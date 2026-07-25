@@ -34,7 +34,7 @@ function InitiativeDetail() {
     <>
       <PageHero
         image={heroManuscript}
-        eyebrow={t(T.status[item.status])}
+        eyebrow={t(T.status[item.status as keyof typeof T.status])}
         title={t(item.title)}
         subtitle={t(item.summary)}
       />

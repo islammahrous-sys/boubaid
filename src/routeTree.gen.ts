@@ -9,38 +9,246 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as LibraryRouteImport } from './routes/library'
+import { Route as InitiativesRouteImport } from './routes/initiatives'
+import { Route as FoundationRouteImport } from './routes/foundation'
+import { Route as FamilyTreeRouteImport } from './routes/family-tree'
+import { Route as ContributeRouteImport } from './routes/contribute'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AchieversRouteImport } from './routes/achievers'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as InitiativesSlugRouteImport } from './routes/initiatives.$slug'
 
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InitiativesRoute = InitiativesRouteImport.update({
+  id: '/initiatives',
+  path: '/initiatives',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FoundationRoute = FoundationRouteImport.update({
+  id: '/foundation',
+  path: '/foundation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FamilyTreeRoute = FamilyTreeRouteImport.update({
+  id: '/family-tree',
+  path: '/family-tree',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContributeRoute = ContributeRouteImport.update({
+  id: '/contribute',
+  path: '/contribute',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AchieversRoute = AchieversRouteImport.update({
+  id: '/achievers',
+  path: '/achievers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NewsRoute,
+} as any)
+const InitiativesSlugRoute = InitiativesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => InitiativesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/achievers': typeof AchieversRoute
+  '/contact': typeof ContactRoute
+  '/contribute': typeof ContributeRoute
+  '/family-tree': typeof FamilyTreeRoute
+  '/foundation': typeof FoundationRoute
+  '/initiatives': typeof InitiativesRouteWithChildren
+  '/library': typeof LibraryRoute
+  '/news': typeof NewsRouteWithChildren
+  '/initiatives/$slug': typeof InitiativesSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/achievers': typeof AchieversRoute
+  '/contact': typeof ContactRoute
+  '/contribute': typeof ContributeRoute
+  '/family-tree': typeof FamilyTreeRoute
+  '/foundation': typeof FoundationRoute
+  '/initiatives': typeof InitiativesRouteWithChildren
+  '/library': typeof LibraryRoute
+  '/news': typeof NewsRouteWithChildren
+  '/initiatives/$slug': typeof InitiativesSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/achievers': typeof AchieversRoute
+  '/contact': typeof ContactRoute
+  '/contribute': typeof ContributeRoute
+  '/family-tree': typeof FamilyTreeRoute
+  '/foundation': typeof FoundationRoute
+  '/initiatives': typeof InitiativesRouteWithChildren
+  '/library': typeof LibraryRoute
+  '/news': typeof NewsRouteWithChildren
+  '/initiatives/$slug': typeof InitiativesSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/achievers'
+    | '/contact'
+    | '/contribute'
+    | '/family-tree'
+    | '/foundation'
+    | '/initiatives'
+    | '/library'
+    | '/news'
+    | '/initiatives/$slug'
+    | '/news/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/achievers'
+    | '/contact'
+    | '/contribute'
+    | '/family-tree'
+    | '/foundation'
+    | '/initiatives'
+    | '/library'
+    | '/news'
+    | '/initiatives/$slug'
+    | '/news/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/achievers'
+    | '/contact'
+    | '/contribute'
+    | '/family-tree'
+    | '/foundation'
+    | '/initiatives'
+    | '/library'
+    | '/news'
+    | '/initiatives/$slug'
+    | '/news/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AchieversRoute: typeof AchieversRoute
+  ContactRoute: typeof ContactRoute
+  ContributeRoute: typeof ContributeRoute
+  FamilyTreeRoute: typeof FamilyTreeRoute
+  FoundationRoute: typeof FoundationRoute
+  InitiativesRoute: typeof InitiativesRouteWithChildren
+  LibraryRoute: typeof LibraryRoute
+  NewsRoute: typeof NewsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/initiatives': {
+      id: '/initiatives'
+      path: '/initiatives'
+      fullPath: '/initiatives'
+      preLoaderRoute: typeof InitiativesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/foundation': {
+      id: '/foundation'
+      path: '/foundation'
+      fullPath: '/foundation'
+      preLoaderRoute: typeof FoundationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/family-tree': {
+      id: '/family-tree'
+      path: '/family-tree'
+      fullPath: '/family-tree'
+      preLoaderRoute: typeof FamilyTreeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contribute': {
+      id: '/contribute'
+      path: '/contribute'
+      fullPath: '/contribute'
+      preLoaderRoute: typeof ContributeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/achievers': {
+      id: '/achievers'
+      path: '/achievers'
+      fullPath: '/achievers'
+      preLoaderRoute: typeof AchieversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +256,56 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof NewsRoute
+    }
+    '/initiatives/$slug': {
+      id: '/initiatives/$slug'
+      path: '/$slug'
+      fullPath: '/initiatives/$slug'
+      preLoaderRoute: typeof InitiativesSlugRouteImport
+      parentRoute: typeof InitiativesRoute
+    }
   }
 }
 
+interface InitiativesRouteChildren {
+  InitiativesSlugRoute: typeof InitiativesSlugRoute
+}
+
+const InitiativesRouteChildren: InitiativesRouteChildren = {
+  InitiativesSlugRoute: InitiativesSlugRoute,
+}
+
+const InitiativesRouteWithChildren = InitiativesRoute._addFileChildren(
+  InitiativesRouteChildren,
+)
+
+interface NewsRouteChildren {
+  NewsSlugRoute: typeof NewsSlugRoute
+}
+
+const NewsRouteChildren: NewsRouteChildren = {
+  NewsSlugRoute: NewsSlugRoute,
+}
+
+const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AchieversRoute: AchieversRoute,
+  ContactRoute: ContactRoute,
+  ContributeRoute: ContributeRoute,
+  FamilyTreeRoute: FamilyTreeRoute,
+  FoundationRoute: FoundationRoute,
+  InitiativesRoute: InitiativesRouteWithChildren,
+  LibraryRoute: LibraryRoute,
+  NewsRoute: NewsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
