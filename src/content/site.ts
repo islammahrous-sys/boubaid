@@ -436,6 +436,7 @@ export const dnaInfo = {
   geographicDistribution: [
     {
       country: { ar: "دولة قطر", en: "Qatar" } as BiText,
+      flagCode: "qa",
       regions: { ar: "الدوحة، الوكرة، الشمال", en: "Doha, Al Wakrah, Al Shamal" } as BiText,
       families: {
         ar: "الكواري، المهندي، البوعينين، الخيارين (تكتل فرعي J-ZS9361)",
@@ -450,6 +451,7 @@ export const dnaInfo = {
     },
     {
       country: { ar: "المملكة العربية السعودية", en: "Saudi Arabia" } as BiText,
+      flagCode: "sa",
       regions: {
         ar: "المنطقة الشرقية (الأحساء والمبرز تحديداً) ونجد",
         en: "Eastern Province (specifically Al-Ahsa and Al-Mubarraz) and Najd",
@@ -467,6 +469,7 @@ export const dnaInfo = {
     },
     {
       country: { ar: "مملكة البحرين", en: "Bahrain" } as BiText,
+      flagCode: "bh",
       regions: { ar: "المحرق، الرفاع", en: "Muharraq, Riffa" } as BiText,
       families: {
         ar: "أبناء العمومة من فروع بني تميم",
@@ -481,6 +484,7 @@ export const dnaInfo = {
     },
     {
       country: { ar: "دولة الكويت", en: "Kuwait" } as BiText,
+      flagCode: "kw",
       regions: { ar: "العاصمة، الأحمدي", en: "Kuwait City, Ahmadi" } as BiText,
       families: {
         ar: "عوائل تميمية يلتقي معها التحور",
@@ -495,6 +499,7 @@ export const dnaInfo = {
     },
     {
       country: { ar: "الإمارات العربية المتحدة", en: "United Arab Emirates" } as BiText,
+      flagCode: "ae",
       regions: { ar: "أبوظبي ودبي", en: "Abu Dhabi and Dubai" } as BiText,
       families: {
         ar: "تجمعات لعائلات مثل النعيمي والمنصوري",
@@ -509,6 +514,7 @@ export const dnaInfo = {
     },
     {
       country: { ar: "سلطنة عمان", en: "Oman" } as BiText,
+      flagCode: "om",
       regions: { ar: "مسقط", en: "Muscat" } as BiText,
       families: {
         ar: "عينة موثقة واحدة",
@@ -523,6 +529,7 @@ export const dnaInfo = {
     },
     {
       country: { ar: "المملكة المغربية", en: "Morocco" } as BiText,
+      flagCode: "ma",
       regions: {
         ar: "الدار البيضاء وأقاليم المغرب الأقصى",
         en: "Casablanca and the Far Maghreb",

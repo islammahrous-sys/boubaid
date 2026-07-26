@@ -360,6 +360,15 @@ export function DnaPage() {
                 {dnaInfo.geographicDistribution.map((row, i) => (
                   <tr key={i} className="border-b border-border align-baseline">
                     <td className="py-4 pe-6 text-sm font-medium text-foreground">
+                      <img
+                        src={`https://flagcdn.com/24x18/${row.flagCode}.png`}
+                        srcSet={`https://flagcdn.com/48x36/${row.flagCode}.png 2x`}
+                        width={20}
+                        height={15}
+                        alt=""
+                        loading="lazy"
+                        className="me-2 inline-block rounded-[2px] align-middle ring-1 ring-ink/10 dark:ring-ivory/15"
+                      />
                       {t(row.country)}
                     </td>
                     <td className="py-4 pe-6 text-[13px] leading-snug text-muted-foreground">
@@ -390,7 +399,23 @@ export function DnaPage() {
 
           <div className="mt-7 border-t border-ink/25 md:hidden dark:border-ivory/20">
             {dnaInfo.geographicDistribution.map((row, i) => (
-              <Record key={i} title={t(row.country)}>
+              <Record
+                key={i}
+                title={
+                  <>
+                    <img
+                      src={`https://flagcdn.com/24x18/${row.flagCode}.png`}
+                      srcSet={`https://flagcdn.com/48x36/${row.flagCode}.png 2x`}
+                      width={20}
+                      height={15}
+                      alt=""
+                      loading="lazy"
+                      className="me-2 inline-block rounded-[2px] align-middle ring-1 ring-ink/10 dark:ring-ivory/15"
+                    />
+                    {t(row.country)}
+                  </>
+                }
+              >
                 <RecordField label={t(copy.colAreas)}>{t(row.regions)}</RecordField>
                 <RecordField label={t(copy.colShare)} mono>
                   {t(row.sampleLabel)}
