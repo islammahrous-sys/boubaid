@@ -8,7 +8,6 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
-import { pageImages } from "@/content/images";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -198,19 +197,6 @@ export function ContactPage() {
 
           {/* ── Particulars ────────────────────────────────── */}
           <aside className="lg:border-s lg:border-border lg:ps-12">
-            <figure className="mb-8">
-              <img
-                src={pageImages.contact.seat.src}
-                alt=""
-                className="aspect-[16/9] w-full object-cover"
-                loading="lazy"
-              />
-              <figcaption className="mt-3 flex items-start gap-2.5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
-                <span className="mt-1.5 h-px w-5 shrink-0 bg-bronze" aria-hidden="true" />
-                <span>{t(pageImages.contact.seat.caption)}</span>
-              </figcaption>
-            </figure>
-
             <Eyebrow>{t(copy.detailsTitle)}</Eyebrow>
 
             <dl className="mt-6 space-y-6 text-sm">
