@@ -9,75 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as NewsRouteImport } from './routes/news'
-import { Route as LibraryRouteImport } from './routes/library'
-import { Route as InitiativesRouteImport } from './routes/initiatives'
-import { Route as FoundationRouteImport } from './routes/foundation'
-import { Route as FamilyTreeRouteImport } from './routes/family-tree'
-import { Route as DnaRouteImport } from './routes/dna'
-import { Route as DirectoryRouteImport } from './routes/directory'
-import { Route as ContributeRouteImport } from './routes/contribute'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BranchesRouteImport } from './routes/branches'
-import { Route as AchieversRouteImport } from './routes/achievers'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AchieversRouteImport } from './routes/achievers'
+import { Route as BranchesRouteImport } from './routes/branches'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ContributeRouteImport } from './routes/contribute'
+import { Route as DirectoryRouteImport } from './routes/directory'
+import { Route as DnaRouteImport } from './routes/dna'
+import { Route as FamilyTreeRouteImport } from './routes/family-tree'
+import { Route as FoundationRouteImport } from './routes/foundation'
+import { Route as InitiativesRouteImport } from './routes/initiatives'
+import { Route as LibraryRouteImport } from './routes/library'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as InitiativesSlugRouteImport } from './routes/initiatives.$slug'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LibraryRoute = LibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InitiativesRoute = InitiativesRouteImport.update({
-  id: '/initiatives',
-  path: '/initiatives',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FoundationRoute = FoundationRouteImport.update({
-  id: '/foundation',
-  path: '/foundation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FamilyTreeRoute = FamilyTreeRouteImport.update({
-  id: '/family-tree',
-  path: '/family-tree',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DnaRoute = DnaRouteImport.update({
-  id: '/dna',
-  path: '/dna',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DirectoryRoute = DirectoryRouteImport.update({
-  id: '/directory',
-  path: '/directory',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContributeRoute = ContributeRouteImport.update({
-  id: '/contribute',
-  path: '/contribute',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BranchesRoute = BranchesRouteImport.update({
-  id: '/branches',
-  path: '/branches',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AchieversRoute = AchieversRouteImport.update({
-  id: '/achievers',
-  path: '/achievers',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -85,20 +35,70 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AchieversRoute = AchieversRouteImport.update({
+  id: '/achievers',
+  path: '/achievers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsSlugRoute = NewsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => NewsRoute,
+const BranchesRoute = BranchesRouteImport.update({
+  id: '/branches',
+  path: '/branches',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContributeRoute = ContributeRouteImport.update({
+  id: '/contribute',
+  path: '/contribute',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DirectoryRoute = DirectoryRouteImport.update({
+  id: '/directory',
+  path: '/directory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DnaRoute = DnaRouteImport.update({
+  id: '/dna',
+  path: '/dna',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FamilyTreeRoute = FamilyTreeRouteImport.update({
+  id: '/family-tree',
+  path: '/family-tree',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FoundationRoute = FoundationRouteImport.update({
+  id: '/foundation',
+  path: '/foundation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InitiativesRoute = InitiativesRouteImport.update({
+  id: '/initiatives',
+  path: '/initiatives',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const InitiativesSlugRoute = InitiativesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => InitiativesRoute,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NewsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -225,81 +225,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/library': {
-      id: '/library'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof LibraryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/initiatives': {
-      id: '/initiatives'
-      path: '/initiatives'
-      fullPath: '/initiatives'
-      preLoaderRoute: typeof InitiativesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/foundation': {
-      id: '/foundation'
-      path: '/foundation'
-      fullPath: '/foundation'
-      preLoaderRoute: typeof FoundationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/family-tree': {
-      id: '/family-tree'
-      path: '/family-tree'
-      fullPath: '/family-tree'
-      preLoaderRoute: typeof FamilyTreeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dna': {
-      id: '/dna'
-      path: '/dna'
-      fullPath: '/dna'
-      preLoaderRoute: typeof DnaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/directory': {
-      id: '/directory'
-      path: '/directory'
-      fullPath: '/directory'
-      preLoaderRoute: typeof DirectoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contribute': {
-      id: '/contribute'
-      path: '/contribute'
-      fullPath: '/contribute'
-      preLoaderRoute: typeof ContributeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/branches': {
-      id: '/branches'
-      path: '/branches'
-      fullPath: '/branches'
-      preLoaderRoute: typeof BranchesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/achievers': {
-      id: '/achievers'
-      path: '/achievers'
-      fullPath: '/achievers'
-      preLoaderRoute: typeof AchieversRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -309,19 +239,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/achievers': {
+      id: '/achievers'
+      path: '/achievers'
+      fullPath: '/achievers'
+      preLoaderRoute: typeof AchieversRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news/$slug': {
-      id: '/news/$slug'
-      path: '/$slug'
-      fullPath: '/news/$slug'
-      preLoaderRoute: typeof NewsSlugRouteImport
-      parentRoute: typeof NewsRoute
+    '/branches': {
+      id: '/branches'
+      path: '/branches'
+      fullPath: '/branches'
+      preLoaderRoute: typeof BranchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contribute': {
+      id: '/contribute'
+      path: '/contribute'
+      fullPath: '/contribute'
+      preLoaderRoute: typeof ContributeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/directory': {
+      id: '/directory'
+      path: '/directory'
+      fullPath: '/directory'
+      preLoaderRoute: typeof DirectoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dna': {
+      id: '/dna'
+      path: '/dna'
+      fullPath: '/dna'
+      preLoaderRoute: typeof DnaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/family-tree': {
+      id: '/family-tree'
+      path: '/family-tree'
+      fullPath: '/family-tree'
+      preLoaderRoute: typeof FamilyTreeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/foundation': {
+      id: '/foundation'
+      path: '/foundation'
+      fullPath: '/foundation'
+      preLoaderRoute: typeof FoundationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/initiatives': {
+      id: '/initiatives'
+      path: '/initiatives'
+      fullPath: '/initiatives'
+      preLoaderRoute: typeof InitiativesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/initiatives/$slug': {
       id: '/initiatives/$slug'
@@ -329,6 +322,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/initiatives/$slug'
       preLoaderRoute: typeof InitiativesSlugRouteImport
       parentRoute: typeof InitiativesRoute
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof NewsRoute
     }
   }
 }
@@ -373,13 +373,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
