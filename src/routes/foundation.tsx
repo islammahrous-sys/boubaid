@@ -53,6 +53,11 @@ const copy = {
     ar: "تأسست صندوق التنمية العائلية (آل بوعبيد) ككيان أهلي غير ربحي يعنى بتنظيم شؤون الأسرة الجامعة: توثيق النسب وحفظ الأرشيف، وإدارة الأوقاف والاشتراكات، وتنفيذ برامج التكافل والتنمية بين أبناء الفروع السبعة.",
     en: "The Al Bu Obaid Family Development Fund was established as a nonprofit civic entity to administer the collective affairs of the family: documenting lineage and preserving the archive, managing endowments and subscriptions, and delivering solidarity and development programmes across the seven branches.",
   } as BiText,
+  certificateLabel: { ar: "شهادة الترخيص الرسمية", en: "Official License Certificate" } as BiText,
+  certificateCta: {
+    ar: "عرض شهادة ترخيص NCNP كاملة (صيغة PDF/JPG)",
+    en: "View the full NCNP license certificate",
+  } as BiText,
   mandateP2: {
     ar: "وتلتزم الصندوق بمتطلبات الحوكمة والإفصاح المالي والامتثال الزكوي المقررة على القطاع غير الربحي، ويخضع حسابها لمراجعة سنوية مستقلة، بما يتسق مع مستهدفات رؤية المملكة ٢٠٣٠.",
     en: "The organisation is bound by the governance, financial disclosure, and zakat compliance requirements set for the nonprofit sector. Its accounts are subject to independent annual audit, consistent with the aims of Saudi Vision 2030.",
@@ -185,6 +190,26 @@ export function FoundationPage() {
           <Prose>
             <p>{t(copy.mandateP1)}</p>
             <p>{t(copy.mandateP2)}</p>
+
+            <a
+              href="/images/ncnp_license_certificate.jpg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="not-prose group mt-6 flex max-w-sm items-center gap-4 border border-border p-3 transition-colors hover:border-bronze dark:hover:border-gold"
+            >
+              <img
+                src="/images/ncnp_license_certificate.jpg"
+                alt=""
+                className="h-16 w-24 shrink-0 border border-border object-cover"
+                loading="lazy"
+              />
+              <span className="text-[13px] leading-relaxed text-foreground">
+                <span className="label-caps block text-bronze dark:text-gold">
+                  {t(copy.certificateLabel)}
+                </span>
+                {t(copy.certificateCta)}
+              </span>
+            </a>
           </Prose>
         </section>
 

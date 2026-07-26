@@ -1343,6 +1343,46 @@ export const libraryItems = {
       kind: "PDF",
       ncnpRef: "Engineering Spec",
     },
+    {
+      title: {
+        ar: "شهادة ترخيص المنشأة غير الربحية (NCNP)",
+        en: "Non-Profit Organization License Certificate (NCNP)",
+      } as BiText,
+      year: 1447,
+      kind: "JPG",
+      ncnpRef: "Lic. 1200758400",
+      href: "/images/ncnp_license_certificate.jpg",
+    },
+    {
+      title: {
+        ar: "إثبات العنوان الوطني الرسمي",
+        en: "Official National Address Proof",
+      } as BiText,
+      year: 1447,
+      kind: "JPG",
+      ncnpRef: "Saudi Post",
+      href: "/images/national_address_proof.jpg",
+    },
+    {
+      title: {
+        ar: "خطاب تشكيل مجلس الأمناء (مُحجوبة أرقام الهوية)",
+        en: "Board of Trustees Formation Letter (ID numbers redacted)",
+      } as BiText,
+      year: 1447,
+      kind: "JPG",
+      ncnpRef: "PTEB031650",
+      href: "/images/board_formation_letter.jpg",
+    },
+    {
+      title: {
+        ar: "خطاب تفويض إدارة الحسابات البنكية (مُحجوبة أرقام الهوية)",
+        en: "Bank Account Signatory Authorization Letter (ID numbers redacted)",
+      } as BiText,
+      year: 1447,
+      kind: "JPG",
+      ncnpRef: "No. 79",
+      href: "/images/bank_authorization_letter.jpg",
+    },
   ],
   photos: [
     {
