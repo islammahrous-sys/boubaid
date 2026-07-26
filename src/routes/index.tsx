@@ -17,6 +17,7 @@ import {
   SectionHeading,
   Rule,
   Ornament,
+  CalligraphicDivider,
   Prose,
   Eyebrow,
   Status,
