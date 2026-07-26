@@ -66,14 +66,14 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
             loop
             playsInline
             preload="auto"
-            // @ts-expect-error — non-standard iOS attribute
-            "webkit-playsinline"=""
+            {...({ "webkit-playsinline": "" } as Record<string, string>)}
             disablePictureInPicture
             disableRemotePlayback
             aria-hidden="true"
             onCanPlay={() => setLoaded(true)}
           />
         ) : null}
+
 
         {/* Cinematic scrim — vertical + vignette for text legibility */}
         <div
