@@ -16,7 +16,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("ar");
 
   useEffect(() => {
-    const stored = (typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY)) as Lang | null;
+    const stored = (typeof window !== "undefined" &&
+      localStorage.getItem(STORAGE_KEY)) as Lang | null;
     if (stored === "ar" || stored === "en") setLangState(stored);
   }, []);
 
@@ -26,17 +27,22 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   }, [lang]);
 
-  const value = useMemo<Ctx>(() => ({
-    lang,
-    dir: lang === "ar" ? "rtl" : "ltr",
-    setLang: (l) => {
-      setLangState(l);
-      try { localStorage.setItem(STORAGE_KEY, l); } catch {
-        // ignore storage failures
-      }
-    },
-    t: ({ ar, en }) => (lang === "ar" ? ar : en),
-  }), [lang]);
+  const value = useMemo<Ctx>(
+    () => ({
+      lang,
+      dir: lang === "ar" ? "rtl" : "ltr",
+      setLang: (l) => {
+        setLangState(l);
+        try {
+          localStorage.setItem(STORAGE_KEY, l);
+        } catch {
+          // ignore storage failures
+        }
+      },
+      t: ({ ar, en }) => (lang === "ar" ? ar : en),
+    }),
+    [lang],
+  );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }

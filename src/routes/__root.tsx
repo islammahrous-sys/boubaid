@@ -12,25 +12,29 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
+import { ThemeProvider, THEME_STORAGE_KEY } from "@/lib/ThemeProvider";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { MobileNav } from "@/components/site/MobileNav";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-navy">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-navy">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+      <div className="max-w-md">
+        <p className="nums font-mono text-sm text-bronze">404</p>
+        <h1 className="mt-3 text-2xl text-foreground">الصفحة غير موجودة — Page not found</h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          الرابط المطلوب غير متاح أو تم نقله.
+          <br />
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <div className="mt-6">
+        <div className="mt-7 border-t border-border pt-5">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-navy px-4 py-2 text-sm font-medium text-ivory hover:bg-navy-soft"
+            className="inline-flex items-center border border-ink bg-ink px-4 py-2 text-sm font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
           >
-            Go home
+            العودة للرئيسية — Go home
           </Link>
         </div>
       </div>
@@ -47,28 +51,28 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-navy">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+      <div className="max-w-md">
+        <h1 className="text-2xl text-foreground">تعذر تحميل الصفحة — This page didn't load</h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          حدث خطأ غير متوقع. يمكنك المحاولة مرة أخرى أو العودة للرئيسية.
+          <br />
+          Something went wrong on our end. Try again or head back home.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-7 flex flex-wrap gap-3 border-t border-border pt-5">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-navy px-4 py-2 text-sm font-medium text-ivory hover:bg-navy-soft"
+            className="inline-flex items-center border border-ink bg-ink px-4 py-2 text-sm font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
           >
-            Try again
+            إعادة المحاولة — Try again
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+            className="inline-flex items-center border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
           >
-            Go home
+            الرئيسية — Go home
           </a>
         </div>
       </div>
@@ -98,8 +102,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
+        // Amiri is the Arabic display face and carries every heading in the
+        // site's primary language — it is not optional decoration.
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap",
       },
     ],
   }),
@@ -109,10 +115,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+/**
+ * Runs synchronously before first paint so the `dark` class is already
+ * correct when the stylesheet applies — without it, every page would flash
+ * light before React mounts and ThemeProvider corrects it.
+ */
+const themeInitScript = `(function () {
+  try {
+    var stored = localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});
+    var dark = stored === "dark" || (stored !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+  } catch (e) {}
+})();`;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="ar" dir="rtl">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <HeadContent />
       </head>
       <body>
@@ -128,16 +148,19 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">
-            <Outlet />
-          </main>
-          <Footer />
-        </div>
-        <Toaster richColors position="top-center" />
-      </LanguageProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <div className="flex min-h-screen flex-col pb-16 md:pb-0">
+            <Header />
+            <main className="flex-1">
+              <Outlet />
+            </main>
+            <Footer />
+            <MobileNav />
+          </div>
+          <Toaster richColors position="top-center" />
+        </LanguageProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

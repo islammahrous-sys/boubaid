@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>شجرة عائلة آل بوعبيد الشاملة | Al Bu Obaid Family Tree</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Cairo', 'sans-serif'] },
+                    colors: {
+                        saudi: { green: '#006C35', dark: '#044724', light: '#E8F3EC' },
+                        gold: { 300: '#F3E5AB', 400: '#D4AF37', 500: '#C5A059', 600: '#9E7C30' },
+                        desert: { 50: '#FDFBF7', 100: '#F4F1EA' }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Cairo', sans-serif;
+            background-color: #FDFBF7;
+            /* Premium Islamic Geometric Background */
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        #tree-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            cursor: grab;
+        }
+        #tree-container:active { cursor: grabbing; }
+
+        /* UI Panels */
+        .glass-panel {
+            background: rgba(253, 251, 247, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 108, 53, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            z-index: 50;
+        }
+
+        .link {
+            fill: none;
+            stroke: #D4AF37;
+            stroke-opacity: 0.4;
+            stroke-width: 2px;
+            transition: stroke 0.3s, stroke-width 0.3s, stroke-opacity 0.3s;
+        }
+        .link.path-highlight {
+            stroke: #006C35;
+            stroke-width: 4px;
+            stroke-opacity: 1;
+        }
+        
+        .node-group { cursor: pointer; }
+        
+        .node-bg { 
+            transition: all 0.3s ease; 
+        }
+
+        .node-group:hover .node-bg {
+            stroke: #D4AF37 !important;
+            stroke-width: 3px !important;
+        }
+
+        @keyframes pulse-shadow {
+            0% { stroke-opacity: 0.5; stroke-width: 2px; }
+            50% { stroke-opacity: 1; stroke-width: 5px; }
+            100% { stroke-opacity: 0.5; stroke-width: 2px; }
+        }
+        
+        .node--highlighted .node-bg {
+            stroke: #006C35 !important;
+            animation: pulse-shadow 1.5s infinite;
+        }
+        
+        .error-msg {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white; padding: 20px; border-radius: 10px;
+            border: 2px solid red; color: red; font-weight: bold;
+            z-index: 9999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-panel absolute top-6 left-6 p-6 flex flex-col gap-5 w-80">
+        <div class="flex items-center justify-center gap-3 mb-2">
+            <i class="fa-solid fa-seedling text-gold-500 text-2xl"></i>
+            <h2 class="text-saudi-dark font-black text-xl tracking-tight">السجل الديموغرافي</h2>
+        </div>
+
+        <div class="relative w-full">
+            <input type="text" id="search-box" class="w-full py-3 px-4 pr-10 rounded-xl border-2 border-saudi-green/20 focus:border-gold-400 focus:outline-none bg-white font-bold text-sm text-saudi-dark shadow-inner transition-colors" placeholder="ابحث عن اسم بالكامل...">
+            <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 transform -translate-y-1/2 text-gold-500"></i>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <button id="zoom-in" class="bg-saudi-dark text-white py-3 rounded-xl hover:bg-saudi-green transition-all font-bold text-sm flex items-center justify-center gap-2 shadow-md">
+                <i class="fa-solid fa-plus"></i> تكبير
+            </button>
+            <button id="zoom-out" class="bg-white border-2 border-gold-400 text-saudi-dark py-3 rounded-xl hover:bg-desert-50 transition-all font-bold text-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-minus"></i> تصغير
+            </button>
+        </div>
+        
+        <button id="reset" class="bg-gold-500 text-white py-3 rounded-xl hover:bg-gold-600 transition-all font-bold text-sm flex items-center justify-center gap-2 shadow-md">
+            <i class="fa-solid fa-crosshairs"></i> العودة للجد الجامع
+        </button>
+        
+        <div class="h-px bg-gold-400/30 my-1"></div>
+        
+        <button id="expand-all" class="bg-saudi-dark text-gold-300 py-3 rounded-xl hover:bg-gray-900 transition-all font-bold text-sm flex items-center justify-center gap-2 shadow-md">
+            <i class="fa-solid fa-network-wired"></i> استعراض كافة الفروع
+        </button>
+        <button id="collapse-all" class="bg-desert-100 text-saudi-dark py-3 rounded-xl hover:bg-white transition-all font-bold text-sm flex items-center justify-center gap-2 border border-gold-400/30">
+            <i class="fa-solid fa-compress"></i> طي التفرعات
+        </button>
+    </div>
+
+    <div class="glass-panel absolute bottom-6 right-6 p-6 max-w-sm border-t-4 border-t-saudi-green hidden md:block">
+        <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 bg-saudi-light rounded-full flex items-center justify-center border border-saudi-green/30">
+                <i class="fa-solid fa-certificate text-saudi-green text-xl"></i>
+            </div>
+            <div>
+                <h3 class="font-black text-saudi-dark text-lg leading-tight">دليل الجدارية التفاعلية</h3>
+                <p class="text-xs text-gold-600 font-bold mt-1">توثيق إلكتروني شامل للفروع والأحفاد</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-col gap-3 text-sm text-saudi-dark bg-white/80 p-4 rounded-xl shadow-inner border border-gold-400/20">
+            <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-saudi-dark border-2 border-gold-400 shadow-sm"></div>
+                <span class="font-bold">البطاقة الخضراء الداكنة: <span class="font-normal text-xs">الجذور والفروع الرئيسية.</span></span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-gold-400 shadow-sm"></div>
+                <span class="font-bold">النقطة الذهبية: <span class="font-normal text-xs">أجيال مخفية (انقر للفتح).</span></span>
+            </div>
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-hand-pointer text-gold-500 w-4 text-center"></i>
+                <span class="font-bold text-xs">اسحب الشاشة يميناً ويساراً للتنقل.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container for D3 SVG -->
+    <div id="tree-container"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            if (typeof d3 === 'undefined') {
+                document.getElementById('tree-container').innerHTML = '<div class="error-msg">فشل تحميل مكتبة D3.js. يرجى التحقق من اتصال الإنترنت أو إعدادات المتصفح.</div>';
+                return;
+            }
+
+            try {
+                // Massive comprehensive dataset incorporating all names from the PDF OCR
+                const familyData = {
+                    name: "عبد الله", 
+                    title: "الجد الجامع (آل بوعبيد)", 
+                    isRoot: true,
+                    children: [
+                        {
+                            name: "محمد",
+                            title: "الجد الثاني",
+                            isRoot: true,
+                            children: [
+                                {
+                                    name: "صالح",
+                                    title: "الجد الثالث",
+                                    isRoot: true,
+                                    children: [
+                                        {
+                                            name: "أحمد",
+                                            title: "الجد الرابع",
+                                            isRoot: true,
+                                            children: [
+                                                // --- BRANCH 1: AL SAAD ---
+                                                {
+                                                    name: "آل سعد", 
+                                                    isBranch: true,
+                                                    children: [
+                                                        { 
+                                                            name: "سعد بن عبد العزيز", 
+                                                            children: [
+                                                                { name: "عيسى", children: [{name: "وليد", children: [{name: "عيسى"}, {name: "عبدالرحمن"}, {name: "طارق"}]}, {name: "علي", children: [{name: "محمد"}, {name: "أحمد"}]}, {name: "عبدالرحمن"}] }, 
+                                                                { name: "خالد", children: [{name: "سعد", children: [{name: "خالد"}, {name: "فيصل"}]}, {name: "عبدالرحمن"}, {name: "إبراهيم"}] }, 
+                                                                { name: "وليد", children: [{name: "محمد", children: [{name: "وليد"}, {name: "بندر"}]}, {name: "خالد"}] }, 
+                                                                { name: "بندر", children: [{name: "سعد"}, {name: "عبدالله"}] }, 
+                                                                { name: "فيصل", children: [{name: "محمد"}, {name: "عبدالله"}, {name: "فهد"}, {name: "سلطان"}] },
+                                                                { name: "مانع", children: [{name: "صلاح"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "سعد بن عبد الرحمن", 
+                                                            children: [
+                                                                { name: "صالح", children: [{name: "عبدالرحمن"}, {name: "فهد"}, {name: "سعود"}, {name: "محمد"}] }, 
+                                                                { name: "إبراهيم", children: [{name: "عبدالعزيز", children: [{name: "إبراهيم"}, {name: "وليد"}]}] }, 
+                                                                { name: "محمد", children: [{name: "سعد", children: [{name: "محمد"}, {name: "علي"}]}] }, 
+                                                                { name: "توفيق", children: [{name: "أحمد"}, {name: "صالح"}, {name: "وليد", children: [{name: "عبدالرحمن"}, {name: "توفيق"}]}] }
+                                                            ] 
+                                                        }
+                                                    ]
+                                                },
+                                                // --- BRANCH 2: AL ABDULRAHMAN ---
+                                                {
+                                                    name: "آل عبد الرحمن", 
+                                                    isBranch: true,
+                                                    children: [
+                                                        { 
+                                                            name: "عبد الله", 
+                                                            children: [
+                                                                { name: "جمال", children: [{name: "عبدالله"}, {name: "خالد"}, {name: "طارق"}] }, 
+                                                                { name: "طارق", children: [{name: "عبدالرحمن"}, {name: "محمد"}, {name: "خالد"}, {name: "يزيد"}] }, 
+                                                                { name: "مشاري", children: [{name: "عبدالعزيز"}, {name: "عبدالرحمن"}] },
+                                                                { name: "عبدالرؤوف", children: [{name: "أحمد"}, {name: "فهد"}, {name: "سعود"}] },
+                                                                { name: "سعود", children: [{name: "صالح"}, {name: "عبدالله"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "عيسى", 
+                                                            children: [
+                                                                { name: "عبد العزيز", children: [{name: "عمر"}, {name: "محمد"}, {name: "عيسى"}, {name: "عبدالله"}] }, 
+                                                                { name: "خالد", children: [{name: "وليد"}, {name: "مشعل"}, {name: "سعد"}, {name: "عادل"}] }, 
+                                                                { name: "ماهر", children: [{name: "عبدالرحمن"}, {name: "عيسى"}, {name: "خالد"}] },
+                                                                { name: "صالح", children: [{name: "سعد"}, {name: "محمد"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "محمد", 
+                                                            children: [
+                                                                { name: "يوسف", children: [{name: "عبدالله"}, {name: "صالح"}, {name: "أحمد"}, {name: "إبراهيم"}] }, 
+                                                                { name: "يعقوب", children: [{name: "محمد"}, {name: "عبدالرحمن"}] }, 
+                                                                { name: "نادر", children: [{name: "عبدالرحمن"}, {name: "سالم"}] },
+                                                                { name: "فهد", children: [{name: "عبدالعزيز"}, {name: "محمد"}] },
+                                                                { name: "بدر", children: [{name: "خالد"}, {name: "عبدالله"}] },
+                                                                { name: "عبدالباري", children: [{name: "محمد", children: [{name: "فهد"}, {name: "عادل"}]}] }
+                                                            ] 
+                                                        }
+                                                    ]
+                                                },
+                                                // --- BRANCH 3: AL ABDULAZIZ ---
+                                                {
+                                                    name: "آل عبد العزيز", 
+                                                    isBranch: true,
+                                                    children: [
+                                                        { 
+                                                            name: "محمد", 
+                                                            children: [
+                                                                { name: "زياد", children: [{name: "عبدالعزيز"}, {name: "محمد"}] }, 
+                                                                { name: "نبيل", children: [{name: "فهد"}, {name: "صالح"}] }, 
+                                                                { name: "فهد", children: [{name: "سلطان"}, {name: "خالد"}, {name: "عبدالله"}] },
+                                                                { name: "عبدالرحمن", children: [{name: "محمد"}] },
+                                                                { name: "حفاظ", children: [{name: "إبراهيم"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "علي", 
+                                                            children: [
+                                                                { name: "عبد الله", children: [{name: "محمد"}, {name: "أحمد"}, {name: "إبراهيم"}, {name: "علي"}] }, 
+                                                                { name: "صالح", children: [{name: "عبدالعزيز", children: [{name: "صالح"}]}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "سعد", 
+                                                            children: [
+                                                                { name: "رياض", children: [{name: "عبدالله"}, {name: "سعد"}, {name: "إياد"}] }, 
+                                                                { name: "عصام", children: [{name: "سعد"}, {name: "وليد"}, {name: "محمد"}, {name: "أحمد"}] }, 
+                                                                { name: "ياسر", children: [{name: "سعد"}, {name: "عبدالعزيز"}] },
+                                                                { name: "أحمد", children: [{name: "خالد"}, {name: "سعد"}] }
+                                                            ] 
+                                                        }
+                                                    ]
+                                                },
+                                                // --- BRANCH 4: AL ABDULLATIF ---
+                                                {
+                                                    name: "آل عبد اللطيف", 
+                                                    isBranch: true,
+                                                    children: [
+                                                        { 
+                                                            name: "خالد", 
+                                                            children: [
+                                                                { name: "عبد الله", children: [{name: "خالد"}] }, 
+                                                                { name: "ريان", children: [{name: "خالد"}] },
+                                                                { name: "يوسف", children: [{name: "خالد"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "سعود", 
+                                                            children: [
+                                                                { name: "محمد", children: [{name: "عبداللطيف"}] }, 
+                                                                { name: "سعد", children: [{name: "سعود"}] },
+                                                                { name: "عبدالرحمن", children: [{name: "فيصل"}, {name: "سعود"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "عبد المجيد", 
+                                                            children: [
+                                                                { name: "يوسف", children: [{name: "عبدالمجيد"}, {name: "عبداللطيف"}] }, 
+                                                                { name: "أحمد", children: [{name: "صالح"}, {name: "عبدالرحمن"}] }
+                                                            ] 
+                                                        }
+                                                    ]
+                                                },
+                                                // --- BRANCH 5: AL ABDULLAH SALEH ---
+                                                {
+                                                    name: "آل عبد الله صالح", 
+                                                    isBranch: true,
+                                                    children: [
+                                                        { 
+                                                            name: "محمد", 
+                                                            children: [
+                                                                { name: "وليد", children: [{name: "محمد"}, {name: "صالح"}, {name: "عبدالله"}] }, 
+                                                                { name: "صالح", children: [{name: "عبدالله"}, {name: "محمد"}] }, 
+                                                                { name: "عادل", children: [{name: "محمد"}, {name: "سعد"}] },
+                                                                { name: "مشعل", children: [{name: "سعد"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "أحمد", 
+                                                            children: [
+                                                                { name: "حمد", children: [{name: "أحمد"}, {name: "عبدالله"}] }, 
+                                                                { name: "عبد العزيز", children: [{name: "عمر"}, {name: "أحمد"}] },
+                                                                { name: "نايف", children: [{name: "أحمد"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "سعد", 
+                                                            children: [
+                                                                { name: "عبد الرحمن", children: [{name: "سعد"}, {name: "عبدالله"}] }, 
+                                                                { name: "يوسف", children: [{name: "أحمد"}, {name: "سعد"}] },
+                                                                { name: "محمد", children: [{name: "وليد"}, {name: "سعد"}] }
+                                                            ] 
+                                                        }
+                                                    ]
+                                                },
+                                                // --- BRANCH 6: AL MUHAMMAD AHMED ---
+                                                {
+                                                    name: "آل محمد أحمد", 
+                                                    isBranch: true,
+                                                    children: [
+                                                        { 
+                                                            name: "عبد العزيز", 
+                                                            children: [
+                                                                { name: "إبراهيم", children: [{name: "خالد"}, {name: "محمد"}, {name: "أحمد"}, {name: "عبدالعزيز"}] }, 
+                                                                { name: "خالد", children: [{name: "سعد"}, {name: "عبدالعزيز"}] },
+                                                                { name: "يوسف", children: [{name: "عبدالعزيز"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "عبد الله", 
+                                                            children: [
+                                                                { name: "سلمان", children: [{name: "عبدالله"}] }, 
+                                                                { name: "فواز", children: [{name: "عبدالله"}] },
+                                                                { name: "أحمد", children: [{name: "محمد"}, {name: "عبدالله"}] },
+                                                                { name: "جاسم", children: [{name: "عبدالله"}, {name: "مهند"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "عيسى", 
+                                                            children: [
+                                                                { name: "أنس", children: [{name: "عيسى"}] }, 
+                                                                { name: "براء", children: [{name: "عيسى"}] },
+                                                                { name: "عمار", children: [{name: "عيسى"}] }
+                                                            ] 
+                                                        }
+                                                    ]
+                                                },
+                                                // --- BRANCH 7: AL YOUSSEF ---
+                                                {
+                                                    name: "آل يوسف", 
+                                                    isBranch: true,
+                                                    children: [
+                                                        { 
+                                                            name: "محمد", 
+                                                            children: [
+                                                                { name: "عبد الإله", children: [{name: "يوسف"}, {name: "أحمد"}, {name: "محمد"}] }, 
+                                                                { name: "تركي", children: [{name: "محمد"}] }, 
+                                                                { name: "نواف", children: [{name: "فهد"}, {name: "محمد"}] },
+                                                                { name: "فيصل", children: [{name: "محمد"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "عبد الرحمن", 
+                                                            children: [
+                                                                { name: "صلاح", children: [{name: "عبدالرحمن"}, {name: "يوسف"}] }, 
+                                                                { name: "حمود", children: [{name: "محمد"}, {name: "عبدالرحمن"}] },
+                                                                { name: "يعقوب", children: [{name: "عبدالرحمن"}] },
+                                                                { name: "راشد", children: [{name: "أحمد"}] }
+                                                            ] 
+                                                        },
+                                                        { 
+                                                            name: "عبد اللطيف", 
+                                                            children: [
+                                                                { name: "ماجد", children: [{name: "عبداللطيف"}, {name: "صالح"}, {name: "معاذ"}] }, 
+                                                                { name: "عبد الرزاق", children: [{name: "أحمد"}, {name: "عبداللطيف"}] },
+                                                                { name: "طلال", children: [{name: "عبداللطيف"}] },
+                                                                { name: "صالح", children: [{name: "عبداللطيف"}] },
+                                                                { name: "غانم", children: [{name: "عبداللطيف"}] }
+                                                            ] 
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                };
+
+                const container = document.getElementById('tree-container');
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                
+                let i = 0;
+                const duration = 400;
+
+                // Clear any existing SVG
+                d3.select("#tree-container").selectAll("*").remove();
+
+                const svg = d3.select("#tree-container").append("svg")
+                    .attr("width", "100%")
+                    .attr("height", "100%")
+                    .style("background-color", "transparent");
+
+                const g = svg.append("g");
+                
+                const zoom = d3.zoom()
+                    .scaleExtent([0.1, 4])
+                    .on("zoom", (event) => g.attr("transform", event.transform));
+                    
+                svg.call(zoom);
+                svg.on("dblclick.zoom", null);
+
+                // Tree layout: Horizontal spread (dx) and vertical spread (dy)
+                const dx = 60; // Vertical distance between siblings
+                const dy = 240; // Horizontal distance between generations
+                const treemap = d3.tree().nodeSize([dx, dy]);
+                
+                const root = d3.hierarchy(familyData, d => d.children);
+                root.x0 = 0;
+                root.y0 = 0;
+
+                function collapse(d) {
+                    if(d.children) {
+                        d._children = d.children;
+                        d._children.forEach(collapse);
+                        d.children = null;
+                    }
+                }
+
+                // Collapse deep branches initially to keep it readable
+                if (root.children) {
+                    root.children[0].children[0].children[0].children.forEach(branch => {
+                        if (branch.children) {
+                            branch.children.forEach(collapse);
+                        }
+                    });
+                }
+
+                function update(source) {
+                    const treeData = treemap(root);
+                    const nodes = treeData.descendants();
+                    const links = treeData.descendants().slice(1);
+                    
+                    // Root position right aligned for RTL
+                    const rootXPosition = width - 200;
+
+                    nodes.forEach(d => {
+                        // RTL Math: Subtract Y depth from right margin
+                        d.y_rtl = rootXPosition - d.y;
+                    });
+
+                    // --- NODES ---
+                    const node = g.selectAll('g.node')
+                        .data(nodes, d => d.id || (d.id = ++i));
+
+                    const nodeEnter = node.enter().append('g')
+                        .attr('class', 'node-group node')
+                        .attr("transform", d => `translate(${source.y0_rtl || rootXPosition},${source.x0 || 0})`)
+                        .on('click', click)
+                        .on('mouseover', mouseover)
+                        .on('mouseout', mouseout);
+
+                    // Pill Shape
+                    nodeEnter.append('rect')
+                        .attr('class', 'node-bg')
+                        .attr('width', 160)
+                        .attr('height', 44)
+                        .attr('x', -80) 
+                        .attr('y', -22) 
+                        .attr('rx', 22) 
+                        .attr('fill', d => {
+                            if (d.data.isRoot) return "#044724"; 
+                            if (d.data.isBranch) return "#E8F3EC"; 
+                            return "#ffffff"; 
+                        })
+                        .attr('stroke', d => {
+                            if (d.data.isRoot) return "#D4AF37"; 
+                            if (d.data.isBranch) return "#006C35"; 
+                            return "#d1d5db"; 
+                        })
+                        .attr('stroke-width', d => d.data.isRoot ? 3 : (d._children ? 2 : 1));
+
+                    // Text
+                    nodeEnter.append('text')
+                        .attr('dy', d => d.data.title ? -5 : 5) 
+                        .attr('text-anchor', 'middle')
+                        .text(d => d.data.name)
+                        .style('fill', d => d.data.isRoot ? "#ffffff" : "#044724")
+                        .style('font-weight', d => d.data.isRoot || d.data.isBranch ? '800' : '600')
+                        .style('font-size', d => d.data.isRoot ? '16px' : '14px')
+                        .style('pointer-events', 'none');
+
+                    // Subtitle
+                    nodeEnter.filter(d => d.data.title).append('text')
+                        .attr('dy', 14)
+                        .attr('text-anchor', 'middle')
+                        .text(d => d.data.title)
+                        .style('fill', '#C5A059')
+                        .style('font-weight', '700')
+                        .style('font-size', '11px')
+                        .style('pointer-events', 'none');
+
+                    // Expand Indicator (Gold Dot on Left side)
+                    const indicatorGroup = nodeEnter.append('g')
+                        .attr('class', 'children-indicator')
+                        .attr('transform', `translate(-70, 0)`) 
+                        .style('opacity', d => d._children ? 1 : 0);
+                        
+                    indicatorGroup.append('circle')
+                        .attr('r', 5)
+                        .style('fill', '#D4AF37')
+                        .style('stroke', '#fff')
+                        .style('stroke-width', '2px');
+
+                    const nodeUpdate = nodeEnter.merge(node);
+                    
+                    nodeUpdate.transition()
+                        .duration(duration)
+                        .attr("transform", d => `translate(${d.y_rtl},${d.x})`);
+
+                    nodeUpdate.select('.children-indicator')
+                        .transition().duration(duration)
+                        .style('opacity', d => d._children ? 1 : 0);
+
+                    const nodeExit = node.exit().transition()
+                        .duration(duration)
+                        .attr("transform", d => `translate(${source.y_rtl},${source.x})`)
+                        .remove();
+
+                    nodeExit.select('rect').attr('width', 0).attr('height', 0);
+                    nodeExit.select('text').style('fill-opacity', 0);
+
+                    // --- LINKS ---
+                    const link = g.selectAll('path.link')
+                        .data(links, d => d.id);
+
+                    const linkEnter = link.enter().insert('path', "g")
+                        .attr("class", "link")
+                        .attr('d', d => {
+                            const o = {x: source.x0 || 0, y_rtl: source.y0_rtl || rootXPosition};
+                            return diagonal(o, o);
+                        });
+
+                    const linkUpdate = linkEnter.merge(link);
+                    linkUpdate.transition()
+                        .duration(duration)
+                        .attr('d', d => diagonal(d, d.parent));
+
+                    link.exit().transition()
+                        .duration(duration)
+                        .attr('d', d => {
+                            const o = {x: source.x, y_rtl: source.y_rtl};
+                            return diagonal(o, o);
+                        })
+                        .remove();
+
+                    nodes.forEach(d => {
+                        d.x0 = d.x;
+                        d.y0_rtl = d.y_rtl;
+                    });
+                }
+
+                function diagonal(s, d) {
+                    return `M ${s.y_rtl} ${s.x}
+                            C ${(s.y_rtl + d.y_rtl) / 2} ${s.x},
+                              ${(s.y_rtl + d.y_rtl) / 2} ${d.x},
+                              ${d.y_rtl} ${d.x}`;
+                }
+
+                function mouseover(event, d) {
+                    d3.selectAll('.link').classed('path-highlight', false);
+                    let current = d;
+                    while(current.parent) {
+                        d3.selectAll('.link').filter(l => l.target === current).classed('path-highlight', true);
+                        current = current.parent;
+                    }
+                }
+
+                function mouseout(event, d) {
+                    d3.selectAll('.link').classed('path-highlight', false);
+                }
+
+                function click(event, d) {
+                    if (d.children) {
+                        d._children = d.children; 
+                        d.children = null;
+                    } else {
+                        d.children = d._children; 
+                        d._children = null;
+                    }
+                    update(d);
+                }
+
+                function centerRoot() {
+                    const scale = 0.7;
+                    svg.transition().duration(750).call(
+                        zoom.transform, 
+                        d3.zoomIdentity.translate(0, height/2).scale(scale)
+                    );
+                }
+
+                function centerNode(d) {
+                    const scale = 1.3;
+                    let x = -d.y_rtl * scale + (width / 2);
+                    let y = -d.x * scale + (height / 2);
+                    svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity.translate(x,y).scale(scale));
+                }
+
+                document.getElementById('zoom-in').addEventListener('click', () => {
+                    svg.transition().duration(300).call(zoom.scaleBy, 1.3);
+                });
+                
+                document.getElementById('zoom-out').addEventListener('click', () => {
+                    svg.transition().duration(300).call(zoom.scaleBy, 0.7);
+                });
+                
+                document.getElementById('reset').addEventListener('click', () => {
+                    centerRoot();
+                });
+                
+                document.getElementById('expand-all').addEventListener('click', () => {
+                    root.descendants().forEach(d => {
+                        if (d._children) { d.children = d._children; d._children = null; }
+                    });
+                    update(root);
+                    centerRoot();
+                });
+
+                document.getElementById('collapse-all').addEventListener('click', () => {
+                    if (root.children) {
+                        root.children[0].children[0].children[0].children.forEach(branch => {
+                            if (branch.children) {
+                                branch.children.forEach(collapse);
+                            }
+                        });
+                    }
+                    update(root);
+                    centerRoot();
+                });
+
+                document.getElementById('search-box').addEventListener('input', function(e) {
+                    const term = e.target.value.trim().toLowerCase();
+                    g.selectAll('.node-group').classed('node--highlighted', false);
+                    
+                    if(term.length < 2) return;
+                    
+                    const matches = root.descendants().filter(d => d.data.name.toLowerCase().includes(term));
+                    
+                    if(matches.length > 0) {
+                        matches.forEach(match => {
+                            let current = match;
+                            while(current.parent) {
+                                if(current.parent._children) {
+                                    current.parent.children = current.parent._children;
+                                    current.parent._children = null;
+                                }
+                                current = current.parent;
+                            }
+                        });
+                        
+                        update(root);
+                        
+                        setTimeout(() => {
+                            matches.forEach(match => {
+                                g.selectAll('.node-group').filter(d => d.data.name === match.data.name).classed('node--highlighted', true);
+                            });
+                            centerNode(matches[0]);
+                        }, duration + 100);
+                    }
+                });
+
+                // Initialize
+                update(root);
+                centerRoot();
+
+            } catch (error) {
+                console.error("D3 Error:", error);
+                document.getElementById('tree-container').innerHTML = `<div class="error-msg">حدث خطأ داخلي في رسم الجدارية: <br>${error.message}</div>`;
+            }
+        }); 
+    </script>
+</body>
+</html>

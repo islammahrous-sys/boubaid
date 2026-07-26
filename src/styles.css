@@ -4,18 +4,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+/* ══════════════════════════════════════════════════════════════
+   Al Bu Obaid — design tokens
 
+   The site reads as a printed archive: warm paper, sepia ink,
+   hairline rules, and gold used as a seal rather than a surface.
+   Gold is deliberately scarce — roughly one gold element per
+   viewport. If you are reaching for `text-gold` a second time in
+   the same section, use `bronze` or `ink-soft` instead.
+   ══════════════════════════════════════════════════════════════ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 6px);
+  --radius-3xl: calc(var(--radius) + 10px);
+  --radius-4xl: calc(var(--radius) + 14px);
+
+  /* Arabic sets the tone — it is the primary language of the site.
+     Naskh (Amiri) for display, humanist sans for running text. */
+  --font-naskh: "Amiri", "Scheherazade New", Georgia, serif;
   --font-arabic: "IBM Plex Sans Arabic", "Tajawal", system-ui, sans-serif;
-  --font-display: "Cormorant Garamond", "Cairo", serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
   --font-body: "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -38,12 +52,20 @@
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
 
-  --color-navy: var(--navy);
-  --color-navy-soft: var(--navy-soft);
+  /* Heritage palette. `navy` is kept as an alias of `ink` because it
+     is referenced widely; new work should prefer `ink`. */
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-navy: var(--ink);
+  --color-navy-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-shade: var(--paper-shade);
+  --color-rule: var(--rule);
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
   --color-ivory: var(--ivory);
   --color-emerald: var(--emerald);
+  --color-bronze: var(--bronze);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -61,72 +83,105 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  /* Tight radius. Pillowy corners read as generic app UI; an archive
+     wants something closer to a printed rule box. */
+  --radius: 0.25rem;
 
-  /* Heritage palette */
-  --navy: oklch(0.22 0.05 260);
-  --navy-soft: oklch(0.32 0.05 260);
-  --gold: oklch(0.75 0.12 82);
-  --gold-soft: oklch(0.88 0.06 82);
-  --ivory: oklch(0.972 0.012 85);
-  --emerald: oklch(0.38 0.08 155);
+  /* Warm sepia ink, not blue-black — it agrees with the bronze/gold
+     logo instead of fighting it. */
+  --ink: oklch(0.21 0.026 62);
+  --ink-soft: oklch(0.34 0.028 60);
+  --paper: oklch(0.972 0.009 80);
+  --paper-shade: oklch(0.945 0.013 78);
+  /* 3.4:1 against paper, 3.1:1 against paper-shade — hairline rules carry
+     165 structural divisions across the site, so they need to actually be
+     visible (the previous 0.86 lightness measured 1.4:1). */
+  --rule: oklch(0.62 0.018 74);
 
-  --background: oklch(0.985 0.008 85); /* near ivory */
-  --foreground: oklch(0.22 0.05 260); /* navy */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.05 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.05 260);
-  --primary: oklch(0.22 0.05 260); /* navy */
-  --primary-foreground: oklch(0.985 0.008 85);
-  --secondary: oklch(0.94 0.02 85);
-  --secondary-foreground: oklch(0.22 0.05 260);
-  --muted: oklch(0.94 0.015 85);
-  --muted-foreground: oklch(0.45 0.03 260);
-  --accent: oklch(0.75 0.12 82); /* gold */
-  --accent-foreground: oklch(0.22 0.05 260);
-  --destructive: oklch(0.55 0.22 27);
+  --gold: oklch(0.68 0.13 76);
+  --gold-soft: oklch(0.83 0.09 82);
+  --ivory: oklch(0.975 0.008 80);
+  --emerald: oklch(0.42 0.07 158);
+  --bronze: oklch(0.49 0.09 58);
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: oklch(0.995 0.004 80);
+  --card-foreground: var(--ink);
+  --popover: oklch(0.995 0.004 80);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: var(--paper-shade);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-shade);
+  --muted-foreground: oklch(0.48 0.02 62);
+  --accent: var(--gold);
+  --accent-foreground: var(--ink);
+  --destructive: oklch(0.52 0.19 28);
   --destructive-foreground: oklch(0.985 0.003 247);
-  --border: oklch(0.88 0.02 85);
-  --input: oklch(0.9 0.015 85);
-  --ring: oklch(0.75 0.12 82);
+  --border: var(--rule);
+  --input: oklch(0.89 0.014 76);
+  --ring: var(--bronze);
 
-  --chart-1: oklch(0.22 0.05 260);
-  --chart-2: oklch(0.75 0.12 82);
-  --chart-3: oklch(0.38 0.08 155);
-  --chart-4: oklch(0.6 0.1 40);
-  --chart-5: oklch(0.5 0.1 260);
+  --chart-1: oklch(0.21 0.026 62);
+  --chart-2: oklch(0.68 0.13 76);
+  --chart-3: oklch(0.42 0.07 158);
+  --chart-4: oklch(0.49 0.09 58);
+  --chart-5: oklch(0.62 0.06 40);
 
-  --sidebar: oklch(0.985 0.008 85);
-  --sidebar-foreground: oklch(0.22 0.05 260);
-  --sidebar-primary: oklch(0.22 0.05 260);
-  --sidebar-primary-foreground: oklch(0.985 0.008 85);
-  --sidebar-accent: oklch(0.94 0.02 85);
-  --sidebar-accent-foreground: oklch(0.22 0.05 260);
-  --sidebar-border: oklch(0.88 0.02 85);
-  --sidebar-ring: oklch(0.75 0.12 82);
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: var(--paper);
+  --sidebar-accent: var(--paper-shade);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--bronze);
 }
 
 .dark {
-  --background: oklch(0.16 0.03 260);
-  --foreground: oklch(0.972 0.012 85);
-  --card: oklch(0.22 0.05 260);
-  --card-foreground: oklch(0.972 0.012 85);
-  --popover: oklch(0.22 0.05 260);
-  --popover-foreground: oklch(0.972 0.012 85);
-  --primary: oklch(0.75 0.12 82);
-  --primary-foreground: oklch(0.16 0.03 260);
-  --secondary: oklch(0.28 0.04 260);
-  --secondary-foreground: oklch(0.972 0.012 85);
-  --muted: oklch(0.28 0.04 260);
-  --muted-foreground: oklch(0.75 0.02 85);
-  --accent: oklch(0.75 0.12 82);
-  --accent-foreground: oklch(0.16 0.03 260);
-  --destructive: oklch(0.7 0.19 22);
-  --destructive-foreground: oklch(0.972 0.012 85);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.75 0.12 82);
+  /* Lamplight on dark paper — still warm, never blue. */
+  --ink: oklch(0.16 0.018 60);
+  --ink-soft: oklch(0.25 0.02 58);
+  --paper: oklch(0.155 0.016 58);
+  --paper-shade: oklch(0.205 0.018 58);
+  --rule: oklch(0.98 0.01 80 / 14%);
+
+  --gold: oklch(0.76 0.12 80);
+  --gold-soft: oklch(0.87 0.08 84);
+  --ivory: oklch(0.97 0.008 80);
+  --emerald: oklch(0.55 0.09 158);
+  --bronze: oklch(0.66 0.09 62);
+
+  --background: var(--paper);
+  --foreground: oklch(0.93 0.012 78);
+  --card: oklch(0.19 0.018 58);
+  --card-foreground: oklch(0.93 0.012 78);
+  --popover: oklch(0.19 0.018 58);
+  --popover-foreground: oklch(0.93 0.012 78);
+  --primary: var(--gold);
+  --primary-foreground: oklch(0.155 0.016 58);
+  --secondary: var(--paper-shade);
+  --secondary-foreground: oklch(0.93 0.012 78);
+  --muted: var(--paper-shade);
+  --muted-foreground: oklch(0.68 0.018 74);
+  --accent: var(--gold);
+  --accent-foreground: oklch(0.155 0.016 58);
+  --destructive: oklch(0.66 0.17 24);
+  --destructive-foreground: oklch(0.95 0.008 78);
+  --border: var(--rule);
+  --input: oklch(0.98 0.01 80 / 17%);
+  --ring: var(--gold);
+
+  --sidebar: oklch(0.17 0.016 58);
+  --sidebar-foreground: oklch(0.93 0.012 78);
+  --sidebar-primary: var(--gold);
+  --sidebar-primary-foreground: oklch(0.155 0.016 58);
+  --sidebar-accent: var(--paper-shade);
+  --sidebar-accent-foreground: oklch(0.93 0.012 78);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--gold);
 }
 
 @layer base {
@@ -138,45 +193,104 @@
     scroll-behavior: smooth;
   }
 
+  /* Every link, button, and custom control on the site gets a visible
+     keyboard focus ring. shadcn's own components already set their own
+     focus-visible ring via a utility class, which — being a compound
+     selector — wins the cascade over this bare pseudo-class and is left
+     untouched; this rule exists for the 60+ hand-built links, tabs, and
+     filter buttons that had no focus state at all. */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html[dir="rtl"] body {
     font-family: var(--font-arabic);
+    line-height: 1.8;
   }
 
-  h1, h2, h3, h4 {
+  /* Headings carry a display face in both scripts. Previously the RTL
+     override sent Arabic headings back to the body face, which left the
+     primary language with no typographic contrast at all. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: -0.012em;
   }
 
   html[dir="rtl"] h1,
   html[dir="rtl"] h2,
   html[dir="rtl"] h3,
-  html[dir="rtl"] h4 {
-    font-family: var(--font-arabic);
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5,
+  html[dir="rtl"] h6 {
+    font-family: var(--font-naskh);
+    font-weight: 700;
     letter-spacing: 0;
+    line-height: 1.5;
+  }
+
+  /* Amiri sits small on the metric line; nudge display sizes up in RTL
+     so Arabic and Latin headings feel the same weight on the page. */
+  html[dir="rtl"] h1 {
+    font-size: 1.06em;
+  }
+  html[dir="rtl"] h2 {
+    font-size: 1.04em;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-paper-shade);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.49 0.09 58 / 35%);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-bronze);
+  }
+
+  ::selection {
+    background-color: oklch(0.68 0.13 76 / 28%);
+    color: var(--color-ink);
+  }
+
+  .dark ::selection {
+    color: oklch(0.95 0.01 80);
   }
 }
 
-@utility gold-divider {
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--color-gold) 20%,
-    var(--color-gold) 80%,
-    transparent
-  );
-}
+/* ── Layout ─────────────────────────────────────────────────── */
 
 @utility container-page {
   margin-inline: auto;
   width: 100%;
-  max-width: 72rem;
+  max-width: 74rem;
   padding-inline: 1.25rem;
 }
 
@@ -184,4 +298,178 @@
   .container-page {
     padding-inline: 2rem;
   }
+}
+
+@media (min-width: 1280px) {
+  .container-page {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Narrow measure for running prose. Long-form text should never span
+   the full container — 66ch is the readable limit. */
+@utility measure {
+  max-width: 66ch;
+}
+
+@utility measure-tight {
+  max-width: 54ch;
+}
+
+/* ── Editorial rules & ornament ─────────────────────────────── */
+
+@utility rule-hair {
+  border-top: 1px solid var(--color-rule);
+}
+
+@utility rule-ink {
+  border-top: 2px solid var(--color-ink);
+}
+
+.dark .rule-ink {
+  border-top-color: var(--color-gold);
+}
+
+/* Double rule — the printed-page device for a major division. */
+@utility rule-double {
+  border-top: 1px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-ink);
+  height: 4px;
+}
+
+.dark .rule-double {
+  border-top-color: oklch(0.98 0.01 80 / 30%);
+  border-bottom-color: oklch(0.98 0.01 80 / 30%);
+}
+
+/* An eight-point star, the standard Islamic geometric unit. Used as a
+   section break — sparingly, and never more than once per screen. */
+@utility ornament-star {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0l3.06 5.88L21.6 3.6l-2.28 6.54L24 12l-4.68 1.86 2.28 6.54-6.54-2.28L12 24l-3.06-5.88L2.4 20.4l2.28-6.54L0 12l4.68-1.86L2.4 3.6l6.54 2.28z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0l3.06 5.88L21.6 3.6l-2.28 6.54L24 12l-4.68 1.86 2.28 6.54-6.54-2.28L12 24l-3.06-5.88L2.4 20.4l2.28-6.54L0 12l4.68-1.86L2.4 3.6l6.54 2.28z'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Very low-contrast tile for the few surfaces that want texture rather
+   than a flat fill. Deliberately near-invisible. */
+@utility paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z' fill='none' stroke='%237a5a35' stroke-width='0.4' opacity='0.05'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* ── Typographic devices ────────────────────────────────────── */
+
+/* Tabular figures for anything in a column: licence numbers, counts,
+   years, percentages. Keeps digits from dancing between rows. */
+@utility nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+@utility label-caps {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* Arabic has no uppercase; letterspacing actively damages it by
+   breaking the joined script. Track it back in and drop the casing. */
+html[dir="rtl"] .label-caps {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.75rem;
+}
+
+@utility drop-cap {
+  &::first-letter {
+    float: inline-start;
+    font-family: var(--font-display);
+    font-size: 3.2em;
+    line-height: 0.82;
+    font-weight: 600;
+    padding-inline-end: 0.08em;
+    padding-block-start: 0.06em;
+    color: var(--color-bronze);
+  }
+}
+
+html[dir="rtl"] .drop-cap::first-letter {
+  font-family: var(--font-naskh);
+  font-size: 2.6em;
+  line-height: 1;
+}
+
+/* ── Motion ─────────────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-fade-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@utility reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Misc ───────────────────────────────────────────────────── */
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@utility active-scale {
+  transition: transform 0.15s ease-in-out;
+}
+.active-scale:active {
+  transform: scale(0.98);
 }

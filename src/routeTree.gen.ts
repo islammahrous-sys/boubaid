@@ -14,8 +14,11 @@ import { Route as LibraryRouteImport } from './routes/library'
 import { Route as InitiativesRouteImport } from './routes/initiatives'
 import { Route as FoundationRouteImport } from './routes/foundation'
 import { Route as FamilyTreeRouteImport } from './routes/family-tree'
+import { Route as DnaRouteImport } from './routes/dna'
+import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as AchieversRouteImport } from './routes/achievers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -47,6 +50,16 @@ const FamilyTreeRoute = FamilyTreeRouteImport.update({
   path: '/family-tree',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DnaRoute = DnaRouteImport.update({
+  id: '/dna',
+  path: '/dna',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DirectoryRoute = DirectoryRouteImport.update({
+  id: '/directory',
+  path: '/directory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContributeRoute = ContributeRouteImport.update({
   id: '/contribute',
   path: '/contribute',
@@ -55,6 +68,11 @@ const ContributeRoute = ContributeRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BranchesRoute = BranchesRouteImport.update({
+  id: '/branches',
+  path: '/branches',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AchieversRoute = AchieversRouteImport.update({
@@ -87,8 +105,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
+  '/directory': typeof DirectoryRoute
+  '/dna': typeof DnaRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
@@ -101,8 +122,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
+  '/directory': typeof DirectoryRoute
+  '/dna': typeof DnaRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
@@ -116,8 +140,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
+  '/directory': typeof DirectoryRoute
+  '/dna': typeof DnaRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
@@ -132,8 +159,11 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/achievers'
+    | '/branches'
     | '/contact'
     | '/contribute'
+    | '/directory'
+    | '/dna'
     | '/family-tree'
     | '/foundation'
     | '/initiatives'
@@ -146,8 +176,11 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/achievers'
+    | '/branches'
     | '/contact'
     | '/contribute'
+    | '/directory'
+    | '/dna'
     | '/family-tree'
     | '/foundation'
     | '/initiatives'
@@ -160,8 +193,11 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/achievers'
+    | '/branches'
     | '/contact'
     | '/contribute'
+    | '/directory'
+    | '/dna'
     | '/family-tree'
     | '/foundation'
     | '/initiatives'
@@ -175,8 +211,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AchieversRoute: typeof AchieversRoute
+  BranchesRoute: typeof BranchesRoute
   ContactRoute: typeof ContactRoute
   ContributeRoute: typeof ContributeRoute
+  DirectoryRoute: typeof DirectoryRoute
+  DnaRoute: typeof DnaRoute
   FamilyTreeRoute: typeof FamilyTreeRoute
   FoundationRoute: typeof FoundationRoute
   InitiativesRoute: typeof InitiativesRouteWithChildren
@@ -221,6 +260,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FamilyTreeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dna': {
+      id: '/dna'
+      path: '/dna'
+      fullPath: '/dna'
+      preLoaderRoute: typeof DnaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/directory': {
+      id: '/directory'
+      path: '/directory'
+      fullPath: '/directory'
+      preLoaderRoute: typeof DirectoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contribute': {
       id: '/contribute'
       path: '/contribute'
@@ -233,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/branches': {
+      id: '/branches'
+      path: '/branches'
+      fullPath: '/branches'
+      preLoaderRoute: typeof BranchesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/achievers': {
@@ -299,8 +359,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AchieversRoute: AchieversRoute,
+  BranchesRoute: BranchesRoute,
   ContactRoute: ContactRoute,
   ContributeRoute: ContributeRoute,
+  DirectoryRoute: DirectoryRoute,
+  DnaRoute: DnaRoute,
   FamilyTreeRoute: FamilyTreeRoute,
   FoundationRoute: FoundationRoute,
   InitiativesRoute: InitiativesRouteWithChildren,
@@ -310,3 +373,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

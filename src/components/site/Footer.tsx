@@ -1,62 +1,203 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Youtube, MessageCircle, Send } from "lucide-react";
+import { MessageCircle, MapPin, Phone, Mail, ArrowUp, Globe } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
-import { T } from "@/i18n/translations";
 import { siteMeta } from "@/content/site";
+import { navGroups } from "@/content/navigation";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
   const { t, lang } = useLang();
+  const [email, setEmail] = useState("");
+  const rtl = lang === "ar";
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    toast.success(
+      lang === "ar"
+        ? "تم تسجيل اشتراكك في نشرة الأسرة."
+        : "You have been added to the family newsletter.",
+    );
+    setEmail("");
+  };
+
+  const channels = [
+    {
+      label: { ar: "قناة واتساب", en: "WhatsApp" },
+      href: siteMeta.contact.whatsapp,
+      icon: MessageCircle,
+    },
+    {
+      label: { ar: "الموقع الرسمي", en: "Website" },
+      href: `https://${siteMeta.domain}`,
+      icon: Globe,
+    },
+    { label: { ar: "البريد", en: "Email" }, href: `mailto:${siteMeta.contact.email}`, icon: Mail },
+  ];
 
   return (
-    <footer className="mt-24 border-t border-navy/10 bg-navy text-ivory">
-      <div className="gold-divider" />
-      <div className="container-page grid gap-10 py-14 md:grid-cols-4">
-        <div className="md:col-span-2">
-          <div className="text-2xl font-semibold">{t(T.brand)}</div>
-          <div className="mt-1 text-xs uppercase tracking-[0.25em] text-gold">{t(T.brandSub)}</div>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-ivory/80">
-            {lang === "ar"
-              ? "أسرة عريقة الجذور من فرع العبادل من بني تميم، تتخذ من الأحساء موطناً لها، وتعمل من خلال صندوق التنمية العائلية على خدمة أبنائها ومجتمعها."
-              : "A family of deep Tamimi roots from the ʿAbadil branch, rooted in Al-Ahsa, working through its Family Development Fund to serve its members and community."}
-          </p>
+    <footer className="bg-ink text-ivory">
+      <div className="container-page py-14">
+        <div className="grid gap-10 lg:grid-cols-[1.4fr_2fr] lg:gap-16">
+          {/* Colophon */}
+          <div>
+            <div className="flex items-center gap-3.5">
+              <img
+                src="/logo-gold.png"
+                alt=""
+                className="h-14 w-14 object-contain"
+                aria-hidden="true"
+              />
+              <div>
+                <p className="font-naskh text-lg leading-snug font-bold text-gold rtl:text-xl">
+                  {t(siteMeta.officialName)}
+                </p>
+                <p className="label-caps mt-1 text-ivory/45">{t(siteMeta.shortName)}</p>
+              </div>
+            </div>
+
+            <p className="measure-tight mt-6 text-sm leading-relaxed text-ivory/65">
+              {lang === "ar"
+                ? "كيان أهلي مرخص يعنى بتوثيق نسب الأسرة وأرشيفها، وتنظيم أوقافها ومبادراتها التنموية، ومقره مدينة المبرز بمحافظة الأحساء."
+                : "A licensed nonprofit documenting the family's lineage and archive, and administering its endowments and development programmes from Al-Mubarraz, Al-Ahsa."}
+            </p>
+
+            {/* Registration statement, set as a formal colophon rather than a badge. */}
+            <dl className="mt-7 border-t border-ivory/15 pt-5 text-sm">
+              <div className="flex flex-wrap gap-x-3 gap-y-1">
+                <dt className="label-caps pt-1 text-ivory/45">
+                  {lang === "ar" ? "رقم الترخيص" : "Licence no."}
+                </dt>
+                <dd className="nums font-mono text-gold">{siteMeta.ncnpLicense}</dd>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                <dt className="label-caps pt-1 text-ivory/45">
+                  {lang === "ar" ? "جهة الإصدار" : "Issued by"}
+                </dt>
+                <dd className="text-ivory/75">{t(siteMeta.ncnpAuthority)}</dd>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                <dt className="label-caps pt-1 text-ivory/45">
+                  {lang === "ar" ? "تاريخ الإشهار" : "Registered"}
+                </dt>
+                <dd className="nums text-ivory/75">
+                  {siteMeta.foundedHijri} هـ · {siteMeta.foundedGregorian}
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          {/* Index */}
+          <div className="grid gap-8 sm:grid-cols-3">
+            {navGroups.map((group) => (
+              <nav key={group.title.en} aria-label={group.title.en}>
+                <p className="label-caps mb-3 border-b border-ivory/15 pb-2 text-gold/80">
+                  {t(group.title)}
+                </p>
+                <ul className="space-y-2.5">
+                  {group.items.map((n) => (
+                    <li key={n.to}>
+                      <Link
+                        to={n.to}
+                        className="text-[13px] text-ivory/65 transition-colors hover:text-gold"
+                      >
+                        {t(n.label)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
+          </div>
         </div>
 
-        <div>
-          <h4 className="text-sm font-semibold uppercase tracking-widest text-gold">
-            {lang === "ar" ? "روابط سريعة" : "Quick links"}
-          </h4>
-          <ul className="mt-4 space-y-2 text-sm">
-            <li><Link to="/about" className="hover:text-gold">{t(T.nav.about)}</Link></li>
-            <li><Link to="/foundation" className="hover:text-gold">{t(T.nav.foundation)}</Link></li>
-            <li><Link to="/initiatives" className="hover:text-gold">{t(T.nav.initiatives)}</Link></li>
-            <li><Link to="/news" className="hover:text-gold">{t(T.nav.news)}</Link></li>
-            <li><Link to="/library" className="hover:text-gold">{t(T.nav.library)}</Link></li>
-            <li><Link to="/contribute" className="hover:text-gold">{t(T.nav.contribute)}</Link></li>
-          </ul>
-        </div>
+        {/* Contact & newsletter */}
+        <div className="mt-12 grid gap-10 border-t border-ivory/15 pt-10 lg:grid-cols-[1.4fr_2fr] lg:gap-16">
+          <address className="space-y-3 text-sm text-ivory/65 not-italic">
+            <p className="flex items-start gap-2.5">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold/70" aria-hidden="true" />
+              <span>{t(siteMeta.headquarters)}</span>
+            </p>
+            <p className="flex items-center gap-2.5">
+              <Phone className="h-4 w-4 shrink-0 text-gold/70" aria-hidden="true" />
+              <span dir="ltr" className="nums font-mono text-[13px]">
+                {siteMeta.contact.phone}
+              </span>
+            </p>
+            <p className="flex items-center gap-2.5">
+              <Mail className="h-4 w-4 shrink-0 text-gold/70" aria-hidden="true" />
+              <a href={`mailto:${siteMeta.contact.email}`} className="hover:text-gold">
+                {siteMeta.contact.email}
+              </a>
+            </p>
+          </address>
 
-        <div>
-          <h4 className="text-sm font-semibold uppercase tracking-widest text-gold">
-            {lang === "ar" ? "تواصل معنا" : "Contact"}
-          </h4>
-          <ul className="mt-4 space-y-2 text-sm text-ivory/80">
-            <li>{t(siteMeta.headquarters)}</li>
-            <li dir="ltr" className="text-start">{siteMeta.contact.phone}</li>
-            <li><a href={`mailto:${siteMeta.contact.email}`} className="hover:text-gold">{siteMeta.contact.email}</a></li>
-          </ul>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <a aria-label="X" href={siteMeta.contact.x} className="grid h-9 w-9 place-items-center rounded-full border border-ivory/20 hover:border-gold hover:text-gold"><span className="text-sm font-bold">X</span></a>
-            <a aria-label="Instagram" href={siteMeta.contact.instagram} className="grid h-9 w-9 place-items-center rounded-full border border-ivory/20 hover:border-gold hover:text-gold"><Instagram className="h-4 w-4" /></a>
-            <a aria-label="YouTube" href={siteMeta.contact.youtube} className="grid h-9 w-9 place-items-center rounded-full border border-ivory/20 hover:border-gold hover:text-gold"><Youtube className="h-4 w-4" /></a>
-            <a aria-label="WhatsApp" href={siteMeta.contact.whatsapp} className="grid h-9 w-9 place-items-center rounded-full border border-ivory/20 hover:border-gold hover:text-gold"><MessageCircle className="h-4 w-4" /></a>
-            <a aria-label="Telegram" href={siteMeta.contact.telegram} className="grid h-9 w-9 place-items-center rounded-full border border-ivory/20 hover:border-gold hover:text-gold"><Send className="h-4 w-4" /></a>
+          <div>
+            <form onSubmit={handleSubscribe} className="max-w-md">
+              <label htmlFor="footer-email" className="label-caps mb-2.5 block text-gold/80">
+                {lang === "ar" ? "نشرة الأسرة" : "Family Newsletter"}
+              </label>
+              <p className="mb-3 text-[13px] leading-relaxed text-ivory/55">
+                {lang === "ar"
+                  ? "إشعار دوري بمواعيد اللقاءات والبيانات الرسمية."
+                  : "Periodic notice of assemblies and official announcements."}
+              </p>
+              <div className="flex">
+                <input
+                  id="footer-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={lang === "ar" ? "البريد الإلكتروني" : "Email address"}
+                  required
+                  className="w-full border border-ivory/20 bg-transparent px-3.5 py-2.5 text-sm text-ivory outline-none transition-colors placeholder:text-ivory/35 focus:border-gold"
+                />
+                <button
+                  type="submit"
+                  className="shrink-0 border border-gold bg-gold px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-transparent hover:text-gold"
+                >
+                  {lang === "ar" ? "اشتراك" : "Subscribe"}
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+              {channels.map((c) => {
+                const Icon = c.icon;
+                return (
+                  <a
+                    key={c.label.en}
+                    href={c.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[13px] text-ivory/60 transition-colors hover:text-gold"
+                  >
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    {t(c.label)}
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
-      <div className="border-t border-ivory/10">
-        <div className="container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-ivory/60 sm:flex-row">
-          <span>© {new Date().getFullYear()} {t(T.brand)}. {lang === "ar" ? "جميع الحقوق محفوظة." : "All rights reserved."}</span>
-          <span>{lang === "ar" ? "تصميم بروح الموروث" : "Designed with heritage in mind"}</span>
+
+      <div className="border-t border-ivory/15">
+        <div className="container-page flex flex-col items-center justify-between gap-3 py-4 sm:flex-row">
+          <p className="nums text-xs text-ivory/40">
+            © {new Date().getFullYear()} {t(siteMeta.officialName)} ·{" "}
+            {lang === "ar" ? "جميع الحقوق محفوظة" : "All rights reserved"}
+          </p>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="inline-flex items-center gap-1.5 text-xs text-ivory/50 transition-colors hover:text-gold"
+          >
+            {lang === "ar" ? "إلى الأعلى" : "Back to top"}
+            <ArrowUp className={cn("h-3.5 w-3.5", rtl && "")} aria-hidden="true" />
+          </button>
         </div>
       </div>
     </footer>
