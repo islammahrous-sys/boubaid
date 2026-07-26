@@ -27,12 +27,12 @@ import { pageImages } from "@/content/images";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "منظمة التنمية العائلية آل بوعبيد — البوابة الرسمية | Al Bu Obaid Family" },
+      { title: "صندوق التنمية العائلية (آل بوعبيد) — البوابة الرسمية | Al Bu Obaid Family" },
       {
         name: "description",
-        content: `البوابة الرسمية لمنظمة التنمية العائلية آل بوعبيد من بني تميم بالأحساء (ترخيص NCNP رقم ${siteMeta.ncnpLicense}).`,
+        content: `البوابة الرسمية لصندوق التنمية العائلية (آل بوعبيد) من بني تميم بالأحساء (ترخيص NCNP رقم ${siteMeta.ncnpLicense}).`,
       },
-      { property: "og:title", content: "منظمة التنمية العائلية آل بوعبيد — الأحساء" },
+      { property: "og:title", content: "صندوق التنمية العائلية (آل بوعبيد) — الأحساء" },
       {
         property: "og:description",
         content:
@@ -105,7 +105,7 @@ const copy = {
   allProgrammes: { ar: "كل المبادرات", en: "All initiatives" } as BiText,
 
   joinTitle: {
-    ar: "المشاركة في أعمال المنظمة",
+    ar: "المشاركة في أعمال الصندوق",
     en: "Take part in the organisation's work",
   } as BiText,
   joinBody: {

@@ -3,8 +3,8 @@ export type { BiText };
 
 export const T = {
   brand: {
-    ar: "منظمة التنمية العائلية",
-    en: "Family Development Organization",
+    ar: "صندوق التنمية العائلية",
+    en: "Family Development Fund",
   } as BiText,
   brandSub: {
     ar: "أسرة آل بوعبيد — ترخيص رقم 1200758400",

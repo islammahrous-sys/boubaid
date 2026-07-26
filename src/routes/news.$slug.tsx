@@ -30,7 +30,7 @@ export const Route = createFileRoute("/news/$slug")({
 
 const copy = {
   bulletin: { ar: "نشرة الأسرة", en: "The Family Bulletin" } as BiText,
-  fund: { ar: "شؤون المنظمة", en: "Organisation" } as BiText,
+  fund: { ar: "شؤون الصندوق", en: "Fund Affairs" } as BiText,
   family: { ar: "شؤون الأسرة", en: "Family" } as BiText,
   share: { ar: "مشاركة", en: "Share" } as BiText,
   copyLink: { ar: "نسخ الرابط", en: "Copy link" } as BiText,

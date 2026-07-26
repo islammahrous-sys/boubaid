@@ -5,6 +5,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import {
   boardOfTrustees,
+  boardTerm,
   committees,
   foundingMembers,
   ceoRequirement,
@@ -18,10 +19,10 @@ import { Eyebrow, Prose, Ornament } from "@/components/site/Editorial";
 export const Route = createFileRoute("/foundation")({
   head: () => ({
     meta: [
-      { title: "الحوكمة ومجلس الأمناء | منظمة التنمية العائلية آل بوعبيد" },
+      { title: "الحوكمة ومجلس الأمناء | صندوق التنمية العائلية (آل بوعبيد)" },
       {
         name: "description",
-        content: `الإطار النظامي لمنظمة التنمية العائلية آل بوعبيد: مجلس الأمناء، اللجان الخمس، والحوكمة المالية وفق ترخيص NCNP رقم ${siteMeta.ncnpLicense}.`,
+        content: `الإطار النظامي لصندوق التنمية العائلية (آل بوعبيد): مجلس الأمناء، اللجان الخمس، والحوكمة المالية وفق ترخيص NCNP رقم ${siteMeta.ncnpLicense}.`,
       },
       { property: "og:title", content: "الحوكمة ومجلس الأمناء — آل بوعبيد" },
       { property: "og:type", content: "article" },
@@ -34,7 +35,7 @@ const copy = {
   eyebrow: { ar: "الإطار النظامي", en: "Constitution" } as BiText,
   title: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" } as BiText,
   subtitle: {
-    ar: "تعمل المنظمة بموجب لائحة أساسية معتمدة من المركز الوطني لتنمية القطاع غير الربحي، ويتولى إدارتها مجلس أمناء وخمس لجان تنفيذية تمثل الفروع السبعة.",
+    ar: "تعمل الصندوق بموجب لائحة أساسية معتمدة من المركز الوطني لتنمية القطاع غير الربحي، ويتولى إدارتها مجلس أمناء وخمس لجان تنفيذية تمثل الفروع السبعة.",
     en: "The organisation operates under a charter approved by the National Center for Nonprofit Sector. It is administered by a board of trustees and five standing committees representing the seven branches.",
   } as BiText,
   imageCaption: {
@@ -49,11 +50,11 @@ const copy = {
   mandateEyebrow: { ar: "أولاً", en: "Article I" } as BiText,
   mandateTitle: { ar: "الغرض والاختصاص", en: "Purpose and remit" } as BiText,
   mandateP1: {
-    ar: "تأسست منظمة التنمية العائلية آل بوعبيد ككيان أهلي غير ربحي يعنى بتنظيم شؤون الأسرة الجامعة: توثيق النسب وحفظ الأرشيف، وإدارة الأوقاف والاشتراكات، وتنفيذ برامج التكافل والتنمية بين أبناء الفروع السبعة.",
-    en: "The Al Bu Obaid Family Development Organisation was established as a nonprofit civic entity to administer the collective affairs of the family: documenting lineage and preserving the archive, managing endowments and subscriptions, and delivering solidarity and development programmes across the seven branches.",
+    ar: "تأسست صندوق التنمية العائلية (آل بوعبيد) ككيان أهلي غير ربحي يعنى بتنظيم شؤون الأسرة الجامعة: توثيق النسب وحفظ الأرشيف، وإدارة الأوقاف والاشتراكات، وتنفيذ برامج التكافل والتنمية بين أبناء الفروع السبعة.",
+    en: "The Al Bu Obaid Family Development Fund was established as a nonprofit civic entity to administer the collective affairs of the family: documenting lineage and preserving the archive, managing endowments and subscriptions, and delivering solidarity and development programmes across the seven branches.",
   } as BiText,
   mandateP2: {
-    ar: "وتلتزم المنظمة بمتطلبات الحوكمة والإفصاح المالي والامتثال الزكوي المقررة على القطاع غير الربحي، ويخضع حسابها لمراجعة سنوية مستقلة، بما يتسق مع مستهدفات رؤية المملكة ٢٠٣٠.",
+    ar: "وتلتزم الصندوق بمتطلبات الحوكمة والإفصاح المالي والامتثال الزكوي المقررة على القطاع غير الربحي، ويخضع حسابها لمراجعة سنوية مستقلة، بما يتسق مع مستهدفات رؤية المملكة ٢٠٣٠.",
     en: "The organisation is bound by the governance, financial disclosure, and zakat compliance requirements set for the nonprofit sector. Its accounts are subject to independent annual audit, consistent with the aims of Saudi Vision 2030.",
   } as BiText,
 
@@ -78,7 +79,7 @@ const copy = {
   financeTitle: { ar: "الحوكمة المالية", en: "Financial governance" } as BiText,
   financeItems: [
     {
-      ar: "حساب بنكي مستقل باسم المنظمة، منفصل عن الذمم الشخصية لأعضاء المجلس واللجان.",
+      ar: "حساب بنكي مستقل باسم الصندوق، منفصل عن الذمم الشخصية لأعضاء المجلس واللجان.",
       en: "An independent bank account in the organisation's name, separate from the personal accounts of board and committee members.",
     },
     {
@@ -117,6 +118,18 @@ const copy = {
     ar: "أوجه الصرف الرأسمالي والتشغيلي",
     en: "Capital & operating expenditure",
   } as BiText,
+  shareholderLoansTitle: {
+    ar: "القروض الحسنة المساهمة (مسدد / إجمالي)",
+    en: "Interest-free shareholder loans (repaid / total)",
+  } as BiText,
+  shareholderLoansNote: {
+    ar: "ثمانية أعضاء مؤسسين موّلوا فجوة النقد بقروض حسنة إجمالية 820,000 ريال؛ سُدّد منها 350,000 ريال حتى نهاية 2025.",
+    en: "Eight founding members covered the cash gap via SAR 820,000 in interest-free loans; SAR 350,000 had been repaid by the end of 2025.",
+  } as BiText,
+  eidDeficitTitle: {
+    ar: "عجز اجتماع العيد بحسب السنة الهجرية",
+    en: "Eid-gathering deficit by Hijri year",
+  } as BiText,
 
   docsEyebrow: { ar: "الوثائق النظامية", en: "Constitutional documents" } as BiText,
   docsNote: {
@@ -131,7 +144,7 @@ const copy = {
 };
 
 const constitutionalDocs: { ref: string; title: BiText }[] = [
-  { ref: "CHTR-1447", title: { ar: "اللائحة الأساسية للمنظمة", en: "Charter and basic bylaws" } },
+  { ref: "CHTR-1447", title: { ar: "اللائحة الأساسية للصندوق", en: "Charter and basic bylaws" } },
   {
     ref: "GOV-1447",
     title: { ar: "لائحة الحوكمة وتنظيم اللجان", en: "Governance and committee regulations" },
@@ -186,6 +199,7 @@ export function FoundationPage() {
               <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
                 {t(copy.boardNote)}
               </p>
+              <p className="label-caps mt-4 text-muted-foreground">{t(boardTerm)}</p>
             </div>
 
             <div>
@@ -358,6 +372,53 @@ export function FoundationPage() {
                   </li>
                 ))}
               </ol>
+
+              <div className="mt-8 grid gap-8 sm:grid-cols-2">
+                <div>
+                  <p className="label-caps mb-3 text-muted-foreground">
+                    {t(copy.shareholderLoansTitle)}
+                  </p>
+                  <ol>
+                    {hqProject.shareholderLoans.map((s, i) => (
+                      <li
+                        key={i}
+                        className="flex items-baseline justify-between gap-4 border-b border-border py-2 text-[13px] first:border-t"
+                      >
+                        <span className="text-foreground">{t(s.label)}</span>
+                        <span className="nums font-mono text-muted-foreground">
+                          {s.repaid.toLocaleString("en-US")} / {s.amount.toLocaleString("en-US")}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {t(copy.shareholderLoansNote)}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="label-caps mb-3 text-muted-foreground">
+                    {t(copy.eidDeficitTitle)}
+                  </p>
+                  <ol>
+                    {hqProject.eidDeficitByYear.map((e, i) => (
+                      <li
+                        key={i}
+                        className="flex items-baseline justify-between gap-4 border-b border-border py-2 text-[13px] first:border-t"
+                      >
+                        <span className="text-foreground">{e.year}</span>
+                        <span className="nums font-mono text-muted-foreground">
+                          {e.amount.toLocaleString("en-US")}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+
+              <p className="label-caps mt-8 text-muted-foreground">
+                {t(hqProject.financials.approvedBy)}
+              </p>
             </div>
           </div>
         </section>

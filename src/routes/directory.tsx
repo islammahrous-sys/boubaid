@@ -10,7 +10,7 @@ import { Eyebrow } from "@/components/site/Editorial";
 export const Route = createFileRoute("/directory")({
   head: () => ({
     meta: [
-      { title: "دليل الأعمال | منظمة التنمية العائلية آل بوعبيد" },
+      { title: "دليل الأعمال | صندوق التنمية العائلية (آل بوعبيد)" },
       {
         name: "description",
         content:
@@ -27,7 +27,7 @@ const copy = {
   eyebrow: { ar: "دليل مبوب", en: "Classified index" } as BiText,
   title: { ar: "دليل أعمال الأسرة", en: "Family Business Directory" } as BiText,
   subtitle: {
-    ar: "قيد بالمنشآت والمكاتب التي يملكها أو يديرها أبناء الأسرة، مرتبة حسب القطاع. القيد بالدليل لا يعد توصية أو ضماناً من المنظمة.",
+    ar: "قيد بالمنشآت والمكاتب التي يملكها أو يديرها أبناء الأسرة، مرتبة حسب القطاع. القيد بالدليل لا يعد توصية أو ضماناً من الصندوق.",
     en: "A register of enterprises and practices owned or managed by family members, ordered by sector. Inclusion is a listing, not an endorsement or warranty by the organisation.",
   } as BiText,
 

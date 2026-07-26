@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: "الأخبار والبيانات الرسمية | منظمة التنمية العائلية آل بوعبيد" },
+      { title: "الأخبار والبيانات الرسمية | صندوق التنمية العائلية (آل بوعبيد)" },
       {
         name: "description",
-        content: "أخبار وبيانات منظمة التنمية العائلية آل بوعبيد بالأحساء ومستجدات فعالياتها.",
+        content: "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها.",
       },
       { property: "og:title", content: "أخبار آل بوعبيد" },
       { property: "og:type", content: "website" },
@@ -26,7 +26,7 @@ const copy = {
   masthead: { ar: "نشرة الأسرة", en: "The Family Bulletin" } as BiText,
   issuedBy: { ar: "تصدر عن", en: "Issued by" } as BiText,
   filterAll: { ar: "الكل", en: "All" } as BiText,
-  filterFund: { ar: "شؤون المنظمة", en: "Organisation" } as BiText,
+  filterFund: { ar: "شؤون الصندوق", en: "Fund Affairs" } as BiText,
   filterFamily: { ar: "شؤون الأسرة", en: "Family" } as BiText,
   lead: { ar: "الخبر الرئيسي", en: "Lead story" } as BiText,
   more: { ar: "أخبار أخرى", en: "More news" } as BiText,

@@ -13,11 +13,11 @@ import { pageImages } from "@/content/images";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "تواصل معنا | منظمة التنمية العائلية آل بوعبيد" },
+      { title: "تواصل معنا | صندوق التنمية العائلية (آل بوعبيد)" },
       {
         name: "description",
         content:
-          "تواصل مع الأمانة العامة واللجان التنفيذية لمنظمة التنمية العائلية آل بوعبيد بمدينة المبرز بالأحساء.",
+          "تواصل مع الأمانة العامة واللجان التنفيذية لصندوق التنمية العائلية (آل بوعبيد) بمدينة المبرز بالأحساء.",
       },
       { property: "og:title", content: "تواصل معنا — آل بوعبيد" },
       { property: "og:type", content: "website" },
@@ -219,7 +219,9 @@ export function ContactPage() {
                   <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
                   {t(copy.labelAddress)}
                 </dt>
-                <dd className="leading-relaxed text-foreground">{t(siteMeta.headquarters)}</dd>
+                <dd className="leading-relaxed text-foreground">
+                  {t(siteMeta.nationalAddress.full)}
+                </dd>
               </div>
 
               <div>
@@ -283,7 +285,11 @@ export function ContactPage() {
               </p>
               <p className="text-sm leading-relaxed text-foreground">{t(siteMeta.officialName)}</p>
               <p className="nums mt-1 font-mono text-[13px] text-bronze dark:text-gold">
-                {siteMeta.ncnpLicense}
+                {t({ ar: "ترخيص NCNP", en: "NCNP Lic." })} {siteMeta.ncnpLicense}
+              </p>
+              <p className="nums mt-0.5 font-mono text-[13px] text-muted-foreground">
+                {t({ ar: "الرقم الوطني الموحد", en: "Unified National No." })}{" "}
+                {siteMeta.unifiedNationalNumber}
               </p>
             </div>
           </aside>

@@ -49,6 +49,8 @@ const copy = {
   countLabel: { ar: "الأفراد الموثقون", en: "Documented members" } as BiText,
   subLabel: { ar: "الأفرع الداخلية", en: "Sub-lineages" } as BiText,
   figuresLabel: { ar: "من أعلام الفرع", en: "Notable figures" } as BiText,
+  posterLabel: { ar: "اللوحة الرسمية لشجرة الفرع", en: "Official branch tree plate" } as BiText,
+  posterOpen: { ar: "فتح اللوحة كاملة", en: "Open full plate" } as BiText,
 
   treeCta: { ar: "المشجرة التفاعلية الكاملة", en: "The full interactive tree" } as BiText,
   treeBody: {
@@ -258,6 +260,36 @@ export function BranchesPage() {
                       ))}
                     </ul>
                   </div>
+                ) : null}
+
+                {b.treePoster ? (
+                  <figure className="mt-7 border-t border-border pt-5">
+                    <p className="label-caps mb-3 text-muted-foreground">
+                      {t(copy.posterLabel)}
+                    </p>
+                    <a
+                      href={b.treePoster}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block max-w-xs border border-border"
+                    >
+                      <img
+                        src={b.treePoster}
+                        alt=""
+                        className="w-full bg-white object-contain"
+                        loading="lazy"
+                      />
+                    </a>
+                    <a
+                      href={b.treePoster}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-medium text-bronze transition-colors hover:text-foreground dark:text-gold dark:hover:text-ivory"
+                    >
+                      {t(copy.posterOpen)}
+                      <Arrow className="h-3 w-3" aria-hidden="true" />
+                    </a>
+                  </figure>
                 ) : null}
               </div>
             </div>

@@ -10,11 +10,11 @@ import { Eyebrow, Status, Prose } from "@/components/site/Editorial";
 export const Route = createFileRoute("/initiatives")({
   head: () => ({
     meta: [
-      { title: "المبادرات والمشاريع | منظمة التنمية العائلية آل بوعبيد" },
+      { title: "المبادرات والمشاريع | صندوق التنمية العائلية (آل بوعبيد)" },
       {
         name: "description",
         content:
-          "المبادرات التنموية والاجتماعية لمنظمة التنمية العائلية آل بوعبيد ومشروع المقر الدائم بحي الحزام الذهبي.",
+          "المبادرات التنموية والاجتماعية لصندوق التنمية العائلية (آل بوعبيد) ومشروع المقر الدائم بحي الحزام الذهبي.",
       },
       { property: "og:title", content: "مبادرات آل بوعبيد" },
       { property: "og:type", content: "article" },
@@ -27,7 +27,7 @@ const copy = {
   eyebrow: { ar: "البرامج والمشاريع", en: "Programmes & projects" } as BiText,
   title: { ar: "المبادرات القائمة والمخططة", en: "Current & Planned Initiatives" } as BiText,
   subtitle: {
-    ar: "برامج تنموية واجتماعية تنفذها اللجان التنفيذية، إلى جانب مشروع المقر الدائم الذي يمثل أكبر التزام رأسمالي للمنظمة.",
+    ar: "برامج تنموية واجتماعية تنفذها اللجان التنفيذية، إلى جانب مشروع المقر الدائم الذي يمثل أكبر التزام رأسمالي للصندوق.",
     en: "Development and social programmes delivered by the standing committees, alongside the permanent headquarters — the organisation's largest capital commitment.",
   } as BiText,
 

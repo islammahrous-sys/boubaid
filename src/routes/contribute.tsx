@@ -10,11 +10,11 @@ import { pageImages } from "@/content/images";
 export const Route = createFileRoute("/contribute")({
   head: () => ({
     meta: [
-      { title: "الاشتراك والمساهمة | منظمة التنمية العائلية آل بوعبيد" },
+      { title: "الاشتراك والمساهمة | صندوق التنمية العائلية (آل بوعبيد)" },
       {
         name: "description",
         content:
-          "الاشتراكات الشهرية والمساهمات في أوقاف ومشاريع منظمة التنمية العائلية آل بوعبيد عبر القنوات المعتمدة.",
+          "الاشتراكات الشهرية والمساهمات في أوقاف ومشاريع صندوق التنمية العائلية (آل بوعبيد) عبر القنوات المعتمدة.",
       },
       { property: "og:title", content: "الاشتراك والمساهمة — آل بوعبيد" },
       { property: "og:type", content: "article" },
@@ -27,7 +27,7 @@ const copy = {
   eyebrow: { ar: "الاشتراكات والأوقاف", en: "Subscriptions & endowments" } as BiText,
   title: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" } as BiText,
   subtitle: {
-    ar: "تعتمد المنظمة في تمويلها على اشتراكات أبناء الأسرة والقروض الحسنة المساهمة. وتُدار المبالغ عبر حسابات مستقلة وتخضع للمراجعة السنوية.",
+    ar: "تعتمد الصندوق في تمويلها على اشتراكات أبناء الأسرة والقروض الحسنة المساهمة. وتُدار المبالغ عبر حسابات مستقلة وتخضع للمراجعة السنوية.",
     en: "The organisation is funded by members' subscriptions and interest-free contributory loans. Funds are held in separate accounts and subject to annual audit.",
   } as BiText,
 
@@ -49,7 +49,7 @@ const copy = {
   channelsTitle: { ar: "القنوات المعتمدة", en: "Approved channels" } as BiText,
   sallaTitle: { ar: "المتجر الإلكتروني (سلة)", en: "Online store (Salla)" } as BiText,
   sallaBody: {
-    ar: "الاشتراك الشهري المتكرر يُدار عبر متجر المنظمة على منصة سلة، وتصدر الإيصالات آلياً باسم المنظمة.",
+    ar: "الاشتراك الشهري المتكرر يُدار عبر متجر الصندوق على منصة سلة، وتصدر الإيصالات آلياً باسم الصندوق.",
     en: "Recurring monthly subscriptions are handled through the organisation's Salla storefront, which issues receipts automatically in the organisation's name.",
   } as BiText,
   sallaCta: { ar: "الانتقال إلى المتجر", en: "Go to the store" } as BiText,
@@ -75,7 +75,7 @@ const copy = {
 
   safetyTitle: { ar: "تنبيه", en: "Important" } as BiText,
   safetyBody: {
-    ar: "لا تطلب المنظمة أرقام بطاقات أو بيانات بنكية عبر الرسائل أو مجموعات الواتساب. وأي طلب من هذا النوع يُبلَّغ عنه للأمانة العامة فوراً.",
+    ar: "لا تطلب الصندوق أرقام بطاقات أو بيانات بنكية عبر الرسائل أو مجموعات الواتساب. وأي طلب من هذا النوع يُبلَّغ عنه للأمانة العامة فوراً.",
     en: "The organisation never requests card numbers or banking details through messages or WhatsApp groups. Any such request should be reported to the secretariat immediately.",
   } as BiText,
 };

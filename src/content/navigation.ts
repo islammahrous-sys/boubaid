@@ -45,7 +45,7 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
     ],
   },
   {
-    title: { ar: "المنظمة", en: "The Organisation" },
+    title: { ar: "الصندوق", en: "The Fund" },
     items: [
       { to: "/foundation", label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Trustees" } },
       {

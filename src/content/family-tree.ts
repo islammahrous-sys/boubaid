@@ -673,8 +673,8 @@ export const familyMembersData: FamilyMemberNode[] = [
     ancestorName: { ar: "الجد سعد بن أحمد آل بوعبيد", en: "Patriarch Saad bin Ahmed Al Bu Obaid" },
     settlement: { ar: "المبرز بالأحساء", en: "Al-Mubarraz, Al-Ahsa" },
     title: {
-      ar: "عضو مجلس أمناء منظمة التنمية العائلية",
-      en: "Trustee — Family Development Organization",
+      ar: "عضو مجلس أمناء صندوق التنمية العائلية",
+      en: "Trustee — Family Development Fund",
     },
     bio: {
       ar: "شخصية عائلية بارزة وعضو مجلس الأمناء المعتمد برقم #1200758400، له جهود مشهودة في إدارة شؤون الأسرة والأوقاف والتواصل الاجتماعي.",
@@ -762,7 +762,7 @@ export const familyMembersData: FamilyMemberNode[] = [
     },
     settlement: { ar: "الرياض والأحساء", en: "Riyadh & Al-Ahsa" },
     title: {
-      ar: "عميد متقاعد ورئيس لجنة الأمن والسلامة بالمنظمة",
+      ar: "عميد متقاعد ورئيس لجنة الأمن والسلامة بالصندوق",
       en: "Retired Brigadier & Safety Committee Chair",
     },
     bio: {
@@ -855,7 +855,7 @@ export const familyMembersData: FamilyMemberNode[] = [
     settlement: { ar: "حي الحزام الذهبي بالمبرز", en: "Al-Hizam Al-Dhahabi, Al-Mubarraz" },
     title: { ar: "رئيس لجنة إعمار وتطوير المقر الرئيسي", en: "Chair of HQ Development Committee" },
     bio: {
-      ar: "رائد أعمال ورئيس لجنة بناء المقر الرئيسي آل بوعبيد، أشرف على مرحلة التأسيس والتجهيز الهندسي لمبنى المنظمة بالحزام الذهبي.",
+      ar: "رائد أعمال ورئيس لجنة بناء المقر الرئيسي آل بوعبيد، أشرف على مرحلة التأسيس والتجهيز الهندسي لمبنى الصندوق بالحزام الذهبي.",
       en: "Entrepreneur and Chair of the HQ building project, overseeing the architectural construction of the official family headquarters in Al-Mubarraz.",
     },
     relations: {
@@ -894,7 +894,7 @@ export const familyMembersData: FamilyMemberNode[] = [
     settlement: { ar: "الدمام والأحساء", en: "Dammam & Al-Ahsa" },
     title: { ar: "رئيس لجنة الإعلام والتواصل الرقمي", en: "Media & Digital Communication Chair" },
     bio: {
-      ar: "خبير في الإعلام والتحول الرقمي، قاد مبادرة إطلاق البوابة الرقمية التفاعلية والأرشيف الإلكتروني المعتمد لمنظمة التنمية العائلية.",
+      ar: "خبير في الإعلام والتحول الرقمي، قاد مبادرة إطلاق البوابة الرقمية التفاعلية والأرشيف الإلكتروني المعتمد لصندوق التنمية العائلية.",
       en: "Media & digital transformation strategist, leading the launch of the interactive family portal and certified electronic archive.",
     },
     relations: {

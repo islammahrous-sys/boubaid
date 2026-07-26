@@ -2,14 +2,14 @@ import type { BiText } from "@/i18n/LanguageProvider";
 
 /**
  * Official site content for Al Bu Obaid Family ("آل بوعبيد")
- * Operating under registered entity: منظمة التنمية العائلية (Family Development Organization)
+ * Operating under registered entity: صندوق التنمية العائلية (Family Development Fund)
  * Licensed by NCNP (المركز الوطني لتنمية القطاع غير الربحي) under license #1200758400 (20 Safar 1447H / 14 August 2025)
  */
 
 export const siteMeta = {
   officialName: {
-    ar: "منظمة التنمية العائلية آل بوعبيد",
-    en: "Al Bu Obaid Family Development Organization",
+    ar: "صندوق التنمية العائلية (آل بوعبيد)",
+    en: "Al Bu Obaid Family Development Fund",
   } as BiText,
   shortName: {
     ar: "آل بوعبيد",
@@ -24,12 +24,35 @@ export const siteMeta = {
     ar: "المركز الوطني لتنمية القطاع غير الربحي",
     en: "National Center for Nonprofit Sector (NCNP)",
   } as BiText,
+  /** Unified National Number issued alongside the NCNP license — appears on the license certificate and audited financial statements. */
+  unifiedNationalNumber: "7051186638",
+  licenseIssued: "2025-08-14",
+  licenseExpiry: "2029-08-14",
+  legalBasis: {
+    ar: "المرسوم الملكي رقم م/8 وتاريخ 19/2/1437هـ (نظام الجمعيات والمؤسسات الأهلية)",
+    en: "Royal Decree No. M/8 dated 19/02/1437H (Law of Associations and Civil Institutions)",
+  } as BiText,
   foundedHijri: "20 صفر 1447",
   foundedGregorian: "14 أغسطس 2025",
   headquarters: {
     ar: "حي الحزام الذهبي، المبرز، محافظة الأحساء، المملكة العربية السعودية",
     en: "Al-Hizam Al-Dhahabi District, Al-Mubarraz, Al-Ahsa Governorate, KSA",
   } as BiText,
+  /** Precise Saudi National Address (Address Proof #1073542966, issued 16/10/2025). */
+  nationalAddress: {
+    shortAddress: "FMDF7959",
+    buildingNo: "7959",
+    street: { ar: "الصدفة", en: "Al Sudfa" } as BiText,
+    district: { ar: "حي الحزام الذهبي", en: "Al Hizam Adh Dhahabi District" } as BiText,
+    secondaryNo: "3411",
+    postalCode: "36422",
+    city: { ar: "المبرز", en: "Al Mubarraz" } as BiText,
+    country: { ar: "المملكة العربية السعودية", en: "Kingdom of Saudi Arabia" } as BiText,
+    full: {
+      ar: "مبنى 7959، شارع الصدفة، حي الحزام الذهبي 3411، الرمز البريدي 36422، المبرز، المملكة العربية السعودية (العنوان المختصر: FMDF7959)",
+      en: "Building 7959, Al Sudfa Street, Al Hizam Adh Dhahabi Dist. 3411, Postal Code 36422, Al Mubarraz, Kingdom of Saudi Arabia (Short Address: FMDF7959)",
+    } as BiText,
+  },
   domain: "albouabidfamily.com",
   sallaStoreUrl: "https://albouabidfamily.com/القسط-الشهري/c1360847582",
   contact: {
@@ -81,6 +104,7 @@ export const branches = [
       en: "Patriarch Saad bin Ahmed bin Salih Al Bu Obaid",
     } as BiText,
     image: "/images/branch_saad.png",
+    treePoster: "/images/branch_tree_al_saad.jpg",
     settlement: {
       ar: "المبرز بالأحساء، الدمام، الرياض",
       en: "Al-Mubarraz (Al-Ahsa), Dammam, Riyadh",
@@ -110,6 +134,7 @@ export const branches = [
       en: "Patriarch Abdulrahman bin Ahmed bin Salih Al Bu Obaid",
     } as BiText,
     image: "/images/branch_abdulrahman.png",
+    treePoster: "/images/branch_tree_al_abdulrahman.jpg",
     settlement: {
       ar: "حي العيوني والمبرز بالأحساء، الخبر، الظهران",
       en: "Al-Oyouni & Al-Mubarraz, Khobar, Dhahran",
@@ -139,6 +164,7 @@ export const branches = [
       en: "Patriarch Abdulaziz bin Ahmed bin Salih Al Bu Obaid",
     } as BiText,
     image: "/images/branch_abdulaziz.png",
+    treePoster: "/images/branch_tree_al_abdulaziz.jpg",
     settlement: {
       ar: "الأحساء، الرياض، الجبيل الصناعية",
       en: "Al-Ahsa, Riyadh, Jubail Industrial City",
@@ -168,13 +194,14 @@ export const branches = [
       en: "Patriarch Abdullatif bin Ahmed bin Salih Al Bu Obaid",
     } as BiText,
     image: "/images/branch_abdullatif.png",
+    treePoster: "/images/branch_tree_al_abdullatif.jpg",
     settlement: { ar: "المبرز القديم بالأحساء، الدمام", en: "Old Al-Mubarraz, Dammam" } as BiText,
     subBranches: {
       ar: "الأفرع الداخلية: ذرية خالد (عبدالله، ريان، يوسف) • ذرية سعود (محمد، سعد، عبدالرحمن) • ذرية عبدالمجيد (يوسف، أحمد)",
       en: "Sub-lineages: Descendants of Khalid, Saud, and Abdulmajeed",
     } as BiText,
     description: {
-      ar: "يُعتبر هذا الفرع أيقونة أكاديمية ومهنية حديثة في تاريخ الأسرة، فقد أثمر شخصيات بارزة حصدت أعلى المراتب، ويرأس منه حالياً رئيس مجلس أمناء المنظمة، كما يضم قيادات أمنية وعسكرية شابة متميزة.",
+      ar: "يُعتبر هذا الفرع أيقونة أكاديمية ومهنية حديثة في تاريخ الأسرة، فقد أثمر شخصيات بارزة حصدت أعلى المراتب، ويرأس منه حالياً رئيس مجلس أمناء الصندوق، كما يضم قيادات أمنية وعسكرية شابة متميزة.",
       en: "A modern academic and professional icon in the family's history, this branch has produced figures who reached the highest ranks — including the organisation's current Chairman of the Board of Trustees — alongside distinguished young security and military leaders.",
     } as BiText,
     count: 58,
@@ -201,6 +228,7 @@ export const branches = [
       en: "Patriarch Abdullah Salih bin Mohammed Al Bu Obaid",
     } as BiText,
     image: "/images/branch_abdullah_salih.png",
+    treePoster: "/images/branch_tree_al_abdullah_salih.jpg",
     settlement: {
       ar: "حي الحزام الذهبي بالأحساء، الخبر",
       en: "Al-Hizam Al-Dhahabi (Al-Ahsa), Khobar",
@@ -230,6 +258,7 @@ export const branches = [
       en: "Patriarch Mohammed Ahmed bin Salih Al Bu Obaid",
     } as BiText,
     image: "/images/branch_mohammed_ahmed.png",
+    treePoster: "/images/branch_tree_al_mohammed_ahmed.jpg",
     settlement: {
       ar: "الأحساء، الدمام، الكويت، البحرين",
       en: "Al-Ahsa, Dammam, Kuwait, Bahrain",
@@ -259,6 +288,7 @@ export const branches = [
       en: "Patriarch Yousef bin Ahmed bin Salih Al Bu Obaid",
     } as BiText,
     image: "/images/branch_yousef.png",
+    treePoster: "/images/branch_tree_al_yousef.jpg",
     settlement: { ar: "الأحساء، الرياض، جدة", en: "Al-Ahsa, Riyadh, Jeddah" } as BiText,
     subBranches: {
       ar: "الأفرع الداخلية: ذرية محمد (عبدالإله، تركي، نواف، فيصل) • ذرية عبدالرحمن (صلاح، حمود، يعقوب، راشد) • ذرية عبداللطيف (ماجد، عبدالرزاق، طلال، صالح، غانم)",
@@ -571,8 +601,8 @@ export const boardOfTrustees = [
   {
     role: { ar: "عضو مجلس الأمناء", en: "Board Trustee" } as BiText,
     name: {
-      ar: "الأستاذ عبدالرحمن بن عبدالعزيز بوعبيد",
-      en: "Mr. Abdulrahman bin Abdulaziz Bu Obaid",
+      ar: "الأستاذ عبدالرحمن بن عبدالعزيز بن عبدالرحمن بوعبيد",
+      en: "Mr. Abdulrahman bin Abdulaziz bin Abdulrahman Bu Obaid",
     } as BiText,
     bio: {
       ar: "يتولى الإشراف ضمن الدائرة المصغرة المخوّلة باتخاذ القرارات المالية والاستراتيجية، وأحد الموقّعين الثلاثة على التفويض البنكي الدقيق للصندوق.",
@@ -586,24 +616,32 @@ export const boardOfTrustees = [
       en: "Mr. Abdullah bin Saud bin Abdulaziz Bu Obaid",
     } as BiText,
     bio: {
-      ar: "يشارك في التوجيه الاستراتيجي للمنظمة وتطوير مواردها.",
+      ar: "يشارك في التوجيه الاستراتيجي للصندوق وتطوير مواردها.",
       en: "Participates in the organisation's strategic direction and resource development.",
     } as BiText,
   },
 ];
 
+/** First board term: one year from formation, per NCNP letter Ref. PTEB031650 dated 20 Safar 1447H. */
+export const boardTerm = {
+  ar: "الدورة الأولى لمجلس الأمناء: سنة واحدة من تاريخ 20 صفر 1447هـ (خطاب تشكيل المجلس رقم PTEB031650).",
+  en: "First Board term: one year from 20 Safar 1447H (Board Formation Letter Ref. PTEB031650).",
+} as BiText;
+
 /**
- * Six founding members leading the five standing committees (one committee is
- * co-led by two founders). Names per the NCNP-registered constitutional documents;
- * full patronymics are not disclosed in the source filing.
+ * The fund's ten founders, per the current bylaws (Article II). Four of the
+ * ten (Hussein bin Abdullah, Khaled bin Yousef, Abdulrahman bin Abdulaziz,
+ * and Abdullah bin Saud) also sit on the Board of Trustees — see
+ * `boardOfTrustees` — while the remaining six lead the five standing
+ * committees. National IDs and phone numbers on file are not published here.
  */
 export const foundingMembers = [
-  { ar: "الأستاذ رياض بوعبيد", en: "Mr. Riyadh Bu Obaid" } as BiText,
-  { ar: "الأستاذ عبدالله بوعبيد", en: "Mr. Abdullah Bu Obaid" } as BiText,
-  { ar: "الأستاذ صالح بوعبيد", en: "Mr. Saleh Bu Obaid" } as BiText,
-  { ar: "الأستاذ صالح بوعبيد (الثاني)", en: "Mr. Saleh Bu Obaid (II)" } as BiText,
-  { ar: "الأستاذ عبدالرحمن بوعبيد", en: "Mr. Abdulrahman Bu Obaid" } as BiText,
-  { ar: "الأستاذ ماهر بوعبيد", en: "Mr. Maher Bu Obaid" } as BiText,
+  { ar: "الأستاذ رياض بن عبدالعزيز بن أحمد بوعبيد", en: "Mr. Riyadh bin Abdulaziz bin Ahmed Bu Obaid" } as BiText,
+  { ar: "الأستاذ صالح بن عبدالعزيز بن عبدالله بوعبيد", en: "Mr. Saleh bin Abdulaziz bin Abdullah Bu Obaid" } as BiText,
+  { ar: "الأستاذ صالح بن محمد بن يوسف بوعبيد", en: "Mr. Saleh bin Mohammed bin Yousef Bu Obaid" } as BiText,
+  { ar: "الأستاذ عبدالرحمن بن صالح بن علي بوعبيد", en: "Mr. Abdulrahman bin Salih bin Ali Bu Obaid" } as BiText,
+  { ar: "الأستاذ عبدالله بن عبدالعزيز بن عبدالرحمن بوعبيد", en: "Mr. Abdullah bin Abdulaziz bin Abdulrahman Bu Obaid" } as BiText,
+  { ar: "الأستاذ عامر بن أحمد بن إبراهيم بوعبيد", en: "Mr. Amer bin Ahmed bin Ibrahim Bu Obaid" } as BiText,
 ];
 
 /** The chief executive officer requirement stated in the bylaws: bachelor's degree + 16 years' administrative experience. */
@@ -623,7 +661,10 @@ export const committees = [
       ar: "تتولى تنظيم الملتقيات السنوية، متابعة المناسبات الأهلية، وتقديم الدعم الاجتماعي والتكافل بين أبناء الأسرة.",
       en: "Organizes annual assemblies, monitors family occasions, and provides social solidarity support.",
     } as BiText,
-    lead: { ar: "الأستاذ عبدالله بوعبيد", en: "Mr. Abdullah Bu Obaid" } as BiText,
+    lead: {
+      ar: "الأستاذ عبدالله بن عبدالعزيز بن عبدالرحمن بوعبيد",
+      en: "Mr. Abdullah bin Abdulaziz bin Abdulrahman Bu Obaid",
+    } as BiText,
   },
   {
     id: "finance",
@@ -633,8 +674,8 @@ export const committees = [
       en: "Oversees the approved budget, monthly subscriptions, dedicated zakat accounts, and endowment planning.",
     } as BiText,
     lead: {
-      ar: "الأستاذ عبدالرحمن بوعبيد",
-      en: "Mr. Abdulrahman Bu Obaid",
+      ar: "الأستاذ عبدالرحمن بن صالح بن علي بوعبيد",
+      en: "Mr. Abdulrahman bin Salih bin Ali Bu Obaid",
     } as BiText,
   },
   {
@@ -647,7 +688,10 @@ export const committees = [
       ar: "مسؤولة عن متابعة أرض مشروع المقر الدائم بحي الحزام الذهبي بالمبرز، والتصاميم الهندسية ومراحل الإنشاء والتطوير.",
       en: "Responsible for managing the headquarters land project in Al-Hizam Al-Dhahabi district, engineering designs, and construction.",
     } as BiText,
-    lead: { ar: "الأستاذ رياض بوعبيد", en: "Mr. Riyadh Bu Obaid" } as BiText,
+    lead: {
+      ar: "الأستاذ رياض بن عبدالعزيز بن أحمد بوعبيد",
+      en: "Mr. Riyadh bin Abdulaziz bin Ahmed Bu Obaid",
+    } as BiText,
   },
   {
     id: "activities",
@@ -656,7 +700,10 @@ export const committees = [
       ar: "تنظم جائزة التفوق العلمي، مسابقة رمضان الثقافية عبر واتساب، الدورات التدريبية للشباب واللقاءات الرياضية.",
       en: "Organizes the Academic Excellence Award, Ramadan WhatsApp quiz, youth skills workshops, and sports events.",
     } as BiText,
-    lead: { ar: "الأستاذ صالح بوعبيد", en: "Mr. Saleh Bu Obaid" } as BiText,
+    lead: {
+      ar: "الأستاذ صالح بن عبدالعزيز بن عبدالله بوعبيد",
+      en: "Mr. Saleh bin Abdulaziz bin Abdullah Bu Obaid",
+    } as BiText,
   },
   {
     id: "media",
@@ -665,7 +712,10 @@ export const committees = [
       ar: "إدارة البوابة الرقمية، حسابات التواصل الاجتماعي، التوثيق التاريخي والجيني، وتصميم إصدارات الأسرة.",
       en: "Manages the web platform, official social channels, historical/DNA archives, and family publications.",
     } as BiText,
-    lead: { ar: "الأستاذ ماهر بوعبيد", en: "Mr. Maher Bu Obaid" } as BiText,
+    lead: {
+      ar: "الأستاذ عامر بن أحمد بن إبراهيم بوعبيد",
+      en: "Mr. Amer bin Ahmed bin Ibrahim Bu Obaid",
+    } as BiText,
   },
 ];
 
@@ -753,7 +803,29 @@ export const hqProject = {
       ar: "الفجوة المحاسبية بين الإيرادات والمصروفات (480,000 ريال) ناتجة عن قرار استراتيجي جريء بالاستحواذ الرأسمالي على الأرض (CAPEX)، وليست ناتجة عن أي هدر تشغيلي، وقد جرت تغطيتها بآليات تمويل داخلي مبتكرة دون أي أعباء فوائد بنكية.",
       en: "The accounting gap between revenue and expenses (SAR 480,000) stems from a bold strategic decision to acquire capital land (CAPEX), not from any operating waste, and has been covered through innovative internal financing mechanisms free of any bank-interest burden.",
     } as BiText,
+    approvedBy: {
+      ar: "اعتمد مجلس الأمناء هذه القوائم المالية بتاريخ 13 يونيو 2026.",
+      en: "Approved by the Board of Trustees on 13 June 2026.",
+    } as BiText,
   },
+  /** Interest-free shareholder loans (Note 4b/4c of the audited statement) — amount contributed and repaid per member, SAR. */
+  shareholderLoans: [
+    { label: { ar: "المساهم 1", en: "Shareholder 1" } as BiText, amount: 100000, repaid: 100000 },
+    { label: { ar: "المساهم 2", en: "Shareholder 2" } as BiText, amount: 100000, repaid: 100000 },
+    { label: { ar: "المساهم 3", en: "Shareholder 3" } as BiText, amount: 100000, repaid: 100000 },
+    { label: { ar: "المساهم 4", en: "Shareholder 4" } as BiText, amount: 120000, repaid: 0 },
+    { label: { ar: "المساهم 5", en: "Shareholder 5" } as BiText, amount: 100000, repaid: 0 },
+    { label: { ar: "المساهم 6", en: "Shareholder 6" } as BiText, amount: 100000, repaid: 0 },
+    { label: { ar: "المساهم 7", en: "Shareholder 7" } as BiText, amount: 100000, repaid: 0 },
+    { label: { ar: "المساهم 8", en: "Shareholder 8" } as BiText, amount: 100000, repaid: 50000 },
+  ],
+  /** Eid-gathering operating deficit by Hijri year (Note 7 of the audited statement), SAR. */
+  eidDeficitByYear: [
+    { year: "1444هـ", amount: 3300 },
+    { year: "1445هـ", amount: 4550 },
+    { year: "1446هـ", amount: 2000 },
+    { year: "1447هـ", amount: 4001 },
+  ],
 };
 
 export const news = [
@@ -763,8 +835,8 @@ export const news = [
     dateGregorian: "14 أغسطس 2025",
     section: "fund" as const,
     title: {
-      ar: "صدور الترخيص الرسمي لمنظمة التنمية العائلية آل بوعبيد برقم (1200758400)",
-      en: "Official NCNP License No. 1200758400 Issued for Al Bu Obaid Family Organization",
+      ar: "صدور الترخيص الرسمي لصندوق التنمية العائلية (آل بوعبيد) برقم (1200758400)",
+      en: "Official NCNP License No. 1200758400 Issued for Al Bu Obaid Family Fund",
     } as BiText,
     excerpt: {
       ar: "تكللت الجهود الصادقة لأبناء الأسرة بتحصيل الاعتماد الرسمي من المركز الوطني لتنمية القطاع غير الربحي، مما ينقل أعمال الصندوق إلى المأسسة الكاملة.",
@@ -856,7 +928,7 @@ export const initiatives = [
     } as BiText,
     status: "ongoing" as const,
     summary: {
-      ar: "تأسيس ديوان الأسرة والمجمع الاجتماعي والثقافي على أرض مملوكة بالكامل للمنظمة.",
+      ar: "تأسيس ديوان الأسرة والمجمع الاجتماعي والثقافي على أرض مملوكة بالكامل للصندوق.",
       en: "Establishing the main assembly hall and cultural complex on fully-owned organization land.",
     } as BiText,
     body: {
@@ -924,7 +996,7 @@ export const initiatives = [
       en: "Documenting official volunteer hours for family members on Saudi Arabia's National Platform.",
     } as BiText,
     body: {
-      ar: "بصفتها كياناً أهلياً مرخصاً تحت رقم (1200758400)، تتيح منظمة التنمية العائلية آل بوعبيد توثيق الساعات التطوعية المعتمدة لأبناء الأسرة المشاركين في تنظيم الفعاليات والمبادرات الأهلية.",
+      ar: "بصفتها كياناً أهلياً مرخصاً تحت رقم (1200758400)، تتيح صندوق التنمية العائلية (آل بوعبيد) توثيق الساعات التطوعية المعتمدة لأبناء الأسرة المشاركين في تنظيم الفعاليات والمبادرات الأهلية.",
       en: "As an NCNP-licensed nonprofit (#1200758400), the organization issues officially accredited volunteer hours for family members serving in civic initiatives.",
     } as BiText,
   },
@@ -941,8 +1013,8 @@ export const achievers = [
       en: "Judiciary, Jurisprudence & Business",
     } as BiText,
     achievement: {
-      ar: "دكتوراه من المعهد العالي للقضاء، رئيس مجلس أمناء منظمة التنمية العائلية ورئيس شركة سلسلة الثقة للمقاولات، وله مساهمات بحثية في الفقه الطبي المستجد (نوازل كورونا)",
-      en: "PhD from the Higher Institute of Judiciary; Chairman of the Board of Trustees and Chairman of Silsilat Al-Thiqa for Contracting, with published research in contemporary medical jurisprudence (COVID-era rulings)",
+      ar: "بكالوريوس من جامعة الإمام محمد بن سعود الإسلامية (1417هـ)، ماجستير من المعهد العالي للقضاء (1431هـ)، ودكتوراه من المعهد العالي للقضاء (1440هـ). رئيس مجلس أمناء الصندوق ورئيس شركة سلسلة الثقة للمقاولات، وله مساهمات بحثية في الفقه الطبي المستجد (نوازل كورونا)",
+      en: "BA from Imam Mohammed bin Saud Islamic University (1417H), Master's from the Higher Institute of Judiciary (1431H), and PhD from the Higher Institute of Judiciary (1440H). Chairman of the Board of Trustees and Chairman of Silsilat Al-Thiqa for Contracting, with published research in contemporary medical jurisprudence (COVID-era rulings)",
     } as BiText,
     category: "academic" as const,
     branch: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
@@ -955,8 +1027,8 @@ export const achievers = [
     } as BiText,
     field: { ar: "الخدمة الأمنية", en: "Security Service" } as BiText,
     achievement: {
-      ar: "خريج كلية الملك فهد الأمنية",
-      en: "Graduate of King Fahd Security College",
+      ar: "بكالوريوس من جامعة الإمام محمد بن سعود (1442هـ)، وتخرج من كلية الملك فهد الأمنية (1443هـ)",
+      en: "BA from Imam Mohammed bin Saud University (1442H); graduated King Fahd Security College (1443H)",
     } as BiText,
     category: "military" as const,
     branch: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
@@ -966,12 +1038,56 @@ export const achievers = [
     name: { ar: "الضابط ريان بن خالد بوعبيد", en: "Officer Rayan bin Khaled Bu Obaid" } as BiText,
     field: { ar: "الدفاع الجوي", en: "Air Defence" } as BiText,
     achievement: {
-      ar: "خريج كلية الملك عبدالله للدفاع الجوي",
-      en: "Graduate of King Abdullah Air Defence College",
+      ar: "تخرج من كلية الملك عبدالله للدفاع الجوي (1445هـ)",
+      en: "Graduated King Abdullah Air Defence College (1445H)",
     } as BiText,
     category: "military" as const,
     branch: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
     image: "/images/achiever-military.png",
+  },
+  {
+    name: { ar: "الأستاذ عبدالله بن يوسف عبداللطيف بوعبيد", en: "Mr. Abdullah bin Yousef Abdullatif Bu Obaid" } as BiText,
+    field: { ar: "الإدارة", en: "Administration" } as BiText,
+    achievement: {
+      ar: "بكالوريوس من جامعة الإمام محمد بن سعود (1432هـ)",
+      en: "BA from Imam Mohammed bin Saud University (1432H)",
+    } as BiText,
+    category: "academic" as const,
+    branch: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
+    image: "/images/achiever-professor.png",
+  },
+  {
+    name: { ar: "الأستاذ محمد بن أحمد بن عبداللطيف بوعبيد", en: "Mr. Mohammed bin Ahmed bin Abdullatif Bu Obaid" } as BiText,
+    field: { ar: "إدارة الأعمال", en: "Business Administration" } as BiText,
+    achievement: {
+      ar: "بكالوريوس إدارة أعمال من جامعة الملك فيصل (تخرج 2017م)",
+      en: "BA in Business Administration from King Faisal University (graduated 2017)",
+    } as BiText,
+    category: "business" as const,
+    branch: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
+    image: "/images/achiever-executive.png",
+  },
+  {
+    name: { ar: "الأستاذ عبداللطيف بن أحمد بن عبداللطيف بوعبيد", en: "Mr. Abdullatif bin Ahmed bin Abdullatif Bu Obaid" } as BiText,
+    field: { ar: "نظم المعلومات الإدارية", en: "Management Information Systems" } as BiText,
+    achievement: {
+      ar: "بكالوريوس في نظم المعلومات الإدارية من جامعة كومنولث الأمريكية، فيرجينيا (تخرج 2013م)",
+      en: "BA in Management Information Systems from American Commonwealth University, Virginia (graduated 2013)",
+    } as BiText,
+    category: "business" as const,
+    branch: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
+    image: "/images/achiever-executive.png",
+  },
+  {
+    name: { ar: "الأستاذ إبراهيم بن أحمد بن عبداللطيف بوعبيد", en: "Mr. Ibrahim bin Ahmed bin Abdullatif Bu Obaid" } as BiText,
+    field: { ar: "الإلكترونيات", en: "Electronics" } as BiText,
+    achievement: {
+      ar: "دبلوم إلكترونيات من الكلية التقنية بالدمام (تخرج 2012م)",
+      en: "Diploma in Electronics from the Technical College, Dammam (graduated 2012)",
+    } as BiText,
+    category: "business" as const,
+    branch: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
+    image: "/images/achiever-executive.png",
   },
   {
     name: { ar: "د. عبدالله بن سعد بوعبيد", en: "Dr. Abdullah bin Saad Bu Obaid" } as BiText,
@@ -1156,8 +1272,8 @@ export const libraryItems = {
   documents: [
     {
       title: {
-        ar: "اللائحة الأساسية لمنظمة التنمية العائلية آل بوعبيد (PDF)",
-        en: "Official Organization Bylaws & Charter (PDF)",
+        ar: "اللائحة الأساسية لصندوق التنمية العائلية (آل بوعبيد) (PDF)",
+        en: "Official Fund Bylaws & Charter (PDF)",
       } as BiText,
       year: 1447,
       kind: "PDF",
@@ -1258,7 +1374,7 @@ export const libraryItems = {
   videos: [
     {
       title: {
-        ar: "كلمة عميد الأسرة الشيخ سعد بوعبيد بمناسبة إشهار المنظمة",
+        ar: "كلمة عميد الأسرة الشيخ سعد بوعبيد بمناسبة إشهار الصندوق",
         en: "Address by Family Dean Sheikh Saad Bu Obaid on NCNP Licensing",
       } as BiText,
       year: 1447,

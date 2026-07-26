@@ -85,7 +85,7 @@ export function Header() {
               {lang === "ar" ? "آل بوعبيد" : "Al Bu Obaid"}
             </span>
             <span className="label-caps truncate text-bronze transition-colors dark:text-gold-soft">
-              {lang === "ar" ? "منظمة التنمية العائلية" : "Family Development Org."}
+              {lang === "ar" ? "صندوق التنمية العائلية" : "Family Development Org."}
             </span>
           </span>
         </Link>

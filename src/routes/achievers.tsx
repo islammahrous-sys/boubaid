@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/achievers")({
   head: () => ({
     meta: [
-      { title: "سجل المتميزين | منظمة التنمية العائلية آل بوعبيد" },
+      { title: "سجل المتميزين | صندوق التنمية العائلية (آل بوعبيد)" },
       {
         name: "description",
         content:

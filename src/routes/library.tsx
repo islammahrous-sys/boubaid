@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/library")({
   head: () => ({
     meta: [
-      { title: "الأرشيف والمكتبة الرقمية | منظمة التنمية العائلية آل بوعبيد" },
+      { title: "الأرشيف والمكتبة الرقمية | صندوق التنمية العائلية (آل بوعبيد)" },
       {
         name: "description",
         content:
@@ -71,7 +71,7 @@ const copy = {
   plate: { ar: "صورة", en: "Plate" } as BiText,
 
   docsNote: {
-    ar: "الوثائق أدناه صادرة عن المنظمة أو معتمدة منها. ويُرجع في النصوص الرسمية إلى النسخة الموقعة المودعة لدى الأمانة العامة.",
+    ar: "الوثائق أدناه صادرة عن الصندوق أو معتمدة منها. ويُرجع في النصوص الرسمية إلى النسخة الموقعة المودعة لدى الأمانة العامة.",
     en: "The documents below are issued or approved by the organisation. For official purposes, reference is made to the signed copy deposited with the secretariat.",
   } as BiText,
   photosNote: {
