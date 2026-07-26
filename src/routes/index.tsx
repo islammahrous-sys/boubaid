@@ -34,11 +34,11 @@ export const Route = createFileRoute("/")({
         name: "description",
         content: `البوابة الرسمية لمنظمة التنمية العائلية آل بوعبيد من بني تميم بالأحساء (ترخيص NCNP رقم ${siteMeta.ncnpLicense}).`,
       },
-      { property: "og:title", content: "منظمة التنمية العائلية آل بوعبيد — الأحساء" },
+      { property: "og:title", content: "منظمة التنمية العائلية آل بوعبيد — البوابة الرسمية | Al Bu Obaid Family" },
       {
         property: "og:description",
         content:
-          "كيان عائلي مرخص رسمياً من المركز الوطني لتنمية القطاع غير الربحي يجمع الفروع السبعة ومشاريع التكافل الاجتماعي والتطوير العقاري.",
+          "الموقع الرسمي لأسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund.",
       },
       { property: "og:type", content: "website" },
     ],

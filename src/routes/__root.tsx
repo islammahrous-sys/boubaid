@@ -86,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "آل بوعبيد — Al Bu Obaid Family" },
+      { title: "منظمة التنمية العائلية آل بوعبيد — البوابة الرسمية | Al Bu Obaid Family" },
       {
         name: "description",
         content:
@@ -96,10 +96,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "آل بوعبيد — Al Bu Obaid" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "منظمة التنمية العائلية آل بوعبيد — البوابة الرسمية | Al Bu Obaid Family" },
+      { name: "twitter:title", content: "منظمة التنمية العائلية آل بوعبيد — البوابة الرسمية | Al Bu Obaid Family" },
+      { property: "og:description", content: "الموقع الرسمي لأسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund." },
+      { name: "twitter:description", content: "الموقع الرسمي لأسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7b058932-0f08-4739-8467-ec60f3d9ebd1" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/7b058932-0f08-4739-8467-ec60f3d9ebd1" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
