@@ -29,10 +29,15 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
   useEffect(() => {
     if (!showVideo || !videoRef.current) return;
     const v = videoRef.current;
-    const play = () => v.play().catch(() => undefined);
+    v.playbackRate = 0.6;
+    const play = () => {
+      v.playbackRate = 0.6;
+      v.play().catch(() => undefined);
+    };
     if (v.readyState >= 2) play();
     else v.addEventListener("loadeddata", play, { once: true });
   }, [showVideo]);
+
 
   return (
     <section
