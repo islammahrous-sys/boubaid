@@ -23,6 +23,8 @@ import {
 } from "@/components/site/Editorial";
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
+import { HeroVideo } from "@/components/site/HeroVideo";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
