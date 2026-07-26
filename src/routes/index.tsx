@@ -187,15 +187,16 @@ export function HomePage() {
             </Link>
           </div>
 
-          {/* Scroll cue */}
+          {/* Scroll cue — mobile only */}
           <div
-            className="pointer-events-none absolute bottom-6 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 motion-safe:animate-bounce"
+            className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto flex w-full justify-center motion-safe:animate-bounce lg:hidden"
             aria-hidden="true"
           >
             <div className="flex h-10 w-6 justify-center rounded-full border border-ivory/40 pt-2">
               <span className="h-2 w-0.5 rounded-full bg-ivory/70" />
             </div>
           </div>
+
         </div>
 
         {/* Colophon strip — sits at the base of the cinematic hero */}

@@ -170,15 +170,23 @@ export function Header() {
           </div>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-3">
-          <ThemeToggle tone="default" />
-          <LanguageSwitcher tone="default" />
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="hidden items-center gap-1 rounded-md border border-border/60 bg-secondary/40 px-1 py-1 sm:inline-flex">
+            <ThemeToggle tone="default" />
+            <span className="h-4 w-px bg-border" aria-hidden="true" />
+            <LanguageSwitcher tone="default" />
+          </div>
+          <div className="flex items-center gap-1 sm:hidden">
+            <ThemeToggle tone="default" />
+            <LanguageSwitcher tone="default" />
+          </div>
           <Link
             to="/contribute"
             className="hidden items-center rounded-md border border-gold/80 bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-4 py-2 text-[13px] font-bold text-ink shadow-sm transition-all duration-200 hover:scale-102 hover:shadow-md sm:inline-flex"
           >
             {lang === "ar" ? "الاشتراك" : "Subscribe"}
           </Link>
+
           <button
             type="button"
             aria-label={
