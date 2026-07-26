@@ -190,7 +190,7 @@ export function HomePage() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700">
             <Link
               to="/family-tree"
-              className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/90 to-gold-soft px-6 py-3 text-sm font-bold text-ink shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all duration-300 hover:scale-102 hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]"
+              className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/90 to-gold-soft px-6 py-3 text-sm font-bold text-ink shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-[color,background-color,box-shadow,transform,border-color] duration-200 ease-out hover:scale-102 hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] active:scale-[0.97]"
             >
               <span>{lang === "ar" ? "تصفح مشجرة النسب" : "Explore Family Tree"}</span>
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
@@ -198,7 +198,7 @@ export function HomePage() {
 
             <Link
               to="/branches"
-              className="inline-flex items-center gap-2 border border-ivory/30 bg-ivory/5 px-6 py-3 text-sm font-medium text-ivory backdrop-blur-sm transition-all duration-300 hover:border-gold/60 hover:bg-ivory/10 hover:text-gold"
+              className="inline-flex items-center gap-2 border border-ivory/30 bg-ivory/5 px-6 py-3 text-sm font-medium text-ivory backdrop-blur-sm transition-[color,background-color,border-color,transform] duration-200 ease-out hover:border-gold/60 hover:bg-ivory/10 hover:text-gold active:scale-[0.97]"
             >
               <span>{lang === "ar" ? "دليل الفروع السبعة" : "Seven Branches Guide"}</span>
             </Link>
@@ -225,12 +225,12 @@ export function HomePage() {
               { label: copy.seat, value: t(copy.seatValue), mono: false, link: "/contact" },
             ].map((item, i) => {
               const content = (
-                <div className="flex h-full flex-col justify-center px-4 py-6 transition-all duration-300 group-hover:bg-ivory/[0.06] sm:px-6 sm:text-center sm:first:ps-0 sm:last:pe-0">
+                <div className="flex h-full flex-col justify-center px-4 py-6 transition-[background-color,transform] duration-200 ease-out group-hover:bg-ivory/[0.06] active:scale-[0.98] sm:px-6 sm:text-center sm:first:ps-0 sm:last:pe-0">
                   <dt className="label-caps flex items-center justify-center gap-1.5 text-ivory/50 transition-colors group-hover:text-gold">
                     {t(item.label)}
                     {item.link && (
                       <Arrow
-                        className="h-3 w-3 opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-100 rtl:group-hover:-translate-x-0.5"
+                        className="h-3 w-3 opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-x-0.5 group-hover:opacity-100 rtl:group-hover:-translate-x-0.5"
                         aria-hidden="true"
                       />
                     )}
@@ -247,7 +247,7 @@ export function HomePage() {
               );
 
               return (
-                <div key={i} className="group relative transition-all duration-300">
+                <div key={i} className="group relative transition-transform duration-200 ease-out">
                   {item.link ? (
                     <Link to={item.link} className="block h-full w-full">
                       {content}
@@ -304,7 +304,7 @@ export function HomePage() {
                 <Link
                   to="/branches"
                   hash={b.id}
-                  className="group grid grid-cols-[2rem_1fr_auto] items-baseline gap-x-4 border-b border-border py-4 transition-colors hover:bg-background/60 sm:grid-cols-[2.5rem_minmax(0,16rem)_1fr_auto] sm:gap-x-6"
+                  className="group grid grid-cols-[2rem_1fr_auto] items-baseline gap-x-4 border-b border-border py-4 transition-[color,background-color,transform] duration-150 ease-out hover:bg-background/60 active:scale-[0.99] sm:grid-cols-[2.5rem_minmax(0,16rem)_1fr_auto] sm:gap-x-6"
                 >
                   <span
                     className="nums font-naskh text-lg text-bronze/60 dark:text-gold/50"
@@ -449,7 +449,7 @@ export function HomePage() {
         <div className="mt-10 grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:gap-14">
           {/* Lead story */}
           <article>
-            <Link to="/news/$slug" params={{ slug: lead.slug }} className="group block">
+            <Link to="/news/$slug" params={{ slug: lead.slug }} className="group block transition-transform duration-200 ease-out active:scale-[0.99]">
               <img
                 src={newsImage(lead.slug)}
                 alt=""
@@ -475,7 +475,7 @@ export function HomePage() {
                 <Link
                   to="/news/$slug"
                   params={{ slug: n.slug }}
-                  className="group block border-b border-border py-5"
+                  className="group block border-b border-border py-5 transition-transform duration-150 ease-out active:scale-[0.99]"
                 >
                   <p className="nums label-caps text-muted-foreground">{n.dateGregorian}</p>
                   <h3 className="mt-1.5 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
@@ -531,13 +531,16 @@ export function HomePage() {
 
         <div className="mt-10 grid gap-x-14 border-t border-border sm:grid-cols-2 lg:grid-cols-3">
           {initiatives.slice(0, 6).map((init) => (
-            <article key={init.slug} className="border-b border-border py-5">
+            <article
+              key={init.slug}
+              className="group border-b border-border py-5 transition-transform duration-150 ease-out active:scale-[0.99]"
+            >
               <div className="flex items-start justify-between gap-4">
                 <h3 className="text-[15px] leading-snug font-semibold text-foreground">
                   <Link
                     to="/initiatives/$slug"
                     params={{ slug: init.slug }}
-                    className="transition-colors hover:text-bronze dark:hover:text-gold"
+                    className="transition-colors group-hover:text-bronze dark:group-hover:text-gold"
                   >
                     {t(init.title)}
                   </Link>
@@ -628,13 +631,13 @@ export function HomePage() {
           <div className="flex flex-wrap gap-3">
             <Link
               to="/contribute"
-              className="inline-flex items-center border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+              className="inline-flex items-center border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
             >
               {t(copy.joinCta)}
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center border border-border px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+              className="inline-flex items-center border border-border px-5 py-3 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-secondary active:scale-[0.97]"
             >
               {t(copy.contactCta)}
             </Link>
