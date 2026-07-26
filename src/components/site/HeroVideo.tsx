@@ -61,7 +61,8 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
           <video
             ref={videoRef}
             className={
-              "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-out " +
+              "absolute inset-0 h-full w-full object-cover object-[center_center] lg:object-[center_top] transition-opacity duration-1000 ease-out " +
+
               (loaded ? "opacity-100" : "opacity-0")
             }
             src={heroVideo.url}
