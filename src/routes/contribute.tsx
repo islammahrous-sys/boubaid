@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { Eyebrow, Prose, Ornament, Record, RecordField } from "@/components/site/Editorial";
+import { Eyebrow, Prose, Ornament, Record, RecordField, Stamp } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 
@@ -248,7 +248,7 @@ export function ContributePage() {
                 <img
                   src={pageImages.contribute.endowment.src}
                   alt=""
-                  className="aspect-[16/9] w-full object-cover"
+                  className="photo-plate aspect-[16/9] w-full object-cover"
                   loading="lazy"
                 />
                 <figcaption className="mt-3 flex items-start gap-2.5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
@@ -276,7 +276,8 @@ export function ContributePage() {
         <Ornament className="mt-16" />
 
         {/* ── Fraud warning ──────────────────────────────────── */}
-        <aside className="mt-12 border border-ink/30 p-6 dark:border-ivory/20">
+        <aside className="relative mt-12 border border-ink/30 p-6 dark:border-ivory/20">
+          <Stamp>{rtl ? "تنبيه رسمي" : "Official Notice"}</Stamp>
           <p className="label-caps mb-2.5 text-bronze dark:text-gold">{t(copy.safetyTitle)}</p>
           <p className="measure text-sm leading-relaxed text-foreground">{t(copy.safetyBody)}</p>
         </aside>

@@ -147,6 +147,58 @@ export function Prose({
   );
 }
 
+/* ── Pull-quote ─────────────────────────────────────────────── */
+
+/**
+ * A single resonant line lifted out of the narrative and set large — the
+ * one place on a page where display type is allowed to dominate. Use once
+ * per article at most; a second pull-quote on the same page competes with
+ * the first and both lose their weight.
+ */
+export function Pullquote({
+  children,
+  cite,
+  className,
+}: {
+  children: ReactNode;
+  cite?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <figure className={cn("py-2", className)}>
+      <blockquote className="border-s-4 border-bronze/50 ps-6 dark:border-gold/50">
+        <p className="font-naskh text-2xl leading-[1.55] text-foreground rtl:text-[1.75rem]">
+          {children}
+        </p>
+      </blockquote>
+      {cite ? (
+        <figcaption className="label-caps mt-3 ps-6 text-muted-foreground">{cite}</figcaption>
+      ) : null}
+    </figure>
+  );
+}
+
+/* ── Stamp ──────────────────────────────────────────────────── */
+
+/**
+ * A rotated corner mark, like a rubber stamp struck over a printed notice.
+ * Pair with a `relative` parent — the stamp positions itself in the
+ * inline-end corner and bleeds slightly over the border. One per notice.
+ */
+export function Stamp({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none absolute -top-3 end-4 rotate-[-6deg] border-2 border-bronze/55 px-3 py-1 text-bronze/70 dark:border-gold/50 dark:text-gold/65",
+        className,
+      )}
+    >
+      <span className="label-caps whitespace-nowrap">{children}</span>
+    </div>
+  );
+}
+
 /* ── Definition list ────────────────────────────────────────── */
 
 /**

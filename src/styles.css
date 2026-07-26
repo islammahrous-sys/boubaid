@@ -358,10 +358,31 @@
 }
 
 /* Very low-contrast tile for the few surfaces that want texture rather
-   than a flat fill. Deliberately near-invisible. */
+   than a flat fill. Deliberately near-invisible — applied to <body> so
+   every page carries a faint paper grain instead of a flat digital fill. */
 @utility paper-texture {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z' fill='none' stroke='%237a5a35' stroke-width='0.4' opacity='0.05'/%3E%3C/svg%3E");
   background-size: 120px 120px;
+}
+
+.dark .paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z' fill='none' stroke='%23d4af37' stroke-width='0.4' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Warm, unifying grade for editorial photography — the site's imagery is
+   a mixed bag of AI-generated plates shot at different times; this ties
+   them to one palette instead of each sitting in its own raw contrast.
+   Not applied to diagrams, charts, or logos, which need full fidelity. */
+@utility photo-plate {
+  filter: sepia(14%) saturate(88%) contrast(1.03) brightness(0.99);
+}
+
+/* A matte/passe-partout mount around a figure — the difference between a
+   photo floating on the page and a plate presented on it. */
+@utility plate-frame {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card);
+  padding: 0.3125rem;
 }
 
 /* ── Typographic devices ────────────────────────────────────── */
@@ -426,8 +447,12 @@ html[dir="rtl"] .drop-cap::first-letter {
 }
 
 @keyframes heroZoom {
-  0% { transform: scale(1.02); }
-  100% { transform: scale(1.08); }
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+  }
 }
 @utility animate-hero-zoom {
   animation: heroZoom 22s ease-out both;
@@ -459,15 +484,30 @@ html[dir="rtl"] .drop-cap::first-letter {
   opacity: 1;
   transform: translateY(0);
 }
-.reveal-stagger.revealed > *:nth-child(1) { transition-delay: 0ms; }
-.reveal-stagger.revealed > *:nth-child(2) { transition-delay: 80ms; }
-.reveal-stagger.revealed > *:nth-child(3) { transition-delay: 160ms; }
-.reveal-stagger.revealed > *:nth-child(4) { transition-delay: 240ms; }
-.reveal-stagger.revealed > *:nth-child(5) { transition-delay: 320ms; }
-.reveal-stagger.revealed > *:nth-child(6) { transition-delay: 400ms; }
-.reveal-stagger.revealed > *:nth-child(7) { transition-delay: 480ms; }
-.reveal-stagger.revealed > *:nth-child(n+8) { transition-delay: 560ms; }
-
+.reveal-stagger.revealed > *:nth-child(1) {
+  transition-delay: 0ms;
+}
+.reveal-stagger.revealed > *:nth-child(2) {
+  transition-delay: 80ms;
+}
+.reveal-stagger.revealed > *:nth-child(3) {
+  transition-delay: 160ms;
+}
+.reveal-stagger.revealed > *:nth-child(4) {
+  transition-delay: 240ms;
+}
+.reveal-stagger.revealed > *:nth-child(5) {
+  transition-delay: 320ms;
+}
+.reveal-stagger.revealed > *:nth-child(6) {
+  transition-delay: 400ms;
+}
+.reveal-stagger.revealed > *:nth-child(7) {
+  transition-delay: 480ms;
+}
+.reveal-stagger.revealed > *:nth-child(n + 8) {
+  transition-delay: 560ms;
+}
 
 @media (prefers-reduced-motion: reduce) {
   html {

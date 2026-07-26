@@ -90,7 +90,7 @@ function NewsDetail() {
         <img
           src={newsImage(item.slug)}
           alt=""
-          className="aspect-[16/9] w-full object-cover"
+          className="photo-plate aspect-[16/9] w-full object-cover"
           loading="eager"
         />
       </figure>

@@ -99,7 +99,7 @@ export function InitiativesPage() {
               <img
                 src={pageImages.initiatives.flagship.src}
                 alt={t(hqProject.title)}
-                className="aspect-[4/3] w-full object-cover"
+                className="photo-plate aspect-[4/3] w-full object-cover"
                 loading="lazy"
               />
               <figcaption className="mt-3 flex items-start gap-2.5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">

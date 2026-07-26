@@ -186,12 +186,14 @@ export function BranchesPage() {
                   place of the generic branch plate, never in addition to it. */}
               <div className="lg:sticky lg:top-32 lg:self-start">
                 <figure>
-                  <img
-                    src={branchPortraits[b.id] ?? b.image}
-                    alt=""
-                    className="aspect-[3/4] w-full object-cover object-top"
-                    loading="lazy"
-                  />
+                  <div className="plate-frame">
+                    <img
+                      src={branchPortraits[b.id] ?? b.image}
+                      alt=""
+                      className="photo-plate aspect-[3/4] w-full object-cover object-top"
+                      loading="lazy"
+                    />
+                  </div>
                   <figcaption className="nums label-caps mt-2.5 border-t border-border pt-2.5 text-bronze dark:text-gold">
                     {t(copy.entryLabel)} {rtl ? ordinals[i] : `0${i + 1}`}
                   </figcaption>
@@ -264,9 +266,7 @@ export function BranchesPage() {
 
                 {b.treePoster ? (
                   <figure className="mt-7 border-t border-border pt-5">
-                    <p className="label-caps mb-3 text-muted-foreground">
-                      {t(copy.posterLabel)}
-                    </p>
+                    <p className="label-caps mb-3 text-muted-foreground">{t(copy.posterLabel)}</p>
                     <a
                       href={b.treePoster}
                       target="_blank"

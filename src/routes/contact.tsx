@@ -7,6 +7,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
+import { DocumentShowcase } from "@/components/site/DocumentShowcase";
 import { siteMeta } from "@/content/site";
 
 export const Route = createFileRoute("/contact")({
@@ -277,6 +278,13 @@ export function ContactPage() {
                 {t({ ar: "الرقم الوطني الموحد", en: "Unified National No." })}{" "}
                 {siteMeta.unifiedNationalNumber}
               </p>
+            </div>
+
+            <div className="mt-8 border-t border-border pt-6">
+              <p className="label-caps mb-3 text-muted-foreground">
+                {t({ ar: "الوثائق والتراخيص المكانية", en: "Location & Registration Documents" })}
+              </p>
+              <DocumentShowcase refs={["Saudi Post", "Lic. 1200758400"]} variant="list" />
             </div>
           </aside>
         </div>

@@ -151,7 +151,7 @@ export function AchieversPage() {
                   <img
                     src={person.image}
                     alt=""
-                    className="aspect-[3/4] w-16 border border-border object-cover object-top"
+                    className="photo-plate aspect-[3/4] w-16 border border-border object-cover object-top"
                     loading="lazy"
                   />
 

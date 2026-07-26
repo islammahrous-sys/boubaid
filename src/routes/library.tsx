@@ -1,15 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import {
-  Download,
-  Play,
-  Search,
-  X,
-  Eye,
-  FileText,
-  Image as ImageIcon,
-  Video,
-} from "lucide-react";
+import { Download, Play, Search, X, Eye, FileText, Image as ImageIcon, Video } from "lucide-react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -122,7 +113,10 @@ function DownloadControl({
     "inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md px-3.5 py-1.5 text-xs font-medium text-foreground shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:bg-secondary/80 dark:hover:bg-ivory/10 active:scale-[0.97]";
   return doc.href ? (
     <a href={doc.href} target="_blank" rel="noopener noreferrer" className={className}>
-      <Download className="h-3.5 w-3.5 transition-transform duration-150 ease-out group-hover:translate-y-[1px]" aria-hidden="true" />
+      <Download
+        className="h-3.5 w-3.5 transition-transform duration-150 ease-out group-hover:translate-y-[1px]"
+        aria-hidden="true"
+      />
       {label}
     </a>
   ) : (
@@ -346,16 +340,28 @@ export function LibraryPage() {
                     <table className="w-full min-w-[40rem] border-collapse">
                       <thead>
                         <tr className="border-b border-border/60 bg-foreground/[0.02]">
-                          <th scope="col" className="label-caps py-3 ps-6 text-start text-muted-foreground">
+                          <th
+                            scope="col"
+                            className="label-caps py-3 ps-6 text-start text-muted-foreground"
+                          >
                             {t(copy.colRef)}
                           </th>
-                          <th scope="col" className="label-caps py-3 text-start text-muted-foreground">
+                          <th
+                            scope="col"
+                            className="label-caps py-3 text-start text-muted-foreground"
+                          >
                             {t(copy.colTitle)}
                           </th>
-                          <th scope="col" className="label-caps py-3 text-start text-muted-foreground">
+                          <th
+                            scope="col"
+                            className="label-caps py-3 text-start text-muted-foreground"
+                          >
                             {t(copy.colYear)}
                           </th>
-                          <th scope="col" className="label-caps py-3 text-start text-muted-foreground">
+                          <th
+                            scope="col"
+                            className="label-caps py-3 text-start text-muted-foreground"
+                          >
                             {t(copy.colFormat)}
                           </th>
                           <th scope="col" className="py-3 pe-6">
@@ -393,7 +399,11 @@ export function LibraryPage() {
                               </span>
                             </td>
                             <td className="py-4 pe-6 text-end" onClick={(e) => e.stopPropagation()}>
-                              <DownloadControl doc={d} onUnavailable={notify} label={t(copy.download)} />
+                              <DownloadControl
+                                doc={d}
+                                onUnavailable={notify}
+                                label={t(copy.download)}
+                              />
                             </td>
                           </tr>
                         ))}
@@ -436,7 +446,11 @@ export function LibraryPage() {
                           </span>
                         </div>
                         <div onClick={(e) => e.stopPropagation()}>
-                          <DownloadControl doc={d} onUnavailable={notify} label={t(copy.download)} />
+                          <DownloadControl
+                            doc={d}
+                            onUnavailable={notify}
+                            label={t(copy.download)}
+                          />
                         </div>
                       </div>
                     </div>
@@ -488,7 +502,8 @@ export function LibraryPage() {
                         <div className="p-4">
                           <div className="flex items-baseline justify-between gap-3">
                             <span className="nums label-caps text-xs font-semibold text-bronze dark:text-gold">
-                              {t(copy.plate)} {String(libraryItems.photos.indexOf(p) + 1).padStart(2, "0")}
+                              {t(copy.plate)}{" "}
+                              {String(libraryItems.photos.indexOf(p) + 1).padStart(2, "0")}
                             </span>
                             <span className="nums text-xs text-muted-foreground">{p.year} هـ</span>
                           </div>
@@ -496,7 +511,9 @@ export function LibraryPage() {
                             {t(p.title)}
                           </p>
                           <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5">
-                            <span className="label-caps text-xs text-muted-foreground">{p.category}</span>
+                            <span className="label-caps text-xs text-muted-foreground">
+                              {p.category}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -631,11 +648,16 @@ export function LibraryPage() {
                   {previewModal.meta}
                 </span>
               )}
-              <h2 id="modal-title" className="text-lg md:text-xl font-semibold leading-snug text-foreground">
+              <h2
+                id="modal-title"
+                className="text-lg md:text-xl font-semibold leading-snug text-foreground"
+              >
                 {previewModal.title}
               </h2>
               {previewModal.subtitle && (
-                <p className="nums mt-1.5 text-xs md:text-sm text-muted-foreground">{previewModal.subtitle}</p>
+                <p className="nums mt-1.5 text-xs md:text-sm text-muted-foreground">
+                  {previewModal.subtitle}
+                </p>
               )}
             </div>
 

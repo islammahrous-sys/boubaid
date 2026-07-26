@@ -6,13 +6,13 @@
  * that pointed at different images for the same story.
  */
 export const newsImages: Record<string, string> = {
-  "ncnp-license-issuance": "/images/governance_custom.png",
+  "ncnp-license-issuance": "/images/news_ncnp_license.png",
   "hq-land-hizam-dhahabi": "/images/news-hq-development.png",
-  "excellence-award-1447": "/images/news-excellence-awards.png",
-  "ramadan-quiz-series": "/images/news-ramadan-gathering.png",
+  "excellence-award-1447": "/images/news_excellence_1447.png",
+  "ramadan-quiz-series": "/images/news_ramadan_quiz.png",
 };
 
-export const newsImageFallback = "/images/family_majlis.png";
+export const newsImageFallback = "/images/fallback_initiative.png";
 
 export function newsImage(slug: string): string {
   return newsImages[slug] ?? newsImageFallback;

@@ -111,7 +111,7 @@ export function NewsPage() {
                 <img
                   src={newsImage(lead.slug)}
                   alt=""
-                  className="aspect-[16/10] w-full object-cover"
+                  className="photo-plate aspect-[16/10] w-full object-cover"
                   loading="eager"
                 />
 

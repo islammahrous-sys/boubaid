@@ -170,7 +170,7 @@ function PlateHeader({
                 <img
                   src={image}
                   alt=""
-                  className="aspect-[4/3] w-full object-cover lg:aspect-[5/4]"
+                  className="photo-plate aspect-[4/3] w-full object-cover lg:aspect-[5/4]"
                   loading="eager"
                 />
               </div>

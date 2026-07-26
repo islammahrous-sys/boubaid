@@ -3,7 +3,8 @@ import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { SectionHeading, Prose, Eyebrow, Ornament } from "@/components/site/Editorial";
+import { SectionHeading, Prose, Eyebrow, Ornament, Pullquote } from "@/components/site/Editorial";
+import { DocumentShowcase } from "@/components/site/DocumentShowcase";
 import { lineageChain, references, siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 
@@ -89,6 +90,10 @@ const copy = {
   conflictsP2: {
     ar: "وفي فجر الإسلام، برز المنذر بن ساوى بن عبدالله بن زيد بن عبدالله بن دارم — سليل عبدالله بن دارم الجد الجامع للعبادل مباشرة — إذ تلقى رسالة النبي ﷺ يدعوه فيها إلى الإسلام، فأسلم طواعية وأدخل إقليم الأحساء بأكمله في الإسلام دون إراقة دماء. ويدل ارتباط نسب آل بوعبيد بهذه الجغرافية المحددة، وتحت قيادة أبناء عمومتهم المباشرين من بني دارم، على استمرارية بيولوجية وتاريخية وسياسية تمتد لأكثر من أربعة عشر قرناً متصلة في إقليم الأحساء.",
     en: "At the dawn of Islam, Al-Mundhir ibn Sāwā ibn ʿAbd Allāh ibn Zayd ibn ʿAbd Allāh ibn Dārim — a direct descendant of ʿAbd Allāh ibn Dārim, the shared patriarch of the ʿAbadil — received the Prophet's ﷺ letter calling him to Islam. He accepted willingly and brought the whole of Al-Ahsa into Islam without bloodshed. That Al Bu Obaid's lineage traces to this same specific line, under the direct cousins of Banu Dārim, points to a biological, historical, and political continuity spanning more than fourteen unbroken centuries in Al-Ahsa.",
+  } as BiText,
+  conflictsQuote: {
+    ar: "استمرارية بيولوجية وتاريخية وسياسية تمتد لأكثر من أربعة عشر قرناً متصلة في إقليم الأحساء.",
+    en: "A biological, historical, and political continuity spanning more than fourteen unbroken centuries in Al-Ahsa.",
   } as BiText,
 
   economyEyebrow: { ar: "خامساً", en: "V" } as BiText,
@@ -197,6 +202,17 @@ export function AboutPage() {
                 <p>{t(copy.conflictsP1)}</p>
                 <p>{t(copy.conflictsP2)}</p>
               </Prose>
+
+              <Pullquote
+                className="mt-6"
+                cite={
+                  rtl
+                    ? "من التسلسل التاريخي، الفصل الرابع"
+                    : "From the historical chronology, section IV"
+                }
+              >
+                {t(copy.conflictsQuote)}
+              </Pullquote>
             </article>
 
             <article>
@@ -309,7 +325,7 @@ export function AboutPage() {
               <img
                 src={plate.src}
                 alt=""
-                className="aspect-[4/3] w-full object-cover"
+                className="photo-plate plate-frame aspect-[4/3] w-full object-cover"
                 loading="lazy"
               />
               <figcaption className="mt-3 flex gap-3 border-t border-border pt-3">
@@ -328,6 +344,27 @@ export function AboutPage() {
       <div className="container-page">
         <Ornament />
       </div>
+
+      {/* ── Institutional Documentation ─────────────────────────────────────── */}
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
+        <Eyebrow>
+          {t({
+            ar: "الوثائق المؤسسية والأرشيف المعتمد",
+            en: "Institutional & Historical Archives",
+          })}
+        </Eyebrow>
+        <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
+          {t({
+            ar: "الشهادات واللوائح المعتمدة التي توثق التأسيس الرسمي والاعتماد النظامي لصندوق التنمية العائلية ومراحل الحفظ التاريخي.",
+            en: "Approved certificates and governance bylaws documenting the official institutional foundation and historical preservation milestones.",
+          })}
+        </p>
+        <DocumentShowcase
+          refs={["Lic. 1200758400", "Audit Certificate", "IP-Registered"]}
+          variant="grid"
+          className="mt-6"
+        />
+      </section>
 
       {/* ── Bibliography ─────────────────────────────────────── */}
       <section className="container-page py-16 md:py-20 reveal-on-scroll">

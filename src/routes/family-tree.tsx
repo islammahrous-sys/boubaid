@@ -6,6 +6,7 @@ import { branches, siteMeta } from "@/content/site";
 import { familyMembersData, type FamilyMemberNode } from "@/content/family-tree";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/site/Editorial";
+import { DocumentShowcase } from "@/components/site/DocumentShowcase";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/family-tree")({
@@ -355,6 +356,24 @@ export function FamilyTreePage() {
             </section>
           ))
         )}
+      </section>
+
+      {/* ── Official Tree Artwork & Lineage Documents ───────────────────────── */}
+      <section className="mt-16 border-t border-border pt-10">
+        <Eyebrow>
+          {t({ ar: "وثائق النسب والمشجرة الرسمية", en: "Lineage Documents & Official Tree" })}
+        </Eyebrow>
+        <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
+          {t({
+            ar: "اللوحة الرسمية المعتمدة لشجرة أسرة آل بوعبيد (مسجلة الملكية الفكرية)، والتقارير الجينية الموثقة.",
+            en: "The official IP-registered pictorial family tree plate and documented genetic reports.",
+          })}
+        </p>
+        <DocumentShowcase
+          refs={["IP-Registered", "Genealogy Archive"]}
+          variant="grid"
+          className="mt-6"
+        />
       </section>
 
       {/* ── Member record ───────────────────────────────────── */}

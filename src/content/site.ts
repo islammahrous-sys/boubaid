@@ -643,12 +643,30 @@ export const boardTerm = {
  * committees. National IDs and phone numbers on file are not published here.
  */
 export const foundingMembers = [
-  { ar: "الأستاذ رياض بن عبدالعزيز بن أحمد بوعبيد", en: "Mr. Riyadh bin Abdulaziz bin Ahmed Bu Obaid" } as BiText,
-  { ar: "الأستاذ صالح بن عبدالعزيز بن عبدالله بوعبيد", en: "Mr. Saleh bin Abdulaziz bin Abdullah Bu Obaid" } as BiText,
-  { ar: "الأستاذ صالح بن محمد بن يوسف بوعبيد", en: "Mr. Saleh bin Mohammed bin Yousef Bu Obaid" } as BiText,
-  { ar: "الأستاذ عبدالرحمن بن صالح بن علي بوعبيد", en: "Mr. Abdulrahman bin Salih bin Ali Bu Obaid" } as BiText,
-  { ar: "الأستاذ عبدالله بن عبدالعزيز بن عبدالرحمن بوعبيد", en: "Mr. Abdullah bin Abdulaziz bin Abdulrahman Bu Obaid" } as BiText,
-  { ar: "الأستاذ عامر بن أحمد بن إبراهيم بوعبيد", en: "Mr. Amer bin Ahmed bin Ibrahim Bu Obaid" } as BiText,
+  {
+    ar: "الأستاذ رياض بن عبدالعزيز بن أحمد بوعبيد",
+    en: "Mr. Riyadh bin Abdulaziz bin Ahmed Bu Obaid",
+  } as BiText,
+  {
+    ar: "الأستاذ صالح بن عبدالعزيز بن عبدالله بوعبيد",
+    en: "Mr. Saleh bin Abdulaziz bin Abdullah Bu Obaid",
+  } as BiText,
+  {
+    ar: "الأستاذ صالح بن محمد بن يوسف بوعبيد",
+    en: "Mr. Saleh bin Mohammed bin Yousef Bu Obaid",
+  } as BiText,
+  {
+    ar: "الأستاذ عبدالرحمن بن صالح بن علي بوعبيد",
+    en: "Mr. Abdulrahman bin Salih bin Ali Bu Obaid",
+  } as BiText,
+  {
+    ar: "الأستاذ عبدالله بن عبدالعزيز بن عبدالرحمن بوعبيد",
+    en: "Mr. Abdullah bin Abdulaziz bin Abdulrahman Bu Obaid",
+  } as BiText,
+  {
+    ar: "الأستاذ عامر بن أحمد بن إبراهيم بوعبيد",
+    en: "Mr. Amer bin Ahmed bin Ibrahim Bu Obaid",
+  } as BiText,
 ];
 
 /** The chief executive officer requirement stated in the bylaws: bachelor's degree + 16 years' administrative experience. */
@@ -1053,7 +1071,10 @@ export const achievers = [
     image: "/images/achiever-military.png",
   },
   {
-    name: { ar: "الأستاذ عبدالله بن يوسف عبداللطيف بوعبيد", en: "Mr. Abdullah bin Yousef Abdullatif Bu Obaid" } as BiText,
+    name: {
+      ar: "الأستاذ عبدالله بن يوسف عبداللطيف بوعبيد",
+      en: "Mr. Abdullah bin Yousef Abdullatif Bu Obaid",
+    } as BiText,
     field: { ar: "الإدارة", en: "Administration" } as BiText,
     achievement: {
       ar: "بكالوريوس من جامعة الإمام محمد بن سعود (1432هـ)",
@@ -1064,7 +1085,10 @@ export const achievers = [
     image: "/images/achiever-professor.png",
   },
   {
-    name: { ar: "الأستاذ محمد بن أحمد بن عبداللطيف بوعبيد", en: "Mr. Mohammed bin Ahmed bin Abdullatif Bu Obaid" } as BiText,
+    name: {
+      ar: "الأستاذ محمد بن أحمد بن عبداللطيف بوعبيد",
+      en: "Mr. Mohammed bin Ahmed bin Abdullatif Bu Obaid",
+    } as BiText,
     field: { ar: "إدارة الأعمال", en: "Business Administration" } as BiText,
     achievement: {
       ar: "بكالوريوس إدارة أعمال من جامعة الملك فيصل (تخرج 2017م)",
@@ -1075,7 +1099,10 @@ export const achievers = [
     image: "/images/achiever-executive.png",
   },
   {
-    name: { ar: "الأستاذ عبداللطيف بن أحمد بن عبداللطيف بوعبيد", en: "Mr. Abdullatif bin Ahmed bin Abdullatif Bu Obaid" } as BiText,
+    name: {
+      ar: "الأستاذ عبداللطيف بن أحمد بن عبداللطيف بوعبيد",
+      en: "Mr. Abdullatif bin Ahmed bin Abdullatif Bu Obaid",
+    } as BiText,
     field: { ar: "نظم المعلومات الإدارية", en: "Management Information Systems" } as BiText,
     achievement: {
       ar: "بكالوريوس في نظم المعلومات الإدارية من جامعة كومنولث الأمريكية، فيرجينيا (تخرج 2013م)",
@@ -1086,7 +1113,10 @@ export const achievers = [
     image: "/images/achiever-executive.png",
   },
   {
-    name: { ar: "الأستاذ إبراهيم بن أحمد بن عبداللطيف بوعبيد", en: "Mr. Ibrahim bin Ahmed bin Abdullatif Bu Obaid" } as BiText,
+    name: {
+      ar: "الأستاذ إبراهيم بن أحمد بن عبداللطيف بوعبيد",
+      en: "Mr. Ibrahim bin Ahmed bin Abdullatif Bu Obaid",
+    } as BiText,
     field: { ar: "الإلكترونيات", en: "Electronics" } as BiText,
     achievement: {
       ar: "دبلوم إلكترونيات من الكلية التقنية بالدمام (تخرج 2012م)",
@@ -1144,7 +1174,7 @@ export const achievers = [
     } as BiText,
     category: "business" as const,
     branch: { ar: "فرع آل يوسف", en: "Al Yousef Branch" } as BiText,
-    image: "/images/achiever-executive.png",
+    image: "/images/achiever_science_innovation.png",
   },
   {
     name: { ar: "د. نورة بنت عبداللطيف بوعبيد", en: "Dr. Nora bint Abdullatif Bu Obaid" } as BiText,

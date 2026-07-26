@@ -15,6 +15,8 @@ import {
 import { pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose, Ornament } from "@/components/site/Editorial";
+import { DocumentShowcase } from "@/components/site/DocumentShowcase";
+import { Seal } from "@/components/site/Seal";
 
 export const Route = createFileRoute("/foundation")({
   head: () => ({
@@ -148,15 +150,6 @@ const copy = {
   } as BiText,
 };
 
-const constitutionalDocs: { ref: string; title: BiText }[] = [
-  { ref: "CHTR-1447", title: { ar: "اللائحة الأساسية للصندوق", en: "Charter and basic bylaws" } },
-  {
-    ref: "GOV-1447",
-    title: { ar: "لائحة الحوكمة وتنظيم اللجان", en: "Governance and committee regulations" },
-  },
-  { ref: "FIN-1447", title: { ar: "التقرير المالي المراجَع", en: "Audited financial report" } },
-];
-
 export function FoundationPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
@@ -186,6 +179,18 @@ export function FoundationPage() {
             <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
               {t(copy.mandateTitle)}
             </h2>
+
+            {/* The seal — this document's one certifying mark. */}
+            <Seal
+              className="mt-8 hidden h-28 w-28 text-bronze/70 lg:block dark:text-gold/60"
+              ringText={
+                rtl
+                  ? "المركز الوطني لتنمية القطاع غير الربحي"
+                  : "NATIONAL CENTER FOR NONPROFIT SECTOR"
+              }
+              centerLine1={siteMeta.ncnpLicense}
+              centerLine2={rtl ? "مرخص رسمياً" : "REGISTERED"}
+            />
           </div>
           <Prose>
             <p>{t(copy.mandateP1)}</p>
@@ -282,33 +287,52 @@ export function FoundationPage() {
               </p>
             </div>
 
-            <ol>
-              {committees.map((c, i) => (
-                <li
-                  key={c.id}
-                  className="grid grid-cols-[2.5rem_1fr] gap-x-5 border-b border-border py-5 first:border-t"
-                >
-                  <span
-                    className="nums font-mono text-sm text-bronze/70 dark:text-gold/60"
-                    aria-hidden="true"
+            <div>
+              <ol>
+                {committees.map((c, i) => (
+                  <li
+                    key={c.id}
+                    className="grid grid-cols-[2.5rem_1fr] gap-x-5 border-b border-border py-5 first:border-t"
                   >
-                    {String(i + 1).padStart(2, "0")}
+                    <span
+                      className="nums font-mono text-sm text-bronze/70 dark:text-gold/60"
+                      aria-hidden="true"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <h3 className="text-[15px] font-semibold text-foreground">{t(c.name)}</h3>
+                      <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                        {t(c.desc)}
+                      </p>
+                      <p className="mt-2.5 text-[13px]">
+                        <span className="label-caps me-2 text-muted-foreground">
+                          {t(copy.chairLabel)}
+                        </span>
+                        <span className="text-foreground">{t(c.lead)}</span>
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+
+              <figure className="mt-10">
+                <img
+                  src={pageImages.foundation.committees.src}
+                  alt=""
+                  className="photo-plate aspect-[16/9] w-full object-cover"
+                  loading="lazy"
+                />
+                <figcaption className="mt-3 flex gap-3 border-t border-border pt-3">
+                  <span className="nums label-caps shrink-0 text-bronze dark:text-gold">
+                    {rtl ? "لوحة العمل التنفيذي" : "Executive Operations Plate"}
                   </span>
-                  <div>
-                    <h3 className="text-[15px] font-semibold text-foreground">{t(c.name)}</h3>
-                    <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                      {t(c.desc)}
-                    </p>
-                    <p className="mt-2.5 text-[13px]">
-                      <span className="label-caps me-2 text-muted-foreground">
-                        {t(copy.chairLabel)}
-                      </span>
-                      <span className="text-foreground">{t(c.lead)}</span>
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+                  <span className="text-[13px] leading-relaxed text-muted-foreground">
+                    {t(pageImages.foundation.committees.caption)}
+                  </span>
+                </figcaption>
+              </figure>
+            </div>
           </div>
         </section>
 
@@ -322,22 +346,41 @@ export function FoundationPage() {
               </h2>
             </div>
 
-            <ol className="measure">
-              {copy.financeItems.map((item, i) => (
-                <li
-                  key={i}
-                  className="grid grid-cols-[1.75rem_1fr] gap-x-4 border-b border-border py-4 first:border-t"
-                >
-                  <span
-                    className="nums font-mono text-[13px] text-bronze/70 dark:text-gold/60"
-                    aria-hidden="true"
+            <div>
+              <ol className="measure">
+                {copy.financeItems.map((item, i) => (
+                  <li
+                    key={i}
+                    className="grid grid-cols-[1.75rem_1fr] gap-x-4 border-b border-border py-4 first:border-t"
                   >
-                    {i + 1}.
+                    <span
+                      className="nums font-mono text-[13px] text-bronze/70 dark:text-gold/60"
+                      aria-hidden="true"
+                    >
+                      {i + 1}.
+                    </span>
+                    <span className="text-sm leading-relaxed text-foreground">{t(item)}</span>
+                  </li>
+                ))}
+              </ol>
+
+              <figure className="mt-10">
+                <img
+                  src={pageImages.foundation.endowment.src}
+                  alt=""
+                  className="photo-plate aspect-[16/9] w-full object-cover"
+                  loading="lazy"
+                />
+                <figcaption className="mt-3 flex gap-3 border-t border-border pt-3">
+                  <span className="nums label-caps shrink-0 text-bronze dark:text-gold">
+                    {rtl ? "لوحة الأوقاف والموارد" : "Endowments & Resources Plate"}
                   </span>
-                  <span className="text-sm leading-relaxed text-foreground">{t(item)}</span>
-                </li>
-              ))}
-            </ol>
+                  <span className="text-[13px] leading-relaxed text-muted-foreground">
+                    {t(pageImages.foundation.endowment.caption)}
+                  </span>
+                </figcaption>
+              </figure>
+            </div>
           </div>
         </section>
 
@@ -422,9 +465,7 @@ export function FoundationPage() {
                 </div>
 
                 <div>
-                  <p className="label-caps mb-3 text-muted-foreground">
-                    {t(copy.eidDeficitTitle)}
-                  </p>
+                  <p className="label-caps mb-3 text-muted-foreground">{t(copy.eidDeficitTitle)}</p>
                   <ol>
                     {hqProject.eidDeficitByYear.map((e, i) => (
                       <li
@@ -444,6 +485,20 @@ export function FoundationPage() {
               <p className="label-caps mt-8 text-muted-foreground">
                 {t(hqProject.financials.approvedBy)}
               </p>
+
+              <DocumentShowcase
+                refs={["Engineering Spec", "Saudi Post"]}
+                title={{
+                  ar: "المخططات والتراخيص الرسمية للمقر الدائم",
+                  en: "Permanent HQ Official Plans & Address Verification",
+                }}
+                description={{
+                  ar: "الوثائق الهندسية المعتمدة وإثبات العنوان الوطني الرسمي للمقر بحي الحزام الذهبي.",
+                  en: "Approved architectural masterplan and official national address verification for the HQ in Al-Hizam Al-Dhahabi.",
+                }}
+                variant="grid"
+                className="mt-6"
+              />
             </div>
           </div>
         </section>
@@ -457,28 +512,10 @@ export function FoundationPage() {
             {t(copy.docsNote)}
           </p>
 
-          <ul className="mt-6 max-w-3xl">
-            {constitutionalDocs.map((doc) => (
-              <li key={doc.ref} className="border-b border-border first:border-t">
-                <div className="flex flex-wrap items-center justify-between gap-4 py-4">
-                  <div className="flex items-baseline gap-5">
-                    <span className="nums font-mono text-xs text-bronze dark:text-gold">
-                      {doc.ref}
-                    </span>
-                    <span className="text-sm font-medium text-foreground">{t(doc.title)}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => toast(t(copy.pending))}
-                    className="inline-flex shrink-0 items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
-                  >
-                    <Download className="h-3.5 w-3.5" aria-hidden="true" />
-                    PDF
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <DocumentShowcase
+            refs={["Lic. 1200758400", "PTEB031650", "Audit Certificate", "No. 79"]}
+            className="mt-6 max-w-3xl"
+          />
 
           <Link
             to="/library"

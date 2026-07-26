@@ -67,22 +67,50 @@ export const pageImages = {
           en: "The palm groves of Al-Ahsa — the agricultural endowments on which the family's early resources rested.",
         },
       },
+      {
+        src: "/images/about_old_mubarraz_fort.png",
+        caption: {
+          ar: "عمارة المبرز التاريخية وأبراجها القديمة — شاهد على عراقة التأسيس والاستقرار الحصين.",
+          en: "The historic architecture and watchtowers of Al-Mubarraz — a testament to early fortified settlement.",
+        },
+      },
+      {
+        src: "/images/about_arabian_caravan.png",
+        caption: {
+          ar: "قوافل التجارة في واحة الأحساء — النشاط التجاري والربط الاقتصادي عبر طرق القوافل التاريخية.",
+          en: "Trade caravans in the Al-Ahsa oasis — commercial enterprise and connectivity along historic caravan routes.",
+        },
+      },
+      {
+        src: "/images/about_tamim_majlis.png",
+        caption: {
+          ar: "ديوان القبيلة ومجلس الوجهاء في صدر التاريخ — جذور الانتماء إلى بني تميم والمحافظة على القيم.",
+          en: "The tribal council and gathering of elders in early history — roots in Banu Tamim and the preservation of heritage.",
+        },
+      },
     ] satisfies Figure[],
   },
 
   foundation: {
     header: {
-      src: "/images/governance_custom.png",
+      src: "/images/foundation_trustees_hall.png",
       caption: {
-        ar: "اجتماع مجلس الأمناء واللجان التنفيذية — المبرز، الأحساء.",
-        en: "A sitting of the board of trustees and standing committees — Al-Mubarraz, Al-Ahsa.",
+        ar: "قاعة اجتماعات مجلس الأمناء — حوكمة مؤسسية تجمع بين أصالة التراث الأحسائي وحداثة الإدارة.",
+        en: "The Board of Trustees assembly hall — institutional governance blending Al-Ahsa heritage with modern administration.",
       },
     } satisfies Figure,
     committees: {
-      src: "/images/governance_custom.png",
+      src: "/images/governance_council.png",
       caption: {
-        ar: "أعمال اللجان التنفيذية الخمس المنبثقة عن مجلس الأمناء.",
-        en: "The five standing committees issuing from the board of trustees at work.",
+        ar: "أعمال اللجان التنفيذية الخمس المنبثقة عن مجلس الأمناء والإشراف على المشاريع.",
+        en: "The five standing committees issuing from the board of trustees supervising projects at work.",
+      },
+    } satisfies Figure,
+    endowment: {
+      src: "/images/foundation_palm_endowment.png",
+      caption: {
+        ar: "أوقاف النخيل وعيون المياه بالأحساء — الركيزة الاقتصادية المستدامة للمشاريع العائلية والخيرية.",
+        en: "Palm endowments and water channels in Al-Ahsa — the sustainable economic foundation for family and charitable projects.",
       },
     } satisfies Figure,
   },
@@ -129,13 +157,13 @@ export const pageImages = {
     /** Contact-sheet order for the photographic collection. */
     contactSheet: [
       "/images/library-digital-archives.png",
-      "/images/library-deed-1102.png",
-      "/images/library_archive_custom.png",
-      "/images/governance_custom.png",
-      "/images/saudi_majlis_custom.png",
-      "/images/ramadan_custom.png",
       "/images/academic_custom.png",
-      "/images/hq_render_custom.png",
+      "/images/library_archive_custom.png",
+      "/images/library_manuscript_room.png",
+      "/images/library_ancient_deed.png",
+      "/images/library_digital_lab.png",
+      "/images/governance_custom.png",
+      "/images/ramadan_custom.png",
     ],
   },
 } as const;
@@ -153,15 +181,15 @@ export const branchPortraits: Record<string, string> = {
 };
 
 export const initiativeImages: Record<string, string> = {
-  "excellence-award": "/images/academic_awards.png",
-  headquarters: "/images/hq_render_custom.png",
-  "ramadan-quiz": "/images/ramadan_community.png",
-  "youth-training": "/images/academic_custom.png",
-  "eid-gatherings": "/images/family_majlis.png",
-  "national-volunteering": "/images/governance_custom.png",
+  "excellence-award": "/images/initiative_excellence_ceremony.png",
+  headquarters: "/images/hq_initiative_card.png",
+  "ramadan-quiz": "/images/initiative_ramadan_gathering.png",
+  "youth-training": "/images/initiative_youth_hub.png",
+  "eid-gatherings": "/images/initiative_eid_gathering.png",
+  "national-volunteering": "/images/initiative_volunteering.png",
 };
 
-export const initiativeImageFallback = "/images/family_majlis.png";
+export const initiativeImageFallback = "/images/fallback_initiative.png";
 
 export function initiativeImage(slug: string): string {
   return initiativeImages[slug] ?? initiativeImageFallback;

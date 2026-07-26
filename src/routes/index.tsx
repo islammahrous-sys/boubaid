@@ -25,7 +25,6 @@ import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
 import { HeroVideo } from "@/components/site/HeroVideo";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -196,7 +195,6 @@ export function HomePage() {
               <span className="h-2 w-0.5 rounded-full bg-ivory/70" />
             </div>
           </div>
-
         </div>
 
         {/* Colophon strip — sits at the base of the cinematic hero */}
@@ -255,7 +253,6 @@ export function HomePage() {
           </dl>
         </div>
       </HeroVideo>
-
 
       {/* ── Opening statement ────────────────────────────────── */}
       <section className="container-page py-16 md:py-20 reveal-on-scroll">
@@ -341,7 +338,7 @@ export function HomePage() {
             <img
               src={pageImages.home.project.src}
               alt={t(hqProject.title)}
-              className="w-full object-cover"
+              className="photo-plate w-full object-cover"
               loading="lazy"
             />
             <figcaption className="mt-3 flex items-start gap-2.5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
@@ -444,7 +441,11 @@ export function HomePage() {
         <div className="mt-10 grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:gap-14">
           {/* Lead story */}
           <article>
-            <Link to="/news/$slug" params={{ slug: lead.slug }} className="group block transition-transform duration-200 ease-out active:scale-[0.99]">
+            <Link
+              to="/news/$slug"
+              params={{ slug: lead.slug }}
+              className="group block transition-transform duration-200 ease-out active:scale-[0.99]"
+            >
               <img
                 src={newsImage(lead.slug)}
                 alt=""

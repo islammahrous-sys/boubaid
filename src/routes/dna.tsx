@@ -5,6 +5,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { dnaInfo } from "@/content/site";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose, Record, RecordField } from "@/components/site/Editorial";
+import { DocumentShowcase } from "@/components/site/DocumentShowcase";
 import { stripLeadingLabel } from "@/lib/text";
 
 export const Route = createFileRoute("/dna")({
@@ -433,6 +434,24 @@ export function DnaPage() {
               </Record>
             ))}
           </div>
+        </section>
+
+        {/* ── Genetic Documents Showcase ───────────────────────── */}
+        <section className="mt-16 border-t border-border pt-10">
+          <Eyebrow>
+            {t({ ar: "الوثائق والأرشيف الجيني", en: "Genomic & Lineage Archives" })}
+          </Eyebrow>
+          <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
+            {t({
+              ar: "الوثائق العلمية والتقارير الجينية المعتمدة، بما في ذلك لوحات الشجرة الجينية المصورة وثيقة النسب.",
+              en: "Approved scientific documents and genetic reports, including illustrated haplogroup charts and lineage documentation.",
+            })}
+          </p>
+          <DocumentShowcase
+            refs={["Genealogy Archive", "DNA Archive", "IP-Registered"]}
+            variant="grid"
+            className="mt-6"
+          />
         </section>
 
         {/* ── Databases ──────────────────────────────────────── */}
