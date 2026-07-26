@@ -186,7 +186,7 @@ export function FamilyTreePage() {
         <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
           <div>
             <Eyebrow>{t(copy.artworkEyebrow)}</Eyebrow>
-            <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl leading-tight text-foreground transition-colors hover:text-gold-foil">
+            <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
               {t(copy.artworkTitle)}
             </h2>
             <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -224,7 +224,7 @@ export function FamilyTreePage() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <Eyebrow>{t(copy.explorerEyebrow)}</Eyebrow>
-            <h2 className="mt-3 font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
+            <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
               {t(copy.explorerTitle)}
             </h2>
           </div>
@@ -327,7 +327,7 @@ export function FamilyTreePage() {
                       className="group block w-full py-4 text-start"
                     >
                       <div className="flex items-baseline justify-between gap-4">
-                        <span className="font-naskh text-base font-bold text-foreground transition-colors group-hover:text-gold-foil rtl:text-lg">
+                        <span className="font-naskh text-base font-bold text-foreground transition-colors group-hover:text-bronze rtl:text-lg dark:group-hover:text-gold">
                           {t(m.name)}
                         </span>
                         {m.isPatriarch ? (
@@ -367,7 +367,7 @@ export function FamilyTreePage() {
             <>
               <div className="border-b border-ink/25 px-6 py-5 dark:border-ivory/20">
                 <Eyebrow rule={false}>{t(selected.generationTitle)}</Eyebrow>
-                <DialogTitle className="mt-2 font-naskh text-2xl leading-tight font-bold text-foreground transition-colors hover:text-gold-foil rtl:text-[1.75rem]">
+                <DialogTitle className="mt-2 font-naskh text-2xl leading-tight font-bold text-foreground rtl:text-[1.75rem]">
                   {t(selected.name)}
                 </DialogTitle>
                 {selected.title ? (

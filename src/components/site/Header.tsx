@@ -65,19 +65,19 @@ export function Header() {
       <div className="container-page flex h-[4.5rem] items-center justify-between gap-4">
         <Link
           to="/"
-          className="group flex shrink-0 items-center gap-3"
+          className="group flex shrink-0 items-center gap-3 transition-transform duration-200 ease-out active:scale-[0.98]"
           onClick={() => setOpen(false)}
         >
           <img
             src="/logo-brown.png"
             alt=""
-            className="h-10 w-10 shrink-0 object-contain transition-transform duration-300 group-hover:scale-105 dark:hidden"
+            className="h-10 w-10 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:hidden"
             aria-hidden="true"
           />
           <img
             src="/logo-gold.png"
             alt=""
-            className="hidden h-10 w-10 shrink-0 object-contain transition-transform duration-300 group-hover:scale-105 dark:block"
+            className="hidden h-10 w-10 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:block"
             aria-hidden="true"
           />
           <span className="flex min-w-0 flex-col leading-tight">
@@ -99,7 +99,7 @@ export function Header() {
                 to={n.to}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-all duration-200",
+                  "rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
                   active
                     ? "bg-bronze/10 text-bronze font-bold shadow-xs dark:bg-gold/15 dark:text-gold"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -117,7 +117,7 @@ export function Header() {
               aria-expanded={moreOpen}
               aria-haspopup="true"
               className={cn(
-                "flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-all duration-200",
+                "flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
                 isSecondaryActive
                   ? "bg-bronze/10 text-bronze font-bold shadow-xs dark:bg-gold/15 dark:text-gold"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -134,7 +134,7 @@ export function Header() {
             </button>
 
             {moreOpen ? (
-              <div className="absolute top-full mt-2 w-[30rem] rounded-lg border border-border bg-popover p-6 shadow-xl end-0 transition-all animate-in fade-in-0 zoom-in-95 duration-200">
+              <div className="absolute top-full mt-2 w-[30rem] rounded-lg border border-border bg-popover p-6 shadow-xl end-0 transition-[opacity,transform] animate-in fade-in-0 zoom-in-95 duration-150 ease-out origin-top-right rtl:origin-top-left">
                 <div className="grid grid-cols-2 gap-x-8 gap-y-6">
                   {navGroups.map((group) => (
                     <div key={group.title.en}>
@@ -150,7 +150,7 @@ export function Header() {
                                 to={n.to}
                                 onClick={() => setMoreOpen(false)}
                                 className={cn(
-                                  "block py-1 text-[13px] transition-colors rounded-xs px-1",
+                                  "block py-1 text-[13px] transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.98] rounded-xs px-1",
                                   active
                                     ? "font-bold text-bronze dark:text-gold"
                                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/50",

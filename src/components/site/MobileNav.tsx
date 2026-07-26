@@ -40,7 +40,7 @@ export function MobileNav() {
               to={item.to}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-colors",
+                "flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
                 active
                   ? "border-bronze text-foreground dark:border-gold"
                   : "border-transparent text-muted-foreground",
@@ -56,7 +56,7 @@ export function MobileNav() {
           <DrawerTrigger asChild>
             <button
               type="button"
-              className="flex flex-1 flex-col items-center justify-center gap-1 border-t-2 border-transparent text-muted-foreground"
+              className="flex flex-1 flex-col items-center justify-center gap-1 border-t-2 border-transparent text-muted-foreground transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]"
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
               <span className="text-[11px]">{lang === "ar" ? "المزيد" : "More"}</span>

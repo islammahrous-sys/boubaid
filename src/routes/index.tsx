@@ -17,7 +17,6 @@ import {
   SectionHeading,
   Rule,
   Ornament,
-  CalligraphicDivider,
   Prose,
   Eyebrow,
   Status,
@@ -268,7 +267,7 @@ export function HomePage() {
         <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
           <div>
             <Eyebrow>{t(copy.openingEyebrow)}</Eyebrow>
-            <h2 className="mt-4 font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
+            <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
               {t(copy.openingTitle)}
             </h2>
           </div>
@@ -358,7 +357,7 @@ export function HomePage() {
 
           <div>
             <Eyebrow>{t(copy.hqEyebrow)}</Eyebrow>
-            <h2 className="mt-4 font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
+            <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
               {t(hqProject.title)}
             </h2>
             <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -431,7 +430,7 @@ export function HomePage() {
       </section>
 
       <div className="container-page">
-        <CalligraphicDivider />
+        <Ornament />
       </div>
 
       {/* ── News ─────────────────────────────────────────────── */}
@@ -460,7 +459,7 @@ export function HomePage() {
               <p className="nums label-caps mt-4 text-bronze dark:text-gold">
                 {lead.dateGregorian}
               </p>
-              <h3 className="mt-2 font-naskh text-xl md:text-2xl font-bold leading-snug text-foreground transition-colors group-hover:text-gold-foil">
+              <h3 className="mt-2 text-xl leading-snug text-foreground transition-colors group-hover:text-bronze md:text-2xl dark:group-hover:text-gold">
                 {t(lead.title)}
               </h3>
               <p className="measure mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -479,7 +478,7 @@ export function HomePage() {
                   className="group block border-b border-border py-5"
                 >
                   <p className="nums label-caps text-muted-foreground">{n.dateGregorian}</p>
-                  <h3 className="mt-1.5 font-naskh text-base font-bold leading-snug text-foreground transition-colors group-hover:text-gold-foil">
+                  <h3 className="mt-1.5 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
                     {t(n.title)}
                   </h3>
                 </Link>
@@ -506,7 +505,7 @@ export function HomePage() {
           <ul className="mt-10 grid gap-x-14 gap-y-0 border-t border-border md:grid-cols-2">
             {achievers.slice(0, 6).map((person, i) => (
               <li key={i} className="border-b border-border py-4">
-                <p className="font-naskh text-lg font-bold text-foreground transition-colors hover:text-gold-foil">{t(person.name)}</p>
+                <p className="text-[15px] font-semibold text-foreground">{t(person.name)}</p>
                 <p className="mt-1 text-[13px] text-bronze dark:text-gold">{t(person.field)}</p>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
                   {t(person.achievement)}
@@ -534,11 +533,11 @@ export function HomePage() {
           {initiatives.slice(0, 6).map((init) => (
             <article key={init.slug} className="border-b border-border py-5">
               <div className="flex items-start justify-between gap-4">
-                <h3 className="font-naskh text-lg font-bold leading-snug text-foreground">
+                <h3 className="text-[15px] leading-snug font-semibold text-foreground">
                   <Link
                     to="/initiatives/$slug"
                     params={{ slug: init.slug }}
-                    className="transition-colors hover:text-gold-foil"
+                    className="transition-colors hover:text-bronze dark:hover:text-gold"
                   >
                     {t(init.title)}
                   </Link>
@@ -571,7 +570,7 @@ export function HomePage() {
             </div>
 
             <div>
-              <h2 className="font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
+              <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
                 {t(dnaInfo.title)}
               </h2>
               <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -615,14 +614,10 @@ export function HomePage() {
       </section>
 
       {/* ── Take part ────────────────────────────────────────── */}
-      <div className="container-page">
-        <CalligraphicDivider />
-      </div>
-
       <section className="container-page py-16 md:py-20">
         <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
           <div>
-            <h2 className="font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
+            <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
               {t(copy.joinTitle)}
             </h2>
             <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">

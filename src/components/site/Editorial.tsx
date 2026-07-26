@@ -36,20 +36,7 @@ export function Ornament({ className }: { className?: string }) {
     >
       <span className="h-px w-16 bg-rule" />
       <span className="ornament-star opacity-70" />
-    </div>
-  );
-}
-
-/** Calligraphic royal centerpiece divider with traditional Islamic geometric & floral arabesque motifs. */
-export function CalligraphicDivider({ className }: { className?: string }) {
-  return (
-    <div
-      role="presentation"
-      className={cn("my-8 flex items-center justify-center gap-4 text-gold/80 dark:text-gold/90", className)}
-    >
-      <span className="h-px w-24 bg-gradient-to-r from-transparent via-gold/50 to-gold" />
-      <span className="font-naskh text-xl tracking-widest text-bronze dark:text-gold select-none">◈ ─── ❖ ─── ◈</span>
-      <span className="h-px w-24 bg-gradient-to-r from-gold via-gold/50 to-transparent" />
+      <span className="h-px w-16 bg-rule" />
     </div>
   );
 }
@@ -115,7 +102,7 @@ export function SectionHeading({
             {index}
           </span>
         ) : null}
-        <Tag className="font-naskh text-balance text-2xl md:text-3xl lg:text-4xl leading-tight text-foreground transition-colors hover:text-gold-foil">
+        <Tag className="text-balance text-2xl leading-tight text-foreground md:text-3xl">
           {title}
         </Tag>
       </div>
@@ -217,7 +204,7 @@ export function Record({
 }) {
   return (
     <div className={cn("border-b border-border py-4 first:pt-0 last:border-b-0", className)}>
-      <p className="font-naskh text-base font-bold text-foreground transition-colors hover:text-gold-foil">{title}</p>
+      <p className="text-sm font-semibold text-foreground">{title}</p>
       {children ? <div className="mt-2 space-y-1.5">{children}</div> : null}
     </div>
   );

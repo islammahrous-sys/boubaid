@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { Eyebrow, Prose, Ornament, CalligraphicDivider, Record, RecordField } from "@/components/site/Editorial";
+import { Eyebrow, Prose, Ornament, Record, RecordField } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 
@@ -132,7 +132,7 @@ export function ContributePage() {
         {/* ── Schedule of contributions ──────────────────────── */}
         <section>
           <Eyebrow>{t(copy.scheduleEyebrow)}</Eyebrow>
-          <h2 className="mt-3 font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
+          <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
             {t(copy.scheduleTitle)}
           </h2>
 
@@ -196,13 +196,13 @@ export function ContributePage() {
         {/* ── Channels ───────────────────────────────────────── */}
         <section className="mt-16 border-t border-border pt-12">
           <Eyebrow>{t(copy.channelsEyebrow)}</Eyebrow>
-          <h2 className="mt-3 font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
+          <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
             {t(copy.channelsTitle)}
           </h2>
 
           <div className="mt-8 grid gap-10 md:grid-cols-2 md:gap-14">
             <div className="border-t-2 border-ink pt-5 dark:border-gold">
-              <h3 className="font-naskh text-xl font-bold text-foreground transition-colors hover:text-gold-foil">{t(copy.sallaTitle)}</h3>
+              <h3 className="text-lg text-foreground">{t(copy.sallaTitle)}</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {t(copy.sallaBody)}
               </p>
@@ -218,7 +218,7 @@ export function ContributePage() {
             </div>
 
             <div className="border-t border-border pt-5">
-              <h3 className="font-naskh text-xl font-bold text-foreground transition-colors hover:text-gold-foil">{t(copy.transferTitle)}</h3>
+              <h3 className="text-lg text-foreground">{t(copy.transferTitle)}</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {t(copy.transferBody)}
               </p>
@@ -238,7 +238,7 @@ export function ContributePage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.useEyebrow)}</Eyebrow>
-              <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl leading-tight text-foreground transition-colors hover:text-gold-foil">
+              <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
                 {t(copy.useTitle)}
               </h2>
             </div>
@@ -273,7 +273,7 @@ export function ContributePage() {
           </div>
         </section>
 
-        <CalligraphicDivider className="mt-16" />
+        <Ornament className="mt-16" />
 
         {/* ── Fraud warning ──────────────────────────────────── */}
         <aside className="mt-12 border border-ink/30 p-6 dark:border-ivory/20">

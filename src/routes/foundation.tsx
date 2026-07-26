@@ -13,7 +13,7 @@ import {
 } from "@/content/site";
 import { pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
-import { Eyebrow, Prose, Ornament, CalligraphicDivider } from "@/components/site/Editorial";
+import { Eyebrow, Prose, Ornament } from "@/components/site/Editorial";
 
 export const Route = createFileRoute("/foundation")({
   head: () => ({
@@ -165,7 +165,7 @@ export function FoundationPage() {
         <section className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
           <div>
             <Eyebrow>{t(copy.mandateEyebrow)}</Eyebrow>
-            <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl leading-tight text-foreground transition-colors hover:text-gold-foil">
+            <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
               {t(copy.mandateTitle)}
             </h2>
           </div>
@@ -180,9 +180,9 @@ export function FoundationPage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.boardEyebrow)}</Eyebrow>
-            <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl leading-tight text-foreground transition-colors hover:text-gold-foil">
-              {t(copy.boardTitle)}
-            </h2>
+              <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
+                {t(copy.boardTitle)}
+              </h2>
               <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
                 {t(copy.boardNote)}
               </p>
@@ -235,7 +235,7 @@ export function FoundationPage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.committeesEyebrow)}</Eyebrow>
-              <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl leading-tight text-foreground transition-colors hover:text-gold-foil">
+              <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
                 {t(copy.committeesTitle)}
               </h2>
               <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -278,7 +278,7 @@ export function FoundationPage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.financeEyebrow)}</Eyebrow>
-              <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl leading-tight text-foreground transition-colors hover:text-gold-foil">
+              <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
                 {t(copy.financeTitle)}
               </h2>
             </div>
@@ -307,7 +307,7 @@ export function FoundationPage() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.financeReportEyebrow)}</Eyebrow>
-              <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl leading-tight text-foreground transition-colors hover:text-gold-foil">
+              <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
                 {t(copy.financeReportTitle)}
               </h2>
               <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -362,7 +362,7 @@ export function FoundationPage() {
           </div>
         </section>
 
-        <CalligraphicDivider className="mt-16" />
+        <Ornament className="mt-16" />
 
         {/* ── Constitutional documents ───────────────────────── */}
         <section className="mt-16">

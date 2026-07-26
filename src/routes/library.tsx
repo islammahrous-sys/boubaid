@@ -201,7 +201,7 @@ export function LibraryPage() {
                       <td className="nums py-4 pe-6 font-mono text-xs whitespace-nowrap text-bronze dark:text-gold">
                         {d.ncnpRef}
                       </td>
-                      <td className="py-4 pe-6 font-naskh text-base font-bold text-foreground transition-colors hover:text-gold-foil">
+                      <td className="py-4 pe-6 text-sm leading-snug font-medium text-foreground">
                         {t(d.title)}
                       </td>
                       <td className="nums py-4 pe-6 text-[13px] whitespace-nowrap text-muted-foreground">
@@ -260,7 +260,7 @@ export function LibraryPage() {
                         </span>
                         <span className="nums text-xs text-muted-foreground">{p.year} هـ</span>
                       </div>
-                      <p className="mt-1.5 font-naskh text-base font-bold text-foreground transition-colors hover:text-gold-foil">
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-foreground">
                         {t(p.title)}
                       </p>
                       <p className="label-caps mt-1 text-muted-foreground">{p.category}</p>
@@ -296,7 +296,7 @@ export function LibraryPage() {
                     </button>
 
                     <div className="min-w-0">
-                      <p className="font-naskh text-base font-bold text-foreground transition-colors hover:text-gold-foil">
+                      <p className="text-sm leading-snug font-medium text-foreground">
                         {t(v.title)}
                       </p>
                       <p className="nums label-caps mt-1 text-muted-foreground">{v.year} هـ</p>

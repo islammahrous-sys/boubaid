@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Link2 } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { news, siteMeta } from "@/content/site";
-import { Ornament, CalligraphicDivider } from "@/components/site/Editorial";
+import { Ornament } from "@/components/site/Editorial";
 import { newsImage } from "@/content/news-images";
 
 export const Route = createFileRoute("/news/$slug")({
@@ -76,7 +76,7 @@ function NewsDetail() {
           <span className="nums text-xs text-muted-foreground">{item.date} هـ</span>
         </div>
 
-        <h1 className="mt-6 font-naskh text-balance text-3xl leading-[1.25] text-foreground transition-colors hover:text-gold-foil md:text-[2.5rem]">
+        <h1 className="mt-6 text-balance text-3xl leading-[1.25] text-foreground md:text-[2.5rem]">
           {t(item.title)}
         </h1>
 
@@ -101,7 +101,7 @@ function NewsDetail() {
           <p>{t(item.body)}</p>
         </div>
 
-        <CalligraphicDivider className="my-10" />
+        <Ornament className="my-10" />
 
         {/* Colophon */}
         <div className="border-t border-border pt-5">

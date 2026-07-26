@@ -30,16 +30,16 @@ export function ThemeToggle({ tone = "default" }: ThemeToggleProps) {
       aria-label={label}
       title={label}
       className={cn(
-        "grid h-8 w-8 shrink-0 place-items-center border transition-colors",
+        "grid h-8 w-8 shrink-0 place-items-center border transition-[color,background-color,border-color,transform] duration-150 ease-out active:scale-[0.95]",
         isInk
           ? "border-ivory/25 bg-ink/60 text-ivory/80 hover:bg-ivory/10 hover:text-ivory"
           : "border-border text-muted-foreground hover:bg-secondary hover:text-foreground",
       )}
     >
       {isDark ? (
-        <Sun className="h-4 w-4" aria-hidden="true" />
+        <Sun className="h-4 w-4 animate-in fade-in zoom-in-75 duration-150" aria-hidden="true" />
       ) : (
-        <Moon className="h-4 w-4" aria-hidden="true" />
+        <Moon className="h-4 w-4 animate-in fade-in zoom-in-75 duration-150" aria-hidden="true" />
       )}
     </button>
   );

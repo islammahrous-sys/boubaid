@@ -24,10 +24,8 @@
   --radius-4xl: calc(var(--radius) + 14px);
 
   /* Arabic sets the tone — it is the primary language of the site.
-     El Messiri and Amiri for display, humanist sans for running text. */
-  --font-naskh: "El Messiri", "Amiri", "Scheherazade New", Georgia, serif;
-  --font-kufi: "Reem Kufi", "Amiri", system-ui, sans-serif;
-  --font-ruqaa: "Aref Ruqaa", "Amiri", Georgia, serif;
+     Naskh (Amiri) for display, humanist sans for running text. */
+  --font-naskh: "Amiri", "Scheherazade New", Georgia, serif;
   --font-arabic: "IBM Plex Sans Arabic", "Tajawal", system-ui, sans-serif;
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-body: "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
@@ -475,48 +473,3 @@ html[dir="rtl"] .drop-cap::first-letter {
 .active-scale:active {
   transform: scale(0.98);
 }
-
-/* ── Calligraphy & Royal Typography Utilities ───────────────── */
-
-@utility text-gold-foil {
-  background: linear-gradient(135deg, oklch(0.72 0.12 70) 0%, oklch(0.85 0.15 80) 50%, oklch(0.65 0.11 65) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-@utility text-bronze-foil {
-  background: linear-gradient(135deg, oklch(0.55 0.08 55) 0%, oklch(0.72 0.12 70) 50%, oklch(0.45 0.06 50) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-@utility calligraphic-watermark {
-  position: relative;
-  overflow: hidden;
-}
-
-.calligraphic-watermark::before {
-  content: "آل بوعبيد";
-  font-family: var(--font-naskh);
-  font-weight: 700;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-10deg);
-  font-size: min(25vw, 18rem);
-  line-height: 1;
-  color: var(--color-gold);
-  opacity: 0.04;
-  pointer-events: none;
-  white-space: nowrap;
-  user-select: none;
-  z-index: 0;
-}
-
-.dark .calligraphic-watermark::before {
-  opacity: 0.06;
-}
-

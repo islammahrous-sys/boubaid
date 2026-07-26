@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { initiatives } from "@/content/site";
-import { Eyebrow, Status, Ornament, CalligraphicDivider } from "@/components/site/Editorial";
+import { Eyebrow, Status, Ornament } from "@/components/site/Editorial";
 import { initiativeImage } from "@/content/images";
 
 export const Route = createFileRoute("/initiatives/$slug")({
@@ -72,7 +72,7 @@ function InitiativeDetail() {
           </Status>
         </div>
 
-        <h1 className="mt-6 font-naskh text-balance text-3xl leading-[1.25] text-foreground transition-colors hover:text-gold-foil md:text-[2.5rem]">
+        <h1 className="mt-6 text-balance text-3xl leading-[1.25] text-foreground md:text-[2.5rem]">
           {t(item.title)}
         </h1>
 
@@ -98,12 +98,12 @@ function InitiativeDetail() {
           </div>
         </section>
 
-        <CalligraphicDivider className="my-12" />
+        <Ornament className="my-12" />
 
         {/* Enquiry */}
         <section className="flex flex-wrap items-center justify-between gap-6 border-y border-border py-8">
           <div className="measure">
-            <h2 className="font-naskh text-xl font-bold text-foreground transition-colors hover:text-gold-foil">{t(copy.contactTitle)}</h2>
+            <h2 className="text-lg text-foreground">{t(copy.contactTitle)}</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {t(copy.contactBody)}
             </p>
