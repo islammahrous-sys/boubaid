@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { SectionHeading, Prose, Eyebrow, Ornament } from "@/components/site/Editorial";
+import { SectionHeading, Prose, Eyebrow, Ornament, CalligraphicDivider } from "@/components/site/Editorial";
 import { lineageChain, references, siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 
@@ -326,7 +326,7 @@ export function AboutPage() {
       </section>
 
       <div className="container-page">
-        <Ornament />
+        <CalligraphicDivider />
       </div>
 
       {/* ── Bibliography ─────────────────────────────────────── */}

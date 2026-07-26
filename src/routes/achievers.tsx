@@ -156,7 +156,7 @@ export function AchieversPage() {
                   />
 
                   <span className="md:pt-0.5">
-                    <span className="block font-naskh text-base font-bold text-foreground rtl:text-lg">
+                    <span className="block font-naskh text-base font-bold text-foreground transition-colors hover:text-gold-foil rtl:text-lg">
                       {t(person.name)}
                     </span>
                     <span className="mt-0.5 block text-xs text-bronze md:hidden dark:text-gold">
@@ -188,7 +188,7 @@ export function AchieversPage() {
       <section className="border-t border-border bg-secondary/40">
         <div className="container-page flex flex-wrap items-center justify-between gap-6 py-12">
           <div className="measure">
-            <h2 className="text-xl text-foreground">{t(copy.nominateTitle)}</h2>
+            <h2 className="font-naskh text-xl md:text-2xl font-bold text-foreground transition-colors hover:text-gold-foil">{t(copy.nominateTitle)}</h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
               {t(copy.nominateBody)}
             </p>

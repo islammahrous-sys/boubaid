@@ -209,7 +209,7 @@ export function BranchesPage() {
 
               {/* Entry body */}
               <div>
-                <h2 className="text-2xl leading-tight text-foreground md:text-3xl">{t(b.name)}</h2>
+                <h2 className="font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">{t(b.name)}</h2>
 
                 <p className="mt-3 border-s-2 border-bronze/40 ps-4 text-sm leading-relaxed text-muted-foreground dark:border-gold/40">
                   <span className="label-caps me-2 text-bronze dark:text-gold">
@@ -230,7 +230,7 @@ export function BranchesPage() {
                         key={si}
                         className="grid gap-x-6 gap-y-0.5 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,10rem)_1fr]"
                       >
-                        <span className="text-sm font-semibold text-foreground">{sub.head}</span>
+                        <span className="font-naskh text-base font-bold text-foreground transition-colors hover:text-gold-foil">{sub.head}</span>
                         {sub.names ? (
                           <span className="text-sm leading-relaxed text-muted-foreground">
                             {sub.names}
@@ -248,7 +248,7 @@ export function BranchesPage() {
                     </p>
                     <ul className="space-y-1.5">
                       {b.keyFigures.map((fig, fi) => (
-                        <li key={fi} className="flex gap-2.5 text-sm text-foreground">
+                        <li key={fi} className="flex gap-2.5 font-naskh text-base font-bold text-foreground transition-colors hover:text-gold-foil">
                           <span
                             className="mt-2 h-1 w-1 shrink-0 bg-bronze dark:bg-gold"
                             aria-hidden="true"

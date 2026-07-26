@@ -148,7 +148,7 @@ export function DirectoryPage() {
                   <li key={b.id} className="border-b border-border py-6">
                     <div className="grid gap-x-10 gap-y-4 lg:grid-cols-[1fr_minmax(0,16rem)]">
                       <div>
-                        <h3 className="text-[15px] font-semibold text-foreground">{t(b.name)}</h3>
+                        <h3 className="font-naskh text-lg font-bold text-foreground transition-colors hover:text-gold-foil">{t(b.name)}</h3>
                         <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
                           {t(b.description)}
                         </p>

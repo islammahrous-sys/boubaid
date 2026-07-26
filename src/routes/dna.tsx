@@ -143,7 +143,7 @@ export function DnaPage() {
           </div>
 
           <div>
-            <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
+            <h2 className="font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
               {t(copy.overviewTitle)}
             </h2>
             <Prose className="mt-4">
@@ -155,7 +155,7 @@ export function DnaPage() {
         {/* ── Clade ladder — this page's signature device ─────── */}
         <section className="mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.cladeEyebrow)}</Eyebrow>
-          <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.cladeTitle)}</h2>
+          <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl font-bold leading-tight text-foreground transition-colors hover:text-gold-foil">{t(copy.cladeTitle)}</h2>
           <p className="mt-2 text-[13px] text-muted-foreground">{t(copy.cladeNote)}</p>
 
           <ol className="mt-7 max-w-2xl" dir="ltr">
@@ -204,7 +204,7 @@ export function DnaPage() {
         {/* ── SNP chronology ─────────────────────────────────── */}
         <section className="mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.timelineEyebrow)}</Eyebrow>
-          <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.timelineTitle)}</h2>
+          <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl font-bold leading-tight text-foreground transition-colors hover:text-gold-foil">{t(copy.timelineTitle)}</h2>
           <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.timelineNote)}
           </p>
@@ -333,7 +333,7 @@ export function DnaPage() {
         {/* ── Distribution table ─────────────────────────────── */}
         <section className="mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.distEyebrow)}</Eyebrow>
-          <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.distTitle)}</h2>
+          <h2 className="mt-3 font-naskh text-xl md:text-2xl lg:text-3xl font-bold leading-tight text-foreground transition-colors hover:text-gold-foil">{t(copy.distTitle)}</h2>
           <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.distNote)}
           </p>

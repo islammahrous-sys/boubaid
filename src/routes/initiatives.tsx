@@ -90,7 +90,7 @@ export function InitiativesPage() {
       <section className="border-b border-border bg-secondary/40">
         <div className="container-page py-14 md:py-16">
           <Eyebrow>{t(copy.flagshipEyebrow)}</Eyebrow>
-          <h2 className="mt-3 max-w-3xl text-2xl leading-tight text-foreground md:text-3xl">
+          <h2 className="mt-3 max-w-3xl font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
             {t(hqProject.title)}
           </h2>
 
@@ -182,7 +182,7 @@ export function InitiativesPage() {
       {/* ── Programme schedule ──────────────────────────────── */}
       <section className="container-page py-14 md:py-16">
         <Eyebrow>{t(copy.scheduleEyebrow)}</Eyebrow>
-        <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
+        <h2 className="mt-3 font-naskh text-2xl md:text-3xl lg:text-[2rem] leading-tight text-foreground transition-colors hover:text-gold-foil">
           {t(copy.scheduleTitle)}
         </h2>
 
@@ -201,7 +201,7 @@ export function InitiativesPage() {
                   {String(i + 1).padStart(2, "0")}
                 </span>
 
-                <h3 className="text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
+                <h3 className="font-naskh text-lg font-bold text-foreground transition-colors group-hover:text-gold-foil">
                   {t(init.title)}
                 </h3>
 
@@ -224,7 +224,7 @@ export function InitiativesPage() {
       <section className="border-t border-border bg-secondary/40">
         <div className="container-page flex flex-wrap items-center justify-between gap-6 py-12">
           <div className="measure">
-            <h2 className="text-xl text-foreground">{t(copy.supportTitle)}</h2>
+            <h2 className="font-naskh text-xl md:text-2xl font-bold text-foreground transition-colors hover:text-gold-foil">{t(copy.supportTitle)}</h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
               {t(copy.supportBody)}
             </p>

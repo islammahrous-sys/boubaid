@@ -124,7 +124,7 @@ export function NewsPage() {
                     </span>
                   </div>
 
-                  <h2 className="mt-4 text-2xl leading-tight text-foreground transition-colors group-hover:text-bronze md:text-[2rem] dark:group-hover:text-gold">
+                  <h2 className="mt-4 font-naskh text-2xl md:text-3xl lg:text-[2rem] font-bold leading-tight text-foreground transition-colors group-hover:text-gold-foil">
                     {t(lead.title)}
                   </h2>
 
@@ -161,7 +161,7 @@ export function NewsPage() {
                         </span>
                       </div>
 
-                      <h3 className="mt-2.5 text-lg leading-snug text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
+                      <h3 className="mt-2.5 font-naskh text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-gold-foil">
                         {t(n.title)}
                       </h3>
 

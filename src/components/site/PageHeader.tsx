@@ -98,11 +98,11 @@ function RuleHeader({
   className,
 }: Omit<PageHeaderProps, "variant" | "image" | "imageCaption">) {
   return (
-    <header className={cn("border-b border-border bg-background", className)}>
-      <div className="container-page pt-12 pb-10 md:pt-16 md:pb-12">
+    <header className={cn("border-b border-border bg-background calligraphic-watermark", className)}>
+      <div className="container-page pt-12 pb-10 md:pt-16 md:pb-12 relative z-10">
         {eyebrow ? <Eyebrow className="mb-5">{eyebrow}</Eyebrow> : null}
 
-        <h1 className="max-w-4xl text-balance text-3xl leading-[1.2] text-foreground md:text-[2.75rem]">
+        <h1 className="font-naskh max-w-4xl text-balance text-4xl leading-[1.25] text-foreground transition-colors hover:text-gold-foil md:text-5xl">
           {title}
         </h1>
 
@@ -138,8 +138,8 @@ function PlateHeader({
   className,
 }: Omit<PageHeaderProps, "variant">) {
   return (
-    <header className={cn("bg-ink text-ivory", className)}>
-      <div className="container-page py-12 md:py-16">
+    <header className={cn("bg-ink text-ivory calligraphic-watermark", className)}>
+      <div className="container-page py-12 md:py-16 relative z-10">
         <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16">
           <div>
             {eyebrow ? (
@@ -149,7 +149,7 @@ function PlateHeader({
               </span>
             ) : null}
 
-            <h1 className="text-balance text-3xl leading-[1.2] text-ivory md:text-[2.75rem]">
+            <h1 className="font-naskh text-balance text-4xl leading-[1.25] text-ivory transition-colors hover:text-gold-foil md:text-5xl">
               {title}
             </h1>
 
@@ -201,15 +201,15 @@ function DocumentHeader({
   className,
 }: Omit<PageHeaderProps, "variant" | "image" | "imageCaption">) {
   return (
-    <header className={cn("bg-secondary/50", className)}>
-      <div className="container-page py-12 md:py-16">
+    <header className={cn("bg-secondary/50 calligraphic-watermark", className)}>
+      <div className="container-page py-12 md:py-16 relative z-10">
         <div className="border border-ink/25 bg-card dark:border-ivory/15">
           <div className="border-b border-ink/25 px-6 py-3 dark:border-ivory/15">
             <Eyebrow rule={false}>{eyebrow}</Eyebrow>
           </div>
 
           <div className="px-6 py-8 md:px-10 md:py-10">
-            <h1 className="max-w-3xl text-balance text-2xl leading-[1.25] text-foreground md:text-4xl">
+            <h1 className="font-naskh max-w-3xl text-balance text-3xl leading-[1.25] text-foreground transition-colors hover:text-gold-foil md:text-4xl">
               {title}
             </h1>
 
