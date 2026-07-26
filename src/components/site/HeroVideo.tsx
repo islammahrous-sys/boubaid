@@ -45,14 +45,16 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
         "relative isolate overflow-hidden bg-ink text-ivory " + (className ?? "")
       }
     >
-      {/* Poster — always rendered as the first visual so there is no layout shift */}
-      <div className="absolute inset-0 z-0">
+      {/* Poster / video wrapper — cropped to hide bottom-right watermark on desktop */}
+      <div
+        className="absolute inset-0 z-0 origin-top scale-100 lg:scale-[1.28] lg:origin-[30%_top] motion-safe:animate-hero-zoom"
+      >
         {poster ? (
           <img
             src={poster}
             alt=""
             aria-hidden="true"
-            className="h-full w-full object-cover object-[center_center] lg:object-[center_top]"
+            className="h-full w-full object-cover object-[center_center] lg:object-[30%_top]"
             fetchPriority="high"
           />
         ) : null}
@@ -62,7 +64,7 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
           <video
             ref={videoRef}
             className={
-              "absolute inset-0 h-full w-full object-cover object-[center_center] lg:object-[center_top] transition-opacity duration-1000 ease-out " +
+              "absolute inset-0 h-full w-full object-cover object-[center_center] lg:object-[30%_top] transition-opacity duration-[1400ms] ease-out " +
 
               (loaded ? "opacity-100" : "opacity-0")
             }
@@ -80,21 +82,15 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
             onCanPlay={() => setLoaded(true)}
           />
         ) : null}
+      </div>
 
-
-        {/* Cinematic scrim — vertical + vignette for text legibility */}
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/45 to-ink/85"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.55)_100%)]"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.12)_0%,transparent_65%)]"
-          aria-hidden="true"
-        />
+      {/* Cinematic scrims — outside the transformed wrapper so gradients cover full frame */}
+      <div className="pointer-events-none absolute inset-0 z-[1]" aria-hidden="true">
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/40 to-ink" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_28%,rgba(0,0,0,0.6)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.12)_0%,transparent_65%)]" />
+        {/* Extra bottom fade to solid ink — masks the video watermark before the colophon strip */}
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-ink/80 to-ink" />
       </div>
 
       <div className="relative z-10">{children}</div>

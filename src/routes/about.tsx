@@ -149,7 +149,7 @@ export function AboutPage() {
       />
 
       {/* ── Manuscript spread: narrative with a margin column ── */}
-      <section className="container-page py-16 md:py-20">
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[1fr_minmax(0,15rem)]">
           <div className="space-y-12">
             <article>
@@ -254,7 +254,7 @@ export function AboutPage() {
       </section>
 
       {/* ── The nasab column — this page's signature ─────────── */}
-      <section className="border-y border-border bg-secondary/40">
+      <section className="border-y border-border bg-secondary/40 reveal-on-scroll">
         <div className="container-page py-16 md:py-20">
           <SectionHeading
             align="center"
@@ -300,7 +300,7 @@ export function AboutPage() {
       </section>
 
       {/* ── Plates ───────────────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20">
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <SectionHeading eyebrow={t(copy.platesEyebrow)} title={t(copy.platesTitle)} />
 
         <div className="mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2">
@@ -330,7 +330,7 @@ export function AboutPage() {
       </div>
 
       {/* ── Bibliography ─────────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20">
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <Eyebrow>{t(copy.biblioTitle)}</Eyebrow>
 
         <ol className="mt-6 max-w-3xl border-t border-border">

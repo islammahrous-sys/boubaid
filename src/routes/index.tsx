@@ -258,7 +258,7 @@ export function HomePage() {
 
 
       {/* ── Opening statement ────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20">
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
           <div>
             <Eyebrow>{t(copy.openingEyebrow)}</Eyebrow>
@@ -285,7 +285,7 @@ export function HomePage() {
       </section>
 
       {/* ── The seven branches, as an index ──────────────────── */}
-      <section className="border-y border-border bg-secondary/40">
+      <section className="border-y border-border bg-secondary/40 reveal-on-scroll">
         <div className="container-page py-16 md:py-20">
           <SectionHeading
             eyebrow={t(copy.branchesEyebrow)}
@@ -335,7 +335,7 @@ export function HomePage() {
       </section>
 
       {/* ── Headquarters project ─────────────────────────────── */}
-      <section className="container-page py-16 md:py-20">
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <figure>
             <img
@@ -429,7 +429,7 @@ export function HomePage() {
       </div>
 
       {/* ── News ─────────────────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20">
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
           <SectionHeading eyebrow={t(copy.newsEyebrow)} title={t(copy.newsTitle)} />
           <Link
@@ -484,7 +484,7 @@ export function HomePage() {
       </section>
 
       {/* ── Roll of honour ───────────────────────────────────── */}
-      <section className="border-y border-border bg-secondary/40">
+      <section className="border-y border-border bg-secondary/40 reveal-on-scroll">
         <div className="container-page py-16 md:py-20">
           <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
             <SectionHeading eyebrow={t(copy.honoursEyebrow)} title={t(copy.honoursTitle)} />
@@ -512,7 +512,7 @@ export function HomePage() {
       </section>
 
       {/* ── Initiatives ──────────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20">
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
           <SectionHeading eyebrow={t(copy.programmesEyebrow)} title={t(copy.programmesTitle)} />
           <Link
@@ -559,7 +559,7 @@ export function HomePage() {
       </section>
 
       {/* ── Genetic study ────────────────────────────────────── */}
-      <section className="border-y border-border bg-secondary/40">
+      <section className="border-y border-border bg-secondary/40 reveal-on-scroll">
         <div className="container-page py-16 md:py-20">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
             <div>
@@ -612,7 +612,7 @@ export function HomePage() {
       </section>
 
       {/* ── Take part ────────────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20">
+      <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
           <div>
             <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
