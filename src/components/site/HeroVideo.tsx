@@ -52,10 +52,11 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
             src={poster}
             alt=""
             aria-hidden="true"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-[center_center] lg:object-[center_top]"
             fetchPriority="high"
           />
         ) : null}
+
 
         {showVideo ? (
           <video
