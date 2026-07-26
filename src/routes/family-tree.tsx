@@ -150,7 +150,7 @@ export function FamilyTreePage() {
               href="/interactive-tree.html"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center gap-2 border border-gold bg-gold px-4 py-2.5 text-[13px] font-medium text-ink transition-colors hover:bg-transparent hover:text-gold"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-gold bg-gold px-4 py-2.5 text-[13px] font-medium text-ink transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-transparent hover:text-gold hover:shadow-sm active:scale-[0.97]"
             >
               <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
               {t(copy.fullscreen)}
@@ -196,7 +196,7 @@ export function FamilyTreePage() {
               href="/images/family_tree_official_artwork.jpg"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+              className="mt-5 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-[color,border-color,transform] duration-150 ease-out hover:border-foreground hover:text-foreground active:scale-[0.97] dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
             >
               {t(copy.artworkOpen)}
               <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
@@ -207,7 +207,7 @@ export function FamilyTreePage() {
             href="/images/family_tree_official_artwork.jpg"
             target="_blank"
             rel="noopener noreferrer"
-            className="block border border-border bg-white"
+            className="block rounded-xl border border-border/50 bg-white/90 p-3 backdrop-blur-md transition-[border-color,box-shadow,transform] duration-200 ease-out hover:border-border hover:shadow-lg active:scale-[0.99] dark:border-ivory/15 dark:bg-card/40"
           >
             <img
               src="/images/family_tree_official_artwork.jpg"
@@ -234,7 +234,7 @@ export function FamilyTreePage() {
         </div>
 
         {/* Controls */}
-        <div className="mt-7 grid gap-5 border-y border-border py-5 md:grid-cols-[1fr_auto_auto] md:items-end">
+        <div className="mt-7 grid gap-5 rounded-xl border border-border/50 bg-background/80 p-5 shadow-sm backdrop-blur-md transition-[border-color,box-shadow] duration-200 md:grid-cols-[1fr_auto_auto] md:items-end dark:border-ivory/20 dark:bg-ivory/5">
           <div>
             <label htmlFor="tree-search" className="label-caps mb-2 block text-muted-foreground">
               {t(copy.searchLabel)}
@@ -250,7 +250,7 @@ export function FamilyTreePage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t(copy.searchPlaceholder)}
-                className="w-full border border-input bg-background py-2.5 text-sm outline-none transition-colors focus:border-bronze ps-11 pe-3.5 dark:focus:border-gold"
+                className="w-full rounded-lg border border-input/60 bg-background/70 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow] duration-150 ease-out focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] ps-11 pe-3.5 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
               />
             </div>
           </div>
@@ -263,7 +263,7 @@ export function FamilyTreePage() {
               id="tree-branch"
               value={branchId}
               onChange={(e) => setBranchId(e.target.value)}
-              className="w-full border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-bronze md:w-52 dark:focus:border-gold"
+              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] active:scale-[0.98] md:w-52 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
             >
               <option value="all">{t(copy.all)}</option>
               {branches.map((b) => (
@@ -284,7 +284,7 @@ export function FamilyTreePage() {
               onChange={(e) =>
                 setGeneration(e.target.value === "all" ? "all" : Number(e.target.value))
               }
-              className="w-full border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-bronze md:w-40 dark:focus:border-gold"
+              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] active:scale-[0.98] md:w-40 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
             >
               <option value="all">{t(copy.all)}</option>
               {[1, 2, 3, 4].map((g) => (
@@ -300,7 +300,7 @@ export function FamilyTreePage() {
           <button
             type="button"
             onClick={reset}
-            className="mt-3 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium text-muted-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-secondary/80 hover:text-foreground active:scale-[0.97]"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
             {t(copy.clear)}
@@ -318,34 +318,34 @@ export function FamilyTreePage() {
                 <span className="nums ms-2 text-muted-foreground">({members.length})</span>
               </p>
 
-              <ol className="grid gap-x-12 md:grid-cols-2">
+              <ol className="grid gap-4 md:grid-cols-2">
                 {members.map((m) => (
-                  <li key={m.id} className="border-b border-border">
+                  <li key={m.id} className="list-none">
                     <button
                       type="button"
                       onClick={() => setSelected(m)}
-                      className="group block w-full py-4 text-start"
+                      className="group block w-full rounded-xl border border-border/50 bg-background/80 p-5 text-start backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-bronze/40 hover:bg-background hover:shadow-md active:scale-[0.98] dark:border-ivory/15 dark:bg-ivory/5 dark:hover:border-gold/40 dark:hover:bg-ivory/10"
                     >
                       <div className="flex items-baseline justify-between gap-4">
-                        <span className="font-naskh text-base font-bold text-foreground transition-colors group-hover:text-bronze rtl:text-lg dark:group-hover:text-gold">
+                        <span className="font-naskh text-base font-bold text-foreground transition-[color,transform] duration-150 ease-out group-hover:text-bronze rtl:text-lg dark:group-hover:text-gold">
                           {t(m.name)}
                         </span>
                         {m.isPatriarch ? (
-                          <span className="label-caps shrink-0 text-bronze dark:text-gold">
+                          <span className="label-caps shrink-0 rounded-full border border-bronze/30 bg-bronze/10 px-2.5 py-0.5 text-bronze backdrop-blur-sm dark:border-gold/30 dark:bg-gold/10 dark:text-gold">
                             {t(copy.rootBadge)}
                           </span>
                         ) : m.isBranchFounder ? (
-                          <span className="label-caps shrink-0 text-muted-foreground">
+                          <span className="label-caps shrink-0 rounded-full border border-border/60 bg-secondary/60 px-2.5 py-0.5 text-muted-foreground backdrop-blur-sm dark:border-ivory/15 dark:bg-ivory/5">
                             {t(copy.founderBadge)}
                           </span>
                         ) : null}
                       </div>
                       {m.title ? (
-                        <span className="mt-1 block text-[13px] text-bronze dark:text-gold">
+                        <span className="mt-1.5 block text-[13px] font-medium text-bronze dark:text-gold">
                           {t(m.title)}
                         </span>
                       ) : null}
-                      <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
+                      <span className="mt-1.5 block text-[13px] leading-relaxed text-muted-foreground">
                         {t(m.settlement)}
                       </span>
                     </button>
@@ -361,7 +361,7 @@ export function FamilyTreePage() {
       <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
         <DialogContent
           dir={rtl ? "rtl" : "ltr"}
-          className="max-h-[85vh] gap-0 overflow-y-auto rounded-none border-border bg-background p-0 sm:max-w-2xl"
+          className="max-h-[85vh] gap-0 overflow-y-auto rounded-2xl border border-border/60 bg-background/90 p-0 shadow-2xl backdrop-blur-xl transition-[transform,opacity] duration-200 ease-out sm:max-w-2xl dark:border-ivory/20 dark:bg-ink/90"
         >
           {selected ? (
             <>

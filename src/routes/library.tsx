@@ -1,6 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Download, Play } from "lucide-react";
+import { useState, useMemo } from "react";
+import {
+  Download,
+  Play,
+  Search,
+  X,
+  Eye,
+  FileText,
+  Image as ImageIcon,
+  Video,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -78,6 +87,19 @@ const copy = {
     ar: "الملف قيد الرفع على الأرشيف الرقمي — يرجى مراجعة الأمانة العامة.",
     en: "This file is still being uploaded to the digital archive — please contact the secretariat.",
   } as BiText,
+  searchPlaceholder: {
+    ar: "البحث بالاسم، المرجع، أو السنة...",
+    en: "Search by title, ref, or year...",
+  } as BiText,
+  clearSearch: { ar: "مسح البحث", en: "Clear search" } as BiText,
+  allCategories: { ar: "الكل", en: "All" } as BiText,
+  preview: { ar: "معاينة", en: "Preview" } as BiText,
+  close: { ar: "إغلاق", en: "Close" } as BiText,
+  details: { ar: "تفاصيل الوثيقة", en: "Document Details" } as BiText,
+  noResults: {
+    ar: "لا توجد نتائج تطابق بحثك أو تصنيف الفرع المختار.",
+    en: "No results match your search query or selected category.",
+  } as BiText,
 };
 
 const sheet = pageImages.library.contactSheet;
@@ -97,10 +119,10 @@ function DownloadControl({
   label: string;
 }) {
   const className =
-    "inline-flex shrink-0 items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary";
+    "inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md px-3.5 py-1.5 text-xs font-medium text-foreground shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:bg-secondary/80 dark:hover:bg-ivory/10 active:scale-[0.97]";
   return doc.href ? (
     <a href={doc.href} target="_blank" rel="noopener noreferrer" className={className}>
-      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+      <Download className="h-3.5 w-3.5 transition-transform duration-150 ease-out group-hover:translate-y-[1px]" aria-hidden="true" />
       {label}
     </a>
   ) : (
@@ -114,15 +136,82 @@ function DownloadControl({
 export function LibraryPage() {
   const { t, lang } = useLang();
   const [tab, setTab] = useState<TabKey>("documents");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [previewModal, setPreviewModal] = useState<{
+    type: TabKey;
+    title: string;
+    subtitle?: string;
+    meta?: string;
+    image?: string;
+    duration?: string;
+    doc?: LibraryDocument;
+  } | null>(null);
+
   const rtl = lang === "ar";
 
   const notify = () => toast(t(copy.pending));
+
+  const handleTabChange = (newTab: TabKey) => {
+    setTab(newTab);
+    setSelectedCategory(null);
+  };
 
   const tabDefs: { key: TabKey; label: BiText; count: number }[] = [
     { key: "documents", label: copy.tabs.documents, count: libraryItems.documents.length },
     { key: "photographs", label: copy.tabs.photographs, count: libraryItems.photos.length },
     { key: "recordings", label: copy.tabs.recordings, count: libraryItems.videos.length },
   ];
+
+  // Derive category pills per tab
+  const currentCategories = useMemo(() => {
+    if (tab === "documents") {
+      return Array.from(new Set(libraryItems.documents.map((d) => d.kind))).filter(Boolean);
+    }
+    if (tab === "photographs") {
+      return Array.from(new Set(libraryItems.photos.map((p) => p.category))).filter(Boolean);
+    }
+    if (tab === "recordings") {
+      return Array.from(new Set(libraryItems.videos.map((v) => `${v.year} هـ`))).filter(Boolean);
+    }
+    return [];
+  }, [tab]);
+
+  // Filter items by search query and selected category
+  const filteredDocuments = useMemo(() => {
+    return libraryItems.documents.filter((d) => {
+      const matchesSearch =
+        !searchQuery.trim() ||
+        t(d.title).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        d.ncnpRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        String(d.year).includes(searchQuery.trim());
+      const matchesCat = !selectedCategory || d.kind === selectedCategory;
+      return matchesSearch && matchesCat;
+    });
+  }, [searchQuery, selectedCategory, t]);
+
+  const filteredPhotos = useMemo(() => {
+    return libraryItems.photos.filter((p) => {
+      const matchesSearch =
+        !searchQuery.trim() ||
+        t(p.title).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        String(p.year).includes(searchQuery.trim());
+      const matchesCat = !selectedCategory || p.category === selectedCategory;
+      return matchesSearch && matchesCat;
+    });
+  }, [searchQuery, selectedCategory, t]);
+
+  const filteredVideos = useMemo(() => {
+    return libraryItems.videos.filter((v) => {
+      const matchesSearch =
+        !searchQuery.trim() ||
+        t(v.title).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        String(v.year).includes(searchQuery.trim());
+      const matchesCat = !selectedCategory || `${v.year} هـ` === selectedCategory;
+      return matchesSearch && matchesCat;
+    });
+  }, [searchQuery, selectedCategory, t]);
 
   return (
     <>
@@ -139,182 +228,491 @@ export function LibraryPage() {
       />
 
       <div className="container-page pb-20">
-        {/* Finding aid — plain text tabs with a rule, not pills. */}
-        <div className="border-b border-ink/25 dark:border-ivory/20">
+        {/* Apple-style translucent glassmorphic filter tabs and search bar */}
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div
             role="tablist"
             aria-label={t(copy.eyebrow)}
-            className="-mb-px flex gap-8 overflow-x-auto no-scrollbar"
+            className="inline-flex gap-1.5 overflow-x-auto no-scrollbar rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 p-1.5 backdrop-blur-md shadow-sm"
           >
-            {tabDefs.map((d) => (
+            {tabDefs.map((d) => {
+              const isSelected = tab === d.key;
+              return (
+                <button
+                  key={d.key}
+                  role="tab"
+                  type="button"
+                  aria-selected={isSelected}
+                  onClick={() => handleTabChange(d.key)}
+                  className={cn(
+                    "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
+                    isSelected
+                      ? "bg-background dark:bg-ivory/15 text-foreground shadow-sm border border-ink/15 dark:border-ivory/30 font-semibold"
+                      : "border border-transparent text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+                  )}
+                >
+                  {d.key === "documents" && <FileText className="h-4 w-4 shrink-0 opacity-70" />}
+                  {d.key === "photographs" && <ImageIcon className="h-4 w-4 shrink-0 opacity-70" />}
+                  {d.key === "recordings" && <Video className="h-4 w-4 shrink-0 opacity-70" />}
+                  <span>{t(d.label)}</span>
+                  <span
+                    className={cn(
+                      "nums text-xs rounded-full px-1.5 py-0.5",
+                      isSelected
+                        ? "bg-ink/10 dark:bg-ivory/20 text-foreground font-bold"
+                        : "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    {d.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative w-full md:w-80 shrink-0">
+            <Search
+              className="absolute top-1/2 -translate-y-1/2 start-3.5 h-4 w-4 text-muted-foreground pointer-events-none"
+              aria-hidden="true"
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t(copy.searchPlaceholder)}
+              className="w-full rounded-xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md py-2 text-sm text-foreground placeholder:text-muted-foreground shadow-sm outline-none transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out ps-10 pe-9 focus:border-ink/40 dark:focus:border-ivory/40 focus:bg-background dark:focus:bg-ivory/10 focus:ring-2 focus:ring-gold/20"
+            />
+            {searchQuery && (
               <button
-                key={d.key}
-                role="tab"
                 type="button"
-                aria-selected={tab === d.key}
-                onClick={() => setTab(d.key)}
-                className={cn(
-                  "flex shrink-0 items-baseline gap-2 border-b-2 py-4 text-sm transition-colors",
-                  tab === d.key
-                    ? "border-ink font-semibold text-foreground dark:border-gold"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
-                )}
+                onClick={() => setSearchQuery("")}
+                aria-label={t(copy.clearSearch)}
+                className="absolute top-1/2 -translate-y-1/2 end-2.5 rounded-lg p-1 text-muted-foreground transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-foreground/10 hover:text-foreground active:scale-[0.97]"
               >
-                {t(d.label)}
-                <span className="nums text-xs text-muted-foreground">({d.count})</span>
+                <X className="h-4 w-4" />
               </button>
-            ))}
+            )}
           </div>
         </div>
 
+        {/* Category Filter Buttons */}
+        {currentCategories.length > 0 && (
+          <div className="mb-8 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedCategory(null)}
+              className={cn(
+                "rounded-full px-3.5 py-1.5 text-xs font-medium border transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
+                selectedCategory === null
+                  ? "bg-ink text-ivory border-ink dark:bg-gold dark:text-ink dark:border-gold shadow-sm font-semibold"
+                  : "border-ink/15 dark:border-ivory/20 bg-background/60 dark:bg-ivory/5 backdrop-blur-md text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+              )}
+            >
+              {t(copy.allCategories)}
+            </button>
+            {currentCategories.map((cat) => {
+              const isSelected = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(isSelected ? null : cat)}
+                  className={cn(
+                    "rounded-full px-3.5 py-1.5 text-xs font-medium border transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
+                    isSelected
+                      ? "bg-ink text-ivory border-ink dark:bg-gold dark:text-ink dark:border-gold shadow-sm font-semibold"
+                      : "border-ink/15 dark:border-ivory/20 bg-background/60 dark:bg-ivory/5 backdrop-blur-md text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+                  )}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* ── Documents ──────────────────────────────────────── */}
         {tab === "documents" ? (
-          <section className="pt-10">
+          <section>
             <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.docsNote)}
             </p>
 
-            <div className="hidden overflow-x-auto md:block">
-              <table className="w-full min-w-[40rem] border-collapse">
-                <thead>
-                  <tr className="border-b border-ink/25 dark:border-ivory/20">
-                    <th scope="col" className="label-caps py-2.5 text-start text-muted-foreground">
-                      {t(copy.colRef)}
-                    </th>
-                    <th scope="col" className="label-caps py-2.5 text-start text-muted-foreground">
-                      {t(copy.colTitle)}
-                    </th>
-                    <th scope="col" className="label-caps py-2.5 text-start text-muted-foreground">
-                      {t(copy.colYear)}
-                    </th>
-                    <th scope="col" className="label-caps py-2.5 text-start text-muted-foreground">
-                      {t(copy.colFormat)}
-                    </th>
-                    <th scope="col" className="py-2.5">
-                      <span className="sr-only">{t(copy.download)}</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {libraryItems.documents.map((d, i) => (
-                    <tr key={i} className="border-b border-border align-baseline">
-                      <td className="nums py-4 pe-6 font-mono text-xs whitespace-nowrap text-bronze dark:text-gold">
-                        {d.ncnpRef}
-                      </td>
-                      <td className="py-4 pe-6 text-sm leading-snug font-medium text-foreground">
-                        {t(d.title)}
-                      </td>
-                      <td className="nums py-4 pe-6 text-[13px] whitespace-nowrap text-muted-foreground">
-                        {d.year} هـ
-                      </td>
-                      <td className="py-4 pe-6 text-[13px] text-muted-foreground">{d.kind}</td>
-                      <td className="py-4 text-end">
-                        <DownloadControl doc={d} onUnavailable={notify} label={t(copy.download)} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="border-t border-ink/25 md:hidden dark:border-ivory/20">
-              {libraryItems.documents.map((d, i) => (
-                <Record key={i} title={t(d.title)}>
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="text-[13px] text-muted-foreground">
-                      <span className="nums font-mono text-bronze dark:text-gold">{d.ncnpRef}</span>
-                      <span className="mx-1.5">·</span>
-                      <span className="nums">{d.year} هـ</span>
-                      <span className="mx-1.5">·</span>
-                      {d.kind}
-                    </p>
-                    <DownloadControl doc={d} onUnavailable={notify} label={t(copy.download)} />
+            {filteredDocuments.length > 0 ? (
+              <>
+                <div className="hidden overflow-x-auto md:block">
+                  <div className="overflow-hidden rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md shadow-sm">
+                    <table className="w-full min-w-[40rem] border-collapse">
+                      <thead>
+                        <tr className="border-b border-border/60 bg-foreground/[0.02]">
+                          <th scope="col" className="label-caps py-3 ps-6 text-start text-muted-foreground">
+                            {t(copy.colRef)}
+                          </th>
+                          <th scope="col" className="label-caps py-3 text-start text-muted-foreground">
+                            {t(copy.colTitle)}
+                          </th>
+                          <th scope="col" className="label-caps py-3 text-start text-muted-foreground">
+                            {t(copy.colYear)}
+                          </th>
+                          <th scope="col" className="label-caps py-3 text-start text-muted-foreground">
+                            {t(copy.colFormat)}
+                          </th>
+                          <th scope="col" className="py-3 pe-6">
+                            <span className="sr-only">{t(copy.download)}</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredDocuments.map((d, i) => (
+                          <tr
+                            key={i}
+                            onClick={() =>
+                              setPreviewModal({
+                                type: "documents",
+                                title: t(d.title),
+                                subtitle: `${d.kind} · ${d.year} هـ`,
+                                meta: d.ncnpRef,
+                                doc: d,
+                              })
+                            }
+                            className="group cursor-pointer border-b border-border/50 align-baseline transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-foreground/[0.03] dark:hover:bg-ivory/10 active:scale-[0.99] last:border-0"
+                          >
+                            <td className="nums py-4 ps-6 pe-4 font-mono text-xs whitespace-nowrap font-semibold text-bronze dark:text-gold">
+                              {d.ncnpRef}
+                            </td>
+                            <td className="py-4 pe-6 text-sm leading-snug font-medium text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors duration-150 ease-out">
+                              {t(d.title)}
+                            </td>
+                            <td className="nums py-4 pe-6 text-[13px] whitespace-nowrap text-muted-foreground">
+                              {d.year} هـ
+                            </td>
+                            <td className="py-4 pe-6 text-[13px] text-muted-foreground">
+                              <span className="rounded bg-muted/80 dark:bg-ivory/10 px-2 py-0.5 font-mono text-xs font-semibold text-foreground">
+                                {d.kind}
+                              </span>
+                            </td>
+                            <td className="py-4 pe-6 text-end" onClick={(e) => e.stopPropagation()}>
+                              <DownloadControl doc={d} onUnavailable={notify} label={t(copy.download)} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </Record>
-              ))}
-            </div>
+                </div>
+
+                <div className="grid gap-4 md:hidden">
+                  {filteredDocuments.map((d, i) => (
+                    <div
+                      key={i}
+                      onClick={() =>
+                        setPreviewModal({
+                          type: "documents",
+                          title: t(d.title),
+                          subtitle: `${d.kind} · ${d.year} هـ`,
+                          meta: d.ncnpRef,
+                          doc: d,
+                        })
+                      }
+                      className="group cursor-pointer rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 p-4 backdrop-blur-md shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:shadow-md active:scale-[0.98]"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <span className="nums inline-block rounded-md bg-bronze/10 dark:bg-gold/15 px-2 py-0.5 font-mono text-xs font-semibold text-bronze dark:text-gold mb-2">
+                            {d.ncnpRef}
+                          </span>
+                          <h3 className="text-sm font-medium leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors duration-150 ease-out">
+                            {t(d.title)}
+                          </h3>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <span className="nums font-medium">{d.year} هـ</span>
+                          <span>·</span>
+                          <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] font-semibold text-foreground">
+                            {d.kind}
+                          </span>
+                        </div>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <DownloadControl doc={d} onUnavailable={notify} label={t(copy.download)} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : null}
           </section>
         ) : null}
 
-        {/* ── Photographs — contact sheet ─────────────────────── */}
+        {/* ── Photographs — archive cards ─────────────────────── */}
         {tab === "photographs" ? (
-          <section className="pt-10">
+          <section>
             <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.photosNote)}
             </p>
 
-            <ol className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-              {libraryItems.photos.map((p, i) => (
-                <li key={i}>
-                  <figure>
-                    <img
-                      src={sheet[i % sheet.length]}
-                      alt={t(p.title)}
-                      className="aspect-[4/3] w-full border border-border object-cover"
-                      loading="lazy"
-                    />
-                    <figcaption className="mt-2.5 border-t border-border pt-2.5">
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="nums label-caps text-bronze dark:text-gold">
-                          {t(copy.plate)} {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="nums text-xs text-muted-foreground">{p.year} هـ</span>
+            {filteredPhotos.length > 0 ? (
+              <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredPhotos.map((p, i) => {
+                  const imageSrc = sheet[libraryItems.photos.indexOf(p) % sheet.length];
+                  return (
+                    <li key={i}>
+                      <div
+                        onClick={() =>
+                          setPreviewModal({
+                            type: "photographs",
+                            title: t(p.title),
+                            subtitle: `${p.category} · ${p.year} هـ`,
+                            image: imageSrc,
+                          })
+                        }
+                        className="group cursor-pointer overflow-hidden rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
+                      >
+                        <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+                          <img
+                            src={imageSrc}
+                            alt={t(p.title)}
+                            className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100 flex items-end p-3">
+                            <span className="inline-flex items-center gap-1.5 rounded-lg bg-black/60 backdrop-blur-md px-2.5 py-1 text-xs font-medium text-white shadow-sm border border-white/20">
+                              <Eye className="h-3.5 w-3.5" />
+                              {t(copy.preview)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <div className="flex items-baseline justify-between gap-3">
+                            <span className="nums label-caps text-xs font-semibold text-bronze dark:text-gold">
+                              {t(copy.plate)} {String(libraryItems.photos.indexOf(p) + 1).padStart(2, "0")}
+                            </span>
+                            <span className="nums text-xs text-muted-foreground">{p.year} هـ</span>
+                          </div>
+                          <p className="mt-2 text-sm font-medium leading-relaxed text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors duration-150 ease-out line-clamp-2">
+                            {t(p.title)}
+                          </p>
+                          <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5">
+                            <span className="label-caps text-xs text-muted-foreground">{p.category}</span>
+                          </div>
+                        </div>
                       </div>
-                      <p className="mt-1.5 text-[13px] leading-relaxed text-foreground">
-                        {t(p.title)}
-                      </p>
-                      <p className="label-caps mt-1 text-muted-foreground">{p.category}</p>
-                    </figcaption>
-                  </figure>
-                </li>
-              ))}
-            </ol>
+                    </li>
+                  );
+                })}
+              </ol>
+            ) : null}
           </section>
         ) : null}
 
-        {/* ── Recordings — schedule listing ───────────────────── */}
+        {/* ── Recordings — video cards ────────────────────────── */}
         {tab === "recordings" ? (
-          <section className="pt-10">
+          <section>
             <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.videosNote)}
             </p>
 
-            <ol className="border-t border-ink/25 dark:border-ivory/20">
-              {libraryItems.videos.map((v, i) => (
-                <li key={i} className="border-b border-border">
-                  <div className="grid grid-cols-[auto_1fr_auto] items-center gap-5 py-5">
-                    <button
-                      type="button"
-                      onClick={notify}
-                      aria-label={`${t(copy.play)} — ${t(v.title)}`}
-                      className="grid h-11 w-11 shrink-0 place-items-center border border-ink text-ink transition-colors hover:bg-ink hover:text-ivory dark:border-gold dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
+            {filteredVideos.length > 0 ? (
+              <ol className="grid gap-3.5">
+                {filteredVideos.map((v, i) => (
+                  <li key={i}>
+                    <div
+                      onClick={() =>
+                        setPreviewModal({
+                          type: "recordings",
+                          title: t(v.title),
+                          subtitle: `${v.year} هـ`,
+                          duration: v.duration,
+                        })
+                      }
+                      className="group flex cursor-pointer items-center justify-between gap-5 rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 p-4 backdrop-blur-md shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:shadow-md hover:bg-secondary/40 dark:hover:bg-ivory/10 active:scale-[0.99]"
                     >
-                      <Play
-                        className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")}
-                        aria-hidden="true"
-                      />
-                    </button>
+                      <div className="flex items-center gap-4 min-w-0">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            notify();
+                          }}
+                          aria-label={`${t(copy.play)} — ${t(v.title)}`}
+                          className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-ink/20 bg-background/90 text-ink shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out group-hover:scale-105 group-hover:border-ink group-hover:bg-ink group-hover:text-ivory dark:border-gold/30 dark:bg-ivory/10 dark:text-gold dark:group-hover:border-gold dark:group-hover:bg-gold dark:group-hover:text-ink active:scale-[0.97]"
+                        >
+                          <Play
+                            className={cn("h-5 w-5 fill-current", rtl && "-scale-x-100")}
+                            aria-hidden="true"
+                          />
+                        </button>
 
-                    <div className="min-w-0">
-                      <p className="text-sm leading-snug font-medium text-foreground">
-                        {t(v.title)}
-                      </p>
-                      <p className="nums label-caps mt-1 text-muted-foreground">{v.year} هـ</p>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors duration-150 ease-out">
+                            {t(v.title)}
+                          </p>
+                          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                            <span className="nums label-caps font-semibold">{v.year} هـ</span>
+                            <span>·</span>
+                            <span className="inline-flex items-center gap-1">
+                              <Video className="h-3 w-3" />
+                              {t(copy.tabs.recordings)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span
+                          className="nums rounded-lg border border-border/50 bg-background/50 dark:bg-ivory/5 px-2.5 py-1 font-mono text-xs font-medium text-muted-foreground shadow-2xs"
+                          dir="ltr"
+                        >
+                          {v.duration}
+                        </span>
+                      </div>
                     </div>
-
-                    <span
-                      className="nums shrink-0 font-mono text-sm text-muted-foreground"
-                      dir="ltr"
-                    >
-                      {v.duration}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ol>
+                  </li>
+                ))}
+              </ol>
+            ) : null}
           </section>
         ) : null}
+
+        {/* Empty state when search or category filter yields no results */}
+        {((tab === "documents" && filteredDocuments.length === 0) ||
+          (tab === "photographs" && filteredPhotos.length === 0) ||
+          (tab === "recordings" && filteredVideos.length === 0)) && (
+          <div className="my-12 flex flex-col items-center justify-center rounded-3xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 p-12 text-center backdrop-blur-md shadow-sm animate-in fade-in duration-150">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background dark:bg-ivory/10 text-muted-foreground shadow-sm mb-4">
+              <Search className="h-6 w-6 opacity-60" />
+            </div>
+            <p className="max-w-md text-sm font-medium text-foreground">{t(copy.noResults)}</p>
+            {(searchQuery || selectedCategory) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory(null);
+                }}
+                className="mt-4 inline-flex items-center gap-2 rounded-xl border border-ink/20 dark:border-ivory/20 bg-background/90 dark:bg-ivory/10 px-4 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-secondary active:scale-[0.97]"
+              >
+                <X className="h-3.5 w-3.5" />
+                {t(copy.clearSearch)}
+              </button>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* ── Apple-style Glassmorphic Modal Dialog ───────────────── */}
+      {previewModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-in fade-in duration-150"
+          onClick={() => setPreviewModal(null)}
+        >
+          <div
+            className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-ink/20 dark:border-ivory/20 bg-background/95 dark:bg-zinc-900/95 p-6 md:p-8 backdrop-blur-2xl shadow-2xl transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out animate-in zoom-in-95"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+          >
+            <button
+              type="button"
+              onClick={() => setPreviewModal(null)}
+              aria-label={t(copy.close)}
+              className="absolute top-5 end-5 grid h-9 w-9 place-items-center rounded-full border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/10 text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-foreground/10 hover:text-foreground active:scale-[0.97]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="pe-10 mb-6">
+              {previewModal.meta && (
+                <span className="nums inline-block rounded-md bg-bronze/10 dark:bg-gold/15 px-2.5 py-1 font-mono text-xs font-semibold text-bronze dark:text-gold mb-2.5">
+                  {previewModal.meta}
+                </span>
+              )}
+              <h2 id="modal-title" className="text-lg md:text-xl font-semibold leading-snug text-foreground">
+                {previewModal.title}
+              </h2>
+              {previewModal.subtitle && (
+                <p className="nums mt-1.5 text-xs md:text-sm text-muted-foreground">{previewModal.subtitle}</p>
+              )}
+            </div>
+
+            {previewModal.type === "photographs" && previewModal.image && (
+              <div className="overflow-hidden rounded-2xl border border-border/60 bg-black/5 dark:bg-black/40 shadow-inner mb-6 max-h-[60vh] flex items-center justify-center">
+                <img
+                  src={previewModal.image}
+                  alt={previewModal.title}
+                  className="max-h-[60vh] w-auto object-contain mx-auto rounded-xl"
+                />
+              </div>
+            )}
+
+            {previewModal.type === "recordings" && (
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-ink/15 dark:border-ivory/20 bg-secondary/50 dark:bg-ivory/5 p-10 text-center backdrop-blur-md mb-6">
+                <div className="grid h-16 w-16 place-items-center rounded-2xl border border-ink/20 dark:border-gold/30 bg-background dark:bg-ivory/10 text-ink dark:text-gold shadow-md mb-4">
+                  <Play className={cn("h-7 w-7 fill-current", rtl && "-scale-x-100")} />
+                </div>
+                <p className="text-sm text-foreground font-medium mb-1">{previewModal.title}</p>
+                {previewModal.duration && (
+                  <span className="nums font-mono text-xs text-muted-foreground mb-6" dir="ltr">
+                    {previewModal.duration}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewModal(null);
+                    notify();
+                  }}
+                  className="inline-flex items-center gap-2 rounded-xl bg-ink dark:bg-gold px-5 py-2.5 text-xs font-semibold text-ivory dark:text-ink shadow-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
+                >
+                  <Play className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")} />
+                  {t(copy.play)}
+                </button>
+              </div>
+            )}
+
+            {previewModal.type === "documents" && (
+              <div className="rounded-2xl border border-ink/15 dark:border-ivory/20 bg-secondary/30 dark:bg-ivory/5 p-6 backdrop-blur-md mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <FileText className="h-6 w-6 text-bronze dark:text-gold" />
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">{t(copy.details)}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {t(copy.metaHolder)}: {t(siteMeta.shortName)}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs leading-relaxed text-muted-foreground border-t border-border/50 pt-3">
+                  {t(copy.docsNote)}
+                </p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3 border-t border-border/60 pt-4">
+              <button
+                type="button"
+                onClick={() => setPreviewModal(null)}
+                className="rounded-xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 px-4 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-secondary active:scale-[0.97]"
+              >
+                {t(copy.close)}
+              </button>
+              {previewModal.type === "documents" && previewModal.doc && (
+                <DownloadControl
+                  doc={previewModal.doc}
+                  onUnavailable={() => {
+                    setPreviewModal(null);
+                    notify();
+                  }}
+                  label={t(copy.download)}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
