@@ -23,6 +23,8 @@ import {
 } from "@/components/site/Editorial";
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
+import { HeroVideo } from "@/components/site/HeroVideo";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -128,85 +130,76 @@ export function HomePage() {
 
   return (
     <>
-      {/* ── Frontispiece ─────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-ink text-ivory">
-        {/* High-visibility, vibrant heritage background image */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <img
-            src="/images/ahsa_oasis.png"
-            alt=""
-            className="h-full w-full object-cover opacity-50 filter contrast-110 shadow-inner"
-            aria-hidden="true"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-ink/90 via-ink/65 to-ink/95" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.15)_0%,transparent_75%)]" />
-        </div>
-
-        <div className="container-page relative z-10 py-16 text-center md:py-24">
-          {/* Calligraphic Emblem with Radiant Halo Ring */}
-          <div className="relative mx-auto w-max animate-in fade-in zoom-in-95 duration-700">
+      {/* ── Cinematic frontispiece ───────────────────────────── */}
+      <HeroVideo poster="/images/ahsa_oasis.png">
+        <div className="container-page flex min-h-[86vh] flex-col items-center justify-center py-24 text-center md:min-h-[92vh]">
+          {/* Emblem */}
+          <div className="relative mx-auto w-max motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-1000">
             <div
-              className="absolute -inset-4 rounded-full bg-gold/15 blur-xl animate-pulse"
+              className="absolute -inset-4 rounded-full bg-gold/15 blur-2xl motion-safe:animate-pulse"
               aria-hidden="true"
             />
-            <div className="relative grid h-32 w-32 place-items-center rounded-full border border-gold/40 bg-ink/80 shadow-[0_0_50px_rgba(212,175,55,0.2)] md:h-40 md:w-40">
+            <div className="relative grid h-28 w-28 place-items-center rounded-full border border-gold/40 bg-ink/40 backdrop-blur-sm shadow-[0_0_60px_rgba(212,175,55,0.25)] md:h-36 md:w-36">
               <img
                 src="/logo-gold.png"
                 alt=""
-                className="h-24 w-24 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.35)] transition-transform duration-500 hover:scale-105 md:h-30 md:w-30"
+                className="h-20 w-20 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.4)] md:h-28 md:w-28"
                 aria-hidden="true"
               />
             </div>
           </div>
 
-          <p className="label-caps mt-8 text-gold/90 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-150">
+          <p className="label-caps mt-10 text-gold/90 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700 motion-safe:delay-200">
             {t(siteMeta.ncnpAuthority)}
           </p>
 
-          <h1 className="mx-auto mt-4 max-w-4xl text-balance font-naskh text-3xl font-bold leading-[1.3] text-transparent bg-gradient-to-b from-ivory via-ivory to-gold-soft bg-clip-text drop-shadow-md transition-colors animate-in fade-in slide-in-from-bottom-3 duration-700 delay-200 md:text-5xl lg:text-6xl">
+          <h1 className="mx-auto mt-5 max-w-4xl text-balance font-naskh text-4xl font-bold leading-[1.2] text-transparent bg-gradient-to-b from-ivory via-ivory to-gold-soft bg-clip-text drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-300 md:text-6xl lg:text-7xl">
             {t(siteMeta.officialName)}
           </h1>
 
-          <div className="mx-auto mt-7 flex max-w-xs items-center gap-4 text-gold/70 animate-in fade-in duration-700 delay-300">
-            <span
-              className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent"
-              aria-hidden="true"
-            />
-            <span
-              className="ornament-star text-gold drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]"
-              aria-hidden="true"
-            />
-            <span
-              className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent"
-              aria-hidden="true"
-            />
+          <div
+            className="mx-auto mt-8 flex max-w-xs items-center gap-4 text-gold/70 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-500"
+            aria-hidden="true"
+          >
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
+            <span className="ornament-star text-gold drop-shadow-[0_0_10px_rgba(212,175,55,0.6)]" />
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
           </div>
 
-          <p className="measure mx-auto mt-7 text-base leading-relaxed text-balance text-ivory/85 animate-in fade-in slide-in-from-bottom-3 duration-700 delay-500 md:text-lg">
+          <p className="measure mx-auto mt-8 text-balance text-base leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-700 md:text-lg">
             {t(copy.standfirst)}
           </p>
 
-          {/* Hero Quick Action CTAs */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700">
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-1000 motion-safe:delay-1000">
             <Link
               to="/family-tree"
-              className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/90 to-gold-soft px-6 py-3 text-sm font-bold text-ink shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-[color,background-color,box-shadow,transform,border-color] duration-200 ease-out hover:scale-102 hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] active:scale-[0.97]"
+              className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-7 py-3.5 text-sm font-bold text-ink shadow-[0_10px_40px_-10px_rgba(212,175,55,0.6)] transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.03] hover:shadow-[0_15px_50px_-10px_rgba(212,175,55,0.8)] active:scale-[0.98]"
             >
               <span>{lang === "ar" ? "تصفح مشجرة النسب" : "Explore Family Tree"}</span>
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
             </Link>
 
             <Link
-              to="/branches"
-              className="inline-flex items-center gap-2 border border-ivory/30 bg-ivory/5 px-6 py-3 text-sm font-medium text-ivory backdrop-blur-sm transition-[color,background-color,border-color,transform] duration-200 ease-out hover:border-gold/60 hover:bg-ivory/10 hover:text-gold active:scale-[0.97]"
+              to="/about"
+              className="inline-flex items-center gap-2 border border-ivory/40 bg-ivory/5 px-7 py-3.5 text-sm font-medium text-ivory backdrop-blur-md transition-[color,background-color,border-color,transform] duration-300 ease-out hover:border-gold/70 hover:bg-ivory/10 hover:text-gold active:scale-[0.98]"
             >
-              <span>{lang === "ar" ? "دليل الفروع السبعة" : "Seven Branches Guide"}</span>
+              <span>{lang === "ar" ? "قصة الأسرة" : "Our Story"}</span>
             </Link>
+          </div>
+
+          {/* Scroll cue */}
+          <div
+            className="pointer-events-none absolute bottom-6 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 motion-safe:animate-bounce"
+            aria-hidden="true"
+          >
+            <div className="flex h-10 w-6 justify-center rounded-full border border-ivory/40 pt-2">
+              <span className="h-2 w-0.5 rounded-full bg-ivory/70" />
+            </div>
           </div>
         </div>
 
-        {/* Colophon strip — interactive stats that define the entity. */}
-        <div className="relative z-10 border-t border-gold/20 bg-ink/80 backdrop-blur-md">
+        {/* Colophon strip — sits at the base of the cinematic hero */}
+        <div className="relative border-t border-gold/20 bg-ink/70 backdrop-blur-md">
           <dl className="container-page grid grid-cols-2 divide-y divide-ivory/10 sm:grid-cols-4 sm:divide-x sm:divide-y-0 sm:rtl:divide-x-reverse">
             {[
               { label: copy.licence, value: siteMeta.ncnpLicense, mono: true, link: null },
@@ -260,7 +253,8 @@ export function HomePage() {
             })}
           </dl>
         </div>
-      </section>
+      </HeroVideo>
+
 
       {/* ── Opening statement ────────────────────────────────── */}
       <section className="container-page py-16 md:py-20">
