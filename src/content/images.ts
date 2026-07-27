@@ -151,6 +151,23 @@ export const pageImages = {
         en: "One of the Ramadan solidarity programmes funded by members' subscriptions.",
       },
     } satisfies Figure,
+    stewardship: {
+      src: "/images/contribute_stewardship.jpg",
+      caption: {
+        ar: "رعاية أشجار النخيل بأوقاف الأسرة — استمرار مبدأ الوقف بأيدي الجيل الحاضر.",
+        en: "Tending the family's endowed palm grove — the principle of waqf carried forward by the present generation.",
+      },
+    } satisfies Figure,
+  },
+
+  achievers: {
+    header: {
+      src: "/images/achievers_hall_plate.jpg",
+      caption: {
+        ar: "قاعة تكريم المتفوقين — الاحتفاء السنوي بأبناء الأسرة المتميزين في العلم والعمل.",
+        en: "The honours hall — the family's annual recognition of members distinguished in learning and service.",
+      },
+    } satisfies Figure,
   },
 
   library: {
