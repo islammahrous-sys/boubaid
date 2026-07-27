@@ -6,6 +6,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { achievers } from "@/content/site";
+import { pageImages } from "@/content/images";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/achievers")({
@@ -77,9 +78,12 @@ export function AchieversPage() {
   return (
     <>
       <PageHeader
+        variant="plate"
         eyebrow={t(copy.eyebrow)}
         title={t(copy.title)}
         subtitle={t(copy.subtitle)}
+        image={pageImages.achievers.header.src}
+        imageCaption={t(pageImages.achievers.header.caption)}
         meta={[
           { label: t(copy.metaEntries), value: achievers.length.toString(), mono: true },
           { label: t(copy.metaFields), value: fieldCount.toString(), mono: true },
