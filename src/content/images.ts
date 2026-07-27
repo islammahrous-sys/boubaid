@@ -27,6 +27,13 @@ export const pageImages = {
         en: "Architectural rendering of the permanent headquarters, Al-Hizam Al-Dhahabi, Al-Mubarraz.",
       },
     } satisfies Figure,
+    heritage: {
+      src: "/images/heritage_grove_dawn.jpg",
+      caption: {
+        ar: "بستان نخيل تاريخي بواحة الأحساء عند الفجر — المشهد الذي تدور حوله الأوقاف والعائلة.",
+        en: "A historic palm grove at dawn in the Al-Ahsa oasis — the landscape around which the family's endowments have turned.",
+      },
+    } satisfies Figure,
   },
 
   about: {
