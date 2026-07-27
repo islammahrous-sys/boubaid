@@ -281,6 +281,22 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ── Heritage plate — a single field image between chapters ─ */}
+      <section className="reveal-on-scroll">
+        <figure className="relative">
+          <img
+            src={pageImages.home.heritage.src}
+            alt=""
+            className="photo-plate h-[42vh] min-h-[300px] w-full object-cover md:h-[58vh]"
+            loading="lazy"
+          />
+          <figcaption className="container-page mt-3 flex items-start gap-2.5 pt-3 text-xs leading-relaxed text-muted-foreground">
+            <span className="mt-1.5 h-px w-5 shrink-0 bg-bronze" aria-hidden="true" />
+            <span>{t(pageImages.home.heritage.caption)}</span>
+          </figcaption>
+        </figure>
+      </section>
+
       {/* ── The seven branches, as an index ──────────────────── */}
       <section className="border-y border-border bg-secondary/40 reveal-on-scroll">
         <div className="container-page py-16 md:py-20">

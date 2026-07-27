@@ -27,6 +27,13 @@ export const pageImages = {
         en: "Architectural rendering of the permanent headquarters, Al-Hizam Al-Dhahabi, Al-Mubarraz.",
       },
     } satisfies Figure,
+    heritage: {
+      src: "/images/heritage_grove_dawn.jpg",
+      caption: {
+        ar: "بستان نخيل تاريخي بواحة الأحساء عند الفجر — المشهد الذي تدور حوله الأوقاف والعائلة.",
+        en: "A historic palm grove at dawn in the Al-Ahsa oasis — the landscape around which the family's endowments have turned.",
+      },
+    } satisfies Figure,
   },
 
   about: {
@@ -142,6 +149,23 @@ export const pageImages = {
       caption: {
         ar: "من برامج التكافل الرمضانية الممولة من اشتراكات أبناء الأسرة.",
         en: "One of the Ramadan solidarity programmes funded by members' subscriptions.",
+      },
+    } satisfies Figure,
+    stewardship: {
+      src: "/images/contribute_stewardship.jpg",
+      caption: {
+        ar: "رعاية أشجار النخيل بأوقاف الأسرة — استمرار مبدأ الوقف بأيدي الجيل الحاضر.",
+        en: "Tending the family's endowed palm grove — the principle of waqf carried forward by the present generation.",
+      },
+    } satisfies Figure,
+  },
+
+  achievers: {
+    header: {
+      src: "/images/achievers_hall_plate.jpg",
+      caption: {
+        ar: "قاعة تكريم المتفوقين — الاحتفاء السنوي بأبناء الأسرة المتميزين في العلم والعمل.",
+        en: "The honours hall — the family's annual recognition of members distinguished in learning and service.",
       },
     } satisfies Figure,
   },
