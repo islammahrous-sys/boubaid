@@ -1,149 +1,68 @@
-
 ## Goal
 
-Ship a professional bilingual (Arabic RTL + English LTR) website for **آل بوعبيد / Al Bu Obaid family**, structured like the reference Saudi family fund sites. Full public site, all sections requested, populated with **real content drawn from the uploaded research report** (lineage, DNA study, foundation formation) alongside clearly-marked editable placeholders for names, photos, and figures the family will provide later.
+Elevate the site's visual craft with a coordinated pass of UI/UX polish plus a curated set of new, editorial images and icon-glyphs distributed only where they add meaning — no decorative filler.
 
-## Content grounded in the uploaded research
+## Scope (what changes)
 
-The research report gives us authentic material to seed pages instead of generic filler:
+### 1. Image generation — targeted, not blanket
 
-- **Lineage** (About / Family Tree): descent from فرع العبادل → عبد الله بن دارم → بنو تميم → عدنان, meeting the Prophet ﷺ's line at إلياس بن مضر.
-- **Homeland**: الأحساء, Eastern Arabia; historical spread of بني دارم across Najd to the eastern coast.
-- **Historical figures**: الأحنف بن قيس التميمي as a heritage callout.
-- **DNA / genealogy section** (About or dedicated card in Family Tree): Y-DNA haplogroup **J-Z20777** (~600 CE), branch context J-Z20776 / J-Z20774, geographic distribution across Qatar (Al-Kuwari, Al-Mohannadi, Al-Buainain, Al-Khayarin) and the Gulf.
-- **Foundation** (Fund page): **صندوق التنمية العائلية / Family Development Fund**, formally established **20 Safar 1447 AH** after four years of preparation, aligned with Saudi Vision 2030. Strategic real-estate acquisition of a future headquarters (~93% of first-cycle capital expenditure) framed as the fund's foundational asset.
-- **Compliance & governance**: registered non-profit posture, bylaws (اللائحة الأساسية), audited financials.
-- **References**: cited sources listed at the bottom of About with links (masaha.org, archive.org, FamilyTreeDNA project pages).
+Audit each route and generate images only where a real editorial gap exists. Planned additions:
 
-Names, board photos, exact registration number, current stats, contact numbers → placeholders labelled clearly.
+- **Home** — a second supporting figure below the hero (heritage/oasis scene) so the page has a visual anchor after the video ends; a small figure for the "Foundation at a glance" band.
+- **About** — one missing plate for the Lineage → Banu Tamim section (currently text-only), plus a DNA/haplogroup abstract illustration for the DNA study card.
+- **Foundation** — a portrait-style plate for the Secretariat/organizational chart intro (currently no image between committees and endowment).
+- **Family Tree** — a decorative but meaningful "tree of names" plate at the page header (calligraphic tree, not literal photo).
+- **Achievers** — an editorial header plate (graduation/scholarship scene in Ahsa context).
+- **Initiatives** — replace the generic fallback (`fallback_initiative.png`) with 2 authored fallbacks (cultural vs. social program), and add missing images for any initiative slug still hitting the fallback.
+- **News** — one authored fallback replacing `fallback_initiative.png` reuse; add slug-specific images for any current news item missing one.
+- **Library** — 1–2 extra contact-sheet frames if the current grid has awkward gaps.
+- **Contact** — no new photo; the majlis image is enough.
+- **Contribute** — a second supporting plate (endowment/palm grove context) below the Ramadan image.
 
-## Visual identity
+All new images generated with `imagegen` at editorial quality, saved under `src/assets/` or `public/images/` following existing naming conventions, and wired through `src/content/images.ts`, `initiativeImages`, and `newsImages` maps. No image is added unless a specific slot in a route calls for it.
 
-- Palette: deep midnight navy `#0B1E3F` + refined gold `#C9A24B` accent + warm ivory `#F5F1E8` surfaces, dark emerald as secondary highlight. Calm, formal, heritage-forward.
-- Typography: **IBM Plex Sans Arabic** (Arabic) + **Cormorant Garamond** display / **Inter** body (English). Loaded via `<link>` in `__root.tsx` head.
-- Wordmark placeholder: bilingual lockup — "آل بوعبيد" in Plex Arabic large; "Al Bu Obaid Family" in Cormorant small caps beneath; slim gold ornamental divider.
-- Generous whitespace, thin gold hairlines, soft-shadow cards, hero imagery with archival warmth, rounded-md corners, no gratuitous gradients.
-- Fully responsive; RTL is primary.
+### 2. Iconography — a small custom glyph set
 
-## Language & RTL
+Introduce ~8–10 thin-stroke bronze/gold line glyphs (palm, minaret, scroll, star-ornament, majlis lamp, compass, book, seal, water channel, key). Use them, sparingly, to:
 
-- `LanguageProvider` (React context) with `ar` (default) and `en`. Persists in `localStorage`.
-- Sets `<html lang dir>` on switch (Arabic → `rtl`, English → `ltr`).
-- All copy lives in one `src/i18n/translations.ts` dictionary keyed per page/section; each string has `ar` and `en`.
-- Switcher (ع / EN) top-inline-end of header.
-- Tailwind logical properties (`ms-*`, `me-*`, `ps-*`, `pe-*`, `text-start`, `text-end`) so layout flips cleanly.
+- Replace the current generic lucide icons on the Home "Pillars" / Foundation objectives lists.
+- Mark section eyebrows on About, Foundation, Initiatives, Library.
+- Anchor the four mobile tab-bar items with heritage-styled versions (still lucide fallback for a11y sizing).
 
-## Routes (TanStack file-based)
+Delivered as inline SVG React components in `src/components/site/glyphs/` so they inherit `currentColor` and respect the bronze/gold theme.
 
-```
-src/routes/
-  __root.tsx             fonts, language provider, header, footer
-  index.tsx              Home
-  about.tsx              About Us + lineage + DNA study
-  foundation.tsx         Fund (structure, bylaws, plan, committees, financials)
-  family-tree.tsx        Family Tree + members directory
-  achievers.tsx          Family Achievers
-  initiatives.tsx        Initiatives list
-  initiatives.$slug.tsx  Initiative detail
-  news.tsx               News (Family + Fund tabs)
-  news.$slug.tsx         News article
-  library.tsx            Library (Documents / Photos / Videos)
-  contact.tsx            Contact
-  contribute.tsx         Contribute / Donate
-```
+### 3. UI/UX polish pass
 
-Each route has its own bilingual `head()` (title, description, og:title, og:description, og:type, twitter:card). Root `head()` gets updated title/description too. No og:image on root.
+Per route, tighten what's already there — no restructuring:
 
-## Shared chrome
+- **Home**: promote the video → next-section transition (soft fade band already exists; add a paper-grain divider); tighten pillar cards' spacing; add subtle hover lift on the news preview cards.
+- **About**: apply drop-cap to first paragraph of each major section; add margin numerals (I/II/III) to section headings using existing `SectionHeading` `index` prop.
+- **Foundation**: convert the committees grid to a definition-list style hybrid so it reads as a document, not a card grid.
+- **Family Tree / Directory**: improve empty-state and search feedback micro-copy; add hover on branch cards.
+- **Achievers**: refine card typography hierarchy (name / role / year).
+- **Initiatives (index + detail)**: hover motion on cards; stronger date/status treatment on detail.
+- **News (index + detail)**: consistent kicker + date treatment; improve article typography (measure width, drop cap).
+- **Library**: contact-sheet captions on hover; keyboard focus rings.
+- **Contact / Contribute**: form field polish (focus ring, label spacing), success-state placeholder styling.
+- **Global**: refine `ScrollReveal` timing (slightly slower, ease-out-quart), add a bronze rule under active nav item in header, improve mobile drawer type scale.
 
-- **Header**: wordmark on start side; nav (Home, About, Foundation, Family Tree, Achievers, Initiatives, News, Library, Contact); gold outline "Contribute" CTA; language switcher. Mobile: slide-in sheet menu.
-- **Footer**: short blurb, quick links, contact block (phone / email / Al-Ahsa headquarters placeholder), social icons (X, Instagram, Snapchat, TikTok, YouTube, WhatsApp), copyright, top gold hairline.
+No changes to routing, data model, i18n keys, or business logic.
 
-## Page-by-page
+### 4. Verification
 
-### Home
-- Hero slider (3 slides) with generated heritage imagery + bilingual headline/subhead + primary CTA (WhatsApp community) + secondary CTA (About the fund).
-- About preview block (2–3 lines drawn from lineage summary) → link to /about.
-- Animated stats strip (IntersectionObserver counters): members (placeholder), year founded (1447 AH / 2025 CE), initiatives, chapters/regions.
-- Latest news: 3 cards.
-- Initiatives highlight: 3 cards with status pills (upcoming / ongoing / completed).
-- CTA band: join WhatsApp / Telegram (placeholder links).
-- Quick contact form (name, email, message) — zod validation, toast on submit, no backend.
+- `tsgo` typecheck clean.
+- Visual check via Playwright screenshots at desktop + mobile on: `/`, `/about`, `/foundation`, `/family-tree`, `/initiatives`, `/news`, `/library`.
+- Confirm no route regresses on light/dark and RTL/LTR.
 
-### About Us
-- **Origin & lineage** section using real chain: العبادل → عبد الله بن دارم → بنو تميم → عدنان, meeting point with the Prophet ﷺ at إلياس بن مضر.
-- **Geography & history**: Al-Ahsa homeland, expansion of بنو دارم from Najd to the eastern coast; Al-Ahnaf ibn Qais callout.
-- **Vision / Mission / Goals** cards (fund-aligned, Vision 2030 language).
-- **Genetic genealogy / DNA study** card: haplogroup **J-Z20777 (~600 CE)**, branches J-Z20776 / J-Z20774, distribution across Qatar and Gulf Tamim families — small table.
-- Registration number field (placeholder).
-- Historical photo gallery (sepia-toned generated imagery).
-- Sources section with the report's external links.
+## Out of scope
 
-### Foundation
-- Overview: **صندوق التنمية العائلية / Al Bu Obaid Family Development Fund**, established **20 Safar 1447 AH** after four years of coordination, Saudi Vision 2030 alignment.
-- Board of Trustees grid (6 placeholder profiles).
-- Bylaws / اللائحة الأساسية: PDF download link placeholders.
-- Strategic plan summary (3 pillars).
-- Committees: social, financial, media, cultural.
-- First-cycle financial highlight card: land acquisition for the future HQ noted as the flagship capital investment.
+- New routes, new data schemas, new features.
+- Any change to the hero video, header structure, or navigation IA (already settled).
+- Copy rewrites beyond micro-copy on empty/loading states.
 
-### Family Tree
-- Semi-interactive SVG family tree: ancestor node at root → branches → generations. Pan/zoom on desktop, vertical stack on mobile. Purely visual for v1.
-- Searchable directory (~12 placeholder members) with generation filter and privacy notice.
-- Elder / founder bios (3 longer profile cards).
+## Technical notes
 
-### Achievers
-- Category chips: Medical, Academic, Sports, Business, Public Service.
-- Grid of achiever cards (photo, name, achievement, field) — placeholders.
-
-### Initiatives
-- Grid with status pills.
-- Detail page: hero, description, timeline, related news.
-
-### News
-- Tabs: Family News / Fund News.
-- Card grid, client-side pagination over placeholder array.
-- Detail page: cover, title, date, body, share buttons (X, WhatsApp, copy link).
-
-### Library
-- Tabs: Documents (PDF cards + download), Photos (masonry), Videos (YouTube embed placeholders).
-- Year + category filters.
-
-### Contact
-- Form with zod + simple math captcha.
-- Phone / email / address blocks. Static map placeholder + "Open in Google Maps" link.
-- WhatsApp / Telegram community CTA.
-
-### Contribute
-- Copy explaining how contributions fund initiatives and the future HQ.
-- Bank-transfer placeholder details + disabled "Pay online — coming soon" note referencing local regulations.
-- 3-item FAQ.
-
-## Data shape
-
-All content lives in typed modules under `src/content/` (`news.ts`, `initiatives.ts`, `achievers.ts`, `members.ts`, `trustees.ts`, `library.ts`, `stats.ts`, `lineage.ts`, `dna.ts`). Every entry has `{ ar, en }` fields → easy handoff to a real CMS later.
-
-## Imagery
-
-Generate ~10 refined heritage-tone images with `imagegen` (fast tier): Al-Ahsa oasis at dusk, majlis interior, gathering silhouette, Arabic calligraphy detail, archival document texture, palm-grove macro, etc. Stored in `src/assets/`, imported per route.
-
-## Technical
-
-- Tokens added to `src/styles.css`: `--navy`, `--gold`, `--ivory`, `--emerald`, mapped via `@theme inline`. Font families: `--font-arabic`, `--font-display`, `--font-body`.
-- Fonts loaded via Google Fonts `<link>` in `__root.tsx` head.
-- Motion: CSS transitions + small IntersectionObserver hook for counters / reveal-on-scroll. No heavy libs.
-- SEO: unique bilingual `<title>` + description per route; hreflang `ar` / `en`; updated `sitemap.xml` and `robots.txt`.
-- Accessibility: semantic landmarks, focus rings on gold, AA contrast on ivory, rem-based type, `aria-label`s on icon buttons.
-- No backend, no auth, no payments in v1. Forms validate + toast only.
-
-## Out of scope for v1 (explicitly deferred, extension points left in code)
-
-- CMS / admin panel (needs Lovable Cloud + tables + auth).
-- Real member login, e-voting.
-- Working online donations / payment provider.
-- Google Analytics wiring (commented placeholder in `__root.tsx`).
-- Real Google Maps embed (static placeholder + external link).
-
-## Deliverable
-
-A working bilingual site at all 12 routes with the heritage visual identity above, seeded with authentic lineage / DNA / foundation content from the research report and clearly-marked placeholders everywhere else. Ready to publish and iterate.
+- Image generation uses the agent-side `generate_image` tool (project files), fast tier for photographic plates, premium only if text/typography appears in the image. Transparent PNG for glyphs is not needed — glyphs are hand-authored SVG for crispness at any size and theme-color inheritance.
+- All new images registered in `src/content/images.ts` / `initiative-images` / `news-images` maps so index and detail views cannot drift.
+- Glyphs live in `src/components/site/glyphs/index.tsx` exporting named components; consumed via `<PalmGlyph className="h-4 w-4 text-bronze" />`.
+- Motion changes stay within existing `ScrollReveal` + Tailwind utilities; no new animation library.
