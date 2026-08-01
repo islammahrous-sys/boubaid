@@ -274,6 +274,26 @@ export function FoundationPage() {
           </div>
         </section>
 
+        {/* ── Secretariat / organisational-plate interlude ───── */}
+        <section className="container-page mt-16">
+          <figure className="reveal-on-scroll">
+            <img
+              src={pageImages.foundation.secretariat.src}
+              alt=""
+              className="photo-plate aspect-[16/7] w-full object-cover"
+              loading="lazy"
+            />
+            <figcaption className="mt-3 flex gap-3 border-t border-border pt-3">
+              <span className="nums label-caps shrink-0 text-bronze dark:text-gold">
+                {rtl ? "لوحة الأمانة العامة" : "Secretariat Plate"}
+              </span>
+              <span className="text-[13px] leading-relaxed text-muted-foreground">
+                {t(pageImages.foundation.secretariat.caption)}
+              </span>
+            </figcaption>
+          </figure>
+        </section>
+
         {/* ── Article III — committees ───────────────────────── */}
         <section className="mt-16 border-t border-border pt-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
