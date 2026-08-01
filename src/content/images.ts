@@ -233,7 +233,7 @@ export const initiativeImageFallbackSocial = "/images/fallback_initiative_social
 export function initiativeImage(slug: string): string {
   if (initiativeImages[slug]) return initiativeImages[slug];
   return slug === "headquarters"
-    ? initiativeImageFallbackChemical
+    ? initiativeImageFallbackCultural
     : initiativeImageFallbackSocial;
 }
 
