@@ -308,11 +308,11 @@ export function FoundationPage() {
             </div>
 
             <div>
-              <ol>
+              <dl className="border-t border-border">
                 {committees.map((c, i) => (
-                  <li
+                  <div
                     key={c.id}
-                    className="grid grid-cols-[2.5rem_1fr] gap-x-5 border-b border-border py-5 first:border-t"
+                    className="grid grid-cols-[2.5rem_1fr] gap-x-5 border-b border-border py-5 transition-colors hover:bg-secondary/30"
                   >
                     <span
                       className="nums font-mono text-sm text-bronze/70 dark:text-gold/60"
@@ -321,20 +321,20 @@ export function FoundationPage() {
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div>
-                      <h3 className="text-[15px] font-semibold text-foreground">{t(c.name)}</h3>
-                      <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                      <dt className="text-[15px] font-semibold text-foreground">{t(c.name)}</dt>
+                      <dd className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
                         {t(c.desc)}
-                      </p>
-                      <p className="mt-2.5 text-[13px]">
+                      </dd>
+                      <dd className="mt-2.5 text-[13px]">
                         <span className="label-caps me-2 text-muted-foreground">
                           {t(copy.chairLabel)}
                         </span>
                         <span className="text-foreground">{t(c.lead)}</span>
-                      </p>
+                      </dd>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ol>
+              </dl>
 
               <figure className="mt-10">
                 <img

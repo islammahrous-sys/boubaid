@@ -52,7 +52,14 @@ const copy = {
   generationLabel: { ar: "الجيل", en: "Generation" } as BiText,
   all: { ar: "الكل", en: "All" } as BiText,
   results: { ar: "نتيجة", en: "results" } as BiText,
-  empty: { ar: "لا توجد نتائج مطابقة.", en: "No matching records." } as BiText,
+  empty: {
+    ar: "لا توجد نتائج مطابقة لبحثك. جرّب كلمة أخرى أو امسح عوامل التصفية.",
+    en: "No matching records for your search. Try another word or clear the filters.",
+  } as BiText,
+  searchHint: {
+    ar: "ابدأ بكتابة اسم، فرع، أو قرية…",
+    en: "Start typing a name, branch, or village…",
+  } as BiText,
   clear: { ar: "إعادة ضبط", en: "Reset" } as BiText,
 
   rootBadge: { ar: "الجد الجامع", en: "Root ancestor" } as BiText,
@@ -322,7 +329,10 @@ export function FamilyTreePage() {
 
         {/* Results, grouped by generation */}
         {filtered.length === 0 ? (
-          <p className="py-20 text-center text-sm text-muted-foreground">{t(copy.empty)}</p>
+          <div className="py-20 text-center">
+            <p className="text-sm font-medium text-foreground">{t(copy.empty)}</p>
+            <p className="mt-2 text-xs text-muted-foreground">{t(copy.searchHint)}</p>
+          </div>
         ) : (
           grouped.map(([gen, members]) => (
             <section key={gen} className="mt-10">
