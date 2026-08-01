@@ -3,6 +3,7 @@ import { ExternalLink, ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { dnaInfo } from "@/content/site";
+import { pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose, Record, RecordField } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
@@ -141,13 +142,27 @@ export function DnaPage() {
             <Eyebrow>{t(copy.overviewEyebrow)}</Eyebrow>
             <p className="nums mt-4 font-mono text-4xl text-foreground">{dnaInfo.haplogroup}</p>
             <p className="label-caps mt-2 text-muted-foreground">{t(copy.metaSystemValue)}</p>
+
+            <figure className="mt-8">
+              <div className="plate-frame">
+                <img
+                  src={pageImages.about.dnaAbstract.src}
+                  alt=""
+                  className="photo-plate aspect-[4/3] w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <figcaption className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+                {t(pageImages.about.dnaAbstract.caption)}
+              </figcaption>
+            </figure>
           </div>
 
           <div>
             <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
               {t(copy.overviewTitle)}
             </h2>
-            <Prose className="mt-4">
+            <Prose dropCap className="mt-4">
               <p>{t(dnaInfo.overview)}</p>
             </Prose>
           </div>
