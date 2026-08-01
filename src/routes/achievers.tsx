@@ -163,8 +163,10 @@ export function AchieversPage() {
                     <span className="block font-naskh text-base font-bold text-foreground rtl:text-lg">
                       {t(person.name)}
                     </span>
-                    <span className="mt-0.5 block text-xs text-bronze md:hidden dark:text-gold">
-                      {t(person.field)}
+                    <span className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs text-bronze dark:text-gold">
+                      <span>{t(person.field)}</span>
+                      <span className="hidden text-border md:inline" aria-hidden="true">·</span>
+                      <span className="hidden text-muted-foreground md:inline">{t(person.branch)}</span>
                     </span>
                   </span>
 
@@ -174,10 +176,7 @@ export function AchieversPage() {
 
                   <span className="col-start-2 text-[13px] leading-relaxed text-muted-foreground md:col-start-auto md:pt-1">
                     {t(person.achievement)}
-                    {/* Full-strength muted-foreground, not a translucent tint —
-                        /75 measured 2.67:1 against paper, below the 4.5:1 this
-                        line of text needs. */}
-                    <span className="mt-1 block text-xs text-muted-foreground">
+                    <span className="mt-1 block text-xs text-muted-foreground md:hidden">
                       {t(person.branch)}
                     </span>
                   </span>

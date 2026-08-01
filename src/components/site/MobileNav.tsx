@@ -1,9 +1,15 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Network, BookOpen, Landmark, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { navGroups, isRouteActive } from "@/content/navigation";
+import {
+  PalmGlyph,
+  CompassGlyph,
+  BookGlyph,
+  SealGlyph,
+} from "@/components/site/Glyphs";
 import {
   Drawer,
   DrawerContent,
@@ -14,13 +20,13 @@ import {
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 
-/** Four most-used destinations. Icons earn their place here — this is a
- *  thumb-reachable tab bar, not a decorated list. */
-const tabs: { to: string; label: BiText; icon: typeof Home }[] = [
-  { to: "/", label: { ar: "الرئيسية", en: "Home" }, icon: Home },
-  { to: "/family-tree", label: { ar: "المشجرة", en: "Tree" }, icon: Network },
-  { to: "/library", label: { ar: "الأرشيف", en: "Archive" }, icon: BookOpen },
-  { to: "/foundation", label: { ar: "الحوكمة", en: "Governance" }, icon: Landmark },
+/** Four most-used destinations. Heritage glyphs earn their place here —
+ *  a thumb-reachable tab bar with identity, not just generic UI. */
+const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?: string }> }[] = [
+  { to: "/", label: { ar: "الرئيسية", en: "Home" }, Icon: PalmGlyph },
+  { to: "/family-tree", label: { ar: "المشجرة", en: "Tree" }, Icon: CompassGlyph },
+  { to: "/library", label: { ar: "الأرشيف", en: "Archive" }, Icon: BookGlyph },
+  { to: "/foundation", label: { ar: "الحوكمة", en: "Governance" }, Icon: SealGlyph },
 ];
 
 export function MobileNav() {
@@ -32,7 +38,7 @@ export function MobileNav() {
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm md:hidden">
       <nav className="flex h-16 items-stretch justify-around px-1" aria-label="Quick navigation">
         {tabs.map((item) => {
-          const Icon = item.icon;
+          const Icon = item.Icon;
           const active = isRouteActive(pathname, item.to);
           return (
             <Link

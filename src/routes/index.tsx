@@ -254,6 +254,9 @@ export function HomePage() {
         </div>
       </HeroVideo>
 
+      {/* Paper-grain divider between the cinematic hero and the document body */}
+      <div className="h-5 w-full paper-texture opacity-25" aria-hidden="true" />
+
       {/* ── Opening statement ────────────────────────────────── */}
       <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
@@ -460,7 +463,7 @@ export function HomePage() {
             <Link
               to="/news/$slug"
               params={{ slug: lead.slug }}
-              className="group block transition-transform duration-200 ease-out active:scale-[0.99]"
+              className="group block hover-lift active:scale-[0.99]"
             >
               <img
                 src={newsImage(lead.slug)}
@@ -487,7 +490,7 @@ export function HomePage() {
                 <Link
                   to="/news/$slug"
                   params={{ slug: n.slug }}
-                  className="group block border-b border-border py-5 transition-transform duration-150 ease-out active:scale-[0.99]"
+                  className="group block border-b border-border py-5 hover-lift active:scale-[0.99]"
                 >
                   <p className="nums label-caps text-muted-foreground">{n.dateGregorian}</p>
                   <h3 className="mt-1.5 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">

@@ -65,8 +65,9 @@ function InitiativeDetail() {
           {t(copy.parent)}
         </Link>
 
-        <div className="mt-7 flex flex-wrap items-center gap-4 border-b border-ink/25 pb-3 dark:border-ivory/20">
+        <div className="mt-7 flex flex-wrap items-center gap-3 border-b border-ink/25 pb-3 dark:border-ivory/20">
           <Eyebrow rule={false}>{t(copy.eyebrow)}</Eyebrow>
+          <span className="h-3 w-px bg-border" aria-hidden="true" />
           <Status tone={item.status === "ongoing" ? "active" : "pending"}>
             {item.status === "ongoing" ? t(copy.active) : t(copy.planned)}
           </Status>

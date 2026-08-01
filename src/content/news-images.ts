@@ -12,7 +12,7 @@ export const newsImages: Record<string, string> = {
   "ramadan-quiz-series": "/images/news_ramadan_quiz.png",
 };
 
-export const newsImageFallback = "/images/fallback_initiative.png";
+export const newsImageFallback = "/images/fallback_news.jpg";
 
 export function newsImage(slug: string): string {
   return newsImages[slug] ?? newsImageFallback;

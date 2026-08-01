@@ -475,6 +475,8 @@ export function LibraryPage() {
                   return (
                     <li key={i}>
                       <div
+                        role="button"
+                        tabIndex={0}
                         onClick={() =>
                           setPreviewModal({
                             type: "photographs",
@@ -483,7 +485,18 @@ export function LibraryPage() {
                             image: imageSrc,
                           })
                         }
-                        className="group cursor-pointer overflow-hidden rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setPreviewModal({
+                              type: "photographs",
+                              title: t(p.title),
+                              subtitle: `${p.category} · ${p.year} هـ`,
+                              image: imageSrc,
+                            });
+                          }
+                        }}
+                        className="group cursor-pointer overflow-hidden rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze dark:focus-visible:ring-gold"
                       >
                         <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
                           <img
@@ -492,11 +505,11 @@ export function LibraryPage() {
                             className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                             loading="lazy"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100 flex items-end p-3">
-                            <span className="inline-flex items-center gap-1.5 rounded-lg bg-black/60 backdrop-blur-md px-2.5 py-1 text-xs font-medium text-white shadow-sm border border-white/20">
-                              <Eye className="h-3.5 w-3.5" />
-                              {t(copy.preview)}
-                            </span>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100 flex flex-col justify-end gap-0.5 p-4">
+                            <p className="line-clamp-2 text-sm font-medium text-white drop-shadow-sm">
+                              {t(p.title)}
+                            </p>
+                            <p className="text-xs text-white/90">{p.category} · {p.year} هـ</p>
                           </div>
                         </div>
                         <div className="p-4">

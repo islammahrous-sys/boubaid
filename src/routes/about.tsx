@@ -175,7 +175,7 @@ export function AboutPage() {
                 eyebrow={t(copy.migrationEyebrow)}
                 title={t(copy.migrationTitle)}
               />
-              <Prose className="mt-5">
+              <Prose dropCap className="mt-5">
                 <p>{t(copy.migrationP1)}</p>
                 <p>{t(copy.migrationP2)}</p>
               </Prose>
@@ -187,7 +187,7 @@ export function AboutPage() {
                 eyebrow={t(copy.sourcesEyebrow)}
                 title={t(copy.sourcesTitle)}
               />
-              <Prose className="mt-5">
+              <Prose dropCap className="mt-5">
                 <p>{t(copy.sourcesP1)}</p>
               </Prose>
             </article>
@@ -198,7 +198,7 @@ export function AboutPage() {
                 eyebrow={t(copy.conflictsEyebrow)}
                 title={t(copy.conflictsTitle)}
               />
-              <Prose className="mt-5">
+              <Prose dropCap className="mt-5">
                 <p>{t(copy.conflictsP1)}</p>
                 <p>{t(copy.conflictsP2)}</p>
               </Prose>
@@ -221,7 +221,7 @@ export function AboutPage() {
                 eyebrow={t(copy.economyEyebrow)}
                 title={t(copy.economyTitle)}
               />
-              <Prose className="mt-5">
+              <Prose dropCap className="mt-5">
                 <p>{t(copy.economyP1)}</p>
                 <p>{t(copy.economyP2)}</p>
               </Prose>
