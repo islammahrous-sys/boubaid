@@ -101,7 +101,7 @@ export function Header() {
                 className={cn(
                   "rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
                   active
-                    ? "bg-bronze/10 text-bronze font-bold shadow-xs dark:bg-gold/15 dark:text-gold"
+                    ? "relative bg-bronze/10 text-bronze font-bold shadow-xs after:absolute after:-bottom-0.5 after:start-2 after:end-2 after:h-0.5 after:rounded-full after:bg-bronze dark:bg-gold/15 dark:text-gold dark:after:bg-gold"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
               >
@@ -119,7 +119,7 @@ export function Header() {
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
                 isSecondaryActive
-                  ? "bg-bronze/10 text-bronze font-bold shadow-xs dark:bg-gold/15 dark:text-gold"
+                  ? "relative bg-bronze/10 text-bronze font-bold shadow-xs after:absolute after:-bottom-0.5 after:start-2 after:end-2 after:h-0.5 after:rounded-full after:bg-bronze dark:bg-gold/15 dark:text-gold dark:after:bg-gold"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
