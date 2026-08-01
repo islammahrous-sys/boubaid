@@ -96,6 +96,13 @@ export const pageImages = {
         },
       },
     ] satisfies Figure[],
+    dnaAbstract: {
+      src: "/images/about_dna_abstract.jpg",
+      caption: {
+        ar: "تصوير تجريدي للشجرة الجينية — ربط النسب الكتابي بالأدلة الجينية.",
+        en: "An abstract rendering of the genetic family tree — connecting written lineage with genetic evidence.",
+      },
+    } satisfies Figure,
   },
 
   foundation: {
@@ -118,6 +125,13 @@ export const pageImages = {
       caption: {
         ar: "أوقاف النخيل وعيون المياه بالأحساء — الركيزة الاقتصادية المستدامة للمشاريع العائلية والخيرية.",
         en: "Palm endowments and water channels in Al-Ahsa — the sustainable economic foundation for family and charitable projects.",
+      },
+    } satisfies Figure,
+    secretariat: {
+      src: "/images/foundation_secretariat.jpg",
+      caption: {
+        ar: "مكتب الأمانة العامة — حيث تُحال المراسلات إلى اللجان المختصة وتُدون قرارات الحوكمة.",
+        en: "The secretariat office — where correspondence is routed to committees and governance resolutions are recorded.",
       },
     } satisfies Figure,
   },
@@ -213,8 +227,15 @@ export const initiativeImages: Record<string, string> = {
   "national-volunteering": "/images/initiative_volunteering.png",
 };
 
-export const initiativeImageFallback = "/images/fallback_initiative.png";
+export const initiativeImageFallbackCultural = "/images/fallback_initiative_cultural.jpg";
+export const initiativeImageFallbackSocial = "/images/fallback_initiative_social.jpg";
 
 export function initiativeImage(slug: string): string {
-  return initiativeImages[slug] ?? initiativeImageFallback;
+  if (initiativeImages[slug]) return initiativeImages[slug];
+  return slug === "headquarters"
+    ? initiativeImageFallbackChemical
+    : initiativeImageFallbackSocial;
 }
+
+/** @deprecated kept for compatibility */
+export const initiativeImageFallback = initiativeImageFallbackSocial;
