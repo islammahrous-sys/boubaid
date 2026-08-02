@@ -313,3 +313,90 @@ export function Status({
     </span>
   );
 }
+
+/* ── Editorial Actions (Buttons & Links) ─────────────────────── */
+
+export function EditorialButton({
+  variant = "outline",
+  size = "md",
+  children,
+  className,
+  ...props
+}: {
+  variant?: "primary" | "outline" | "ghost" | "bronze";
+  size?: "sm" | "md" | "lg";
+  children: ReactNode;
+  className?: string;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const variants = {
+    primary: "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
+    outline:
+      "border-border bg-card text-foreground hover:border-foreground hover:bg-accent/40 active:bg-accent/70",
+    ghost: "border-transparent text-foreground hover:bg-accent/50",
+    bronze:
+      "border-bronze/40 bg-bronze/10 text-bronze hover:border-bronze hover:bg-bronze/20 dark:border-bronze/50 dark:bg-bronze/15",
+  };
+
+  const sizes = {
+    sm: "px-3 py-1.5 text-xs",
+    md: "px-4 py-2 text-xs md:text-sm",
+    lg: "px-5 py-2.5 text-sm md:text-base",
+  };
+
+  return (
+    <button
+      className={cn(
+        "label-caps inline-flex shrink-0 items-center justify-center gap-2 border font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+        variants[variant],
+        sizes[size],
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function EditorialLink({
+  variant = "outline",
+  size = "md",
+  children,
+  className,
+  ...props
+}: {
+  variant?: "primary" | "outline" | "ghost" | "bronze";
+  size?: "sm" | "md" | "lg";
+  children: ReactNode;
+  className?: string;
+} & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  const variants = {
+    primary: "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
+    outline:
+      "border-border bg-card text-foreground hover:border-foreground hover:bg-accent/40 active:bg-accent/70",
+    ghost: "border-transparent text-foreground hover:bg-accent/50",
+    bronze:
+      "border-bronze/40 bg-bronze/10 text-bronze hover:border-bronze hover:bg-bronze/20 dark:border-bronze/50 dark:bg-bronze/15",
+  };
+
+  const sizes = {
+    sm: "px-3 py-1.5 text-xs",
+    md: "px-4 py-2 text-xs md:text-sm",
+    lg: "px-5 py-2.5 text-sm md:text-base",
+  };
+
+  return (
+    <a
+      className={cn(
+        "label-caps inline-flex shrink-0 items-center justify-center gap-2 border font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+        variants[variant],
+        sizes[size],
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </a>
+  );
+}
+

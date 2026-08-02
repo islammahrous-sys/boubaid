@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { Record } from "@/components/site/Editorial";
+import { Record, EditorialButton, EditorialLink } from "@/components/site/Editorial";
 import { libraryItems, siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 import { cn } from "@/lib/utils";
@@ -109,21 +109,16 @@ function DownloadControl({
   onUnavailable: () => void;
   label: string;
 }) {
-  const className =
-    "inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md px-3.5 py-1.5 text-xs font-medium text-foreground shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:bg-secondary/80 dark:hover:bg-ivory/10 active:scale-[0.97]";
   return doc.href ? (
-    <a href={doc.href} target="_blank" rel="noopener noreferrer" className={className}>
-      <Download
-        className="h-3.5 w-3.5 transition-transform duration-150 ease-out group-hover:translate-y-[1px]"
-        aria-hidden="true"
-      />
-      {label}
-    </a>
-  ) : (
-    <button type="button" onClick={onUnavailable} className={className}>
+    <EditorialLink href={doc.href} target="_blank" rel="noopener noreferrer" size="sm">
       <Download className="h-3.5 w-3.5" aria-hidden="true" />
       {label}
-    </button>
+    </EditorialLink>
+  ) : (
+    <EditorialButton type="button" onClick={onUnavailable} size="sm">
+      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+      {label}
+    </EditorialButton>
   );
 }
 
@@ -222,12 +217,12 @@ export function LibraryPage() {
       />
 
       <div className="container-page pb-20">
-        {/* Apple-style translucent glassmorphic filter tabs and search bar */}
+        {/* Flat editorial filter tabs and search bar */}
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div
             role="tablist"
             aria-label={t(copy.eyebrow)}
-            className="inline-flex gap-1.5 overflow-x-auto no-scrollbar rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 p-1.5 backdrop-blur-md shadow-sm"
+            className="inline-flex gap-1 overflow-x-auto no-scrollbar border border-border bg-card p-1"
           >
             {tabDefs.map((d) => {
               const isSelected = tab === d.key;
@@ -239,21 +234,21 @@ export function LibraryPage() {
                   aria-selected={isSelected}
                   onClick={() => handleTabChange(d.key)}
                   className={cn(
-                    "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
+                    "label-caps flex shrink-0 items-center gap-2 border px-3.5 py-1.5 text-xs transition-colors duration-150",
                     isSelected
-                      ? "bg-background dark:bg-ivory/15 text-foreground shadow-sm border border-ink/15 dark:border-ivory/30 font-semibold"
-                      : "border border-transparent text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+                      ? "border-primary bg-primary text-primary-foreground font-semibold"
+                      : "border-transparent text-muted-foreground hover:border-border hover:bg-accent/40 hover:text-foreground",
                   )}
                 >
-                  {d.key === "documents" && <FileText className="h-4 w-4 shrink-0 opacity-70" />}
-                  {d.key === "photographs" && <ImageIcon className="h-4 w-4 shrink-0 opacity-70" />}
-                  {d.key === "recordings" && <Video className="h-4 w-4 shrink-0 opacity-70" />}
+                  {d.key === "documents" && <FileText className="h-3.5 w-3.5 shrink-0 opacity-70" />}
+                  {d.key === "photographs" && <ImageIcon className="h-3.5 w-3.5 shrink-0 opacity-70" />}
+                  {d.key === "recordings" && <Video className="h-3.5 w-3.5 shrink-0 opacity-70" />}
                   <span>{t(d.label)}</span>
                   <span
                     className={cn(
-                      "nums text-xs rounded-full px-1.5 py-0.5",
+                      "nums text-[11px] px-1.5 py-0.2",
                       isSelected
-                        ? "bg-ink/10 dark:bg-ivory/20 text-foreground font-bold"
+                        ? "bg-primary-foreground/20 text-primary-foreground font-bold"
                         : "bg-muted text-muted-foreground",
                     )}
                   >
@@ -267,7 +262,7 @@ export function LibraryPage() {
           {/* Search Bar */}
           <div className="relative w-full md:w-80 shrink-0">
             <Search
-              className="absolute top-1/2 -translate-y-1/2 start-3.5 h-4 w-4 text-muted-foreground pointer-events-none"
+              className="absolute top-1/2 -translate-y-1/2 start-3 h-4 w-4 text-muted-foreground pointer-events-none"
               aria-hidden="true"
             />
             <input
@@ -275,16 +270,16 @@ export function LibraryPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t(copy.searchPlaceholder)}
-              className="w-full rounded-xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md py-2 text-sm text-foreground placeholder:text-muted-foreground shadow-sm outline-none transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out ps-10 pe-9 focus:border-ink/40 dark:focus:border-ivory/40 focus:bg-background dark:focus:bg-ivory/10 focus:ring-2 focus:ring-gold/20"
+              className="w-full border border-border bg-card py-2 text-xs font-serif text-foreground placeholder:text-muted-foreground outline-none transition-colors duration-150 ps-9 pe-8 focus:border-foreground focus:ring-1 focus:ring-ring"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
                 aria-label={t(copy.clearSearch)}
-                className="absolute top-1/2 -translate-y-1/2 end-2.5 rounded-lg p-1 text-muted-foreground transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-foreground/10 hover:text-foreground active:scale-[0.97]"
+                className="absolute top-1/2 -translate-y-1/2 end-2 p-1 text-muted-foreground transition-colors hover:text-foreground"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
@@ -292,15 +287,15 @@ export function LibraryPage() {
 
         {/* Category Filter Buttons */}
         {currentCategories.length > 0 && (
-          <div className="mb-8 flex flex-wrap items-center gap-2">
+          <div className="mb-8 flex flex-wrap items-center gap-1.5">
             <button
               type="button"
               onClick={() => setSelectedCategory(null)}
               className={cn(
-                "rounded-full px-3.5 py-1.5 text-xs font-medium border transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
+                "label-caps border px-3 py-1 text-xs transition-colors duration-150",
                 selectedCategory === null
-                  ? "bg-ink text-ivory border-ink dark:bg-gold dark:text-ink dark:border-gold shadow-sm font-semibold"
-                  : "border-ink/15 dark:border-ivory/20 bg-background/60 dark:bg-ivory/5 backdrop-blur-md text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+                  ? "border-primary bg-primary text-primary-foreground font-semibold"
+                  : "border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground",
               )}
             >
               {t(copy.allCategories)}
@@ -313,10 +308,10 @@ export function LibraryPage() {
                   type="button"
                   onClick={() => setSelectedCategory(isSelected ? null : cat)}
                   className={cn(
-                    "rounded-full px-3.5 py-1.5 text-xs font-medium border transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
+                    "label-caps border px-3 py-1 text-xs transition-colors duration-150",
                     isSelected
-                      ? "bg-ink text-ivory border-ink dark:bg-gold dark:text-ink dark:border-gold shadow-sm font-semibold"
-                      : "border-ink/15 dark:border-ivory/20 bg-background/60 dark:bg-ivory/5 backdrop-blur-md text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+                      ? "border-primary bg-primary text-primary-foreground font-semibold"
+                      : "border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground",
                   )}
                 >
                   {cat}
@@ -336,10 +331,10 @@ export function LibraryPage() {
             {filteredDocuments.length > 0 ? (
               <>
                 <div className="hidden overflow-x-auto md:block">
-                  <div className="overflow-hidden rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md shadow-sm">
+                  <div className="border border-border bg-card">
                     <table className="w-full min-w-[40rem] border-collapse">
                       <thead>
-                        <tr className="border-b border-border/60 bg-foreground/[0.02]">
+                        <tr className="border-b border-border bg-muted/30">
                           <th
                             scope="col"
                             className="label-caps py-3 ps-6 text-start text-muted-foreground"
@@ -382,19 +377,19 @@ export function LibraryPage() {
                                 doc: d,
                               })
                             }
-                            className="group cursor-pointer border-b border-border/50 align-baseline transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-foreground/[0.03] dark:hover:bg-ivory/10 active:scale-[0.99] last:border-0"
+                            className="group cursor-pointer border-b border-border align-baseline transition-colors hover:bg-accent/40 last:border-0"
                           >
                             <td className="nums py-4 ps-6 pe-4 font-mono text-xs whitespace-nowrap font-semibold text-bronze dark:text-gold">
                               {d.ncnpRef}
                             </td>
-                            <td className="py-4 pe-6 text-sm leading-snug font-medium text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors duration-150 ease-out">
+                            <td className="py-4 pe-6 text-sm leading-snug font-medium text-foreground group-hover:text-bronze transition-colors">
                               {t(d.title)}
                             </td>
                             <td className="nums py-4 pe-6 text-[13px] whitespace-nowrap text-muted-foreground">
                               {d.year} هـ
                             </td>
                             <td className="py-4 pe-6 text-[13px] text-muted-foreground">
-                              <span className="rounded bg-muted/80 dark:bg-ivory/10 px-2 py-0.5 font-mono text-xs font-semibold text-foreground">
+                              <span className="border border-border bg-muted px-2 py-0.5 font-mono text-xs font-semibold text-foreground">
                                 {d.kind}
                               </span>
                             </td>
@@ -412,7 +407,7 @@ export function LibraryPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-4 md:hidden">
+                <div className="grid gap-3 md:hidden">
                   {filteredDocuments.map((d, i) => (
                     <div
                       key={i}
@@ -425,23 +420,23 @@ export function LibraryPage() {
                           doc: d,
                         })
                       }
-                      className="group cursor-pointer rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 p-4 backdrop-blur-md shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:shadow-md active:scale-[0.98]"
+                      className="group cursor-pointer border border-border bg-card p-4 transition-colors hover:border-foreground"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <span className="nums inline-block rounded-md bg-bronze/10 dark:bg-gold/15 px-2 py-0.5 font-mono text-xs font-semibold text-bronze dark:text-gold mb-2">
+                          <span className="nums inline-block border border-bronze/30 bg-bronze/10 px-2 py-0.5 font-mono text-xs font-semibold text-bronze dark:text-gold mb-2">
                             {d.ncnpRef}
                           </span>
-                          <h3 className="text-sm font-medium leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors duration-150 ease-out">
+                          <h3 className="text-sm font-medium leading-snug text-foreground group-hover:text-bronze transition-colors">
                             {t(d.title)}
                           </h3>
                         </div>
                       </div>
-                      <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-3 text-xs text-muted-foreground">
+                      <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <span className="nums font-medium">{d.year} هـ</span>
                           <span>·</span>
-                          <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] font-semibold text-foreground">
+                          <span className="border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] font-semibold text-foreground">
                             {d.kind}
                           </span>
                         </div>
@@ -496,7 +491,7 @@ export function LibraryPage() {
                             });
                           }
                         }}
-                        className="group cursor-pointer overflow-hidden rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 backdrop-blur-md shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze dark:focus-visible:ring-gold"
+                        className="group cursor-pointer border border-border bg-card transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                       >
                         <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
                           <img
@@ -505,11 +500,11 @@ export function LibraryPage() {
                             className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                             loading="lazy"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100 flex flex-col justify-end gap-0.5 p-4">
-                            <p className="line-clamp-2 text-sm font-medium text-white drop-shadow-sm">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 transition-opacity duration-150 group-hover:opacity-100 flex flex-col justify-end gap-0.5 p-4">
+                            <p className="line-clamp-2 text-xs font-serif text-white">
                               {t(p.title)}
                             </p>
-                            <p className="text-xs text-white/90">
+                            <p className="text-[11px] text-white/80">
                               {p.category} · {p.year} هـ
                             </p>
                           </div>
@@ -522,10 +517,10 @@ export function LibraryPage() {
                             </span>
                             <span className="nums text-xs text-muted-foreground">{p.year} هـ</span>
                           </div>
-                          <p className="mt-2 text-sm font-medium leading-relaxed text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors duration-150 ease-out line-clamp-2">
+                          <p className="mt-2 text-sm font-medium leading-snug text-foreground group-hover:text-bronze transition-colors line-clamp-2">
                             {t(p.title)}
                           </p>
-                          <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5">
+                          <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5">
                             <span className="label-caps text-xs text-muted-foreground">
                               {p.category}
                             </span>
@@ -548,7 +543,7 @@ export function LibraryPage() {
             </p>
 
             {filteredVideos.length > 0 ? (
-              <ol className="grid gap-3.5">
+              <ol className="grid gap-3">
                 {filteredVideos.map((v, i) => (
                   <li key={i}>
                     <div
@@ -560,7 +555,7 @@ export function LibraryPage() {
                           duration: v.duration,
                         })
                       }
-                      className="group flex cursor-pointer items-center justify-between gap-5 rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 p-4 backdrop-blur-md shadow-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-ink/30 dark:hover:border-ivory/30 hover:shadow-md hover:bg-secondary/40 dark:hover:bg-ivory/10 active:scale-[0.99]"
+                      className="group flex cursor-pointer items-center justify-between gap-5 border border-border bg-card p-4 transition-colors hover:border-foreground"
                     >
                       <div className="flex items-center gap-4 min-w-0">
                         <button
@@ -570,16 +565,16 @@ export function LibraryPage() {
                             notify();
                           }}
                           aria-label={`${t(copy.play)} — ${t(v.title)}`}
-                          className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-ink/20 bg-background/90 text-ink shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out group-hover:scale-105 group-hover:border-ink group-hover:bg-ink group-hover:text-ivory dark:border-gold/30 dark:bg-ivory/10 dark:text-gold dark:group-hover:border-gold dark:group-hover:bg-gold dark:group-hover:text-ink active:scale-[0.97]"
+                          className="grid h-10 w-10 shrink-0 place-items-center border border-border bg-muted text-foreground transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground"
                         >
                           <Play
-                            className={cn("h-5 w-5 fill-current", rtl && "-scale-x-100")}
+                            className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")}
                             aria-hidden="true"
                           />
                         </button>
 
                         <div className="min-w-0">
-                          <p className="text-sm font-medium leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors duration-150 ease-out">
+                          <p className="text-sm font-medium leading-snug text-foreground group-hover:text-bronze transition-colors">
                             {t(v.title)}
                           </p>
                           <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
@@ -595,7 +590,7 @@ export function LibraryPage() {
 
                       <div className="flex shrink-0 items-center gap-3">
                         <span
-                          className="nums rounded-lg border border-border/50 bg-background/50 dark:bg-ivory/5 px-2.5 py-1 font-mono text-xs font-medium text-muted-foreground shadow-2xs"
+                          className="nums border border-border bg-muted px-2.5 py-1 font-mono text-xs font-medium text-muted-foreground"
                           dir="ltr"
                         >
                           {v.duration}
@@ -613,36 +608,37 @@ export function LibraryPage() {
         {((tab === "documents" && filteredDocuments.length === 0) ||
           (tab === "photographs" && filteredPhotos.length === 0) ||
           (tab === "recordings" && filteredVideos.length === 0)) && (
-          <div className="my-12 flex flex-col items-center justify-center rounded-3xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 p-12 text-center backdrop-blur-md shadow-sm animate-in fade-in duration-150">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl border border-ink/15 dark:border-ivory/20 bg-background dark:bg-ivory/10 text-muted-foreground shadow-sm mb-4">
-              <Search className="h-6 w-6 opacity-60" />
+          <div className="my-12 flex flex-col items-center justify-center border border-border bg-card p-12 text-center">
+            <div className="grid h-12 w-12 place-items-center border border-border bg-muted text-muted-foreground mb-4">
+              <Search className="h-5 w-5 opacity-60" />
             </div>
             <p className="max-w-md text-sm font-medium text-foreground">{t(copy.noResults)}</p>
             {(searchQuery || selectedCategory) && (
-              <button
+              <EditorialButton
                 type="button"
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedCategory(null);
                 }}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl border border-ink/20 dark:border-ivory/20 bg-background/90 dark:bg-ivory/10 px-4 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-secondary active:scale-[0.97]"
+                className="mt-4"
+                size="sm"
               >
                 <X className="h-3.5 w-3.5" />
                 {t(copy.clearSearch)}
-              </button>
+              </EditorialButton>
             )}
           </div>
         )}
       </div>
 
-      {/* ── Apple-style Glassmorphic Modal Dialog ───────────────── */}
+      {/* ── Editorial Modal Dialog ───────────────── */}
       {previewModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
           onClick={() => setPreviewModal(null)}
         >
           <div
-            className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-ink/20 dark:border-ivory/20 bg-background/95 dark:bg-zinc-900/95 p-6 md:p-8 backdrop-blur-2xl shadow-2xl transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out animate-in zoom-in-95"
+            className="relative w-full max-w-2xl border border-border bg-card p-6 md:p-8"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -652,14 +648,14 @@ export function LibraryPage() {
               type="button"
               onClick={() => setPreviewModal(null)}
               aria-label={t(copy.close)}
-              className="absolute top-5 end-5 grid h-9 w-9 place-items-center rounded-full border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/10 text-muted-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-foreground/10 hover:text-foreground active:scale-[0.97]"
+              className="absolute top-4 end-4 grid h-8 w-8 place-items-center border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="pe-10 mb-6">
               {previewModal.meta && (
-                <span className="nums inline-block rounded-md bg-bronze/10 dark:bg-gold/15 px-2.5 py-1 font-mono text-xs font-semibold text-bronze dark:text-gold mb-2.5">
+                <span className="nums inline-block border border-bronze/30 bg-bronze/10 px-2.5 py-1 font-mono text-xs font-semibold text-bronze dark:text-gold mb-2.5">
                   {previewModal.meta}
                 </span>
               )}
@@ -677,19 +673,19 @@ export function LibraryPage() {
             </div>
 
             {previewModal.type === "photographs" && previewModal.image && (
-              <div className="overflow-hidden rounded-2xl border border-border/60 bg-black/5 dark:bg-black/40 shadow-inner mb-6 max-h-[60vh] flex items-center justify-center">
+              <div className="border border-border bg-black/5 dark:bg-black/40 mb-6 max-h-[60vh] flex items-center justify-center">
                 <img
                   src={previewModal.image}
                   alt={previewModal.title}
-                  className="max-h-[60vh] w-auto object-contain mx-auto rounded-xl"
+                  className="max-h-[60vh] w-auto object-contain mx-auto"
                 />
               </div>
             )}
 
             {previewModal.type === "recordings" && (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-ink/15 dark:border-ivory/20 bg-secondary/50 dark:bg-ivory/5 p-10 text-center backdrop-blur-md mb-6">
-                <div className="grid h-16 w-16 place-items-center rounded-2xl border border-ink/20 dark:border-gold/30 bg-background dark:bg-ivory/10 text-ink dark:text-gold shadow-md mb-4">
-                  <Play className={cn("h-7 w-7 fill-current", rtl && "-scale-x-100")} />
+              <div className="flex flex-col items-center justify-center border border-border bg-muted/30 p-8 text-center mb-6">
+                <div className="grid h-14 w-14 place-items-center border border-border bg-card text-foreground mb-4">
+                  <Play className={cn("h-6 w-6 fill-current", rtl && "-scale-x-100")} />
                 </div>
                 <p className="text-sm text-foreground font-medium mb-1">{previewModal.title}</p>
                 {previewModal.duration && (
@@ -697,22 +693,22 @@ export function LibraryPage() {
                     {previewModal.duration}
                   </span>
                 )}
-                <button
+                <EditorialButton
                   type="button"
+                  variant="primary"
                   onClick={() => {
                     setPreviewModal(null);
                     notify();
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl bg-ink dark:bg-gold px-5 py-2.5 text-xs font-semibold text-ivory dark:text-ink shadow-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
                 >
                   <Play className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")} />
                   {t(copy.play)}
-                </button>
+                </EditorialButton>
               </div>
             )}
 
             {previewModal.type === "documents" && (
-              <div className="rounded-2xl border border-ink/15 dark:border-ivory/20 bg-secondary/30 dark:bg-ivory/5 p-6 backdrop-blur-md mb-6">
+              <div className="border border-border bg-muted/30 p-6 mb-6">
                 <div className="flex items-center gap-3 mb-4">
                   <FileText className="h-6 w-6 text-bronze dark:text-gold" />
                   <div>
@@ -722,20 +718,16 @@ export function LibraryPage() {
                     </p>
                   </div>
                 </div>
-                <p className="text-xs leading-relaxed text-muted-foreground border-t border-border/50 pt-3">
+                <p className="text-xs leading-relaxed text-muted-foreground border-t border-border pt-3">
                   {t(copy.docsNote)}
                 </p>
               </div>
             )}
 
-            <div className="flex items-center justify-end gap-3 border-t border-border/60 pt-4">
-              <button
-                type="button"
-                onClick={() => setPreviewModal(null)}
-                className="rounded-xl border border-ink/15 dark:border-ivory/20 bg-background/80 dark:bg-ivory/5 px-4 py-2 text-xs font-medium text-foreground shadow-sm backdrop-blur-md transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:bg-secondary active:scale-[0.97]"
-              >
+            <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
+              <EditorialButton type="button" onClick={() => setPreviewModal(null)} size="sm">
                 {t(copy.close)}
-              </button>
+              </EditorialButton>
               {previewModal.type === "documents" && previewModal.doc && (
                 <DownloadControl
                   doc={previewModal.doc}
@@ -753,3 +745,5 @@ export function LibraryPage() {
     </>
   );
 }
+
+

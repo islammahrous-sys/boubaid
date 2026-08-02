@@ -9,11 +9,11 @@ import type { BiText } from "@/i18n/LanguageProvider";
 export const siteMeta = {
   officialName: {
     ar: "صندوق التنمية العائلية (آل بوعبيد)",
-    en: "Al Bu Obaid Family Development Fund",
+    en: "Al-Boabid Family Development Fund",
   } as BiText,
   shortName: {
     ar: "آل بوعبيد",
-    en: "Al Bu Obaid",
+    en: "Al-Boabid",
   } as BiText,
   tagline: {
     ar: "أسرة عريقة، جذور تميمية، وحضور مؤسسي معاصر.",
