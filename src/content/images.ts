@@ -128,7 +128,7 @@ export const pageImages = {
       },
     } satisfies Figure,
     secretariat: {
-      src: "/images/foundation_secretariat.jpg",
+      src: "/images/foundation_secretariat.png",
       caption: {
         ar: "مكتب الأمانة العامة — حيث تُحال المراسلات إلى اللجان المختصة وتُدون قرارات الحوكمة.",
         en: "The secretariat office — where correspondence is routed to committees and governance resolutions are recorded.",

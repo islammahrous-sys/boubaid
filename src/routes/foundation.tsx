@@ -276,7 +276,7 @@ export function FoundationPage() {
 
         {/* ── Secretariat / organisational-plate interlude ───── */}
         <section className="container-page mt-16">
-          <figure className="reveal-on-scroll">
+          <figure className="reveal-on-scroll border border-border bg-card p-3">
             <img
               src={pageImages.foundation.secretariat.src}
               alt=""
