@@ -69,20 +69,20 @@ export function Header() {
           onClick={() => setOpen(false)}
         >
           <img
-            src="/logo-brown.png"
+            src="/logo-mark-brown.svg"
             alt=""
-            className="h-10 w-10 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:hidden"
+            className="h-11 w-11 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:hidden"
             aria-hidden="true"
           />
           <img
-            src="/logo-gold.png"
+            src="/logo-mark-gold.svg"
             alt=""
-            className="hidden h-10 w-10 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:block"
+            className="hidden h-11 w-11 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:block"
             aria-hidden="true"
           />
           <span className="flex min-w-0 flex-col leading-tight">
             <span className="truncate font-naskh text-lg font-bold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold rtl:text-xl">
-              {lang === "ar" ? "آل بوعبيد" : "Al Bu Obaid"}
+              {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
             </span>
             <span className="label-caps truncate text-bronze transition-colors dark:text-gold-soft">
               {lang === "ar" ? "صندوق التنمية العائلية" : "Family Development Org."}
