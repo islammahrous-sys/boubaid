@@ -193,19 +193,6 @@ export function ContributePage() {
           </div>
         </section>
 
-        {/* ── Stewardship figure ─────────────────────────────── */}
-        <figure className="mt-16 reveal-on-scroll">
-          <img
-            src={pageImages.contribute.stewardship.src}
-            alt=""
-            className="photo-plate aspect-[16/7] w-full object-cover"
-            loading="lazy"
-          />
-          <figcaption className="mt-3 flex items-start gap-2.5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
-            <span className="mt-1.5 h-px w-5 shrink-0 bg-bronze" aria-hidden="true" />
-            <span>{t(pageImages.contribute.stewardship.caption)}</span>
-          </figcaption>
-        </figure>
 
         {/* ── Channels ───────────────────────────────────────── */}
         <section className="mt-16 border-t border-border pt-12">
