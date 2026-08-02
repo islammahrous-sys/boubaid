@@ -102,13 +102,13 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
           (outer, static) from the slow zoom (inner, animated) lets both
           apply at once. */}
       <div className="absolute inset-0 z-0 origin-top scale-100 lg:origin-[30%_top]">
-        <div className="h-full w-full motion-safe:animate-hero-zoom">
+        <div className="h-full w-full">
           {poster ? (
             <img
               src={poster}
               alt=""
               aria-hidden="true"
-              className="h-full w-full object-cover object-[center_center] lg:object-[30%_top]"
+              className="h-full w-full object-cover object-center"
               fetchPriority="high"
             />
           ) : null}
@@ -117,7 +117,7 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
             <video
               ref={attachVideo}
               className={
-                "absolute inset-0 h-full w-full object-cover object-[center_center] lg:object-[30%_top] transition-opacity duration-[1400ms] ease-out " +
+                "absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1400ms] ease-out " +
                 (loaded ? "opacity-100" : "opacity-0")
               }
               src={videoSrc}
