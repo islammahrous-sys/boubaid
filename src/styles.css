@@ -89,22 +89,25 @@
      wants something closer to a printed rule box. */
   --radius: 0.25rem;
 
-  /* Warm sepia ink, not blue-black — it agrees with the bronze/gold
-     logo instead of fighting it. */
-  --ink: oklch(0.21 0.026 62);
-  --ink-soft: oklch(0.34 0.028 60);
-  --paper: oklch(0.972 0.009 80);
-  --paper-shade: oklch(0.945 0.013 78);
-  /* 3.4:1 against paper, 3.1:1 against paper-shade — hairline rules carry
-     165 structural divisions across the site, so they need to actually be
-     visible (the previous 0.86 lightness measured 1.4:1). */
-  --rule: oklch(0.62 0.018 74);
+  /* Official brand palette (family brand sheet):
+     #78462A deep brown · #8B5433 clay · #BE744A copper ·
+     #FDE7D6 cream · #26583C heritage green · #E6EAF0 cool grey ·
+     #EDA746 brand gold (the logo gold — used as a seal, sparingly). */
+  --ink: oklch(0.29 0.058 48);
+  --ink-soft: oklch(0.447 0.08 49);
+  --paper: oklch(0.972 0.013 68);
+  --paper-shade: oklch(0.941 0.033 60);
+  /* Warm hairline rule, kept at ~3.3:1 against cream so the site's
+     structural divisions stay visible. */
+  --rule: oklch(0.655 0.04 55);
 
-  --gold: oklch(0.68 0.13 76);
-  --gold-soft: oklch(0.83 0.09 82);
-  --ivory: oklch(0.975 0.008 80);
-  --emerald: oklch(0.42 0.07 158);
-  --bronze: oklch(0.49 0.09 58);
+  --gold: oklch(0.779 0.138 72);
+  --gold-soft: oklch(0.87 0.085 76);
+  --ivory: oklch(0.98 0.009 70);
+  --emerald: oklch(0.417 0.072 157);
+  --bronze: oklch(0.501 0.087 51);
+  --copper: oklch(0.63 0.109 49);
+  --mist: oklch(0.936 0.009 258);
 
   --background: var(--paper);
   --foreground: var(--ink);
