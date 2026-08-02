@@ -101,7 +101,7 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
           silently dropping the static scale. Splitting the desktop crop
           (outer, static) from the slow zoom (inner, animated) lets both
           apply at once. */}
-      <div className="absolute inset-0 z-0 origin-top scale-100 lg:origin-[30%_top] lg:scale-[1.28]">
+      <div className="absolute inset-0 z-0 origin-top scale-100 lg:origin-[30%_top]">
         <div className="h-full w-full motion-safe:animate-hero-zoom">
           {poster ? (
             <img
