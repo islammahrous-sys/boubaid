@@ -189,17 +189,6 @@ export function FamilyTreePage() {
         </div>
       </aside>
 
-      {/* ── Decorative tree-plate header ─────────────────────── */}
-      <section className="container-page py-10 md:py-12">
-        <div className="reveal-on-scroll border border-border">
-          <img
-            src="/images/family_tree_header_plate.jpg"
-            alt=""
-            className="photo-plate aspect-[21/9] w-full object-cover"
-            loading="lazy"
-          />
-        </div>
-      </section>
 
       {/* ── The official commissioned artwork, alongside the digital explorer ── */}
       <section className="container-page py-12 md:py-14">
