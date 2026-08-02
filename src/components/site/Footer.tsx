@@ -43,11 +43,11 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.4fr_2fr] lg:gap-16">
           {/* Colophon */}
           <div>
-            <div className="flex items-center gap-3.5">
+            <div className="flex items-center gap-4">
               <img
-                src="/logo-gold.png"
+                src="/logo-mark-gold.svg"
                 alt=""
-                className="h-14 w-14 object-contain"
+                className="h-16 w-16 shrink-0 object-contain"
                 aria-hidden="true"
               />
               <div>
