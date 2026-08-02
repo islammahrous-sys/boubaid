@@ -120,104 +120,134 @@
      wants something closer to a printed rule box. */
   --radius: 0.25rem;
 
-  /* Official brand palette (family brand sheet):
-     #78462A deep brown · #8B5433 clay · #BE744A copper ·
-     #FDE7D6 cream · #26583C heritage green · #E6EAF0 cool grey ·
-     #EDA746 brand gold (the logo gold — used as a seal, sparingly). */
-  --ink: oklch(0.29 0.058 48);
-  --ink-soft: oklch(0.447 0.08 49);
-  --paper: oklch(0.972 0.013 68);
-  --paper-shade: oklch(0.941 0.033 60);
-  /* Warm hairline rule, kept at ~3.3:1 against cream so the site's
-     structural divisions stay visible. */
-  --rule: oklch(0.655 0.04 55);
+  /* Exact values from the family's official visual identity guide
+     (دليل الهوية البصرية, v1.0, Muharram 1448H), not an approximation:
+       #774932 deep brown · #8B5638 clay · #BA734A copper ·
+       #FFE9D4 cream · #245B3F heritage green · #E4EAEF cool grey ·
+       #ECA654 brand gold.
+     One correction to the guide's own default-border token: its
+     --border-default (#D0BBA9, ladder step 400) measures 1.7:1 against
+     the page background — the guide's contrast table never tested
+     border-on-page, only text pairs. Step 700 (#8A7768) of the same
+     "Raq" ladder is the shallowest step that clears 3:1, so structural
+     rules use that instead; everything else is the guide's literal
+     value. Dark mode isn't specified by the guide (flagged there as
+     needing visual sign-off before launch) — extrapolated from the
+     same ladders, verified against WCAG below. */
+  --ink: #245b3f; /* heritage green — the guide's surface-inverse /
+       action-primary-bg role. The site already used one token for both
+       "dark band" backgrounds (header, footer, hero) and "brand
+       primary" buttons — that's exactly this role, so fixing the value
+       here corrects every such surface at once. */
+  --ink-soft: #3f6f56; /* palm ladder, step 700 — the guide's literal
+       --focus-ring value; doubles as the inverse hover tone. */
+  --paper: #fff4e9; /* surface-page */
+  --paper-shade: #ffe9d4; /* surface-sunken — the base cream swatch */
+  --rule: #8a7768; /* structural border — see note above */
 
-  --gold: oklch(0.779 0.138 72);
-  --gold-soft: oklch(0.87 0.085 76);
-  --ivory: oklch(0.98 0.009 70);
-  --emerald: oklch(0.417 0.072 157);
-  --bronze: oklch(0.501 0.087 51);
-  --copper: oklch(0.63 0.109 49);
-  --mist: oklch(0.936 0.009 258);
+  --gold: #eca654;
+  --gold-soft: #f1bc7d; /* gold ladder, step 300 */
+  --ivory: #ffffff; /* surface-raised */
+  --emerald: #245b3f; /* status "active" reuses the brand green */
+  --bronze: #ba734a; /* copper — the logo's second colourway */
+  --copper: #ba734a;
+  --mist: #e4eaef; /* cool neutral — guide restricts this to table
+       headers and toolbars, not general UI */
 
   --background: var(--paper);
-  --foreground: var(--ink);
-  --card: oklch(0.988 0.008 70);
-  --card-foreground: var(--ink);
-  --popover: oklch(0.988 0.008 70);
-  --popover-foreground: var(--ink);
+  --foreground: #1b110b; /* text-primary — deliberately not var(--ink):
+       that token is now the brand green, a surface colour, and body
+       text needs the guide's near-black instead. */
+  --card: var(--ivory);
+  --card-foreground: #1b110b;
+  --popover: var(--ivory);
+  --popover-foreground: #1b110b;
   --primary: var(--ink);
-  --primary-foreground: oklch(0.98 0.009 70);
+  --primary-foreground: var(--paper);
   --secondary: var(--paper-shade);
-  --secondary-foreground: var(--ink);
+  --secondary-foreground: #1b110b;
   --muted: var(--paper-shade);
-  --muted-foreground: oklch(0.475 0.05 50);
+  --muted-foreground: #736053; /* text-muted */
   --accent: var(--gold);
-  --accent-foreground: var(--ink);
+  --accent-foreground: #1b110b;
   --destructive: oklch(0.52 0.19 28);
   --destructive-foreground: oklch(0.985 0.003 247);
   --border: var(--rule);
-  --input: oklch(0.885 0.035 58);
-  --ring: var(--bronze);
+  --input: var(--rule);
+  --ring: var(--ink-soft);
 
-  --chart-1: oklch(0.29 0.058 48);
-  --chart-2: oklch(0.779 0.138 72);
-  --chart-3: oklch(0.417 0.072 157);
-  --chart-4: oklch(0.501 0.087 51);
-  --chart-5: oklch(0.63 0.109 49);
+  --chart-1: var(--ink);
+  --chart-2: var(--gold);
+  --chart-3: #774932;
+  --chart-4: var(--bronze);
+  --chart-5: var(--mist);
 
   --sidebar: var(--paper);
-  --sidebar-foreground: var(--ink);
+  --sidebar-foreground: #1b110b;
   --sidebar-primary: var(--ink);
   --sidebar-primary-foreground: var(--paper);
   --sidebar-accent: var(--paper-shade);
-  --sidebar-accent-foreground: var(--ink);
+  --sidebar-accent-foreground: #1b110b;
   --sidebar-border: var(--rule);
-  --sidebar-ring: var(--bronze);
+  --sidebar-ring: var(--ink-soft);
 }
 
 .dark {
-  /* Lamplight on the brand's deep brown — the same palette after dark. */
-  --ink: oklch(0.165 0.028 46);
-  --ink-soft: oklch(0.255 0.04 47);
-  --paper: oklch(0.195 0.032 47);
-  --paper-shade: oklch(0.25 0.036 47);
+  /* The guide explicitly doesn't specify dark mode — its own open-issues
+     list (page 23) flags it as "معرَّف مبدئياً... يحتاج مراجعة بصرية"
+     (only preliminarily defined, needs visual sign-off before launch).
+     Extrapolated here from the same official ladders and verified
+     against WCAG, but treat it as a draft pending that review.
+
+     One deliberate asymmetry from light mode: --ink stays a near-black
+     rather than becoming green. The site's established dark-mode button
+     convention pairs a gold fill with `dark:text-ink` for the label —
+     tried as green (matching light mode's inverse-band logic) it only
+     reaches 2.5–3.4:1 on gold, short of the 4.5:1 regular text needs.
+     Near-black clears 10.8:1, so dark mode keeps ink for text-on-gold
+     and lets header/footer bands read close to the page fill instead
+     of as a separate green block — a reasonable dark-UI convention on
+     its own, and correct until the brand system says otherwise. */
+  --ink: #1b110b;
+  --ink-soft: #492d1f;
+  --paper: #241811;
+  --paper-shade: #2e2015;
   --rule: oklch(0.94 0.03 62 / 16%);
 
-  --gold: oklch(0.8 0.135 73);
-  --gold-soft: oklch(0.885 0.075 74);
-  --ivory: oklch(0.965 0.026 62);
-  --emerald: oklch(0.56 0.09 157);
-  --bronze: oklch(0.68 0.105 50);
-  --copper: oklch(0.7 0.115 49);
-  --mist: oklch(0.936 0.009 258);
+  --gold: #f1bc7d;
+  --gold-soft: #f5d1a7;
+  --ivory: #fff4e9;
+  --emerald: #59836e;
+  --bronze: #c58a67;
+  --copper: #c58a67;
+  --mist: #5a6167;
 
   --background: var(--paper);
-  --foreground: oklch(0.945 0.026 62);
-  --card: oklch(0.232 0.034 47);
-  --card-foreground: oklch(0.945 0.026 62);
-  --popover: oklch(0.232 0.034 47);
-  --popover-foreground: oklch(0.945 0.026 62);
+  --foreground: #fff4e9;
+  --card: var(--paper-shade);
+  --card-foreground: #fff4e9;
+  --popover: var(--paper-shade);
+  --popover-foreground: #fff4e9;
   --primary: var(--gold);
-  --primary-foreground: oklch(0.195 0.032 47);
+  --primary-foreground: var(--ink);
   --secondary: var(--paper-shade);
-  --secondary-foreground: oklch(0.945 0.026 62);
+  --secondary-foreground: #fff4e9;
   --muted: var(--paper-shade);
-  --muted-foreground: oklch(0.735 0.035 62);
+  --muted-foreground: #dbb7a2;
   --accent: var(--gold);
-  --accent-foreground: oklch(0.195 0.032 47);
+  --accent-foreground: var(--ink);
   --destructive: oklch(0.66 0.17 24);
   --destructive-foreground: oklch(0.95 0.008 78);
   --border: var(--rule);
   --input: oklch(0.94 0.03 62 / 20%);
   --ring: var(--gold);
 
-  --sidebar: oklch(0.215 0.032 47);
-  --sidebar-foreground: oklch(0.945 0.026 62);
+  --sidebar: var(--paper-shade);
+  --sidebar-foreground: #fff4e9;
   --sidebar-primary: var(--gold);
-  --sidebar-primary-foreground: oklch(0.195 0.032 47);
+  --sidebar-primary-foreground: var(--ink);
   --sidebar-accent: var(--paper-shade);
-  --sidebar-accent-foreground: oklch(0.945 0.026 62);
+  --sidebar-accent-foreground: #fff4e9;
   --sidebar-border: var(--rule);
   --sidebar-ring: var(--gold);
 }
