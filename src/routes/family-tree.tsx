@@ -143,7 +143,7 @@ export function FamilyTreePage() {
             <Eyebrow rule={false} className="text-gold">
               {t(copy.eyebrow)}
             </Eyebrow>
-            <h1 className="mt-1 font-naskh text-xl leading-tight font-bold text-ivory rtl:text-2xl">
+            <h1 className="mt-1 font-brand text-xl leading-tight font-bold text-ivory rtl:text-2xl">
               {t(copy.title)}
             </h1>
           </div>

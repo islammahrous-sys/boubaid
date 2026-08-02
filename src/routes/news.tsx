@@ -58,7 +58,7 @@ export function NewsPage() {
           <p className="label-caps text-bronze dark:text-gold">{t(copy.issuedBy)}</p>
           <p className="mt-1.5 text-sm text-muted-foreground">{t(siteMeta.officialName)}</p>
 
-          <h1 className="mt-5 font-naskh text-4xl leading-none font-bold text-foreground md:text-6xl">
+          <h1 className="mt-5 font-brand text-4xl leading-none font-bold text-foreground md:text-6xl">
             {t(copy.masthead)}
           </h1>
 

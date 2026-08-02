@@ -146,7 +146,7 @@ export function HomePage() {
             {t(siteMeta.ncnpAuthority)}
           </p>
 
-          <h1 className="mx-auto mt-5 max-w-4xl text-balance font-naskh text-4xl leading-[1.2] font-bold text-ivory motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 md:text-6xl lg:text-7xl">
+          <h1 className="mx-auto mt-5 max-w-4xl text-balance font-brand text-4xl leading-[1.2] font-bold text-ivory motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 md:text-6xl lg:text-7xl">
             {t(siteMeta.officialName)}
           </h1>
 

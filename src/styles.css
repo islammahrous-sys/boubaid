@@ -4,6 +4,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Self-hosted brand display face — bilingual (Arabic + Latin), used only
+   for the masthead wordmark and page h1s. Self-hosting avoids a third
+   external font origin and guarantees it's available even if the licence
+   restricts a public CDN. */
+@font-face {
+  font-family: "HT Baybars Display";
+  src: url("/fonts/HTBaybarsDisplay-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "HT Baybars Display";
+  src: url("/fonts/HTBaybarsDisplay-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "HT Baybars Display";
+  src: url("/fonts/HTBaybarsDisplay-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ══════════════════════════════════════════════════════════════
    Al Bu Obaid — design tokens
 
@@ -24,8 +50,13 @@
   --radius-4xl: calc(var(--radius) + 14px);
 
   /* Arabic sets the tone — it is the primary language of the site.
-     Naskh (Amiri) for display, humanist sans for running text. */
+     Naskh (Amiri) carries section headings within content, where a
+     calligraphic, manuscript feel serves long-form reading. HT Baybars
+     Display is reserved for the site's own voice — the masthead wordmark
+     and page-title (h1) moments — so the two don't compete on the same
+     line of text. */
   --font-naskh: "Amiri", "Scheherazade New", Georgia, serif;
+  --font-brand: "HT Baybars Display", "Amiri", Georgia, serif;
   --font-arabic: "IBM Plex Sans Arabic", "Tajawal", system-ui, sans-serif;
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-body: "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
@@ -256,10 +287,23 @@
     line-height: 1.5;
   }
 
-  /* Amiri sits small on the metric line; nudge display sizes up in RTL
-     so Arabic and Latin headings feel the same weight on the page. */
+  /* The site's own voice: h1 — the masthead wordmark and every page's
+     title — carries the brand display face rather than the naskh used
+     for section headings within content. This is the one place display
+     type is allowed to announce the brand rather than serve the text. */
+  h1 {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
   html[dir="rtl"] h1 {
-    font-size: 1.06em;
+    font-family: var(--font-brand);
+    font-weight: 700;
+    letter-spacing: 0;
+    /* HT Baybars sits taller on the metric line than Amiri; the earlier
+       1.06em compensation (tuned for Amiri) would overshoot here. */
+    font-size: 1em;
   }
   html[dir="rtl"] h2 {
     font-size: 1.04em;

@@ -51,7 +51,7 @@ export function Footer() {
                 aria-hidden="true"
               />
               <div>
-                <p className="font-naskh text-lg leading-snug font-bold text-gold rtl:text-xl">
+                <p className="font-brand text-lg leading-snug font-bold text-gold rtl:text-xl">
                   {t(siteMeta.officialName)}
                 </p>
                 <p className="label-caps mt-1 text-ivory/45">{t(siteMeta.shortName)}</p>

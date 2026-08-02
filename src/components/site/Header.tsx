@@ -81,7 +81,7 @@ export function Header() {
             aria-hidden="true"
           />
           <span className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate font-naskh text-lg font-bold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold rtl:text-xl">
+            <span className="truncate font-brand text-lg font-bold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold rtl:text-xl">
               {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
             </span>
             <span className="label-caps truncate text-bronze transition-colors dark:text-gold-soft">
