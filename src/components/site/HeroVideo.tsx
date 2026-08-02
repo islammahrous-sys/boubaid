@@ -142,7 +142,7 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
       <div className="pointer-events-none absolute inset-0 z-[1]" aria-hidden="true">
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/40 to-ink" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_28%,rgba(0,0,0,0.6)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.12)_0%,transparent_65%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(237,167,70,0.12)_0%,transparent_65%)]" />
         {/* Extra bottom fade to solid ink — masks the video watermark before the colophon strip */}
         <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-ink/80 to-ink" />
       </div>

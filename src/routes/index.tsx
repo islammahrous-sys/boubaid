@@ -135,7 +135,7 @@ export function HomePage() {
           {/* Emblem — one mark, plainly presented, no glow */}
           <div className="mx-auto w-max motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
             <img
-              src="/logo-gold.png"
+              src="/logo-mark-gold.svg"
               alt=""
               className="h-24 w-24 object-contain md:h-32 md:w-32"
               aria-hidden="true"
@@ -155,7 +155,7 @@ export function HomePage() {
             aria-hidden="true"
           >
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-            <span className="ornament-star text-gold drop-shadow-[0_0_10px_rgba(212,175,55,0.6)]" />
+            <span className="ornament-star text-gold drop-shadow-[0_0_10px_rgba(237,167,70,0.6)]" />
             <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
           </div>
 
@@ -166,7 +166,7 @@ export function HomePage() {
           <div className="mt-12 flex flex-wrap items-center justify-center gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-1000 motion-safe:delay-1000">
             <Link
               to="/family-tree"
-              className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-7 py-3.5 text-sm font-bold text-ink shadow-[0_10px_40px_-10px_rgba(212,175,55,0.6)] transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.03] hover:shadow-[0_15px_50px_-10px_rgba(212,175,55,0.8)] active:scale-[0.98]"
+              className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-7 py-3.5 text-sm font-bold text-ink shadow-[0_10px_40px_-10px_rgba(237,167,70,0.6)] transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.03] hover:shadow-[0_15px_50px_-10px_rgba(237,167,70,0.8)] active:scale-[0.98]"
             >
               <span>{lang === "ar" ? "تصفح مشجرة النسب" : "Explore Family Tree"}</span>
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
@@ -248,6 +248,9 @@ export function HomePage() {
         </div>
       </HeroVideo>
 
+      {/* Paper-grain divider between the cinematic hero and the document body */}
+      <div className="h-5 w-full paper-texture opacity-25" aria-hidden="true" />
+
       {/* ── Opening statement ────────────────────────────────── */}
       <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
@@ -273,6 +276,22 @@ export function HomePage() {
             </Link>
           </div>
         </div>
+      </section>
+
+      {/* ── Heritage plate — a single field image between chapters ─ */}
+      <section className="reveal-on-scroll">
+        <figure className="relative">
+          <img
+            src={pageImages.home.heritage.src}
+            alt=""
+            className="photo-plate h-[42vh] min-h-[300px] w-full object-cover md:h-[58vh]"
+            loading="lazy"
+          />
+          <figcaption className="container-page mt-3 flex items-start gap-2.5 pt-3 text-xs leading-relaxed text-muted-foreground">
+            <span className="mt-1.5 h-px w-5 shrink-0 bg-bronze" aria-hidden="true" />
+            <span>{t(pageImages.home.heritage.caption)}</span>
+          </figcaption>
+        </figure>
       </section>
 
       {/* ── The seven branches, as an index ──────────────────── */}
@@ -438,7 +457,7 @@ export function HomePage() {
             <Link
               to="/news/$slug"
               params={{ slug: lead.slug }}
-              className="group block transition-transform duration-200 ease-out active:scale-[0.99]"
+              className="group block hover-lift active:scale-[0.99]"
             >
               <img
                 src={newsImage(lead.slug)}
@@ -465,7 +484,7 @@ export function HomePage() {
                 <Link
                   to="/news/$slug"
                   params={{ slug: n.slug }}
-                  className="group block border-b border-border py-5 transition-transform duration-150 ease-out active:scale-[0.99]"
+                  className="group block border-b border-border py-5 hover-lift active:scale-[0.99]"
                 >
                   <p className="nums label-caps text-muted-foreground">{n.dateGregorian}</p>
                   <h3 className="mt-1.5 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">

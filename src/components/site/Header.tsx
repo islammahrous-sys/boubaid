@@ -69,20 +69,20 @@ export function Header() {
           onClick={() => setOpen(false)}
         >
           <img
-            src="/logo-brown.png"
+            src="/logo-mark-brown.svg"
             alt=""
-            className="h-10 w-10 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:hidden"
+            className="h-11 w-11 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:hidden"
             aria-hidden="true"
           />
           <img
-            src="/logo-gold.png"
+            src="/logo-mark-gold.svg"
             alt=""
-            className="hidden h-10 w-10 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:block"
+            className="hidden h-11 w-11 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:block"
             aria-hidden="true"
           />
           <span className="flex min-w-0 flex-col leading-tight">
             <span className="truncate font-naskh text-lg font-bold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold rtl:text-xl">
-              {lang === "ar" ? "آل بوعبيد" : "Al Bu Obaid"}
+              {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
             </span>
             <span className="label-caps truncate text-bronze transition-colors dark:text-gold-soft">
               {lang === "ar" ? "صندوق التنمية العائلية" : "Family Development Org."}
@@ -101,7 +101,7 @@ export function Header() {
                 className={cn(
                   "rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
                   active
-                    ? "bg-bronze/10 text-bronze font-bold shadow-xs dark:bg-gold/15 dark:text-gold"
+                    ? "relative bg-bronze/10 text-bronze font-bold shadow-xs after:absolute after:-bottom-0.5 after:start-2 after:end-2 after:h-0.5 after:rounded-full after:bg-bronze dark:bg-gold/15 dark:text-gold dark:after:bg-gold"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
               >
@@ -119,7 +119,7 @@ export function Header() {
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
                 isSecondaryActive
-                  ? "bg-bronze/10 text-bronze font-bold shadow-xs dark:bg-gold/15 dark:text-gold"
+                  ? "relative bg-bronze/10 text-bronze font-bold shadow-xs after:absolute after:-bottom-0.5 after:start-2 after:end-2 after:h-0.5 after:rounded-full after:bg-bronze dark:bg-gold/15 dark:text-gold dark:after:bg-gold"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >

@@ -186,13 +186,13 @@ export function InitiativesPage() {
           {t(copy.scheduleTitle)}
         </h2>
 
-        <ol className="mt-8 border-t border-ink/25 dark:border-ivory/20">
+          <ol className="mt-8 border-t border-ink/25 dark:border-ivory/20">
           {initiatives.map((init, i) => (
             <li key={init.slug} className="border-b border-border">
               <Link
                 to="/initiatives/$slug"
                 params={{ slug: init.slug }}
-                className="group grid gap-x-6 gap-y-2 py-6 md:grid-cols-[2.5rem_minmax(0,18rem)_1fr_auto] md:items-baseline"
+                className="group grid gap-x-6 gap-y-2 py-6 transition-[color,background-color,transform] duration-200 ease-out hover:bg-secondary/40 active:scale-[0.98] md:grid-cols-[2.5rem_minmax(0,18rem)_1fr_auto] md:items-baseline"
               >
                 <span
                   className="nums font-mono text-sm text-bronze/70 dark:text-gold/60"

@@ -27,6 +27,13 @@ export const pageImages = {
         en: "Architectural rendering of the permanent headquarters, Al-Hizam Al-Dhahabi, Al-Mubarraz.",
       },
     } satisfies Figure,
+    heritage: {
+      src: "/images/heritage_grove_dawn.jpg",
+      caption: {
+        ar: "بستان نخيل تاريخي بواحة الأحساء عند الفجر — المشهد الذي تدور حوله الأوقاف والعائلة.",
+        en: "A historic palm grove at dawn in the Al-Ahsa oasis — the landscape around which the family's endowments have turned.",
+      },
+    } satisfies Figure,
   },
 
   about: {
@@ -89,6 +96,13 @@ export const pageImages = {
         },
       },
     ] satisfies Figure[],
+    dnaAbstract: {
+      src: "/images/about_dna_abstract.jpg",
+      caption: {
+        ar: "تصوير تجريدي للشجرة الجينية — ربط النسب الكتابي بالأدلة الجينية.",
+        en: "An abstract rendering of the genetic family tree — connecting written lineage with genetic evidence.",
+      },
+    } satisfies Figure,
   },
 
   foundation: {
@@ -111,6 +125,13 @@ export const pageImages = {
       caption: {
         ar: "أوقاف النخيل وعيون المياه بالأحساء — الركيزة الاقتصادية المستدامة للمشاريع العائلية والخيرية.",
         en: "Palm endowments and water channels in Al-Ahsa — the sustainable economic foundation for family and charitable projects.",
+      },
+    } satisfies Figure,
+    secretariat: {
+      src: "/images/foundation_secretariat.jpg",
+      caption: {
+        ar: "مكتب الأمانة العامة — حيث تُحال المراسلات إلى اللجان المختصة وتُدون قرارات الحوكمة.",
+        en: "The secretariat office — where correspondence is routed to committees and governance resolutions are recorded.",
       },
     } satisfies Figure,
   },
@@ -142,6 +163,23 @@ export const pageImages = {
       caption: {
         ar: "من برامج التكافل الرمضانية الممولة من اشتراكات أبناء الأسرة.",
         en: "One of the Ramadan solidarity programmes funded by members' subscriptions.",
+      },
+    } satisfies Figure,
+    stewardship: {
+      src: "/images/contribute_stewardship.jpg",
+      caption: {
+        ar: "رعاية أشجار النخيل بأوقاف الأسرة — استمرار مبدأ الوقف بأيدي الجيل الحاضر.",
+        en: "Tending the family's endowed palm grove — the principle of waqf carried forward by the present generation.",
+      },
+    } satisfies Figure,
+  },
+
+  achievers: {
+    header: {
+      src: "/images/achievers_hall_plate.jpg",
+      caption: {
+        ar: "قاعة تكريم المتفوقين — الاحتفاء السنوي بأبناء الأسرة المتميزين في العلم والعمل.",
+        en: "The honours hall — the family's annual recognition of members distinguished in learning and service.",
       },
     } satisfies Figure,
   },
@@ -189,8 +227,15 @@ export const initiativeImages: Record<string, string> = {
   "national-volunteering": "/images/initiative_volunteering.png",
 };
 
-export const initiativeImageFallback = "/images/fallback_initiative.png";
+export const initiativeImageFallbackCultural = "/images/fallback_initiative_cultural.jpg";
+export const initiativeImageFallbackSocial = "/images/fallback_initiative_social.jpg";
 
 export function initiativeImage(slug: string): string {
-  return initiativeImages[slug] ?? initiativeImageFallback;
+  if (initiativeImages[slug]) return initiativeImages[slug];
+  return slug === "headquarters"
+    ? initiativeImageFallbackCultural
+    : initiativeImageFallbackSocial;
 }
+
+/** @deprecated kept for compatibility */
+export const initiativeImageFallback = initiativeImageFallbackSocial;

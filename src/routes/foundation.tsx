@@ -274,6 +274,26 @@ export function FoundationPage() {
           </div>
         </section>
 
+        {/* ── Secretariat / organisational-plate interlude ───── */}
+        <section className="container-page mt-16">
+          <figure className="reveal-on-scroll">
+            <img
+              src={pageImages.foundation.secretariat.src}
+              alt=""
+              className="photo-plate aspect-[16/7] w-full object-cover"
+              loading="lazy"
+            />
+            <figcaption className="mt-3 flex gap-3 border-t border-border pt-3">
+              <span className="nums label-caps shrink-0 text-bronze dark:text-gold">
+                {rtl ? "لوحة الأمانة العامة" : "Secretariat Plate"}
+              </span>
+              <span className="text-[13px] leading-relaxed text-muted-foreground">
+                {t(pageImages.foundation.secretariat.caption)}
+              </span>
+            </figcaption>
+          </figure>
+        </section>
+
         {/* ── Article III — committees ───────────────────────── */}
         <section className="mt-16 border-t border-border pt-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
@@ -288,11 +308,11 @@ export function FoundationPage() {
             </div>
 
             <div>
-              <ol>
+              <dl className="border-t border-border">
                 {committees.map((c, i) => (
-                  <li
+                  <div
                     key={c.id}
-                    className="grid grid-cols-[2.5rem_1fr] gap-x-5 border-b border-border py-5 first:border-t"
+                    className="grid grid-cols-[2.5rem_1fr] gap-x-5 border-b border-border py-5 transition-colors hover:bg-secondary/30"
                   >
                     <span
                       className="nums font-mono text-sm text-bronze/70 dark:text-gold/60"
@@ -301,20 +321,20 @@ export function FoundationPage() {
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div>
-                      <h3 className="text-[15px] font-semibold text-foreground">{t(c.name)}</h3>
-                      <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                      <dt className="text-[15px] font-semibold text-foreground">{t(c.name)}</dt>
+                      <dd className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
                         {t(c.desc)}
-                      </p>
-                      <p className="mt-2.5 text-[13px]">
+                      </dd>
+                      <dd className="mt-2.5 text-[13px]">
                         <span className="label-caps me-2 text-muted-foreground">
                           {t(copy.chairLabel)}
                         </span>
                         <span className="text-foreground">{t(c.lead)}</span>
-                      </p>
+                      </dd>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ol>
+              </dl>
 
               <figure className="mt-10">
                 <img

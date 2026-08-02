@@ -17,9 +17,9 @@
                 extend: {
                     fontFamily: { sans: ['Cairo', 'sans-serif'] },
                     colors: {
-                        saudi: { green: '#006C35', dark: '#044724', light: '#E8F3EC' },
-                        gold: { 300: '#F3E5AB', 400: '#D4AF37', 500: '#C5A059', 600: '#9E7C30' },
-                        desert: { 50: '#FDFBF7', 100: '#F4F1EA' }
+                        saudi: { green: '#26583C', dark: '#78462A', light: '#FDE7D6' },
+                        gold: { 300: '#F7D9A8', 400: '#EDA746', 500: '#BE744A', 600: '#8B5433' },
+                        desert: { 50: '#FBF3EA', 100: '#F5E6D8' }
                     }
                 }
             }
@@ -36,7 +36,7 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Cairo', sans-serif;
-            background-color: #FDFBF7;
+            background-color: #FBF3EA;
             /* Premium Islamic Geometric Background */
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
@@ -64,13 +64,13 @@
 
         .link {
             fill: none;
-            stroke: #D4AF37;
+            stroke: #EDA746;
             stroke-opacity: 0.4;
             stroke-width: 2px;
             transition: stroke 0.3s, stroke-width 0.3s, stroke-opacity 0.3s;
         }
         .link.path-highlight {
-            stroke: #006C35;
+            stroke: #26583C;
             stroke-width: 4px;
             stroke-opacity: 1;
         }
@@ -82,7 +82,7 @@
         }
 
         .node-group:hover .node-bg {
-            stroke: #D4AF37 !important;
+            stroke: #EDA746 !important;
             stroke-width: 3px !important;
         }
 
@@ -93,7 +93,7 @@
         }
         
         .node--highlighted .node-bg {
-            stroke: #006C35 !important;
+            stroke: #26583C !important;
             animation: pulse-shadow 1.5s infinite;
         }
         
@@ -522,13 +522,13 @@
                         .attr('y', -22) 
                         .attr('rx', 22) 
                         .attr('fill', d => {
-                            if (d.data.isRoot) return "#044724"; 
-                            if (d.data.isBranch) return "#E8F3EC"; 
+                            if (d.data.isRoot) return "#78462A"; 
+                            if (d.data.isBranch) return "#FDE7D6"; 
                             return "#ffffff"; 
                         })
                         .attr('stroke', d => {
-                            if (d.data.isRoot) return "#D4AF37"; 
-                            if (d.data.isBranch) return "#006C35"; 
+                            if (d.data.isRoot) return "#EDA746"; 
+                            if (d.data.isBranch) return "#26583C"; 
                             return "#d1d5db"; 
                         })
                         .attr('stroke-width', d => d.data.isRoot ? 3 : (d._children ? 2 : 1));
@@ -538,7 +538,7 @@
                         .attr('dy', d => d.data.title ? -5 : 5) 
                         .attr('text-anchor', 'middle')
                         .text(d => d.data.name)
-                        .style('fill', d => d.data.isRoot ? "#ffffff" : "#044724")
+                        .style('fill', d => d.data.isRoot ? "#ffffff" : "#78462A")
                         .style('font-weight', d => d.data.isRoot || d.data.isBranch ? '800' : '600')
                         .style('font-size', d => d.data.isRoot ? '16px' : '14px')
                         .style('pointer-events', 'none');
@@ -548,7 +548,7 @@
                         .attr('dy', 14)
                         .attr('text-anchor', 'middle')
                         .text(d => d.data.title)
-                        .style('fill', '#C5A059')
+                        .style('fill', '#BE744A')
                         .style('font-weight', '700')
                         .style('font-size', '11px')
                         .style('pointer-events', 'none');
@@ -561,7 +561,7 @@
                         
                     indicatorGroup.append('circle')
                         .attr('r', 5)
-                        .style('fill', '#D4AF37')
+                        .style('fill', '#EDA746')
                         .style('stroke', '#fff')
                         .style('stroke-width', '2px');
 

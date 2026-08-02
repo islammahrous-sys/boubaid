@@ -52,7 +52,14 @@ const copy = {
   generationLabel: { ar: "الجيل", en: "Generation" } as BiText,
   all: { ar: "الكل", en: "All" } as BiText,
   results: { ar: "نتيجة", en: "results" } as BiText,
-  empty: { ar: "لا توجد نتائج مطابقة.", en: "No matching records." } as BiText,
+  empty: {
+    ar: "لا توجد نتائج مطابقة لبحثك. جرّب كلمة أخرى أو امسح عوامل التصفية.",
+    en: "No matching records for your search. Try another word or clear the filters.",
+  } as BiText,
+  searchHint: {
+    ar: "ابدأ بكتابة اسم، فرع، أو قرية…",
+    en: "Start typing a name, branch, or village…",
+  } as BiText,
   clear: { ar: "إعادة ضبط", en: "Reset" } as BiText,
 
   rootBadge: { ar: "الجد الجامع", en: "Root ancestor" } as BiText,
@@ -165,7 +172,7 @@ export function FamilyTreePage() {
         <iframe
           src="/interactive-tree.html"
           title={t(copy.title)}
-          className="block h-[70vh] min-h-[32rem] w-full border-0 bg-[#FDFBF7]"
+          className="block h-[70vh] min-h-[32rem] w-full border-0 bg-card"
         />
       </div>
 
@@ -181,6 +188,18 @@ export function FamilyTreePage() {
           </p>
         </div>
       </aside>
+
+      {/* ── Decorative tree-plate header ─────────────────────── */}
+      <section className="container-page py-10 md:py-12">
+        <div className="reveal-on-scroll">
+          <img
+            src="/images/family_tree_header_plate.jpg"
+            alt=""
+            className="photo-plate aspect-[21/9] w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      </section>
 
       {/* ── The official commissioned artwork, alongside the digital explorer ── */}
       <section className="container-page py-12 md:py-14">
@@ -251,7 +270,7 @@ export function FamilyTreePage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t(copy.searchPlaceholder)}
-                className="w-full rounded-lg border border-input/60 bg-background/70 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow] duration-150 ease-out focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] ps-11 pe-3.5 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
+                className="w-full rounded-lg border border-input/60 bg-background/70 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow] duration-150 ease-out focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(139,84,51,0.15)] ps-11 pe-3.5 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(237,167,70,0.15)]"
               />
             </div>
           </div>
@@ -264,7 +283,7 @@ export function FamilyTreePage() {
               id="tree-branch"
               value={branchId}
               onChange={(e) => setBranchId(e.target.value)}
-              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] active:scale-[0.98] md:w-52 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
+              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(139,84,51,0.15)] active:scale-[0.98] md:w-52 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(237,167,70,0.15)]"
             >
               <option value="all">{t(copy.all)}</option>
               {branches.map((b) => (
@@ -285,7 +304,7 @@ export function FamilyTreePage() {
               onChange={(e) =>
                 setGeneration(e.target.value === "all" ? "all" : Number(e.target.value))
               }
-              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] active:scale-[0.98] md:w-40 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
+              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(139,84,51,0.15)] active:scale-[0.98] md:w-40 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(237,167,70,0.15)]"
             >
               <option value="all">{t(copy.all)}</option>
               {[1, 2, 3, 4].map((g) => (
@@ -310,7 +329,10 @@ export function FamilyTreePage() {
 
         {/* Results, grouped by generation */}
         {filtered.length === 0 ? (
-          <p className="py-20 text-center text-sm text-muted-foreground">{t(copy.empty)}</p>
+          <div className="py-20 text-center">
+            <p className="text-sm font-medium text-foreground">{t(copy.empty)}</p>
+            <p className="mt-2 text-xs text-muted-foreground">{t(copy.searchHint)}</p>
+          </div>
         ) : (
           grouped.map(([gen, members]) => (
             <section key={gen} className="mt-10">
