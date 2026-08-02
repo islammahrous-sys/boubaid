@@ -62,29 +62,29 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container-page flex h-[4.5rem] items-center justify-between gap-4">
+      <div className="container-page flex h-24 items-center justify-between gap-4 py-2 md:h-28">
         <Link
           to="/"
-          className="group flex shrink-0 items-center gap-3 transition-transform duration-200 ease-out active:scale-[0.98]"
+          className="group flex shrink-0 items-center gap-4 transition-transform duration-200 ease-out active:scale-[0.98]"
           onClick={() => setOpen(false)}
         >
           <img
             src="/logo-mark-brown.svg"
             alt=""
-            className="h-11 w-11 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:hidden"
+            className="h-16 w-16 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 md:h-20 md:w-20 dark:hidden"
             aria-hidden="true"
           />
           <img
             src="/logo-mark-gold.svg"
             alt=""
-            className="hidden h-11 w-11 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 dark:block"
+            className="hidden h-16 w-16 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 md:h-20 md:w-20 dark:block"
             aria-hidden="true"
           />
           <span className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate font-brand text-lg font-bold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold rtl:text-xl">
+            <span className="truncate font-brand text-xl font-bold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold rtl:text-2xl md:text-2xl">
               {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
             </span>
-            <span className="label-caps truncate text-bronze transition-colors dark:text-gold-soft">
+            <span className="label-caps truncate text-bronze transition-colors text-xs md:text-sm dark:text-gold-soft">
               {lang === "ar" ? "صندوق التنمية العائلية" : "Family Development Org."}
             </span>
           </span>

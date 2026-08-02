@@ -43,18 +43,18 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.4fr_2fr] lg:gap-16">
           {/* Colophon */}
           <div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
               <img
                 src="/logo-mark-gold.svg"
                 alt=""
-                className="h-16 w-16 shrink-0 object-contain"
+                className="h-28 w-28 shrink-0 object-contain drop-shadow-[0_4px_20px_rgba(237,167,70,0.25)] md:h-36 md:w-36"
                 aria-hidden="true"
               />
               <div>
-                <p className="font-brand text-lg leading-snug font-bold text-gold rtl:text-xl">
+                <p className="font-brand text-xl leading-snug font-bold text-gold rtl:text-2xl md:text-3xl">
                   {t(siteMeta.officialName)}
                 </p>
-                <p className="label-caps mt-1 text-ivory/45">{t(siteMeta.shortName)}</p>
+                <p className="label-caps mt-1.5 text-sm text-ivory/60">{t(siteMeta.shortName)}</p>
               </div>
             </div>
 
