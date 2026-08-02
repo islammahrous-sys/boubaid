@@ -4,12 +4,7 @@ import { useState } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { navGroups, isRouteActive } from "@/content/navigation";
-import {
-  PalmGlyph,
-  CompassGlyph,
-  BookGlyph,
-  SealGlyph,
-} from "@/components/site/Glyphs";
+import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
 import {
   Drawer,
   DrawerContent,

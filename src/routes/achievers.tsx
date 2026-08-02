@@ -165,8 +165,12 @@ export function AchieversPage() {
                     </span>
                     <span className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs text-bronze dark:text-gold">
                       <span>{t(person.field)}</span>
-                      <span className="hidden text-border md:inline" aria-hidden="true">·</span>
-                      <span className="hidden text-muted-foreground md:inline">{t(person.branch)}</span>
+                      <span className="hidden text-border md:inline" aria-hidden="true">
+                        ·
+                      </span>
+                      <span className="hidden text-muted-foreground md:inline">
+                        {t(person.branch)}
+                      </span>
                     </span>
                   </span>
 

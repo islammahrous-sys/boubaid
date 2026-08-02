@@ -186,7 +186,7 @@ export function InitiativesPage() {
           {t(copy.scheduleTitle)}
         </h2>
 
-          <ol className="mt-8 border-t border-ink/25 dark:border-ivory/20">
+        <ol className="mt-8 border-t border-ink/25 dark:border-ivory/20">
           {initiatives.map((init, i) => (
             <li key={init.slug} className="border-b border-border">
               <Link

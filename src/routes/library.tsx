@@ -509,7 +509,9 @@ export function LibraryPage() {
                             <p className="line-clamp-2 text-sm font-medium text-white drop-shadow-sm">
                               {t(p.title)}
                             </p>
-                            <p className="text-xs text-white/90">{p.category} · {p.year} هـ</p>
+                            <p className="text-xs text-white/90">
+                              {p.category} · {p.year} هـ
+                            </p>
                           </div>
                         </div>
                         <div className="p-4">

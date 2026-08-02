@@ -97,9 +97,9 @@ function NewsDetail() {
 
       {/* Body */}
       <div className="mx-auto mt-10 max-w-3xl">
-          <div className="measure mx-auto text-[0.95rem] leading-[1.95] text-ink-soft dark:text-foreground/85">
-            <p className="drop-cap whitespace-pre-line">{t(item.body)}</p>
-          </div>
+        <div className="measure mx-auto text-[0.95rem] leading-[1.95] text-ink-soft dark:text-foreground/85">
+          <p className="drop-cap whitespace-pre-line">{t(item.body)}</p>
+        </div>
 
         <Ornament className="my-10" />
 

@@ -567,11 +567,20 @@ html[dir="rtl"] .drop-cap::first-letter {
   animation: glyph-breathe 6s ease-in-out infinite;
 }
 @keyframes glyph-breathe {
-  0%, 100% { opacity: 0.75; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hover-lift:hover { transform: none; }
-  .glyph-breathe { animation: none; }
+  .hover-lift:hover {
+    transform: none;
+  }
+  .glyph-breathe {
+    animation: none;
+  }
 }
