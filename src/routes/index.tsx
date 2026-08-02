@@ -132,27 +132,21 @@ export function HomePage() {
       {/* ── Cinematic frontispiece ───────────────────────────── */}
       <HeroVideo poster="/images/ahsa_oasis.png">
         <div className="container-page flex min-h-[86vh] flex-col items-center justify-center py-24 text-center md:min-h-[92vh]">
-          {/* Emblem */}
-          <div className="relative mx-auto w-max motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-1000">
-            <div
-              className="absolute -inset-4 rounded-full bg-gold/15 blur-2xl motion-safe:animate-pulse"
+          {/* Emblem — one mark, plainly presented, no glow */}
+          <div className="mx-auto w-max motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+            <img
+              src="/logo-gold.png"
+              alt=""
+              className="h-24 w-24 object-contain md:h-32 md:w-32"
               aria-hidden="true"
             />
-            <div className="relative grid h-28 w-28 place-items-center rounded-full border border-gold/40 bg-ink/40 backdrop-blur-sm shadow-[0_0_60px_rgba(212,175,55,0.25)] md:h-36 md:w-36">
-              <img
-                src="/logo-gold.png"
-                alt=""
-                className="h-20 w-20 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.4)] md:h-28 md:w-28"
-                aria-hidden="true"
-              />
-            </div>
           </div>
 
-          <p className="label-caps mt-10 text-gold/90 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700 motion-safe:delay-200">
+          <p className="label-caps mt-8 text-gold/90 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
             {t(siteMeta.ncnpAuthority)}
           </p>
 
-          <h1 className="mx-auto mt-5 max-w-4xl text-balance font-naskh text-4xl font-bold leading-[1.2] text-transparent bg-gradient-to-b from-ivory via-ivory to-gold-soft bg-clip-text drop-shadow-[0_4px_24px_rgba(0,0,0,0.6)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-300 md:text-6xl lg:text-7xl">
+          <h1 className="mx-auto mt-5 max-w-4xl text-balance font-naskh text-4xl leading-[1.2] font-bold text-ivory motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 md:text-6xl lg:text-7xl">
             {t(siteMeta.officialName)}
           </h1>
 

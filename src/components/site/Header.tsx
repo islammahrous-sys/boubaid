@@ -134,7 +134,7 @@ export function Header() {
             </button>
 
             {moreOpen ? (
-              <div className="absolute top-full mt-2 w-[30rem] rounded-lg border border-border bg-popover p-6 shadow-xl end-0 transition-[opacity,transform] animate-in fade-in-0 zoom-in-95 duration-150 ease-out origin-top-right rtl:origin-top-left">
+              <div className="absolute top-full end-0 mt-2 w-[30rem] origin-top-right border border-border bg-popover p-6 transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rtl:origin-top-left">
                 <div className="grid grid-cols-2 gap-x-8 gap-y-6">
                   {navGroups.map((group) => (
                     <div key={group.title.en}>
@@ -150,10 +150,10 @@ export function Header() {
                                 to={n.to}
                                 onClick={() => setMoreOpen(false)}
                                 className={cn(
-                                  "block py-1 text-[13px] transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.98] rounded-xs px-1",
+                                  "block py-1 text-[13px] transition-colors",
                                   active
                                     ? "font-bold text-bronze dark:text-gold"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
+                                    : "text-muted-foreground hover:text-foreground",
                                 )}
                               >
                                 {t(n.label)}
@@ -171,7 +171,7 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="hidden items-center gap-1 rounded-md border border-border/60 bg-secondary/40 px-1 py-1 sm:inline-flex">
+          <div className="hidden items-center gap-1 border border-border/60 bg-secondary/40 px-1 py-1 sm:inline-flex">
             <ThemeToggle tone="default" />
             <span className="h-4 w-px bg-border" aria-hidden="true" />
             <LanguageSwitcher tone="default" />
@@ -182,7 +182,7 @@ export function Header() {
           </div>
           <Link
             to="/contribute"
-            className="hidden items-center rounded-md border border-gold/80 bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-4 py-2 text-[13px] font-bold text-ink shadow-sm transition-all duration-200 hover:scale-102 hover:shadow-md sm:inline-flex"
+            className="hidden items-center border border-gold bg-gold px-4 py-2 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold sm:inline-flex"
           >
             {lang === "ar" ? "الاشتراك" : "Subscribe"}
           </Link>
@@ -199,7 +199,7 @@ export function Header() {
                   : "Open menu"
             }
             aria-expanded={open}
-            className="grid h-9 w-9 place-items-center rounded-md border border-border text-foreground transition-colors hover:bg-secondary lg:hidden"
+            className="grid h-9 w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary lg:hidden"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
@@ -242,7 +242,7 @@ export function Header() {
             <Link
               to="/contribute"
               onClick={() => setOpen(false)}
-              className="mt-2 block rounded-md border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-4 py-3.5 text-center text-sm font-bold text-ink shadow-sm"
+              className="mt-2 block border border-gold bg-gold px-4 py-3.5 text-center text-sm font-bold text-ink"
             >
               {lang === "ar" ? "الاشتراك والمساهمة" : "Subscribe & Contribute"}
             </Link>

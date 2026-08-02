@@ -95,40 +95,47 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
 
   return (
     <section className={"relative isolate overflow-hidden bg-ink text-ivory " + (className ?? "")}>
-      {/* Poster / video wrapper — cropped to hide bottom-right watermark on desktop */}
-      <div className="absolute inset-0 z-0 origin-top scale-100 lg:scale-[1.28] lg:origin-[30%_top] motion-safe:animate-hero-zoom">
-        {poster ? (
-          <img
-            src={poster}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-cover object-[center_center] lg:object-[30%_top]"
-            fetchPriority="high"
-          />
-        ) : null}
+      {/* Two nested wrappers, not one — a static Tailwind `scale-*` utility
+          and a `transform`-driven keyframe animation on the same element
+          fight over the same CSS property and the animation always wins,
+          silently dropping the static scale. Splitting the desktop crop
+          (outer, static) from the slow zoom (inner, animated) lets both
+          apply at once. */}
+      <div className="absolute inset-0 z-0 origin-top scale-100 lg:origin-[30%_top] lg:scale-[1.28]">
+        <div className="h-full w-full motion-safe:animate-hero-zoom">
+          {poster ? (
+            <img
+              src={poster}
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover object-[center_center] lg:object-[30%_top]"
+              fetchPriority="high"
+            />
+          ) : null}
 
-        {showVideo && videoSrc && !errored ? (
-          <video
-            ref={attachVideo}
-            className={
-              "absolute inset-0 h-full w-full object-cover object-[center_center] lg:object-[30%_top] transition-opacity duration-[1400ms] ease-out " +
-              (loaded ? "opacity-100" : "opacity-0")
-            }
-            src={videoSrc}
-            poster={poster}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            {...({ "webkit-playsinline": "" } as Record<string, string>)}
-            disablePictureInPicture
-            disableRemotePlayback
-            aria-hidden="true"
-            onCanPlay={() => setLoaded(true)}
-            onError={handleError}
-          />
-        ) : null}
+          {showVideo && videoSrc && !errored ? (
+            <video
+              ref={attachVideo}
+              className={
+                "absolute inset-0 h-full w-full object-cover object-[center_center] lg:object-[30%_top] transition-opacity duration-[1400ms] ease-out " +
+                (loaded ? "opacity-100" : "opacity-0")
+              }
+              src={videoSrc}
+              poster={poster}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              {...({ "webkit-playsinline": "" } as Record<string, string>)}
+              disablePictureInPicture
+              disableRemotePlayback
+              aria-hidden="true"
+              onCanPlay={() => setLoaded(true)}
+              onError={handleError}
+            />
+          ) : null}
+        </div>
       </div>
 
       {/* Cinematic scrims — outside the transformed wrapper so gradients cover full frame */}
@@ -144,4 +151,3 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
     </section>
   );
 }
-
