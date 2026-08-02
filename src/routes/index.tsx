@@ -138,11 +138,11 @@ export function HomePage() {
               className="absolute -inset-4 rounded-full bg-gold/15 blur-2xl motion-safe:animate-pulse"
               aria-hidden="true"
             />
-            <div className="relative grid h-28 w-28 place-items-center rounded-full border border-gold/40 bg-ink/40 backdrop-blur-sm shadow-[0_0_60px_rgba(212,175,55,0.25)] md:h-36 md:w-36">
+            <div className="relative grid h-28 w-28 place-items-center rounded-full border border-gold/40 bg-ink/40 backdrop-blur-sm shadow-[0_0_60px_rgba(237,167,70,0.25)] md:h-36 md:w-36">
               <img
-                src="/logo-gold.png"
+                src="/logo-mark-gold.svg"
                 alt=""
-                className="h-20 w-20 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.4)] md:h-28 md:w-28"
+                className="h-[4.5rem] w-[4.5rem] object-contain drop-shadow-[0_0_20px_rgba(237,167,70,0.4)] md:h-24 md:w-24"
                 aria-hidden="true"
               />
             </div>
