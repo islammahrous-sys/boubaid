@@ -172,7 +172,7 @@ export function FamilyTreePage() {
         <iframe
           src="/interactive-tree.html"
           title={t(copy.title)}
-          className="block h-[70vh] min-h-[32rem] w-full border-0 bg-[#FDFBF7]"
+          className="block h-[70vh] min-h-[32rem] w-full border-0 bg-card"
         />
       </div>
 
@@ -270,7 +270,7 @@ export function FamilyTreePage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t(copy.searchPlaceholder)}
-                className="w-full rounded-lg border border-input/60 bg-background/70 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow] duration-150 ease-out focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] ps-11 pe-3.5 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
+                className="w-full rounded-lg border border-input/60 bg-background/70 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow] duration-150 ease-out focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(139,84,51,0.15)] ps-11 pe-3.5 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(237,167,70,0.15)]"
               />
             </div>
           </div>
@@ -283,7 +283,7 @@ export function FamilyTreePage() {
               id="tree-branch"
               value={branchId}
               onChange={(e) => setBranchId(e.target.value)}
-              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] active:scale-[0.98] md:w-52 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
+              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(139,84,51,0.15)] active:scale-[0.98] md:w-52 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(237,167,70,0.15)]"
             >
               <option value="all">{t(copy.all)}</option>
               {branches.map((b) => (
@@ -304,7 +304,7 @@ export function FamilyTreePage() {
               onChange={(e) =>
                 setGeneration(e.target.value === "all" ? "all" : Number(e.target.value))
               }
-              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(184,134,11,0.15)] active:scale-[0.98] md:w-40 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(255,215,0,0.15)]"
+              className="w-full rounded-lg border border-input/60 bg-background/70 px-3.5 py-2.5 text-sm outline-none backdrop-blur-sm transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:border-foreground/40 focus:border-bronze focus:bg-background focus:shadow-[0_0_0_3px_rgba(139,84,51,0.15)] active:scale-[0.98] md:w-40 dark:border-ivory/20 dark:bg-ivory/5 dark:focus:border-gold dark:focus:bg-ink dark:focus:shadow-[0_0_0_3px_rgba(237,167,70,0.15)]"
             >
               <option value="all">{t(copy.all)}</option>
               {[1, 2, 3, 4].map((g) => (
