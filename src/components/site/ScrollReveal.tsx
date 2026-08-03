@@ -109,7 +109,9 @@ export function ScrollReveal() {
       // hydrated header/footer, which would let the scan start too soon.
       const all = document.querySelectorAll(ALL);
       const last = all[all.length - 1];
-      if (!last || isHydrated(last) || tries > 60) {
+      const ready = document.readyState === "complete";
+      if (!last || ((ready || tries > 20) && isHydrated(last)) || tries > 60) {
+
 
         scan();
         return;
