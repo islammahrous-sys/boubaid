@@ -105,8 +105,12 @@ export function ScrollReveal() {
     let tries = 0;
     let poll = 0;
     const waitForHydration = () => {
-      const first = document.querySelector(ALL);
-      if (!first || isHydrated(first) || tries > 60) {
+      // Check the LAST candidate: earlier ones can live in the already
+      // hydrated header/footer, which would let the scan start too soon.
+      const all = document.querySelectorAll(ALL);
+      const last = all[all.length - 1];
+      if (!last || isHydrated(last) || tries > 60) {
+
         scan();
         return;
       }
