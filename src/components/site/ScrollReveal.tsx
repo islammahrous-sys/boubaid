@@ -83,17 +83,30 @@ export function ScrollReveal() {
       document.querySelectorAll<HTMLElement>(SELECTOR).forEach((el) => io.observe(el));
     };
 
-    scan();
+    /**
+     * Route content sits behind a Suspense boundary, so it hydrates a beat
+     * after this effect runs. Touching classes/styles before that lands makes
+     * React report a hydration mismatch and skip patching, so the first scan
+     * waits for the browser to go idle instead of firing immediately.
+     */
+    let idle = 0;
+    const startTimer = window.setTimeout(() => {
+      idle = window.requestAnimationFrame(scan);
+    }, 220);
+
     const unsub = router.subscribe("onResolved", () => {
       // Rescan after DOM commit.
       requestAnimationFrame(() => requestAnimationFrame(scan));
     });
 
     return () => {
+      window.clearTimeout(startTimer);
+      if (idle) cancelAnimationFrame(idle);
       unsub();
       io.disconnect();
     };
   }, [router]);
+
 
   return null;
 }
