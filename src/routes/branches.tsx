@@ -81,7 +81,7 @@ export function BranchesPage() {
       />
 
       {/* ── Index table — this page's signature device ───────── */}
-      <section className="border-b border-border bg-secondary/40">
+      <section className="reveal-on-scroll border-b border-border bg-secondary/40">
         <div className="container-page py-12 md:py-14">
           <Eyebrow>{t(copy.indexTitle)}</Eyebrow>
 
@@ -271,7 +271,7 @@ export function BranchesPage() {
                       href={b.treePoster}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group block max-w-xs border border-border"
+                      className="group card-craft active-scale block max-w-xs border border-border"
                     >
                       <img
                         src={b.treePoster}
@@ -298,7 +298,7 @@ export function BranchesPage() {
       </div>
 
       {/* ── Onward to the tree ───────────────────────────────── */}
-      <section className="border-t border-border bg-secondary/40">
+      <section className="reveal-on-scroll border-t border-border bg-secondary/40">
         <div className="container-page flex flex-wrap items-center justify-between gap-6 py-12">
           <p className="measure text-sm leading-relaxed text-muted-foreground">
             {t(copy.treeBody)}

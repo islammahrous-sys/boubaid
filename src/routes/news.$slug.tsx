@@ -143,7 +143,7 @@ function NewsDetail() {
 
         {/* Also in this issue */}
         {others.length > 0 ? (
-          <section className="mt-12">
+          <section className="reveal-on-scroll mt-12">
             <p className="label-caps border-b border-border pb-2 text-bronze dark:text-gold">
               {t(copy.alsoIn)}
             </p>

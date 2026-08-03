@@ -323,7 +323,7 @@ export function LibraryPage() {
 
         {/* ── Documents ──────────────────────────────────────── */}
         {tab === "documents" ? (
-          <section>
+          <section className="reveal-on-scroll">
             <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.docsNote)}
             </p>
@@ -407,7 +407,7 @@ export function LibraryPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-3 md:hidden">
+                <div className="reveal-stagger grid gap-3 md:hidden">
                   {filteredDocuments.map((d, i) => (
                     <div
                       key={i}
@@ -420,7 +420,7 @@ export function LibraryPage() {
                           doc: d,
                         })
                       }
-                      className="group cursor-pointer border border-border bg-card p-4 transition-colors hover:border-foreground"
+                      className="group card-craft active-scale cursor-pointer border border-border bg-card p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -458,13 +458,13 @@ export function LibraryPage() {
 
         {/* ── Photographs — archive cards ─────────────────────── */}
         {tab === "photographs" ? (
-          <section>
+          <section className="reveal-on-scroll">
             <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.photosNote)}
             </p>
 
             {filteredPhotos.length > 0 ? (
-              <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <ol className="reveal-stagger grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredPhotos.map((p, i) => {
                   const imageSrc = sheet[libraryItems.photos.indexOf(p) % sheet.length];
                   return (
@@ -491,7 +491,7 @@ export function LibraryPage() {
                             });
                           }
                         }}
-                        className="group cursor-pointer border border-border bg-card transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        className="group card-craft active-scale cursor-pointer border border-border bg-card focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                       >
                         <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
                           <img
@@ -537,13 +537,13 @@ export function LibraryPage() {
 
         {/* ── Recordings — video cards ────────────────────────── */}
         {tab === "recordings" ? (
-          <section>
+          <section className="reveal-on-scroll">
             <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.videosNote)}
             </p>
 
             {filteredVideos.length > 0 ? (
-              <ol className="grid gap-3">
+              <ol className="reveal-stagger grid gap-3">
                 {filteredVideos.map((v, i) => (
                   <li key={i}>
                     <div
@@ -555,7 +555,7 @@ export function LibraryPage() {
                           duration: v.duration,
                         })
                       }
-                      className="group flex cursor-pointer items-center justify-between gap-5 border border-border bg-card p-4 transition-colors hover:border-foreground"
+                      className="group card-craft active-scale flex cursor-pointer items-center justify-between gap-5 border border-border bg-card p-4"
                     >
                       <div className="flex items-center gap-4 min-w-0">
                         <button

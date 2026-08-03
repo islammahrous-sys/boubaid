@@ -15,6 +15,44 @@ export function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  /** Masthead condenses once the page has moved — the wordmark stays present
+   *  but stops taking the whole first screen. */
+  const [condensed, setCondensed] = useState(false);
+
+  /** Travelling underline. Measured from the active nav item so the rule
+   *  slides between destinations instead of jumping. */
+  const navRef = useRef<HTMLElement>(null);
+  const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
+
+  useEffect(() => {
+    const onScroll = () => setCondensed(window.scrollY > 28);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const measure = () => {
+      const nav = navRef.current;
+      if (!nav) return;
+      const el = nav.querySelector<HTMLElement>("[data-nav-active='true']");
+      if (!el) {
+        setIndicator(null);
+        return;
+      }
+      const navBox = nav.getBoundingClientRect();
+      const box = el.getBoundingClientRect();
+      setIndicator({ left: box.left - navBox.left, width: box.width });
+    };
+    // Wait for fonts/layout to settle before measuring.
+    const raf = requestAnimationFrame(() => requestAnimationFrame(measure));
+    window.addEventListener("resize", measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", measure);
+    };
+  }, [pathname, lang, condensed]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -43,11 +81,21 @@ export function Header() {
 
   const isSecondaryActive = secondaryNav.some((n) => isRouteActive(pathname, n.to));
 
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md text-foreground shadow-xs transition-all duration-300">
-      {/* Registration line. Stated plainly as public record. */}
-      <div className="border-b border-border/50 bg-secondary/60 py-1.5 text-foreground">
-        <div className="container-page flex items-center justify-center gap-2.5 text-center text-xs">
+    <header
+      data-condensed={condensed ? "true" : "false"}
+      className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md text-foreground shadow-xs transition-shadow duration-500 data-[condensed=true]:shadow-sm"
+    >
+      {/* Registration line. Stated plainly as public record — and folded away
+          once the reader has committed to the page. */}
+      <div
+        className={cn(
+          "overflow-hidden border-b border-border/50 bg-secondary/60 text-foreground transition-[max-height,opacity] duration-500 ease-out",
+          condensed ? "max-h-0 opacity-0" : "max-h-12 opacity-100",
+        )}
+      >
+        <div className="container-page flex items-center justify-center gap-2.5 py-1.5 text-center text-xs">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-0.5 text-[11px] font-medium text-amber-900 dark:text-gold">
             <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" aria-hidden="true" />
             {lang === "ar" ? "كيان أهلي مرخص" : "Licensed Nonprofit"}
@@ -62,46 +110,83 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container-page flex h-24 items-center justify-between gap-4 py-2 md:h-28">
+      <div
+        className={cn(
+          "container-page flex items-center justify-between gap-4 py-2 transition-[height] duration-500 ease-out",
+          condensed ? "h-16 md:h-18" : "h-24 md:h-28",
+        )}
+      >
         <Link
           to="/"
-          className="group flex shrink-0 items-center gap-4 transition-transform duration-200 ease-out active:scale-[0.98]"
+          className="group active-scale flex shrink-0 items-center gap-4"
           onClick={() => setOpen(false)}
         >
           <img
             src="/logo-mark-brown.svg"
             alt=""
-            className="h-16 w-16 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 md:h-20 md:w-20 dark:hidden"
+            className={cn(
+              "shrink-0 object-contain transition-[height,width,transform] duration-500 ease-out group-hover:scale-105 dark:hidden",
+              condensed ? "h-11 w-11 md:h-12 md:w-12" : "h-16 w-16 md:h-20 md:w-20",
+            )}
             aria-hidden="true"
           />
           <img
             src="/logo-mark-gold.svg"
             alt=""
-            className="hidden h-16 w-16 shrink-0 object-contain transition-transform duration-200 ease-out group-hover:scale-105 md:h-20 md:w-20 dark:block"
+            className={cn(
+              "hidden shrink-0 object-contain transition-[height,width,transform] duration-500 ease-out group-hover:scale-105 dark:block",
+              condensed ? "h-11 w-11 md:h-12 md:w-12" : "h-16 w-16 md:h-20 md:w-20",
+            )}
             aria-hidden="true"
           />
           <span className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate font-brand text-xl font-bold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold rtl:text-2xl md:text-2xl">
+            <span
+              className={cn(
+                "truncate font-brand font-bold text-foreground transition-[color,font-size] duration-500 group-hover:text-bronze dark:group-hover:text-gold",
+                condensed ? "text-lg rtl:text-xl md:text-xl" : "text-xl rtl:text-2xl md:text-2xl",
+              )}
+            >
               {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
             </span>
-            <span className="label-caps truncate text-bronze transition-colors text-xs md:text-sm dark:text-gold-soft">
+            <span
+              className={cn(
+                "label-caps truncate text-bronze transition-[max-height,opacity] duration-500 dark:text-gold-soft",
+                condensed
+                  ? "max-h-0 opacity-0"
+                  : "max-h-6 text-xs opacity-100 md:text-sm",
+              )}
+            >
               {lang === "ar" ? "صندوق التنمية العائلية" : "Family Development Org."}
             </span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
+        <nav ref={navRef} className="relative hidden items-center gap-1 lg:flex" aria-label="Primary">
+          {/* One rule that travels, rather than a rule per item. */}
+          <span
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute bottom-0 h-0.5 rounded-full bg-bronze transition-[transform,width,opacity] duration-500 dark:bg-gold",
+              indicator ? "opacity-100" : "opacity-0",
+            )}
+            style={{
+              width: indicator ? `${indicator.width - 14}px` : 0,
+              transform: `translateX(${indicator ? indicator.left + 7 : 0}px)`,
+              transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          />
           {primaryNav.map((n) => {
             const active = isRouteActive(pathname, n.to);
             return (
               <Link
                 key={n.to}
                 to={n.to}
+                data-nav-active={active ? "true" : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
+                  "nav-link active-scale rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
                   active
-                    ? "relative bg-bronze/10 text-bronze font-bold shadow-xs after:absolute after:-bottom-0.5 after:start-2 after:end-2 after:h-0.5 after:rounded-full after:bg-bronze dark:bg-gold/15 dark:text-gold dark:after:bg-gold"
+                    ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
               >
@@ -116,22 +201,24 @@ export function Header() {
               onClick={() => setMoreOpen(!moreOpen)}
               aria-expanded={moreOpen}
               aria-haspopup="true"
+              data-nav-active={isSecondaryActive ? "true" : undefined}
               className={cn(
-                "flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.97]",
+                "active-scale flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
                 isSecondaryActive
-                  ? "relative bg-bronze/10 text-bronze font-bold shadow-xs after:absolute after:-bottom-0.5 after:start-2 after:end-2 after:h-0.5 after:rounded-full after:bg-bronze dark:bg-gold/15 dark:text-gold dark:after:bg-gold"
+                  ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
               {lang === "ar" ? "المزيد" : "More"}
               <ChevronDown
                 className={cn(
-                  "h-3.5 w-3.5 transition-transform duration-200",
+                  "h-3.5 w-3.5 transition-transform duration-300",
                   moreOpen && "rotate-180",
                 )}
                 aria-hidden="true"
               />
             </button>
+
 
             {moreOpen ? (
               <div className="absolute top-full end-0 mt-2 w-[30rem] origin-top-right border border-border bg-popover p-6 transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rtl:origin-top-left">

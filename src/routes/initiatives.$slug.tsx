@@ -90,7 +90,7 @@ function InitiativeDetail() {
           />
         </figure>
 
-        <section className="mt-10">
+        <section className="reveal-on-scroll mt-10">
           <p className="label-caps border-b border-border pb-2 text-bronze dark:text-gold">
             {t(copy.aboutTitle)}
           </p>
@@ -102,7 +102,7 @@ function InitiativeDetail() {
         <Ornament className="my-12" />
 
         {/* Enquiry */}
-        <section className="flex flex-wrap items-center justify-between gap-6 border-y border-border py-8">
+        <section className="reveal-on-scroll flex flex-wrap items-center justify-between gap-6 border-y border-border py-8">
           <div className="measure">
             <h2 className="text-lg text-foreground">{t(copy.contactTitle)}</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -119,11 +119,11 @@ function InitiativeDetail() {
         </section>
 
         {/* Other programmes */}
-        <section className="mt-12">
+        <section className="reveal-on-scroll mt-12">
           <p className="label-caps border-b border-border pb-2 text-muted-foreground">
             {t(copy.otherTitle)}
           </p>
-          <ol className="grid gap-x-12 sm:grid-cols-2">
+          <ol className="reveal-stagger grid gap-x-12 sm:grid-cols-2">
             {others.map((other) => (
               <li key={other.slug} className="border-b border-border">
                 <Link

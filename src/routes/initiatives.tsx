@@ -87,7 +87,7 @@ export function InitiativesPage() {
       />
 
       {/* ── Flagship: the headquarters, given a spec sheet ──── */}
-      <section className="border-b border-border bg-secondary/40">
+      <section className="reveal-on-scroll border-b border-border bg-secondary/40">
         <div className="container-page py-14 md:py-16">
           <Eyebrow>{t(copy.flagshipEyebrow)}</Eyebrow>
           <h2 className="mt-3 max-w-3xl text-2xl leading-tight text-foreground md:text-3xl">
@@ -180,7 +180,7 @@ export function InitiativesPage() {
       </section>
 
       {/* ── Programme schedule ──────────────────────────────── */}
-      <section className="container-page py-14 md:py-16">
+      <section className="reveal-on-scroll container-page py-14 md:py-16">
         <Eyebrow>{t(copy.scheduleEyebrow)}</Eyebrow>
         <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
           {t(copy.scheduleTitle)}
@@ -221,7 +221,7 @@ export function InitiativesPage() {
       </section>
 
       {/* ── Support ─────────────────────────────────────────── */}
-      <section className="border-t border-border bg-secondary/40">
+      <section className="reveal-on-scroll border-t border-border bg-secondary/40">
         <div className="container-page flex flex-wrap items-center justify-between gap-6 py-12">
           <div className="measure">
             <h2 className="text-xl text-foreground">{t(copy.supportTitle)}</h2>

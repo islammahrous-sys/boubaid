@@ -106,7 +106,7 @@ export function NewsPage() {
         <div className="container-page py-12 md:py-14">
           {/* Lead */}
           <article className="border-b border-border pb-12">
-            <Link to="/news/$slug" params={{ slug: lead.slug }} className="group block">
+            <Link to="/news/$slug" params={{ slug: lead.slug }} className="group active-scale block">
               <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
                 <img
                   src={newsImage(lead.slug)}
@@ -144,13 +144,13 @@ export function NewsPage() {
 
           {/* Remaining stories, set in columns like a news page */}
           {rest.length > 0 ? (
-            <section className="pt-10">
+            <section className="reveal-on-scroll pt-10">
               <Eyebrow>{t(copy.more)}</Eyebrow>
 
-              <div className="mt-6 grid gap-x-12 md:grid-cols-2 lg:grid-cols-3">
+              <div className="reveal-stagger mt-6 grid gap-x-12 md:grid-cols-2 lg:grid-cols-3">
                 {rest.map((n) => (
                   <article key={n.slug} className="border-t border-border py-6">
-                    <Link to="/news/$slug" params={{ slug: n.slug }} className="group block">
+                    <Link to="/news/$slug" params={{ slug: n.slug }} className="group active-scale block">
                       <div className="flex items-center gap-3">
                         <span className="label-caps text-bronze dark:text-gold">
                           {sectionLabel(n.section)}

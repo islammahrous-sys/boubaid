@@ -319,7 +319,7 @@ export function AboutPage() {
       <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <SectionHeading eyebrow={t(copy.platesEyebrow)} title={t(copy.platesTitle)} />
 
-        <div className="mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2">
+        <div className="reveal-stagger mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2">
           {pageImages.about.plates.map((plate, i) => (
             <figure key={i}>
               <img
