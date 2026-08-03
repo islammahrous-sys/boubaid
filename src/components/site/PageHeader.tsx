@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "./Editorial";
+import { PlateImage } from "./Plate";
+
 
 export interface PageHeaderMeta {
   label: ReactNode;
@@ -167,12 +169,13 @@ function PlateHeader({
           {image ? (
             <figure className="lg:justify-self-end">
               <div className="border border-ivory/15 p-1.5">
-                <img
+                <PlateImage
                   src={image}
                   alt=""
                   className="photo-plate aspect-[4/3] w-full object-cover lg:aspect-[5/4]"
                   loading="eager"
                 />
+
               </div>
               {imageCaption ? (
                 <figcaption className="mt-3 flex items-start gap-2.5 text-xs leading-relaxed text-ivory/50">

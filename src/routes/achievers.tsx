@@ -192,7 +192,7 @@ export function AchieversPage() {
       </div>
 
       {/* ── Nominations ──────────────────────────────────────── */}
-      <section className="border-t border-border bg-secondary/40">
+      <section className="reveal-on-scroll border-t border-border bg-secondary/40">
         <div className="container-page flex flex-wrap items-center justify-between gap-6 py-12">
           <div className="measure">
             <h2 className="text-xl text-foreground">{t(copy.nominateTitle)}</h2>

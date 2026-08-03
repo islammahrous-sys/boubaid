@@ -140,7 +140,7 @@ export function DirectoryPage() {
           <p className="py-20 text-center text-sm text-muted-foreground">{t(copy.empty)}</p>
         ) : (
           grouped.map(([sector, items]) => (
-            <section key={sector} className="mt-12 first:mt-10">
+            <section key={sector} className="reveal-on-scroll mt-12 first:mt-10">
               <Eyebrow>{t(items[0].category)}</Eyebrow>
 
               <ol className="mt-4 border-t border-ink/25 dark:border-ivory/20">

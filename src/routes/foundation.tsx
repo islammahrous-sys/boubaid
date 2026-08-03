@@ -173,7 +173,7 @@ export function FoundationPage() {
 
       <div className="container-page py-14 md:py-16">
         {/* ── Article I — mandate ────────────────────────────── */}
-        <section className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
+        <section className="reveal-on-scroll grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
           <div>
             <Eyebrow>{t(copy.mandateEyebrow)}</Eyebrow>
             <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
@@ -219,7 +219,7 @@ export function FoundationPage() {
         </section>
 
         {/* ── Article II — the board as a table of offices ───── */}
-        <section className="mt-16 border-t border-border pt-12">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.boardEyebrow)}</Eyebrow>
@@ -275,7 +275,7 @@ export function FoundationPage() {
         </section>
 
         {/* ── Secretariat / organisational-plate interlude ───── */}
-        <section className="container-page mt-16">
+        <section className="reveal-on-scroll container-page mt-16">
           <figure className="reveal-on-scroll border border-border bg-card p-3">
             <img
               src={pageImages.foundation.secretariat.src}
@@ -295,7 +295,7 @@ export function FoundationPage() {
         </section>
 
         {/* ── Article III — committees ───────────────────────── */}
-        <section className="mt-16 border-t border-border pt-12">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.committeesEyebrow)}</Eyebrow>
@@ -357,7 +357,7 @@ export function FoundationPage() {
         </section>
 
         {/* ── Article IV — financial governance ──────────────── */}
-        <section className="mt-16 border-t border-border pt-12">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.financeEyebrow)}</Eyebrow>
@@ -405,7 +405,7 @@ export function FoundationPage() {
         </section>
 
         {/* ── Article V — the audited financial report ───────── */}
-        <section className="mt-16 border-t border-border pt-12">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.financeReportEyebrow)}</Eyebrow>
@@ -526,7 +526,7 @@ export function FoundationPage() {
         <Ornament className="mt-16" />
 
         {/* ── Constitutional documents ───────────────────────── */}
-        <section className="mt-16">
+        <section className="reveal-on-scroll mt-16">
           <Eyebrow>{t(copy.docsEyebrow)}</Eyebrow>
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.docsNote)}

@@ -17,6 +17,8 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { MobileNav } from "@/components/site/MobileNav";
 import { ScrollReveal } from "@/components/site/ScrollReveal";
+import { PageTransition } from "@/components/site/PageTransition";
+
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -182,8 +184,11 @@ function RootComponent() {
           <div className="flex min-h-screen flex-col pb-16 md:pb-0">
             <Header />
             <main className="flex-1">
-              <Outlet />
+              <PageTransition>
+                <Outlet />
+              </PageTransition>
             </main>
+
             <Footer />
             <MobileNav />
             <ScrollReveal />

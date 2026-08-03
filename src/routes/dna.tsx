@@ -137,7 +137,7 @@ export function DnaPage() {
         </aside>
 
         {/* ── Summary ────────────────────────────────────────── */}
-        <section className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,18rem)_1fr] lg:gap-16">
+        <section className="reveal-on-scroll mt-14 grid gap-10 lg:grid-cols-[minmax(0,18rem)_1fr] lg:gap-16">
           <div>
             <Eyebrow>{t(copy.overviewEyebrow)}</Eyebrow>
             <p className="nums mt-4 font-mono text-4xl text-foreground">{dnaInfo.haplogroup}</p>
@@ -169,7 +169,7 @@ export function DnaPage() {
         </section>
 
         {/* ── Clade ladder — this page's signature device ─────── */}
-        <section className="mt-16 border-t border-border pt-10">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.cladeEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.cladeTitle)}</h2>
           <p className="mt-2 text-[13px] text-muted-foreground">{t(copy.cladeNote)}</p>
@@ -218,7 +218,7 @@ export function DnaPage() {
         </section>
 
         {/* ── SNP chronology ─────────────────────────────────── */}
-        <section className="mt-16 border-t border-border pt-10">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.timelineEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.timelineTitle)}</h2>
           <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -347,7 +347,7 @@ export function DnaPage() {
         </section>
 
         {/* ── Distribution table ─────────────────────────────── */}
-        <section className="mt-16 border-t border-border pt-10">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.distEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.distTitle)}</h2>
           <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -452,7 +452,7 @@ export function DnaPage() {
         </section>
 
         {/* ── Genetic Documents Showcase ───────────────────────── */}
-        <section className="mt-16 border-t border-border pt-10">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>
             {t({ ar: "الوثائق والأرشيف الجيني", en: "Genomic & Lineage Archives" })}
           </Eyebrow>
@@ -470,7 +470,7 @@ export function DnaPage() {
         </section>
 
         {/* ── Databases ──────────────────────────────────────── */}
-        <section className="mt-16 border-t border-border pt-10">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.sourcesEyebrow)}</Eyebrow>
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.sourcesNote)}

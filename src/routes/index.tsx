@@ -442,7 +442,7 @@ export function HomePage() {
             <Link
               to="/news/$slug"
               params={{ slug: lead.slug }}
-              className="group block hover-lift active:scale-[0.99]"
+              className="group block hover-lift active-scale"
             >
               <img
                 src={newsImage(lead.slug)}
@@ -469,7 +469,7 @@ export function HomePage() {
                 <Link
                   to="/news/$slug"
                   params={{ slug: n.slug }}
-                  className="group block border-b border-border py-5 hover-lift active:scale-[0.99]"
+                  className="group block border-b border-border py-5 hover-lift active-scale"
                 >
                   <p className="nums label-caps text-muted-foreground">{n.dateGregorian}</p>
                   <h3 className="mt-1.5 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
@@ -496,7 +496,7 @@ export function HomePage() {
             </Link>
           </div>
 
-          <ul className="mt-10 grid gap-x-14 gap-y-0 border-t border-border md:grid-cols-2">
+          <ul className="reveal-stagger mt-10 grid gap-x-14 gap-y-0 border-t border-border md:grid-cols-2">
             {achievers.slice(0, 6).map((person, i) => (
               <li key={i} className="border-b border-border py-4">
                 <p className="text-[15px] font-semibold text-foreground">{t(person.name)}</p>
@@ -523,7 +523,7 @@ export function HomePage() {
           </Link>
         </div>
 
-        <div className="mt-10 grid gap-x-14 border-t border-border sm:grid-cols-2 lg:grid-cols-3">
+        <div className="reveal-stagger mt-10 grid gap-x-14 border-t border-border sm:grid-cols-2 lg:grid-cols-3">
           {initiatives.slice(0, 6).map((init) => (
             <article
               key={init.slug}

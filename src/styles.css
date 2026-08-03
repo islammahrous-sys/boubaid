@@ -303,7 +303,20 @@
     font-family: var(--font-display);
     font-weight: 600;
     letter-spacing: -0.012em;
+    /* Headlines wrap on meaning, not on the container edge. */
+    text-wrap: balance;
   }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Quotes and dashes hang into the margin so the text edge stays optically
+     straight — the one typographic detail that most says "typeset". */
+  blockquote {
+    hanging-punctuation: first last;
+  }
+
 
   html[dir="rtl"] h1,
   html[dir="rtl"] h2,
@@ -512,6 +525,26 @@ html[dir="rtl"] .drop-cap::first-letter {
 
 /* ── Motion ─────────────────────────────────────────────────── */
 
+/* One named motion vocabulary. Nothing in the site should invent its own
+   duration or curve: pick a step from this scale.
+     quick     — state changes (colour, border, press)
+     normal    — small elements entering, nav underline travel
+     slow      — text blocks, cards
+     cinematic — full-width plates and hero-scale imagery
+   `--ease-editorial` is a decelerating curve: fast departure, long settle,
+   which reads as weight rather than bounce. `--ease-exit` is its inverse,
+   used only for things leaving. */
+:root {
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --dur-quick: 180ms;
+  --dur-normal: 320ms;
+  --dur-slow: 560ms;
+  --dur-cinematic: 900ms;
+  /* Stagger step, overridable per container. */
+  --reveal-step: 70ms;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -524,7 +557,7 @@ html[dir="rtl"] .drop-cap::first-letter {
 }
 
 @utility animate-fade-up {
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: fadeInUp var(--dur-slow) var(--ease-editorial) forwards;
 }
 
 @keyframes heroZoom {
@@ -539,55 +572,145 @@ html[dir="rtl"] .drop-cap::first-letter {
   animation: heroZoom 22s ease-out both;
 }
 
+/* ── Scroll reveal ──────────────────────────────────────────────
+   Four variants, matched to the weight of what is entering. All are
+   driven by the observer in ScrollReveal.tsx, which adds `.revealed`.
+   Only opacity and transform animate, so nothing triggers layout. */
+
 @utility reveal-on-scroll {
   opacity: 0;
   transform: translateY(18px);
   transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity var(--dur-slow) var(--ease-editorial),
+    transform var(--dur-slow) var(--ease-editorial);
   will-change: opacity, transform;
 }
 
-.reveal-on-scroll.revealed {
-  opacity: 1;
-  transform: translateY(0);
+/* Alias with an explicit name, for readability at call sites. */
+@utility reveal-rise {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--dur-slow) var(--ease-editorial),
+    transform var(--dur-slow) var(--ease-editorial);
+  will-change: opacity, transform;
 }
 
-/* Stagger children when parent is revealed */
+/* Text: opacity only. Running prose that slides is distracting. */
+@utility reveal-fade {
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-editorial);
+  will-change: opacity;
+}
+
+/* Plates: heavier, slower, with a hair of scale so the image settles
+   into its mount rather than sliding into place. */
+@utility reveal-plate {
+  opacity: 0;
+  transform: translateY(22px) scale(0.985);
+  transition:
+    opacity var(--dur-cinematic) var(--ease-editorial),
+    transform var(--dur-cinematic) var(--ease-editorial);
+  will-change: opacity, transform;
+}
+
+/* Hairline rules draw open from the leading edge — the printed-page
+   gesture of a division being ruled in. */
+@utility reveal-rule {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease-editorial);
+  will-change: transform;
+}
+html[dir="rtl"] .reveal-rule {
+  transform-origin: right center;
+}
+
+.reveal-on-scroll.revealed,
+.reveal-rise.revealed,
+.reveal-plate.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.reveal-fade.revealed {
+  opacity: 1;
+}
+.reveal-rule.revealed {
+  transform: scaleX(1);
+}
+
+/* Once an element has arrived it should stop claiming a GPU layer. */
+.revealed {
+  will-change: auto;
+}
+
+/* Per-element delay, set by the reveal engine as an index. Works for
+   sequences of siblings and for grids of any length. */
+.reveal-on-scroll,
+.reveal-rise,
+.reveal-fade,
+.reveal-plate,
+.reveal-rule {
+  transition-delay: calc(var(--reveal-i, 0) * var(--reveal-step));
+}
+
+/* Stagger children when parent is revealed. Delay is index-driven so
+   grids of any size (library, directory) keep cascading. */
 .reveal-stagger > * {
   opacity: 0;
   transform: translateY(14px);
   transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity var(--dur-slow) var(--ease-editorial),
+    transform var(--dur-slow) var(--ease-editorial);
+  transition-delay: calc(var(--reveal-i, 0) * var(--reveal-step));
+  will-change: opacity, transform;
 }
 .reveal-stagger.revealed > * {
   opacity: 1;
   transform: translateY(0);
+  will-change: auto;
 }
-.reveal-stagger.revealed > *:nth-child(1) {
-  transition-delay: 0ms;
+
+/* ── Page transitions ───────────────────────────────────────────
+   Exit is deliberately shorter than entry: leaving should feel decisive,
+   arriving should feel composed. */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.reveal-stagger.revealed > *:nth-child(2) {
-  transition-delay: 80ms;
+@keyframes pageOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
 }
-.reveal-stagger.revealed > *:nth-child(3) {
-  transition-delay: 160ms;
+
+.page-transition[data-state="entering"] {
+  animation: pageIn var(--dur-slow) var(--ease-editorial) both;
 }
-.reveal-stagger.revealed > *:nth-child(4) {
-  transition-delay: 240ms;
+.page-transition[data-state="exiting"] {
+  animation: pageOut var(--dur-quick) var(--ease-exit) both;
 }
-.reveal-stagger.revealed > *:nth-child(5) {
-  transition-delay: 320ms;
+
+/* ── Image resolve ─────────────────────────────────────────────
+   Plates fade up out of a paper-toned ground instead of flashing in. */
+@utility plate-img {
+  opacity: 0;
+  transition: opacity var(--dur-cinematic) var(--ease-editorial);
+  background-color: var(--color-paper-shade);
 }
-.reveal-stagger.revealed > *:nth-child(6) {
-  transition-delay: 400ms;
-}
-.reveal-stagger.revealed > *:nth-child(7) {
-  transition-delay: 480ms;
-}
-.reveal-stagger.revealed > *:nth-child(n + 8) {
-  transition-delay: 560ms;
+.plate-img[data-loaded="true"] {
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -601,13 +724,25 @@ html[dir="rtl"] .drop-cap::first-letter {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 
-  .reveal-on-scroll {
+  .reveal-on-scroll,
+  .reveal-rise,
+  .reveal-fade,
+  .reveal-plate,
+  .reveal-stagger > * {
     opacity: 1;
     transform: none;
   }
+  .reveal-rule {
+    transform: none;
+  }
+  .plate-img {
+    opacity: 1;
+  }
 }
+
 
 /* ── Misc ───────────────────────────────────────────────────── */
 
@@ -620,7 +755,7 @@ html[dir="rtl"] .drop-cap::first-letter {
 }
 
 @utility active-scale {
-  transition: transform 0.15s ease-in-out;
+  transition: transform var(--dur-quick) var(--ease-editorial);
 }
 .active-scale:active {
   transform: scale(0.98);
@@ -629,11 +764,52 @@ html[dir="rtl"] .drop-cap::first-letter {
 /* Editorial hover-lift — a hairline shift, not a bounce. */
 @utility hover-lift {
   transition:
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transform var(--dur-slow) var(--ease-editorial),
+    box-shadow var(--dur-slow) var(--ease-editorial),
+    border-color var(--dur-normal) var(--ease-editorial);
 }
 .hover-lift:hover {
   transform: translateY(-2px);
+}
+
+/* A card that behaves like a mounted plate: the hairline warms, the mount
+   deepens a touch, and the whole thing yields under the press. Never
+   scales up on hover — enlargement reads as web UI, not print. */
+@utility card-craft {
+  transition:
+    border-color var(--dur-normal) var(--ease-editorial),
+    background-color var(--dur-normal) var(--ease-editorial),
+    box-shadow var(--dur-slow) var(--ease-editorial),
+    transform var(--dur-slow) var(--ease-editorial);
+}
+.card-craft:hover {
+  border-color: var(--color-bronze);
+  box-shadow: 0 10px 30px -22px oklch(0.3 0.06 50 / 55%);
+  transform: translateY(-2px);
+}
+.card-craft:active {
+  transform: translateY(0) scale(0.995);
+}
+.dark .card-craft:hover {
+  border-color: var(--color-gold);
+  box-shadow: 0 10px 30px -22px oklch(0 0 0 / 60%);
+}
+
+/* Inline prose links: a rule that sweeps in from the leading edge. */
+@utility link-sweep {
+  position: relative;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size var(--dur-normal) var(--ease-editorial);
+}
+html[dir="rtl"] .link-sweep {
+  background-position: 100% 100%;
+}
+.link-sweep:hover {
+  background-size: 100% 1px;
 }
 
 /* Slow, decorative flicker for lamp/star glyphs. Opt in explicitly. */
@@ -650,11 +826,79 @@ html[dir="rtl"] .drop-cap::first-letter {
   }
 }
 
+/* Gold seals warm only under a deliberate hover — never on their own. */
+@utility seal-warm {
+  transition:
+    filter var(--dur-slow) var(--ease-editorial),
+    opacity var(--dur-slow) var(--ease-editorial);
+}
+.group:hover .seal-warm,
+.seal-warm:hover {
+  filter: drop-shadow(0 0 10px oklch(0.78 0.14 72 / 45%));
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hover-lift:hover {
+  .hover-lift:hover,
+  .card-craft:hover,
+  .card-craft:active {
     transform: none;
   }
   .glyph-breathe {
     animation: none;
+  }
+}
+
+
+/* Primary nav: inactive items get a hairline that grows from the centre on
+   hover. The active item is marked by the travelling rule the header
+   measures, so this one is deliberately quieter — a hint, not a second
+   indicator competing with it. */
+@utility nav-link {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0.5rem;
+    bottom: 0;
+    height: 1px;
+    background-color: var(--color-rule);
+    transform: scaleX(0);
+    transition: transform var(--dur-normal) var(--ease-editorial);
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+
+  &[data-nav-active="true"]::after {
+    display: none;
+  }
+}
+
+/* Mobile menu: rows arrive in sequence rather than as one block. Indices are
+   stamped inline by the markup so this stays pure CSS. */
+@utility menu-in {
+  animation: menuIn var(--dur-normal) var(--ease-editorial) both;
+  animation-delay: calc(var(--menu-i, 0) * 28ms);
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-in {
+    animation: none;
+  }
+  .nav-link::after {
+    transition: none;
   }
 }

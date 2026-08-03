@@ -130,7 +130,7 @@ export function ContributePage() {
 
       <div className="container-page pb-20">
         {/* ── Schedule of contributions ──────────────────────── */}
-        <section>
+        <section className="reveal-on-scroll">
           <Eyebrow>{t(copy.scheduleEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
             {t(copy.scheduleTitle)}
@@ -195,7 +195,7 @@ export function ContributePage() {
 
 
         {/* ── Channels ───────────────────────────────────────── */}
-        <section className="mt-16 border-t border-border pt-12">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-12">
           <Eyebrow>{t(copy.channelsEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
             {t(copy.channelsTitle)}
@@ -235,7 +235,7 @@ export function ContributePage() {
         </section>
 
         {/* ── Application of funds ───────────────────────────── */}
-        <section className="mt-16 border-t border-border pt-12">
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.useEyebrow)}</Eyebrow>

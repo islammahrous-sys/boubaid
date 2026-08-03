@@ -122,7 +122,7 @@ export function ContactPage() {
       <div className="container-page py-12 md:py-16">
         <div className="grid gap-12 lg:grid-cols-[1fr_minmax(0,20rem)] lg:gap-20">
           {/* ── Form ───────────────────────────────────────── */}
-          <section>
+          <section className="reveal-on-scroll">
             <Eyebrow>{t(copy.formTitle)}</Eyebrow>
 
             <form onSubmit={handleSubmit} className="mt-6 max-w-xl space-y-5">

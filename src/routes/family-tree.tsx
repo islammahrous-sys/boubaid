@@ -191,7 +191,7 @@ export function FamilyTreePage() {
 
 
       {/* ── The official commissioned artwork, alongside the digital explorer ── */}
-      <section className="container-page py-12 md:py-14">
+      <section className="reveal-on-scroll container-page py-12 md:py-14">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
           <div>
             <Eyebrow>{t(copy.artworkEyebrow)}</Eyebrow>
@@ -229,7 +229,7 @@ export function FamilyTreePage() {
       </section>
 
       {/* ── Generation explorer ─────────────────────────────── */}
-      <section className="container-page py-12 md:py-14">
+      <section className="reveal-on-scroll container-page py-12 md:py-14">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <Eyebrow>{t(copy.explorerEyebrow)}</Eyebrow>
@@ -324,13 +324,13 @@ export function FamilyTreePage() {
           </div>
         ) : (
           grouped.map(([gen, members]) => (
-            <section key={gen} className="mt-10">
+            <section key={gen} className="reveal-on-scroll mt-10">
               <p className="label-caps border-b border-border pb-2 text-bronze dark:text-gold">
                 {t(generationLabels[gen])}
                 <span className="nums ms-2 text-muted-foreground">({members.length})</span>
               </p>
 
-              <ol className="grid gap-4 md:grid-cols-2 mt-4">
+              <ol className="reveal-stagger grid gap-4 md:grid-cols-2 mt-4">
                 {members.map((m) => (
                   <li key={m.id} className="list-none">
                     <button
@@ -370,7 +370,7 @@ export function FamilyTreePage() {
       </section>
 
       {/* ── Official Tree Artwork & Lineage Documents ───────────────────────── */}
-      <section className="mt-16 border-t border-border pt-10">
+      <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
         <Eyebrow>
           {t({ ar: "وثائق النسب والمشجرة الرسمية", en: "Lineage Documents & Official Tree" })}
         </Eyebrow>
