@@ -297,21 +297,29 @@ export function Header() {
       {open ? (
         <div className="max-h-[80vh] overflow-y-auto border-t border-border bg-background text-foreground lg:hidden animate-in slide-in-from-top-2 duration-200">
           <nav className="container-page py-6" aria-label="Mobile">
-            {navGroups.map((group) => (
-              <div key={group.title.en} className="mb-6 last:mb-0">
+            {navGroups.map((group, gi) => (
+              <div
+                key={group.title.en}
+                className="menu-in mb-6 last:mb-0"
+                style={{ ["--menu-i" as string]: gi * 3 }}
+              >
                 <p className="label-caps mb-2 border-b border-border pb-2 text-bronze">
                   {t(group.title)}
                 </p>
                 <ul>
-                  {group.items.map((n) => {
+                  {group.items.map((n, ii) => {
                     const active = isRouteActive(pathname, n.to);
                     return (
-                      <li key={n.to}>
+                      <li
+                        key={n.to}
+                        className="menu-in"
+                        style={{ ["--menu-i" as string]: gi * 3 + ii + 1 }}
+                      >
                         <Link
                           to={n.to}
                           onClick={() => setOpen(false)}
                           className={cn(
-                            "block border-b border-border/60 py-3 text-sm transition-colors",
+                            "active-scale block border-b border-border/60 py-3 text-sm transition-colors",
                             active
                               ? "font-bold text-bronze dark:text-gold"
                               : "text-muted-foreground hover:text-foreground",
@@ -329,13 +337,15 @@ export function Header() {
             <Link
               to="/contribute"
               onClick={() => setOpen(false)}
-              className="mt-2 block border border-gold bg-gold px-4 py-3.5 text-center text-sm font-bold text-ink"
+              className="menu-in active-scale mt-2 block border border-gold bg-gold px-4 py-3.5 text-center text-sm font-bold text-ink transition-colors hover:bg-transparent hover:text-bronze dark:hover:text-gold"
+              style={{ ["--menu-i" as string]: navGroups.length * 3 + 1 }}
             >
               {lang === "ar" ? "الاشتراك والمساهمة" : "Subscribe & Contribute"}
             </Link>
           </nav>
         </div>
       ) : null}
+
     </header>
   );
 }
