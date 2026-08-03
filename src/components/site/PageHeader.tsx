@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "./Editorial";
+import { PlateImage } from "./Plate";
+
 
 export interface PageHeaderMeta {
   label: ReactNode;
