@@ -89,36 +89,44 @@ export function ScrollReveal() {
     };
 
     /**
-     * Route content sits behind a Suspense boundary, so it hydrates a beat
-     * after this effect runs. Touching classes or inline styles before that
-     * lands makes React report a hydration mismatch and refuse to patch, so
-     * the first scan waits for the router to report a rendered tree — with a
-     * timed fallback in case that event has already fired.
+     * Route content sits behind a Suspense boundary, so on a fresh page load
+     * it hydrates a beat after this effect runs. Touching classes or inline
+     * styles on markup React hasn't claimed yet makes it report a hydration
+     * mismatch and refuse to patch the tree.
+     *
+     * React stamps a `__reactFiber$…` key on every DOM node it hydrates, so
+     * that key is an exact signal — no timing guesswork. Poll for it, then
+     * start observing; bail out after a couple of seconds so a page that
+     * somehow never hydrates still shows its content.
      */
-    let started = false;
-    let raf = 0;
-    const start = () => {
-      if (started) return;
-      started = true;
-      raf = requestAnimationFrame(() => requestAnimationFrame(scan));
-    };
+    const isHydrated = (el: Element) =>
+      Object.keys(el).some((k) => k.startsWith("__reactFiber$"));
 
-    const unsubRendered = router.subscribe("onRendered", start);
-    const startTimer = window.setTimeout(start, 1200);
+    let tries = 0;
+    let poll = 0;
+    const waitForHydration = () => {
+      const first = document.querySelector(ALL);
+      if (!first || isHydrated(first) || tries > 60) {
+        scan();
+        return;
+      }
+      tries += 1;
+      poll = window.setTimeout(waitForHydration, 32);
+    };
+    waitForHydration();
 
     const unsub = router.subscribe("onResolved", () => {
-      // Rescan after DOM commit.
+      // Client navigations are already hydrated — just rescan after commit.
       requestAnimationFrame(() => requestAnimationFrame(scan));
     });
 
     return () => {
-      window.clearTimeout(startTimer);
-      if (raf) cancelAnimationFrame(raf);
-      unsubRendered();
+      window.clearTimeout(poll);
       unsub();
       io.disconnect();
     };
   }, [router]);
+
 
 
 
