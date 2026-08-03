@@ -30,12 +30,17 @@ export function ScrollReveal() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       const revealAll = () =>
         document.querySelectorAll(ALL).forEach((el) => el.classList.add("revealed"));
-      revealAll();
+      // Same hydration caveat as below: let the route content hydrate first.
+      const t = window.setTimeout(revealAll, 220);
       const unsub = router.subscribe("onResolved", () =>
         requestAnimationFrame(() => requestAnimationFrame(revealAll)),
       );
-      return unsub;
+      return () => {
+        window.clearTimeout(t);
+        unsub();
+      };
     }
+
 
     /**
      * Sequence siblings that share a reveal variant so a heading, its rule,
