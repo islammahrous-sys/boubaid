@@ -902,3 +902,126 @@ html[dir="rtl"] .link-sweep {
     transition: none;
   }
 }
+
+/* ── Accessibility apparatus ────────────────────────────────────
+   A skip link that stays out of the way until it is tabbed to, and a
+   single focus treatment for every custom control on the site. The
+   editorial surfaces are low-contrast by design, so focus is drawn as a
+   bronze/gold hairline offset from the element rather than a glow. */
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  inset-inline-start: 0.5rem;
+  z-index: 100;
+  transform: translateY(-160%);
+  transition: transform var(--dur-normal) var(--ease-editorial);
+  background-color: var(--color-ink);
+  color: var(--color-ivory);
+  padding: 0.6rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+:where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-bronze);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+.dark :where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+  outline-color: var(--color-gold);
+}
+
+/* Section targets receive focus programmatically from the section rail;
+   they should not draw a box when they do. */
+section:focus,
+section:focus-visible,
+article:focus,
+article:focus-visible {
+  outline: none;
+}
+
+/* ── Reading comfort ────────────────────────────────────────────
+   Arabic and Latin do not reach the same comfortable measure at the same
+   width: the joined script sets denser, so it tolerates a longer line. */
+html[dir="rtl"] .measure {
+  max-width: 42rem;
+}
+html[dir="ltr"] .measure {
+  max-width: 38rem;
+}
+
+/* Quotation marks hang into the margin so the first character of the
+   quoted text stays on the text edge. */
+blockquote {
+  hanging-punctuation: first last;
+}
+
+/* ── Print ──────────────────────────────────────────────────────
+   The lineage, genetic and foundation pages are reference documents and
+   get printed. Drop the chrome, flatten the palette to ink on paper, and
+   keep headings with their text. */
+@media print {
+  header,
+  footer,
+  nav,
+  video,
+  .print-hide {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .paper-texture {
+    background-image: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .container-page {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  figure,
+  blockquote,
+  table {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* Printed links carry their destination, since a click cannot. */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    color: #555;
+  }
+
+  .reveal-on-scroll,
+  .reveal-rise,
+  .reveal-fade,
+  .reveal-plate,
+  .reveal-stagger > *,
+  .plate-img {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
