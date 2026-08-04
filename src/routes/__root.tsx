@@ -182,12 +182,16 @@ function RootComponent() {
       <ThemeProvider>
         <LanguageProvider>
           <div className="flex min-h-screen flex-col pb-16 md:pb-0">
+            <a href="#main" className="skip-link">
+              تخطَّ إلى المحتوى — Skip to content
+            </a>
             <Header />
-            <main className="flex-1">
+            <main id="main" className="flex-1">
               <PageTransition>
                 <Outlet />
               </PageTransition>
             </main>
+
 
             <Footer />
             <MobileNav />
