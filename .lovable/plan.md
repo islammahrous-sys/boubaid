@@ -1,86 +1,86 @@
-# Making the site functional: full backend plan
+# UI/UX enhancement pass — beyond motion
 
-Today every page is static. All content lives in `src/content/*.ts`, there is no backend
-in the project (`src/integrations` does not exist), and the contact form only shows a
-local success message — nothing is stored or emailed.
+The motion and visual layers are in place: a shared duration/easing scale, five reveal
+variants applied across all pages, condensing masthead, page transitions, plate hovers.
+So the remaining gains are not more animation — they are wayfinding, reading comfort,
+usable data, and accessibility. That is where the site still feels like a set of long
+documents rather than a navigable archive.
 
-Enabling the backend failed on the first attempt; the first step below is to retry it.
+## Where it falls short today
 
-## What the backend will do
+- The long pages carry a lot of content in one scroll (Library, Home, Foundation, DNA,
+  Family Tree, About) with no in-page navigation, so there is no sense of position.
+- Deep pages have no breadcrumb and no "related" exits — a news article or initiative is
+  a dead end.
+- The archive lists (library documents, photographs, news, achievers, directory) have no
+  filtering or sorting beyond what search offers, and no result counts.
+- Photographs open nothing — there is no lightbox for the archive plates.
+- Empty and loading states are minimal, and the contact form gives only a toast.
+- Bilingual/RTL details: number and Hijri date formatting is inconsistent, and switching
+  language does not preserve reading position.
+- Accessibility: no skip-to-content link, focus rings are inconsistent on custom
+  controls, some icon-only buttons lack labels, and dark-mode contrast has not been
+  audited.
 
-| Area | Becomes functional |
-| --- | --- |
-| Contact form | Submissions saved and emailed to the Secretariat |
-| Membership / contribute | Applications saved, status tracked, applicant notified |
-| Newsletter | Subscriber list with confirmation and unsubscribe |
-| Accounts | Family-member sign-in (email + Google), separate roles table (`admin`, `secretariat`, `member`) |
-| Member area | Own profile, own membership status, private documents |
-| Admin panel | Secretariat manages news, initiatives, achievers, library items and files |
-| Directory / family tree | Person and branch records stored in the database, editable |
-| Library | Real file uploads with access rules (public vs members-only) |
-| Achievers | Member nominations, admin review and publish |
+## Planned work
 
-## External connectors needed
+**1. Wayfinding**
+- Sticky in-page section rail on the long pages (About, Foundation, DNA, Library,
+  Family Tree) — bilingual labels, current-section highlight, collapses to a compact
+  chip row on mobile.
+- Breadcrumbs on detail routes (News, Initiatives) matching the editorial type scale.
+- "Continue reading" blocks: next/previous article and 2–3 related initiatives or
+  documents at the end of each detail page.
+- Thin reading-progress rule under the masthead on article routes only.
 
-Only one is required. Everything else is native.
+**2. Archive usability**
+- Filter and sort controls for Library (kind, decade, ascending/descending), News (year,
+  category) and Achievers (branch, field), with live result counts and a clear-all.
+- Filter state reflected in the URL so views are shareable and survive reload.
+- Photograph lightbox: keyboard navigable (arrows, Escape), caption and Hijri metadata,
+  focus trapped and restored, respecting reduced motion.
+- Better empty states — an explanatory bilingual message plus a reset action instead of a
+  bare "no results".
 
-1. **Email sending — required.** Form notifications, membership decisions, newsletter,
-   sign-in and password-reset emails. Uses Lovable's built-in email; it needs a domain
-   the family owns (e.g. `notify.albuobaid.sa`) verified once via DNS.
-2. **Payments — optional, deferred.** Only if online contributions are collected. For
-   Saudi coverage (Mada, Apple Pay, SADAD) a local gateway such as Moyasar or Tap is the
-   better fit and needs API keys from that provider. For now the site keeps
-   bank-transfer instructions.
-3. **SMS / OTP — optional.** Twilio, only if phone verification for members is wanted.
+**3. Reading comfort**
+- Consistent numeral and Hijri/Gregorian date formatting through one shared helper, used
+  everywhere.
+- Measure and hyphenation tuned per script — Arabic and English need different line
+  lengths for the same comfort.
+- Pull quotes, footnote markers and source citations styled as part of the editorial
+  scale rather than ad-hoc.
+- Language switch preserves the scroll anchor so the reader stays on the same section.
 
-Not needed: separate database, auth provider, file storage or CDN accounts — all built in.
-Google sign-in is included without an external account.
+**4. Interaction feedback**
+- Contact and contribute forms: inline per-field validation with bilingual messages,
+  disabled/pending button state, and a persistent success panel rather than a toast that
+  disappears.
+- Copy-to-clipboard on the IBAN, email and phone with confirmation.
+- Skeleton placeholders sized to the real content for the family-tree and directory
+  searches so the layout does not jump.
 
-## Build order
-
-**Phase 1 — forms and email (immediate value)**
-- Retry enabling the backend.
-- Tables: `contact_submissions`, `membership_applications`, `newsletter_subscribers`.
-  Public insert-only, admin/secretariat read.
-- Server-side validation on every submission (length limits, email format, basic
-  anti-spam), plus the existing client-side checks.
-- Wire `contact.tsx` and `contribute.tsx` to real submissions with proper success/error
-  states in both Arabic and English.
-- Set up the email domain and send notification + acknowledgement emails.
-
-**Phase 2 — accounts and roles**
-- Sign-in and sign-up (email/password + Google), password reset page.
-- `profiles` table (name, branch, phone, preferred language) created automatically on
-  signup; `user_roles` table kept separate for security.
-- Protected member area: own profile, own application status.
-
-**Phase 3 — admin panel (content out of code)**
-- Tables for `news`, `initiatives`, `achievers`, `library_items`, `people`, `branches`,
-  each with draft/published state and owner-plus-public read rules.
-- Secretariat-only editor screens with file/image upload to storage.
-- Public pages read from the database, falling back to nothing missing — same layout,
-  same design, no visual change.
-- Achiever nominations from members with admin approval.
-
-**Phase 4 — contributions (only when a gateway is chosen)**
-- Contribution records, receipts, a simple fund ledger view for admins.
+**5. Accessibility and polish**
+- Skip-to-content link, a single `<main>` landmark check, and a heading-level audit per
+  page.
+- Uniform `focus-visible` treatment on every custom control; `aria-label` on all
+  icon-only buttons; minimum 44px tap targets on mobile.
+- Dark-mode contrast audit across brand clay/copper/gold on dark surfaces, fixing any
+  token pair that fails.
+- Print stylesheet so lineage, DNA and foundation pages print as clean documents — a
+  real need for an archive of this kind.
 
 ## Technical notes
 
-- Backend: Lovable Cloud (Postgres + auth + storage) with row-level security on every
-  table and explicit grants; roles checked through a security-definer `has_role` function,
-  never stored on the profile row.
-- Server logic: TanStack `createServerFn` for app calls; `src/routes/api/public/*` only
-  for external callers (email events, future payment webhooks) with signature checks.
-- Bilingual content columns stored as `title_ar`/`title_en` pairs so the existing
-  `t({ ar, en })` pattern keeps working unchanged.
-- Content files stay as the seed source: Phase 3 migrations insert the current
-  `src/content/*.ts` data so nothing disappears when pages switch to the database.
-- Public pages keep server-side rendering and their SEO/OG metadata; only the member and
-  admin areas sit behind the authenticated layout.
+- All additions use the existing tokens in `src/styles.css` and the current reveal
+  utilities — no new colors, fonts or animation libraries.
+- The section rail, lightbox and filter controls become small components under
+  `src/components/site/`, kept presentational so page content stays in `src/content/*.ts`.
+- Filters use TanStack Router search params with validation, so SSR and OG metadata on
+  public routes are unaffected.
+- Formatting helpers extend `src/lib/text.ts`; the lightbox and rail are client-only where
+  they touch layout measurement, to avoid hydration mismatches.
 
-## Recommendation
+## Suggested order
 
-Approve Phase 1 first — it turns the two forms and the newsletter into something real
-within one pass, and requires only the email domain from the family. Phases 2 and 3 follow
-once sign-in policy (who may register) is decided.
+Wayfinding first (biggest perceived change), then archive usability, then reading comfort
+and forms, with the accessibility and print pass last as a sweep across everything.
