@@ -5,7 +5,10 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { news, siteMeta } from "@/content/site";
 import { Ornament } from "@/components/site/Editorial";
+import { Breadcrumbs } from "@/components/site/Breadcrumbs";
+import { ReadingProgress } from "@/components/site/ReadingProgress";
 import { newsImage } from "@/content/news-images";
+import { formatHijri } from "@/lib/text";
 
 export const Route = createFileRoute("/news/$slug")({
   loader: ({ params }) => {
@@ -38,6 +41,9 @@ const copy = {
   back: { ar: "العودة إلى النشرة", en: "Back to the bulletin" } as BiText,
   alsoIn: { ar: "في العدد نفسه", en: "Also in this issue" } as BiText,
   issuedBy: { ar: "صادر عن", en: "Issued by" } as BiText,
+  home: { ar: "الرئيسية", en: "Home" } as BiText,
+  next: { ar: "الخبر التالي", en: "Next dispatch" } as BiText,
+  prev: { ar: "الخبر السابق", en: "Previous dispatch" } as BiText,
 };
 
 function NewsDetail() {
@@ -50,6 +56,12 @@ function NewsDetail() {
   const sectionLabel = item.section === "fund" ? t(copy.fund) : t(copy.family);
   const others = news.filter((n) => n.slug !== item.slug).slice(0, 3);
 
+  // Sequential reading: the bulletin is ordered, so offer the neighbouring
+  // dispatches rather than making the reader return to the index.
+  const index = news.findIndex((n) => n.slug === item.slug);
+  const prev = index > 0 ? news[index - 1] : undefined;
+  const next = index >= 0 && index < news.length - 1 ? news[index + 1] : undefined;
+
   const copyLink = () => {
     if (typeof window === "undefined") return;
     navigator.clipboard?.writeText(window.location.href);
@@ -58,22 +70,25 @@ function NewsDetail() {
 
   return (
     <article className="container-page py-12 md:py-16">
+      <ReadingProgress />
+
       {/* Dateline */}
       <div className="mx-auto max-w-3xl">
-        <Link
-          to="/news"
-          className="inline-flex items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <BackArrow className="h-3.5 w-3.5" aria-hidden="true" />
-          {t(copy.bulletin)}
-        </Link>
+        <Breadcrumbs
+          className="print-hide"
+          items={[
+            { label: copy.home, to: "/" },
+            { label: copy.bulletin, to: "/news" },
+            { label: item.title },
+          ]}
+        />
 
         <div className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-ink/25 pb-3 dark:border-ivory/20">
           <span className="label-caps text-bronze dark:text-gold">{sectionLabel}</span>
           <span className="h-3 w-px bg-border" aria-hidden="true" />
           <span className="nums text-xs text-muted-foreground">{item.dateGregorian}</span>
           <span className="h-3 w-px bg-border" aria-hidden="true" />
-          <span className="nums text-xs text-muted-foreground">{item.date} هـ</span>
+          <span className="nums text-xs text-muted-foreground">{formatHijri(item.date, lang)}</span>
         </div>
 
         <h1 className="mt-6 text-balance text-3xl leading-[1.25] text-foreground md:text-[2.5rem]">
@@ -164,6 +179,35 @@ function NewsDetail() {
               ))}
             </ol>
           </section>
+        ) : null}
+
+        {/* Continue reading */}
+        {prev || next ? (
+          <nav
+            aria-label={t({ ar: "متابعة القراءة", en: "Continue reading" })}
+            className="reveal-on-scroll mt-12 grid gap-px border-t border-border sm:grid-cols-2"
+          >
+            {[
+              { entry: prev, label: copy.prev, align: "start" as const },
+              { entry: next, label: copy.next, align: "end" as const },
+            ].map(({ entry, label, align }, i) =>
+              entry ? (
+                <Link
+                  key={i}
+                  to="/news/$slug"
+                  params={{ slug: entry.slug }}
+                  className={`card-craft active-scale group block p-5 ${align === "end" ? "sm:text-end" : ""}`}
+                >
+                  <span className="label-caps text-muted-foreground">{t(label)}</span>
+                  <span className="mt-2 block text-[15px] leading-snug font-medium text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
+                    {t(entry.title)}
+                  </span>
+                </Link>
+              ) : (
+                <span key={i} aria-hidden="true" className="hidden sm:block" />
+              ),
+            )}
+          </nav>
         ) : null}
 
         <Link
