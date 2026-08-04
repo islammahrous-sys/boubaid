@@ -5,8 +5,10 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SectionHeading, Prose, Eyebrow, Ornament, Pullquote } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
+import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { lineageChain, references, siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
+
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -132,6 +134,19 @@ const copy = {
   biblioTitle: { ar: "المراجع", en: "Bibliography" } as BiText,
 };
 
+/** In-page wayfinding: the page is a five-part essay plus its apparatus. */
+const railSections: RailSection[] = [
+  { id: "origin", label: { ar: "الأصل", en: "Origin" } },
+  { id: "migration", label: { ar: "الهجرة", en: "Migration" } },
+  { id: "sources", label: { ar: "المصادر", en: "Sources" } },
+  { id: "conflicts", label: { ar: "الروايات", en: "Accounts" } },
+  { id: "economy", label: { ar: "التوطن", en: "Settlement" } },
+  { id: "chain", label: { ar: "عمود النسب", en: "Chain of descent" } },
+  { id: "plates", label: { ar: "اللوحات", en: "Plates" } },
+  { id: "bibliography", label: { ar: "المراجع", en: "Bibliography" } },
+];
+
+
 export function AboutPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
@@ -153,11 +168,13 @@ export function AboutPage() {
         ]}
       />
 
+      <SectionRail sections={railSections} className="print-hide" />
+
       {/* ── Manuscript spread: narrative with a margin column ── */}
       <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[1fr_minmax(0,15rem)]">
           <div className="space-y-12">
-            <article>
+            <article id="origin" className="scroll-mt-28">
               <SectionHeading
                 index={rtl ? "١" : "I"}
                 eyebrow={t(copy.narrativeEyebrow)}
@@ -169,7 +186,7 @@ export function AboutPage() {
               </Prose>
             </article>
 
-            <article>
+            <article id="migration" className="scroll-mt-28">
               <SectionHeading
                 index={rtl ? "٢" : "II"}
                 eyebrow={t(copy.migrationEyebrow)}
@@ -181,7 +198,7 @@ export function AboutPage() {
               </Prose>
             </article>
 
-            <article>
+            <article id="sources" className="scroll-mt-28">
               <SectionHeading
                 index={rtl ? "٣" : "III"}
                 eyebrow={t(copy.sourcesEyebrow)}
@@ -192,7 +209,7 @@ export function AboutPage() {
               </Prose>
             </article>
 
-            <article>
+            <article id="conflicts" className="scroll-mt-28">
               <SectionHeading
                 index={rtl ? "٤" : "IV"}
                 eyebrow={t(copy.conflictsEyebrow)}
@@ -215,7 +232,7 @@ export function AboutPage() {
               </Pullquote>
             </article>
 
-            <article>
+            <article id="economy" className="scroll-mt-28">
               <SectionHeading
                 index={rtl ? "٥" : "V"}
                 eyebrow={t(copy.economyEyebrow)}
@@ -270,7 +287,7 @@ export function AboutPage() {
       </section>
 
       {/* ── The nasab column — this page's signature ─────────── */}
-      <section className="border-y border-border bg-secondary/40 reveal-on-scroll">
+      <section id="chain" className="scroll-mt-28 border-y border-border bg-secondary/40 reveal-on-scroll">
         <div className="container-page py-16 md:py-20">
           <SectionHeading
             align="center"
@@ -316,7 +333,7 @@ export function AboutPage() {
       </section>
 
       {/* ── Plates ───────────────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20 reveal-on-scroll">
+      <section id="plates" className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll">
         <SectionHeading eyebrow={t(copy.platesEyebrow)} title={t(copy.platesTitle)} />
 
         <div className="reveal-stagger mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2">
@@ -367,7 +384,7 @@ export function AboutPage() {
       </section>
 
       {/* ── Bibliography ─────────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20 reveal-on-scroll">
+      <section id="bibliography" className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll">
         <Eyebrow>{t(copy.biblioTitle)}</Eyebrow>
 
         <ol className="mt-6 max-w-3xl border-t border-border">

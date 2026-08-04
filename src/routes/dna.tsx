@@ -5,6 +5,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { dnaInfo } from "@/content/site";
 import { pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
+import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { Eyebrow, Prose, Record, RecordField } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
 import { stripLeadingLabel } from "@/lib/text";
@@ -106,6 +107,15 @@ const copy = {
   } as BiText,
 };
 
+const railSections: RailSection[] = [
+  { id: "overview", label: { ar: "الخلاصة", en: "Overview" } },
+  { id: "clade", label: { ar: "السلالة", en: "Haplogroup" } },
+  { id: "timeline", label: { ar: "التسلسل الزمني", en: "Timeline" } },
+  { id: "distribution", label: { ar: "الانتشار", en: "Distribution" } },
+  { id: "method", label: { ar: "المنهجية", en: "Method" } },
+  { id: "dna-sources", label: { ar: "المصادر", en: "Sources" } },
+];
+
 export function DnaPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
@@ -127,6 +137,8 @@ export function DnaPage() {
         ]}
       />
 
+      <SectionRail sections={railSections} className="print-hide" />
+
       <div className="container-page pb-20">
         {/* ── Methodological note, stated up front ───────────── */}
         <aside className="border-s-2 border-bronze/50 ps-5 dark:border-gold/50">
@@ -137,7 +149,7 @@ export function DnaPage() {
         </aside>
 
         {/* ── Summary ────────────────────────────────────────── */}
-        <section className="reveal-on-scroll mt-14 grid gap-10 lg:grid-cols-[minmax(0,18rem)_1fr] lg:gap-16">
+        <section id="overview" className="scroll-mt-28 reveal-on-scroll mt-14 grid gap-10 lg:grid-cols-[minmax(0,18rem)_1fr] lg:gap-16">
           <div>
             <Eyebrow>{t(copy.overviewEyebrow)}</Eyebrow>
             <p className="nums mt-4 font-mono text-4xl text-foreground">{dnaInfo.haplogroup}</p>
@@ -169,7 +181,7 @@ export function DnaPage() {
         </section>
 
         {/* ── Clade ladder — this page's signature device ─────── */}
-        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section id="clade" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.cladeEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.cladeTitle)}</h2>
           <p className="mt-2 text-[13px] text-muted-foreground">{t(copy.cladeNote)}</p>
@@ -218,7 +230,7 @@ export function DnaPage() {
         </section>
 
         {/* ── SNP chronology ─────────────────────────────────── */}
-        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section id="timeline" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.timelineEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.timelineTitle)}</h2>
           <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -347,7 +359,7 @@ export function DnaPage() {
         </section>
 
         {/* ── Distribution table ─────────────────────────────── */}
-        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section id="distribution" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.distEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.distTitle)}</h2>
           <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -452,7 +464,7 @@ export function DnaPage() {
         </section>
 
         {/* ── Genetic Documents Showcase ───────────────────────── */}
-        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section id="method" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>
             {t({ ar: "الوثائق والأرشيف الجيني", en: "Genomic & Lineage Archives" })}
           </Eyebrow>
@@ -470,7 +482,7 @@ export function DnaPage() {
         </section>
 
         {/* ── Databases ──────────────────────────────────────── */}
-        <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section id="dna-sources" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
           <Eyebrow>{t(copy.sourcesEyebrow)}</Eyebrow>
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.sourcesNote)}

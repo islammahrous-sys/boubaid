@@ -37,3 +37,27 @@ export function parseLineageList(text: string): { head: string; names: string }[
     })
     .filter((entry) => entry.head.length > 0);
 }
+
+/**
+ * Eastern-Arabic numerals. Hijri years, references and counts are set in the
+ * numerals of the script they sit in, which is what a reader of an Arabic
+ * document expects; the English side keeps Western digits.
+ */
+const EASTERN_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+
+export function toEasternNumerals(value: string | number): string {
+  return String(value).replace(/\d/g, (d) => EASTERN_DIGITS[Number(d)] ?? d);
+}
+
+export function formatNumber(value: string | number, lang: "ar" | "en"): string {
+  return lang === "ar" ? toEasternNumerals(value) : String(value);
+}
+
+/**
+ * One formatting for every Hijri year on the site: "١٤٤٧ هـ" in Arabic and
+ * "1447 AH" in English. Pages were previously hardcoding the suffix, so the
+ * English side read "1447 هـ".
+ */
+export function formatHijri(year: string | number, lang: "ar" | "en"): string {
+  return lang === "ar" ? `${toEasternNumerals(year)} هـ` : `${year} AH`;
+}
