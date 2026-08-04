@@ -5,8 +5,10 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SectionHeading, Prose, Eyebrow, Ornament, Pullquote } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
+import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { lineageChain, references, siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
+
 
 export const Route = createFileRoute("/about")({
   head: () => ({
