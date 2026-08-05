@@ -22,14 +22,21 @@ import { Seal } from "@/components/site/Seal";
 export const Route = createFileRoute("/foundation")({
   head: () => ({
     meta: [
-      { title: "الحوكمة ومجلس الأمناء | صندوق التنمية العائلية (آل بوعبيد)" },
+      { title: "الحوكمة ومجلس الأمناء | آل بوعبيد" },
       {
         name: "description",
         content: `الإطار النظامي لصندوق التنمية العائلية (آل بوعبيد): مجلس الأمناء، اللجان الخمس، والحوكمة المالية وفق ترخيص NCNP رقم ${siteMeta.ncnpLicense}.`,
       },
       { property: "og:title", content: "الحوكمة ومجلس الأمناء — آل بوعبيد" },
+      {
+        property: "og:description",
+        content:
+          "مجلس الأمناء واللجان الخمس والحوكمة المالية لصندوق التنمية العائلية (آل بوعبيد) المرخّص من المركز الوطني.",
+      },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/foundation" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/foundation" }],
   }),
   component: FoundationPage,
 });
