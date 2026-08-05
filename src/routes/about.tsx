@@ -14,14 +14,13 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "النسب والتاريخ | أسرة آل بوعبيد — الأحساء" },
-      {
-        name: "description",
-        content:
-          "التاريخ والنسب الموثق لأسرة آل بوعبيد، هجرتهم واستقرارهم بالمبرز بالأحساء، وتفرعهم من بني تميم.",
-      },
+      { name: "description", content: "التاريخ والنسب الموثق لأسرة آل بوعبيد، هجرتهم واستقرارهم بالمبرز بالأحساء، وتفرعهم من بني تميم." },
       { property: "og:title", content: "النسب والتاريخ — آل بوعبيد" },
+      { property: "og:description", content: "نسب أسرة آل بوعبيد من العبادل من بني تميم، وهجرتهم واستقرارهم في المبرز بالأحساء، وأقدم وثائقهم." },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/about" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/about" }],
   }),
   component: AboutPage,
 });

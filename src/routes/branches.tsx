@@ -11,15 +11,14 @@ import { parseLineageList } from "@/lib/text";
 export const Route = createFileRoute("/branches")({
   head: () => ({
     meta: [
-      { title: "الفروع السبعة | أسرة آل بوعبيد — الأحساء" },
-      {
-        name: "description",
-        content:
-          "سجل الفروع السبعة الموثقة لأسرة آل بوعبيد: الجد الجامع لكل فرع، أفرعه الداخلية، مناطق استقراره، وأعلامه.",
-      },
+      { title: "الفروع السبعة | أسرة آل بوعبيد" },
+      { name: "description", content: "سجل الفروع السبعة الموثقة لأسرة آل بوعبيد: الجد الجامع لكل فرع، أفرعه الداخلية، مناطق استقراره، وأعلامه." },
       { property: "og:title", content: "الفروع السبعة — آل بوعبيد" },
+      { property: "og:description", content: "الفروع السبعة الموثقة لأسرة آل بوعبيد: الجد الجامع لكل فرع، أفرعه الداخلية، ومناطق استقراره وأعلامه." },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/branches" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/branches" }],
   }),
   component: BranchesPage,
 });

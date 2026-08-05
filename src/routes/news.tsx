@@ -10,14 +10,14 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: "الأخبار والبيانات الرسمية | صندوق التنمية العائلية (آل بوعبيد)" },
-      {
-        name: "description",
-        content: "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها.",
-      },
+      { title: "الأخبار والبيانات الرسمية | آل بوعبيد" },
+      { name: "description", content: "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها ومبادراتها." },
       { property: "og:title", content: "أخبار آل بوعبيد" },
+      { property: "og:description", content: "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها ومبادراتها." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/news" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/news" }],
   }),
   component: NewsPage,
 });

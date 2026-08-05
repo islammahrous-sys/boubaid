@@ -10,15 +10,14 @@ import { Eyebrow } from "@/components/site/Editorial";
 export const Route = createFileRoute("/directory")({
   head: () => ({
     meta: [
-      { title: "دليل الأعمال | صندوق التنمية العائلية (آل بوعبيد)" },
-      {
-        name: "description",
-        content:
-          "دليل المنشآت والأعمال التي يديرها أبناء أسرة آل بوعبيد في الأحساء والمنطقة الشرقية والرياض.",
-      },
+      { title: "دليل الأعمال | آل بوعبيد" },
+      { name: "description", content: "دليل المنشآت والأعمال التي يديرها أبناء أسرة آل بوعبيد في الأحساء والمنطقة الشرقية والرياض." },
       { property: "og:title", content: "دليل أعمال آل بوعبيد" },
+      { property: "og:description", content: "دليل المنشآت والأعمال التي يديرها أبناء أسرة آل بوعبيد في الأحساء والمنطقة الشرقية والرياض." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/directory" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/directory" }],
   }),
   component: DirectoryPage,
 });

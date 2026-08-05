@@ -10,15 +10,14 @@ import { pageImages } from "@/content/images";
 export const Route = createFileRoute("/contribute")({
   head: () => ({
     meta: [
-      { title: "الاشتراك والمساهمة | صندوق التنمية العائلية (آل بوعبيد)" },
-      {
-        name: "description",
-        content:
-          "الاشتراكات الشهرية والمساهمات في أوقاف ومشاريع صندوق التنمية العائلية (آل بوعبيد) عبر القنوات المعتمدة.",
-      },
+      { title: "الاشتراك والمساهمة | آل بوعبيد" },
+      { name: "description", content: "الاشتراكات الشهرية والمساهمات في أوقاف ومشاريع صندوق التنمية العائلية (آل بوعبيد) عبر القنوات المعتمدة." },
       { property: "og:title", content: "الاشتراك والمساهمة — آل بوعبيد" },
+      { property: "og:description", content: "طرق الاشتراك الشهري والمساهمة في أوقاف ومشاريع صندوق التنمية العائلية (آل بوعبيد) عبر القنوات المعتمدة." },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/contribute" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/contribute" }],
   }),
   component: ContributePage,
 });

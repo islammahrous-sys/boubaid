@@ -10,15 +10,14 @@ import { Eyebrow, Status, Prose } from "@/components/site/Editorial";
 export const Route = createFileRoute("/initiatives")({
   head: () => ({
     meta: [
-      { title: "المبادرات والمشاريع | صندوق التنمية العائلية (آل بوعبيد)" },
-      {
-        name: "description",
-        content:
-          "المبادرات التنموية والاجتماعية لصندوق التنمية العائلية (آل بوعبيد) ومشروع المقر الدائم بحي الحزام الذهبي.",
-      },
+      { title: "المبادرات والمشاريع | آل بوعبيد" },
+      { name: "description", content: "المبادرات التنموية والاجتماعية لصندوق التنمية العائلية (آل بوعبيد) ومشروع المقر الدائم بحي الحزام الذهبي." },
       { property: "og:title", content: "مبادرات آل بوعبيد" },
+      { property: "og:description", content: "المبادرات التنموية والاجتماعية لصندوق التنمية العائلية (آل بوعبيد) ومشروع المقر الدائم بحي الحزام الذهبي." },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/initiatives" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/initiatives" }],
   }),
   component: InitiativesPage,
 });

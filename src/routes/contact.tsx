@@ -13,15 +13,14 @@ import { siteMeta } from "@/content/site";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "تواصل معنا | صندوق التنمية العائلية (آل بوعبيد)" },
-      {
-        name: "description",
-        content:
-          "تواصل مع الأمانة العامة واللجان التنفيذية لصندوق التنمية العائلية (آل بوعبيد) بمدينة المبرز بالأحساء.",
-      },
+      { title: "تواصل معنا | آل بوعبيد" },
+      { name: "description", content: "تواصل مع الأمانة العامة واللجان التنفيذية لصندوق التنمية العائلية (آل بوعبيد) بمدينة المبرز بالأحساء." },
       { property: "og:title", content: "تواصل معنا — آل بوعبيد" },
+      { property: "og:description", content: "بيانات التواصل مع الأمانة العامة واللجان التنفيذية لصندوق التنمية العائلية (آل بوعبيد) في المبرز بالأحساء." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/contact" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/contact" }],
   }),
   component: ContactPage,
 });
