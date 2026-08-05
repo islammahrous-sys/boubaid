@@ -188,7 +188,10 @@ export function BranchesPage() {
                   <div className="plate-frame">
                     <img
                       src={branchPortraits[b.id] ?? b.image}
-                      alt=""
+                      alt={t({
+                        ar: `صورة ${b.ancestor.ar} — الجد الجامع لفرع ${b.name.ar}`,
+                        en: `Portrait of ${b.ancestor.en}, patriarch of the ${b.name.en} branch`,
+                      })}
                       className="photo-plate aspect-[3/4] w-full object-cover object-top"
                       loading="lazy"
                     />
@@ -274,7 +277,10 @@ export function BranchesPage() {
                     >
                       <img
                         src={b.treePoster}
-                        alt=""
+                        alt={t({
+                          ar: `لوحة شجرة فرع ${b.name.ar}`,
+                          en: `Family tree plate of the ${b.name.en} branch`,
+                        })}
                         className="w-full bg-white object-contain"
                         loading="lazy"
                       />

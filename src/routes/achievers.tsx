@@ -153,7 +153,7 @@ export function AchieversPage() {
                       a register plate, not an avatar. */}
                   <img
                     src={person.image}
-                    alt=""
+                    alt={t({ ar: `صورة ${person.name.ar}`, en: `Portrait of ${person.name.en}` })}
                     className="photo-plate aspect-[3/4] w-16 border border-border object-cover object-top"
                     loading="lazy"
                   />
