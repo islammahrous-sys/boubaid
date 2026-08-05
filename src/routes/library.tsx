@@ -13,15 +13,14 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/library")({
   head: () => ({
     meta: [
-      { title: "الأرشيف والمكتبة الرقمية | صندوق التنمية العائلية (آل بوعبيد)" },
-      {
-        name: "description",
-        content:
-          "الأرشيف الرقمي المعتمد آل بوعبيد: اللوائح الرسمية، الدراسات التاريخية والجينية، ومجموعات الصور والتسجيلات.",
-      },
+      { title: "الأرشيف والمكتبة الرقمية | آل بوعبيد" },
+      { name: "description", content: "الأرشيف الرقمي المعتمد آل بوعبيد: اللوائح الرسمية، الدراسات التاريخية والجينية، ومجموعات الصور والتسجيلات." },
       { property: "og:title", content: "الأرشيف والمكتبة الرقمية — آل بوعبيد" },
+      { property: "og:description", content: "الأرشيف الرقمي المعتمد لأسرة آل بوعبيد: اللوائح الرسمية، الدراسات التاريخية والجينية، ومجموعات الصور." },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/library" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/library" }],
   }),
   component: LibraryPage,
 });

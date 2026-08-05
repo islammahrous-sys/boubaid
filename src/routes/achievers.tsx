@@ -12,15 +12,14 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/achievers")({
   head: () => ({
     meta: [
-      { title: "سجل المتميزين | صندوق التنمية العائلية (آل بوعبيد)" },
-      {
-        name: "description",
-        content:
-          "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة.",
-      },
+      { title: "سجل المتميزين | آل بوعبيد" },
+      { name: "description", content: "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة." },
       { property: "og:title", content: "سجل المتميزين — آل بوعبيد" },
+      { property: "og:description", content: "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة." },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/achievers" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/achievers" }],
   }),
   component: AchieversPage,
 });
@@ -154,7 +153,7 @@ export function AchieversPage() {
                       a register plate, not an avatar. */}
                   <img
                     src={person.image}
-                    alt=""
+                    alt={t({ ar: `صورة ${person.name.ar}`, en: `Portrait of ${person.name.en}` })}
                     className="photo-plate aspect-[3/4] w-16 border border-border object-cover object-top"
                     loading="lazy"
                   />

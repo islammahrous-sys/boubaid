@@ -12,7 +12,7 @@ export const Route = createFileRoute("/initiatives/$slug")({
     if (!item) throw notFound();
     return { item };
   },
-  head: ({ loaderData }) => {
+  head: ({ params, loaderData }) => {
     const title = loaderData
       ? `${loaderData.item.title.ar} — ${loaderData.item.title.en}`
       : "مبادرة";
@@ -23,6 +23,11 @@ export const Route = createFileRoute("/initiatives/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: loaderData?.item.summary.en ?? "" },
         { property: "og:type", content: "article" },
+        { property: "og:url", content: `https://alboabid-heritage-hub.lovable.app/initiatives/${params.slug}` },
+        ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
+      ],
+      links: [
+        { rel: "canonical", href: `https://alboabid-heritage-hub.lovable.app/initiatives/${params.slug}` },
       ],
     };
   },

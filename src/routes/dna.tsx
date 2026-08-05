@@ -13,15 +13,14 @@ import { stripLeadingLabel } from "@/lib/text";
 export const Route = createFileRoute("/dna")({
   head: () => ({
     meta: [
-      { title: "الدراسة الجينية J-Z20777 | أسرة آل بوعبيد" },
-      {
-        name: "description",
-        content:
-          "نتائج فحوصات سلالة الكروموسوم الذكري (Y-DNA) لأسرة آل بوعبيد ضمن شجرة التحور J-Z20777، وصولاً إلى التحور الطرفي J-BY37877 حيث يظهر اسم آل بوعبيد صراحةً في لوحتي الأسرة الجينيتين، والتسلسل الزمني للطفرات وانتشارها الجغرافي.",
-      },
+      { title: "الدراسة الجينية J-Z20777 | آل بوعبيد" },
+      { name: "description", content: "نتائج فحوصات سلالة الكروموسوم الذكري (Y-DNA) لأسرة آل بوعبيد ضمن شجرة التحور J-Z20777 وتحورها الطرفي J-BY37877." },
       { property: "og:title", content: "الدراسة الجينية — آل بوعبيد" },
+      { property: "og:description", content: "نتائج فحوصات الحمض النووي (Y-DNA) لأسرة آل بوعبيد ضمن شجرة التحور J-Z20777 والتحور الطرفي J-BY37877." },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/dna" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/dna" }],
   }),
   component: DnaPage,
 });

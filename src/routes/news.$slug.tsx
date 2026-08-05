@@ -16,16 +16,20 @@ export const Route = createFileRoute("/news/$slug")({
     if (!item) throw notFound();
     return { item };
   },
-  head: ({ loaderData }) => {
+  head: ({ params, loaderData }) => {
     const title = loaderData?.item.title.ar ?? "خبر";
+    const url = `https://alboabid-heritage-hub.lovable.app/news/${params.slug}`;
     return {
       meta: [
         { title },
         { name: "description", content: loaderData?.item.excerpt.ar ?? "" },
         { property: "og:title", content: title },
-        { property: "og:description", content: loaderData?.item.excerpt.en ?? "" },
+        { property: "og:description", content: loaderData?.item.excerpt.ar ?? "" },
         { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
       ],
+      links: [{ rel: "canonical", href: url }],
     };
   },
   component: NewsDetail,

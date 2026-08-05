@@ -28,19 +28,21 @@ import { HeroVideo } from "@/components/site/HeroVideo";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "صندوق التنمية العائلية (آل بوعبيد) — البوابة الرسمية | Al Bu Obaid Family" },
+      { title: "آل بوعبيد — صندوق التنمية العائلية | البوابة الرسمية" },
       {
         name: "description",
-        content: `البوابة الرسمية لصندوق التنمية العائلية (آل بوعبيد) من بني تميم بالأحساء (ترخيص NCNP رقم ${siteMeta.ncnpLicense}).`,
+        content: `البوابة الرسمية لصندوق التنمية العائلية (آل بوعبيد) من بني تميم بالأحساء — النسب والفروع والمبادرات (ترخيص NCNP ${siteMeta.ncnpLicense}).`,
       },
       { property: "og:title", content: "صندوق التنمية العائلية (آل بوعبيد) — الأحساء" },
       {
         property: "og:description",
         content:
-          "الموقع الرسمي لأسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund.",
+          "البوابة الرسمية لأسرة آل بوعبيد وصندوق التنمية العائلية — من العبادل من بني تميم، ومقرها المبرز بالأحساء.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/" }],
   }),
   component: HomePage,
 });

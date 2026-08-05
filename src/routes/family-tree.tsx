@@ -12,15 +12,14 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/family-tree")({
   head: () => ({
     meta: [
-      { title: "المشجرة التفاعلية | الفروع امتداد الجذور — آل بوعبيد" },
-      {
-        name: "description",
-        content:
-          "المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم، وتغطي الأجيال الموثقة عبر الفروع السبعة.",
-      },
+      { title: "المشجرة التفاعلية | آل بوعبيد" },
+      { name: "description", content: "المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم، وتغطي الأجيال الموثقة عبر الفروع السبعة." },
       { property: "og:title", content: "المشجرة التفاعلية — آل بوعبيد" },
+      { property: "og:description", content: "المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم، تغطي الأجيال الموثقة عبر الفروع السبعة." },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: "https://alboabid-heritage-hub.lovable.app/family-tree" },
     ],
+    links: [{ rel: "canonical", href: "https://alboabid-heritage-hub.lovable.app/family-tree" }],
   }),
   component: FamilyTreePage,
 });
