@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 import { Mail, Phone, MapPin, MessageCircle, ExternalLink } from "lucide-react";
+import { submitContactMessage } from "@/lib/forms.functions";
+import { contactMessageSchema } from "@/lib/forms.schemas";
+
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
