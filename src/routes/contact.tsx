@@ -83,16 +83,13 @@ const copy = {
   } as BiText,
 };
 
-const schema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(255),
-  subject: z.string().trim().min(1),
-  message: z.string().trim().min(5).max(1000),
-});
+const schema = contactMessageSchema;
 
 export function ContactPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [submitting, setSubmitting] = useState(false);
+  const sendContact = useServerFn(submitContactMessage);
+
 
   const fieldClass =
     "w-full border border-input bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-bronze focus:ring-2 focus:ring-bronze/20 dark:focus:border-gold dark:focus:ring-gold/20";
