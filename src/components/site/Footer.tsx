@@ -189,10 +189,12 @@ export function Footer() {
                 />
                 <button
                   type="submit"
-                  className="shrink-0 border border-gold bg-gold px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-transparent hover:text-gold"
+                  disabled={subscribing}
+                  className="shrink-0 border border-gold bg-gold px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
                 >
                   {lang === "ar" ? "اشتراك" : "Subscribe"}
                 </button>
+
               </div>
             </form>
 
