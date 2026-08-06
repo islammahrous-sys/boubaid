@@ -1,27 +1,60 @@
 import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { MessageCircle, MapPin, Phone, Mail, ArrowUp, Globe } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import { siteMeta } from "@/content/site";
 import { navGroups } from "@/content/navigation";
+import { subscribeToNewsletter } from "@/lib/forms.functions";
+import { newsletterSchema } from "@/lib/forms.schemas";
 import { cn } from "@/lib/utils";
 
 export function Footer() {
   const { t, lang } = useLang();
   const [email, setEmail] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
+  const subscribe = useServerFn(subscribeToNewsletter);
   const rtl = lang === "ar";
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    toast.success(
-      lang === "ar"
-        ? "تم تسجيل اشتراكك في نشرة الأسرة."
-        : "You have been added to the family newsletter.",
-    );
-    setEmail("");
+    const parsed = newsletterSchema.safeParse({ email, locale: lang });
+    if (!parsed.success) {
+      toast.error(
+        lang === "ar" ? "يرجى إدخال بريد إلكتروني صحيح." : "Please enter a valid email address.",
+      );
+      return;
+    }
+
+    setSubscribing(true);
+    try {
+      const res = await subscribe({ data: parsed.data });
+      if (res.ok) {
+        toast.success(
+          res.already
+            ? lang === "ar"
+              ? "بريدك مسجَّل مسبقاً في نشرة الأسرة."
+              : "This address is already on the family newsletter."
+            : lang === "ar"
+              ? "تم تسجيل اشتراكك في نشرة الأسرة."
+              : "You have been added to the family newsletter.",
+        );
+        setEmail("");
+      } else {
+        toast.error(
+          lang === "ar" ? "تعذّر تسجيل الاشتراك. حاول مرة أخرى." : "Subscription failed. Please try again.",
+        );
+      }
+    } catch {
+      toast.error(
+        lang === "ar" ? "تعذّر تسجيل الاشتراك. حاول مرة أخرى." : "Subscription failed. Please try again.",
+      );
+    } finally {
+      setSubscribing(false);
+    }
   };
+
 
   const channels = [
     {
@@ -156,10 +189,12 @@ export function Footer() {
                 />
                 <button
                   type="submit"
-                  className="shrink-0 border border-gold bg-gold px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-transparent hover:text-gold"
+                  disabled={subscribing}
+                  className="shrink-0 border border-gold bg-gold px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
                 >
                   {lang === "ar" ? "اشتراك" : "Subscribe"}
                 </button>
+
               </div>
             </form>
 

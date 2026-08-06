@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 import { Mail, Phone, MapPin, MessageCircle, ExternalLink } from "lucide-react";
+import { submitContactMessage } from "@/lib/forms.functions";
+import { contactMessageSchema } from "@/lib/forms.schemas";
+
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
@@ -47,7 +50,12 @@ const copy = {
     ar: "يرجى مراجعة الحقول المطلوبة.",
     en: "Please check the required fields.",
   } as BiText,
+  failed: {
+    ar: "تعذّر إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+    en: "The message could not be sent. Please try again.",
+  } as BiText,
   required: { ar: "مطلوب", en: "required" } as BiText,
+
 
   subjects: [
     { ar: "استفسار عام", en: "General enquiry" },
@@ -78,21 +86,18 @@ const copy = {
   } as BiText,
 };
 
-const schema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(255),
-  subject: z.string().trim().min(1),
-  message: z.string().trim().min(5).max(1000),
-});
+const schema = contactMessageSchema;
 
 export function ContactPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [submitting, setSubmitting] = useState(false);
+  const sendContact = useServerFn(submitContactMessage);
+
 
   const fieldClass =
     "w-full border border-input bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-bronze focus:ring-2 focus:ring-bronze/20 dark:focus:border-gold dark:focus:ring-gold/20";
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
@@ -101,6 +106,7 @@ export function ContactPage() {
       email: fd.get("email"),
       subject: fd.get("subject"),
       message: fd.get("message"),
+      locale: lang,
     });
 
     if (!result.success) {
@@ -109,10 +115,21 @@ export function ContactPage() {
     }
 
     setSubmitting(true);
-    toast.success(t(copy.sent));
-    form.reset();
-    setSubmitting(false);
+    try {
+      const res = await sendContact({ data: result.data });
+      if (res.ok) {
+        toast.success(t(copy.sent));
+        form.reset();
+      } else {
+        toast.error(t(copy.failed));
+      }
+    } catch {
+      toast.error(t(copy.failed));
+    } finally {
+      setSubmitting(false);
+    }
   };
+
 
   return (
     <>
