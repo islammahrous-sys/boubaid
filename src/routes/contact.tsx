@@ -47,7 +47,12 @@ const copy = {
     ar: "يرجى مراجعة الحقول المطلوبة.",
     en: "Please check the required fields.",
   } as BiText,
+  failed: {
+    ar: "تعذّر إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+    en: "The message could not be sent. Please try again.",
+  } as BiText,
   required: { ar: "مطلوب", en: "required" } as BiText,
+
 
   subjects: [
     { ar: "استفسار عام", en: "General enquiry" },
