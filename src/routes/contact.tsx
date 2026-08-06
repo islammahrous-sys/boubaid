@@ -92,7 +92,7 @@ export function ContactPage() {
   const fieldClass =
     "w-full border border-input bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-bronze focus:ring-2 focus:ring-bronze/20 dark:focus:border-gold dark:focus:ring-gold/20";
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
@@ -101,6 +101,7 @@ export function ContactPage() {
       email: fd.get("email"),
       subject: fd.get("subject"),
       message: fd.get("message"),
+      locale: lang,
     });
 
     if (!result.success) {
@@ -109,10 +110,21 @@ export function ContactPage() {
     }
 
     setSubmitting(true);
-    toast.success(t(copy.sent));
-    form.reset();
-    setSubmitting(false);
+    try {
+      const res = await sendContact({ data: result.data });
+      if (res.ok) {
+        toast.success(t(copy.sent));
+        form.reset();
+      } else {
+        toast.error(t(copy.failed));
+      }
+    } catch {
+      toast.error(t(copy.failed));
+    } finally {
+      setSubmitting(false);
+    }
   };
+
 
   return (
     <>
