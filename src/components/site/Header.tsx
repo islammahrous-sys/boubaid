@@ -1,7 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, UserRound } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
+import { useAuth } from "@/hooks/useAuth";
 import { siteMeta } from "@/content/site";
 import { primaryNav, secondaryNav, navGroups, isRouteActive } from "@/content/navigation";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { t, lang } = useLang();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -268,11 +270,25 @@ export function Header() {
             <LanguageSwitcher tone="default" />
           </div>
           <Link
+            to={user ? "/account" : "/auth"}
+            className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary md:inline-flex"
+          >
+            <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
+            {user
+              ? lang === "ar"
+                ? "حسابي"
+                : "My account"
+              : lang === "ar"
+                ? "دخول الأعضاء"
+                : "Member sign-in"}
+          </Link>
+          <Link
             to="/contribute"
             className="hidden items-center border border-gold bg-gold px-4 py-2 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold sm:inline-flex"
           >
             {lang === "ar" ? "الاشتراك" : "Subscribe"}
           </Link>
+
 
           <button
             type="button"
