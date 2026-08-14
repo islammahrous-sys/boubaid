@@ -127,6 +127,14 @@ function AdminPage() {
           "مراجعة طلبات العضوية، ومتابعة رسائل التواصل والمشتركين وسجل الأعضاء.",
           "Review membership requests and follow contact messages, subscribers, and the member register.",
         )}
+        actions={
+          <Link
+            to="/content"
+            className="border border-border px-4 py-2 text-[13px] font-medium hover:bg-secondary"
+          >
+            {label("منصة المحتوى", "Content console")}
+          </Link>
+        }
       />
 
       <section className="container-page mt-10">

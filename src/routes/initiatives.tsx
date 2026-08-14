@@ -2,12 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
-import { initiatives, hqProject } from "@/content/site";
+import { initiatives as staticInitiatives, hqProject } from "@/content/site";
+import { getPublishedInitiatives } from "@/lib/cms.functions";
+import { mergeInitiatives } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Status, Prose } from "@/components/site/Editorial";
 
 export const Route = createFileRoute("/initiatives")({
+  loader: async () => {
+    const rows = await getPublishedInitiatives();
+    return { initiatives: mergeInitiatives(rows, staticInitiatives) };
+  },
   head: () => ({
     meta: [
       { title: "المبادرات والمشاريع | آل بوعبيد" },
@@ -66,6 +72,7 @@ const copy = {
 
 export function InitiativesPage() {
   const { t, lang } = useLang();
+  const { initiatives } = Route.useLoaderData();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
 

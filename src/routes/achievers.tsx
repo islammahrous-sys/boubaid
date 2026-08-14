@@ -5,11 +5,17 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
-import { achievers } from "@/content/site";
+import { achievers as staticAchievers } from "@/content/site";
+import { getPublishedAchievers } from "@/lib/cms.functions";
+import { mergeAchievers } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/achievers")({
+  loader: async () => {
+    const rows = await getPublishedAchievers();
+    return { achievers: mergeAchievers(rows, staticAchievers) };
+  },
   head: () => ({
     meta: [
       { title: "سجل المتميزين | آل بوعبيد" },
@@ -65,6 +71,7 @@ const categories: { key: string; label: BiText }[] = [
 
 export function AchieversPage() {
   const { t, lang } = useLang();
+  const { achievers } = Route.useLoaderData();
   const [selected, setSelected] = useState("all");
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;

@@ -3,7 +3,9 @@ import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Link2 } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
-import { news, siteMeta } from "@/content/site";
+import { news as staticNews, siteMeta } from "@/content/site";
+import { getPublishedNews } from "@/lib/cms.functions";
+import { mergeNews } from "@/content/cms-adapt";
 import { Ornament } from "@/components/site/Editorial";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ReadingProgress } from "@/components/site/ReadingProgress";
@@ -11,10 +13,12 @@ import { newsImage } from "@/content/news-images";
 import { formatHijri } from "@/lib/text";
 
 export const Route = createFileRoute("/news/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    const rows = await getPublishedNews();
+    const news = mergeNews(rows, staticNews);
     const item = news.find((n) => n.slug === params.slug);
     if (!item) throw notFound();
-    return { item };
+    return { item, news };
   },
   head: ({ params, loaderData }) => {
     const title = loaderData?.item.title.ar ?? "خبر";
@@ -51,7 +55,7 @@ const copy = {
 };
 
 function NewsDetail() {
-  const { item } = Route.useLoaderData();
+  const { item, news } = Route.useLoaderData();
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   const BackArrow = rtl ? ArrowRight : ArrowLeft;

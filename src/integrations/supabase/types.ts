@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievers: {
+        Row: {
+          achievement_ar: string | null
+          achievement_en: string | null
+          branch_ar: string | null
+          branch_en: string | null
+          category: string
+          created_at: string
+          created_by: string | null
+          field_ar: string | null
+          field_en: string | null
+          id: string
+          image_path: string | null
+          is_published: boolean
+          name_ar: string
+          name_en: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          achievement_ar?: string | null
+          achievement_en?: string | null
+          branch_ar?: string | null
+          branch_en?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          field_ar?: string | null
+          field_en?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          name_ar: string
+          name_en?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          achievement_ar?: string | null
+          achievement_en?: string | null
+          branch_ar?: string | null
+          branch_en?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          field_ar?: string | null
+          field_en?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          name_ar?: string
+          name_en?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -41,6 +98,57 @@ export type Database = {
           entity?: string
           entity_id?: string | null
           id?: string
+        }
+        Relationships: []
+      }
+      branches: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description_ar: string | null
+          description_en: string | null
+          elder_ar: string | null
+          elder_en: string | null
+          id: string
+          image_path: string | null
+          is_published: boolean
+          name_ar: string
+          name_en: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          elder_ar?: string | null
+          elder_en?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          name_ar: string
+          name_en?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          elder_ar?: string | null
+          elder_en?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          name_ar?: string
+          name_en?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -83,6 +191,177 @@ export type Database = {
           subject?: string | null
           submitted_by?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      contributions: {
+        Row: {
+          amount: number
+          contributor_name: string
+          created_at: string
+          currency: string
+          email: string | null
+          id: string
+          method: string
+          phone: string | null
+          purpose: string | null
+          receipt_path: string | null
+          reference: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["contribution_status"]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          contributor_name: string
+          created_at?: string
+          currency?: string
+          email?: string | null
+          id?: string
+          method?: string
+          phone?: string | null
+          purpose?: string | null
+          receipt_path?: string | null
+          reference?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["contribution_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          contributor_name?: string
+          created_at?: string
+          currency?: string
+          email?: string | null
+          id?: string
+          method?: string
+          phone?: string | null
+          purpose?: string | null
+          receipt_path?: string | null
+          reference?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["contribution_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      initiatives: {
+        Row: {
+          body_ar: string | null
+          body_en: string | null
+          cover_path: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_published: boolean
+          slug: string
+          sort_order: number
+          status: string
+          summary_ar: string | null
+          summary_en: string | null
+          title_ar: string
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          body_ar?: string | null
+          body_en?: string | null
+          cover_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          slug: string
+          sort_order?: number
+          status?: string
+          summary_ar?: string | null
+          summary_en?: string | null
+          title_ar: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body_ar?: string | null
+          body_en?: string | null
+          cover_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          slug?: string
+          sort_order?: number
+          status?: string
+          summary_ar?: string | null
+          summary_en?: string | null
+          title_ar?: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      library_items: {
+        Row: {
+          collection: string
+          created_at: string
+          created_by: string | null
+          description_ar: string | null
+          description_en: string | null
+          external_url: string | null
+          file_path: string | null
+          id: string
+          is_published: boolean
+          kind: string | null
+          reference: string | null
+          sort_order: number
+          title_ar: string
+          title_en: string | null
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          collection?: string
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          external_url?: string | null
+          file_path?: string | null
+          id?: string
+          is_published?: boolean
+          kind?: string | null
+          reference?: string | null
+          sort_order?: number
+          title_ar: string
+          title_en?: string | null
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          collection?: string
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          external_url?: string | null
+          file_path?: string | null
+          id?: string
+          is_published?: boolean
+          kind?: string | null
+          reference?: string | null
+          sort_order?: number
+          title_ar?: string
+          title_en?: string | null
+          updated_at?: string
+          year?: number | null
         }
         Relationships: []
       }
@@ -137,6 +416,69 @@ export type Database = {
           status?: Database["public"]["Enums"]["request_status"]
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      news_posts: {
+        Row: {
+          body_ar: string | null
+          body_en: string | null
+          cover_path: string | null
+          created_at: string
+          created_by: string | null
+          excerpt_ar: string | null
+          excerpt_en: string | null
+          gregorian_date: string | null
+          hijri_date: string | null
+          id: string
+          is_published: boolean
+          published_at: string | null
+          section: string
+          slug: string
+          sort_order: number
+          title_ar: string
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          body_ar?: string | null
+          body_en?: string | null
+          cover_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt_ar?: string | null
+          excerpt_en?: string | null
+          gregorian_date?: string | null
+          hijri_date?: string | null
+          id?: string
+          is_published?: boolean
+          published_at?: string | null
+          section?: string
+          slug: string
+          sort_order?: number
+          title_ar: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body_ar?: string | null
+          body_en?: string | null
+          cover_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt_ar?: string | null
+          excerpt_en?: string | null
+          gregorian_date?: string | null
+          hijri_date?: string | null
+          id?: string
+          is_published?: boolean
+          published_at?: string | null
+          section?: string
+          slug?: string
+          sort_order?: number
+          title_ar?: string
+          title_en?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -245,6 +587,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "editor" | "treasurer" | "member"
+      contribution_status: "pending" | "verified" | "rejected"
       message_status: "new" | "read" | "archived"
       request_status: "pending" | "approved" | "rejected"
     }
@@ -375,6 +718,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "treasurer", "member"],
+      contribution_status: ["pending", "verified", "rejected"],
       message_status: ["new", "read", "archived"],
       request_status: ["pending", "approved", "rejected"],
     },
