@@ -237,8 +237,15 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
     const { id, ...rest } = data.values as { id?: string } & Record<string, unknown>;
     const payload = blankToNull(rest);
 
+    // The table name is a validated union; the generated per-table row types
+    // cannot be narrowed generically, so widen the query builder here.
+    const table = supabase.from(data.table) as unknown as {
+      update: (v: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { code?: string; message: string } | null }> };
+      insert: (v: Record<string, unknown>) => { select: (c: string) => { maybeSingle: () => Promise<{ data: { id: string } | null; error: { code?: string; message: string } | null }> } };
+    };
+
     if (id) {
-      const { error } = await supabase.from(data.table).update(payload).eq("id", id);
+      const { error } = await table.update(payload).eq("id", id);
       if (error) {
         console.error("[cms] update failed", data.table, error.code, error.message);
         return { ok: false, error: error.code === "23505" ? "duplicate_slug" : "update_failed" };
@@ -246,8 +253,7 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
       return { ok: true, id };
     }
 
-    const { data: inserted, error } = await supabase
-      .from(data.table)
+    const { data: inserted, error } = await table
       .insert({ ...payload, created_by: userId })
       .select("id")
       .maybeSingle();
@@ -267,7 +273,10 @@ export const setCmsPublished = createServerFn({ method: "POST" })
     if (data.table === "news_posts") {
       patch["published_at"] = data.is_published ? new Date().toISOString() : null;
     }
-    const { error } = await context.supabase.from(data.table).update(patch).eq("id", data.id);
+    const table = context.supabase.from(data.table) as unknown as {
+      update: (v: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { code?: string; message: string } | null }> };
+    };
+    const { error } = await table.update(patch).eq("id", data.id);
     if (error) {
       console.error("[cms] publish toggle failed", error.code, error.message);
       return { ok: false, error: "update_failed" };
