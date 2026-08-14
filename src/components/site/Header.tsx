@@ -1,7 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, UserRound } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
+import { useAuth } from "@/hooks/useAuth";
 import { siteMeta } from "@/content/site";
 import { primaryNav, secondaryNav, navGroups, isRouteActive } from "@/content/navigation";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { t, lang } = useLang();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
