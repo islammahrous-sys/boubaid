@@ -19,6 +19,7 @@ import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BranchesRouteImport } from './routes/branches'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AchieversRouteImport } from './routes/achievers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -75,6 +76,11 @@ const BranchesRoute = BranchesRouteImport.update({
   path: '/branches',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AchieversRoute = AchieversRouteImport.update({
   id: '/achievers',
   path: '/achievers',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/achievers'
+    | '/auth'
     | '/branches'
     | '/contact'
     | '/contribute'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/achievers'
+    | '/auth'
     | '/branches'
     | '/contact'
     | '/contribute'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/achievers'
+    | '/auth'
     | '/branches'
     | '/contact'
     | '/contribute'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AchieversRoute: typeof AchieversRoute
+  AuthRoute: typeof AuthRoute
   BranchesRoute: typeof BranchesRoute
   ContactRoute: typeof ContactRoute
   ContributeRoute: typeof ContributeRoute
@@ -295,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BranchesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/achievers': {
       id: '/achievers'
       path: '/achievers'
@@ -359,6 +379,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AchieversRoute: AchieversRoute,
+  AuthRoute: AuthRoute,
   BranchesRoute: BranchesRoute,
   ContactRoute: ContactRoute,
   ContributeRoute: ContributeRoute,

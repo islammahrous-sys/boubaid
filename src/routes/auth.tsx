@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 
@@ -85,23 +84,15 @@ function AuthPage() {
     }
   };
 
-  const onGoogle = async () => {
-    try {
-      await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    } catch {
-      toast.error(label("تعذر الدخول عبر Google.", "Google sign-in failed."));
-    }
-  };
-
   return (
     <div className="pb-20">
       <PageHeader
-        eyebrow={{ ar: "بوابة الأعضاء", en: "Member portal" }}
-        title={{ ar: "دخول الأعضاء", en: "Member sign-in" }}
-        lede={{
-          ar: "الدخول مخصص لأفراد الأسرة. بعد إنشاء الحساب يُقدَّم طلب العضوية ويُعتمد من أمانة المجلس.",
-          en: "Access is for family members. After creating an account you submit a membership request for the council secretariat to approve.",
-        }}
+        eyebrow={label("بوابة الأعضاء", "Member portal")}
+        title={label("دخول الأعضاء", "Member sign-in")}
+        subtitle={label(
+          "الدخول مخصص لأفراد الأسرة. بعد إنشاء الحساب يُقدَّم طلب العضوية ويُعتمد من أمانة المجلس.",
+          "Access is for family members. After creating an account you submit a membership request for the council secretariat to approve.",
+        )}
       />
 
       <section className="container-page mt-12 max-w-md reveal-fade">
@@ -123,20 +114,6 @@ function AuthPage() {
                   : label("حساب جديد", "Create account")}
               </button>
             ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={onGoogle}
-            className="mb-5 flex w-full items-center justify-center gap-2 border border-border px-4 py-2.5 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary"
-          >
-            {label("المتابعة بحساب Google", "Continue with Google")}
-          </button>
-
-          <div className="mb-5 flex items-center gap-3 text-[11px] text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            {label("أو بالبريد الإلكتروني", "or with email")}
-            <span className="h-px flex-1 bg-border" />
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
