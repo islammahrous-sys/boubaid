@@ -180,25 +180,26 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <LanguageProvider>
-          <div className="flex min-h-screen flex-col pb-16 md:pb-0">
-            <a href="#main" className="skip-link">
-              تخطَّ إلى المحتوى — Skip to content
-            </a>
-            <Header />
-            <main id="main" className="flex-1">
-              <PageTransition>
-                <Outlet />
-              </PageTransition>
-            </main>
+        <AuthProvider>
+          <LanguageProvider>
+            <div className="flex min-h-screen flex-col pb-16 md:pb-0">
+              <a href="#main" className="skip-link">
+                تخطَّ إلى المحتوى — Skip to content
+              </a>
+              <Header />
+              <main id="main" className="flex-1">
+                <PageTransition>
+                  <Outlet />
+                </PageTransition>
+              </main>
 
-
-            <Footer />
-            <MobileNav />
-            <ScrollReveal />
-          </div>
-          <Toaster richColors position="top-center" />
-        </LanguageProvider>
+              <Footer />
+              <MobileNav />
+              <ScrollReveal />
+            </div>
+            <Toaster richColors position="top-center" />
+          </LanguageProvider>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

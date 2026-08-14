@@ -26,6 +26,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as InitiativesSlugRouteImport } from './routes/initiatives.$slug'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 
 const NewsRoute = NewsRouteImport.update({
@@ -112,6 +113,11 @@ const InitiativesSlugRoute = InitiativesSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => InitiativesRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
   '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
 }
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
   '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
 }
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
 }
@@ -195,6 +204,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/account'
+    | '/admin'
     | '/initiatives/$slug'
     | '/news/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/account'
+    | '/admin'
     | '/initiatives/$slug'
     | '/news/$slug'
   id:
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/_authenticated/account'
+    | '/_authenticated/admin'
     | '/initiatives/$slug'
     | '/news/$slug'
   fileRoutesById: FileRoutesById
@@ -377,6 +389,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InitiativesSlugRouteImport
       parentRoute: typeof InitiativesRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/account': {
       id: '/_authenticated/account'
       path: '/account'
@@ -389,10 +408,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
