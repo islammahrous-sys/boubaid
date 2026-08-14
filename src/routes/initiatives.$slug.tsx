@@ -2,15 +2,19 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
-import { initiatives } from "@/content/site";
+import { initiatives as staticInitiatives } from "@/content/site";
+import { getPublishedInitiatives } from "@/lib/cms.functions";
+import { mergeInitiatives } from "@/content/cms-adapt";
 import { Eyebrow, Status, Ornament } from "@/components/site/Editorial";
 import { initiativeImage } from "@/content/images";
 
 export const Route = createFileRoute("/initiatives/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    const rows = await getPublishedInitiatives();
+    const initiatives = mergeInitiatives(rows, staticInitiatives);
     const item = initiatives.find((i) => i.slug === params.slug);
     if (!item) throw notFound();
-    return { item };
+    return { item, initiatives };
   },
   head: ({ params, loaderData }) => {
     const title = loaderData
@@ -51,7 +55,7 @@ const copy = {
 };
 
 function InitiativeDetail() {
-  const { item } = Route.useLoaderData();
+  const { item, initiatives } = Route.useLoaderData();
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
