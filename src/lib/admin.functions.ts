@@ -84,11 +84,14 @@ export const reviewMembershipRequest = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     // Authorise from the caller's own client — never with elevated access.
-    const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: userId,
-      _role: "admin",
-    });
-    if (!isAdmin) return { ok: false as const, error: "forbidden" };
+    // (The update itself is also gated by an admin-only RLS policy.)
+    const { data: adminRole } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!adminRole) return { ok: false as const, error: "forbidden" };
 
     const { data: updated, error } = await supabase
       .from("membership_requests")
