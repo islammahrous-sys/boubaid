@@ -2,12 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
-import { news, siteMeta } from "@/content/site";
+import { news as staticNews, siteMeta } from "@/content/site";
+import { getPublishedNews } from "@/lib/cms.functions";
+import { mergeNews } from "@/content/cms-adapt";
 import { Eyebrow } from "@/components/site/Editorial";
 import { newsImage } from "@/content/news-images";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/news")({
+  loader: async () => {
+    const rows = await getPublishedNews();
+    return { news: mergeNews(rows, staticNews) };
+  },
   head: () => ({
     meta: [
       { title: "الأخبار والبيانات الرسمية | آل بوعبيد" },
@@ -36,6 +42,7 @@ const copy = {
 
 export function NewsPage() {
   const { t, lang } = useLang();
+  const { news } = Route.useLoaderData();
   const [tab, setTab] = useState<"all" | "family" | "fund">("all");
 
   const filtered = tab === "all" ? news : news.filter((n) => n.section === tab);
