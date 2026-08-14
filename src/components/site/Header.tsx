@@ -11,7 +11,8 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { t, lang } = useLang();
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
+  const canReviewTreasury = roles.includes("admin") || roles.includes("treasurer");
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -269,6 +270,14 @@ export function Header() {
             <ThemeToggle tone="default" />
             <LanguageSwitcher tone="default" />
           </div>
+          {canReviewTreasury ? (
+            <Link
+              to="/treasury"
+              className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary md:inline-flex"
+            >
+              {lang === "ar" ? "الخزينة" : "Treasury"}
+            </Link>
+          ) : null}
           <Link
             to={user ? "/account" : "/auth"}
             className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary md:inline-flex"

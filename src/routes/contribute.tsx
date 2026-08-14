@@ -1,11 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ArrowLeft, ArrowRight, ExternalLink, Paperclip } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose, Ornament, Record, RecordField, Stamp } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { submitContribution, getMyContributions, type ContributionRow } from "@/lib/contributions.functions";
 
 export const Route = createFileRoute("/contribute")({
   head: () => ({
@@ -108,10 +115,153 @@ const tiers: { category: BiText; amount: BiText; purpose: BiText }[] = [
   },
 ];
 
+const contribCopy = {
+  formEyebrow: { ar: "سجل مساهمتك", en: "Record a contribution" } as BiText,
+  formTitle: { ar: "تسجيل اشتراك أو مساهمة", en: "Record a subscription or contribution" } as BiText,
+  formSubtitle: {
+    ar: "سجّل تحويلك البنكي أو مساهمتك هنا ليتولى أمين الخزينة اعتمادها.",
+    en: "Log your bank transfer or contribution here for the treasurer to verify.",
+  } as BiText,
+  contributorName: { ar: "اسم المساهم", en: "Contributor name" } as BiText,
+  amount: { ar: "المبلغ (ريال سعودي)", en: "Amount (SAR)" } as BiText,
+  method: { ar: "طريقة السداد", en: "Payment method" } as BiText,
+  methodBank: { ar: "تحويل بنكي", en: "Bank transfer" } as BiText,
+  methodInPerson: { ar: "حضورياً", en: "In person" } as BiText,
+  methodOther: { ar: "أخرى", en: "Other" } as BiText,
+  purpose: { ar: "وجه الصرف", en: "Purpose" } as BiText,
+  reference: { ar: "المرجع البنكي", en: "Bank reference" } as BiText,
+  receipt: { ar: "إيصال (اختياري، صورة أو PDF)", en: "Receipt (optional, image or PDF)" } as BiText,
+  submit: { ar: "تسجيل المساهمة", en: "Record contribution" } as BiText,
+  submitting: { ar: "جارٍ الإرسال…", en: "Submitting…" } as BiText,
+  signedOutTitle: { ar: "لتسجيل مساهمتك", en: "To record your contribution" } as BiText,
+  signedOutBody: {
+    ar: "سجّل الدخول إلى حسابك لتسجيل اشتراكك أو مساهمتك ومتابعة حالتها.",
+    en: "Sign in to your account to record your subscription or contribution and follow its status.",
+  } as BiText,
+  signInCta: { ar: "دخول الأعضاء", en: "Member sign-in" } as BiText,
+  mineEyebrow: { ar: "سجلي", en: "My record" } as BiText,
+  mineTitle: { ar: "مساهماتي", en: "My contributions" } as BiText,
+  mineEmpty: { ar: "لم تُسجَّل أي مساهمات بعد.", en: "No contributions recorded yet." } as BiText,
+  statusPending: { ar: "قيد المراجعة", en: "Pending" } as BiText,
+  statusVerified: { ar: "معتمد", en: "Verified" } as BiText,
+  statusRejected: { ar: "مرفوض", en: "Rejected" } as BiText,
+  successToast: { ar: "تم تسجيل المساهمة، بانتظار الاعتماد.", en: "Contribution recorded, awaiting verification." } as BiText,
+  errorToast: { ar: "تعذر تسجيل المساهمة.", en: "We couldn't record that contribution." } as BiText,
+  uploadError: { ar: "تعذر رفع الإيصال.", en: "We couldn't upload the receipt." } as BiText,
+  fileTooBig: { ar: "حجم الملف يتجاوز ٥ ميجابايت.", en: "The file exceeds 5MB." } as BiText,
+  fileType: { ar: "يُقبل الصور وملفات PDF فقط.", en: "Only images and PDF files are accepted." } as BiText,
+};
+
+const statusLabels: Record<ContributionRow["status"], BiText> = {
+  pending: contribCopy.statusPending,
+  verified: contribCopy.statusVerified,
+  rejected: contribCopy.statusRejected,
+};
+
+function formatSar(amount: number, lang: "ar" | "en") {
+  return new Intl.NumberFormat(lang === "ar" ? "ar-SA" : "en-US", {
+    style: "currency",
+    currency: "SAR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function formatDate(iso: string, lang: "ar" | "en") {
+  return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(new Date(iso));
+}
+
 export function ContributePage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
+  const label = (ar: string, en: string) => (lang === "ar" ? ar : en);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const submit = useServerFn(submitContribution);
+  const fetchMine = useServerFn(getMyContributions);
+
+  const { data: mine, isLoading: mineLoading } = useQuery({
+    queryKey: ["my-contributions"],
+    queryFn: () => fetchMine(),
+    enabled: !!user,
+  });
+
+  const [form, setForm] = useState({
+    contributor_name: "",
+    amount: "",
+    method: "bank_transfer" as "bank_transfer" | "in_person" | "other",
+    purpose: "",
+    reference: "",
+  });
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const record = useMutation({
+    mutationFn: async () => {
+      let receipt_path = "";
+      if (file) {
+        setUploading(true);
+        const ext = file.name.split(".").pop() || "bin";
+        const path = `${user?.id}/${Date.now()}.${ext}`;
+        const { error: uploadErr } = await supabase.storage.from("receipts").upload(path, file, {
+          contentType: file.type,
+        });
+        setUploading(false);
+        if (uploadErr) throw new Error("upload_failed");
+        receipt_path = path;
+      }
+      return submit({
+        data: {
+          contributor_name: form.contributor_name,
+          amount: Number(form.amount),
+          currency: "SAR",
+          method: form.method,
+          purpose: form.purpose,
+          reference: form.reference,
+          receipt_path,
+        },
+      });
+    },
+    onSuccess: (result) => {
+      if (result?.ok) {
+        toast.success(t(contribCopy.successToast));
+        setForm({ contributor_name: "", amount: "", method: "bank_transfer", purpose: "", reference: "" });
+        setFile(null);
+        void queryClient.invalidateQueries({ queryKey: ["my-contributions"] });
+      } else {
+        toast.error(t(contribCopy.errorToast));
+      }
+    },
+    onError: (err: Error) => {
+      if (err.message === "upload_failed") {
+        toast.error(t(contribCopy.uploadError));
+      } else {
+        toast.error(t(contribCopy.errorToast));
+      }
+    },
+  });
+
+  const onFileChange = (f: File | null) => {
+    if (!f) {
+      setFile(null);
+      return;
+    }
+    const okType = f.type.startsWith("image/") || f.type === "application/pdf";
+    if (!okType) {
+      toast.error(t(contribCopy.fileType));
+      return;
+    }
+    if (f.size > 5 * 1024 * 1024) {
+      toast.error(t(contribCopy.fileTooBig));
+      return;
+    }
+    setFile(f);
+  };
 
   return (
     <>
@@ -231,6 +381,190 @@ export function ContributePage() {
               </Link>
             </div>
           </div>
+        </section>
+
+        {/* ── Record a contribution ─────────────────────────── */}
+        <section className="reveal-on-scroll mt-16 border-t border-border pt-12">
+          <Eyebrow>{t(contribCopy.formEyebrow)}</Eyebrow>
+          <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
+            {t(contribCopy.formTitle)}
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            {t(contribCopy.formSubtitle)}
+          </p>
+
+          {user ? (
+            <form
+              className="mt-8 grid gap-4 border border-border bg-card p-6 sm:grid-cols-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                record.mutate();
+              }}
+            >
+              <div className="sm:col-span-2">
+                <label htmlFor="contributor-name" className="label-caps mb-1.5 block text-muted-foreground">
+                  {t(contribCopy.contributorName)}
+                </label>
+                <input
+                  id="contributor-name"
+                  required
+                  value={form.contributor_name}
+                  onChange={(e) => setForm((f) => ({ ...f, contributor_name: e.target.value }))}
+                  className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="amount" className="label-caps mb-1.5 block text-muted-foreground">
+                  {t(contribCopy.amount)}
+                </label>
+                <input
+                  id="amount"
+                  type="number"
+                  min={1}
+                  step="0.01"
+                  required
+                  value={form.amount}
+                  onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
+                  className="nums w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="method" className="label-caps mb-1.5 block text-muted-foreground">
+                  {t(contribCopy.method)}
+                </label>
+                <select
+                  id="method"
+                  value={form.method}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, method: e.target.value as typeof f.method }))
+                  }
+                  className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
+                >
+                  <option value="bank_transfer">{t(contribCopy.methodBank)}</option>
+                  <option value="in_person">{t(contribCopy.methodInPerson)}</option>
+                  <option value="other">{t(contribCopy.methodOther)}</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="purpose" className="label-caps mb-1.5 block text-muted-foreground">
+                  {t(contribCopy.purpose)}
+                </label>
+                <input
+                  id="purpose"
+                  value={form.purpose}
+                  onChange={(e) => setForm((f) => ({ ...f, purpose: e.target.value }))}
+                  className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="reference" className="label-caps mb-1.5 block text-muted-foreground">
+                  {t(contribCopy.reference)}
+                </label>
+                <input
+                  id="reference"
+                  value={form.reference}
+                  onChange={(e) => setForm((f) => ({ ...f, reference: e.target.value }))}
+                  className="nums w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label htmlFor="receipt" className="label-caps mb-1.5 block text-muted-foreground">
+                  {t(contribCopy.receipt)}
+                </label>
+                <div className="flex items-center gap-3">
+                  <label
+                    htmlFor="receipt"
+                    className="inline-flex cursor-pointer items-center gap-2 border border-border px-3 py-2 text-[13px] text-foreground hover:bg-secondary"
+                  >
+                    <Paperclip className="h-3.5 w-3.5" aria-hidden="true" />
+                    {file ? file.name : label("اختيار ملف", "Choose file")}
+                  </label>
+                  <input
+                    id="receipt"
+                    type="file"
+                    accept="image/*,application/pdf"
+                    className="sr-only"
+                    onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
+                  />
+                </div>
+              </div>
+
+              <div className="sm:col-span-2">
+                <button
+                  type="submit"
+                  disabled={record.isPending || uploading}
+                  className="border border-gold bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
+                >
+                  {record.isPending || uploading ? t(contribCopy.submitting) : t(contribCopy.submit)}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border border-border bg-secondary/40 p-6">
+              <div>
+                <p className="font-bold text-foreground">{t(contribCopy.signedOutTitle)}</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                  {t(contribCopy.signedOutBody)}
+                </p>
+              </div>
+              <Link
+                to="/auth"
+                className="inline-flex shrink-0 items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+              >
+                {t(contribCopy.signInCta)}
+                <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </div>
+          )}
+
+          {user ? (
+            <div className="mt-10">
+              <Eyebrow>{t(contribCopy.mineEyebrow)}</Eyebrow>
+              <h3 className="mt-2 text-xl leading-tight text-foreground">{t(contribCopy.mineTitle)}</h3>
+
+              {mineLoading ? (
+                <p className="mt-4 text-sm text-muted-foreground">
+                  {label("جارٍ التحميل…", "Loading…")}
+                </p>
+              ) : (
+                <ul className="mt-4 divide-y divide-border border border-border bg-card">
+                  {(mine ?? []).map((c) => (
+                    <li
+                      key={c.id}
+                      className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm"
+                    >
+                      <div>
+                        <p className="nums font-medium text-foreground">{formatSar(c.amount, lang)}</p>
+                        <p className="text-[12px] text-muted-foreground">
+                          {formatDate(c.created_at, lang)}
+                          {c.purpose ? ` · ${c.purpose}` : ""}
+                        </p>
+                      </div>
+                      <span
+                        className={`label-caps rounded-full px-3 py-1 text-[11px] ${
+                          c.status === "verified"
+                            ? "bg-gold/15 text-bronze dark:text-gold"
+                            : c.status === "rejected"
+                              ? "bg-destructive/10 text-destructive"
+                              : "bg-secondary text-muted-foreground"
+                        }`}
+                      >
+                        {t(statusLabels[c.status])}
+                      </span>
+                    </li>
+                  ))}
+                  {(mine ?? []).length === 0 ? (
+                    <li className="px-5 py-6 text-sm text-muted-foreground">{t(contribCopy.mineEmpty)}</li>
+                  ) : null}
+                </ul>
+              )}
+            </div>
+          ) : null}
         </section>
 
         {/* ── Application of funds ───────────────────────────── */}
