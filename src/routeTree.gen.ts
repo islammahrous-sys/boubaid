@@ -22,9 +22,11 @@ import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AchieversRouteImport } from './routes/achievers'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as InitiativesSlugRouteImport } from './routes/initiatives.$slug'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
@@ -91,6 +93,10 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -105,6 +111,11 @@ const InitiativesSlugRoute = InitiativesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => InitiativesRoute,
+} as any)
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -122,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
+  '/account': typeof AuthenticatedAccountRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
 }
@@ -140,12 +152,14 @@ export interface FileRoutesByTo {
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
+  '/account': typeof AuthenticatedAccountRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
   '/auth': typeof AuthRoute
@@ -159,6 +173,7 @@ export interface FileRoutesById {
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
+  '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
 }
@@ -179,6 +194,7 @@ export interface FileRouteTypes {
     | '/initiatives'
     | '/library'
     | '/news'
+    | '/account'
     | '/initiatives/$slug'
     | '/news/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -197,11 +213,13 @@ export interface FileRouteTypes {
     | '/initiatives'
     | '/library'
     | '/news'
+    | '/account'
     | '/initiatives/$slug'
     | '/news/$slug'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/achievers'
     | '/auth'
@@ -215,12 +233,14 @@ export interface FileRouteTypes {
     | '/initiatives'
     | '/library'
     | '/news'
+    | '/_authenticated/account'
     | '/initiatives/$slug'
     | '/news/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AchieversRoute: typeof AchieversRoute
   AuthRoute: typeof AuthRoute
@@ -329,6 +349,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -350,8 +377,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InitiativesSlugRouteImport
       parentRoute: typeof InitiativesRoute
     }
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface InitiativesRouteChildren {
   InitiativesSlugRoute: typeof InitiativesSlugRoute
@@ -377,6 +422,7 @@ const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AchieversRoute: AchieversRoute,
   AuthRoute: AuthRoute,
