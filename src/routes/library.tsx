@@ -6,11 +6,17 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Record, EditorialButton, EditorialLink } from "@/components/site/Editorial";
-import { libraryItems, siteMeta } from "@/content/site";
+import { libraryItems as staticLibraryItems, siteMeta } from "@/content/site";
+import { getPublishedLibrary } from "@/lib/cms.functions";
+import { mergeLibrary } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/library")({
+  loader: async () => {
+    const rows = await getPublishedLibrary();
+    return { libraryItems: mergeLibrary(rows, staticLibraryItems) };
+  },
   head: () => ({
     meta: [
       { title: "الأرشيف والمكتبة الرقمية | آل بوعبيد" },
@@ -94,7 +100,7 @@ const copy = {
 
 const sheet = pageImages.library.contactSheet;
 
-type LibraryDocument = (typeof libraryItems.documents)[number];
+type LibraryDocument = (typeof staticLibraryItems.documents)[number];
 
 /** Shared between the table cell and the mobile record — a real download
  * where the archive holds the file, an honest "not yet uploaded" notice
@@ -123,6 +129,7 @@ function DownloadControl({
 
 export function LibraryPage() {
   const { t, lang } = useLang();
+  const { libraryItems } = Route.useLoaderData();
   const [tab, setTab] = useState<TabKey>("documents");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
