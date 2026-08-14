@@ -268,11 +268,25 @@ export function Header() {
             <LanguageSwitcher tone="default" />
           </div>
           <Link
+            to={user ? "/account" : "/auth"}
+            className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary md:inline-flex"
+          >
+            <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
+            {user
+              ? lang === "ar"
+                ? "حسابي"
+                : "My account"
+              : lang === "ar"
+                ? "دخول الأعضاء"
+                : "Member sign-in"}
+          </Link>
+          <Link
             to="/contribute"
             className="hidden items-center border border-gold bg-gold px-4 py-2 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold sm:inline-flex"
           >
             {lang === "ar" ? "الاشتراك" : "Subscribe"}
           </Link>
+
 
           <button
             type="button"
