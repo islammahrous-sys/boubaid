@@ -162,6 +162,25 @@ function AdminPage() {
           <p className="mt-8 text-sm text-muted-foreground">{label("جارٍ التحميل…", "Loading…")}</p>
         ) : null}
 
+        {isError ? (
+          <div className="mt-8 border border-border bg-card p-5">
+            <p className="text-sm text-foreground">
+              {label(
+                "تعذر تحميل بيانات اللوحة. قد يكون الاتصال انقطع مؤقتًا.",
+                "We couldn't load the console data. The connection may have dropped briefly.",
+              )}
+            </p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              disabled={isFetching}
+              className="mt-4 border border-border px-4 py-2 text-[13px] font-medium hover:bg-secondary disabled:opacity-60"
+            >
+              {isFetching ? label("جارٍ المحاولة…", "Retrying…") : label("إعادة المحاولة", "Try again")}
+            </button>
+          </div>
+        ) : null}
+
         {tab === "requests" ? (
           <ul className="mt-8 space-y-4">
             {(data?.requests ?? []).map((r) => (
