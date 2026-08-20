@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, getRouteApi, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -134,12 +134,16 @@ const copy = {
 /** Arabic abjad-style ordinals for the branch index. */
 const ordinals = ["١", "٢", "٣", "٤", "٥", "٦", "٧"];
 
+// The home component is code-split out of the route module, so read loader
+// data through the route API rather than the `Route` binding.
+const homeRoute = getRouteApi("/");
+
 export function HomePage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
 
-  const { news, initiatives } = Route.useLoaderData();
+  const { news, initiatives } = homeRoute.useLoaderData();
   const [lead, ...rest] = news;
 
   return (
