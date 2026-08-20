@@ -11,6 +11,7 @@ import {
   upsertCmsRow,
   setCmsPublished,
   deleteCmsRow,
+  uploadContentMedia,
   type CmsOverview,
 } from "@/lib/cms.functions";
 import {
@@ -42,7 +43,7 @@ export const Route = createFileRoute("/_authenticated/content")({
 
 /* --------------------------- field configuration --------------------------- */
 
-type FieldKind = "text" | "textarea" | "select" | "number" | "checkbox";
+type FieldKind = "text" | "textarea" | "select" | "number" | "checkbox" | "media";
 
 type FieldConfig = {
   name: string;
@@ -108,7 +109,7 @@ const TABS: TabConfig[] = [
       { name: "body_en", ar: "النص (إنجليزي)", en: "Body (English)", kind: "textarea" },
       { name: "hijri_date", ar: "التاريخ الهجري", en: "Hijri date", kind: "text" },
       { name: "gregorian_date", ar: "التاريخ الميلادي", en: "Gregorian date", kind: "text" },
-      { name: "cover_path", ar: "مسار صورة الغلاف", en: "Cover image path", kind: "text" },
+      { name: "cover_path", ar: "صورة الغلاف", en: "Cover image", kind: "media" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
   },
@@ -152,7 +153,7 @@ const TABS: TabConfig[] = [
       { name: "summary_en", ar: "ملخص (إنجليزي)", en: "Summary (English)", kind: "textarea" },
       { name: "body_ar", ar: "النص (عربي)", en: "Body (Arabic)", kind: "textarea" },
       { name: "body_en", ar: "النص (إنجليزي)", en: "Body (English)", kind: "textarea" },
-      { name: "cover_path", ar: "مسار صورة الغلاف", en: "Cover image path", kind: "text" },
+      { name: "cover_path", ar: "صورة الغلاف", en: "Cover image", kind: "media" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
   },
@@ -211,7 +212,7 @@ const TABS: TabConfig[] = [
       },
       { name: "branch_ar", ar: "الفرع (عربي)", en: "Branch (Arabic)", kind: "text" },
       { name: "branch_en", ar: "الفرع (إنجليزي)", en: "Branch (English)", kind: "text" },
-      { name: "image_path", ar: "مسار الصورة", en: "Image path", kind: "text" },
+      { name: "image_path", ar: "الصورة", en: "Image", kind: "media" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
   },
@@ -266,7 +267,7 @@ const TABS: TabConfig[] = [
       { name: "year", ar: "السنة (هجري)", en: "Year (Hijri)", kind: "number" },
       { name: "kind", ar: "النوع", en: "Kind", kind: "text" },
       { name: "reference", ar: "المرجع", en: "Reference", kind: "text" },
-      { name: "file_path", ar: "مسار الملف", en: "File path", kind: "text" },
+      { name: "file_path", ar: "الملف", en: "File", kind: "media" },
       { name: "external_url", ar: "رابط خارجي", en: "External URL", kind: "text" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
@@ -309,7 +310,7 @@ const TABS: TabConfig[] = [
       },
       { name: "elder_ar", ar: "شيخ الفرع (عربي)", en: "Elder (Arabic)", kind: "text" },
       { name: "elder_en", ar: "شيخ الفرع (إنجليزي)", en: "Elder (English)", kind: "text" },
-      { name: "image_path", ar: "مسار الصورة", en: "Image path", kind: "text" },
+      { name: "image_path", ar: "الصورة", en: "Image", kind: "media" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
   },
