@@ -749,3 +749,102 @@ function CmsForm({
     </form>
   );
 }
+
+/* ------------------------------ media field -------------------------------- */
+
+const MEDIA_ACCEPT = "image/jpeg,image/png,image/webp,image/gif,image/svg+xml,application/pdf";
+
+/**
+ * Uploads the chosen file to the private `content` bucket and stores the
+ * returned storage path in the row. The path stays editable by hand so an
+ * editor can also point at a file that already lives in `/public`.
+ */
+function MediaField({
+  id,
+  folder,
+  value,
+  onChange,
+}: {
+  id: string;
+  folder: CmsTable;
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  const { lang } = useLang();
+  const label = (ar: string, en: string) => (lang === "ar" ? ar : en);
+  const upload = useServerFn(uploadContentMedia);
+  const [busy, setBusy] = useState(false);
+
+  const handleFile = async (file: File) => {
+    setBusy(true);
+    try {
+      const buffer = new Uint8Array(await file.arrayBuffer());
+      let binary = "";
+      for (let i = 0; i < buffer.length; i += 8192) {
+        binary += String.fromCharCode(...buffer.subarray(i, i + 8192));
+      }
+      const result = await upload({
+        data: {
+          folder,
+          fileName: file.name,
+          contentType: file.type,
+          dataBase64: btoa(binary),
+        },
+      });
+      if (result.ok) {
+        onChange(result.path);
+        toast.success(label("تم رفع الملف.", "File uploaded."));
+      } else {
+        toast.error(
+          result.error === "forbidden"
+            ? label("لا تملك صلاحية الرفع.", "You are not allowed to upload.")
+            : label("تعذر رفع الملف.", "Upload failed."),
+        );
+      }
+    } catch {
+      toast.error(label("تعذر رفع الملف.", "Upload failed."));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <input
+        id={id}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={label("مسار الملف أو رابط داخلي", "Storage path or internal URL")}
+        className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
+      />
+      <div className="flex items-center gap-3">
+        <input
+          type="file"
+          accept={MEDIA_ACCEPT}
+          disabled={busy}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (file) void handleFile(file);
+          }}
+          className="text-[12px] text-muted-foreground"
+        />
+        {busy ? (
+          <span className="text-[12px] text-muted-foreground">
+            {label("جارٍ الرفع…", "Uploading…")}
+          </span>
+        ) : null}
+        {value ? (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-[12px] text-destructive underline"
+          >
+            {label("إزالة", "Remove")}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
