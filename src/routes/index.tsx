@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import {
-  news,
-  initiatives,
+  news as staticNews,
+  initiatives as staticInitiatives,
   branches,
   siteMeta,
   dnaInfo,
@@ -24,8 +24,20 @@ import {
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
 import { HeroVideo } from "@/components/site/HeroVideo";
+import { getPublishedNews, getPublishedInitiatives } from "@/lib/cms.functions";
+import { mergeNews, mergeInitiatives } from "@/content/cms-adapt";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    const [newsRows, initiativeRows] = await Promise.all([
+      getPublishedNews(),
+      getPublishedInitiatives(),
+    ]);
+    return {
+      news: mergeNews(newsRows, staticNews),
+      initiatives: mergeInitiatives(initiativeRows, staticInitiatives),
+    };
+  },
   head: () => ({
     meta: [
       { title: "آل بوعبيد — صندوق التنمية العائلية | البوابة الرسمية" },
@@ -127,6 +139,7 @@ export function HomePage() {
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
 
+  const { news, initiatives } = Route.useLoaderData();
   const [lead, ...rest] = news;
 
   return (
@@ -447,7 +460,7 @@ export function HomePage() {
               className="group block hover-lift active-scale"
             >
               <img
-                src={newsImage(lead.slug)}
+                src={lead.image ?? newsImage(lead.slug)}
                 alt=""
                 className="aspect-[16/9] w-full object-cover"
                 loading="lazy"
