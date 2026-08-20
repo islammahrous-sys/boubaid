@@ -126,11 +126,31 @@ export function ScrollReveal() {
       requestAnimationFrame(() => requestAnimationFrame(scan));
     });
 
+    /**
+     * Content that appears from in-page state (a CMS form opening, a modal,
+     * a list growing) is mounted after the scan, so the observer would never
+     * see it and it would stay stuck at opacity 0 — the click looks dead.
+     * Watch the tree and observe any reveal element as it arrives.
+     */
+    const mo = new MutationObserver((records) => {
+      let found = false;
+      for (const r of records) {
+        for (const node of r.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (node.matches(ALL) || node.querySelector(ALL)) found = true;
+        }
+      }
+      if (found) requestAnimationFrame(scan);
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+
     return () => {
       window.clearTimeout(poll);
       unsub();
+      mo.disconnect();
       io.disconnect();
     };
+
   }, [router]);
 
 
