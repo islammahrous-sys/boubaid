@@ -1,52 +1,34 @@
-# Audit: what is still mock or placeholder
+# CMS end-to-end audit and hardening
 
-I checked the content files, the routes, and the live database. Nothing is faked at the plumbing level — every form, login, review queue and ledger writes to and reads from the real database. What remains is placeholder *data*, plus two integrations that need something only you can supply.
+I audited the content console (`/content`), the server functions behind it, the public pages that consume it, and the database (grants, unique constraints, row counts). The plumbing is sound: editor/admin permissions, drafts vs published, create/edit/publish/delete, and public reads all work, and the tables are correctly granted and RLS-protected. What is not fine is the last mile — images, files, and two sections that the console can edit but the site never reads.
 
-## 1. Demo rows sitting in the live database
+## What is confirmed working
 
-These were seeded so the admin guide screenshots wouldn't show empty screens:
+- Access control: only admin/editor see the console; other signed-in users get the "no permission" screen.
+- Create, edit, publish/unpublish, delete for all five sections; slug collisions are caught (unique constraints exist on news, initiatives, branches) and shown as a friendly message.
+- Public pages for news, news detail, initiatives, initiative detail, achievers and library read published rows and merge them ahead of the built-in static content.
+- Anon SELECT is granted on all five content tables, so public reads work without a session.
+- All five content tables are currently empty, so today the site shows only static content.
 
-- 2 contact messages (fahad.demo@example.com, sara.demo@example.com)
-- 2 membership requests
-- 2 contributions
-- 2 newsletter subscribers
-- 2 demo admin profiles/accounts (`admin.demo@…`, `admin.demo2@albuobaid-demo.com`) holding all four roles
+## Gaps to fix
 
-Fix: delete the demo messages, requests, contributions and subscribers. Keep or remove the demo admin account — your call; it's the login used in the PDF guide.
+1. **No way to attach an image or file.** Cover image, achiever photo and library file are plain text path fields, and the only storage bucket is the private receipts one. An editor has nothing valid to type. Fix: add a public `content` media bucket, and replace those fields with an upload control that stores the file and saves its URL.
+2. **Cover images are ignored on the public side.** News list and news detail always use the built-in image chosen by slug, so a CMS article never shows its own cover. Fix: prefer the row's cover image and fall back to the built-in one.
+3. **Achiever and library links can break.** The achiever photo is rendered as-is and the library document link is used as-is, so a storage path renders a broken image or a dead link. Fix: resolve stored paths to real URLs in the adapter, with a fallback.
+4. **Branches are editable but never shown.** The console has a Branches tab and a published-branches reader exists, but the branches page is entirely static and never calls it. Fix: merge published branch rows into the branches page like the other sections.
+5. **Home page never shows new content.** The homepage news and initiatives strips read static content only. Fix: load published rows in the homepage loader and merge them.
+6. **Library mapping is lossy.** One "kind" field is reused as photo category and as video duration, and descriptions are dropped, so publications and media entries come out thin. Fix: map dedicated fields per collection and surface the description.
+7. **No draft preview.** Editors can only see a draft inside the console. Fix: after saving, link the row to its public page (published) or state clearly that a draft is hidden until published.
+8. **Only deletes are audited.** Create, edit and publish toggles write no audit row. Fix: log those too.
 
-## 2. Placeholder contact details (src/content/site.ts)
+## Verification after the fixes
 
-Clearly invented values that appear across the site:
+Sign in as the demo admin and, for each of the five sections, create an item with an uploaded image/file, publish it, confirm it appears on its public page and on the homepage where relevant, edit it, unpublish it and confirm it disappears from public view, then delete it. Also confirm a duplicate slug is rejected with the friendly message and that a member-only account still cannot reach the console.
 
-- Main phone `+966 13 580 0000`, email `contact@albouabidfamily.com`
-- WhatsApp / Instagram / YouTube links to `albouabidfamily` handles that may not exist
-- Branch contact numbers ending `1111`, `2222`, `3333`, `4444`, `5555` on the branches page
-- Loan contributors listed anonymously as "المساهم 1…8"
+## Technical notes
 
-Fix: replace with the real numbers, addresses and social links once you provide them. The anonymised shareholder labels are probably intentional — confirm.
-
-## 3. Public content lives in code, not the console
-
-News, initiatives, achievers, library items and branches are currently served entirely from the static files in `src/content/`, because those five database tables are empty. The pages merge database rows over the static ones, so the admin console works — but until real rows are entered, the secretariat cannot edit any of the visible content without a developer.
-
-Fix (one of two):
-- **Migrate**: move the existing news/initiatives/achievers/library/branches entries into the database as published rows, then trim the static fallback to nothing. Best long-term — the council owns its content.
-- **Leave as is**: static content stays the canonical source and the console is used only for new items.
-
-## 4. Real but unverifiable content
-
-The historical narrative, DNA findings (J-Z20773 / J-Z20777 / J-BY37877, sample counts), 2025 financials (land at SAR 1,140,741, SAR 470,000 outstanding, SAR 480,000 gap), licence and national numbers all came from your research documents. They are not invented — but they should get a factual review pass by the secretariat before launch.
-
-## 5. Missing integrations (blocked on you)
-
-- **Email notifications** — no sender domain is connected, so approvals, contribution receipts and contact replies send nothing. Needs a domain you own.
-- **Online card / mada payments** — giving is bank transfer plus receipt upload only. Needs merchant onboarding with a Saudi gateway.
-
-## Suggested order
-
-1. Purge the demo rows from the database.
-2. Swap in real contact details and social links.
-3. Decide on the content migration (option A or B) and execute.
-4. Connect a sending domain for email; leave payments until merchant onboarding.
-
-Tell me which of these to act on and I'll do them — steps 1 and 3 I can do immediately; step 2 needs the real values from you.
+- New public storage bucket for content media, with insert/update restricted to admin/editor and public read.
+- Upload happens from the browser through the existing Supabase client; the console stores the resulting object path, and `src/content/cms-adapt.ts` converts path to public URL at read time.
+- `getPublishedBranches` is already implemented in `src/lib/cms.functions.ts`; only the branches route and a `mergeBranches` helper are missing.
+- Homepage becomes a loader-backed route calling the existing published-news and published-initiatives readers (both are public, so SSR/prerender is safe).
+- Audit entries reuse the existing `audit_log` write path in `deleteCmsRow`.
