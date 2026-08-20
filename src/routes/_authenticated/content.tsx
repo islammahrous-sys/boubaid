@@ -668,7 +668,15 @@ function CmsForm({
             >
               {label(field.ar, field.en)}
             </label>
-            {field.kind === "textarea" ? (
+            {field.kind === "media" ? (
+              <MediaField
+                id={`f-${field.name}`}
+                folder={config.key}
+                value={String(values[field.name] ?? "")}
+                onChange={(next) => setValues((v) => ({ ...v, [field.name]: next }))}
+              />
+            ) : field.kind === "textarea" ? (
+
               <textarea
                 id={`f-${field.name}`}
                 rows={4}
