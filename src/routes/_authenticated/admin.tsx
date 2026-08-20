@@ -44,10 +44,12 @@ function AdminPage() {
   const review = useServerFn(reviewMembershipRequest);
   const markMessage = useServerFn(setMessageStatus);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["admin-overview"],
     queryFn: () => fetchOverview(),
     enabled: isAdmin,
+    retry: 2,
+    retryDelay: (attempt) => Math.min(1500 * 2 ** attempt, 6000),
   });
 
   const decide = useMutation({
