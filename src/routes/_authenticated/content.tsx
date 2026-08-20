@@ -11,6 +11,7 @@ import {
   upsertCmsRow,
   setCmsPublished,
   deleteCmsRow,
+  uploadContentMedia,
   type CmsOverview,
 } from "@/lib/cms.functions";
 import {
@@ -42,7 +43,7 @@ export const Route = createFileRoute("/_authenticated/content")({
 
 /* --------------------------- field configuration --------------------------- */
 
-type FieldKind = "text" | "textarea" | "select" | "number" | "checkbox";
+type FieldKind = "text" | "textarea" | "select" | "number" | "checkbox" | "media";
 
 type FieldConfig = {
   name: string;
@@ -108,7 +109,7 @@ const TABS: TabConfig[] = [
       { name: "body_en", ar: "النص (إنجليزي)", en: "Body (English)", kind: "textarea" },
       { name: "hijri_date", ar: "التاريخ الهجري", en: "Hijri date", kind: "text" },
       { name: "gregorian_date", ar: "التاريخ الميلادي", en: "Gregorian date", kind: "text" },
-      { name: "cover_path", ar: "مسار صورة الغلاف", en: "Cover image path", kind: "text" },
+      { name: "cover_path", ar: "صورة الغلاف", en: "Cover image", kind: "media" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
   },
@@ -152,7 +153,7 @@ const TABS: TabConfig[] = [
       { name: "summary_en", ar: "ملخص (إنجليزي)", en: "Summary (English)", kind: "textarea" },
       { name: "body_ar", ar: "النص (عربي)", en: "Body (Arabic)", kind: "textarea" },
       { name: "body_en", ar: "النص (إنجليزي)", en: "Body (English)", kind: "textarea" },
-      { name: "cover_path", ar: "مسار صورة الغلاف", en: "Cover image path", kind: "text" },
+      { name: "cover_path", ar: "صورة الغلاف", en: "Cover image", kind: "media" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
   },
@@ -211,7 +212,7 @@ const TABS: TabConfig[] = [
       },
       { name: "branch_ar", ar: "الفرع (عربي)", en: "Branch (Arabic)", kind: "text" },
       { name: "branch_en", ar: "الفرع (إنجليزي)", en: "Branch (English)", kind: "text" },
-      { name: "image_path", ar: "مسار الصورة", en: "Image path", kind: "text" },
+      { name: "image_path", ar: "الصورة", en: "Image", kind: "media" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
   },
@@ -266,7 +267,7 @@ const TABS: TabConfig[] = [
       { name: "year", ar: "السنة (هجري)", en: "Year (Hijri)", kind: "number" },
       { name: "kind", ar: "النوع", en: "Kind", kind: "text" },
       { name: "reference", ar: "المرجع", en: "Reference", kind: "text" },
-      { name: "file_path", ar: "مسار الملف", en: "File path", kind: "text" },
+      { name: "file_path", ar: "الملف", en: "File", kind: "media" },
       { name: "external_url", ar: "رابط خارجي", en: "External URL", kind: "text" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
@@ -309,7 +310,7 @@ const TABS: TabConfig[] = [
       },
       { name: "elder_ar", ar: "شيخ الفرع (عربي)", en: "Elder (Arabic)", kind: "text" },
       { name: "elder_en", ar: "شيخ الفرع (إنجليزي)", en: "Elder (English)", kind: "text" },
-      { name: "image_path", ar: "مسار الصورة", en: "Image path", kind: "text" },
+      { name: "image_path", ar: "الصورة", en: "Image", kind: "media" },
       { name: "sort_order", ar: "الترتيب", en: "Sort order", kind: "number" },
     ],
   },
@@ -668,7 +669,15 @@ function CmsForm({
             >
               {label(field.ar, field.en)}
             </label>
-            {field.kind === "textarea" ? (
+            {field.kind === "media" ? (
+              <MediaField
+                id={`f-${field.name}`}
+                folder={config.key}
+                value={String(values[field.name] ?? "")}
+                onChange={(next) => setValues((v) => ({ ...v, [field.name]: next }))}
+              />
+            ) : field.kind === "textarea" ? (
+
               <textarea
                 id={`f-${field.name}`}
                 rows={4}
@@ -747,5 +756,104 @@ function CmsForm({
         </button>
       </div>
     </form>
+  );
+}
+
+/* ------------------------------ media field -------------------------------- */
+
+const MEDIA_ACCEPT = "image/jpeg,image/png,image/webp,image/gif,image/svg+xml,application/pdf";
+
+/**
+ * Uploads the chosen file to the private `content` bucket and stores the
+ * returned storage path in the row. The path stays editable by hand so an
+ * editor can also point at a file that already lives in `/public`.
+ */
+function MediaField({
+  id,
+  folder,
+  value,
+  onChange,
+}: {
+  id: string;
+  folder: CmsTable;
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  const { lang } = useLang();
+  const label = (ar: string, en: string) => (lang === "ar" ? ar : en);
+  const upload = useServerFn(uploadContentMedia);
+  const [busy, setBusy] = useState(false);
+
+  const handleFile = async (file: File) => {
+    setBusy(true);
+    try {
+      const buffer = new Uint8Array(await file.arrayBuffer());
+      let binary = "";
+      for (let i = 0; i < buffer.length; i += 8192) {
+        binary += String.fromCharCode(...buffer.subarray(i, i + 8192));
+      }
+      const result = await upload({
+        data: {
+          folder,
+          fileName: file.name,
+          contentType: file.type,
+          dataBase64: btoa(binary),
+        },
+      });
+      if (result.ok) {
+        onChange(result.path);
+        toast.success(label("تم رفع الملف.", "File uploaded."));
+      } else {
+        toast.error(
+          result.error === "forbidden"
+            ? label("لا تملك صلاحية الرفع.", "You are not allowed to upload.")
+            : label("تعذر رفع الملف.", "Upload failed."),
+        );
+      }
+    } catch {
+      toast.error(label("تعذر رفع الملف.", "Upload failed."));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <input
+        id={id}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={label("مسار الملف أو رابط داخلي", "Storage path or internal URL")}
+        className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
+      />
+      <div className="flex items-center gap-3">
+        <input
+          type="file"
+          accept={MEDIA_ACCEPT}
+          disabled={busy}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (file) void handleFile(file);
+          }}
+          className="text-[12px] text-muted-foreground"
+        />
+        {busy ? (
+          <span className="text-[12px] text-muted-foreground">
+            {label("جارٍ الرفع…", "Uploading…")}
+          </span>
+        ) : null}
+        {value ? (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-[12px] text-destructive underline"
+          >
+            {label("إزالة", "Remove")}
+          </button>
+        ) : null}
+      </div>
+    </div>
   );
 }

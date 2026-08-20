@@ -111,7 +111,7 @@ function NewsDetail() {
 
       <figure className="mx-auto mt-10 max-w-4xl">
         <img
-          src={newsImage(item.slug)}
+          src={item.image ?? newsImage(item.slug)}
           alt=""
           className="photo-plate aspect-[16/9] w-full object-cover"
           loading="eager"

@@ -116,7 +116,7 @@ export function NewsPage() {
             <Link to="/news/$slug" params={{ slug: lead.slug }} className="group active-scale block">
               <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
                 <img
-                  src={newsImage(lead.slug)}
+                  src={lead.image ?? newsImage(lead.slug)}
                   alt=""
                   className="photo-plate aspect-[16/10] w-full object-cover"
                   loading="eager"

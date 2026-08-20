@@ -472,7 +472,11 @@ export function LibraryPage() {
             {filteredPhotos.length > 0 ? (
               <ol className="reveal-stagger grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredPhotos.map((p, i) => {
-                  const imageSrc = sheet[libraryItems.photos.indexOf(p) % sheet.length];
+                  // A CMS photo carries its own file; static plates fall back
+                  // to the rotating sheet of scanned images.
+                  const imageSrc =
+                    p.image ?? sheet[libraryItems.photos.indexOf(p) % sheet.length];
+
                   return (
                     <li key={i}>
                       <div
