@@ -73,7 +73,7 @@ export function BranchesPage() {
   // the secretariat may override a branch's name, text, elder and portrait
   // from the content console by matching the branch slug.
   const overrides = new Map(branchRows.map((r) => [r.slug, r]));
-  const branchList = branchList.map((b) => {
+  const branchList = branches.map((b) => {
     const o = overrides.get(b.id);
     if (!o) return b;
     return {
