@@ -4,7 +4,9 @@ import {
   cmsPublishSchema,
   cmsRowRefSchema,
   cmsUpsertSchema,
+  contentMediaUploadSchema,
 } from "./cms.schemas";
+
 
 /* ------------------------------------------------------------------ *
  * Row shapes returned to the client (published, public-safe columns). *
@@ -26,7 +28,9 @@ export type NewsRow = {
   is_published: boolean;
   sort_order: number;
   created_at: string;
+  cover_url?: string | null;
 };
+
 
 export type InitiativeRow = {
   id: string;
@@ -41,7 +45,9 @@ export type InitiativeRow = {
   cover_path: string | null;
   is_published: boolean;
   sort_order: number;
+  cover_url?: string | null;
 };
+
 
 export type AchieverRow = {
   id: string;
@@ -57,7 +63,9 @@ export type AchieverRow = {
   image_path: string | null;
   is_published: boolean;
   sort_order: number;
+  image_url?: string | null;
 };
+
 
 export type LibraryRow = {
   id: string;
@@ -73,7 +81,9 @@ export type LibraryRow = {
   external_url: string | null;
   is_published: boolean;
   sort_order: number;
+  file_url?: string | null;
 };
+
 
 export type BranchRow = {
   id: string;
@@ -87,7 +97,9 @@ export type BranchRow = {
   image_path: string | null;
   is_published: boolean;
   sort_order: number;
+  image_url?: string | null;
 };
+
 
 const NEWS_COLS =
   "id, slug, section, title_ar, title_en, excerpt_ar, excerpt_en, body_ar, body_en, hijri_date, gregorian_date, cover_path, is_published, sort_order, created_at";
@@ -101,6 +113,27 @@ const BRANCH_COLS =
   "id, slug, name_ar, name_en, description_ar, description_en, elder_ar, elder_en, image_path, is_published, sort_order";
 
 /* ---------------------------- public reads ---------------------------- */
+
+/**
+ * Rows carry object paths for media; public consumers need loadable URLs, so
+ * every reader signs its media in one batch before returning.
+ */
+async function withMedia<T extends Record<string, unknown>>(
+  rows: T[],
+  fields: { from: string; to: string }[],
+): Promise<T[]> {
+  const { signContentPaths, resolveMedia } = await import("./content-media.server");
+  const signed = await signContentPaths(
+    rows.flatMap((row) => fields.map((f) => row[f.from] as string | null)),
+  );
+  return rows.map((row) => {
+    const next = { ...row } as Record<string, unknown>;
+    for (const f of fields) {
+      next[f.to] = resolveMedia(row[f.from] as string | null, signed);
+    }
+    return next as T;
+  });
+}
 
 /** Published news — safe for public route loaders (anon SELECT policy). */
 export const getPublishedNews = createServerFn({ method: "GET" }).handler(
@@ -116,7 +149,7 @@ export const getPublishedNews = createServerFn({ method: "GET" }).handler(
       console.error("[cms] news read failed", error.code, error.message);
       return [];
     }
-    return (data ?? []) as NewsRow[];
+    return withMedia((data ?? []) as NewsRow[], [{ from: "cover_path", to: "cover_url" }]);
   },
 );
 
@@ -132,7 +165,7 @@ export const getPublishedInitiatives = createServerFn({ method: "GET" }).handler
       console.error("[cms] initiatives read failed", error.code, error.message);
       return [];
     }
-    return (data ?? []) as InitiativeRow[];
+    return withMedia((data ?? []) as InitiativeRow[], [{ from: "cover_path", to: "cover_url" }]);
   },
 );
 
@@ -148,7 +181,7 @@ export const getPublishedAchievers = createServerFn({ method: "GET" }).handler(
       console.error("[cms] achievers read failed", error.code, error.message);
       return [];
     }
-    return (data ?? []) as AchieverRow[];
+    return withMedia((data ?? []) as AchieverRow[], [{ from: "image_path", to: "image_url" }]);
   },
 );
 
@@ -164,7 +197,7 @@ export const getPublishedLibrary = createServerFn({ method: "GET" }).handler(
       console.error("[cms] library read failed", error.code, error.message);
       return [];
     }
-    return (data ?? []) as LibraryRow[];
+    return withMedia((data ?? []) as LibraryRow[], [{ from: "file_path", to: "file_url" }]);
   },
 );
 
@@ -180,9 +213,10 @@ export const getPublishedBranches = createServerFn({ method: "GET" }).handler(
       console.error("[cms] branches read failed", error.code, error.message);
       return [];
     }
-    return (data ?? []) as BranchRow[];
+    return withMedia((data ?? []) as BranchRow[], [{ from: "image_path", to: "image_url" }]);
   },
 );
+
 
 /* ------------------------- secretariat console ------------------------- */
 
@@ -229,6 +263,26 @@ const blankToNull = <T extends Record<string, unknown>>(values: T) =>
     Object.entries(values).map(([k, v]) => [k, v === "" ? null : v]),
   ) as Record<string, unknown>;
 
+/** Every content mutation leaves a trail; failures here never block the edit. */
+async function writeAudit(
+  actorId: string,
+  action: string,
+  entity: string,
+  entityId?: string,
+): Promise<void> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("audit_log").insert({
+      actor_id: actorId,
+      action,
+      entity,
+      entity_id: entityId ?? null,
+    });
+  } catch (err) {
+    console.error("[cms] audit write failed", (err as Error).message);
+  }
+}
+
 export const upsertCmsRow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => cmsUpsertSchema.parse(input))
@@ -250,6 +304,7 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
         console.error("[cms] update failed", data.table, error.code, error.message);
         return { ok: false, error: error.code === "23505" ? "duplicate_slug" : "update_failed" };
       }
+      await writeAudit(userId, "content.updated", data.table, id);
       return { ok: true, id };
     }
 
@@ -262,8 +317,10 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
       console.error("[cms] insert failed", data.table, error.code, error.message);
       return { ok: false, error: error.code === "23505" ? "duplicate_slug" : "insert_failed" };
     }
+    await writeAudit(userId, "content.created", data.table, inserted?.id);
     return { ok: true, id: inserted?.id };
   });
+
 
 export const setCmsPublished = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -281,8 +338,15 @@ export const setCmsPublished = createServerFn({ method: "POST" })
       console.error("[cms] publish toggle failed", error.code, error.message);
       return { ok: false, error: "update_failed" };
     }
+    await writeAudit(
+      context.userId,
+      data.is_published ? "content.published" : "content.unpublished",
+      data.table,
+      data.id,
+    );
     return { ok: true };
   });
+
 
 export const deleteCmsRow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -302,3 +366,58 @@ export const deleteCmsRow = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+/* ---------------------------- media uploads ---------------------------- */
+
+const EXT_BY_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+  "application/pdf": "pdf",
+};
+
+/**
+ * Editors upload cover images, portraits and documents here. The file lands in
+ * the private `content` bucket and the returned path is what the row stores.
+ */
+export const uploadContentMedia = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => contentMediaUploadSchema.parse(input))
+  .handler(
+    async ({ data, context }): Promise<{ ok: true; path: string } | { ok: false; error: string }> => {
+      const { supabase, userId } = context;
+
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId);
+      const roleList = (roles ?? []).map((r) => r.role as string);
+      if (!roleList.includes("admin") && !roleList.includes("editor")) {
+        return { ok: false, error: "forbidden" };
+      }
+
+      const ext = EXT_BY_TYPE[data.contentType] ?? "bin";
+      const stem =
+        data.fileName
+          .replace(/\.[^.]+$/, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 60) || "file";
+      const path = `${data.folder}/${Date.now()}-${stem}.${ext}`;
+
+      let bytes: Uint8Array;
+      try {
+        const binary = atob(data.dataBase64);
+        bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+      } catch {
+        return { ok: false, error: "upload_failed" };
+      }
+
+      const { uploadContentFile } = await import("./content-media.server");
+      return uploadContentFile(path, bytes, data.contentType);
+    },
+  );
+

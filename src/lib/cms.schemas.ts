@@ -117,6 +117,21 @@ export const cmsPublishSchema = cmsRowRefSchema.extend({
   is_published: z.boolean(),
 });
 
+/** ~6 MB decoded ceiling; media for the site is compressed before upload. */
+const MAX_BASE64_LENGTH = 8_400_000;
+
+export const contentMediaUploadSchema = z.object({
+  folder: cmsTableSchema,
+  fileName: z.string().trim().min(1).max(200),
+  contentType: z
+    .string()
+    .trim()
+    .regex(/^(image\/(jpeg|png|webp|gif|svg\+xml)|application\/pdf)$/, "unsupported_type"),
+  dataBase64: z.string().min(16).max(MAX_BASE64_LENGTH),
+});
+export type ContentMediaUpload = z.infer<typeof contentMediaUploadSchema>;
+
+
 export type NewsInput = z.infer<typeof newsInputSchema>;
 export type InitiativeInput = z.infer<typeof initiativeInputSchema>;
 export type AchieverInput = z.infer<typeof achieverInputSchema>;

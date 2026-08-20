@@ -3,12 +3,14 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { branches } from "@/content/site";
+import { getPublishedBranches } from "@/lib/cms.functions";
 import { branchPortraits } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Record, RecordField } from "@/components/site/Editorial";
 import { parseLineageList } from "@/lib/text";
 
 export const Route = createFileRoute("/branches")({
+  loader: async () => ({ branchRows: await getPublishedBranches() }),
   head: () => ({
     meta: [
       { title: "الفروع السبعة | أسرة آل بوعبيد" },
@@ -65,6 +67,24 @@ export function BranchesPage() {
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
   const totalMembers = branches.reduce((sum, b) => sum + b.count, 0);
+  const { branchRows } = Route.useLoaderData();
+
+  // The register's structure (sub-lineages, counts, plates) stays editorial;
+  // the secretariat may override a branch's name, text, elder and portrait
+  // from the content console by matching the branch slug.
+  const overrides = new Map(branchRows.map((r) => [r.slug, r]));
+  const branchList = branchList.map((b) => {
+    const o = overrides.get(b.id);
+    if (!o) return b;
+    return {
+      ...b,
+      name: { ar: o.name_ar, en: o.name_en ?? o.name_ar },
+      description: o.description_ar
+        ? { ar: o.description_ar, en: o.description_en ?? o.description_ar }
+        : b.description,
+      image: o.image_url ?? b.image,
+    };
+  });
 
   return (
     <>
@@ -113,7 +133,7 @@ export function BranchesPage() {
                 </tr>
               </thead>
               <tbody>
-                {branches.map((b, i) => (
+                {branchList.map((b, i) => (
                   <tr key={b.id} className="border-b border-border align-baseline">
                     <td className="nums py-3 font-naskh text-base text-bronze/70 dark:text-gold/60">
                       {rtl ? ordinals[i] : i + 1}
@@ -150,7 +170,7 @@ export function BranchesPage() {
           </div>
 
           <ol className="mt-6 border-t border-ink/25 md:hidden dark:border-ivory/20">
-            {branches.map((b, i) => (
+            {branchList.map((b, i) => (
               <li key={b.id}>
                 <a
                   href={`#${b.id}`}
@@ -173,7 +193,7 @@ export function BranchesPage() {
 
       {/* ── Full entries ─────────────────────────────────────── */}
       <div className="container-page">
-        {branches.map((b, i) => (
+        {branchList.map((b, i) => (
           <article
             key={b.id}
             id={b.id}
