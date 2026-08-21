@@ -393,15 +393,7 @@ export function ConsoleShell({
         </div>
       </div>
 
-      <CommandDialog
-        open={paletteOpen}
-        onOpenChange={setPaletteOpen}
-        title={label("البحث والتنقل", "Search and navigate")}
-        description={label(
-          "انتقل بين أقسام اللوحة أو نفّذ إجراءً سريعًا.",
-          "Jump between console sections or run a quick action.",
-        )}
-      >
+      <CommandDialog open={paletteOpen} onOpenChange={setPaletteOpen}>
         <CommandInput placeholder={label("اكتب للبحث…", "Type to search…")} />
         <CommandList>
           <CommandEmpty>{label("لا نتائج.", "No results.")}</CommandEmpty>
