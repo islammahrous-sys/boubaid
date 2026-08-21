@@ -1,11 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
-import { PageHeader } from "@/components/site/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { ConsoleShell } from "@/components/console/ConsoleShell";
+import {
+  CButton,
+  DataTable,
+  EmptyState,
+  ErrorState,
+  FilterSelect,
+  Panel,
+  PanelHeader,
+  RowsSkeleton,
+  StatCard,
+  StatusBadge,
+  Td,
+  Toolbar,
+} from "@/components/console/ConsoleUI";
 import {
   getAdminOverview,
   reviewMembershipRequest,
@@ -39,6 +53,8 @@ function AdminPage() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>("requests");
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const fetchOverview = useServerFn(getAdminOverview);
   const review = useServerFn(reviewMembershipRequest);
@@ -78,6 +94,47 @@ function AdminPage() {
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["admin-overview"] }),
   });
 
+  const term = search.trim().toLowerCase();
+  const matches = (...parts: (string | null | undefined)[]) =>
+    !term || parts.some((p) => (p ?? "").toLowerCase().includes(term));
+
+  const requests = useMemo(
+    () =>
+      (data?.requests ?? []).filter(
+        (r) =>
+          matches(r.full_name_ar, r.full_name_en, r.email, r.phone, r.branch_slug) &&
+          (statusFilter === "all" || r.status === statusFilter),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, term, statusFilter],
+  );
+
+  const messages = useMemo(
+    () =>
+      (data?.messages ?? []).filter(
+        (m) =>
+          matches(m.name, m.email, m.subject, m.message) &&
+          (statusFilter === "all" || m.status === statusFilter),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, term, statusFilter],
+  );
+
+  const subscribers = useMemo(
+    () => (data?.subscribers ?? []).filter((s) => matches(s.email, s.name)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, term],
+  );
+
+  const members = useMemo(
+    () =>
+      (data?.members ?? []).filter((m) =>
+        matches(m.full_name_ar, m.full_name_en, m.email, m.branch_slug),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, term],
+  );
+
   if (loading) {
     return (
       <div className="container-page py-24 text-sm text-muted-foreground">
@@ -108,6 +165,9 @@ function AdminPage() {
     );
   }
 
+  const pendingRequests = (data?.requests ?? []).filter((r) => r.status === "pending").length;
+  const newMessages = (data?.messages ?? []).filter((m) => m.status === "new").length;
+
   const tabs: { key: Tab; ar: string; en: string; count: number }[] = [
     { key: "requests", ar: "طلبات العضوية", en: "Requests", count: data?.requests.length ?? 0 },
     { key: "messages", ar: "الرسائل", en: "Messages", count: data?.messages.length ?? 0 },
@@ -120,191 +180,331 @@ function AdminPage() {
     { key: "members", ar: "السجل", en: "Register", count: data?.members.length ?? 0 },
   ];
 
-  return (
-    <div className="pb-20">
-      <PageHeader
-        eyebrow={label("إدارة", "Administration")}
-        title={label("لوحة الأمانة", "Council console")}
-        subtitle={label(
-          "مراجعة طلبات العضوية، ومتابعة رسائل التواصل والمشتركين وسجل الأعضاء.",
-          "Review membership requests and follow contact messages, subscribers, and the member register.",
-        )}
-        actions={
-          <Link
-            to="/content"
-            className="border border-border px-4 py-2 text-[13px] font-medium hover:bg-secondary"
-          >
-            {label("منصة المحتوى", "Content console")}
-          </Link>
-        }
-      />
+  const requestTone = (s: string) =>
+    s === "approved" ? "positive" : s === "rejected" ? "negative" : "pending";
+  const requestWord = (s: string) =>
+    s === "approved"
+      ? label("معتمد", "Approved")
+      : s === "rejected"
+        ? label("مرفوض", "Rejected")
+        : label("قيد المراجعة", "Pending");
+  const messageWord = (s: string) =>
+    s === "read"
+      ? label("مقروءة", "Read")
+      : s === "archived"
+        ? label("مؤرشفة", "Archived")
+        : label("جديدة", "New");
 
-      <section className="container-page mt-10">
-        <div className="flex flex-wrap gap-2 border-b border-border pb-3">
-          {tabs.map((tb) => (
-            <button
-              key={tb.key}
-              type="button"
-              onClick={() => setTab(tb.key)}
-              className={`border px-4 py-2 text-[13px] font-medium transition-colors ${
-                tab === tb.key
-                  ? "border-gold bg-gold text-ink"
-                  : "border-border text-muted-foreground hover:bg-secondary"
-              }`}
-            >
-              {label(tb.ar, tb.en)}
-              <span className="nums ms-2 font-mono text-[11px] opacity-70">{tb.count}</span>
-            </button>
-          ))}
+  const showStatusFilter = tab === "requests" || tab === "messages";
+
+  return (
+    <ConsoleShell
+      title={label("لوحة الأمانة", "Council console")}
+      description={label(
+        "مراجعة طلبات العضوية، ومتابعة رسائل التواصل والمشتركين وسجل الأعضاء.",
+        "Review membership requests and follow contact messages, subscribers, and the member register.",
+      )}
+      actions={
+        <CButton size="sm" onClick={() => void refetch()} disabled={isFetching}>
+          {isFetching ? label("تحديث…", "Refreshing…") : label("تحديث", "Refresh")}
+        </CButton>
+      }
+    >
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label={label("طلبات معلّقة", "Pending requests")}
+          value={pendingRequests}
+          tone={pendingRequests > 0 ? "attention" : "neutral"}
+          hint={label("بحاجة إلى قرار الأمانة", "Awaiting a secretariat decision")}
+          icon="❖"
+        />
+        <StatCard
+          label={label("رسائل جديدة", "New messages")}
+          value={newMessages}
+          tone={newMessages > 0 ? "attention" : "neutral"}
+          hint={label("لم تُقرأ بعد", "Not read yet")}
+          icon="✉"
+        />
+        <StatCard
+          label={label("المشتركون", "Subscribers")}
+          value={data?.subscribers.length ?? 0}
+          hint={label("قائمة النشرة", "Newsletter list")}
+          icon="◈"
+        />
+        <StatCard
+          label={label("سجل الأعضاء", "Member register")}
+          value={data?.members.length ?? 0}
+          hint={label("ملفات مسجّلة", "Registered profiles")}
+          icon="◎"
+        />
+      </div>
+
+      <Panel className="mt-5 overflow-hidden">
+        <div
+          role="tablist"
+          aria-label={label("أقسام اللوحة", "Console sections")}
+          className="flex flex-wrap gap-1 border-b border-border px-2 py-2 sm:px-3"
+        >
+          {tabs.map((tb) => {
+            const active = tab === tb.key;
+            return (
+              <button
+                key={tb.key}
+                role="tab"
+                type="button"
+                aria-selected={active}
+                onClick={() => {
+                  setTab(tb.key);
+                  setStatusFilter("all");
+                }}
+                className={
+                  "inline-flex min-h-9 items-center gap-2 rounded-md px-3 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " +
+                  (active
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground")
+                }
+              >
+                {label(tb.ar, tb.en)}
+                <span className="nums font-mono text-[11px] opacity-70">{tb.count}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {isLoading ? (
-          <p className="mt-8 text-sm text-muted-foreground">{label("جارٍ التحميل…", "Loading…")}</p>
-        ) : null}
+        <Toolbar
+          search={search}
+          onSearch={setSearch}
+          placeholder={label("ابحث بالاسم أو البريد…", "Search by name or email…")}
+        >
+          {showStatusFilter ? (
+            <FilterSelect
+              label={label("الحالة", "Status")}
+              value={statusFilter}
+              onChange={setStatusFilter}
+              options={
+                tab === "requests"
+                  ? [
+                      { value: "all", label: label("الكل", "All") },
+                      { value: "pending", label: label("قيد المراجعة", "Pending") },
+                      { value: "approved", label: label("معتمد", "Approved") },
+                      { value: "rejected", label: label("مرفوض", "Rejected") },
+                    ]
+                  : [
+                      { value: "all", label: label("الكل", "All") },
+                      { value: "new", label: label("جديدة", "New") },
+                      { value: "read", label: label("مقروءة", "Read") },
+                      { value: "archived", label: label("مؤرشفة", "Archived") },
+                    ]
+              }
+            />
+          ) : null}
+        </Toolbar>
 
-        {isError ? (
-          <div className="mt-8 border border-border bg-card p-5">
-            <p className="text-sm text-foreground">
-              {label(
-                "تعذر تحميل بيانات اللوحة. قد يكون الاتصال انقطع مؤقتًا.",
-                "We couldn't load the console data. The connection may have dropped briefly.",
+        {isLoading ? <RowsSkeleton /> : null}
+        {isError ? <ErrorState onRetry={() => void refetch()} retrying={isFetching} /> : null}
+
+        {!isLoading && !isError && tab === "requests" ? (
+          requests.length === 0 ? (
+            <EmptyState
+              title={label("لا توجد طلبات", "No requests")}
+              body={label(
+                "ستظهر طلبات العضوية هنا بمجرد تقديمها من الأعضاء.",
+                "Membership requests appear here as soon as members submit them.",
               )}
-            </p>
-            <button
-              type="button"
-              onClick={() => void refetch()}
-              disabled={isFetching}
-              className="mt-4 border border-border px-4 py-2 text-[13px] font-medium hover:bg-secondary disabled:opacity-60"
+            />
+          ) : (
+            <DataTable
+              head={[
+                label("مقدّم الطلب", "Applicant"),
+                label("التواصل", "Contact"),
+                label("الحالة", "Status"),
+                label("القرار", "Decision"),
+              ]}
             >
-              {isFetching ? label("جارٍ المحاولة…", "Retrying…") : label("إعادة المحاولة", "Try again")}
-            </button>
-          </div>
+              {requests.map((r) => (
+                <tr key={r.id} className="align-top">
+                  <Td>
+                    <p className="font-semibold text-foreground">{r.full_name_ar}</p>
+                    {r.branch_slug ? (
+                      <p className="mt-0.5 text-[12px] text-muted-foreground">{r.branch_slug}</p>
+                    ) : null}
+                    {r.notes ? (
+                      <p className="mt-1.5 max-w-md text-[12.5px] leading-relaxed text-muted-foreground">
+                        {r.notes}
+                      </p>
+                    ) : null}
+                  </Td>
+                  <Td className="text-muted-foreground">
+                    <p>{r.email}</p>
+                    {r.phone ? <p className="nums mt-0.5">{r.phone}</p> : null}
+                  </Td>
+                  <Td>
+                    <StatusBadge tone={requestTone(r.status)}>{requestWord(r.status)}</StatusBadge>
+                    {r.review_note ? (
+                      <p className="mt-1.5 max-w-xs text-[12px] text-muted-foreground">
+                        {r.review_note}
+                      </p>
+                    ) : null}
+                  </Td>
+                  <Td>
+                    {r.status === "pending" ? (
+                      <div className="space-y-2">
+                        <input
+                          value={notes[r.id] ?? ""}
+                          onChange={(e) => setNotes((n) => ({ ...n, [r.id]: e.target.value }))}
+                          placeholder={label("ملاحظة (اختياري)", "Note (optional)")}
+                          aria-label={label("ملاحظة المراجعة", "Review note")}
+                          className="min-h-8 w-full min-w-[10rem] rounded-md border border-border bg-background px-2.5 text-[12.5px] text-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                        />
+                        <div className="flex gap-1.5">
+                          <CButton
+                            size="sm"
+                            variant="primary"
+                            disabled={decide.isPending}
+                            onClick={() => decide.mutate({ id: r.id, decision: "approved" })}
+                          >
+                            {label("اعتماد", "Approve")}
+                          </CButton>
+                          <CButton
+                            size="sm"
+                            variant="danger"
+                            disabled={decide.isPending}
+                            onClick={() => decide.mutate({ id: r.id, decision: "rejected" })}
+                          >
+                            {label("رفض", "Reject")}
+                          </CButton>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-[12px] text-muted-foreground">—</span>
+                    )}
+                  </Td>
+                </tr>
+              ))}
+            </DataTable>
+          )
         ) : null}
 
-        {tab === "requests" ? (
-          <ul className="mt-8 space-y-4">
-            {(data?.requests ?? []).map((r) => (
-              <li key={r.id} className="border border-border bg-card p-5">
-                <div className="flex flex-wrap items-baseline justify-between gap-3">
-                  <p className="font-bold text-foreground">{r.full_name_ar}</p>
-                  <span className="label-caps text-bronze dark:text-gold">{r.status}</span>
-                </div>
-                <p className="mt-1 text-[13px] text-muted-foreground">
-                  {r.email}
-                  {r.phone ? ` · ${r.phone}` : ""}
-                  {r.branch_slug ? ` · ${r.branch_slug}` : ""}
-                </p>
-                {r.notes ? (
-                  <p className="mt-2 text-[13px] leading-relaxed text-foreground">{r.notes}</p>
-                ) : null}
-                {r.status === "pending" ? (
-                  <div className="mt-4 space-y-3">
-                    <input
-                      value={notes[r.id] ?? ""}
-                      onChange={(e) => setNotes((n) => ({ ...n, [r.id]: e.target.value }))}
-                      placeholder={label("ملاحظة المراجعة (اختياري)", "Review note (optional)")}
-                      className="w-full border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:border-gold"
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        disabled={decide.isPending}
-                        onClick={() => decide.mutate({ id: r.id, decision: "approved" })}
-                        className="border border-gold bg-gold px-4 py-2 text-[13px] font-bold text-ink disabled:opacity-60"
+        {!isLoading && !isError && tab === "messages" ? (
+          messages.length === 0 ? (
+            <EmptyState
+              title={label("لا توجد رسائل", "No messages")}
+              body={label(
+                "رسائل نموذج التواصل تُدرج هنا مباشرة.",
+                "Contact-form messages are listed here as they arrive.",
+              )}
+              icon="✉"
+            />
+          ) : (
+            <DataTable
+              head={[
+                label("المرسل", "Sender"),
+                label("الرسالة", "Message"),
+                label("الحالة", "Status"),
+                label("إجراء", "Action"),
+              ]}
+            >
+              {messages.map((m) => (
+                <tr key={m.id}>
+                  <Td>
+                    <p className="font-semibold text-foreground">{m.name}</p>
+                    <p className="mt-0.5 text-[12px] text-muted-foreground">{m.email}</p>
+                  </Td>
+                  <Td>
+                    {m.subject ? (
+                      <p className="font-medium text-foreground">{m.subject}</p>
+                    ) : null}
+                    <p className="mt-1 max-w-lg text-[12.5px] leading-relaxed text-muted-foreground">
+                      {m.message}
+                    </p>
+                  </Td>
+                  <Td>
+                    <StatusBadge tone={m.status === "new" ? "pending" : "neutral"}>
+                      {messageWord(m.status)}
+                    </StatusBadge>
+                  </Td>
+                  <Td>
+                    <div className="flex gap-1.5">
+                      <CButton
+                        size="sm"
+                        onClick={() => status.mutate({ id: m.id, status: "read" })}
+                        disabled={status.isPending}
                       >
-                        {label("اعتماد", "Approve")}
-                      </button>
-                      <button
-                        type="button"
-                        disabled={decide.isPending}
-                        onClick={() => decide.mutate({ id: r.id, decision: "rejected" })}
-                        className="border border-border px-4 py-2 text-[13px] font-medium hover:bg-secondary disabled:opacity-60"
+                        {label("مقروءة", "Mark read")}
+                      </CButton>
+                      <CButton
+                        size="sm"
+                        variant="subtle"
+                        onClick={() => status.mutate({ id: m.id, status: "archived" })}
+                        disabled={status.isPending}
                       >
-                        {label("رفض", "Reject")}
-                      </button>
+                        {label("أرشفة", "Archive")}
+                      </CButton>
                     </div>
-                  </div>
-                ) : r.review_note ? (
-                  <p className="mt-3 text-[12px] text-muted-foreground">{r.review_note}</p>
-                ) : null}
-              </li>
-            ))}
-            {!isLoading && (data?.requests.length ?? 0) === 0 ? (
-              <Empty text={label("لا توجد طلبات.", "No requests yet.")} />
-            ) : null}
-          </ul>
+                  </Td>
+                </tr>
+              ))}
+            </DataTable>
+          )
         ) : null}
 
-        {tab === "messages" ? (
-          <ul className="mt-8 space-y-4">
-            {(data?.messages ?? []).map((m) => (
-              <li key={m.id} className="border border-border bg-card p-5">
-                <div className="flex flex-wrap items-baseline justify-between gap-3">
-                  <p className="font-bold text-foreground">
-                    {m.name} <span className="font-normal text-muted-foreground">· {m.email}</span>
-                  </p>
-                  <span className="label-caps text-bronze dark:text-gold">{m.status}</span>
-                </div>
-                {m.subject ? (
-                  <p className="mt-1 text-[13px] font-medium text-foreground">{m.subject}</p>
-                ) : null}
-                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{m.message}</p>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => status.mutate({ id: m.id, status: "read" })}
-                    className="border border-border px-3 py-1.5 text-[12px] hover:bg-secondary"
-                  >
-                    {label("مقروءة", "Mark read")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => status.mutate({ id: m.id, status: "archived" })}
-                    className="border border-border px-3 py-1.5 text-[12px] hover:bg-secondary"
-                  >
-                    {label("أرشفة", "Archive")}
-                  </button>
-                </div>
-              </li>
-            ))}
-            {!isLoading && (data?.messages.length ?? 0) === 0 ? (
-              <Empty text={label("لا توجد رسائل.", "No messages yet.")} />
-            ) : null}
-          </ul>
+        {!isLoading && !isError && tab === "subscribers" ? (
+          subscribers.length === 0 ? (
+            <EmptyState title={label("لا يوجد مشتركون", "No subscribers")} />
+          ) : (
+            <DataTable head={[label("البريد", "Email"), label("الاسم", "Name")]}>
+              {subscribers.map((s) => (
+                <tr key={s.id}>
+                  <Td className="text-foreground">{s.email}</Td>
+                  <Td className="text-muted-foreground">{s.name ?? "—"}</Td>
+                </tr>
+              ))}
+            </DataTable>
+          )
         ) : null}
 
-        {tab === "subscribers" ? (
-          <ul className="mt-8 divide-y divide-border border border-border bg-card">
-            {(data?.subscribers ?? []).map((s) => (
-              <li key={s.id} className="flex flex-wrap justify-between gap-3 px-5 py-3 text-sm">
-                <span className="text-foreground">{s.email}</span>
-                <span className="text-muted-foreground">{s.name ?? "—"}</span>
-              </li>
-            ))}
-            {!isLoading && (data?.subscribers.length ?? 0) === 0 ? (
-              <Empty text={label("لا يوجد مشتركون.", "No subscribers yet.")} />
-            ) : null}
-          </ul>
+        {!isLoading && !isError && tab === "members" ? (
+          members.length === 0 ? (
+            <EmptyState title={label("لا توجد ملفات أعضاء", "No member profiles")} />
+          ) : (
+            <DataTable
+              head={[label("العضو", "Member"), label("الفرع", "Branch"), label("الدليل", "Directory")]}
+            >
+              {members.map((m) => (
+                <tr key={m.id}>
+                  <Td className="text-foreground">{m.full_name_ar ?? m.email ?? m.id}</Td>
+                  <Td className="text-muted-foreground">{m.branch_slug ?? "—"}</Td>
+                  <Td>
+                    <StatusBadge tone={m.show_in_directory ? "positive" : "neutral"}>
+                      {m.show_in_directory ? label("ظاهر", "Listed") : label("مخفي", "Hidden")}
+                    </StatusBadge>
+                  </Td>
+                </tr>
+              ))}
+            </DataTable>
+          )
         ) : null}
+      </Panel>
 
-        {tab === "members" ? (
-          <ul className="mt-8 divide-y divide-border border border-border bg-card">
-            {(data?.members ?? []).map((m) => (
-              <li key={m.id} className="flex flex-wrap justify-between gap-3 px-5 py-3 text-sm">
-                <span className="text-foreground">{m.full_name_ar ?? m.email ?? m.id}</span>
-                <span className="text-muted-foreground">
-                  {m.branch_slug ?? "—"}
-                  {m.show_in_directory ? ` · ${label("في الدليل", "in directory")}` : ""}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </section>
-    </div>
+      <Panel className="mt-5">
+        <PanelHeader
+          title={label("اختصارات", "Shortcuts")}
+          description={label(
+            "انتقل إلى المنصات الأخرى في اللوحة.",
+            "Jump to the other console workspaces.",
+          )}
+          actions={
+            <>
+              <Link to="/content">
+                <CButton size="sm">{label("منصة المحتوى", "Content console")}</CButton>
+              </Link>
+              <Link to="/treasury">
+                <CButton size="sm">{label("سجل الخزينة", "Treasury ledger")}</CButton>
+              </Link>
+            </>
+          }
+        />
+      </Panel>
+    </ConsoleShell>
   );
-}
-
-function Empty({ text }: { text: string }) {
-  return <li className="border border-dashed border-border p-6 text-sm text-muted-foreground">{text}</li>;
 }
