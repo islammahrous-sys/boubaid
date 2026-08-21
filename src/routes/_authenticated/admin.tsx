@@ -495,11 +495,17 @@ function AdminPage() {
           )}
           actions={
             <>
-              <Link to="/content">
-                <CButton size="sm">{label("منصة المحتوى", "Content console")}</CButton>
+              <Link
+                to="/content"
+                className="inline-flex min-h-8 items-center rounded-md border border-border bg-background px-2.5 text-[12px] font-medium text-foreground hover:bg-secondary"
+              >
+                {label("منصة المحتوى", "Content console")}
               </Link>
-              <Link to="/treasury">
-                <CButton size="sm">{label("سجل الخزينة", "Treasury ledger")}</CButton>
+              <Link
+                to="/treasury"
+                className="inline-flex min-h-8 items-center rounded-md border border-border bg-background px-2.5 text-[12px] font-medium text-foreground hover:bg-secondary"
+              >
+                {label("سجل الخزينة", "Treasury ledger")}
               </Link>
             </>
           }
