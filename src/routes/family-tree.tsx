@@ -19,7 +19,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/family-tree")({
-  validateSearch: (search) => searchSchema.parse(search),
+  validateSearch: (search: z.input<typeof searchSchema>) => searchSchema.parse(search),
   loader: async () => {
     const treeData = await getPublicFamilyTreeData();
     return { treeData };

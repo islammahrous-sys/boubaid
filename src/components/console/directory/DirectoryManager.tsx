@@ -248,7 +248,7 @@ export function DirectoryManager({
       </div>
 
       <div className="border border-border rounded-xl bg-card p-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "businesses" | "requests")} className="w-full">
           <TabsList className="grid grid-cols-2 max-w-md mb-4">
             <TabsTrigger value="businesses" className="text-xs gap-1.5">
               <Building2 className="w-3.5 h-3.5" />

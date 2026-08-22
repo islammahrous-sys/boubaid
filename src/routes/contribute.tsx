@@ -35,7 +35,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/contribute")({
-  validateSearch: (search) => searchSchema.parse(search),
+  validateSearch: (search: z.input<typeof searchSchema>) => searchSchema.parse(search),
   head: () => ({
     meta: [
       { title: "الاشتراك والمساهمة | آل بوعبيد" },
