@@ -53,7 +53,7 @@ export function AchieversManager({
     field_en: "Medicine & Health Sciences",
     achievement_ar: "",
     achievement_en: "",
-    category: "medicine",
+    category: "academic",
     branch_ar: "فرع الصالحية",
     branch_en: "Al-Salihiyah",
     sort_order: 0,
@@ -70,7 +70,7 @@ export function AchieversManager({
       field_en: "Medicine & Health Sciences",
       achievement_ar: "",
       achievement_en: "",
-      category: "medicine",
+      category: "academic",
       branch_ar: "فرع الصالحية",
       branch_en: "Al-Salihiyah",
       sort_order: achievers.length,
@@ -270,6 +270,26 @@ export function AchieversManager({
                   onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
                 />
               </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs">{isAr ? "تصنيف التميز *" : "Category *"}</Label>
+              <Select
+                value={form.category}
+                onValueChange={(value) => setForm({ ...form, category: value })}
+              >
+                <SelectTrigger className="h-9 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="academic">{isAr ? "أكاديمي وتعليمي" : "Academic"}</SelectItem>
+                  <SelectItem value="medical">{isAr ? "طب وصحة" : "Medical & Health"}</SelectItem>
+                  <SelectItem value="military">{isAr ? "خدمة عسكرية ووطنية" : "Military & Defense"}</SelectItem>
+                  <SelectItem value="business">{isAr ? "أعمال وابتكار وتقنية" : "Business & Technology"}</SelectItem>
+                  <SelectItem value="sports">{isAr ? "رياضة وبطولات" : "Sports"}</SelectItem>
+                  <SelectItem value="public">{isAr ? "الخدمة العامة" : "Public Service"}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <ImageUploadInput
