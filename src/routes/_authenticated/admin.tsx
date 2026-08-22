@@ -127,7 +127,7 @@ function MasterAdminPage() {
   const { isAdmin, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const searchParams = useSearch({ from: "/_authenticated/admin" });
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: Route.fullPath });
 
   const activeDomainId = searchParams.domain || "dashboard";
   const activeTabId =

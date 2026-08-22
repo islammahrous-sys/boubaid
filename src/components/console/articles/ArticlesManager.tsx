@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { cn } from "@/lib/utils";
 import {
   Plus,
   Edit2,
@@ -258,8 +259,41 @@ export function ArticlesManager({
         </div>
       </div>
 
-      {/* 2. SEARCH & FILTER TOOLBAR */}
+      {/* 2. SEARCH & FILTER TOOLBAR WITH STATUS TABS */}
       <div className="flex flex-col gap-3 bg-card p-4 rounded-2xl border border-border">
+        {/* Status Filter Tabs */}
+        <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/40">
+          {[
+            { id: "all", label_ar: "جميع المقالات", label_en: "All", count: stats.total },
+            { id: "published", label_ar: "المنشورة والمتاحة", label_en: "Published", count: stats.published },
+            { id: "draft", label_ar: "المسودات", label_en: "Drafts", count: stats.drafts, isAlert: true },
+            { id: "in_review", label_ar: "قيد المراجعة", label_en: "In Review", count: articles.filter((a) => a.status === "in_review").length },
+            { id: "archived", label_ar: "المؤرشفة", label_en: "Archived", count: articles.filter((a) => a.status === "archived").length },
+          ].map((tab) => (
+            <Button
+              key={tab.id}
+              variant={statusFilter === tab.id ? "default" : "outline"}
+              size="sm"
+              className={cn(
+                "h-8 text-xs gap-1.5 rounded-lg font-medium",
+                statusFilter !== tab.id && tab.isAlert && tab.count > 0 && "border-amber-500/40 text-amber-600 bg-amber-500/5 hover:bg-amber-500/10"
+              )}
+              onClick={() => {
+                setStatusFilter(tab.id);
+                setCurrentPage(1);
+              }}
+            >
+              <span>{isAr ? tab.label_ar : tab.label_en}</span>
+              <Badge
+                variant={statusFilter === tab.id ? "secondary" : "outline"}
+                className={cn("h-4 px-1.5 text-[9px] font-mono", tab.isAlert && tab.count > 0 && "bg-amber-500 text-white font-bold")}
+              >
+                {tab.count}
+              </Badge>
+            </Button>
+          ))}
+        </div>
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="w-4 h-4 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -281,25 +315,6 @@ export function ArticlesManager({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/40">
-          <Select
-            value={statusFilter}
-            onValueChange={(val) => {
-              setStatusFilter(val);
-              setCurrentPage(1);
-            }}
-          >
-            <SelectTrigger className="h-8 w-[130px] text-xs rounded-lg">
-              <Filter className="w-3 h-3 me-1 text-muted-foreground" />
-              <SelectValue placeholder={isAr ? "الحالة" : "Status"} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{isAr ? "جميع الحالات" : "All Statuses"}</SelectItem>
-              <SelectItem value="published">{isAr ? "منشور" : "Published"}</SelectItem>
-              <SelectItem value="draft">{isAr ? "مسودة" : "Draft"}</SelectItem>
-              <SelectItem value="in_review">{isAr ? "قيد المراجعة" : "In Review"}</SelectItem>
-              <SelectItem value="archived">{isAr ? "مؤرشف" : "Archived"}</SelectItem>
-            </SelectContent>
-          </Select>
 
           <Select
             value={categoryFilter}
@@ -556,7 +571,40 @@ export function ArticlesManager({
                   </TableCell>
 
                   <TableCell className="text-end">
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="flex items-center justify-end gap-1.5">
+                      {a.status !== "published" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/30 px-2 font-medium"
+                          onClick={async () => {
+                            try {
+                              await onSaveArticle({
+                                id: a.id,
+                                slug: a.slug,
+                                title_ar: a.title_ar,
+                                title_en: a.title_en ?? undefined,
+                                excerpt_ar: a.excerpt_ar ?? undefined,
+                                excerpt_en: a.excerpt_en ?? undefined,
+                                content_ar: a.content_ar ?? undefined,
+                                content_en: a.content_en ?? undefined,
+                                featured_media_path: a.featured_media_path ?? undefined,
+                                category_id: a.category_id ?? null,
+                                status: "published",
+                                is_featured: a.is_featured,
+                              });
+                              toast.success(isAr ? "تم نشر المقال بنجاح وإتاحته للعموم" : "Article published successfully");
+                            } catch (err: any) {
+                              toast.error(err.message || (isAr ? "فشل النشر" : "Failed to publish"));
+                            }
+                          }}
+                          title={isAr ? "نشر المقال فوراً" : "Quick Publish"}
+                        >
+                          <Sparkles className="w-3 h-3 me-1" />
+                          {isAr ? "نشر" : "Publish"}
+                        </Button>
+                      )}
+
                       <Button
                         variant="ghost"
                         size="icon"
