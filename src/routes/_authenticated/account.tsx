@@ -176,7 +176,7 @@ function AccountPage() {
     if (!user?.email) return;
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: window.location.origin + "/account",
+        redirectTo: window.location.origin + "/reset-password",
       });
       if (error) throw error;
       toast.success(isAr ? "تم إرسال رابط تعيين كلمة المرور إلى بريدك الإلكتروني." : "Password reset email sent.");

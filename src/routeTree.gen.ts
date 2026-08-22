@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as InitiativesRouteImport } from './routes/initiatives'
@@ -36,6 +37,11 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsRoute = NewsRouteImport.update({
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRoute
   '/news': typeof NewsRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/initiatives'
     | '/library'
     | '/news'
+    | '/reset-password'
     | '/verify'
     | '/account'
     | '/admin'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/initiatives'
     | '/library'
     | '/news'
+    | '/reset-password'
     | '/verify'
     | '/account'
     | '/admin'
@@ -288,6 +299,7 @@ export interface FileRouteTypes {
     | '/initiatives'
     | '/library'
     | '/news'
+    | '/reset-password'
     | '/verify'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -314,6 +326,7 @@ export interface RootRouteChildren {
   InitiativesRoute: typeof InitiativesRouteWithChildren
   LibraryRoute: typeof LibraryRoute
   NewsRoute: typeof NewsRouteWithChildren
+  ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyRoute: typeof VerifyRoute
   PSlugRoute: typeof PSlugRoute
 }
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news': {
@@ -539,6 +559,7 @@ const rootRouteChildren: RootRouteChildren = {
   InitiativesRoute: InitiativesRouteWithChildren,
   LibraryRoute: LibraryRoute,
   NewsRoute: NewsRouteWithChildren,
+  ResetPasswordRoute: ResetPasswordRoute,
   VerifyRoute: VerifyRoute,
   PSlugRoute: PSlugRoute,
 }

@@ -33,12 +33,13 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const { lang } = useLang();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
@@ -52,7 +53,19 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      if (mode === "signup") {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setResetSent(true);
+        toast.success(
+          label(
+            "إذا كان البريد مسجلاً لدينا، فستصلك رسالة تحتوي رابط إعادة تعيين كلمة المرور.",
+            "If that email is registered, a password reset link is on its way.",
+          ),
+        );
+      } else if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
           password,
@@ -160,7 +173,9 @@ function AuthPage() {
               <h1 className="mt-2 font-naskh text-2xl text-foreground">
                 {mode === "signin"
                   ? label("مرحباً بعودتك", "Welcome back")
-                  : label("إنشاء حساب عضو", "Create a member account")}
+                  : mode === "signup"
+                    ? label("إنشاء حساب عضو", "Create a member account")
+                    : label("استعادة كلمة المرور", "Reset your password")}
               </h1>
               <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 {mode === "signin"
@@ -168,118 +183,176 @@ function AuthPage() {
                       "أدخل بيانات حسابك للوصول إلى خدمات الأسرة.",
                       "Enter your credentials to reach the family services.",
                     )
-                  : label(
-                      "سجّل بياناتك، ثم قدّم طلب العضوية لاعتماده من الأمانة.",
-                      "Register your details, then submit a membership request for approval.",
-                    )}
+                  : mode === "signup"
+                    ? label(
+                        "سجّل بياناتك، ثم قدّم طلب العضوية لاعتماده من الأمانة.",
+                        "Register your details, then submit a membership request for approval.",
+                      )
+                    : label(
+                        "أدخل بريدك الإلكتروني وسنرسل لك رابطاً آمناً لتعيين كلمة مرور جديدة.",
+                        "Enter your email and we'll send you a secure link to set a new password.",
+                      )}
               </p>
             </div>
 
-            <div
-              role="tablist"
-              aria-label={label("نوع الدخول", "Access mode")}
-              className="mb-7 grid grid-cols-2 border border-border p-1"
-            >
-              {(["signin", "signup"] as const).map((m) => (
-                <button
-                  key={m}
-                  role="tab"
-                  aria-selected={mode === m}
-                  type="button"
-                  onClick={() => setMode(m)}
-                  className={`py-2 text-[13px] font-medium transition-all duration-300 ${
-                    mode === m
-                      ? "bg-ink text-ivory shadow-sm dark:bg-gold dark:text-ink"
-                      : "text-muted-foreground hover:bg-secondary"
-                  }`}
-                >
-                  {m === "signin"
-                    ? label("تسجيل الدخول", "Sign in")
-                    : label("حساب جديد", "Create account")}
-                </button>
-              ))}
-            </div>
-
-            <form onSubmit={onSubmit} className="space-y-5">
-              {mode === "signup" ? (
-                <Field
-                  id="full-name"
-                  label={label("الاسم الكامل (بالعربية)", "Full name (Arabic)")}
-                  value={fullName}
-                  onChange={setFullName}
-                  autoComplete="name"
-                  required
-                />
-              ) : null}
-              <Field
-                id="email"
-                type="email"
-                label={label("البريد الإلكتروني", "Email")}
-                value={email}
-                onChange={setEmail}
-                autoComplete="email"
-                dir="ltr"
-                required
-              />
-              <Field
-                id="password"
-                type={showPassword ? "text" : "password"}
-                label={label("كلمة المرور", "Password")}
-                value={password}
-                onChange={setPassword}
-                autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                dir="ltr"
-                required
-                hint={
-                  mode === "signup"
-                    ? label("٨ أحرف على الأقل.", "At least 8 characters.")
-                    : undefined
-                }
-                trailing={
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    aria-label={
-                      showPassword
-                        ? label("إخفاء كلمة المرور", "Hide password")
-                        : label("إظهار كلمة المرور", "Show password")
-                    }
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                }
-              />
-
-              <button
-                type="submit"
-                disabled={busy}
-                className="flex w-full items-center justify-center gap-2 border border-gold bg-gold px-4 py-3 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
+            {mode !== "forgot" ? (
+              <div
+                role="tablist"
+                aria-label={label("نوع الدخول", "Access mode")}
+                className="mb-7 grid grid-cols-2 border border-border p-1"
               >
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-                {busy
-                  ? label("جارٍ المعالجة…", "Working…")
-                  : mode === "signin"
-                    ? label("دخول", "Sign in")
-                    : label("إنشاء الحساب", "Create account")}
-              </button>
-            </form>
+                {(["signin", "signup"] as const).map((m) => (
+                  <button
+                    key={m}
+                    role="tab"
+                    aria-selected={mode === m}
+                    type="button"
+                    onClick={() => setMode(m)}
+                    className={`py-2 text-[13px] font-medium transition-all duration-300 ${
+                      mode === m
+                        ? "bg-ink text-ivory shadow-sm dark:bg-gold dark:text-ink"
+                        : "text-muted-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    {m === "signin"
+                      ? label("تسجيل الدخول", "Sign in")
+                      : label("حساب جديد", "Create account")}
+                  </button>
+                ))}
+              </div>
+            ) : null}
 
-            <div className="mt-7 border-t border-border pt-5 text-center text-[12px] leading-relaxed text-muted-foreground">
-              <p>
-                {mode === "signin"
-                  ? label("ليس لديك حساب؟ ", "No account yet? ")
-                  : label("لديك حساب بالفعل؟ ", "Already registered? ")}
+            {mode === "forgot" && resetSent ? (
+              <div className="space-y-5">
+                <p className="border border-border bg-secondary/40 p-4 text-[13px] leading-relaxed text-foreground">
+                  {label(
+                    "إذا كان البريد مسجلاً لدينا، فستصلك رسالة تحتوي رابط إعادة تعيين كلمة المرور خلال دقائق.",
+                    "If that email is registered, a password reset link should arrive within a few minutes.",
+                  )}
+                </p>
                 <button
                   type="button"
-                  onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                  onClick={() => {
+                    setMode("signin");
+                    setResetSent(false);
+                  }}
                   className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
                 >
-                  {mode === "signin"
-                    ? label("أنشئ حساباً جديداً", "Create one")
-                    : label("سجّل الدخول", "Sign in")}
+                  {label("العودة لتسجيل الدخول", "Back to sign in")}
                 </button>
-              </p>
+              </div>
+            ) : (
+              <form onSubmit={onSubmit} className="space-y-5">
+                {mode === "signup" ? (
+                  <Field
+                    id="full-name"
+                    label={label("الاسم الكامل (بالعربية)", "Full name (Arabic)")}
+                    value={fullName}
+                    onChange={setFullName}
+                    autoComplete="name"
+                    required
+                  />
+                ) : null}
+                <Field
+                  id="email"
+                  type="email"
+                  label={label("البريد الإلكتروني", "Email")}
+                  value={email}
+                  onChange={setEmail}
+                  autoComplete="email"
+                  dir="ltr"
+                  required
+                />
+                {mode !== "forgot" ? (
+                  <Field
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    label={label("كلمة المرور", "Password")}
+                    value={password}
+                    onChange={setPassword}
+                    autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                    dir="ltr"
+                    required
+                    hint={
+                      mode === "signup"
+                        ? label("٨ أحرف على الأقل.", "At least 8 characters.")
+                        : undefined
+                    }
+                    trailing={
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        aria-label={
+                          showPassword
+                            ? label("إخفاء كلمة المرور", "Hide password")
+                            : label("إظهار كلمة المرور", "Show password")
+                        }
+                        className="text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    }
+                  />
+                ) : null}
+
+                {mode === "signin" ? (
+                  <div className="flex justify-end -mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setMode("forgot")}
+                      className="text-[12px] font-medium text-muted-foreground underline decoration-gold/60 underline-offset-4 hover:text-foreground hover:decoration-gold"
+                    >
+                      {label("نسيت كلمة المرور؟", "Forgot password?")}
+                    </button>
+                  </div>
+                ) : null}
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="flex w-full items-center justify-center gap-2 border border-gold bg-gold px-4 py-3 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
+                >
+                  {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+                  {busy
+                    ? label("جارٍ المعالجة…", "Working…")
+                    : mode === "signin"
+                      ? label("دخول", "Sign in")
+                      : mode === "signup"
+                        ? label("إنشاء الحساب", "Create account")
+                        : label("إرسال رابط الاستعادة", "Send reset link")}
+                </button>
+              </form>
+            )}
+
+            <div className="mt-7 border-t border-border pt-5 text-center text-[12px] leading-relaxed text-muted-foreground">
+              {mode === "forgot" ? (
+                !resetSent ? (
+                  <p>
+                    <button
+                      type="button"
+                      onClick={() => setMode("signin")}
+                      className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
+                    >
+                      {label("العودة لتسجيل الدخول", "Back to sign in")}
+                    </button>
+                  </p>
+                ) : null
+              ) : (
+                <p>
+                  {mode === "signin"
+                    ? label("ليس لديك حساب؟ ", "No account yet? ")
+                    : label("لديك حساب بالفعل؟ ", "Already registered? ")}
+                  <button
+                    type="button"
+                    onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                    className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
+                  >
+                    {mode === "signin"
+                      ? label("أنشئ حساباً جديداً", "Create one")
+                      : label("سجّل الدخول", "Sign in")}
+                  </button>
+                </p>
+              )}
               <p className="mt-3">
                 <Link to="/contact" className="underline hover:text-foreground">
                   {label("تحتاج مساعدة؟ اتصل بالأمانة", "Need help? Contact the secretariat")}
