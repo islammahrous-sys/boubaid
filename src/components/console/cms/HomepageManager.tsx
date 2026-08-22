@@ -154,7 +154,7 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
     subtitle_en: "Calendar of regular gatherings, Eid assemblies, and workshops.",
     cta_label_ar: "سجل الفعاليات",
     cta_label_en: "All Events",
-    cta_url: "/content",
+    cta_url: "/events",
   },
   {
     id: "heritage_gallery",
@@ -186,12 +186,13 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
   },
 ];
 
-// Section ids that are configurable here but that the public homepage
-// (src/routes/index.tsx) has no render branch for yet — toggling or editing
-// them currently has no visible effect on the live site. Flagged in the UI
-// below rather than silently doing nothing; wiring them up needs real data
-// sources (events, gallery images) beyond a simple text/CTA block.
-const UNIMPLEMENTED_SECTION_IDS = new Set(["upcoming_events", "heritage_gallery"]);
+// Both `upcoming_events` and `heritage_gallery` now have real render branches
+// in src/routes/index.tsx (upcoming_events pulls from `events` via
+// getPublishedEvents; heritage_gallery pulls from `galleries` +
+// `gallery_media` + `media_assets`), so nothing is flagged as unimplemented
+// here any more. Kept as an (empty) set rather than removing the mechanism
+// entirely, in case a future section genuinely can't be wired up yet.
+const UNIMPLEMENTED_SECTION_IDS = new Set<string>([]);
 
 export function HomepageManager({
   initialSettings,

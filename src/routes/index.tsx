@@ -1,5 +1,6 @@
 import { createFileRoute, getRouteApi, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { createServerFn } from "@tanstack/react-start";
+import { ArrowLeft, ArrowRight, ExternalLink, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { useLang } from "@/i18n/LanguageProvider";
@@ -25,20 +26,124 @@ import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
 import { HeroVideo } from "@/components/site/HeroVideo";
 import { getPublishedNews, getPublishedInitiatives, getPublicHomepageConfig } from "@/lib/cms.functions";
+import { getPublishedEvents } from "@/lib/events-public.functions";
+import type { PublicEventRow } from "@/lib/events-public.functions";
 import { mergeNews, mergeInitiatives } from "@/content/cms-adapt";
 import { getCanonicalUrl } from "@/lib/seo";
 
+type PublicGalleryPreviewItem = {
+  id: string;
+  url: string;
+  alt_ar: string | null;
+  alt_en: string | null;
+  caption_ar: string | null;
+  caption_en: string | null;
+};
+
+type PublicGalleryPreview = {
+  id: string;
+  slug: string;
+  title_ar: string;
+  title_en: string | null;
+} & { items: PublicGalleryPreviewItem[] };
+
+/**
+ * Homepage "heritage gallery" preview: a handful of images from one
+ * published, publicly-visible gallery. `galleries` / `gallery_media` both
+ * carry public anon SELECT policies (gallery_media and media_assets are
+ * fully open reads; galleries is scoped to status='published' AND
+ * visibility='public'), so this runs through the anon-key client exactly
+ * like the other public homepage data below — no service-role client
+ * needed. media_assets always carries its own `bucket`, so the object URL
+ * is built directly from bucket + storage_path (every bucket that holds
+ * media_assets rows is a public bucket) rather than guessing the bucket
+ * from the path the way content-media.server.ts's fallback does for the
+ * single `content` bucket.
+ */
+const getHomepageGalleryPreview = createServerFn({ method: "GET" }).handler(
+  async (): Promise<PublicGalleryPreview | null> => {
+    try {
+      const { createPublicServerClient } = await import("@/lib/supabase-public.server");
+      const supabase = createPublicServerClient();
+
+      const { data: gallery, error: galleryError } = await supabase
+        .from("galleries")
+        .select("id, slug, title_ar, title_en")
+        .eq("status", "published")
+        .eq("visibility", "public")
+        .order("sort_order", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (galleryError || !gallery) {
+        if (galleryError) {
+          console.error("[home] gallery lookup failed", galleryError.code, galleryError.message);
+        }
+        return null;
+      }
+
+      const { data: media, error: mediaError } = await supabase
+        .from("gallery_media")
+        .select(
+          "id, sort_order, caption_ar, caption_en, media_assets(bucket, storage_path, public_url, alt_text_ar, alt_text_en)",
+        )
+        .eq("gallery_id", gallery.id)
+        .order("sort_order", { ascending: true })
+        .limit(6);
+
+      if (mediaError) {
+        console.error("[home] gallery media lookup failed", mediaError.code, mediaError.message);
+        return { ...gallery, items: [] };
+      }
+
+      const baseUrl =
+        process.env?.SUPABASE_URL ||
+        process.env?.VITE_SUPABASE_URL ||
+        "https://ywsvittlswbbyqhahorh.supabase.co";
+
+      const items = (media ?? [])
+        .map((row: any): PublicGalleryPreviewItem | null => {
+          const asset = row.media_assets;
+          if (!asset) return null;
+          const url: string | null =
+            asset.public_url || (asset.bucket && asset.storage_path
+              ? `${baseUrl}/storage/v1/object/public/${asset.bucket}/${asset.storage_path}`
+              : null);
+          if (!url) return null;
+          return {
+            id: row.id,
+            url,
+            alt_ar: asset.alt_text_ar ?? null,
+            alt_en: asset.alt_text_en ?? null,
+            caption_ar: row.caption_ar ?? null,
+            caption_en: row.caption_en ?? null,
+          };
+        })
+        .filter((x): x is PublicGalleryPreviewItem => x !== null);
+
+      return { ...gallery, items };
+    } catch (err) {
+      console.error("[home] getHomepageGalleryPreview caught error", err);
+      return null;
+    }
+  },
+);
+
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const [newsRows, initiativeRows, homepageConfig] = await Promise.all([
+    const [newsRows, initiativeRows, homepageConfig, upcomingEvents, galleryPreview] = await Promise.all([
       getPublishedNews(),
       getPublishedInitiatives(),
       getPublicHomepageConfig(),
+      getPublishedEvents(),
+      getHomepageGalleryPreview(),
     ]);
     return {
       news: mergeNews(newsRows, staticNews),
       initiatives: mergeInitiatives(initiativeRows, staticInitiatives),
       homepageConfig,
+      upcomingEvents: upcomingEvents.slice(0, 3),
+      galleryPreview,
     };
   },
   head: () => ({
@@ -168,15 +273,37 @@ const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "family_achievers", enabled: true, order: 6 },
   { id: "initiatives_list", enabled: true, order: 7 },
   { id: "dna_preview", enabled: true, order: 8 },
-  { id: "contact_inquiry", enabled: true, order: 9 },
+  { id: "upcoming_events", enabled: true, order: 9 },
+  { id: "heritage_gallery", enabled: true, order: 10 },
+  { id: "contact_inquiry", enabled: true, order: 11 },
 ];
+
+/** Compact date for the homepage events preview cards (no weekday, unlike the full /events page). */
+function formatHomeEventDate(iso: string, lang: "ar" | "en", timezone: string) {
+  try {
+    return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-US", {
+      timeZone: timezone || "Asia/Riyadh",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(new Date(iso));
+  } catch {
+    return new Date(iso).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US");
+  }
+}
 
 function HomePage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
 
-  const { news, initiatives, homepageConfig: rawHomepageConfig } = homeRoute.useLoaderData();
+  const {
+    news,
+    initiatives,
+    homepageConfig: rawHomepageConfig,
+    upcomingEvents,
+    galleryPreview,
+  } = homeRoute.useLoaderData();
   const homepageConfig = rawHomepageConfig as { sections?: SectionConfig[] } | null;
   const [lead, ...rest] = news;
 
@@ -801,6 +928,107 @@ function HomePage() {
             </div>
           </section>
         );
+
+      case "upcoming_events": {
+        if (!upcomingEvents || upcomingEvents.length === 0) return null;
+        return (
+          <section key={sec.id} className="border-y border-border bg-secondary/40 reveal-on-scroll">
+            <div className="container-page py-16 md:py-20">
+              <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+                <SectionHeading
+                  eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : (rtl ? "التقويم" : "Calendar")}
+                  title={sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : (rtl ? "الفعاليات والاجتماعات العائلية" : "Family Events & Council Meetings")}
+                  subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+                />
+                <Link
+                  to={sec.cta_url || "/events"}
+                  className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                >
+                  {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : (rtl ? "سجل الفعاليات" : "View all events")}
+                  <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              </div>
+
+              <ol className="reveal-stagger mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {upcomingEvents.map((evt: PublicEventRow) => (
+                  <li key={evt.id}>
+                    <Link
+                      to="/events"
+                      className="group block h-full border border-border bg-card p-5 transition-transform duration-150 ease-out hover:border-bronze/50 active:scale-[0.99] dark:hover:border-gold/50"
+                    >
+                      {evt.cover_url ? (
+                        <img
+                          src={evt.cover_url}
+                          alt=""
+                          className="mb-4 aspect-[16/10] w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : null}
+                      <div className="flex items-center gap-2 text-xs text-bronze dark:text-gold">
+                        <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
+                        <span className="nums">{formatHomeEventDate(evt.start_at, lang, evt.timezone)}</span>
+                      </div>
+                      <h3 className="mt-3 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
+                        {rtl ? evt.title_ar : evt.title_en || evt.title_ar}
+                      </h3>
+                      {evt.place ? (
+                        <p className="mt-2 text-[13px] text-muted-foreground">
+                          {rtl ? evt.place.name_ar : evt.place.name_en || evt.place.name_ar}
+                        </p>
+                      ) : null}
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
+        );
+      }
+
+      case "heritage_gallery": {
+        if (!galleryPreview || galleryPreview.items.length === 0) return null;
+        return (
+          <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
+            <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+              <SectionHeading
+                eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : (rtl ? "الأرشيف" : "Archive")}
+                title={
+                  sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                    ? sec.title_en
+                    : rtl
+                    ? galleryPreview.title_ar
+                    : galleryPreview.title_en || galleryPreview.title_ar
+                }
+                subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+              />
+              {sec.cta_url ? (
+                <Link
+                  to={sec.cta_url}
+                  className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                >
+                  {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : (rtl ? "المزيد" : "More")}
+                  <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              ) : null}
+            </div>
+
+            <ol className="reveal-stagger mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              {galleryPreview.items.slice(0, 6).map((item) => (
+                <li key={item.id} className="hover-lift active-scale aspect-square overflow-hidden">
+                  <img
+                    src={item.url}
+                    alt={(rtl ? item.alt_ar : item.alt_en) || (rtl ? item.caption_ar : item.caption_en) || ""}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </li>
+              ))}
+            </ol>
+          </section>
+        );
+      }
 
       default:
         return null;
