@@ -97,10 +97,10 @@ const PERMISSIONS_MATRIX: PermissionItem[] = [
   { key: "family.create", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "إضافة أفراد جدد للشجرة", name_en: "Create Family Members", allowedRoles: ["super_admin", "admin", "family_manager"] },
   { key: "family.update", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "تعديل بيانات الأفراد والقرابة", name_en: "Update Member Details", allowedRoles: ["super_admin", "admin", "family_manager"] },
   { key: "family.delete", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "حذف أو أرشفة أفراد من السجل", name_en: "Delete / Archive Members", allowedRoles: ["super_admin", "admin", "family_manager"] },
-  { key: "family.branches", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "إدارة الفروع السبعة وتعيين الرؤساء", name_en: "Manage 7 Branches", allowedRoles: ["super_admin", "admin"] },
+  { key: "family.branches", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "إدارة الفروع السبعة وتعيين الرؤساء", name_en: "Manage 7 Branches", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
 
   // 2. CMS & Content
-  { key: "cms.pages_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "بناء وتعديل صفحات الـ CMS الديناميكية", name_en: "Build & Edit CMS Pages", allowedRoles: ["super_admin", "admin", "editor"] },
+  { key: "cms.pages_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "بناء وتعديل صفحات الـ CMS الديناميكية", name_en: "Build & Edit CMS Pages", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
   { key: "cms.homepage_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "إدارة أقسام وترتيب الصفحة الرئيسية", name_en: "Manage Homepage Layout", allowedRoles: ["super_admin", "admin"] },
   { key: "cms.articles_write", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "كتابة ونشر المقالات والأخبار", name_en: "Create & Publish Articles", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
   { key: "cms.events_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "جدولة الفعاليات وإدارة الحضور", name_en: "Schedule Events & RSVPs", allowedRoles: ["super_admin", "admin", "editor"] },
@@ -108,7 +108,7 @@ const PERMISSIONS_MATRIX: PermissionItem[] = [
   { key: "cms.dna_studies", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "إدارة الدراسات الجينية وتفرعات الهابلوغروب", name_en: "Manage Y-DNA Studies Data", allowedRoles: ["super_admin", "admin"] },
 
   // 3. Media & Storage
-  { key: "media.upload", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "رفع ملفات إلى الحاويات السحابية", name_en: "Upload to Storage Buckets", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
+  { key: "media.upload", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "رفع ملفات إلى الحاويات السحابية", name_en: "Upload to Storage Buckets", allowedRoles: ["super_admin", "admin", "editor"] },
   { key: "media.delete", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "حذف وسائط وتعديل النصوص البديلة", name_en: "Delete Media Assets", allowedRoles: ["super_admin", "admin"] },
   { key: "media.private_docs", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "استعراض الوثائق والمخطوطات الخاصة", name_en: "Access Private Documents", allowedRoles: ["super_admin", "admin", "member"] },
 
