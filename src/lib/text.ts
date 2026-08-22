@@ -61,3 +61,52 @@ export function formatNumber(value: string | number, lang: "ar" | "en"): string 
 export function formatHijri(year: string | number, lang: "ar" | "en"): string {
   return lang === "ar" ? `${toEasternNumerals(year)} هـ` : `${year} AH`;
 }
+
+/**
+ * Supabase Auth throws its own English-only error messages (e.g. "Invalid
+ * login credentials"). Displaying them verbatim breaks the bilingual UI for
+ * Arabic-mode users, so map the common ones and fall back to a generic
+ * bilingual message for anything unrecognized rather than leaking raw
+ * provider text.
+ */
+const AUTH_ERROR_TRANSLATIONS: { match: RegExp; ar: string; en: string }[] = [
+  {
+    match: /invalid login credentials/i,
+    ar: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    en: "Invalid email or password.",
+  },
+  {
+    match: /email not confirmed/i,
+    ar: "لم يتم تأكيد البريد الإلكتروني بعد. تحقق من صندوق الوارد.",
+    en: "Email not confirmed yet. Check your inbox.",
+  },
+  {
+    match: /user already registered/i,
+    ar: "هذا البريد الإلكتروني مسجل بالفعل.",
+    en: "That email is already registered.",
+  },
+  {
+    match: /password should be at least/i,
+    ar: "كلمة المرور قصيرة جدًا.",
+    en: "That password is too short.",
+  },
+  {
+    match: /rate limit/i,
+    ar: "محاولات كثيرة جدًا. حاول مرة أخرى بعد قليل.",
+    en: "Too many attempts. Please try again shortly.",
+  },
+  {
+    match: /same password/i,
+    ar: "كلمة المرور الجديدة يجب أن تختلف عن الحالية.",
+    en: "The new password must be different from the current one.",
+  },
+];
+
+export function translateAuthError(message: string | undefined, lang: "ar" | "en"): string {
+  const fallback =
+    lang === "ar" ? "تعذر إكمال الطلب. حاول مرة أخرى." : "We couldn't complete that. Please try again.";
+  if (!message) return fallback;
+  const known = AUTH_ERROR_TRANSLATIONS.find((entry) => entry.match.test(message));
+  if (known) return lang === "ar" ? known.ar : known.en;
+  return fallback;
+}

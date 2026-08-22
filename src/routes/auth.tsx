@@ -8,6 +8,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { TurnstileWidget, isTurnstileConfigured } from "@/components/site/TurnstileWidget";
 import { verifyTurnstile } from "@/lib/turnstile.functions";
+import { translateAuthError } from "@/lib/text";
 import heroManuscript from "@/assets/hero-manuscript.jpg";
 
 
@@ -109,11 +110,8 @@ function AuthPage() {
         await navigate({ to: "/account" });
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "";
-      toast.error(
-        message ||
-          label("تعذر إكمال الطلب. حاول مرة أخرى.", "We couldn't complete that. Please try again."),
-      );
+      const message = error instanceof Error ? error.message : undefined;
+      toast.error(translateAuthError(message, lang));
     } finally {
       setBusy(false);
     }

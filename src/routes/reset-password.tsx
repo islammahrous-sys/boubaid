@@ -5,6 +5,7 @@ import { Eye, EyeOff, Loader2, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
+import { translateAuthError } from "@/lib/text";
 
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
@@ -82,10 +83,8 @@ function ResetPasswordPage() {
         void navigate({ to: "/account" });
       }, 1500);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "";
-      toast.error(
-        message || label("تعذر تحديث كلمة المرور. حاول مرة أخرى.", "Could not update the password. Please try again."),
-      );
+      const message = error instanceof Error ? error.message : undefined;
+      toast.error(translateAuthError(message, lang));
     } finally {
       setBusy(false);
     }
