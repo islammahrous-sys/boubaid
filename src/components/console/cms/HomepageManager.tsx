@@ -186,6 +186,13 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
   },
 ];
 
+// Section ids that are configurable here but that the public homepage
+// (src/routes/index.tsx) has no render branch for yet — toggling or editing
+// them currently has no visible effect on the live site. Flagged in the UI
+// below rather than silently doing nothing; wiring them up needs real data
+// sources (events, gallery images) beyond a simple text/CTA block.
+const UNIMPLEMENTED_SECTION_IDS = new Set(["upcoming_events", "heritage_gallery"]);
+
 export function HomepageManager({
   initialSettings,
   onSaveSettings,
@@ -329,6 +336,19 @@ export function HomepageManager({
                   <Badge variant={sec.enabled ? "secondary" : "outline"} className="text-[10px] shrink-0 font-mono">
                     {sec.enabled ? (isAr ? "مفعّل" : "Active") : isAr ? "معطّل" : "Hidden"}
                   </Badge>
+                  {UNIMPLEMENTED_SECTION_IDS.has(sec.id) && (
+                    <Badge
+                      variant="destructive"
+                      className="text-[10px] shrink-0"
+                      title={
+                        isAr
+                          ? "هذا القسم غير مطبق بعد في الواجهة العامة — التعديل هنا لن يظهر للزوار"
+                          : "Not yet implemented on the public homepage — edits here have no visible effect"
+                      }
+                    >
+                      {isAr ? "غير مطبق في الواجهة" : "Not live yet"}
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-[11px] text-muted-foreground truncate max-w-xl">
                   {isAr ? sec.title_ar : sec.title_en}

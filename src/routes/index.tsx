@@ -715,6 +715,61 @@ function HomePage() {
           </section>
         );
 
+      case "family_stats": {
+        const totalMembers = branches.reduce((sum, b) => sum + b.count, 0);
+        const statItems: { value: string; label: BiText }[] = [
+          { value: String(branches.length), label: { ar: "فروع عائلية", en: "Family Branches" } },
+          { value: String(totalMembers), label: { ar: "فرد موثق", en: "Documented Members" } },
+          { value: siteMeta.ncnpLicense, label: copy.licence },
+          { value: `${siteMeta.foundedHijri} هـ`, label: copy.registered },
+        ];
+        return (
+          <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
+            <SectionHeading
+              eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : (rtl ? "أرقام ومنجزات" : "Numbers & Achievements")}
+              title={sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : (rtl ? "الأسرة في أرقام ومنجزات" : "The Family in Numbers")}
+              subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+            />
+            <dl className="mt-10 grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4">
+              {statItems.map((s, i) => (
+                <div key={i} className="text-center">
+                  <dd className="nums font-mono text-3xl font-bold text-bronze md:text-4xl dark:text-gold">
+                    {s.value}
+                  </dd>
+                  <dt className="label-caps mt-2 text-muted-foreground">{t(s.label)}</dt>
+                </div>
+              ))}
+            </dl>
+          </section>
+        );
+      }
+
+      case "tree_highlight":
+        return (
+          <section key={sec.id} className="border-y border-border bg-secondary/40 reveal-on-scroll">
+            <div className="container-page py-16 text-center md:py-20">
+              <Eyebrow>
+                {sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : (rtl ? "الشجرة التفاعلية" : "Interactive Tree")}
+              </Eyebrow>
+              <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
+                {sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : (rtl ? "شجرة العائلة الرقمية التفاعلية" : "Interactive Digital Family Tree")}
+              </h2>
+              {(sec.subtitle_ar || sec.subtitle_en) && (
+                <p className="measure mx-auto mt-4 text-sm leading-relaxed text-muted-foreground">
+                  {sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en}
+                </p>
+              )}
+              <Link
+                to={sec.cta_url || "/family-tree"}
+                className="mt-7 inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+              >
+                {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : (rtl ? "فتح الشجرة التفاعلية" : "Open Tree Canvas")}
+                <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </div>
+          </section>
+        );
+
       case "contact_inquiry":
       case "join_cta":
         return (

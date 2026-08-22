@@ -222,7 +222,7 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockMeta> = {
     description_en: "Numbers of members, branches, initiatives",
     icon: BarChart3,
     defaultData: {
-      stats: [
+      items: [
         { number: "7", label_ar: "فروع عائلية", label_en: "Branches" },
         { number: "1200+", label_ar: "فرد موثق", label_en: "Documented Members" },
         { number: "100%", label_ar: "حوكمة وترخيص", label_en: "Governance" },

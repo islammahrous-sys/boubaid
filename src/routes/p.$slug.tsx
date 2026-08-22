@@ -173,6 +173,31 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
       );
 
 
+    case "cta":
+      return (
+        <div className="max-w-3xl mx-auto rounded-3xl border border-border bg-secondary/30 p-8 md:p-12 text-center space-y-4">
+          <h2 className="text-xl md:text-2xl font-bold font-brand text-foreground">
+            {isAr ? data.title_ar : (data.title_en || data.title_ar)}
+          </h2>
+          {(data.desc_ar || data.desc_en) && (
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              {isAr ? data.desc_ar : (data.desc_en || data.desc_ar)}
+            </p>
+          )}
+          {data.button_text_ar && data.button_url && (
+            <div className="pt-2">
+              <Link
+                to={data.button_url}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-md hover:bg-primary/90 transition-all"
+              >
+                <span>{isAr ? data.button_text_ar : (data.button_text_en || data.button_text_ar)}</span>
+                {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+              </Link>
+            </div>
+          )}
+        </div>
+      );
+
     case "divider":
       return <Rule variant="hair" />;
 
