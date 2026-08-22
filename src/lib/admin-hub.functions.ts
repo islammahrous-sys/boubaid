@@ -52,7 +52,8 @@ export type DashboardStats = {
     action: string;
     entity_type: string;
     created_at: string;
-    metadata: Record<string, unknown> | null;
+    // Loosely typed: audit metadata is arbitrary JSON from the log rows.
+    metadata: any;
   }[];
 };
 
@@ -133,7 +134,7 @@ export const upsertFamilyMember = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
 
-    const payload = {
+    const payload: Record<string, any> = {
       ...data,
       updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
@@ -145,7 +146,7 @@ export const upsertFamilyMember = createServerFn({ method: "POST" })
 
     const { data: member, error } = await supabase
       .from("family_members")
-      .upsert(payload)
+      .upsert(payload as never)
       .select()
       .single();
 
@@ -223,7 +224,7 @@ export const upsertFamilyRelationship = createServerFn({ method: "POST" })
 
     const { data: rel, error } = await supabase
       .from("family_relationships")
-      .upsert(data)
+      .upsert(data as never)
       .select()
       .single();
 
@@ -290,7 +291,7 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const { sections, ...pageData } = data;
 
-    const payload = {
+    const payload: Record<string, any> = {
       ...pageData,
       updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
@@ -306,7 +307,7 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
 
     const { data: page, error } = await supabase
       .from("content_pages")
-      .upsert(payload, { onConflict: payload.id ? "id" : "slug" })
+      .upsert(payload as never, { onConflict: payload.id ? "id" : "slug" })
       .select()
       .single();
 
@@ -327,7 +328,7 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
           settings: s.settings,
           visibility: s.visibility,
         }));
-        const { error: insError } = await supabase.from("content_sections").insert(sectionsToInsert);
+        const { error: insError } = await supabase.from("content_sections").insert(sectionsToInsert as never);
         if (insError) throw new Error(`Failed to save page sections: ${insError.message}`);
       }
     }
@@ -339,7 +340,7 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
     await supabase.from("content_revisions").insert({
       content_page_id: page.id,
       version: nextVersion,
-      snapshot: { page, sections: sections ?? [] },
+      snapshot: { page, sections: sections ?? [] } as never,
       change_summary: `Version ${nextVersion} saved by user`,
       created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
     });
@@ -385,7 +386,7 @@ export const upsertArticle = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const { tag_ids, ...articleData } = data;
 
-    const payload = {
+    const payload: Record<string, any> = {
       ...articleData,
       updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
@@ -401,7 +402,7 @@ export const upsertArticle = createServerFn({ method: "POST" })
 
     const { data: article, error } = await supabase
       .from("articles")
-      .upsert(payload)
+      .upsert(payload as never)
       .select()
       .single();
 
@@ -455,7 +456,7 @@ export const upsertEvent = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
 
-    const payload = {
+    const payload: Record<string, any> = {
       ...data,
       updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
@@ -467,7 +468,7 @@ export const upsertEvent = createServerFn({ method: "POST" })
 
     const { data: event, error } = await supabase
       .from("events")
-      .upsert(payload)
+      .upsert(payload as never)
       .select()
       .single();
 
@@ -502,7 +503,7 @@ export const upsertAnnouncement = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
     const payload = { ...data, created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)) };
-    const { data: ann, error } = await supabase.from("announcements").upsert(payload).select().single();
+    const { data: ann, error } = await supabase.from("announcements").upsert(payload as never).select().single();
     if (error) throw new Error(error.message);
     return { ok: true, announcement: ann };
   });
@@ -559,7 +560,7 @@ export const upsertGallery = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
     const payload = { ...data, created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)) };
-    const { data: gal, error } = await supabase.from("galleries").upsert(payload).select().single();
+    const { data: gal, error } = await supabase.from("galleries").upsert(payload as never).select().single();
     if (error) throw new Error(error.message);
     return { ok: true, gallery: gal };
   });
@@ -570,7 +571,7 @@ export const upsertDocument = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
     const payload = { ...data, uploaded_by: (context.userId || session?.user?.id || (context.claims?.sub as string)) };
-    const { data: doc, error } = await supabase.from("documents").upsert(payload).select().single();
+    const { data: doc, error } = await supabase.from("documents").upsert(payload as never).select().single();
     if (error) throw new Error(error.message);
     return { ok: true, document: doc };
   });
@@ -735,14 +736,14 @@ export const upsertSiteSetting = createServerFn({ method: "POST" })
   .validator((d: unknown) => siteSettingInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = {
+    const payload: Record<string, any> = {
       ...data,
       updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
     const { data: setting, error } = await supabase
       .from("site_settings")
-      .upsert(payload, { onConflict: "key" })
+      .upsert(payload as never, { onConflict: "key" })
       .select()
       .single();
     if (error) throw new Error(error.message);
@@ -782,12 +783,12 @@ export const upsertBusiness = createServerFn({ method: "POST" })
   .validator((d: unknown) => businessInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = {
+    const payload: Record<string, any> = {
       ...data,
       created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
-    const { data: biz, error } = await supabase.from("businesses").upsert(payload).select().single();
+    const { data: biz, error } = await supabase.from("businesses").upsert(payload as never).select().single();
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
@@ -945,12 +946,12 @@ export const upsertInitiative = createServerFn({ method: "POST" })
   .validator((d: unknown) => initiativeInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = {
+    const payload: Record<string, any> = {
       ...data,
       created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
-    const { data: init, error } = await supabase.from("initiatives").upsert(payload).select().single();
+    const { data: init, error } = await supabase.from("initiatives").upsert(payload as never).select().single();
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
@@ -1004,12 +1005,12 @@ export const upsertAchiever = createServerFn({ method: "POST" })
   .validator((d: unknown) => achieverInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = {
+    const payload: Record<string, any> = {
       ...data,
       created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
-    const { data: ach, error } = await supabase.from("achievers").upsert(payload).select().single();
+    const { data: ach, error } = await supabase.from("achievers").upsert(payload as never).select().single();
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
@@ -1063,12 +1064,12 @@ export const upsertLibraryItem = createServerFn({ method: "POST" })
   .validator((d: unknown) => libraryItemInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = {
+    const payload: Record<string, any> = {
       ...data,
       created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
-    const { data: lib, error } = await supabase.from("library_items").upsert(payload).select().single();
+    const { data: lib, error } = await supabase.from("library_items").upsert(payload as never).select().single();
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
@@ -1125,7 +1126,7 @@ export const upsertNavigationMenu = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const { data: menu, error } = await supabase
       .from("navigation_menus")
-      .upsert({ ...data, updated_at: new Date().toISOString() })
+      .upsert({ ...data })
       .select()
       .single();
     if (error) throw new Error(error.message);
@@ -1193,7 +1194,7 @@ export const updateEventRegistrationStatus = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const { data: reg, error } = await supabase
       .from("event_registrations")
-      .update({ status: data.status, updated_at: new Date().toISOString() })
+      .update({ status: data.status })
       .eq("id", data.id)
       .select()
       .single();

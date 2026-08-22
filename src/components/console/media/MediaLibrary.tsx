@@ -15,6 +15,7 @@ export type MediaAssetRow = {
   storage_path: string;
   file_name: string;
   original_file_name?: string | null;
+  public_url?: string | null;
   mime_type: string;
   file_size: number;
   width?: number | null;

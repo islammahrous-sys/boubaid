@@ -72,6 +72,7 @@ export function PagesManager({
 
     setSelectedPage({
       ...p,
+      no_index: p.no_index ?? false,
       sections: pageSections,
     });
     setBuilderOpen(true);

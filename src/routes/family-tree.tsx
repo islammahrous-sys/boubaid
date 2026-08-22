@@ -14,12 +14,12 @@ import { getPublicFamilyTreeData } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 
 const searchSchema = z.object({
-  branch: z.string().optional().default("all"),
-  id: z.string().optional().default(""),
+  branch: z.string().optional(),
+  id: z.string().optional(),
 });
 
 export const Route = createFileRoute("/family-tree")({
-  validateSearch: (search) => searchSchema.parse(search),
+  validateSearch: (search: z.input<typeof searchSchema>) => searchSchema.parse(search),
   loader: async () => {
     const treeData = await getPublicFamilyTreeData();
     return { treeData };

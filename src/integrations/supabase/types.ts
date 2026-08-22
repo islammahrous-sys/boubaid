@@ -77,6 +77,9 @@ export type Database = {
           created_by: string | null
           end_at: string | null
           id: string
+          link_label_ar: string | null
+          link_label_en: string | null
+          link_url: string | null
           message_ar: string
           message_en: string | null
           priority: string
@@ -92,6 +95,9 @@ export type Database = {
           created_by?: string | null
           end_at?: string | null
           id?: string
+          link_label_ar?: string | null
+          link_label_en?: string | null
+          link_url?: string | null
           message_ar: string
           message_en?: string | null
           priority?: string
@@ -107,6 +113,9 @@ export type Database = {
           created_by?: string | null
           end_at?: string | null
           id?: string
+          link_label_ar?: string | null
+          link_label_en?: string | null
+          link_url?: string | null
           message_ar?: string
           message_en?: string | null
           priority?: string
@@ -1498,6 +1507,7 @@ export type Database = {
           id: string
           mime_type: string
           original_file_name: string | null
+          public_url: string | null
           storage_path: string
           updated_at: string
           uploaded_by: string | null
@@ -1518,6 +1528,7 @@ export type Database = {
           id?: string
           mime_type: string
           original_file_name?: string | null
+          public_url?: string | null
           storage_path: string
           updated_at?: string
           uploaded_by?: string | null
@@ -1538,6 +1549,7 @@ export type Database = {
           id?: string
           mime_type?: string
           original_file_name?: string | null
+          public_url?: string | null
           storage_path?: string
           updated_at?: string
           uploaded_by?: string | null

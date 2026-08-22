@@ -30,12 +30,12 @@ import { getCanonicalUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
-  initiative: z.string().optional().default(""),
-  purpose: z.string().optional().default(""),
+  initiative: z.string().optional(),
+  purpose: z.string().optional(),
 });
 
 export const Route = createFileRoute("/contribute")({
-  validateSearch: (search) => searchSchema.parse(search),
+  validateSearch: (search: z.input<typeof searchSchema>) => searchSchema.parse(search),
   head: () => ({
     meta: [
       { title: "الاشتراك والمساهمة | آل بوعبيد" },
