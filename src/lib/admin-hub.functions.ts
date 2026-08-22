@@ -802,7 +802,14 @@ export const removeUserRole = createServerFn({ method: "POST" })
       .select("id");
     if (error) throw new Error(error.message);
     if (!deleted || deleted.length === 0) {
-      throw new Error(`Role "${data.role}" was not found for this user (nothing removed).`);
+      // Diagnostic: a live query at the time this was written confirmed the
+      // target role genuinely exists for the intended user, so a "not found"
+      // here means the client sent a user_id/role that doesn't match either
+      // -- surface exactly what was searched for rather than guessing.
+      throw new Error(
+        `Role "${data.role}" was not found for user_id "${data.user_id}" (nothing removed). ` +
+          `If that user_id looks wrong, the bug is in what the UI sent, not in this delete.`,
+      );
     }
 
     await supabase.from("audit_logs").insert({

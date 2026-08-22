@@ -39,14 +39,25 @@ function createSupabaseAdminClient() {
     process.env?.NEXT_PUBLIC_SUPABASE_URL ||
     DEFAULT_SUPABASE_URL;
 
-  const SUPABASE_SERVICE_ROLE_KEY =
-    process.env?.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env?.SUPABASE_SECRET_KEY ||
-    process.env?.SUPABASE_PUBLISHABLE_KEY ||
-    process.env?.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    process.env?.SUPABASE_ANON_KEY ||
-    process.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    DEFAULT_SUPABASE_PUBLISHABLE_KEY;
+  // This client exists specifically to bypass RLS for trusted server-side
+  // operations (e.g. writing user_roles, which has no write policy at all
+  // for authenticated/anon -- only service_role can touch it). Falling back
+  // to the publishable/anon key here would silently turn every "admin"
+  // write into an unprivileged one: inserts would fail with a genuine RLS
+  // error, and deletes would silently match zero rows and report success
+  // while doing nothing -- exactly the failure mode that made role removal
+  // appear to work but never persist. Fail loudly instead.
+  const SUPABASE_SERVICE_ROLE_KEY = process.env?.SUPABASE_SERVICE_ROLE_KEY || process.env?.SUPABASE_SECRET_KEY;
+
+  if (!SUPABASE_SERVICE_ROLE_KEY) {
+    const message =
+      "Missing SUPABASE_SERVICE_ROLE_KEY. Admin-only writes (user roles, and anything else that " +
+      "goes through supabaseAdmin) require the real service-role key, not the public anon key -- " +
+      "get it from Supabase dashboard > Project Settings > API > service_role, and set " +
+      "SUPABASE_SERVICE_ROLE_KEY in your .env (never expose it to client code).";
+    console.error(`[Supabase] ${message}`);
+    throw new Error(message);
+  }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     global: {
