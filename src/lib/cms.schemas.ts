@@ -117,18 +117,50 @@ export const cmsPublishSchema = cmsRowRefSchema.extend({
   is_published: z.boolean(),
 });
 
-/** ~6 MB decoded ceiling; media for the site is compressed before upload. */
-const MAX_BASE64_LENGTH = 8_400_000;
+/**
+ * Server-enforced size ceilings (matching the limits already advertised to
+ * editors in the console UI, e.g. LibraryItemsManager's "up to 25MB" copy).
+ * Base64 expands bytes by ~4/3, so these are base64-character ceilings with
+ * a small safety margin above the exact ratio.
+ */
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB decoded
+const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024; // 25 MB decoded
+const MAX_IMAGE_BASE64_LENGTH = Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 4;
+const MAX_DOCUMENT_BASE64_LENGTH = Math.ceil((MAX_DOCUMENT_BYTES * 4) / 3) + 4;
 
-export const contentMediaUploadSchema = z.object({
-  folder: cmsTableSchema,
-  fileName: z.string().trim().min(1).max(200),
-  contentType: z
-    .string()
-    .trim()
-    .regex(/^(image\/(jpeg|png|webp|gif|svg\+xml)|application\/pdf)$/, "unsupported_type"),
-  dataBase64: z.string().min(16).max(MAX_BASE64_LENGTH),
-});
+const IMAGE_CONTENT_TYPE_RE = /^image\/(jpeg|png|webp|gif|svg\+xml)$/;
+const DOCUMENT_CONTENT_TYPE_RE = /^application\/pdf$/;
+
+export const contentMediaUploadSchema = z
+  .object({
+    folder: cmsTableSchema,
+    fileName: z.string().trim().min(1).max(200),
+    contentType: z
+      .string()
+      .trim()
+      .regex(
+        /^(image\/(jpeg|png|webp|gif|svg\+xml)|application\/pdf)$/,
+        "unsupported_type",
+      ),
+    // Hard ceiling at the larger (document) ratio; the refine below applies
+    // the tighter image ceiling so the error message matches the field type.
+    dataBase64: z.string().min(16).max(MAX_DOCUMENT_BASE64_LENGTH),
+  })
+  .superRefine((val, ctx) => {
+    const isDocument = DOCUMENT_CONTENT_TYPE_RE.test(val.contentType);
+    const isImage = IMAGE_CONTENT_TYPE_RE.test(val.contentType);
+    const maxLength = isDocument ? MAX_DOCUMENT_BASE64_LENGTH : MAX_IMAGE_BASE64_LENGTH;
+    if ((isImage || isDocument) && val.dataBase64.length > maxLength) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_big,
+        maximum: maxLength,
+        type: "string",
+        inclusive: true,
+        path: ["dataBase64"],
+        message: isDocument ? "file_too_large_document" : "file_too_large_image",
+      });
+    }
+  });
 export type ContentMediaUpload = z.infer<typeof contentMediaUploadSchema>;
 
 

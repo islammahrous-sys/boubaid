@@ -78,11 +78,40 @@ export function resolveMedia(
   return value;
 }
 
+/**
+ * Allowed content types and their per-type size ceilings. This mirrors the
+ * allowlist in `contentMediaUploadSchema` (cms.schemas.ts), but is checked
+ * again here — independently of the caller — so that nothing can reach the
+ * storage write without also passing this gate, even if a future caller of
+ * `uploadContentFile` skips or loosens the schema-level validator.
+ */
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/svg+xml",
+]);
+const ALLOWED_DOCUMENT_TYPES = new Set(["application/pdf"]);
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024; // 25 MB
+
 export async function uploadContentFile(
   path: string,
   bytes: Uint8Array,
   contentType: string,
 ): Promise<{ ok: true; path: string } | { ok: false; error: string }> {
+  const isImage = ALLOWED_IMAGE_TYPES.has(contentType);
+  const isDocument = ALLOWED_DOCUMENT_TYPES.has(contentType);
+  if (!isImage && !isDocument) {
+    return { ok: false, error: "unsupported_type" };
+  }
+
+  const maxBytes = isDocument ? MAX_DOCUMENT_BYTES : MAX_IMAGE_BYTES;
+  if (bytes.byteLength > maxBytes) {
+    return { ok: false, error: "file_too_large" };
+  }
+
   const { error } = await supabaseAdmin.storage.from(BUCKET).upload(path, bytes, {
     contentType,
     upsert: false,
