@@ -24,21 +24,26 @@ export async function signContentPaths(
   const unique = [...new Set(paths.filter(isStoragePath))];
   if (unique.length === 0) return {};
 
-  const { data, error } = await supabaseAdmin.storage
-    .from(BUCKET)
-    .createSignedUrls(unique, SIGN_TTL_SECONDS);
+  try {
+    const { data, error } = await supabaseAdmin.storage
+      .from(BUCKET)
+      .createSignedUrls(unique, SIGN_TTL_SECONDS);
 
-  if (error || !data) {
-    console.error("[content-media] sign failed", error?.message);
+    if (error || !data) {
+      console.error("[content-media] sign failed", error?.message);
+      return {};
+    }
+
+    const map: Record<string, string> = {};
+    data.forEach((entry, index) => {
+      const key = entry.path ?? unique[index];
+      if (key && entry.signedUrl) map[key] = entry.signedUrl;
+    });
+    return map;
+  } catch (err) {
+    console.error("[content-media] signContentPaths caught error", err);
     return {};
   }
-
-  const map: Record<string, string> = {};
-  data.forEach((entry, index) => {
-    const key = entry.path ?? unique[index];
-    if (key && entry.signedUrl) map[key] = entry.signedUrl;
-  });
-  return map;
 }
 
 /** Resolve a stored value to something a browser can load. */

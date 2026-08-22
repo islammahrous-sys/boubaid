@@ -139,117 +139,138 @@ async function withMedia<T extends Record<string, unknown>>(
 /** Published news — safe for public route loaders (anon SELECT policy). */
 export const getPublishedNews = createServerFn({ method: "GET" }).handler(
   async (): Promise<NewsRow[]> => {
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const supabase = createPublicServerClient();
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const supabase = createPublicServerClient();
 
-    const { data: articlesData } = await supabase
-      .from("articles")
-      .select("id, slug, title_ar, title_en, excerpt_ar, excerpt_en, content_ar, content_en, featured_media_path, status, published_at, created_at")
-      .eq("status", "published")
-      .order("created_at", { ascending: false });
+      const { data: articlesData } = await supabase
+        .from("articles")
+        .select("id, slug, title_ar, title_en, excerpt_ar, excerpt_en, content_ar, content_en, featured_media_path, status, published_at, created_at")
+        .eq("status", "published")
+        .order("created_at", { ascending: false });
 
-    if (articlesData && articlesData.length > 0) {
-      const mapped: NewsRow[] = articlesData.map((a: any, idx: number) => ({
-        id: a.id,
-        slug: a.slug,
-        section: "fund",
-        title_ar: a.title_ar,
-        title_en: a.title_en,
-        excerpt_ar: a.excerpt_ar,
-        excerpt_en: a.excerpt_en,
-        body_ar: a.content_ar,
-        body_en: a.content_en,
-        // `formatHijri()` on the client expects a bare year, not a
-        // pre-formatted string — there's no Gregorian→Hijri conversion
-        // available server-side, so this is a placeholder year, not derived
-        // from the article's actual publish date.
-        hijri_date: "1447",
-        gregorian_date: (a.published_at ?? a.created_at)
-          ? new Date(a.published_at ?? a.created_at).toISOString().split("T")[0]
-          : null,
-        cover_path: a.featured_media_path,
-        is_published: true,
-        sort_order: idx + 1,
-        created_at: a.created_at,
-      }));
-      return withMedia(mapped, [{ from: "cover_path", to: "cover_url" }]);
-    }
+      if (articlesData && articlesData.length > 0) {
+        const mapped: NewsRow[] = articlesData.map((a: any, idx: number) => ({
+          id: a.id,
+          slug: a.slug,
+          section: "fund",
+          title_ar: a.title_ar,
+          title_en: a.title_en,
+          excerpt_ar: a.excerpt_ar,
+          excerpt_en: a.excerpt_en,
+          body_ar: a.content_ar,
+          body_en: a.content_en,
+          hijri_date: "1447",
+          gregorian_date: (a.published_at ?? a.created_at)
+            ? new Date(a.published_at ?? a.created_at).toISOString().split("T")[0]
+            : null,
+          cover_path: a.featured_media_path,
+          is_published: true,
+          sort_order: idx + 1,
+          created_at: a.created_at,
+        }));
+        return withMedia(mapped, [{ from: "cover_path", to: "cover_url" }]);
+      }
 
-    const { data, error } = await supabase
-      .from("news_posts")
-      .select(NEWS_COLS)
-      .order("sort_order", { ascending: false })
-      .order("created_at", { ascending: false })
-      .limit(200);
-    if (error) {
-      console.error("[cms] news read failed", error.code, error.message);
+      const { data, error } = await supabase
+        .from("news_posts")
+        .select(NEWS_COLS)
+        .order("sort_order", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) {
+        console.error("[cms] news read failed", error.code, error.message);
+        return [];
+      }
+      return withMedia((data ?? []) as NewsRow[], [{ from: "cover_path", to: "cover_url" }]);
+    } catch (err) {
+      console.error("[cms] getPublishedNews caught error", err);
       return [];
     }
-    return withMedia((data ?? []) as NewsRow[], [{ from: "cover_path", to: "cover_url" }]);
   },
 );
 
 export const getPublishedInitiatives = createServerFn({ method: "GET" }).handler(
   async (): Promise<InitiativeRow[]> => {
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const { data, error } = await createPublicServerClient()
-      .from("initiatives")
-      .select(INITIATIVE_COLS)
-      .order("sort_order", { ascending: true })
-      .limit(200);
-    if (error) {
-      console.error("[cms] initiatives read failed", error.code, error.message);
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const { data, error } = await createPublicServerClient()
+        .from("initiatives")
+        .select(INITIATIVE_COLS)
+        .order("sort_order", { ascending: true })
+        .limit(200);
+      if (error) {
+        console.error("[cms] initiatives read failed", error.code, error.message);
+        return [];
+      }
+      return withMedia((data ?? []) as InitiativeRow[], [{ from: "cover_path", to: "cover_url" }]);
+    } catch (err) {
+      console.error("[cms] getPublishedInitiatives caught error", err);
       return [];
     }
-    return withMedia((data ?? []) as InitiativeRow[], [{ from: "cover_path", to: "cover_url" }]);
   },
 );
 
 export const getPublishedAchievers = createServerFn({ method: "GET" }).handler(
   async (): Promise<AchieverRow[]> => {
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const { data, error } = await createPublicServerClient()
-      .from("achievers")
-      .select(ACHIEVER_COLS)
-      .order("sort_order", { ascending: true })
-      .limit(300);
-    if (error) {
-      console.error("[cms] achievers read failed", error.code, error.message);
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const { data, error } = await createPublicServerClient()
+        .from("achievers")
+        .select(ACHIEVER_COLS)
+        .order("sort_order", { ascending: true })
+        .limit(300);
+      if (error) {
+        console.error("[cms] achievers read failed", error.code, error.message);
+        return [];
+      }
+      return withMedia((data ?? []) as AchieverRow[], [{ from: "image_path", to: "image_url" }]);
+    } catch (err) {
+      console.error("[cms] getPublishedAchievers caught error", err);
       return [];
     }
-    return withMedia((data ?? []) as AchieverRow[], [{ from: "image_path", to: "image_url" }]);
   },
 );
 
 export const getPublishedLibrary = createServerFn({ method: "GET" }).handler(
   async (): Promise<LibraryRow[]> => {
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const { data, error } = await createPublicServerClient()
-      .from("library_items")
-      .select(LIBRARY_COLS)
-      .order("sort_order", { ascending: true })
-      .limit(300);
-    if (error) {
-      console.error("[cms] library read failed", error.code, error.message);
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const { data, error } = await createPublicServerClient()
+        .from("library_items")
+        .select(LIBRARY_COLS)
+        .order("sort_order", { ascending: true })
+        .limit(300);
+      if (error) {
+        console.error("[cms] library read failed", error.code, error.message);
+        return [];
+      }
+      return withMedia((data ?? []) as LibraryRow[], [{ from: "file_path", to: "file_url" }]);
+    } catch (err) {
+      console.error("[cms] getPublishedLibrary caught error", err);
       return [];
     }
-    return withMedia((data ?? []) as LibraryRow[], [{ from: "file_path", to: "file_url" }]);
   },
 );
 
 export const getPublishedBranches = createServerFn({ method: "GET" }).handler(
   async (): Promise<BranchRow[]> => {
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const { data, error } = await createPublicServerClient()
-      .from("branches")
-      .select(BRANCH_COLS)
-      .order("sort_order", { ascending: true })
-      .limit(100);
-    if (error) {
-      console.error("[cms] branches read failed", error.code, error.message);
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const { data, error } = await createPublicServerClient()
+        .from("branches")
+        .select(BRANCH_COLS)
+        .order("sort_order", { ascending: true })
+        .limit(100);
+      if (error) {
+        console.error("[cms] branches read failed", error.code, error.message);
+        return [];
+      }
+      return withMedia((data ?? []) as BranchRow[], [{ from: "image_path", to: "image_url" }]);
+    } catch (err) {
+      console.error("[cms] getPublishedBranches caught error", err);
       return [];
     }
-    return withMedia((data ?? []) as BranchRow[], [{ from: "image_path", to: "image_url" }]);
   },
 );
 
@@ -476,34 +497,44 @@ export const getPublicDnaStudiesData = createServerFn({ method: "GET" }).handler
  * Public Family Tree data loader from Supabase.
  */
 export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler(async () => {
-  const { createPublicServerClient } = await import("./supabase-public.server");
-  const supabase = createPublicServerClient();
-  const [membersRes, branchesRes, relationshipsRes] = await Promise.all([
-    supabase.from("family_members").select("*").order("generation", { ascending: true }),
-    supabase.from("branches").select("*").order("sort_order", { ascending: true }),
-    supabase.from("family_relationships").select("*"),
-  ]);
+  try {
+    const { createPublicServerClient } = await import("./supabase-public.server");
+    const supabase = createPublicServerClient();
+    const [membersRes, branchesRes, relationshipsRes] = await Promise.all([
+      supabase.from("family_members").select("*").order("generation", { ascending: true }),
+      supabase.from("branches").select("*").order("sort_order", { ascending: true }),
+      supabase.from("family_relationships").select("*"),
+    ]);
 
-  return {
-    members: membersRes.data ?? [],
-    branches: branchesRes.data ?? [],
-    relationships: relationshipsRes.data ?? [],
-  };
+    return {
+      members: membersRes.data ?? [],
+      branches: branchesRes.data ?? [],
+      relationships: relationshipsRes.data ?? [],
+    };
+  } catch (err) {
+    console.error("[cms] getPublicFamilyTreeData error", err);
+    return { members: [], branches: [], relationships: [] };
+  }
 });
 
 /**
  * Public Homepage Layout & Sections Config loader from site_settings.
  */
 export const getPublicHomepageConfig = createServerFn({ method: "GET" }).handler(async () => {
-  const { createPublicServerClient } = await import("./supabase-public.server");
-  const supabase = createPublicServerClient();
-  const { data } = await supabase
-    .from("site_settings")
-    .select("value")
-    .eq("key", "homepage_sections_config")
-    .maybeSingle();
+  try {
+    const { createPublicServerClient } = await import("./supabase-public.server");
+    const supabase = createPublicServerClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "homepage_sections_config")
+      .maybeSingle();
 
-  return data?.value ?? null;
+    return data?.value ?? null;
+  } catch (err) {
+    console.error("[cms] getPublicHomepageConfig error", err);
+    return null;
+  }
 });
 
 /**
@@ -512,88 +543,108 @@ export const getPublicHomepageConfig = createServerFn({ method: "GET" }).handler
 export const getPublicContentPageBySlug = createServerFn({ method: "GET" })
   .validator((slug: string) => z.string().min(1).parse(slug))
   .handler(async ({ data: slug }) => {
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const supabase = createPublicServerClient();
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const supabase = createPublicServerClient();
 
-    const [{ data: bySlug }, { data: bySlugAr }] = await Promise.all([
-      supabase.from("content_pages").select("*").eq("slug", slug).eq("status", "published").maybeSingle(),
-      supabase.from("content_pages").select("*").eq("slug_ar", slug).eq("status", "published").maybeSingle(),
-    ]);
-    const page = bySlug ?? bySlugAr;
+      const [{ data: bySlug }, { data: bySlugAr }] = await Promise.all([
+        supabase.from("content_pages").select("*").eq("slug", slug).eq("status", "published").maybeSingle(),
+        supabase.from("content_pages").select("*").eq("slug_ar", slug).eq("status", "published").maybeSingle(),
+      ]);
+      const page = bySlug ?? bySlugAr;
 
-    if (!page) return null;
+      if (!page) return null;
 
-    const { data: sections } = await supabase
-      .from("content_sections")
-      .select("*")
-      .eq("page_id", page.id)
-      .order("sort_order", { ascending: true });
+      const { data: sections } = await supabase
+        .from("content_sections")
+        .select("*")
+        .eq("page_id", page.id)
+        .order("sort_order", { ascending: true });
 
-    return {
-      page,
-      sections: sections ?? [],
-    };
+      return {
+        page,
+        sections: sections ?? [],
+      };
+    } catch (err) {
+      console.error("[cms] getPublicContentPageBySlug error", err);
+      return null;
+    }
   });
 
 /**
  * Public Announcements Loader (Active alerts, breaking news, congratulations, condolences).
  */
 export const getPublicAnnouncements = createServerFn({ method: "GET" }).handler(async () => {
-  const { createPublicServerClient } = await import("./supabase-public.server");
-  const supabase = createPublicServerClient();
+  try {
+    const { createPublicServerClient } = await import("./supabase-public.server");
+    const supabase = createPublicServerClient();
 
-  const { data } = await supabase
-    .from("announcements")
-    .select("*")
-    .or("status.eq.active,status.eq.published")
-    .order("priority", { ascending: false })
-    .order("created_at", { ascending: false });
+    const { data } = await supabase
+      .from("announcements")
+      .select("*")
+      .or("status.eq.active,status.eq.published")
+      .order("priority", { ascending: false })
+      .order("created_at", { ascending: false });
 
-  return data ?? [];
+    return data ?? [];
+  } catch (err) {
+    console.error("[cms] getPublicAnnouncements error", err);
+    return [];
+  }
 });
 
 /**
  * Public Site Settings Loader (Contact info, license, WhatsApp, social links).
  */
 export const getPublicSiteSettings = createServerFn({ method: "GET" }).handler(async () => {
-  const { createPublicServerClient } = await import("./supabase-public.server");
-  const supabase = createPublicServerClient();
+  try {
+    const { createPublicServerClient } = await import("./supabase-public.server");
+    const supabase = createPublicServerClient();
 
-  const { data } = await supabase
-    .from("site_settings")
-    .select("key, value")
-    .eq("is_public", true);
+    const { data } = await supabase
+      .from("site_settings")
+      .select("key, value")
+      .eq("is_public", true);
 
-  const settingsMap: Record<string, any> = {};
-  if (data) {
-    for (const item of data) {
-      settingsMap[item.key] = item.value;
+    const settingsMap: Record<string, any> = {};
+    if (data) {
+      for (const item of data) {
+        settingsMap[item.key] = item.value;
+      }
     }
-  }
 
-  return settingsMap;
+    return settingsMap;
+  } catch (err) {
+    console.error("[cms] getPublicSiteSettings error", err);
+    return {};
+  }
 });
 
 /**
  * Public Family History Timeline Loader for /about page.
  */
 export const getPublicFamilyHistory = createServerFn({ method: "GET" }).handler(async () => {
-  const { createPublicServerClient } = await import("./supabase-public.server");
-  const supabase = createPublicServerClient();
+  try {
+    const { createPublicServerClient } = await import("./supabase-public.server");
+    const supabase = createPublicServerClient();
 
-  const [historyRes, placesRes] = await Promise.all([
-    supabase
-      .from("family_history_entries")
-      .select("*")
-      .eq("visibility", "public")
-      .order("sort_order", { ascending: true }),
-    supabase.from("places").select("*"),
-  ]);
+    const [historyRes, placesRes] = await Promise.all([
+      supabase
+        .from("family_history_entries")
+        .select("*")
+        .eq("visibility", "public")
+        .order("sort_order", { ascending: true }),
+      supabase.from("places").select("*"),
+    ]);
 
-  return {
-    history: historyRes.data ?? [],
-    places: placesRes.data ?? [],
-  };
+    return {
+      history: historyRes.data ?? [],
+      places: placesRes.data ?? [],
+    };
+  } catch (err) {
+    console.error("[cms] getPublicFamilyHistory error", err);
+    return { history: [], places: [] };
+  }
 });
 
 /**

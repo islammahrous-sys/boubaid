@@ -45,17 +45,22 @@ export const getMemberDirectory = createServerFn({ method: "GET" })
  */
 export const getPublishedBusinesses = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const { data, error } = await createPublicServerClient()
-      .from("businesses")
-      .select("*")
-      .eq("is_published", true)
-      .order("sort_order", { ascending: true });
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const { data, error } = await createPublicServerClient()
+        .from("businesses")
+        .select("*")
+        .eq("is_published", true)
+        .order("sort_order", { ascending: true });
 
-    if (error) {
-      console.error("[businesses] read failed", error.message);
+      if (error) {
+        console.error("[businesses] read failed", error.message);
+        return [];
+      }
+      return data ?? [];
+    } catch (err) {
+      console.error("[businesses] getPublishedBusinesses error", err);
       return [];
     }
-    return data ?? [];
   });
 
