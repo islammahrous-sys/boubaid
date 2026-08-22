@@ -15,6 +15,7 @@ import {
   documentInputSchema,
   inquiryStatusUpdateSchema,
   inquiryNoteInputSchema,
+  contactMessageStatusUpdateSchema,
   siteSettingInputSchema,
   businessInputSchema,
   membershipRequestReviewSchema,
@@ -584,13 +585,41 @@ export const getInquiriesData = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const [inquiriesRes, notesRes] = await Promise.all([
+    // The public contact form (src/lib/forms.functions.ts) writes to `contact_messages`,
+    // a separate table from `inquiries` (which only ever receives achiever-nomination
+    // submissions). Both are merged here so real visitor messages actually show up
+    // in the admin Inquiries panel instead of only nominations.
+    const [inquiriesRes, notesRes, contactRes] = await Promise.all([
       supabase.from("inquiries").select("*").order("created_at", { ascending: false }),
       supabase.from("inquiry_notes").select("*").order("created_at", { ascending: true }),
+      supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
     ]);
 
+    const inquiryRows = (inquiriesRes.data ?? []).map((row) => ({
+      ...row,
+      source_table: "inquiries" as const,
+    }));
+
+    const contactRows = (contactRes.data ?? []).map((row) => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      phone: row.phone,
+      subject: row.subject,
+      message: row.message,
+      status: row.status,
+      assigned_to: null,
+      source: "contact_form",
+      created_at: row.created_at,
+      source_table: "contact_messages" as const,
+    }));
+
+    const merged = [...inquiryRows, ...contactRows].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
     return {
-      inquiries: inquiriesRes.data ?? [],
+      inquiries: merged,
       notes: notesRes.data ?? [],
     };
   });
@@ -601,6 +630,16 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { error } = await supabase.from("inquiries").update({ status: data.status, assigned_to: data.assigned_to }).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const updateContactMessageStatus = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => contactMessageStatusUpdateSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { error } = await supabase.from("contact_messages").update({ status: data.status }).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -667,12 +706,28 @@ async function requireCallerIsAdmin(supabase: unknown, userId: string): Promise<
   if (!data || data.length === 0) throw new Error("forbidden");
 }
 
+/** A plain `admin` must not be able to mint `super_admin` (including for
+ *  themselves) — only an existing `super_admin` may grant or revoke that
+ *  specific role. Every other role stays grantable by any admin. */
+async function requireCallerCanGrantRole(supabase: unknown, userId: string, role: string): Promise<void> {
+  if (role !== "super_admin") {
+    await requireCallerIsAdmin(supabase, userId);
+    return;
+  }
+  const { data } = await (supabase as any)
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "super_admin");
+  if (!data || data.length === 0) throw new Error("forbidden: only super_admin may grant super_admin");
+}
+
 export const assignUserRole = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
   .validator((d: unknown) => z.object({ user_id: z.string().uuid(), role: appRoleSchema }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await requireCallerIsAdmin(supabase, userId);
+    await requireCallerCanGrantRole(supabase, userId, data.role);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("user_roles").insert({
@@ -698,7 +753,7 @@ export const removeUserRole = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ user_id: z.string().uuid(), role: appRoleSchema }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    await requireCallerIsAdmin(supabase, userId);
+    await requireCallerCanGrantRole(supabase, userId, data.role);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id).eq("role", data.role);
@@ -825,35 +880,19 @@ export const reviewMembershipRequest = createServerFn({ method: "POST" })
   .validator((d: unknown) => membershipRequestReviewSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { data: req, error } = await supabase
-      .from("membership_requests")
-      .update({
-        status: data.status,
-        review_note: data.review_note,
-        reviewed_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
-        reviewed_at: new Date().toISOString(),
-      })
-      .eq("id", data.id)
-      .select()
-      .single();
+    const actorId = context.userId || session?.user?.id || (context.claims?.sub as string);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: req, error } = await supabaseAdmin.rpc("review_membership_request_as_admin", {
+      p_request_id: data.id,
+      p_status: data.status,
+      p_review_note: data.review_note || null,
+      p_actor_id: actorId,
+    });
 
     if (error) throw new Error(error.message);
 
-    // If approved and user_id is linked, grant member role in user_roles
-    if (data.status === "approved" && req.user_id) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      await supabaseAdmin.from("user_roles").upsert(
-        {
-          user_id: req.user_id,
-          role: "member",
-          granted_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
-        },
-        { onConflict: "user_id, role" },
-      );
-    }
-
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: actorId,
       action: "update",
       entity_type: "membership_requests",
       entity_id: data.id,

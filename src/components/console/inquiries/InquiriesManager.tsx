@@ -20,6 +20,11 @@ export type InquiryRow = {
   assigned_to?: string | null;
   source: string;
   created_at: string;
+  /** Which underlying table this row came from -- the admin notes workflow
+   * and status options only apply to `inquiries` rows; `contact_messages`
+   * rows (real website contact-form submissions) use their own status set
+   * and have no notes table to write to. */
+  source_table: "inquiries" | "contact_messages";
 };
 
 export type InquiryNoteRow = {
@@ -38,7 +43,11 @@ export function InquiriesManager({
 }: {
   inquiries: InquiryRow[];
   notes: InquiryNoteRow[];
-  onUpdateStatus: (id: string, status: "new" | "open" | "in_progress" | "resolved" | "spam") => Promise<void>;
+  onUpdateStatus: (
+    id: string,
+    status: "new" | "open" | "in_progress" | "resolved" | "spam" | "read" | "archived",
+    sourceTable: "inquiries" | "contact_messages"
+  ) => Promise<void>;
   onAddNote: (inquiryId: string, note: string) => Promise<void>;
 }) {
   const { lang } = useLang();
@@ -62,6 +71,10 @@ export function InquiriesManager({
         return <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px] font-bold">{isAr ? "تم الرد" : "Resolved"}</Badge>;
       case "spam":
         return <Badge variant="outline" className="text-destructive text-[10px]">{isAr ? "مزعجة" : "Spam"}</Badge>;
+      case "read":
+        return <Badge variant="secondary" className="text-[10px]">{isAr ? "مقروءة" : "Read"}</Badge>;
+      case "archived":
+        return <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px] font-bold">{isAr ? "مؤرشفة" : "Archived"}</Badge>;
       default:
         return <Badge variant="outline" className="text-[10px]">{st}</Badge>;
     }
@@ -130,6 +143,8 @@ export function InquiriesManager({
               <SelectItem value="open">{isAr ? "مفتوحة" : "Open"}</SelectItem>
               <SelectItem value="in_progress">{isAr ? "قيد المتابعة" : "In Progress"}</SelectItem>
               <SelectItem value="resolved">{isAr ? "تم الرد" : "Resolved"}</SelectItem>
+              <SelectItem value="read">{isAr ? "مقروءة" : "Read"}</SelectItem>
+              <SelectItem value="archived">{isAr ? "مؤرشفة" : "Archived"}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -196,7 +211,7 @@ export function InquiriesManager({
                   <Select
                     value={selectedInquiry.status}
                     onValueChange={async (val: any) => {
-                      await onUpdateStatus(selectedInquiry.id, val);
+                      await onUpdateStatus(selectedInquiry.id, val, selectedInquiry.source_table);
                       setSelectedInquiry((prev) => prev ? { ...prev, status: val } : null);
                     }}
                   >
@@ -204,11 +219,21 @@ export function InquiriesManager({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="new">{isAr ? "جديدة" : "New"}</SelectItem>
-                      <SelectItem value="open">{isAr ? "مفتوحة" : "Open"}</SelectItem>
-                      <SelectItem value="in_progress">{isAr ? "قيد المتابعة" : "In Progress"}</SelectItem>
-                      <SelectItem value="resolved">{isAr ? "تم الرد" : "Resolved"}</SelectItem>
-                      <SelectItem value="spam">{isAr ? "مزعجة" : "Spam"}</SelectItem>
+                      {selectedInquiry.source_table === "contact_messages" ? (
+                        <>
+                          <SelectItem value="new">{isAr ? "جديدة" : "New"}</SelectItem>
+                          <SelectItem value="read">{isAr ? "مقروءة" : "Read"}</SelectItem>
+                          <SelectItem value="archived">{isAr ? "مؤرشفة" : "Archived"}</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="new">{isAr ? "جديدة" : "New"}</SelectItem>
+                          <SelectItem value="open">{isAr ? "مفتوحة" : "Open"}</SelectItem>
+                          <SelectItem value="in_progress">{isAr ? "قيد المتابعة" : "In Progress"}</SelectItem>
+                          <SelectItem value="resolved">{isAr ? "تم الرد" : "Resolved"}</SelectItem>
+                          <SelectItem value="spam">{isAr ? "مزعجة" : "Spam"}</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -235,47 +260,58 @@ export function InquiriesManager({
                 </p>
               </div>
 
-              {/* Internal Notes Section */}
-              <div className="space-y-2 pt-2 border-t border-border">
-                <h4 className="font-bold text-foreground text-xs flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-primary" />
-                  {isAr ? "الملاحظات الإدارية الداخلية" : "Internal Admin Notes"}
-                </h4>
+              {/* Internal Notes Section -- only available for `inquiries` rows;
+                  `contact_messages` (website contact form) has no notes table. */}
+              {selectedInquiry.source_table === "inquiries" ? (
+                <div className="space-y-2 pt-2 border-t border-border">
+                  <h4 className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-primary" />
+                    {isAr ? "الملاحظات الإدارية الداخلية" : "Internal Admin Notes"}
+                  </h4>
 
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {currentNotes.length === 0 ? (
-                    <p className="text-[11px] text-muted-foreground">{isAr ? "لا توجد ملاحظات داخلية مضافة" : "No internal notes yet"}</p>
-                  ) : (
-                    currentNotes.map((n) => (
-                      <div key={n.id} className="p-2.5 rounded-lg bg-muted/40 border border-border text-[11px]">
-                        <p className="text-foreground">{n.note}</p>
-                        <span className="text-[9px] text-muted-foreground mt-1 block font-mono">
-                          {new Date(n.created_at).toLocaleString(isAr ? "ar-SA" : "en-US")}
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {currentNotes.length === 0 ? (
+                      <p className="text-[11px] text-muted-foreground">{isAr ? "لا توجد ملاحظات داخلية مضافة" : "No internal notes yet"}</p>
+                    ) : (
+                      currentNotes.map((n) => (
+                        <div key={n.id} className="p-2.5 rounded-lg bg-muted/40 border border-border text-[11px]">
+                          <p className="text-foreground">{n.note}</p>
+                          <span className="text-[9px] text-muted-foreground mt-1 block font-mono">
+                            {new Date(n.created_at).toLocaleString(isAr ? "ar-SA" : "en-US")}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
 
-                <div className="flex gap-2 pt-1">
-                  <Textarea
-                    rows={2}
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
-                    placeholder={isAr ? "اكتب ملاحظة داخلية للأمانة..." : "Add internal note..."}
-                    className="text-xs"
-                  />
-                  <Button
-                    size="sm"
-                    disabled={submittingNote || !newNote.trim()}
-                    onClick={handleAddNoteSubmit}
-                    className="shrink-0 text-xs gap-1"
-                  >
-                    <Send className="w-3 h-3" />
-                    {isAr ? "إضافة" : "Add"}
-                  </Button>
+                  <div className="flex gap-2 pt-1">
+                    <Textarea
+                      rows={2}
+                      value={newNote}
+                      onChange={(e) => setNewNote(e.target.value)}
+                      placeholder={isAr ? "اكتب ملاحظة داخلية للأمانة..." : "Add internal note..."}
+                      className="text-xs"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={submittingNote || !newNote.trim()}
+                      onClick={handleAddNoteSubmit}
+                      className="shrink-0 text-xs gap-1"
+                    >
+                      <Send className="w-3 h-3" />
+                      {isAr ? "إضافة" : "Add"}
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="pt-2 border-t border-border">
+                  <p className="text-[11px] text-muted-foreground">
+                    {isAr
+                      ? "الملاحظات الداخلية غير متاحة لرسائل نموذج التواصل في الموقع"
+                      : "Internal notes aren't available for website contact-form messages"}
+                  </p>
+                </div>
+              )}
             </div>
 
             <DialogFooter>

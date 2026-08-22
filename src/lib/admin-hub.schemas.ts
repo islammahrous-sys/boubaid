@@ -266,6 +266,10 @@ export const inquiryNoteInputSchema = z.object({
   inquiry_id: z.string().uuid(),
   note: z.string().trim().min(1, "الملاحظة لا يمكن أن تكون فارغة"),
 });
+export const contactMessageStatusUpdateSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(["new", "read", "archived"]),
+});
 
 // 16. Site Settings Schema
 export const siteSettingInputSchema = z.object({

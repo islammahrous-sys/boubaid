@@ -56,6 +56,7 @@ import {
   registerMediaAsset,
   getInquiriesData,
   updateInquiryStatus,
+  updateContactMessageStatus,
   addInquiryNote,
   getUsersAndRolesData,
   assignUserRole,
@@ -181,6 +182,7 @@ function MasterAdminPage() {
   const deleteNotifMut = useServerFn(deleteNotification);
   const saveMediaMut = useServerFn(registerMediaAsset);
   const updateInqStatusMut = useServerFn(updateInquiryStatus);
+  const updateContactStatusMut = useServerFn(updateContactMessageStatus);
   const addNoteMut = useServerFn(addInquiryNote);
   const assignRoleMut = useServerFn(assignUserRole);
   const removeRoleMut = useServerFn(removeUserRole);
@@ -793,7 +795,11 @@ function MasterAdminPage() {
             <InquiriesManager
               inquiries={(inquiriesData?.inquiries ?? []) as any}
               notes={(inquiriesData?.notes ?? []) as any}
-              onUpdateStatus={(id, status) => runMutation(() => updateInqStatusMut({ data: { id, status } }), refreshInquiries)}
+              onUpdateStatus={(id, status, sourceTable) =>
+                sourceTable === "contact_messages"
+                  ? runMutation(() => updateContactStatusMut({ data: { id, status: status as any } }), refreshInquiries)
+                  : runMutation(() => updateInqStatusMut({ data: { id, status: status as any } }), refreshInquiries)
+              }
               onAddNote={(inquiry_id, note) =>
                 runMutation(() => addNoteMut({ data: { inquiry_id, note } }), refreshInquiries)
               }
