@@ -174,12 +174,32 @@ const langInitScript = `(function () {
   } catch (e) {}
 })();`;
 
+// Optional GA4 analytics loader. Only injects gtag.js when a measurement ID
+// is configured (see VITE_GA_MEASUREMENT_ID in .env.example) — with no env
+// var set, nothing is rendered and behavior is unchanged.
+const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+const gaInitScript = gaMeasurementId
+  ? `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', ${JSON.stringify(gaMeasurementId)});`
+  : undefined;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <script dangerouslySetInnerHTML={{ __html: langInitScript }} />
+        {gaMeasurementId && gaInitScript && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+            />
+            <script dangerouslySetInnerHTML={{ __html: gaInitScript }} />
+          </>
+        )}
         <HeadContent />
       </head>
       <body className="paper-texture" suppressHydrationWarning>

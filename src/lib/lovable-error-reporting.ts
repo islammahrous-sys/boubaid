@@ -23,8 +23,11 @@ declare global {
   }
 }
 
+import { externalErrorReporter } from "./external-error-reporter";
+
 export function reportLovableError(error: unknown, context: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
+  externalErrorReporter.captureException(error, context);
   window.__lovableEvents?.captureException?.(
     error,
     {
