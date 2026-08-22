@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useLang } from "@/i18n/LanguageProvider";
 import { Menu, Plus, Edit2, Trash2, ExternalLink, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import type { NavigationMenuInput, NavigationItemInput } from "@/lib/admin-hub.schemas";
 
 export type NavMenuRow = {
@@ -52,6 +53,47 @@ export function NavigationManager({
   const [itemModalOpen, setItemModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<NavItemRow | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [menuModalOpen, setMenuModalOpen] = useState(false);
+  const [menuLoading, setMenuLoading] = useState(false);
+  const [menuForm, setMenuForm] = useState<NavigationMenuInput>({
+    id: undefined,
+    name_ar: "",
+    name_en: "",
+    code: "",
+  });
+
+  // Keep the selection valid as menus are created/removed elsewhere, and
+  // land on the first menu once one exists.
+  useEffect(() => {
+    if (menus.length === 0) {
+      if (selectedMenuId) setSelectedMenuId("");
+      return;
+    }
+    if (!menus.some((m) => m.id === selectedMenuId)) {
+      setSelectedMenuId(menus[0].id);
+    }
+  }, [menus, selectedMenuId]);
+
+  const handleOpenAddMenu = () => {
+    setMenuForm({ id: undefined, name_ar: "", name_en: "", code: "" });
+    setMenuModalOpen(true);
+  };
+
+  const handleSubmitMenu = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!menuForm.name_ar.trim() || !menuForm.code.trim()) return;
+    try {
+      setMenuLoading(true);
+      await onSaveMenu({ ...menuForm });
+      setMenuModalOpen(false);
+      toast.success(isAr ? "تم إنشاء القائمة بنجاح" : "Menu created");
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? "فشل إنشاء القائمة" : "Failed to create menu"));
+    } finally {
+      setMenuLoading(false);
+    }
+  };
 
   const [itemForm, setItemForm] = useState<NavigationItemInput>({
     id: undefined,
@@ -149,7 +191,22 @@ export function NavigationManager({
             </Select>
           )}
 
-          <Button size="sm" onClick={handleOpenAddItem} className="h-8 text-xs gap-1.5">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleOpenAddMenu}
+            className="h-8 text-xs gap-1.5"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            {isAr ? "قائمة جديدة" : "New Menu"}
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={handleOpenAddItem}
+            disabled={!selectedMenuId}
+            className="h-8 text-xs gap-1.5"
+          >
             <Plus className="w-3.5 h-3.5" />
             {isAr ? "إضافة رابط جديد" : "Add Link"}
           </Button>
@@ -177,12 +234,30 @@ export function NavigationManager({
                 </TableCell>
               </TableRow>
             ) : (
-              currentItems.map((it) => (
-                <TableRow key={it.id} className="text-xs hover:bg-muted/30">
-                  <TableCell className="font-semibold text-foreground">
-                    {it.label_ar}
-                    {it.label_en && <span className="block text-[11px] text-muted-foreground font-mono">{it.label_en}</span>}
-                  </TableCell>
+              currentItems.map((it) => {
+                const parentItem = it.parent_id ? currentItems.find((p) => p.id === it.parent_id) : null;
+                return (
+                  <TableRow key={it.id} className={cn("text-xs hover:bg-muted/30", it.parent_id && "bg-muted/15")}>
+                    <TableCell className="font-semibold text-foreground">
+                      <div className="flex items-center gap-1.5">
+                        {it.parent_id && (
+                          <span className="text-primary font-mono text-xs select-none">↳</span>
+                        )}
+                        <div>
+                          <span>{it.label_ar}</span>
+                          {parentItem && (
+                            <span className="ms-2 inline-flex items-center px-1.5 py-0.2 rounded text-[10px] bg-secondary text-muted-foreground border border-border">
+                              {isAr ? `تابع لـ: ${parentItem.label_ar}` : `Under: ${parentItem.label_en || parentItem.label_ar}`}
+                            </span>
+                          )}
+                          {it.label_en && (
+                            <span className="block text-[11px] text-muted-foreground font-mono">
+                              {it.label_en}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </TableCell>
                   <TableCell className="font-mono text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <LinkIcon className="w-3 h-3 text-muted-foreground" />
@@ -230,8 +305,9 @@ export function NavigationManager({
                     </div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+              );
+            })
+          )}
           </TableBody>
         </Table>
       </div>
@@ -271,6 +347,28 @@ export function NavigationManager({
                 onChange={(e) => setItemForm({ ...itemForm, url: e.target.value })}
                 placeholder="/family-tree أو https://..."
               />
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs">{isAr ? "الرابط الرئيسي (العنصر الأب)" : "Parent Menu Item"}</Label>
+              <Select
+                value={itemForm.parent_id || "none"}
+                onValueChange={(val) => setItemForm({ ...itemForm, parent_id: val === "none" ? null : val })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={isAr ? "بدون (عنصر رئيسي)" : "None (Top-level)"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{isAr ? "بدون (عنصر رئيسي)" : "None (Top-level)"}</SelectItem>
+                  {currentItems
+                    .filter((it) => !it.parent_id && (!selectedItem || it.id !== selectedItem.id))
+                    .map((it) => (
+                      <SelectItem key={it.id} value={it.id}>
+                        {it.label_ar} {it.label_en ? `(${it.label_en})` : ""}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

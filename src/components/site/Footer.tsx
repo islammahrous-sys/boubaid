@@ -8,7 +8,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { siteMeta } from "@/content/site";
 import { navGroups } from "@/content/navigation";
 import { subscribeToNewsletter } from "@/lib/forms.functions";
-import { getPublicSiteSettings } from "@/lib/cms.functions";
+import { getPublicSiteSettings, getPublicNavigation } from "@/lib/cms.functions";
 import { newsletterSchema } from "@/lib/forms.schemas";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,16 @@ export function Footer() {
     queryFn: () => getPublicSiteSettings(),
     staleTime: 5 * 60 * 1000,
   });
+
+  /** Live, CMS-managed footer links — falls back to the static navGroups
+   *  index when the "footer" menu has no public items configured. */
+  const { data: liveNav } = useQuery({
+    queryKey: ["public_navigation"],
+    queryFn: () => getPublicNavigation(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const liveFooterItems = liveNav?.footer ?? [];
+  const usingLiveFooterNav = liveFooterItems.length > 0;
 
   const contactPhone = dynamicSettings.contact_phone || siteMeta.contact.phone;
   const contactEmail = dynamicSettings.contact_email || siteMeta.contact.email;
@@ -137,13 +147,13 @@ export function Footer() {
 
           {/* Index */}
           <div className="grid gap-8 sm:grid-cols-3">
-            {navGroups.map((group) => (
-              <nav key={group.title.en} aria-label={group.title.en}>
+            {usingLiveFooterNav ? (
+              <nav aria-label="Footer">
                 <p className="label-caps mb-3 border-b border-ivory/15 pb-2 text-gold/80">
-                  {t(group.title)}
+                  {lang === "ar" ? "فهرس الموقع" : "Site Index"}
                 </p>
                 <ul className="space-y-2.5">
-                  {group.items.map((n) => (
+                  {liveFooterItems.map((n) => (
                     <li key={n.to}>
                       <Link
                         to={n.to}
@@ -155,7 +165,27 @@ export function Footer() {
                   ))}
                 </ul>
               </nav>
-            ))}
+            ) : (
+              navGroups.map((group) => (
+                <nav key={group.title.en} aria-label={group.title.en}>
+                  <p className="label-caps mb-3 border-b border-ivory/15 pb-2 text-gold/80">
+                    {t(group.title)}
+                  </p>
+                  <ul className="space-y-2.5">
+                    {group.items.map((n) => (
+                      <li key={n.to}>
+                        <Link
+                          to={n.to}
+                          className="text-[13px] text-ivory/65 transition-colors hover:text-gold"
+                        >
+                          {t(n.label)}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              ))
+            )}
           </div>
         </div>
 

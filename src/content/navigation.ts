@@ -13,30 +13,53 @@ export type NavItem = {
   label: BiText;
   /** Shown in the mobile tab bar only, where icons do navigational work. */
   short?: BiText;
+  /** Optional nested child items for dropdown navigation. */
+  children?: NavItem[];
 };
 
 /** Top-level routes, shown in the desktop header bar. */
 export const primaryNav: NavItem[] = [
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, short: { ar: "الرئيسية", en: "Home" } },
-  { to: "/about", label: { ar: "النسب والتاريخ", en: "Lineage" } },
-  { to: "/branches", label: { ar: "الفروع السبعة", en: "Branches" } },
   {
-    to: "/family-tree",
-    label: { ar: "المشجرة", en: "Family Tree" },
-    short: { ar: "المشجرة", en: "Tree" },
+    to: "/about",
+    label: { ar: "النسب والتاريخ", en: "Lineage & History" },
+    children: [
+      { to: "/branches", label: { ar: "الفروع", en: "Branches" } },
+      {
+        to: "/family-tree",
+        label: { ar: "المشجرة - دقيقة", en: "Family Tree (Detailed)" },
+        short: { ar: "المشجرة", en: "Tree" },
+      },
+      { to: "/dna", label: { ar: "الدراسة الجينية", en: "Genetic Study" } },
+      { to: "/about", label: { ar: "عمود النسب والتاريخ", en: "Lineage Overview" } },
+    ],
   },
-  { to: "/dna", label: { ar: "الدراسة الجينية", en: "Y-DNA Study" } },
+  {
+    to: "/directory",
+    label: { ar: "الخدمات", en: "Services" },
+    short: { ar: "الخدمات", en: "Services" },
+  },
+  {
+    to: "/initiatives",
+    label: { ar: "المشاريع", en: "Projects" },
+    short: { ar: "المشاريع", en: "Projects" },
+  },
+  {
+    to: "/library",
+    label: { ar: "الأرشيف", en: "Archive" },
+    short: { ar: "الأرشيف", en: "Archive" },
+  },
 ];
 
 /** Secondary routes, grouped for the header dropdown and the footer. */
 export const navGroups: { title: BiText; items: NavItem[] }[] = [
   {
-    title: { ar: "الأسرة", en: "The Family" },
+    title: { ar: "النسب والتوثيق", en: "Lineage & Heritage" },
     items: [
       { to: "/about", label: { ar: "النسب والتاريخ", en: "Lineage & History" } },
-      { to: "/branches", label: { ar: "الفروع السبعة", en: "The Seven Branches" } },
-      { to: "/family-tree", label: { ar: "المشجرة التفاعلية", en: "Interactive Family Tree" } },
-      { to: "/dna", label: { ar: "الدراسة الجينية", en: "Y-DNA Study" } },
+      { to: "/branches", label: { ar: "الفروع", en: "Branches" } },
+      { to: "/family-tree", label: { ar: "المشجرة - دقيقة", en: "Detailed Family Tree" } },
+      { to: "/dna", label: { ar: "الدراسة الجينية", en: "Genetic Study" } },
       {
         to: "/achievers",
         label: { ar: "سجل المتميزين", en: "Roll of Honour" },
@@ -45,29 +68,29 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
     ],
   },
   {
-    title: { ar: "الصندوق", en: "The Fund" },
+    title: { ar: "الصندوق والمشاريع", en: "Fund & Projects" },
     items: [
       { to: "/foundation", label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Trustees" } },
       {
         to: "/initiatives",
-        label: { ar: "المبادرات والمشاريع", en: "Initiatives & Projects" },
-        short: { ar: "المبادرات", en: "Programmes" },
+        label: { ar: "المشاريع", en: "Projects" },
+        short: { ar: "المشاريع", en: "Projects" },
       },
       {
         to: "/library",
-        label: { ar: "الأرشيف والمكتبة", en: "Archive & Library" },
+        label: { ar: "الأرشيف", en: "Archive" },
         short: { ar: "الأرشيف", en: "Archive" },
       },
       { to: "/news", label: { ar: "الأخبار والبيانات", en: "News & Notices" } },
     ],
   },
   {
-    title: { ar: "المشاركة", en: "Take Part" },
+    title: { ar: "الخدمات والمشاركة", en: "Services & Participation" },
     items: [
       {
         to: "/directory",
-        label: { ar: "دليل الأعمال", en: "Business Directory" },
-        short: { ar: "الدليل", en: "Directory" },
+        label: { ar: "الخدمات والدليل", en: "Services & Directory" },
+        short: { ar: "الخدمات", en: "Services" },
       },
       { to: "/contribute", label: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" } },
       { to: "/contact", label: { ar: "تواصل معنا", en: "Contact" } },
@@ -82,4 +105,11 @@ export const secondaryNav: NavItem[] = navGroups
 
 export function isRouteActive(pathname: string, to: string): boolean {
   return to === "/" ? pathname === "/" : pathname === to || pathname.startsWith(`${to}/`);
+}
+
+/** Check if any child route in a nav item is active */
+export function isNavItemActive(pathname: string, item: NavItem): boolean {
+  if (isRouteActive(pathname, item.to)) return true;
+  if (item.children?.some((child) => isRouteActive(pathname, child.to))) return true;
+  return false;
 }

@@ -1,23 +1,52 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, ChevronDown, UserRound, Search } from "lucide-react";
+import { Menu, X, ChevronDown, UserRound, Search, ShoppingBag } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { siteMeta } from "@/content/site";
-import { primaryNav, secondaryNav, navGroups, isRouteActive } from "@/content/navigation";
+import { primaryNav, secondaryNav, navGroups, isRouteActive, isNavItemActive, type NavItem } from "@/content/navigation";
+import { getPublicNavigation, getPublicSiteSettings } from "@/lib/cms.functions";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { GlobalSearchModal } from "./GlobalSearchModal";
 import { cn } from "@/lib/utils";
 
+/** Top-bar links shown inline before the rest fold into "More" —
+ *  mirrors the length of the static `primaryNav` fallback. */
+const HEADER_PRIMARY_COUNT = 5;
+
 export function Header() {
   const { t, lang } = useLang();
   const { user, roles } = useAuth();
   const canReviewTreasury = roles.includes("admin") || roles.includes("treasurer");
+
+  /** Dynamic site settings from Supabase (for Salla store URL override, etc.) */
+  const { data: dynamicSettings = {} } = useQuery({
+    queryKey: ["public_site_settings"],
+    queryFn: () => getPublicSiteSettings(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const storeUrl = dynamicSettings.salla_url || siteMeta.sallaStoreUrl;
+
+  /** Live, CMS-managed navigation (Navigation Manager in the admin console).
+   *  Falls back to the static `@/content/navigation` lists whenever the
+   *  "header" menu has no public items configured. */
+  const { data: liveNav } = useQuery({
+    queryKey: ["public_navigation"],
+    queryFn: () => getPublicNavigation(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const liveHeaderItems = liveNav?.header ?? [];
+  const usingLiveNav = liveHeaderItems.length > 0;
+  const navPrimary = usingLiveNav ? liveHeaderItems.slice(0, HEADER_PRIMARY_COUNT) : primaryNav;
+  const navSecondaryFlat = usingLiveNav ? liveHeaderItems.slice(HEADER_PRIMARY_COUNT) : null;
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const primaryDropdownRef = useRef<HTMLDivElement>(null);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   /** Masthead condenses once the page has moved — the wordmark stays present
@@ -63,6 +92,9 @@ export function Header() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setMoreOpen(false);
       }
+      if (primaryDropdownRef.current && !primaryDropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -76,6 +108,7 @@ export function Header() {
       }
       if (e.key === "Escape") {
         setMoreOpen(false);
+        setOpenDropdown(null);
         setOpen(false);
         setSearchOpen(false);
       }
@@ -87,10 +120,12 @@ export function Header() {
   useEffect(() => {
     setOpen(false);
     setMoreOpen(false);
+    setOpenDropdown(null);
   }, [pathname]);
 
-  const isSecondaryActive = secondaryNav.some((n) => isRouteActive(pathname, n.to));
-
+  const isSecondaryActive = navSecondaryFlat
+    ? navSecondaryFlat.some((n) => isRouteActive(pathname, n.to))
+    : secondaryNav.some((n) => isRouteActive(pathname, n.to));
 
   return (
     <header
@@ -185,22 +220,87 @@ export function Header() {
               transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           />
-          {primaryNav.map((n) => {
-            const active = isRouteActive(pathname, n.to);
+          {navPrimary.map((n) => {
+            const hasChildren = Boolean(n.children && n.children.length > 0);
+            const isItemActive = isNavItemActive(pathname, n);
+            const isDropdownOpen = openDropdown === n.to;
+
+            if (hasChildren) {
+              return (
+                <div
+                  key={n.to}
+                  className="relative"
+                  ref={primaryDropdownRef}
+                  onMouseEnter={() => setOpenDropdown(n.to)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
+                  <button
+                    type="button"
+                    suppressHydrationWarning
+                    onClick={() => setOpenDropdown(isDropdownOpen ? null : n.to)}
+                    aria-expanded={isDropdownOpen}
+                    aria-haspopup="true"
+                    data-nav-active={isItemActive ? "true" : undefined}
+                    className={cn(
+                      "active-scale flex items-center gap-1 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
+                      isItemActive
+                        ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                    )}
+                  >
+                    {typeof n.label === "string" ? n.label : t(n.label)}
+                    <ChevronDown
+                      className={cn(
+                        "h-3.5 w-3.5 transition-transform duration-300",
+                        isDropdownOpen && "rotate-180",
+                      )}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {isDropdownOpen && (
+                    <div className="absolute top-full start-0 mt-1.5 min-w-[15rem] origin-top-start border border-border bg-popover p-2 shadow-lg transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 z-50">
+                      <ul className="space-y-1">
+                        {n.children!.map((child) => {
+                          const childActive = isRouteActive(pathname, child.to);
+                          return (
+                            <li key={child.to}>
+                              <Link
+                                to={child.to}
+                                onClick={() => setOpenDropdown(null)}
+                                className={cn(
+                                  "block rounded-md px-3 py-2 text-[13px] transition-colors",
+                                  childActive
+                                    ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
+                                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                                )}
+                              >
+                                {typeof child.label === "string" ? child.label : t(child.label)}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={n.to}
                 to={n.to}
-                data-nav-active={active ? "true" : undefined}
-                aria-current={active ? "page" : undefined}
+                data-nav-active={isItemActive ? "true" : undefined}
+                aria-current={isItemActive ? "page" : undefined}
                 className={cn(
                   "nav-link active-scale rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
-                  active
+                  isItemActive
                     ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
               >
-                {t(n.label)}
+                {typeof n.label === "string" ? n.label : t(n.label)}
               </Link>
             );
           })}
@@ -214,7 +314,7 @@ export function Header() {
               aria-haspopup="true"
               data-nav-active={isSecondaryActive ? "true" : undefined}
               className={cn(
-                "active-scale flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
+                "active-scale flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
                 isSecondaryActive
                   ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -232,37 +332,61 @@ export function Header() {
 
 
             {moreOpen ? (
-              <div className="absolute top-full end-0 mt-2 w-[30rem] origin-top-right border border-border bg-popover p-6 transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rtl:origin-top-left">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                  {navGroups.map((group) => (
-                    <div key={group.title.en}>
-                      <p className="label-caps mb-2.5 border-b border-border pb-2 text-bronze">
-                        {t(group.title)}
-                      </p>
-                      <ul className="space-y-1.5">
-                        {group.items.map((n) => {
-                          const active = isRouteActive(pathname, n.to);
-                          return (
-                            <li key={n.to}>
-                              <Link
-                                to={n.to}
-                                onClick={() => setMoreOpen(false)}
-                                className={cn(
-                                  "block py-1 text-[13px] transition-colors",
-                                  active
-                                    ? "font-bold text-bronze dark:text-gold"
-                                    : "text-muted-foreground hover:text-foreground",
-                                )}
-                              >
-                                {t(n.label)}
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
+              <div className="absolute top-full end-0 mt-2 w-[30rem] origin-top-right border border-border bg-popover p-6 transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rtl:origin-top-left z-50">
+                {navSecondaryFlat ? (
+                  <ul className="grid grid-cols-2 gap-x-8 gap-y-1.5">
+                    {navSecondaryFlat.map((n) => {
+                      const active = isRouteActive(pathname, n.to);
+                      return (
+                        <li key={n.to}>
+                          <Link
+                            to={n.to}
+                            onClick={() => setMoreOpen(false)}
+                            className={cn(
+                              "block py-1 text-[13px] transition-colors",
+                              active
+                                ? "font-bold text-bronze dark:text-gold"
+                                : "text-muted-foreground hover:text-foreground",
+                            )}
+                          >
+                            {typeof n.label === "string" ? n.label : t(n.label)}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                    {navGroups.map((group) => (
+                      <div key={group.title.en}>
+                        <p className="label-caps mb-2.5 border-b border-border pb-2 text-bronze">
+                          {t(group.title)}
+                        </p>
+                        <ul className="space-y-1.5">
+                          {group.items.map((n) => {
+                            const active = isRouteActive(pathname, n.to);
+                            return (
+                              <li key={n.to}>
+                                <Link
+                                  to={n.to}
+                                  onClick={() => setMoreOpen(false)}
+                                  className={cn(
+                                    "block py-1 text-[13px] transition-colors",
+                                    active
+                                      ? "font-bold text-bronze dark:text-gold"
+                                      : "text-muted-foreground hover:text-foreground",
+                                  )}
+                                >
+                                  {t(n.label)}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : null}
           </div>
@@ -295,6 +419,19 @@ export function Header() {
           >
             <Search className="h-4 w-4" />
           </button>
+
+          {/* E-Commerce Store Icon Button */}
+          <a
+            href={storeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="grid h-9 w-9 place-items-center border border-gold/40 bg-gold/10 text-amber-900 transition-all duration-200 hover:scale-105 hover:bg-gold hover:text-ink dark:border-gold/30 dark:bg-gold/15 dark:text-gold dark:hover:bg-gold dark:hover:text-ink cursor-pointer"
+            aria-label={lang === "ar" ? "المتجر الإلكتروني" : "E-Commerce Store"}
+            title={lang === "ar" ? "المتجر الإلكتروني (سلة)" : "Online Store (Salla)"}
+          >
+            <ShoppingBag className="h-4 w-4" />
+            <span className="sr-only">{lang === "ar" ? "المتجر الإلكتروني" : "E-Commerce Store"}</span>
+          </a>
 
           <div className="hidden items-center gap-1 border border-border/60 bg-secondary/40 px-1 py-1 sm:inline-flex">
             <ThemeToggle tone="default" />
@@ -346,7 +483,7 @@ export function Header() {
                   : "Open menu"
             }
             aria-expanded={open}
-            className="grid h-9 w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary lg:hidden"
+            className="grid h-9 w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary lg:hidden cursor-pointer"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
@@ -357,48 +494,182 @@ export function Header() {
       {open ? (
         <div className="max-h-[80vh] overflow-y-auto border-t border-border bg-background text-foreground lg:hidden animate-in slide-in-from-top-2 duration-200">
           <nav className="container-page py-6" aria-label="Mobile">
-            {navGroups.map((group, gi) => (
-              <div
-                key={group.title.en}
-                className="menu-in mb-6 last:mb-0"
-                style={{ ["--menu-i" as string]: gi * 3 }}
+            {/* Mobile E-Commerce Store Banner Link */}
+            <div className="mb-5">
+              <a
+                href={storeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between border border-gold/40 bg-gold/10 px-4 py-3 text-xs font-bold text-amber-900 transition-colors hover:bg-gold hover:text-ink dark:border-gold/30 dark:bg-gold/15 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
               >
-                <p className="label-caps mb-2 border-b border-border pb-2 text-bronze">
-                  {t(group.title)}
-                </p>
+                <span className="flex items-center gap-2">
+                  <ShoppingBag className="h-4 w-4 text-bronze dark:text-gold" />
+                  {lang === "ar" ? "المتجر الإلكتروني (سلة)" : "E-Commerce Store (Salla)"}
+                </span>
+                <span className="text-[11px] font-semibold opacity-90">
+                  {lang === "ar" ? "تسوق الآن ↗" : "Shop Now ↗"}
+                </span>
+              </a>
+            </div>
+
+            {usingLiveNav ? (
+              <div className="menu-in mb-6 last:mb-0">
                 <ul>
-                  {group.items.map((n, ii) => {
-                    const active = isRouteActive(pathname, n.to);
+                  {liveHeaderItems.map((n, ii) => {
+                    const hasChildren = Boolean(n.children && n.children.length > 0);
+                    const active = isNavItemActive(pathname, n);
                     return (
-                      <li
-                        key={n.to}
-                        className="menu-in"
-                        style={{ ["--menu-i" as string]: gi * 3 + ii + 1 }}
-                      >
-                        <Link
-                          to={n.to}
-                          onClick={() => setOpen(false)}
-                          className={cn(
-                            "active-scale block border-b border-border/60 py-3 text-sm transition-colors",
-                            active
-                              ? "font-bold text-bronze dark:text-gold"
-                              : "text-muted-foreground hover:text-foreground",
-                          )}
-                        >
-                          {t(n.label)}
-                        </Link>
+                      <li key={n.to} className="menu-in border-b border-border/60 py-2.5" style={{ ["--menu-i" as string]: ii + 1 }}>
+                        {hasChildren ? (
+                          <div>
+                            <span className={cn("block py-1 text-sm font-bold", active ? "text-bronze dark:text-gold" : "text-foreground")}>
+                              {typeof n.label === "string" ? n.label : t(n.label)}
+                            </span>
+                            <ul className="mt-1.5 ms-3 space-y-1.5 border-s-2 border-border/70 ps-3">
+                              {n.children!.map((child) => {
+                                const childActive = isRouteActive(pathname, child.to);
+                                return (
+                                  <li key={child.to}>
+                                    <Link
+                                      to={child.to}
+                                      onClick={() => setOpen(false)}
+                                      className={cn(
+                                        "active-scale block py-1 text-[13px] transition-colors",
+                                        childActive
+                                          ? "font-bold text-bronze dark:text-gold"
+                                          : "text-muted-foreground hover:text-foreground",
+                                      )}
+                                    >
+                                      {typeof child.label === "string" ? child.label : t(child.label)}
+                                    </Link>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        ) : (
+                          <Link
+                            to={n.to}
+                            onClick={() => setOpen(false)}
+                            className={cn(
+                              "active-scale block text-sm transition-colors",
+                              active
+                                ? "font-bold text-bronze dark:text-gold"
+                                : "text-muted-foreground hover:text-foreground",
+                            )}
+                          >
+                            {typeof n.label === "string" ? n.label : t(n.label)}
+                          </Link>
+                        )}
                       </li>
                     );
                   })}
                 </ul>
               </div>
-            ))}
+            ) : (
+              <>
+                {/* Primary Quick Links */}
+                <div className="mb-6 border-b border-border/60 pb-4">
+                  <p className="label-caps mb-2 text-bronze">
+                    {lang === "ar" ? "الروابط الرئيسية" : "Main Navigation"}
+                  </p>
+                  <ul className="space-y-1">
+                    {primaryNav.map((n, ii) => {
+                      const hasChildren = Boolean(n.children && n.children.length > 0);
+                      const active = isNavItemActive(pathname, n);
+                      return (
+                        <li key={n.to} className="menu-in" style={{ ["--menu-i" as string]: ii + 1 }}>
+                          {hasChildren ? (
+                            <div className="py-1.5">
+                              <span className={cn("block text-sm font-bold", active ? "text-bronze dark:text-gold" : "text-foreground")}>
+                                {t(n.label)}
+                              </span>
+                              <ul className="mt-1.5 ms-3 space-y-1.5 border-s-2 border-border/70 ps-3">
+                                {n.children!.map((child) => {
+                                  const childActive = isRouteActive(pathname, child.to);
+                                  return (
+                                    <li key={child.to}>
+                                      <Link
+                                        to={child.to}
+                                        onClick={() => setOpen(false)}
+                                        className={cn(
+                                          "active-scale block py-1 text-[13px] transition-colors",
+                                          childActive
+                                            ? "font-bold text-bronze dark:text-gold"
+                                            : "text-muted-foreground hover:text-foreground",
+                                        )}
+                                      >
+                                        {t(child.label)}
+                                      </Link>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          ) : (
+                            <Link
+                              to={n.to}
+                              onClick={() => setOpen(false)}
+                              className={cn(
+                                "active-scale block py-1.5 text-sm transition-colors",
+                                active
+                                  ? "font-bold text-bronze dark:text-gold"
+                                  : "text-muted-foreground hover:text-foreground",
+                              )}
+                            >
+                              {t(n.label)}
+                            </Link>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+
+                {/* Secondary Groups */}
+                {navGroups.map((group, gi) => (
+                  <div
+                    key={group.title.en}
+                    className="menu-in mb-6 last:mb-0"
+                    style={{ ["--menu-i" as string]: gi * 3 + primaryNav.length + 1 }}
+                  >
+                    <p className="label-caps mb-2 border-b border-border pb-2 text-bronze">
+                      {t(group.title)}
+                    </p>
+                    <ul>
+                      {group.items.map((n, ii) => {
+                        const active = isRouteActive(pathname, n.to);
+                        return (
+                          <li
+                            key={n.to}
+                            className="menu-in"
+                            style={{ ["--menu-i" as string]: gi * 3 + ii + primaryNav.length + 2 }}
+                          >
+                            <Link
+                              to={n.to}
+                              onClick={() => setOpen(false)}
+                              className={cn(
+                                "active-scale block border-b border-border/60 py-2.5 text-sm transition-colors",
+                                active
+                                  ? "font-bold text-bronze dark:text-gold"
+                                  : "text-muted-foreground hover:text-foreground",
+                              )}
+                            >
+                              {t(n.label)}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </>
+            )}
 
             <Link
               to="/contribute"
               onClick={() => setOpen(false)}
-              className="menu-in active-scale mt-2 block border border-gold bg-gold px-4 py-3.5 text-center text-sm font-bold text-ink transition-colors hover:bg-transparent hover:text-bronze dark:hover:text-gold"
-              style={{ ["--menu-i" as string]: navGroups.length * 3 + 1 }}
+              className="menu-in active-scale mt-4 block border border-gold bg-gold px-4 py-3.5 text-center text-sm font-bold text-ink transition-colors hover:bg-transparent hover:text-bronze dark:hover:text-gold"
             >
               {lang === "ar" ? "الاشتراك والمساهمة" : "Subscribe & Contribute"}
             </Link>
