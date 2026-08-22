@@ -441,62 +441,79 @@ function ContributePage() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="mt-4 space-y-4 rounded-lg border border-border bg-muted/40 p-4">
-                <div>
-                  <span className="text-xs text-muted-foreground block mb-1">
-                    {lang === "ar" ? "اسم المستفيد / الجهة" : "Beneficiary Name"}
-                  </span>
-                  <span className="text-sm font-medium text-foreground">
-                    {t(siteMeta.bankAccount.beneficiaryName)}
-                  </span>
-                </div>
+              {user ? (
+                <div className="mt-4 space-y-4 rounded-lg border border-border bg-muted/40 p-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground block mb-1">
+                      {lang === "ar" ? "اسم المستفيد / الجهة" : "Beneficiary Name"}
+                    </span>
+                    <span className="text-sm font-medium text-foreground">
+                      {t(siteMeta.bankAccount.beneficiaryName)}
+                    </span>
+                  </div>
 
-                <div>
-                  <span className="text-xs text-muted-foreground block mb-1">
-                    {lang === "ar" ? "البنك" : "Bank"}
-                  </span>
-                  <span className="text-sm font-medium text-foreground">
-                    {t(siteMeta.bankAccount.bankName)}
-                  </span>
-                </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground block mb-1">
+                      {lang === "ar" ? "البنك" : "Bank"}
+                    </span>
+                    <span className="text-sm font-medium text-foreground">
+                      {t(siteMeta.bankAccount.bankName)}
+                    </span>
+                  </div>
 
-                <div>
-                  <span className="text-xs text-muted-foreground block mb-1">
-                    {lang === "ar" ? "رقم الحساب" : "Account Number"}
-                  </span>
-                  <code className="text-sm font-mono text-foreground font-semibold">
-                    {siteMeta.bankAccount.accountNumber}
-                  </code>
-                </div>
-
-                <div className="border-t border-border pt-3">
-                  <span className="text-xs text-muted-foreground block mb-1">
-                    {lang === "ar" ? "رقم الآيبان الدولي (IBAN)" : "International Bank Account Number (IBAN)"}
-                  </span>
-                  <div className="mt-1 flex items-center justify-between gap-2 rounded border border-border bg-background p-2.5">
-                    <code className="text-xs sm:text-sm font-mono font-bold tracking-wider text-foreground select-all" dir="ltr">
-                      {siteMeta.bankAccount.iban}
+                  <div>
+                    <span className="text-xs text-muted-foreground block mb-1">
+                      {lang === "ar" ? "رقم الحساب" : "Account Number"}
+                    </span>
+                    <code className="text-sm font-mono text-foreground font-semibold">
+                      {siteMeta.bankAccount.accountNumber}
                     </code>
-                    <button
-                      type="button"
-                      onClick={handleCopyIban}
-                      className="inline-flex items-center gap-1.5 rounded bg-bronze/10 px-2.5 py-1.5 text-xs font-medium text-bronze transition-colors hover:bg-bronze hover:text-white dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
-                    >
-                      {copiedIban ? (
-                        <>
-                          <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                          <span>{lang === "ar" ? "تم النسخ" : "Copied"}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3.5 w-3.5" />
-                          <span>{lang === "ar" ? "نسخ" : "Copy"}</span>
-                        </>
-                      )}
-                    </button>
+                  </div>
+
+                  <div className="border-t border-border pt-3">
+                    <span className="text-xs text-muted-foreground block mb-1">
+                      {lang === "ar" ? "رقم الآيبان الدولي (IBAN)" : "International Bank Account Number (IBAN)"}
+                    </span>
+                    <div className="mt-1 flex items-center justify-between gap-2 rounded border border-border bg-background p-2.5">
+                      <code className="text-xs sm:text-sm font-mono font-bold tracking-wider text-foreground select-all" dir="ltr">
+                        {siteMeta.bankAccount.iban}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={handleCopyIban}
+                        className="inline-flex items-center gap-1.5 rounded bg-bronze/10 px-2.5 py-1.5 text-xs font-medium text-bronze transition-colors hover:bg-bronze hover:text-white dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
+                      >
+                        {copiedIban ? (
+                          <>
+                            <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <span>{lang === "ar" ? "تم النسخ" : "Copied"}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3.5 w-3.5" />
+                            <span>{lang === "ar" ? "نسخ" : "Copy"}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-4 space-y-3 rounded-lg border border-border bg-muted/40 p-4">
+                  <p className="text-sm leading-relaxed text-foreground">
+                    {lang === "ar"
+                      ? "بيانات الحساب البنكي متاحة لأعضاء الأسرة المسجَّلين فقط. يرجى تسجيل الدخول لعرضها."
+                      : "Bank account details are available to registered family members only. Please sign in to view them."}
+                  </p>
+                  <Link
+                    to="/auth"
+                    className="inline-flex items-center gap-2 border border-ink bg-ink px-4 py-2 text-xs font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+                  >
+                    {t(contribCopy.signInCta)}
+                    <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </section>
