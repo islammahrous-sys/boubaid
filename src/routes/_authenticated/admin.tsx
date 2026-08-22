@@ -401,6 +401,17 @@ function MasterAdminPage() {
   // a forbidden role, a network blip) was silently swallowed — the admin got
   // no feedback and the panel just looked unresponsive. Route every mutation
   // through here so failures always surface as a toast.
+  // Every one of this console's ~47 save/delete/assign actions is wired
+  // through this one function, and most of their manager components wrap
+  // their own call in `try { await onXxx(...); toast.success(...) } catch {
+  // toast.error(...) }` -- clearly written assuming a failure throws. It
+  // didn't: this used to swallow every error internally and never rethrow,
+  // so `await onXxx(...)` always resolved and every one of those callers'
+  // success toasts fired unconditionally, even when the action had actually
+  // failed server-side (this masked a real bug: removing a role silently
+  // did nothing while still reporting "Role removed"). Rethrowing after
+  // showing this function's own error toast restores the behavior those
+  // callers already assumed.
   const runMutation = async (action: () => Promise<unknown>, onSuccess: () => void) => {
     try {
       await action();
@@ -409,6 +420,7 @@ function MasterAdminPage() {
       toast.error(
         err?.message || (isAr ? "حدث خطأ أثناء الحفظ. حاول مرة أخرى." : "Something went wrong. Please try again."),
       );
+      throw err;
     }
   };
 
