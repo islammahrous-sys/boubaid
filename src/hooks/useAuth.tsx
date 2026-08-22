@@ -30,6 +30,12 @@ type AuthCtx = {
   isAdmin: boolean;
   isSuperAdmin: boolean;
   isMember: boolean;
+  /** Any staff role that has at least one real capability somewhere in the
+   *  admin console (per the DB's private.can_* functions and the server
+   *  middleware) -- as opposed to a plain "member"/"viewer", who has none.
+   *  Gates entry to the console; each tab's actual data access is still
+   *  fully enforced server-side regardless of this flag. */
+  canAccessConsole: boolean;
   signOut: () => Promise<void>;
 };
 
@@ -98,6 +104,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAdmin: roles.includes("admin") || roles.includes("super_admin"),
       isSuperAdmin: roles.includes("super_admin"),
       isMember: roles.length > 0,
+      canAccessConsole: roles.some((r) =>
+        (["admin", "super_admin", "editor", "treasurer", "content_manager", "family_manager"] as AppRole[]).includes(r),
+      ),
       signOut: async () => {
         await supabase.auth.signOut();
       },

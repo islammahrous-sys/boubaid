@@ -48,6 +48,14 @@ export type DashboardStats = {
   totalMedia: number;
   pendingInquiries: number;
   totalUsers: number;
+  // Enrichment for dashboard to prevent huge array fetches
+  draftArticles: number;
+  pendingReceipts: number;
+  pendingVerifications: number;
+  totalBusinesses: number;
+  totalInitiatives: number;
+  totalAchievers: number;
+  treasuryVerified: number;
   recentActivity: {
     id: string;
     action: string;
@@ -64,41 +72,67 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
     const { supabase } = context;
 
     const [
-      membersRes,
+      membersTotalRes,
+      membersLivingRes,
       branchesRes,
-      articlesRes,
+      articlesTotalRes,
+      articlesDraftRes,
       pagesRes,
       eventsRes,
       mediaRes,
       inquiriesRes,
+      contactRes,
       usersRes,
+      receiptsRes,
+      verifiedAmountsRes,
+      verificationsRes,
+      businessesRes,
+      initiativesRes,
+      achieversRes,
       activityRes,
     ] = await Promise.all([
-      supabase.from("family_members").select("id, is_living, deleted_at"),
-      supabase.from("branches").select("id"),
-      supabase.from("articles").select("id"),
-      supabase.from("content_pages").select("id"),
-      supabase.from("events").select("id"),
-      supabase.from("media_assets").select("id"),
-      supabase.from("inquiries").select("id").eq("status", "new"),
-      supabase.from("profiles").select("id"),
+      supabase.from("family_members").select("*", { count: "exact", head: true }).is("deleted_at", null),
+      supabase.from("family_members").select("*", { count: "exact", head: true }).is("deleted_at", null).eq("is_living", true),
+      supabase.from("branches").select("*", { count: "exact", head: true }),
+      supabase.from("articles").select("*", { count: "exact", head: true }).is("deleted_at", null),
+      supabase.from("articles").select("*", { count: "exact", head: true }).is("deleted_at", null).eq("status", "draft"),
+      supabase.from("content_pages").select("*", { count: "exact", head: true }).is("deleted_at", null),
+      supabase.from("events").select("*", { count: "exact", head: true }),
+      supabase.from("media_assets").select("*", { count: "exact", head: true }),
+      supabase.from("inquiries").select("*", { count: "exact", head: true }).eq("status", "new"),
+      supabase.from("contact_messages").select("*", { count: "exact", head: true }).eq("status", "new"),
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase.from("contributions").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("contributions").select("amount").eq("status", "verified"),
+      supabase.from("membership_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("businesses").select("*", { count: "exact", head: true }),
+      supabase.from("initiatives").select("*", { count: "exact", head: true }),
+      supabase.from("achievers").select("*", { count: "exact", head: true }),
       supabase.from("audit_logs").select("id, action, entity_type, created_at, metadata").order("created_at", { ascending: false }).limit(10),
     ]);
 
-    const activeMembers = (membersRes.data ?? []).filter((m) => !m.deleted_at);
-    const living = activeMembers.filter((m) => m.is_living).length;
+    const totalMembers = membersTotalRes.count ?? 0;
+    const livingMembers = membersLivingRes.count ?? 0;
+    const treasuryVerified = (verifiedAmountsRes.data ?? []).reduce((sum, row) => sum + Number(row.amount || 0), 0);
 
     return {
-      totalMembers: activeMembers.length,
-      livingMembers: living,
-      deceasedMembers: activeMembers.length - living,
-      totalBranches: branchesRes.data?.length ?? 0,
-      totalArticles: articlesRes.data?.length ?? 0,
-      totalPages: pagesRes.data?.length ?? 0,
-      totalEvents: eventsRes.data?.length ?? 0,
-      totalMedia: mediaRes.data?.length ?? 0,
-      pendingInquiries: inquiriesRes.data?.length ?? 0,
-      totalUsers: usersRes.data?.length ?? 0,
+      totalMembers,
+      livingMembers,
+      deceasedMembers: totalMembers - livingMembers,
+      totalBranches: branchesRes.count ?? 0,
+      totalArticles: articlesTotalRes.count ?? 0,
+      draftArticles: articlesDraftRes.count ?? 0,
+      totalPages: pagesRes.count ?? 0,
+      totalEvents: eventsRes.count ?? 0,
+      totalMedia: mediaRes.count ?? 0,
+      pendingInquiries: (inquiriesRes.count ?? 0) + (contactRes.count ?? 0),
+      totalUsers: usersRes.count ?? 0,
+      pendingReceipts: receiptsRes.count ?? 0,
+      pendingVerifications: verificationsRes.count ?? 0,
+      totalBusinesses: businessesRes.count ?? 0,
+      totalInitiatives: initiativesRes.count ?? 0,
+      totalAchievers: achieversRes.count ?? 0,
+      treasuryVerified,
       recentActivity: (activityRes.data ?? []) as DashboardStats["recentActivity"],
     };
   });

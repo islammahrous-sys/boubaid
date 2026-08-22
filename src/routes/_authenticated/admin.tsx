@@ -124,7 +124,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function MasterAdminPage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
-  const { isAdmin, loading: authLoading } = useAuth();
+  const { canAccessConsole, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const searchParams = useSearch({ from: "/_authenticated/admin" });
   const navigate = useNavigate({ from: Route.fullPath });
@@ -211,142 +211,133 @@ function MasterAdminPage() {
   const { data: overviewData, isLoading: overviewLoading } = useQuery({
     queryKey: ["admin-overview"],
     queryFn: () => fetchOverview(),
-    enabled: isAdmin && activeDomainId === "dashboard",
+    enabled: canAccessConsole && activeDomainId === "dashboard",
     ...queryConfig,
   });
 
   const { data: familyData, isLoading: familyLoading } = useQuery({
     queryKey: ["family-hub-data"],
     queryFn: () => fetchFamily(),
-    enabled: isAdmin && (activeDomainId === "family" || (activeDomainId === "content" && activeTabId === "events")),
+    enabled: canAccessConsole && (activeDomainId === "family" || (activeDomainId === "content" && activeTabId === "events")),
     ...queryConfig,
   });
 
   const { data: pagesData, isLoading: pagesLoading } = useQuery({
     queryKey: ["cms-pages-data"],
     queryFn: () => fetchPages(),
-    enabled: isAdmin && activeDomainId === "content" && activeTabId === "pages",
+    enabled: canAccessConsole && activeDomainId === "content" && activeTabId === "pages",
     ...queryConfig,
   });
 
   const { data: articlesData, isLoading: articlesLoading } = useQuery({
     queryKey: ["cms-articles-data"],
     queryFn: () => fetchArticles(),
-    enabled: isAdmin && ((activeDomainId === "content" && activeTabId === "articles") || activeDomainId === "dashboard"),
+    enabled: canAccessConsole && activeDomainId === "content" && activeTabId === "articles",
     ...queryConfig,
   });
 
   const { data: eventsData, isLoading: eventsLoading } = useQuery({
     queryKey: ["events-data"],
     queryFn: () => fetchEvents(),
-    enabled: isAdmin && ((activeDomainId === "content" && activeTabId === "events") || activeDomainId === "dashboard"),
+    enabled: canAccessConsole && activeDomainId === "content" && activeTabId === "events",
     ...queryConfig,
   });
 
   const { data: announcementsData, isLoading: announcementsLoading } = useQuery({
     queryKey: ["announcements-data"],
     queryFn: () => fetchAnnouncements(),
-    enabled: isAdmin && activeDomainId === "content" && activeTabId === "announcements",
+    enabled: canAccessConsole && activeDomainId === "content" && activeTabId === "announcements",
     ...queryConfig,
   });
 
   const { data: mediaData, isLoading: mediaLoading } = useQuery({
     queryKey: ["media-data"],
     queryFn: () => fetchMedia(),
-    enabled: isAdmin && activeDomainId === "media" && activeTabId === "media_library",
+    enabled: canAccessConsole && activeDomainId === "media" && activeTabId === "media_library",
     ...queryConfig,
   });
 
   const { data: inquiriesData, isLoading: inquiriesLoading } = useQuery({
     queryKey: ["inquiries-data"],
     queryFn: () => fetchInquiries(),
-    enabled: isAdmin && ((activeDomainId === "community" && activeTabId === "inquiries") || activeDomainId === "dashboard"),
+    enabled: canAccessConsole && activeDomainId === "community" && activeTabId === "inquiries",
     ...queryConfig,
   });
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["users-data"],
     queryFn: () => fetchUsers(),
-    enabled: isAdmin && activeDomainId === "system" && activeTabId === "users",
+    enabled: canAccessConsole && activeDomainId === "system" && activeTabId === "users",
     ...queryConfig,
   });
 
   const { data: auditData, isLoading: auditLoading } = useQuery({
     queryKey: ["audit-data"],
     queryFn: () => fetchAudit(),
-    enabled: isAdmin && activeDomainId === "system" && activeTabId === "audit_logs",
+    enabled: canAccessConsole && activeDomainId === "system" && activeTabId === "audit_logs",
     ...queryConfig,
   });
 
   const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ["site-settings-data"],
     queryFn: () => fetchSettings(),
-    enabled: isAdmin && (activeDomainId === "system" || (activeDomainId === "content" && activeTabId === "homepage")),
+    enabled: canAccessConsole && (activeDomainId === "system" || (activeDomainId === "content" && activeTabId === "homepage")),
     ...queryConfig,
   });
 
   const { data: directoryData, isLoading: directoryLoading } = useQuery({
     queryKey: ["directory-management-data"],
     queryFn: () => fetchDirectory(),
-    enabled:
-      isAdmin &&
-      ((activeDomainId === "community" && (activeTabId === "directory" || activeTabId === "verification")) ||
-        activeDomainId === "dashboard"),
+    enabled: canAccessConsole && activeDomainId === "community" && (activeTabId === "directory" || activeTabId === "verification"),
     ...queryConfig,
   });
 
   const { data: treasuryData, isLoading: treasuryLoading } = useQuery({
     queryKey: ["treasury-management-data"],
     queryFn: () => fetchTreasury(),
-    enabled:
-      isAdmin &&
-      ((activeDomainId === "treasury" && activeTabId === "treasury_ledger") || activeDomainId === "dashboard"),
+    enabled: canAccessConsole && activeDomainId === "treasury" && activeTabId === "treasury_ledger",
     ...queryConfig,
   });
 
   const { data: initiativesData, isLoading: initiativesLoading } = useQuery({
     queryKey: ["initiatives-management-data"],
     queryFn: () => fetchInitiatives(),
-    enabled:
-      isAdmin &&
-      ((activeDomainId === "treasury" && activeTabId === "initiatives") || activeDomainId === "dashboard"),
+    enabled: canAccessConsole && activeDomainId === "treasury" && activeTabId === "initiatives",
     ...queryConfig,
   });
 
   const { data: achieversData, isLoading: achieversLoading } = useQuery({
     queryKey: ["achievers-management-data"],
     queryFn: () => fetchAchievers(),
-    enabled:
-      isAdmin &&
-      ((activeDomainId === "treasury" && activeTabId === "achievers") || activeDomainId === "dashboard"),
+    enabled: canAccessConsole && activeDomainId === "treasury" && activeTabId === "achievers",
     ...queryConfig,
   });
 
   const { data: libraryData, isLoading: libraryLoading } = useQuery({
     queryKey: ["library-management-data"],
     queryFn: () => fetchLibrary(),
-    enabled: isAdmin && activeDomainId === "media" && activeTabId === "library_items",
+    enabled: canAccessConsole && activeDomainId === "media" && activeTabId === "library_items",
     ...queryConfig,
   });
 
   const { data: navigationData, isLoading: navigationLoading } = useQuery({
     queryKey: ["navigation-management-data"],
     queryFn: () => fetchNavigation(),
-    enabled: isAdmin && activeDomainId === "content" && activeTabId === "navigation",
+    enabled: canAccessConsole && activeDomainId === "content" && activeTabId === "navigation",
     ...queryConfig,
   });
 
   const { data: dnaData, isLoading: dnaLoading } = useQuery({
     queryKey: ["dna-studies-data"],
     queryFn: () => fetchDna(),
-    enabled: isAdmin && activeDomainId === "content" && activeTabId === "dna",
+    enabled: canAccessConsole && activeDomainId === "content" && activeTabId === "dna",
     ...queryConfig,
   });
 
   const { data: notificationsData } = useQuery({
     queryKey: ["admin-notifications"],
     queryFn: () => fetchNotifs(),
-    enabled: isAdmin,
+    enabled: canAccessConsole,
     refetchInterval: 60000,
     staleTime: 30000,
   });
@@ -423,17 +414,29 @@ function MasterAdminPage() {
 
   // Badge counts calculation
   const badgeCounts = useMemo(() => {
-    const pendingInquiries = overviewData?.pendingInquiries ?? 0;
-    const pendingReceipts = (treasuryData?.contributions ?? []).filter((c) => c.status === "pending").length;
-    const pendingVerifications = (directoryData?.membershipRequests ?? []).filter((r) => r.status === "pending").length;
-    const draftArticles = (articlesData?.articles ?? []).filter((a) => a.status === "draft").length;
+    const pendingInquiries = inquiriesData
+      ? inquiriesData.inquiries.filter((i: any) => i.status === "new").length
+      : (overviewData?.pendingInquiries ?? 0);
+
+    const pendingReceipts = treasuryData
+      ? treasuryData.contributions.filter((c: any) => c.status === "pending").length
+      : (overviewData?.pendingReceipts ?? 0);
+
+    const pendingVerifications = directoryData
+      ? directoryData.membershipRequests.filter((r: any) => r.status === "pending").length
+      : (overviewData?.pendingVerifications ?? 0);
+
+    const draftArticles = articlesData
+      ? articlesData.articles.filter((a: any) => a.status === "draft").length
+      : (overviewData?.draftArticles ?? 0);
+
     return {
       pendingInquiries,
       pendingReceipts,
       pendingVerifications,
       draftArticles,
     };
-  }, [overviewData, treasuryData, directoryData, articlesData]);
+  }, [overviewData, treasuryData, directoryData, articlesData, inquiriesData]);
 
   // Search items index
   const searchItems = useMemo(() => {
@@ -510,7 +513,7 @@ function MasterAdminPage() {
     );
   }
 
-  if (!isAdmin) {
+  if (!canAccessConsole) {
     return (
       <div className="container-page py-24">
         <h1 className="text-2xl font-bold text-foreground">
@@ -551,17 +554,17 @@ function MasterAdminPage() {
                 livingMembers: overviewData?.livingMembers ?? 0,
                 deceasedMembers: overviewData?.deceasedMembers ?? 0,
                 pendingInquiries: overviewData?.pendingInquiries ?? 0,
-                publishedArticles: overviewData?.totalArticles ?? 0,
-                draftArticles: (articlesData?.articles ?? []).filter((a) => a.status === "draft").length,
-                upcomingEvents: overviewData?.totalEvents ?? 0,
+                totalArticles: overviewData?.totalArticles ?? 0,
+                draftArticles: overviewData?.draftArticles ?? 0,
+                totalEvents: overviewData?.totalEvents ?? 0,
+                pendingReceipts: overviewData?.pendingReceipts ?? 0,
+                pendingVerifications: overviewData?.pendingVerifications ?? 0,
+                totalBusinesses: overviewData?.totalBusinesses ?? 0,
+                totalInitiatives: overviewData?.totalInitiatives ?? 0,
+                totalAchievers: overviewData?.totalAchievers ?? 0,
+                treasuryVerified: overviewData?.treasuryVerified ?? 0,
                 recentActivity: overviewData?.recentActivity ?? [],
               }}
-              treasuryData={treasuryData}
-              directoryData={directoryData}
-              articlesData={articlesData}
-              eventsData={eventsData}
-              initiativesData={initiativesData}
-              achieversData={achieversData}
               onNavigateTab={handleSelectTab}
               onQuickAction={handleQuickAction}
             />
