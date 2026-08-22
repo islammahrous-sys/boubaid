@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -39,6 +39,32 @@ export function MediaLibrary({
   const [search, setSearch] = useState("");
   const [uploading, setUploading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  // documents-private is a non-public bucket -- getPublicUrl() produces a URL
+  // that 404s regardless of RLS. Batch-resolve real signed URLs for those
+  // assets instead, same approach content-media.server.ts already uses.
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const privateAssets = mediaAssets.filter((a) => a.bucket === "documents-private" && !a.public_url);
+    if (privateAssets.length === 0) return;
+    let active = true;
+    void Promise.all(
+      privateAssets.map(async (a) => {
+        const { data } = await supabase.storage.from(a.bucket).createSignedUrl(a.storage_path, 60 * 60);
+        return [a.id, data?.signedUrl ?? null] as const;
+      }),
+    ).then((entries) => {
+      if (!active) return;
+      setSignedUrls((prev) => {
+        const next = { ...prev };
+        for (const [id, url] of entries) if (url) next[id] = url;
+        return next;
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [mediaAssets]);
 
   const BUCKETS = [
     { id: "family-photos", label_ar: "صور العائلة والأفراد", label_en: "Family Photos" },
@@ -108,6 +134,7 @@ export function MediaLibrary({
 
   const getMediaUrl = (asset: MediaAssetRow) => {
     if (asset.public_url) return asset.public_url;
+    if (asset.bucket === "documents-private") return signedUrls[asset.id] ?? "";
     const { data } = supabase.storage.from(asset.bucket).getPublicUrl(asset.storage_path);
     return data.publicUrl;
   };

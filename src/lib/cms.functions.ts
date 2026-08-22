@@ -464,7 +464,12 @@ export const uploadContentMedia = createServerFn({ method: "POST" })
         .select("role")
         .eq("user_id", userId);
       const roleList = (roles ?? []).map((r) => r.role as string);
-      if (!roleList.includes("admin") && !roleList.includes("super_admin") && !roleList.includes("editor")) {
+      if (
+        !roleList.includes("admin") &&
+        !roleList.includes("super_admin") &&
+        !roleList.includes("editor") &&
+        !roleList.includes("content_manager")
+      ) {
         return { ok: false, error: "forbidden" };
       }
 
