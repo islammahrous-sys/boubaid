@@ -789,8 +789,21 @@ export const removeUserRole = createServerFn({ method: "POST" })
     await requireCallerCanGrantRole(supabase, userId, data.role);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id).eq("role", data.role);
+    // DELETE matching zero rows is not an error as far as Supabase/Postgres
+    // is concerned -- it succeeds with an empty result, so without checking
+    // what actually came back this would report success even when the
+    // target row didn't exist (wrong user_id, role already removed, a stale
+    // client reference, etc.).
+    const { data: deleted, error } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.user_id)
+      .eq("role", data.role)
+      .select("id");
     if (error) throw new Error(error.message);
+    if (!deleted || deleted.length === 0) {
+      throw new Error(`Role "${data.role}" was not found for this user (nothing removed).`);
+    }
 
     await supabase.from("audit_logs").insert({
       actor_user_id: userId,
