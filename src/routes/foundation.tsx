@@ -19,8 +19,10 @@ import { Eyebrow, Prose, Ornament } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
 import { Seal } from "@/components/site/Seal";
 import { getCanonicalUrl } from "@/lib/seo";
+import { getPublicSiteSettings } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/foundation")({
+  loader: () => getPublicSiteSettings(),
   head: () => ({
     meta: [
       { title: "الحوكمة ومجلس الأمناء | آل بوعبيد" },
@@ -173,6 +175,18 @@ function FoundationPage() {
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
 
+  // Live overrides are saved by the admin console under the "site_governance"
+  // category (see SiteSettingsManager.tsx / upsertSiteSetting) — currently
+  // limited to the names of the three senior board offices. Fall back to the
+  // static bilingual copy in `boardOfTrustees` for any office left unset.
+  const dynamicSettings = (Route.useLoaderData() || {}) as Record<string, any>;
+  const siteGovernance = dynamicSettings.site_governance || {};
+  const boardNameOverrides: Record<number, string | undefined> = {
+    0: siteGovernance.dean_name,
+    1: siteGovernance.chairman_name,
+    2: siteGovernance.vice_chairman_name,
+  };
+
   return (
     <>
       <PageHeader
@@ -267,7 +281,7 @@ function FoundationPage() {
                     <p className="label-caps pt-1 text-bronze dark:text-gold">{t(member.role)}</p>
                     <div>
                       <p className="font-naskh text-base font-bold text-foreground rtl:text-lg">
-                        {t(member.name)}
+                        {boardNameOverrides[i] || t(member.name)}
                       </p>
                       <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
                         {t(member.bio)}
