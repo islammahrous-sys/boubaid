@@ -1,0 +1,8 @@
+{
+  "// NOTE 1": "DEPLOY TARGET 2 of 2 — Vercel. This repo currently has TWO possible deploy targets configured (this file and wrangler.toml) because it wasn't clear which one is actually live — see wrangler.toml's header comment for the full explanation.",
+  "// NOTE 2": "Confirm which platform you actually deploy to, then delete the other file (this one, or wrangler.toml).",
+  "// NOTE 3": "vite.config.ts's nitro preset defaults to 'cloudflare-module' (via @lovable.dev/vite-tanstack-config), so on Vercel the build must be told to target the 'vercel' preset instead via the NITRO_PRESET env var below. That preset writes directly to .vercel/output (Build Output API v3), which Vercel picks up automatically — 'framework: null' below just stops Vercel from guessing a plain static-Vite build and overriding this.",
+
+  "framework": null,
+  "buildCommand": "NITRO_PRESET=vercel npm run build"
+}
