@@ -8,6 +8,10 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const BUCKET = "content";
 const SIGN_TTL_SECONDS = 60 * 60 * 24 * 7; // one week
+const SUPABASE_BASE_URL =
+  process.env?.SUPABASE_URL ||
+  process.env?.VITE_SUPABASE_URL ||
+  "https://ywsvittlswbbyqhahorh.supabase.co";
 
 /** True when the stored value is a bucket object key (not an absolute/site URL). */
 export function isStoragePath(value: string | null | undefined): value is string {
@@ -17,33 +21,43 @@ export function isStoragePath(value: string | null | undefined): value is string
   return true;
 }
 
-/** Signed URLs keyed by object path; unknown or failed paths are simply absent. */
+/** Signed URLs keyed by object path; unknown or failed paths fall back gracefully. */
 export async function signContentPaths(
   paths: (string | null | undefined)[],
 ): Promise<Record<string, string>> {
   const unique = [...new Set(paths.filter(isStoragePath))];
   if (unique.length === 0) return {};
 
+  const map: Record<string, string> = {};
+
   try {
-    const { data, error } = await supabaseAdmin.storage
+    const { data } = await supabaseAdmin.storage
       .from(BUCKET)
       .createSignedUrls(unique, SIGN_TTL_SECONDS);
 
-    if (error || !data) {
-      console.error("[content-media] sign failed", error?.message);
-      return {};
+    if (data) {
+      data.forEach((entry, index) => {
+        const key = entry.path ?? unique[index];
+        if (key && entry.signedUrl) map[key] = entry.signedUrl;
+      });
     }
-
-    const map: Record<string, string> = {};
-    data.forEach((entry, index) => {
-      const key = entry.path ?? unique[index];
-      if (key && entry.signedUrl) map[key] = entry.signedUrl;
-    });
-    return map;
   } catch (err) {
     console.error("[content-media] signContentPaths caught error", err);
-    return {};
   }
+
+  // For any path not signed in the private bucket, generate public fallback URL
+  unique.forEach((key) => {
+    if (!map[key]) {
+      const bucket = key.startsWith("library/")
+        ? "documents-public"
+        : key.startsWith("achievers/")
+        ? "family-photos"
+        : "site-media";
+      map[key] = `${SUPABASE_BASE_URL}/storage/v1/object/public/${bucket}/${key}`;
+    }
+  });
+
+  return map;
 }
 
 /** Resolve a stored value to something a browser can load. */
@@ -52,7 +66,15 @@ export function resolveMedia(
   signed: Record<string, string>,
 ): string | null {
   if (!value) return null;
-  if (isStoragePath(value)) return signed[value] ?? null;
+  if (isStoragePath(value)) {
+    if (signed[value]) return signed[value];
+    const bucket = value.startsWith("library/")
+      ? "documents-public"
+      : value.startsWith("achievers/")
+      ? "family-photos"
+      : "site-media";
+    return `${SUPABASE_BASE_URL}/storage/v1/object/public/${bucket}/${value}`;
+  }
   return value;
 }
 

@@ -33,8 +33,17 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server(
   async ({ next }) => {
     
-    const SUPABASE_URL = process.env['SUPABASE_URL'];
-    const SUPABASE_PUBLISHABLE_KEY = process.env['SUPABASE_PUBLISHABLE_KEY'];
+    const SUPABASE_URL =
+      process.env['SUPABASE_URL'] ||
+      process.env['VITE_SUPABASE_URL'] ||
+      process.env['NEXT_PUBLIC_SUPABASE_URL'] ||
+      "https://ywsvittlswbbyqhahorh.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      process.env['SUPABASE_PUBLISHABLE_KEY'] ||
+      process.env['VITE_SUPABASE_PUBLISHABLE_KEY'] ||
+      process.env['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY'] ||
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3c3ZpdHRsc3diYnlxaGFob3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjgwODcsImV4cCI6MjEwMjkwNDA4N30.TK3AgqMh5vHDzi16S7ILBP7fyIwoKuDDJURjT9r26K4";
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
       const missing = [
@@ -155,7 +164,7 @@ export const requireAdminAuth = createMiddleware({ type: 'function' })
     }
 
     const roleList = roles.map((r: { role: string }) => r.role);
-    if (!roleList.includes('admin')) {
+    if (!roleList.includes('admin') && !roleList.includes('super_admin')) {
       throw new Error('Forbidden: Administrative privileges required');
     }
 
@@ -177,7 +186,7 @@ export const requireEditorAuth = createMiddleware({ type: 'function' })
     }
 
     const roleList = roles.map((r: { role: string }) => r.role);
-    if (!roleList.includes('admin') && !roleList.includes('editor')) {
+    if (!roleList.includes('admin') && !roleList.includes('super_admin') && !roleList.includes('editor')) {
       throw new Error('Forbidden: Editor privileges required');
     }
 
@@ -199,7 +208,7 @@ export const requireTreasuryAuth = createMiddleware({ type: 'function' })
     }
 
     const roleList = roles.map((r: { role: string }) => r.role);
-    if (!roleList.includes('admin') && !roleList.includes('treasurer')) {
+    if (!roleList.includes('admin') && !roleList.includes('super_admin') && !roleList.includes('treasurer')) {
       throw new Error('Forbidden: Treasury privileges required');
     }
 

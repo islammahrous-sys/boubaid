@@ -3,6 +3,8 @@ import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/r
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
+import { getRequest } from "@tanstack/react-start/server";
+
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
@@ -10,7 +12,20 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
-    console.error(error);
+    console.error("[start.ts errorMiddleware]", error);
+    
+    // Check if request is a serverFn / RPC call or expects JSON
+    try {
+      const req = getRequest();
+      const accept = req?.headers?.get("accept") || "";
+      const isServerFn = req?.headers?.get("x-tanstack-start-server-fn") || !accept.includes("text/html");
+      if (isServerFn) {
+        throw error;
+      }
+    } catch {
+      throw error;
+    }
+
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },
