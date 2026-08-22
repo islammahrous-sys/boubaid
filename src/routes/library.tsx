@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Download, Play, Search, X, Eye, FileText, Image as ImageIcon, Video } from "lucide-react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -12,6 +12,60 @@ import { mergeLibrary } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+/** How many rows/cards are shown per page in each tab of the archive. */
+const PAGE_SIZE = 12;
+
+function paginate<T>(items: T[], page: number, pageSize: number): T[] {
+  const start = (page - 1) * pageSize;
+  return items.slice(start, start + pageSize);
+}
+
+/**
+ * Recognises a YouTube link (watch/short/embed forms, youtu.be) and returns
+ * an embeddable player URL, or null if `url` isn't a YouTube link.
+ */
+function getYouTubeEmbedUrl(url: string): string | null {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+    let videoId: string | null = null;
+
+    if (host === "youtu.be") {
+      videoId = u.pathname.slice(1).split("/")[0] || null;
+    } else if (host === "youtube.com" || host === "m.youtube.com" || host === "music.youtube.com") {
+      if (u.pathname === "/watch") {
+        videoId = u.searchParams.get("v");
+      } else if (u.pathname.startsWith("/embed/")) {
+        videoId = u.pathname.split("/")[2] || null;
+      } else if (u.pathname.startsWith("/shorts/")) {
+        videoId = u.pathname.split("/")[2] || null;
+      }
+    } else {
+      return null;
+    }
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  } catch {
+    return null;
+  }
+}
+
+const VIDEO_FILE_EXTENSIONS = [".mp4", ".webm", ".ogg", ".ogv", ".mov", ".m4v"];
+
+/** True when `url` points at a stored video file (by extension) rather than an external link. */
+function isVideoFileUrl(url: string): boolean {
+  const clean = url.split("?")[0].split("#")[0].toLowerCase();
+  return VIDEO_FILE_EXTENSIONS.some((ext) => clean.endsWith(ext));
+}
 
 export const Route = createFileRoute("/library")({
   loader: async () => {
@@ -141,8 +195,10 @@ function LibraryPage() {
     meta?: string;
     image?: string;
     duration?: string;
+    href?: string;
     doc?: LibraryDocument;
   } | null>(null);
+  const [page, setPage] = useState(1);
 
   const rtl = lang === "ar";
 
@@ -152,6 +208,12 @@ function LibraryPage() {
     setTab(newTab);
     setSelectedCategory(null);
   };
+
+  // Any change to the active tab, search query, or category filter starts a
+  // fresh page 1 — otherwise a user could land on an out-of-range page.
+  useEffect(() => {
+    setPage(1);
+  }, [tab, searchQuery, selectedCategory]);
 
   const tabDefs: { key: TabKey; label: BiText; count: number }[] = [
     { key: "documents", label: copy.tabs.documents, count: libraryItems.documents.length },
@@ -217,6 +279,58 @@ function LibraryPage() {
       return matchesSearch && matchesCat;
     });
   }, [searchQuery, selectedCategory, t]);
+
+  // Page-sliced view of whichever tab is active — the filters above still
+  // run over the full list so counts/pills stay accurate.
+  const pagedDocuments = useMemo(() => paginate(filteredDocuments, page, PAGE_SIZE), [filteredDocuments, page]);
+  const pagedPhotos = useMemo(() => paginate(filteredPhotos, page, PAGE_SIZE), [filteredPhotos, page]);
+  const pagedVideos = useMemo(() => paginate(filteredVideos, page, PAGE_SIZE), [filteredVideos, page]);
+
+  const activeTotal =
+    tab === "documents" ? filteredDocuments.length : tab === "photographs" ? filteredPhotos.length : filteredVideos.length;
+  const totalPages = Math.max(1, Math.ceil(activeTotal / PAGE_SIZE));
+
+  const PageControls = () =>
+    totalPages > 1 ? (
+      <Pagination className="mt-8">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setPage((p) => Math.max(1, p - 1));
+              }}
+              className={cn(page <= 1 && "pointer-events-none opacity-40")}
+            />
+          </PaginationItem>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <PaginationItem key={p}>
+              <PaginationLink
+                href="#"
+                isActive={p === page}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(p);
+                }}
+              >
+                {p}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setPage((p) => Math.min(totalPages, p + 1));
+              }}
+              className={cn(page >= totalPages && "pointer-events-none opacity-40")}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    ) : null;
 
   return (
     <>
@@ -381,7 +495,7 @@ function LibraryPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredDocuments.map((d, i) => (
+                        {pagedDocuments.map((d, i) => (
                           <tr
                             key={i}
                             onClick={() =>
@@ -424,7 +538,7 @@ function LibraryPage() {
                 </div>
 
                 <div className="reveal-stagger grid gap-3 md:hidden">
-                  {filteredDocuments.map((d, i) => (
+                  {pagedDocuments.map((d, i) => (
                     <div
                       key={i}
                       onClick={() =>
@@ -467,6 +581,7 @@ function LibraryPage() {
                     </div>
                   ))}
                 </div>
+                <PageControls />
               </>
             ) : null}
           </section>
@@ -480,8 +595,9 @@ function LibraryPage() {
             </p>
 
             {filteredPhotos.length > 0 ? (
+              <>
               <ol className="reveal-stagger grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {filteredPhotos.map((p, i) => {
+                {pagedPhotos.map((p, i) => {
                   // A CMS photo carries its own file; static plates fall back
                   // to the rotating sheet of scanned images.
                   const imageSrc =
@@ -551,6 +667,8 @@ function LibraryPage() {
                   );
                 })}
               </ol>
+              <PageControls />
+              </>
             ) : null}
           </section>
         ) : null}
@@ -563,8 +681,9 @@ function LibraryPage() {
             </p>
 
             {filteredVideos.length > 0 ? (
+              <>
               <ol className="reveal-stagger grid gap-3">
-                {filteredVideos.map((v, i) => (
+                {pagedVideos.map((v, i) => (
                   <li key={i}>
                     <div
                       onClick={() =>
@@ -573,6 +692,7 @@ function LibraryPage() {
                           title: t(v.title),
                           subtitle: `${v.year} هـ`,
                           duration: v.duration,
+                          href: v.href,
                         })
                       }
                       className="group card-craft active-scale flex cursor-pointer items-center justify-between gap-5 border border-border bg-card p-4"
@@ -582,7 +702,17 @@ function LibraryPage() {
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            notify();
+                            if (v.href) {
+                              setPreviewModal({
+                                type: "recordings",
+                                title: t(v.title),
+                                subtitle: `${v.year} هـ`,
+                                duration: v.duration,
+                                href: v.href,
+                              });
+                            } else {
+                              notify();
+                            }
                           }}
                           aria-label={`${t(copy.play)} — ${t(v.title)}`}
                           className="grid h-10 w-10 shrink-0 place-items-center border border-border bg-muted text-foreground transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground"
@@ -620,6 +750,8 @@ function LibraryPage() {
                   </li>
                 ))}
               </ol>
+              <PageControls />
+              </>
             ) : null}
           </section>
         ) : null}
@@ -702,30 +834,64 @@ function LibraryPage() {
               </div>
             )}
 
-            {previewModal.type === "recordings" && (
-              <div className="flex flex-col items-center justify-center border border-border bg-muted/30 p-8 text-center mb-6">
-                <div className="grid h-14 w-14 place-items-center border border-border bg-card text-foreground mb-4">
-                  <Play className={cn("h-6 w-6 fill-current", rtl && "-scale-x-100")} />
+            {previewModal.type === "recordings" && (() => {
+              const youtubeEmbed = previewModal.href ? getYouTubeEmbedUrl(previewModal.href) : null;
+              const isFileVideo = previewModal.href && !youtubeEmbed && isVideoFileUrl(previewModal.href);
+
+              if (youtubeEmbed) {
+                return (
+                  <div className="mb-6 aspect-video w-full overflow-hidden border border-border bg-black">
+                    <iframe
+                      src={youtubeEmbed}
+                      title={previewModal.title}
+                      className="h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                );
+              }
+
+              if (isFileVideo && previewModal.href) {
+                return (
+                  <div className="mb-6 aspect-video w-full overflow-hidden border border-border bg-black">
+                    <video
+                      src={previewModal.href}
+                      controls
+                      autoPlay
+                      className="h-full w-full"
+                    >
+                      {t(copy.pending)}
+                    </video>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="flex flex-col items-center justify-center border border-border bg-muted/30 p-8 text-center mb-6">
+                  <div className="grid h-14 w-14 place-items-center border border-border bg-card text-foreground mb-4">
+                    <Play className={cn("h-6 w-6 fill-current", rtl && "-scale-x-100")} />
+                  </div>
+                  <p className="text-sm text-foreground font-medium mb-1">{previewModal.title}</p>
+                  {previewModal.duration && (
+                    <span className="nums font-mono text-xs text-muted-foreground mb-6" dir="ltr">
+                      {previewModal.duration}
+                    </span>
+                  )}
+                  <EditorialButton
+                    type="button"
+                    variant="primary"
+                    onClick={() => {
+                      setPreviewModal(null);
+                      notify();
+                    }}
+                  >
+                    <Play className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")} />
+                    {t(copy.play)}
+                  </EditorialButton>
                 </div>
-                <p className="text-sm text-foreground font-medium mb-1">{previewModal.title}</p>
-                {previewModal.duration && (
-                  <span className="nums font-mono text-xs text-muted-foreground mb-6" dir="ltr">
-                    {previewModal.duration}
-                  </span>
-                )}
-                <EditorialButton
-                  type="button"
-                  variant="primary"
-                  onClick={() => {
-                    setPreviewModal(null);
-                    notify();
-                  }}
-                >
-                  <Play className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")} />
-                  {t(copy.play)}
-                </EditorialButton>
-              </div>
-            )}
+              );
+            })()}
 
             {previewModal.type === "documents" && (
               <div className="border border-border bg-muted/30 p-6 mb-6">
