@@ -106,11 +106,17 @@ export const updateMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => profileUpdateSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { supabase, userId, claims } = context;
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
+    // Nothing creates a profiles row on sign-up or membership approval, so
+    // this must be able to create it on a member's first save, not only
+    // update an existing one. An UPDATE against a non-existent row silently
+    // affects zero rows and returns no error -- every first-time save would
+    // otherwise report success while persisting nothing.
+    const { error } = await supabase.from("profiles").upsert(
+      {
+        id: userId,
+        email: String(claims.email ?? "") || null,
         full_name_ar: data.full_name_ar,
         full_name_en: data.full_name_en || null,
         branch_slug: data.branch_slug || null,
@@ -118,8 +124,9 @@ export const updateMyProfile = createServerFn({ method: "POST" })
         lineage_notes: data.lineage_notes || null,
         avatar_path: data.avatar_path || null,
         show_in_directory: data.show_in_directory,
-      })
-      .eq("id", userId);
+      },
+      { onConflict: "id" },
+    );
 
     if (error) {
       console.error("[account] profile update failed", error.code, error.message);
