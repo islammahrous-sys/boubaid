@@ -6,9 +6,22 @@ import type { Database } from "@/integrations/supabase/types";
  * Used for public writes/reads that are governed by `anon` RLS policies.
  * Read env inside this factory — never at module scope.
  */
+const DEFAULT_SUPABASE_URL = "https://ywsvittlswbbyqhahorh.supabase.co";
+const DEFAULT_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3c3ZpdHRsc3diYnlxaGFob3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjgwODcsImV4cCI6MjEwMjkwNDA4N30.TK3AgqMh5vHDzi16S7ILBP7fyIwoKuDDJURjT9r26K4";
+
 export function createPublicServerClient() {
-  const url = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"] || "";
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"] || process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || "";
+  const url =
+    process.env?.["SUPABASE_URL"] ||
+    process.env?.["VITE_SUPABASE_URL"] ||
+    process.env?.["NEXT_PUBLIC_SUPABASE_URL"] ||
+    DEFAULT_SUPABASE_URL;
+
+  const key =
+    process.env?.["SUPABASE_PUBLISHABLE_KEY"] ||
+    process.env?.["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+    process.env?.["SUPABASE_ANON_KEY"] ||
+    process.env?.["NEXT_PUBLIC_SUPABASE_ANON_KEY"] ||
+    DEFAULT_SUPABASE_PUBLISHABLE_KEY;
 
   return createClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
