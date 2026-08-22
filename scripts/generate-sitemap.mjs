@@ -1,12 +1,18 @@
 #!/usr/bin/env node
 /**
- * Regenerates public/sitemap.xml from live Supabase data.
+ * Regenerates public/sitemap.xml and public/robots.txt from live Supabase
+ * data and the site's own SITE_URL configuration.
  *
  * Runs as a `prebuild` step (see package.json) so every deploy ships a
  * sitemap that includes the current published detail pages — news/$slug,
  * initiatives/$slug, and p/$slug — each with a real <lastmod> derived from
  * the record's own updated_at/published_at, instead of a static file that
  * only lists top-level routes under one fake date.
+ *
+ * robots.txt is regenerated here too (rather than left as a hand-maintained
+ * static file) so its `Sitemap:` line always points at the same SITE_URL /
+ * VITE_SITE_URL domain that src/lib/seo.ts's getCanonicalUrl() resolves at
+ * runtime — the two can never drift apart again.
  *
  * Uses the same public (anon) Supabase client fallbacks as
  * src/lib/supabase-public.server.ts — the publishable key is safe to embed
@@ -176,16 +182,30 @@ async function main() {
     ...dynamicUrls,
   ].join("\n")}\n</urlset>\n`;
 
-  const outPath = path.join(
-    path.dirname(fileURLToPath(import.meta.url)),
-    "..",
-    "public",
-    "sitemap.xml",
-  );
-  await writeFile(outPath, xml, "utf8");
+  const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "public");
+
+  const sitemapPath = path.join(publicDir, "sitemap.xml");
+  await writeFile(sitemapPath, xml, "utf8");
   console.log(
-    `[sitemap] wrote ${staticUrls.length} static + ${dynamicUrls.length} dynamic URLs to ${outPath}`,
+    `[sitemap] wrote ${staticUrls.length} static + ${dynamicUrls.length} dynamic URLs to ${sitemapPath}`,
   );
+
+  const robotsTxt = [
+    "User-agent: *",
+    "Allow: /",
+    "Disallow: /admin",
+    "Disallow: /account",
+    "Disallow: /treasury",
+    "Disallow: /content",
+    "Disallow: /auth",
+    "Disallow: /verify",
+    "",
+    `Sitemap: ${SITE_URL}/sitemap.xml`,
+    "",
+  ].join("\n");
+  const robotsPath = path.join(publicDir, "robots.txt");
+  await writeFile(robotsPath, robotsTxt, "utf8");
+  console.log(`[sitemap] wrote robots.txt (Sitemap: ${SITE_URL}/sitemap.xml) to ${robotsPath}`);
 }
 
 main().catch((err) => {
