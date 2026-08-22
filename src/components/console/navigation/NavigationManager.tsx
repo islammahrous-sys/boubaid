@@ -19,6 +19,38 @@ export type NavMenuRow = {
   code: string;
 };
 
+// Only allow relative paths (internal navigation) or a small allow-list of
+// safe absolute schemes. Blocks javascript:, data:, vbscript:, etc. from
+// being saved and later rendered as an <a href>.
+function getUrlValidationError(rawUrl: string, isAr: boolean): string | null {
+  // Browsers ignore embedded tabs/newlines when parsing a URL scheme, so a
+  // value like "java\tscript:alert(1)" would otherwise slip past a naive
+  // scheme check. Strip those before inspecting the scheme.
+  const value = rawUrl.replace(/[\t\n\r]/g, "").trim();
+  if (!value) return null;
+
+  const schemeMatch = /^([a-z][a-z0-9+.-]*):/i.exec(value);
+  if (schemeMatch) {
+    const scheme = schemeMatch[1].toLowerCase();
+    if (scheme !== "https" && scheme !== "mailto" && scheme !== "tel") {
+      return isAr
+        ? "الرابط غير آمن. يُسمح فقط بمسار داخلي أو https:// أو mailto: أو tel:"
+        : "Unsafe URL scheme. Only a relative path, https://, mailto:, or tel: links are allowed.";
+    }
+    return null;
+  }
+
+  // No scheme: must be a relative/internal path. Reject protocol-relative
+  // URLs ("//evil.com") which inherit whatever scheme the page is on.
+  if (value.startsWith("//")) {
+    return isAr
+      ? "الرابط غير آمن. يُسمح فقط بمسار داخلي أو https:// أو mailto: أو tel:"
+      : "Unsafe URL scheme. Only a relative path, https://, mailto:, or tel: links are allowed.";
+  }
+
+  return null;
+}
+
 export type NavItemRow = {
   id: string;
   menu_id: string;
@@ -53,6 +85,7 @@ export function NavigationManager({
   const [itemModalOpen, setItemModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<NavItemRow | null>(null);
   const [loading, setLoading] = useState(false);
+  const [urlError, setUrlError] = useState<string | null>(null);
 
   const [menuModalOpen, setMenuModalOpen] = useState(false);
   const [menuLoading, setMenuLoading] = useState(false);
@@ -128,11 +161,13 @@ export function NavigationManager({
       icon: null,
       visibility: "public",
     });
+    setUrlError(null);
     setItemModalOpen(true);
   };
 
   const handleOpenEditItem = (it: NavItemRow) => {
     setSelectedItem(it);
+    setUrlError(null);
     setItemForm({
       id: it.id,
       menu_id: it.menu_id,
@@ -152,6 +187,12 @@ export function NavigationManager({
   const handleSubmitItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!itemForm.label_ar.trim() || !itemForm.url.trim()) return;
+    const urlValidationError = getUrlValidationError(itemForm.url, isAr);
+    if (urlValidationError) {
+      setUrlError(urlValidationError);
+      return;
+    }
+    setUrlError(null);
     try {
       setLoading(true);
       await onSaveItem({ ...itemForm, menu_id: selectedMenuId });
@@ -344,9 +385,15 @@ export function NavigationManager({
               <Input
                 required
                 value={itemForm.url}
-                onChange={(e) => setItemForm({ ...itemForm, url: e.target.value })}
+                onChange={(e) => {
+                  setItemForm({ ...itemForm, url: e.target.value });
+                  if (urlError) setUrlError(null);
+                }}
+                aria-invalid={!!urlError}
+                className={cn(urlError && "border-destructive focus-visible:ring-destructive")}
                 placeholder="/family-tree أو https://..."
               />
+              {urlError && <p className="text-[11px] text-destructive">{urlError}</p>}
             </div>
 
             <div className="space-y-1">

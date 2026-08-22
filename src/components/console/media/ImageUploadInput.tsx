@@ -41,12 +41,27 @@ export function ImageUploadInput({
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fileAccept = accept || (allowPdf ? "image/*,application/pdf,.pdf" : "image/*");
+  // SVG files can embed <script> and are a stored-XSS vector when later
+  // rendered inline or served back with an image content-type, so they are
+  // excluded from the accepted image types for this general-purpose upload
+  // input (none of its current uses need vector/logo uploads).
+  const fileAccept =
+    accept || (allowPdf ? "image/png,image/jpeg,image/webp,image/gif,application/pdf,.pdf" : "image/png,image/jpeg,image/webp,image/gif");
   const isPdf = value ? (value.toLowerCase().includes(".pdf") || value.toLowerCase().endsWith(".pdf")) : false;
 
   const processFile = async (file: File) => {
     const isFilePdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-    const isImage = file.type.startsWith("image/");
+    const isSvg = file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");
+    const isImage = file.type.startsWith("image/") && !isSvg;
+
+    if (isSvg) {
+      toast.error(
+        isAr
+          ? "ملفات SVG غير مسموح بها لأسباب أمنية. يرجى استخدام PNG أو JPG أو WebP"
+          : "SVG files are not allowed for security reasons. Please use PNG, JPG, or WebP"
+      );
+      return;
+    }
 
     if (!isImage && !(allowPdf && isFilePdf)) {
       toast.error(
@@ -55,7 +70,7 @@ export function ImageUploadInput({
             ? "يرجى اختيار ملف صالح (PDF أو صورة PNG, JPG, WebP)"
             : "Please choose a valid PDF or image file (PNG, JPG, WebP)"
           : isAr
-            ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP, SVG)"
+            ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)"
             : "Please choose a valid image file"
       );
       return;
@@ -257,7 +272,7 @@ export function ImageUploadInput({
                       : "Click to upload or drag and drop image here"}
               </p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                {allowPdf ? `PDF, PNG, JPG, WebP, SVG (حتى ${maxSizeMB}MB)` : `PNG, JPG, WebP, SVG (حتى ${maxSizeMB}MB)`}
+                {allowPdf ? `PDF, PNG, JPG, WebP (حتى ${maxSizeMB}MB)` : `PNG, JPG, WebP (حتى ${maxSizeMB}MB)`}
               </p>
             </div>
           </div>
