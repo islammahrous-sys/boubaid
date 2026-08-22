@@ -7,11 +7,16 @@ import {
 } from "./forms.schemas";
 
 /** Result shape returned to the client — never leaks provider errors. */
-export type FormResult = { ok: true; already?: boolean } | { ok: false; error: string };
-
-export const submitContactMessage = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => contactMessageSchema.parse(input))
+export type FormResult = { ok: true; already?: boolean } | { ok: false; error: string };export const submitContactMessage = createServerFn({ method: "POST" })
+  .validator((input: unknown) => contactMessageSchema.parse(input))
   .handler(async ({ data }): Promise<FormResult> => {
+    const { verifyTurnstileToken } = await import("./turnstile.server");
+    const verification = await verifyTurnstileToken(data.turnstile_token);
+    if (!verification.ok) {
+      console.error("[contact] turnstile verification failed", verification.error);
+      return { ok: false, error: "verification_failed" };
+    }
+
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
 
@@ -32,7 +37,7 @@ export const submitContactMessage = createServerFn({ method: "POST" })
   });
 
 export const subscribeToNewsletter = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => newsletterSchema.parse(input))
+  .validator((input: unknown) => newsletterSchema.parse(input))
   .handler(async ({ data }): Promise<FormResult> => {
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
@@ -55,7 +60,7 @@ export const subscribeToNewsletter = createServerFn({ method: "POST" })
   });
 
 export const submitAchieverNomination = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => achieverNominationSchema.parse(input))
+  .validator((input: unknown) => achieverNominationSchema.parse(input))
   .handler(async ({ data }): Promise<FormResult> => {
     if (data.website_url_check && data.website_url_check.length > 0) {
       return { ok: true };
@@ -98,7 +103,7 @@ export const submitAchieverNomination = createServerFn({ method: "POST" })
   });
 
 export const submitBusinessListing = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => businessSubmissionSchema.parse(input))
+  .validator((input: unknown) => businessSubmissionSchema.parse(input))
   .handler(async ({ data }): Promise<FormResult> => {
     if (data.website_url_check && data.website_url_check.length > 0) {
       return { ok: true };

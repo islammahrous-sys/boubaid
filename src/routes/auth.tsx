@@ -1,10 +1,13 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, ShieldCheck, UsersRound, Landmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
+import { TurnstileWidget, isTurnstileConfigured } from "@/components/site/TurnstileWidget";
+import { verifyTurnstile } from "@/lib/turnstile.functions";
 import heroManuscript from "@/assets/hero-manuscript.jpg";
 
 
@@ -40,6 +43,8 @@ function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const verifyTurnstileFn = useServerFn(verifyTurnstile);
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
@@ -66,6 +71,19 @@ function AuthPage() {
           ),
         );
       } else if (mode === "signup") {
+        if (isTurnstileConfigured) {
+          const verification = await verifyTurnstileFn({ data: { token: turnstileToken } });
+          if (!verification.ok) {
+            toast.error(
+              label(
+                "تعذر التحقق من أنك لست روبوتاً. حاول مرة أخرى.",
+                "We couldn't verify you're not a robot. Please try again.",
+              ),
+            );
+            setBusy(false);
+            return;
+          }
+        }
         const { error } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
           password,
@@ -306,6 +324,8 @@ function AuthPage() {
                     </button>
                   </div>
                 ) : null}
+
+                {mode === "signup" ? <TurnstileWidget onToken={setTurnstileToken} /> : null}
 
                 <button
                   type="submit"

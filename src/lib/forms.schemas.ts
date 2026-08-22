@@ -11,6 +11,9 @@ export const contactMessageSchema = z.object({
   message: z.string().trim().min(5).max(1000),
   locale: localeSchema,
   website_url_check: z.string().max(0).optional(),
+  // Cloudflare Turnstile response token (present only when the widget is
+  // configured client-side). Verified server-side only if a secret key is set.
+  turnstile_token: z.string().max(2048).optional(),
 });
 
 export type ContactMessageInput = z.infer<typeof contactMessageSchema>;

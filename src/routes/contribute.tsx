@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
@@ -24,6 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 import { supabase } from "@/integrations/supabase/client";
+import { TurnstileWidget, type TurnstileWidgetHandle } from "@/components/site/TurnstileWidget";
 import { useAuth } from "@/hooks/useAuth";
 import { submitContribution, getMyContributions, type ContributionRow } from "@/lib/contributions.functions";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -225,6 +226,8 @@ function ContributePage() {
   const [uploading, setUploading] = useState(false);
   const [bankModalOpen, setBankModalOpen] = useState(false);
   const [copiedIban, setCopiedIban] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
 
   const handleCopyIban = async () => {
     try {
@@ -260,6 +263,7 @@ function ContributePage() {
           purpose: form.purpose,
           reference: form.reference,
           receipt_path,
+          turnstile_token: turnstileToken || undefined,
         },
       });
     },
@@ -268,6 +272,8 @@ function ContributePage() {
         toast.success(t(contribCopy.successToast));
         setForm({ contributor_name: "", amount: "", method: "bank_transfer", purpose: "", reference: "" });
         setFile(null);
+        setTurnstileToken("");
+        turnstileRef.current?.reset();
         void queryClient.invalidateQueries({ queryKey: ["my-contributions"] });
       } else {
         toast.error(t(contribCopy.errorToast));
@@ -705,6 +711,10 @@ function ContributePage() {
                     </span>
                   ) : null}
                 </div>
+              </div>
+
+              <div className="sm:col-span-2">
+                <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
               </div>
 
               <div className="sm:col-span-2 pt-2">

@@ -29,8 +29,15 @@ const COLS =
 /** Record a contribution/pledge. Bound to the signed-in member by RLS. */
 export const submitContribution = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => contributionInputSchema.parse(input))
+  .validator((input: unknown) => contributionInputSchema.parse(input))
   .handler(async ({ data, context }) => {
+    const { verifyTurnstileToken } = await import("./turnstile.server");
+    const verification = await verifyTurnstileToken(data.turnstile_token);
+    if (!verification.ok) {
+      console.error("[contributions] turnstile verification failed", verification.error);
+      return { ok: false as const, error: "verification_failed" };
+    }
+
     const { supabase, userId, claims } = context;
 
     const { error } = await supabase.from("contributions").insert({
@@ -96,14 +103,14 @@ export const getTreasuryOverview = createServerFn({ method: "GET" })
 
     return {
       contributions,
-      canReview: roleList.includes("admin") || roleList.includes("treasurer"),
+      canReview: roleList.includes("admin") || roleList.includes("super_admin") || roleList.includes("treasurer"),
       totals: { verified: sum("verified"), pending: sum("pending"), count: contributions.length },
     };
   });
 
 export const reviewContribution = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => contributionReviewSchema.parse(input))
+  .validator((input: unknown) => contributionReviewSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("contributions")
@@ -121,10 +128,10 @@ export const reviewContribution = createServerFn({ method: "POST" })
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("audit_log").insert({
-      actor_id: context.userId,
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_user_id: context.userId,
       action: `contribution.${data.status}`,
-      entity: "contributions",
+      entity_type: "contributions",
       entity_id: data.id,
     });
 
@@ -134,7 +141,7 @@ export const reviewContribution = createServerFn({ method: "POST" })
 /** Short-lived signed link to a private receipt; storage RLS gates access. */
 export const getReceiptUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => receiptRefSchema.parse(input))
+  .validator((input: unknown) => receiptRefSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: signed, error } = await context.supabase.storage
       .from("receipts")

@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, MessageCircle, ExternalLink } from "lucide-react";
 import { submitContactMessage } from "@/lib/forms.functions";
 import { contactMessageSchema } from "@/lib/forms.schemas";
+import { TurnstileWidget, type TurnstileWidgetHandle } from "@/components/site/TurnstileWidget";
 
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -96,6 +97,8 @@ function ContactPage() {
   const dynamicSettings = (Route.useLoaderData() || {}) as Record<string, any>;
   const [submitting, setSubmitting] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const sendContact = useServerFn(submitContactMessage);
 
   const contactPhone = dynamicSettings.contact_phone || siteMeta.contact.phone;
@@ -119,6 +122,7 @@ function ContactPage() {
       message: fd.get("message"),
       website_url_check: fd.get("website_url_check") || undefined,
       locale: lang,
+      turnstile_token: turnstileToken || undefined,
     });
 
     if (!result.success) {
@@ -133,6 +137,8 @@ function ContactPage() {
         toast.success(t(copy.sent));
         form.reset();
         setSelectedSubject("");
+        setTurnstileToken("");
+        turnstileRef.current?.reset();
       } else {
         toast.error(t(copy.failed));
       }
@@ -244,6 +250,8 @@ function ContactPage() {
                   className={`${fieldClass} resize-y`}
                 />
               </div>
+
+              <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
 
               <button
                 type="submit"

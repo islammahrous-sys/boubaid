@@ -12,6 +12,9 @@ export const contributionInputSchema = z.object({
   purpose: z.string().trim().max(200).optional().or(z.literal("")),
   reference: z.string().trim().max(120).optional().or(z.literal("")),
   receipt_path: z.string().trim().max(400).optional().or(z.literal("")),
+  // Cloudflare Turnstile response token (present only when the widget is
+  // configured client-side). Verified server-side only if a secret key is set.
+  turnstile_token: z.string().max(2048).optional(),
 });
 export type ContributionInput = z.infer<typeof contributionInputSchema>;
 
