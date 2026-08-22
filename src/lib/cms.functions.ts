@@ -332,10 +332,10 @@ async function writeAudit(
 ): Promise<void> {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("audit_log").insert({
-      actor_id: actorId,
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_user_id: actorId,
       action,
-      entity,
+      entity_type: entity,
       entity_id: entityId ?? null,
     });
   } catch (err) {
