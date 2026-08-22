@@ -40,6 +40,22 @@ const SYSTEM_ROLES: RoleDef[] = [
     desc_en: "Creation and publishing of news, articles, events, and media assets.",
   },
   {
+    key: "content_manager",
+    name_ar: "مدير المحتوى (Content Manager)",
+    name_en: "Content Manager",
+    badgeColor: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30",
+    desc_ar: "تحرير ونشر الأخبار والمبادرات والمتفوقين ومكتبة الموارد عبر لوحة المحتوى.",
+    desc_en: "Editor-equivalent access to news, initiatives, achievers, and the resource library.",
+  },
+  {
+    key: "family_manager",
+    name_ar: "مدير شؤون العائلة (Family Manager)",
+    name_en: "Family Manager",
+    badgeColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30",
+    desc_ar: "إدارة أفراد العائلة والقرابة وسجل التاريخ العائلي، دون الفروع أو الأماكن.",
+    desc_en: "Manages family members, relationships, and family history (not branches or places).",
+  },
+  {
     key: "treasurer",
     name_ar: "أمين الصندوق (Treasurer)",
     name_en: "Treasurer",
@@ -76,23 +92,23 @@ type PermissionItem = {
 
 const PERMISSIONS_MATRIX: PermissionItem[] = [
   // 1. Genealogy
-  { key: "family.read_public", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "عرض السجلات العامة للأفراد", name_en: "View Public Members", allowedRoles: ["super_admin", "admin", "editor", "treasurer", "member", "viewer"] },
-  { key: "family.read_private", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "عرض السجلات الخاصة بالأفراد والأحياء", name_en: "View Private & Living Members", allowedRoles: ["super_admin", "admin", "member"] },
-  { key: "family.create", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "إضافة أفراد جدد للشجرة", name_en: "Create Family Members", allowedRoles: ["super_admin", "admin"] },
-  { key: "family.update", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "تعديل بيانات الأفراد والقرابة", name_en: "Update Member Details", allowedRoles: ["super_admin", "admin"] },
-  { key: "family.delete", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "حذف أو أرشفة أفراد من السجل", name_en: "Delete / Archive Members", allowedRoles: ["super_admin", "admin"] },
+  { key: "family.read_public", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "عرض السجلات العامة للأفراد", name_en: "View Public Members", allowedRoles: ["super_admin", "admin", "editor", "content_manager", "family_manager", "treasurer", "member", "viewer"] },
+  { key: "family.read_private", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "عرض السجلات الخاصة بالأفراد والأحياء", name_en: "View Private & Living Members", allowedRoles: ["super_admin", "admin", "family_manager", "member"] },
+  { key: "family.create", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "إضافة أفراد جدد للشجرة", name_en: "Create Family Members", allowedRoles: ["super_admin", "admin", "family_manager"] },
+  { key: "family.update", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "تعديل بيانات الأفراد والقرابة", name_en: "Update Member Details", allowedRoles: ["super_admin", "admin", "family_manager"] },
+  { key: "family.delete", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "حذف أو أرشفة أفراد من السجل", name_en: "Delete / Archive Members", allowedRoles: ["super_admin", "admin", "family_manager"] },
   { key: "family.branches", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "إدارة الفروع السبعة وتعيين الرؤساء", name_en: "Manage 7 Branches", allowedRoles: ["super_admin", "admin"] },
 
   // 2. CMS & Content
   { key: "cms.pages_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "بناء وتعديل صفحات الـ CMS الديناميكية", name_en: "Build & Edit CMS Pages", allowedRoles: ["super_admin", "admin", "editor"] },
   { key: "cms.homepage_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "إدارة أقسام وترتيب الصفحة الرئيسية", name_en: "Manage Homepage Layout", allowedRoles: ["super_admin", "admin"] },
-  { key: "cms.articles_write", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "كتابة ونشر المقالات والأخبار", name_en: "Create & Publish Articles", allowedRoles: ["super_admin", "admin", "editor"] },
+  { key: "cms.articles_write", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "كتابة ونشر المقالات والأخبار", name_en: "Create & Publish Articles", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
   { key: "cms.events_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "جدولة الفعاليات وإدارة الحضور", name_en: "Schedule Events & RSVPs", allowedRoles: ["super_admin", "admin", "editor"] },
   { key: "cms.announcements", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "بث الإعلانات العاجلة وتنبيهات الأعضاء", name_en: "Broadcast Urgent Announcements", allowedRoles: ["super_admin", "admin"] },
   { key: "cms.dna_studies", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "إدارة الدراسات الجينية وتفرعات الهابلوغروب", name_en: "Manage Y-DNA Studies Data", allowedRoles: ["super_admin", "admin"] },
 
   // 3. Media & Storage
-  { key: "media.upload", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "رفع ملفات إلى الحاويات السحابية", name_en: "Upload to Storage Buckets", allowedRoles: ["super_admin", "admin", "editor"] },
+  { key: "media.upload", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "رفع ملفات إلى الحاويات السحابية", name_en: "Upload to Storage Buckets", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
   { key: "media.delete", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "حذف وسائط وتعديل النصوص البديلة", name_en: "Delete Media Assets", allowedRoles: ["super_admin", "admin"] },
   { key: "media.private_docs", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "استعراض الوثائق والمخطوطات الخاصة", name_en: "Access Private Documents", allowedRoles: ["super_admin", "admin", "member"] },
 
@@ -191,6 +207,10 @@ export function RolesPermissionMatrix() {
                     <span className="text-amber-600 dark:text-amber-400">Admin</span>
                   ) : r.key === "editor" ? (
                     <span className="text-blue-600 dark:text-blue-400">Editor</span>
+                  ) : r.key === "content_manager" ? (
+                    <span className="text-sky-600 dark:text-sky-400">Content Mgr</span>
+                  ) : r.key === "family_manager" ? (
+                    <span className="text-indigo-600 dark:text-indigo-400">Family Mgr</span>
                   ) : r.key === "treasurer" ? (
                     <span className="text-emerald-600 dark:text-emerald-400">Treasurer</span>
                   ) : r.key === "member" ? (
@@ -205,7 +225,7 @@ export function RolesPermissionMatrix() {
           <TableBody>
             {filteredPermissions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-28 text-center text-muted-foreground text-xs">
+                <TableCell colSpan={SYSTEM_ROLES.length + 2} className="h-28 text-center text-muted-foreground text-xs">
                   {isAr ? "لا توجد نتائج مطابقة لبحثك" : "No permissions matching search"}
                 </TableCell>
               </TableRow>
