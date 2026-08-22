@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   membershipRequestSchema,
@@ -6,6 +7,49 @@ import {
 } from "./account.schemas";
 
 import { z } from "zod";
+
+// --- Simple in-memory rate limiter for the public, unauthenticated
+// membership-verification lookup below. This endpoint accepts only a short
+// (6+ hex char) prefix of a member id, so without throttling it could be
+// brute-forced/enumerated. Per-process, per-IP, sliding-window counter --
+// no external dependency, resets on deploy/restart, good enough as a
+// first line of defense in front of Supabase's own request limits.
+const VERIFY_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const VERIFY_RATE_LIMIT_MAX_ATTEMPTS = 20; // per IP, per window
+const verifyAttemptsByIp = new Map<string, { count: number; windowStart: number }>();
+
+function isVerifyRateLimited(ip: string): boolean {
+  const now = Date.now();
+
+  // Opportunistically prune stale entries so the map can't grow unbounded.
+  if (verifyAttemptsByIp.size > 5000) {
+    for (const [key, entry] of verifyAttemptsByIp) {
+      if (now - entry.windowStart > VERIFY_RATE_LIMIT_WINDOW_MS) {
+        verifyAttemptsByIp.delete(key);
+      }
+    }
+  }
+
+  const entry = verifyAttemptsByIp.get(ip);
+  if (!entry || now - entry.windowStart > VERIFY_RATE_LIMIT_WINDOW_MS) {
+    verifyAttemptsByIp.set(ip, { count: 1, windowStart: now });
+    return false;
+  }
+
+  entry.count += 1;
+  return entry.count > VERIFY_RATE_LIMIT_MAX_ATTEMPTS;
+}
+
+function getRequestIp(): string {
+  try {
+    const request = getRequest();
+    const forwardedFor = request?.headers.get("x-forwarded-for");
+    if (forwardedFor) return forwardedFor.split(",")[0]!.trim();
+    return request?.headers.get("x-real-ip")?.trim() || "unknown";
+  } catch {
+    return "unknown";
+  }
+}
 
 export type AccountSnapshot = {
   profile: {
@@ -91,13 +135,18 @@ export const getMemberVerification = createServerFn({ method: "GET" })
       .parse(input),
   )
   .handler(async ({ data }) => {
+    // This is a public, unauthenticated lookup keyed on a short hex prefix,
+    // so throttle it per-IP before touching the database at all.
+    if (isVerifyRateLimited(getRequestIp())) {
+      return { ok: false, verified: false, member: null };
+    }
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const rawId = data.id.replace(/^ABO-/i, "").trim().toLowerCase();
 
     // A single `.ilike` prefix match — not a hand-built `.or()` filter string —
     // so nothing in `rawId` (already regex-validated to hex above) can change
-    // the shape of the query. Matching on the public 6-char member code alone
-    // also keeps this from being a cheap way to enumerate the profiles table.
+    // the shape of the query.
     const { data: profiles, error } = await supabaseAdmin
       .from("profiles")
       .select("id, full_name_ar, full_name_en, branch_slug, avatar_path, created_at")
@@ -105,7 +154,12 @@ export const getMemberVerification = createServerFn({ method: "GET" })
       .order("id")
       .limit(5);
 
-    if (error || !profiles || profiles.length === 0) {
+    // Require the prefix to resolve to exactly one profile. Picking
+    // `profiles[0]` when several ids share the same short prefix would
+    // silently reveal a different member's name/photo/role than the one the
+    // scanned code actually belongs to, so any ambiguity is treated the same
+    // as "not found" rather than guessed at.
+    if (error || !profiles || profiles.length !== 1) {
       return { ok: false, verified: false, member: null };
     }
 
