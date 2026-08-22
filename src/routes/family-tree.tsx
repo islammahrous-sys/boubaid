@@ -16,6 +16,7 @@ import { getCanonicalUrl } from "@/lib/seo";
 const searchSchema = z.object({
   branch: z.string().optional(),
   id: z.string().optional(),
+  focus: z.string().optional(),
 });
 
 export const Route = createFileRoute("/family-tree")({
@@ -117,6 +118,7 @@ function FamilyTreePage() {
   const [generation, setGeneration] = useState<number | "all">("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<FamilyMemberNode | null>(null);
+  const [highlightId, setHighlightId] = useState<string | null>(null);
 
   const allMembers = useMemo(() => {
     const list: FamilyMemberNode[] = [...familyMembersData];
@@ -190,6 +192,30 @@ function FamilyTreePage() {
     }
     return Array.from(map.entries()).sort((a, b) => a[0] - b[0]);
   }, [filtered]);
+
+  /** A search result can deep-link here with ?focus=<memberId>; once that
+   *  member is rendered in the list below, scroll to it and flash a
+   *  highlight so the visitor can see which record was searched for. */
+  useEffect(() => {
+    const focusId = search.focus;
+    if (!focusId) return;
+    if (!allMembers.some((m) => m.id === focusId)) return;
+
+    let clearTimer: ReturnType<typeof setTimeout> | undefined;
+    const raf = requestAnimationFrame(() => {
+      const el = document.getElementById(`member-card-${focusId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      setHighlightId(focusId);
+      clearTimer = setTimeout(() => setHighlightId(null), 2500);
+    });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      if (clearTimer) clearTimeout(clearTimer);
+    };
+  }, [search.focus, allMembers]);
 
   const isFiltered = branchId !== "all" || generation !== "all" || query !== "";
 
@@ -398,11 +424,15 @@ function FamilyTreePage() {
 
               <ol className="reveal-stagger grid gap-4 md:grid-cols-2 mt-4">
                 {members.map((m) => (
-                  <li key={m.id} className="list-none">
+                  <li key={m.id} id={`member-card-${m.id}`} className="list-none scroll-mt-24">
                     <button
                       type="button"
                       onClick={() => setSelected(m)}
-                      className="group block w-full border border-border bg-card p-5 text-start transition-colors hover:border-foreground rounded-lg"
+                      className={cn(
+                        "group block w-full border border-border bg-card p-5 text-start transition-all duration-500 hover:border-foreground rounded-lg",
+                        highlightId === m.id &&
+                          "border-bronze ring-2 ring-bronze ring-offset-2 ring-offset-background bg-bronze/10 dark:border-gold dark:ring-gold dark:bg-gold/10",
+                      )}
                     >
                       <div className="flex items-start gap-3.5">
                         <SaudiCulturalAvatar
