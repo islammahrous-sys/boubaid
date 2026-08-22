@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireAdminAuth, requireTreasuryAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAdminAuth, requireTreasuryAuth, requireFamilyManagementAuth } from "@/integrations/supabase/auth-middleware";
 import {
   familyMemberInputSchema,
   familyBranchInputSchema,
@@ -108,7 +108,7 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
  * ========================================================================= */
 
 export const getFamilyHubData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireFamilyManagementAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
 
@@ -130,7 +130,7 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
   });
 
 export const upsertFamilyMember = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireFamilyManagementAuth])
   .validator((d: unknown) => familyMemberInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -166,7 +166,7 @@ export const upsertFamilyMember = createServerFn({ method: "POST" })
   });
 
 export const deleteFamilyMember = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireFamilyManagementAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -214,7 +214,7 @@ export const upsertFamilyBranch = createServerFn({ method: "POST" })
   });
 
 export const upsertFamilyRelationship = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireFamilyManagementAuth])
   .validator((d: unknown) => familyRelationshipInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -234,7 +234,7 @@ export const upsertFamilyRelationship = createServerFn({ method: "POST" })
   });
 
 export const deleteFamilyRelationship = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireFamilyManagementAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -254,7 +254,7 @@ export const upsertPlace = createServerFn({ method: "POST" })
   });
 
 export const upsertFamilyHistory = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireFamilyManagementAuth])
   .validator((d: unknown) => familyHistoryInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;

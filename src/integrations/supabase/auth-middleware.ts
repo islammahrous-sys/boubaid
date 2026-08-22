@@ -186,8 +186,42 @@ export const requireEditorAuth = createMiddleware({ type: 'function' })
     }
 
     const roleList = roles.map((r: { role: string }) => r.role);
-    if (!roleList.includes('admin') && !roleList.includes('super_admin') && !roleList.includes('editor')) {
+    if (
+      !roleList.includes('admin') &&
+      !roleList.includes('super_admin') &&
+      !roleList.includes('editor') &&
+      !roleList.includes('content_manager')
+    ) {
       throw new Error('Forbidden: Editor privileges required');
+    }
+
+    return next();
+  });
+
+/** Mirrors `private.can_manage_family` in the DB (admin, super_admin,
+ *  family_manager) so the app-layer gate on family-hub mutations agrees with
+ *  the RLS policies protecting the underlying tables. */
+export const requireFamilyManagementAuth = createMiddleware({ type: 'function' })
+  .middleware([requireSupabaseAuth])
+  .server(async ({ next, context }) => {
+    const { supabase, userId } = context;
+
+    const { data: roles, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId);
+
+    if (error || !roles) {
+      throw new Error('Forbidden: Could not verify user permissions');
+    }
+
+    const roleList = roles.map((r: { role: string }) => r.role);
+    if (
+      !roleList.includes('admin') &&
+      !roleList.includes('super_admin') &&
+      !roleList.includes('family_manager')
+    ) {
+      throw new Error('Forbidden: Family management privileges required');
     }
 
     return next();
