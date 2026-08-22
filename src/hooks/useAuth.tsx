@@ -52,20 +52,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         return;
       }
-      const [rolesRes, profileRes] = await Promise.all([
-        supabase.from("user_roles").select("role").eq("user_id", userId),
-        supabase.from("profiles").select("full_name_ar, full_name_en, avatar_path").eq("id", userId).maybeSingle(),
-      ]);
-      if (!active) return;
-      setRoles(((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role));
-      setProfile((profileRes.data as AuthProfile | null) ?? null);
+      try {
+        const [rolesRes, profileRes] = await Promise.all([
+          supabase.from("user_roles").select("role").eq("user_id", userId),
+          supabase.from("profiles").select("full_name_ar, full_name_en, avatar_path").eq("id", userId).maybeSingle(),
+        ]);
+        if (!active) return;
+        setRoles(((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role));
+        setProfile((profileRes.data as AuthProfile | null) ?? null);
+      } catch (err) {
+        console.error("Failed to load user roles:", err);
+      }
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
       if (!active) return;
-      setSession(next);
-      // Never await inside the callback — defer the follow-up read.
-      void loadRoles(next?.user?.id);
+      // Defer state update to ensure component is fully mounted
+      queueMicrotask(() => {
+        if (!active) return;
+        setSession(next);
+        void loadRoles(next?.user?.id);
+      });
     });
 
     void supabase.auth.getSession().then(async ({ data }) => {

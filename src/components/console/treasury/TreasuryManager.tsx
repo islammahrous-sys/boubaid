@@ -9,6 +9,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { Landmark, FileText, CheckCircle2, XCircle, Clock, Check, X, ExternalLink, Download } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import type { TreasuryContributionReviewInput } from "@/lib/admin-hub.schemas";
 
 export type ContributionItem = {
@@ -140,20 +141,39 @@ export function TreasuryManager({
         </div>
       </div>
 
-      {/* Filter and Table */}
-      <div className="flex items-center justify-between bg-card p-3 rounded-xl border border-border">
-        <span className="text-xs font-semibold text-foreground">{isAr ? "سجل الحركات المالية:" : "Transactions Log:"}</span>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="h-8 w-[140px] text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{isAr ? "جميع الحالات" : "All Statuses"}</SelectItem>
-            <SelectItem value="pending">{isAr ? "قيد المراجعة" : "Pending"}</SelectItem>
-            <SelectItem value="verified">{isAr ? "معتمد" : "Verified"}</SelectItem>
-            <SelectItem value="rejected">{isAr ? "مرفوض" : "Rejected"}</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Status Filter Tabs & Search Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card p-3 rounded-xl border border-border">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {[
+            { id: "all", label_ar: "الكل", label_en: "All", count: contributions.length },
+            { id: "pending", label_ar: "قيد المراجعة", label_en: "Pending", count: contributions.filter((c) => c.status === "pending").length, isAlert: true },
+            { id: "verified", label_ar: "المعتمدة", label_en: "Verified", count: contributions.filter((c) => c.status === "verified").length },
+            { id: "rejected", label_ar: "المرفوضة", label_en: "Rejected", count: contributions.filter((c) => c.status === "rejected").length },
+          ].map((tab) => (
+            <Button
+              key={tab.id}
+              variant={statusFilter === tab.id ? "default" : "outline"}
+              size="sm"
+              className={cn(
+                "h-8 text-xs gap-1.5 rounded-lg font-medium",
+                statusFilter !== tab.id && tab.isAlert && tab.count > 0 && "border-amber-500/40 text-amber-600 bg-amber-500/5 hover:bg-amber-500/10"
+              )}
+              onClick={() => setStatusFilter(tab.id)}
+            >
+              <span>{isAr ? tab.label_ar : tab.label_en}</span>
+              <Badge
+                variant={statusFilter === tab.id ? "secondary" : "outline"}
+                className={cn("h-4 px-1.5 text-[9px] font-mono", tab.isAlert && tab.count > 0 && "bg-amber-500 text-white font-bold")}
+              >
+                {tab.count}
+              </Badge>
+            </Button>
+          ))}
+        </div>
+
+        <span className="text-xs text-muted-foreground font-mono">
+          {filtered.length} {isAr ? "عملية مطابقة" : "matches"}
+        </span>
       </div>
 
       <div className="border border-border rounded-xl bg-card overflow-hidden">
@@ -173,7 +193,7 @@ export function TreasuryManager({
             {filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-28 text-center text-muted-foreground text-xs">
-                  {isAr ? "لا توجد عمليات مساهمة مسجلة" : "No contributions found"}
+                  {isAr ? "لا توجد عمليات مساهمة مسجلة في هذا التبويب" : "No contributions found"}
                 </TableCell>
               </TableRow>
             ) : (
@@ -201,10 +221,11 @@ export function TreasuryManager({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 text-[10px] gap-1 text-primary"
+                        className="h-6 text-[10px] gap-1 text-primary hover:bg-primary/10"
                         onClick={() => handleOpenReceipt(c.receipt_path!)}
+                        title={isAr ? "معاينة ملف الإيصال" : "Preview Receipt"}
                       >
-                        <FileText className="w-3 h-3" />
+                        <FileText className="w-3.5 h-3.5" />
                         {isAr ? "عرض" : "View"}
                       </Button>
                     ) : (
@@ -213,17 +234,47 @@ export function TreasuryManager({
                   </TableCell>
                   <TableCell className="text-center">{getStatusBadge(c.status)}</TableCell>
                   <TableCell className="text-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs"
-                      onClick={() => {
-                        setSelectedContribution(c);
-                        setReviewNote(c.review_note ?? "");
-                      }}
-                    >
-                      {isAr ? "مراجعة" : "Review"}
-                    </Button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      {c.status === "pending" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={loading}
+                          className="h-7 text-xs bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/30 px-2 font-medium"
+                          onClick={async () => {
+                            try {
+                              setLoading(true);
+                              await onReviewContribution({
+                                id: c.id,
+                                status: "verified",
+                                review_note: "تم الاعتماد السريع من كشف الخزينة",
+                              });
+                              toast.success(isAr ? `تم اعتماد مساهمة: ${c.contributor_name}` : `Verified contribution from ${c.contributor_name}`);
+                            } catch (err: any) {
+                              toast.error(err.message || (isAr ? "فشل الاعتماد" : "Failed to verify"));
+                            } finally {
+                              setLoading(false);
+                            }
+                          }}
+                          title={isAr ? "اعتماد مباشر" : "Quick Verify"}
+                        >
+                          <Check className="w-3 h-3 me-1" />
+                          {isAr ? "اعتماد" : "Verify"}
+                        </Button>
+                      )}
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs px-2.5"
+                        onClick={() => {
+                          setSelectedContribution(c);
+                          setReviewNote(c.review_note ?? "");
+                        }}
+                      >
+                        {isAr ? "تدقيق" : "Details"}
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

@@ -271,6 +271,7 @@ export function FamilyMemberFormDialog({
                       value={form.avatar_path}
                       onChange={(url) => setForm((prev) => ({ ...prev, avatar_path: url }))}
                       placeholder={isAr ? "رابط الصورة أو ارفع صورة شخصية..." : "Avatar URL or upload..."}
+                      hidePreview={true}
                     />
                   </div>
                 </div>

@@ -468,18 +468,48 @@ export function DirectoryManager({
                           </Badge>
                         </TableCell>
                         <TableCell className="text-end">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 text-xs"
-                            onClick={() => {
-                              setSelectedReq(req);
-                              setReqReviewNote(req.review_note ?? "");
-                              setReqModalOpen(true);
-                            }}
-                          >
-                            {isAr ? "فحص واعتماد" : "Review"}
-                          </Button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            {req.status === "pending" && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={loading}
+                                className="h-7 text-xs bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/30 px-2 font-medium"
+                                onClick={async () => {
+                                  try {
+                                    setLoading(true);
+                                    await onReviewRequest({
+                                      id: req.id,
+                                      status: "approved",
+                                      review_note: "تم الاعتماد وتوثيق العضوية بنجاح",
+                                    });
+                                    toast.success(isAr ? `تم توثيق عضوية: ${req.full_name_ar}` : `Approved membership for ${req.full_name_ar}`);
+                                  } catch (err: any) {
+                                    toast.error(err.message || (isAr ? "فشل الاعتماد" : "Failed to approve"));
+                                  } finally {
+                                    setLoading(false);
+                                  }
+                                }}
+                                title={isAr ? "اعتماد فوري" : "Quick Approve"}
+                              >
+                                <Check className="w-3 h-3 me-1" />
+                                {isAr ? "اعتماد" : "Approve"}
+                              </Button>
+                            )}
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs px-2.5"
+                              onClick={() => {
+                                setSelectedReq(req);
+                                setReqReviewNote(req.review_note ?? "");
+                                setReqModalOpen(true);
+                              }}
+                            >
+                              {isAr ? "تفاصيل" : "Details"}
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))

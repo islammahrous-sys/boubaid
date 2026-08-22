@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { branches } from "@/content/site";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
-import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import {
   getMyAccount,
   submitMembershipRequest,
@@ -49,6 +48,9 @@ import {
   LayoutDashboard,
   Camera,
   ExternalLink,
+  Upload,
+  X,
+  Loader2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/account")({
@@ -127,6 +129,51 @@ function AccountPage() {
       .then((url) => setQrCodeDataUrl(url))
       .catch((err) => console.error("QR Code Generation Error:", err));
   }, [user?.id, memberCode]);
+
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error(isAr ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)" : "Please select an image file");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(isAr ? "الحد الأقصى لحجم الصورة هو 10 ميغابايت" : "Maximum file size is 10MB");
+      return;
+    }
+
+    try {
+      setAvatarUploading(true);
+      const fileExt = file.name.split(".").pop() || "jpg";
+      const cleanFileName = `avatar-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+      const storagePath = `avatars/${cleanFileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(storagePath, file, {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: file.type,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(storagePath);
+      setForm((prev) => ({ ...prev, avatar_path: urlData.publicUrl }));
+      toast.success(isAr ? "تم اختيار الصورة بنجاح. احفظ التغييرات لتثبيتها." : "Avatar updated. Save changes to persist.");
+    } catch (err: any) {
+      console.error("Avatar upload failed:", err);
+      toast.error(err.message || (isAr ? "فشل رفع الصورة" : "Failed to upload avatar"));
+    } finally {
+      setAvatarUploading(false);
+      if (avatarFileInputRef.current) avatarFileInputRef.current.value = "";
+    }
+  };
 
   const save = useMutation({
     mutationFn: () => saveProfile({ data: form }),
@@ -339,37 +386,86 @@ function AccountPage() {
                         className="space-y-5"
                       >
                         {/* Avatar Customization Widget */}
-                        <div className="p-4 rounded-xl border border-border bg-secondary/20 flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                          <div className="relative">
+                        <div className="p-4 rounded-xl border border-border bg-secondary/15 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                          <div className="relative group shrink-0">
                             <SaudiCulturalAvatar
                               src={form.avatar_path}
                               alt={form.full_name_ar}
                               size="xl"
-                              className="w-20 h-20 shadow-md"
+                              className="w-20 h-20 shadow-md ring-2 ring-primary/20"
                             />
+                            <button
+                              type="button"
+                              onClick={() => avatarFileInputRef.current?.click()}
+                              className="absolute inset-0 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-[10px] gap-1 cursor-pointer"
+                              disabled={avatarUploading}
+                              title={isAr ? "تغيير الصورة" : "Change Photo"}
+                            >
+                              <Camera className="w-4 h-4" />
+                              <span>{isAr ? "تغيير" : "Change"}</span>
+                            </button>
                           </div>
-                          <div className="flex-1 w-full space-y-2">
-                            <div className="flex items-center justify-between">
-                              <Label className="text-xs font-bold text-foreground">{isAr ? "الصورة الشخصية للعضو" : "Member Avatar"}</Label>
+
+                          <div className="flex-1 w-full space-y-2 text-center sm:text-start">
+                            <div>
+                              <Label className="text-xs font-bold text-foreground">
+                                {isAr ? "الصورة الشخصية للعضو" : "Member Profile Picture"}
+                              </Label>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">
+                                {form.avatar_path
+                                  ? isAr
+                                    ? "تم تعيين صورة شخصية خاصة بحسابك. يمكنك استبدالها أو استعادة الرمز التراثي."
+                                    : "Custom photo is set. You can replace it or reset to the heritage avatar."
+                                  : isAr
+                                    ? "يمكنك رفع صورة شخصية حديثة، أو الاحتفاظ بالرمز التراثي السعودي الافتراضي."
+                                    : "Upload a recent photo or keep the default Saudi cultural avatar."}
+                              </p>
+                            </div>
+
+                            <input
+                              ref={avatarFileInputRef}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleAvatarFileSelect}
+                            />
+
+                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-8 text-xs gap-1.5 rounded-lg border-primary/30 hover:bg-primary/5"
+                                onClick={() => avatarFileInputRef.current?.click()}
+                                disabled={avatarUploading}
+                              >
+                                {avatarUploading ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                                ) : (
+                                  <Upload className="w-3.5 h-3.5 text-primary" />
+                                )}
+                                {form.avatar_path
+                                  ? isAr
+                                    ? "استبدال الصورة"
+                                    : "Replace Photo"
+                                  : isAr
+                                    ? "رفع صورة شخصية"
+                                    : "Upload Photo"}
+                              </Button>
+
                               {form.avatar_path && (
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => setForm((f) => ({ ...f, avatar_path: "" }))}
-                                  className="h-6 text-[10px] text-destructive hover:bg-destructive/10 px-2"
+                                  className="h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 px-2.5 rounded-lg"
                                 >
+                                  <X className="w-3.5 h-3.5 me-1" />
                                   {isAr ? "استعادة الرمز التراثي" : "Use Cultural Avatar"}
                                 </Button>
                               )}
                             </div>
-                            <ImageUploadInput
-                              bucket="site-media"
-                              value={form.avatar_path}
-                              onChange={(url) => setForm((f) => ({ ...f, avatar_path: url }))}
-                              placeholder={isAr ? "رابط الصورة أو اختر ملفاً للرفع..." : "Image URL or upload..."}
-                              helperText={isAr ? "يمكنك رفع صورة شخصية، أو استخدام الرمز التراثي السعودي الافتراضي." : "Upload a photo or keep the default Saudi cultural avatar."}
-                            />
                           </div>
                         </div>
 

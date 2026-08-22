@@ -466,16 +466,71 @@ export function AdminConsoleLayout({
               </SheetContent>
             </Sheet>
 
-            {/* Breadcrumb Trail */}
-            <div className="flex items-center gap-2 text-xs">
-              <span className="font-semibold text-muted-foreground hidden sm:inline">
-                {isAr ? currentDomain.label_ar : currentDomain.label_en}
-              </span>
-              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground rtl:rotate-180 hidden sm:inline" />
-              <Badge variant="secondary" className="text-xs font-bold px-2 py-0.5 rounded-md">
-                {isAr ? currentTab.label_ar : currentTab.label_en}
-              </Badge>
-            </div>
+            {/* Interactive Breadcrumb Trail & Domain Switcher */}
+            <nav aria-label="Admin Breadcrumbs" className="flex items-center gap-1.5 text-xs">
+              <button
+                type="button"
+                onClick={() => onSelectTab("dashboard", "overview")}
+                className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-muted/50"
+                title={isAr ? "الرئيسية (لوحة التحكم)" : "Dashboard"}
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline font-medium">{isAr ? "لوحة التحكم" : "Dashboard"}</span>
+              </button>
+
+              {activeDomainId !== "dashboard" && (
+                <>
+                  <ChevronRight className="w-3 h-3 text-muted-foreground/60 rtl:rotate-180" />
+                  
+                  {/* Domain Dropdown Selector */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex items-center gap-1 font-semibold text-muted-foreground hover:text-foreground transition-colors px-1.5 py-0.5 rounded-md hover:bg-muted/50 cursor-pointer"
+                      >
+                        <span>{isAr ? currentDomain.label_ar : currentDomain.label_en}</span>
+                        <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align={isAr ? "end" : "start"} className="w-56 p-1">
+                      <DropdownMenuLabel className="text-[11px] text-muted-foreground">
+                        {isAr ? "الانتقال إلى قطاع إداري" : "Switch Domain"}
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {ADMIN_DOMAINS.map((dom) => {
+                        const DomIcon = dom.icon;
+                        const isCurrent = dom.id === activeDomainId;
+                        return (
+                          <DropdownMenuItem
+                            key={dom.id}
+                            onClick={() => onSelectTab(dom.id, dom.tabs[0]?.id || "")}
+                            className={cn(
+                              "text-xs cursor-pointer flex items-center justify-between",
+                              isCurrent && "font-bold text-primary bg-primary/5"
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              <DomIcon className="w-3.5 h-3.5" />
+                              <span>{isAr ? dom.label_ar : dom.label_en}</span>
+                            </div>
+                            {isCurrent && <Check className="w-3 h-3 text-primary" />}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <ChevronRight className="w-3 h-3 text-muted-foreground/60 rtl:rotate-180" />
+                  
+                  {/* Active Sub-Tab Badge */}
+                  <Badge variant="secondary" className="text-xs font-bold px-2 py-0.5 rounded-md flex items-center gap-1.5 shadow-2xs border border-border/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    <span>{isAr ? currentTab.label_ar : currentTab.label_en}</span>
+                  </Badge>
+                </>
+              )}
+            </nav>
           </div>
 
           {/* Right: Actions & Status */}

@@ -16,6 +16,7 @@ export interface ImageUploadInputProps {
   placeholder?: string;
   helperText?: string;
   allowPdf?: boolean;
+  hidePreview?: boolean;
   accept?: string;
   maxSizeMB?: number;
   className?: string;
@@ -29,6 +30,7 @@ export function ImageUploadInput({
   placeholder,
   helperText,
   allowPdf = true,
+  hidePreview = false,
   accept,
   maxSizeMB = 25,
   className = "",
@@ -174,29 +176,38 @@ export function ImageUploadInput({
       <div className="flex flex-col gap-2.5">
         {value ? (
           <div className="relative group flex items-center gap-3 p-2.5 bg-muted/40 rounded-xl border border-border">
-            {isPdf ? (
-              <div className="relative w-16 h-16 rounded-lg bg-rose-500/10 border border-rose-500/20 shrink-0 flex flex-col items-center justify-center shadow-xs">
-                <FileText className="w-6 h-6 text-rose-500" />
-                <Badge variant="destructive" className="h-3.5 px-1 text-[8px] font-mono mt-0.5">
-                  PDF
-                </Badge>
-              </div>
-            ) : (
-              <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-background border border-border shrink-0 flex items-center justify-center shadow-xs">
-                <img
-                  src={value}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = "none";
-                  }}
-                />
-                <ImageIcon className="w-5 h-5 text-muted-foreground/40 -z-10 absolute" />
-              </div>
+            {!hidePreview && (
+              isPdf ? (
+                <div className="relative w-16 h-16 rounded-lg bg-rose-500/10 border border-rose-500/20 shrink-0 flex flex-col items-center justify-center shadow-xs">
+                  <FileText className="w-6 h-6 text-rose-500" />
+                  <Badge variant="destructive" className="h-3.5 px-1 text-[8px] font-mono mt-0.5">
+                    PDF
+                  </Badge>
+                </div>
+              ) : (
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-background border border-border shrink-0 flex items-center justify-center shadow-xs">
+                  <img
+                    src={value}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = "none";
+                    }}
+                  />
+                  <ImageIcon className="w-5 h-5 text-muted-foreground/40 -z-10 absolute" />
+                </div>
+              )
             )}
 
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-foreground truncate font-mono">{value}</p>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <Badge variant="outline" className="text-[10px] font-mono shrink-0">
+                  {isPdf ? "PDF" : isAr ? "صورة" : "Image"}
+                </Badge>
+                <span className="truncate text-[11px] text-muted-foreground font-mono" dir="ltr" title={value}>
+                  {value.split("/").pop() || (isAr ? "ملف مرفوع" : "Uploaded file")}
+                </span>
+              </div>
               <div className="flex flex-wrap items-center gap-2 mt-2">
                 <Button
                   type="button"

@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useLang } from "@/i18n/LanguageProvider";
 import { MessageSquare, Mail, Phone, Clock, Plus, Send, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export type InquiryRow = {
   id: string;
@@ -123,30 +124,48 @@ export function InquiriesManager({
             </span>
           </div>
         </div>
+      </div>
 
-        {/* Search & Filter Bar */}
-        <div className="flex flex-wrap items-center gap-2">
+      {/* Status Filter Tabs & Search Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card p-3 rounded-xl border border-border">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {[
+            { id: "all", label_ar: "الكل", label_en: "All", count: inquiries.length },
+            { id: "new", label_ar: "الرسائل الجديدة", label_en: "New", count: inquiries.filter((i) => i.status === "new").length, isAlert: true },
+            { id: "in_progress", label_ar: "قيد المتابعة", label_en: "In Progress", count: inquiries.filter((i) => i.status === "in_progress" || i.status === "open").length },
+            { id: "resolved", label_ar: "تم الرد والإنهاء", label_en: "Resolved", count: inquiries.filter((i) => i.status === "resolved" || i.status === "read").length },
+            { id: "archived", label_ar: "المؤرشفة", label_en: "Archived", count: inquiries.filter((i) => i.status === "archived").length },
+          ].map((tab) => (
+            <Button
+              key={tab.id}
+              variant={statusFilter === tab.id ? "default" : "outline"}
+              size="sm"
+              className={cn(
+                "h-8 text-xs gap-1.5 rounded-lg font-medium",
+                statusFilter !== tab.id && tab.isAlert && tab.count > 0 && "border-blue-500/40 text-blue-600 bg-blue-500/5 hover:bg-blue-500/10"
+              )}
+              onClick={() => setStatusFilter(tab.id)}
+            >
+              <span>{isAr ? tab.label_ar : tab.label_en}</span>
+              <Badge
+                variant={statusFilter === tab.id ? "secondary" : "outline"}
+                className={cn("h-4 px-1.5 text-[9px] font-mono", tab.isAlert && tab.count > 0 && "bg-blue-500 text-white font-bold")}
+              >
+                {tab.count}
+              </Badge>
+            </Button>
+          ))}
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative min-w-[200px]">
           <input
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={isAr ? "بحث بالمرسل أو الموضوع..." : "Search inquiries..."}
-            className="h-8 px-3 rounded-lg border border-border bg-background text-xs text-foreground outline-none focus:border-primary w-44 sm:w-56"
+            className="h-8 px-3 rounded-lg border border-border bg-background text-xs text-foreground outline-none focus:border-primary w-full"
           />
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-8 w-[130px] text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{isAr ? "جميع الرسائل" : "All Messages"}</SelectItem>
-              <SelectItem value="new">{isAr ? "جديدة" : "New"}</SelectItem>
-              <SelectItem value="open">{isAr ? "مفتوحة" : "Open"}</SelectItem>
-              <SelectItem value="in_progress">{isAr ? "قيد المتابعة" : "In Progress"}</SelectItem>
-              <SelectItem value="resolved">{isAr ? "تم الرد" : "Resolved"}</SelectItem>
-              <SelectItem value="read">{isAr ? "مقروءة" : "Read"}</SelectItem>
-              <SelectItem value="archived">{isAr ? "مؤرشفة" : "Archived"}</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
