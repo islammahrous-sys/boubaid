@@ -345,7 +345,7 @@ async function writeAudit(
 
 export const upsertCmsRow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => cmsUpsertSchema.parse(input))
+  .validator((input: unknown) => cmsUpsertSchema.parse(input))
   .handler(async ({ data, context }): Promise<MutationResult> => {
     const { supabase, userId } = context;
     const { id, ...rest } = data.values as { id?: string } & Record<string, unknown>;
@@ -384,7 +384,7 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
 
 export const setCmsPublished = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => cmsPublishSchema.parse(input))
+  .validator((input: unknown) => cmsPublishSchema.parse(input))
   .handler(async ({ data, context }): Promise<MutationResult> => {
     const patch: Record<string, unknown> = { is_published: data.is_published };
     if (data.table === "news_posts") {
@@ -410,7 +410,7 @@ export const setCmsPublished = createServerFn({ method: "POST" })
 
 export const deleteCmsRow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => cmsRowRefSchema.parse(input))
+  .validator((input: unknown) => cmsRowRefSchema.parse(input))
   .handler(async ({ data, context }): Promise<MutationResult> => {
     const { error } = await context.supabase.from(data.table).delete().eq("id", data.id);
     if (error) {
@@ -418,10 +418,10 @@ export const deleteCmsRow = createServerFn({ method: "POST" })
       return { ok: false, error: "delete_failed" };
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("audit_log").insert({
-      actor_id: context.userId,
-      action: "content.deleted",
-      entity: data.table,
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_user_id: context.userId,
+      action: "delete",
+      entity_type: data.table,
       entity_id: data.id,
     });
     return { ok: true };
@@ -444,7 +444,7 @@ const EXT_BY_TYPE: Record<string, string> = {
  */
 export const uploadContentMedia = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => contentMediaUploadSchema.parse(input))
+  .validator((input: unknown) => contentMediaUploadSchema.parse(input))
   .handler(
     async ({ data, context }): Promise<{ ok: true; path: string } | { ok: false; error: string }> => {
       const { supabase, userId } = context;
@@ -454,7 +454,7 @@ export const uploadContentMedia = createServerFn({ method: "POST" })
         .select("role")
         .eq("user_id", userId);
       const roleList = (roles ?? []).map((r) => r.role as string);
-      if (!roleList.includes("admin") && !roleList.includes("editor")) {
+      if (!roleList.includes("admin") && !roleList.includes("super_admin") && !roleList.includes("editor")) {
         return { ok: false, error: "forbidden" };
       }
 
@@ -713,6 +713,90 @@ export const getPublicGlobalSearch = createServerFn({ method: "GET" })
       branches: branchesRes.data ?? [],
     };
   });
+
+/**
+ * Public Navigation Loader — reads the CMS-managed `navigation_menus` /
+ * `navigation_items` tables so edits made in the admin Navigation Manager
+ * take effect on the live site. Only top-level (parent_id is null), public
+ * items are returned, per menu `code`, ordered by `sort_order`.
+ *
+ * Callers should treat an empty array for a given menu code as "not
+ * configured" and fall back to the static defaults in `@/content/navigation`.
+ */
+export type PublicNavItem = {
+  to: string;
+  label: { ar: string; en: string };
+  children?: PublicNavItem[];
+};
+
+export const getPublicNavigation = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    const { createPublicServerClient } = await import("./supabase-public.server");
+    const supabase = createPublicServerClient();
+
+    const [menusRes, itemsRes] = await Promise.all([
+      supabase.from("navigation_menus").select("id, code"),
+      supabase
+        .from("navigation_items")
+        .select("id, menu_id, label_ar, label_en, url, parent_id, sort_order, visibility")
+        .eq("visibility", "public")
+        .order("sort_order", { ascending: true }),
+    ]);
+
+    const menusByCode = new Map((menusRes.data ?? []).map((m) => [m.id, m.code]));
+    const byCode: Record<string, PublicNavItem[]> = {};
+
+    // Group all items by menu_id
+    const itemsByMenu = new Map<
+      string,
+      Array<{
+        id: string;
+        menu_id: string;
+        label_ar: string;
+        label_en: string | null;
+        url: string;
+        parent_id: string | null;
+        sort_order: number;
+      }>
+    >();
+
+    for (const item of itemsRes.data ?? []) {
+      const list = itemsByMenu.get(item.menu_id) ?? [];
+      list.push(item);
+      itemsByMenu.set(item.menu_id, list);
+    }
+
+    for (const [menuId, menuItems] of itemsByMenu.entries()) {
+      const code = menusByCode.get(menuId);
+      if (!code) continue;
+
+      const topLevel = menuItems.filter((i) => !i.parent_id);
+      const structured: PublicNavItem[] = [];
+
+      for (const top of topLevel) {
+        const subItems = menuItems
+          .filter((i) => i.parent_id === top.id)
+          .map((sub) => ({
+            to: sub.url,
+            label: { ar: sub.label_ar, en: sub.label_en || sub.label_ar },
+          }));
+
+        structured.push({
+          to: top.url,
+          label: { ar: top.label_ar, en: top.label_en || top.label_ar },
+          ...(subItems.length > 0 ? { children: subItems } : {}),
+        });
+      }
+
+      byCode[code] = structured;
+    }
+
+    return byCode;
+  } catch (err) {
+    console.error("[cms] getPublicNavigation error", err);
+    return {} as Record<string, PublicNavItem[]>;
+  }
+});
 
 
 
