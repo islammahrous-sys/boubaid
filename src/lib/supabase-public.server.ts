@@ -7,8 +7,8 @@ import type { Database } from "@/integrations/supabase/types";
  * Read env inside this factory — never at module scope.
  */
 export function createPublicServerClient() {
-  const url = process.env["SUPABASE_URL"]!;
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+  const url = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"] || "";
+  const key = process.env["SUPABASE_PUBLISHABLE_KEY"] || process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || "";
 
   return createClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
