@@ -192,16 +192,18 @@ function mapLibraryVideoRow(row: LibraryRow): LibraryVideo {
 
 /**
  * `collection` on the DB row maps onto the three tabs the library page
- * already renders: "documents" -> Documents & Bylaws, "publications" ->
- * Photographs, "media" -> Recordings.
+ * already renders: "documents" -> Documents & Bylaws, "photographs" ->
+ * Photographs, "recordings" -> Recordings. These three values are exactly
+ * what the admin console's Library form (LibraryItemsManager) lets an
+ * editor pick, so this mapping must stay in lockstep with that form.
  */
 export function mergeLibrary(
   dbRows: LibraryRow[],
   staticItems: LibraryData,
 ): LibraryData {
   const documentRows = dbRows.filter((r) => r.collection === "documents");
-  const photoRows = dbRows.filter((r) => r.collection === "publications");
-  const videoRows = dbRows.filter((r) => r.collection === "media");
+  const photoRows = dbRows.filter((r) => r.collection === "photographs");
+  const videoRows = dbRows.filter((r) => r.collection === "recordings");
 
   const dbDocuments = documentRows.map(mapLibraryDocumentRow);
   const dbPhotos = photoRows.map(mapLibraryPhotoRow);
