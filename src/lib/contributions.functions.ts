@@ -112,7 +112,7 @@ export const reviewContribution = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => contributionReviewSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    const { data: updated, error } = await context.supabase
       .from("contributions")
       .update({
         status: data.status,
@@ -120,11 +120,17 @@ export const reviewContribution = createServerFn({ method: "POST" })
         reviewed_by: context.userId,
         reviewed_at: new Date().toISOString(),
       })
-      .eq("id", data.id);
+      .eq("id", data.id)
+      .select("id");
 
     if (error) {
       console.error("[contributions] review failed", error.code, error.message);
       return { ok: false as const, error: "update_failed" };
+    }
+
+    if (!updated || updated.length === 0) {
+      console.error("[contributions] review affected zero rows", data.id);
+      return { ok: false as const, error: "not_found" };
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

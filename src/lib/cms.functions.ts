@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth, requireEditorAuth } from "@/integrations/supabase/auth-middleware";
 import {
   cmsPublishSchema,
   cmsRowRefSchema,
@@ -344,7 +344,7 @@ async function writeAudit(
 }
 
 export const upsertCmsRow = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireEditorAuth])
   .validator((input: unknown) => cmsUpsertSchema.parse(input))
   .handler(async ({ data, context }): Promise<MutationResult> => {
     const { supabase, userId } = context;
@@ -383,7 +383,7 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
 
 
 export const setCmsPublished = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireEditorAuth])
   .validator((input: unknown) => cmsPublishSchema.parse(input))
   .handler(async ({ data, context }): Promise<MutationResult> => {
     const patch: Record<string, unknown> = { is_published: data.is_published };
@@ -409,7 +409,7 @@ export const setCmsPublished = createServerFn({ method: "POST" })
 
 
 export const deleteCmsRow = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireEditorAuth])
   .validator((input: unknown) => cmsRowRefSchema.parse(input))
   .handler(async ({ data, context }): Promise<MutationResult> => {
     const { error } = await context.supabase.from(data.table).delete().eq("id", data.id);
