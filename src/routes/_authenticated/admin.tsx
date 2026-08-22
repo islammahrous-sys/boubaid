@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminConsoleLayout } from "@/components/console/layout/AdminConsoleLayout";
+import { AdminTabSkeleton } from "@/components/console/layout/AdminTabSkeleton";
+import { ADMIN_DOMAINS } from "@/components/console/layout/AdminNavigation";
 import { AdminDashboardOverview } from "@/components/console/dashboard/AdminDashboardOverview";
 import { HomepageManager } from "@/components/console/cms/HomepageManager";
 import { RolesPermissionMatrix } from "@/components/console/users/RolesPermissionMatrix";
@@ -93,7 +95,18 @@ import {
   deleteNotification,
 } from "@/lib/admin-hub.functions";
 
+type AdminSearch = {
+  domain?: string;
+  tab?: string;
+};
+
 export const Route = createFileRoute("/_authenticated/admin")({
+  validateSearch: (search: Record<string, unknown>): AdminSearch => {
+    return {
+      domain: typeof search.domain === "string" ? search.domain : undefined,
+      tab: typeof search.tab === "string" ? search.tab : undefined,
+    };
+  },
   head: () => ({
     meta: [
       { title: "منظومة أمانة المجلس والـ CMS الشاملة | أسرة آل بوعبيد" },
@@ -112,9 +125,16 @@ function MasterAdminPage() {
   const isAr = lang === "ar";
   const { isAdmin, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
+  const searchParams = useSearch({ from: "/_authenticated/admin" });
+  const navigate = useNavigate();
 
-  const [activeDomainId, setActiveDomainId] = useState<string>("dashboard");
-  const [activeTabId, setActiveTabId] = useState<string>("overview");
+  const activeDomainId = searchParams.domain || "dashboard";
+  const activeTabId =
+    searchParams.tab ||
+    (activeDomainId === "dashboard"
+      ? "overview"
+      : ADMIN_DOMAINS.find((d) => d.id === activeDomainId)?.tabs[0]?.id || "overview");
+
   const [importExportOpen, setImportExportOpen] = useState(false);
   const [selectedRelMemberId, setSelectedRelMemberId] = useState<string | null>(null);
 
@@ -180,120 +200,153 @@ function MasterAdminPage() {
   const delNavItemMut = useServerFn(deleteNavigationItem);
   const saveDnaMut = useServerFn(saveDnaStudiesData);
 
-  // Queries
-  const { data: overviewData } = useQuery({
+  // Gated, high-performance cached queries (5 min staleTime, 15 min cache)
+  const queryConfig = {
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+  };
+
+  const { data: overviewData, isLoading: overviewLoading } = useQuery({
     queryKey: ["admin-overview"],
     queryFn: () => fetchOverview(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "dashboard",
+    ...queryConfig,
   });
 
-  const { data: familyData } = useQuery({
+  const { data: familyData, isLoading: familyLoading } = useQuery({
     queryKey: ["family-hub-data"],
     queryFn: () => fetchFamily(),
-    enabled: isAdmin,
+    enabled: isAdmin && (activeDomainId === "family" || (activeDomainId === "content" && activeTabId === "events")),
+    ...queryConfig,
   });
 
-  const { data: pagesData } = useQuery({
+  const { data: pagesData, isLoading: pagesLoading } = useQuery({
     queryKey: ["cms-pages-data"],
     queryFn: () => fetchPages(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "content" && activeTabId === "pages",
+    ...queryConfig,
   });
 
-  const { data: articlesData } = useQuery({
+  const { data: articlesData, isLoading: articlesLoading } = useQuery({
     queryKey: ["cms-articles-data"],
     queryFn: () => fetchArticles(),
-    enabled: isAdmin,
+    enabled: isAdmin && ((activeDomainId === "content" && activeTabId === "articles") || activeDomainId === "dashboard"),
+    ...queryConfig,
   });
 
-  const { data: eventsData } = useQuery({
+  const { data: eventsData, isLoading: eventsLoading } = useQuery({
     queryKey: ["events-data"],
     queryFn: () => fetchEvents(),
-    enabled: isAdmin,
+    enabled: isAdmin && ((activeDomainId === "content" && activeTabId === "events") || activeDomainId === "dashboard"),
+    ...queryConfig,
   });
 
-  const { data: announcementsData } = useQuery({
+  const { data: announcementsData, isLoading: announcementsLoading } = useQuery({
     queryKey: ["announcements-data"],
     queryFn: () => fetchAnnouncements(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "content" && activeTabId === "announcements",
+    ...queryConfig,
   });
 
-  const { data: mediaData } = useQuery({
+  const { data: mediaData, isLoading: mediaLoading } = useQuery({
     queryKey: ["media-data"],
     queryFn: () => fetchMedia(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "media" && activeTabId === "media_library",
+    ...queryConfig,
   });
 
-  const { data: inquiriesData } = useQuery({
+  const { data: inquiriesData, isLoading: inquiriesLoading } = useQuery({
     queryKey: ["inquiries-data"],
     queryFn: () => fetchInquiries(),
-    enabled: isAdmin,
+    enabled: isAdmin && ((activeDomainId === "community" && activeTabId === "inquiries") || activeDomainId === "dashboard"),
+    ...queryConfig,
   });
 
-  const { data: usersData } = useQuery({
+  const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["users-data"],
     queryFn: () => fetchUsers(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "system" && activeTabId === "users",
+    ...queryConfig,
   });
 
-  const { data: auditData } = useQuery({
+  const { data: auditData, isLoading: auditLoading } = useQuery({
     queryKey: ["audit-data"],
     queryFn: () => fetchAudit(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "system" && activeTabId === "audit_logs",
+    ...queryConfig,
   });
 
-  const { data: settingsData } = useQuery({
+  const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ["site-settings-data"],
     queryFn: () => fetchSettings(),
-    enabled: isAdmin,
+    enabled: isAdmin && (activeDomainId === "system" || (activeDomainId === "content" && activeTabId === "homepage")),
+    ...queryConfig,
   });
 
-  const { data: directoryData } = useQuery({
+  const { data: directoryData, isLoading: directoryLoading } = useQuery({
     queryKey: ["directory-management-data"],
     queryFn: () => fetchDirectory(),
-    enabled: isAdmin,
+    enabled:
+      isAdmin &&
+      ((activeDomainId === "community" && (activeTabId === "directory" || activeTabId === "verification")) ||
+        activeDomainId === "dashboard"),
+    ...queryConfig,
   });
 
-  const { data: treasuryData } = useQuery({
+  const { data: treasuryData, isLoading: treasuryLoading } = useQuery({
     queryKey: ["treasury-management-data"],
     queryFn: () => fetchTreasury(),
-    enabled: isAdmin,
+    enabled:
+      isAdmin &&
+      ((activeDomainId === "treasury" && activeTabId === "treasury_ledger") || activeDomainId === "dashboard"),
+    ...queryConfig,
   });
 
-  const { data: initiativesData } = useQuery({
+  const { data: initiativesData, isLoading: initiativesLoading } = useQuery({
     queryKey: ["initiatives-management-data"],
     queryFn: () => fetchInitiatives(),
-    enabled: isAdmin,
+    enabled:
+      isAdmin &&
+      ((activeDomainId === "treasury" && activeTabId === "initiatives") || activeDomainId === "dashboard"),
+    ...queryConfig,
   });
 
-  const { data: achieversData } = useQuery({
+  const { data: achieversData, isLoading: achieversLoading } = useQuery({
     queryKey: ["achievers-management-data"],
     queryFn: () => fetchAchievers(),
-    enabled: isAdmin,
+    enabled:
+      isAdmin &&
+      ((activeDomainId === "treasury" && activeTabId === "achievers") || activeDomainId === "dashboard"),
+    ...queryConfig,
   });
 
-  const { data: libraryData } = useQuery({
+  const { data: libraryData, isLoading: libraryLoading } = useQuery({
     queryKey: ["library-management-data"],
     queryFn: () => fetchLibrary(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "media" && activeTabId === "library_items",
+    ...queryConfig,
   });
 
-  const { data: navigationData } = useQuery({
+  const { data: navigationData, isLoading: navigationLoading } = useQuery({
     queryKey: ["navigation-management-data"],
     queryFn: () => fetchNavigation(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "content" && activeTabId === "navigation",
+    ...queryConfig,
   });
 
-  const { data: dnaData } = useQuery({
+  const { data: dnaData, isLoading: dnaLoading } = useQuery({
     queryKey: ["dna-studies-data"],
     queryFn: () => fetchDna(),
-    enabled: isAdmin,
+    enabled: isAdmin && activeDomainId === "content" && activeTabId === "dna",
+    ...queryConfig,
   });
 
   const { data: notificationsData } = useQuery({
     queryKey: ["admin-notifications"],
     queryFn: () => fetchNotifs(),
     enabled: isAdmin,
-    refetchInterval: 15000,
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 
   // Query Refreshes
@@ -389,10 +442,7 @@ function MasterAdminPage() {
         title: `${m.first_name_ar} ${m.last_name_ar}`,
         subtitle: m.occupation_ar || m.slug,
         category: "family",
-        onSelect: () => {
-          setActiveDomainId("family");
-          setActiveTabId("members");
-        },
+        onSelect: () => handleSelectTab("family", "members"),
       });
     });
     (directoryData?.businesses ?? []).forEach((b) => {
@@ -401,10 +451,7 @@ function MasterAdminPage() {
         title: b.name_ar,
         subtitle: b.category_ar,
         category: "directory",
-        onSelect: () => {
-          setActiveDomainId("community");
-          setActiveTabId("directory");
-        },
+        onSelect: () => handleSelectTab("community", "directory"),
       });
     });
     (pagesData?.pages ?? []).forEach((p) => {
@@ -413,10 +460,7 @@ function MasterAdminPage() {
         title: p.title_ar,
         subtitle: `/${p.slug}`,
         category: "content",
-        onSelect: () => {
-          setActiveDomainId("content");
-          setActiveTabId("pages");
-        },
+        onSelect: () => handleSelectTab("content", "pages"),
       });
     });
     (articlesData?.articles ?? []).forEach((a) => {
@@ -425,10 +469,7 @@ function MasterAdminPage() {
         title: a.title_ar,
         subtitle: a.slug,
         category: "articles",
-        onSelect: () => {
-          setActiveDomainId("content");
-          setActiveTabId("articles");
-        },
+        onSelect: () => handleSelectTab("content", "articles"),
       });
     });
     (eventsData?.events ?? []).forEach((e) => {
@@ -437,30 +478,25 @@ function MasterAdminPage() {
         title: e.title_ar,
         subtitle: e.slug,
         category: "events",
-        onSelect: () => {
-          setActiveDomainId("content");
-          setActiveTabId("events");
-        },
+        onSelect: () => handleSelectTab("content", "events"),
       });
     });
     return list;
   }, [familyData, directoryData, pagesData, articlesData, eventsData]);
 
   const handleSelectTab = (domainId: string, tabId: string) => {
-    setActiveDomainId(domainId);
-    setActiveTabId(tabId);
+    void navigate({
+      search: { domain: domainId, tab: tabId },
+    });
   };
 
   const handleQuickAction = (actionId: string) => {
     if (actionId === "add_member") {
-      setActiveDomainId("family");
-      setActiveTabId("members");
+      handleSelectTab("family", "members");
     } else if (actionId === "add_article") {
-      setActiveDomainId("content");
-      setActiveTabId("articles");
+      handleSelectTab("content", "articles");
     } else if (actionId === "add_event") {
-      setActiveDomainId("content");
-      setActiveTabId("events");
+      handleSelectTab("content", "events");
     }
   };
 
@@ -501,274 +537,378 @@ function MasterAdminPage() {
       searchItems={searchItems}
       onQuickAction={handleQuickAction}
     >
-      {/* 1. DOMAIN: DASHBOARD (Command Center) */}
-      {activeDomainId === "dashboard" && activeTabId === "overview" && (
-        <AdminDashboardOverview
-          overviewData={{
-            totalMembers: overviewData?.totalMembers ?? 0,
-            livingMembers: overviewData?.livingMembers ?? 0,
-            deceasedMembers: overviewData?.deceasedMembers ?? 0,
-            pendingInquiries: overviewData?.pendingInquiries ?? 0,
-            publishedArticles: overviewData?.totalArticles ?? 0,
-            draftArticles: (articlesData?.articles ?? []).filter((a) => a.status === "draft").length,
-            upcomingEvents: overviewData?.totalEvents ?? 0,
-            recentActivity: overviewData?.recentActivity ?? [],
-          }}
-          treasuryData={treasuryData}
-          directoryData={directoryData}
-          articlesData={articlesData}
-          eventsData={eventsData}
-          initiativesData={initiativesData}
-          achieversData={achieversData}
-          onNavigateTab={handleSelectTab}
-          onQuickAction={handleQuickAction}
-        />
-      )}
+      <div className="transition-opacity duration-200">
+        {/* 1. DOMAIN: DASHBOARD (Command Center) */}
+        {activeDomainId === "dashboard" && activeTabId === "overview" && (
+          overviewLoading && !overviewData ? (
+            <AdminTabSkeleton type="overview" cardCount={4} />
+          ) : (
+            <AdminDashboardOverview
+              overviewData={{
+                totalMembers: overviewData?.totalMembers ?? 0,
+                livingMembers: overviewData?.livingMembers ?? 0,
+                deceasedMembers: overviewData?.deceasedMembers ?? 0,
+                pendingInquiries: overviewData?.pendingInquiries ?? 0,
+                publishedArticles: overviewData?.totalArticles ?? 0,
+                draftArticles: (articlesData?.articles ?? []).filter((a) => a.status === "draft").length,
+                upcomingEvents: overviewData?.totalEvents ?? 0,
+                recentActivity: overviewData?.recentActivity ?? [],
+              }}
+              treasuryData={treasuryData}
+              directoryData={directoryData}
+              articlesData={articlesData}
+              eventsData={eventsData}
+              initiativesData={initiativesData}
+              achieversData={achieversData}
+              onNavigateTab={handleSelectTab}
+              onQuickAction={handleQuickAction}
+            />
+          )
+        )}
 
-      {/* 2. DOMAIN: FAMILY & LINEAGE */}
-      {activeDomainId === "family" && activeTabId === "members" && (
-        <FamilyMembersTable
-          members={(familyData?.members ?? []) as any}
-          branches={(familyData?.branches ?? []) as any}
-          places={(familyData?.places ?? []) as any}
-          onSaveMember={(data) => runMutation(() => saveMemberMut({ data }), refreshFamily)}
-          onDeleteMember={(id) => runMutation(() => delMemberMut({ data: { id } }), refreshFamily)}
-          onBulkAction={(data) => runMutation(() => bulkMembersMut({ data }), refreshFamily)}
-          onOpenRelationships={(memberId) => {
-            setSelectedRelMemberId(memberId);
-            setActiveDomainId("family");
-            setActiveTabId("relationships");
-          }}
-          onOpenImportExport={() => setImportExportOpen(true)}
-        />
-      )}
+        {/* 2. DOMAIN: FAMILY & LINEAGE */}
+        {activeDomainId === "family" && activeTabId === "members" && (
+          familyLoading && !familyData ? (
+            <AdminTabSkeleton type="table" cardCount={4} />
+          ) : (
+            <FamilyMembersTable
+              members={(familyData?.members ?? []) as any}
+              branches={(familyData?.branches ?? []) as any}
+              places={(familyData?.places ?? []) as any}
+              onSaveMember={(data) => runMutation(() => saveMemberMut({ data }), refreshFamily)}
+              onDeleteMember={(id) => runMutation(() => delMemberMut({ data: { id } }), refreshFamily)}
+              onBulkAction={(data) => runMutation(() => bulkMembersMut({ data }), refreshFamily)}
+              onOpenRelationships={(memberId) => {
+                setSelectedRelMemberId(memberId);
+                handleSelectTab("family", "relationships");
+              }}
+              onOpenImportExport={() => setImportExportOpen(true)}
+            />
+          )
+        )}
 
-      {activeDomainId === "family" && activeTabId === "tree" && (
-        <FamilyTreeViewer
-          members={(familyData?.members ?? []) as any}
-          branches={(familyData?.branches ?? []) as any}
-          relationships={(familyData?.relationships ?? []) as any}
-        />
-      )}
+        {activeDomainId === "family" && activeTabId === "tree" && (
+          familyLoading && !familyData ? (
+            <AdminTabSkeleton type="overview" cardCount={0} />
+          ) : (
+            <FamilyTreeViewer
+              members={(familyData?.members ?? []) as any}
+              branches={(familyData?.branches ?? []) as any}
+              relationships={(familyData?.relationships ?? []) as any}
+            />
+          )
+        )}
 
-      {activeDomainId === "family" && activeTabId === "branches" && (
-        <FamilyBranchesManager
-          branches={(familyData?.branches ?? []) as any}
-          onSaveBranch={(data) => runMutation(() => saveBranchMut({ data }), refreshFamily)}
-        />
-      )}
+        {activeDomainId === "family" && activeTabId === "branches" && (
+          familyLoading && !familyData ? (
+            <AdminTabSkeleton type="grid" cardCount={2} />
+          ) : (
+            <FamilyBranchesManager
+              branches={(familyData?.branches ?? []) as any}
+              onSaveBranch={(data) => runMutation(() => saveBranchMut({ data }), refreshFamily)}
+            />
+          )
+        )}
 
-      {activeDomainId === "family" && activeTabId === "relationships" && (
-        <FamilyRelationshipsManager
-          members={(familyData?.members ?? []) as any}
-          relationships={(familyData?.relationships ?? []) as any}
-          filterMemberId={selectedRelMemberId}
-          onSaveRelationship={(data) => runMutation(() => saveRelMut({ data }), refreshFamily)}
-          onDeleteRelationship={(id) => runMutation(() => delRelMut({ data: { id } }), refreshFamily)}
-        />
-      )}
+        {activeDomainId === "family" && activeTabId === "relationships" && (
+          familyLoading && !familyData ? (
+            <AdminTabSkeleton type="table" cardCount={2} />
+          ) : (
+            <FamilyRelationshipsManager
+              members={(familyData?.members ?? []) as any}
+              relationships={(familyData?.relationships ?? []) as any}
+              filterMemberId={selectedRelMemberId}
+              onSaveRelationship={(data) => runMutation(() => saveRelMut({ data }), refreshFamily)}
+              onDeleteRelationship={(id) => runMutation(() => delRelMut({ data: { id } }), refreshFamily)}
+            />
+          )
+        )}
 
-      {activeDomainId === "family" && activeTabId === "history" && (
-        <FamilyHistoryManager
-          historyItems={(familyData?.history ?? []) as any}
-          places={(familyData?.places ?? []) as any}
-          onSaveHistory={(data) => runMutation(() => saveHistMut({ data }), refreshFamily)}
-        />
-      )}
+        {activeDomainId === "family" && activeTabId === "history" && (
+          familyLoading && !familyData ? (
+            <AdminTabSkeleton type="table" cardCount={2} />
+          ) : (
+            <FamilyHistoryManager
+              historyItems={(familyData?.history ?? []) as any}
+              places={(familyData?.places ?? []) as any}
+              onSaveHistory={(data) => runMutation(() => saveHistMut({ data }), refreshFamily)}
+            />
+          )
+        )}
 
-      {activeDomainId === "family" && activeTabId === "places" && (
-        <PlacesManager
-          places={(familyData?.places ?? []) as any}
-          onSavePlace={(data) => runMutation(() => savePlaceMut({ data }), refreshFamily)}
-        />
-      )}
+        {activeDomainId === "family" && activeTabId === "places" && (
+          familyLoading && !familyData ? (
+            <AdminTabSkeleton type="grid" cardCount={2} />
+          ) : (
+            <PlacesManager
+              places={(familyData?.places ?? []) as any}
+              onSavePlace={(data) => runMutation(() => savePlaceMut({ data }), refreshFamily)}
+            />
+          )
+        )}
 
-      {activeDomainId === "family" && activeTabId === "privacy" && (
-        <FamilyMembersTable
-          members={(familyData?.members ?? []) as any}
-          branches={(familyData?.branches ?? []) as any}
-          places={(familyData?.places ?? []) as any}
-          onSaveMember={(data) => runMutation(() => saveMemberMut({ data }), refreshFamily)}
-          onDeleteMember={(id) => runMutation(() => delMemberMut({ data: { id } }), refreshFamily)}
-          onBulkAction={(data) => runMutation(() => bulkMembersMut({ data }), refreshFamily)}
-          onOpenRelationships={(memberId) => {
-            setSelectedRelMemberId(memberId);
-            setActiveDomainId("family");
-            setActiveTabId("relationships");
-          }}
-          onOpenImportExport={() => setImportExportOpen(true)}
-        />
-      )}
+        {activeDomainId === "family" && activeTabId === "privacy" && (
+          familyLoading && !familyData ? (
+            <AdminTabSkeleton type="table" cardCount={4} />
+          ) : (
+            <FamilyMembersTable
+              members={(familyData?.members ?? []) as any}
+              branches={(familyData?.branches ?? []) as any}
+              places={(familyData?.places ?? []) as any}
+              onSaveMember={(data) => runMutation(() => saveMemberMut({ data }), refreshFamily)}
+              onDeleteMember={(id) => runMutation(() => delMemberMut({ data: { id } }), refreshFamily)}
+              onBulkAction={(data) => runMutation(() => bulkMembersMut({ data }), refreshFamily)}
+              onOpenRelationships={(memberId) => {
+                setSelectedRelMemberId(memberId);
+                handleSelectTab("family", "relationships");
+              }}
+              onOpenImportExport={() => setImportExportOpen(true)}
+            />
+          )
+        )}
 
-      {/* 3. DOMAIN: CONTENT & CMS */}
-      {activeDomainId === "content" && activeTabId === "homepage" && (
-        <HomepageManager
-          initialSettings={(settingsData ?? []) as any}
-          onSaveSettings={(data) =>
-            runMutation(() => saveSettingMut({ data }), () =>
-              queryClient.invalidateQueries({ queryKey: ["site-settings-data"] }),
-            )
-          }
-        />
-      )}
+        {/* 3. DOMAIN: CONTENT & CMS */}
+        {activeDomainId === "content" && activeTabId === "homepage" && (
+          settingsLoading && !settingsData ? (
+            <AdminTabSkeleton type="form" cardCount={0} />
+          ) : (
+            <HomepageManager
+              initialSettings={(settingsData ?? []) as any}
+              onSaveSettings={(data) =>
+                runMutation(() => saveSettingMut({ data }), () =>
+                  queryClient.invalidateQueries({ queryKey: ["site-settings-data"] }),
+                )
+              }
+            />
+          )
+        )}
 
-      {activeDomainId === "content" && activeTabId === "pages" && (
-        <PagesManager
-          pages={(pagesData?.pages ?? []) as any}
-          sections={(pagesData?.sections ?? []) as any}
-          revisions={(pagesData?.revisions ?? []) as any}
-          onSavePage={(data) => runMutation(() => savePageMut({ data }), refreshPages)}
-        />
-      )}
+        {activeDomainId === "content" && activeTabId === "pages" && (
+          pagesLoading && !pagesData ? (
+            <AdminTabSkeleton type="table" cardCount={3} />
+          ) : (
+            <PagesManager
+              pages={(pagesData?.pages ?? []) as any}
+              sections={(pagesData?.sections ?? []) as any}
+              revisions={(pagesData?.revisions ?? []) as any}
+              onSavePage={(data) => runMutation(() => savePageMut({ data }), refreshPages)}
+            />
+          )
+        )}
 
-      {activeDomainId === "content" && activeTabId === "articles" && (
-        <ArticlesManager
-          articles={(articlesData?.articles ?? []) as any}
-          categories={(articlesData?.categories ?? []) as any}
-          onSaveArticle={(data) => runMutation(() => saveArtMut({ data }), refreshArticles)}
-        />
-      )}
+        {activeDomainId === "content" && activeTabId === "articles" && (
+          articlesLoading && !articlesData ? (
+            <AdminTabSkeleton type="table" cardCount={4} />
+          ) : (
+            <ArticlesManager
+              articles={(articlesData?.articles ?? []) as any}
+              categories={(articlesData?.categories ?? []) as any}
+              onSaveArticle={(data) => runMutation(() => saveArtMut({ data }), refreshArticles)}
+            />
+          )
+        )}
 
-      {activeDomainId === "content" && activeTabId === "announcements" && (
-        <AnnouncementsManager
-          announcements={(announcementsData ?? []) as any}
-          onSaveAnnouncement={(data) => runMutation(() => saveAnnMut({ data }), refreshAnnouncements)}
-        />
-      )}
+        {activeDomainId === "content" && activeTabId === "announcements" && (
+          announcementsLoading && !announcementsData ? (
+            <AdminTabSkeleton type="table" cardCount={2} />
+          ) : (
+            <AnnouncementsManager
+              announcements={(announcementsData ?? []) as any}
+              onSaveAnnouncement={(data) => runMutation(() => saveAnnMut({ data }), refreshAnnouncements)}
+            />
+          )
+        )}
 
-      {activeDomainId === "content" && activeTabId === "events" && (
-        <EventsManager
-          events={(eventsData?.events ?? []) as any}
-          registrations={(eventsData?.registrations ?? []) as any}
-          places={(familyData?.places ?? []) as any}
-          onSaveEvent={(data) => runMutation(() => saveEventMut({ data }), refreshEvents)}
-          onUpdateRegistrationStatus={(id, status) =>
-            runMutation(() => updateRegMut({ data: { id, status } }), refreshEvents)
-          }
-          onDeleteRegistration={(id) => runMutation(() => delRegMut({ data: { id } }), refreshEvents)}
-        />
-      )}
+        {activeDomainId === "content" && activeTabId === "events" && (
+          eventsLoading && !eventsData ? (
+            <AdminTabSkeleton type="grid" cardCount={3} />
+          ) : (
+            <EventsManager
+              events={(eventsData?.events ?? []) as any}
+              registrations={(eventsData?.registrations ?? []) as any}
+              places={(familyData?.places ?? []) as any}
+              onSaveEvent={(data) => runMutation(() => saveEventMut({ data }), refreshEvents)}
+              onUpdateRegistrationStatus={(id, status) =>
+                runMutation(() => updateRegMut({ data: { id, status } }), refreshEvents)
+              }
+              onDeleteRegistration={(id) => runMutation(() => delRegMut({ data: { id } }), refreshEvents)}
+            />
+          )
+        )}
 
-      {activeDomainId === "content" && activeTabId === "navigation" && (
-        <NavigationManager
-          menus={(navigationData?.menus ?? []) as any}
-          items={(navigationData?.items ?? []) as any}
-          onSaveMenu={(data) => runMutation(() => saveNavMenuMut({ data }), refreshNavigation)}
-          onSaveItem={(data) => runMutation(() => saveNavItemMut({ data }), refreshNavigation)}
-          onDeleteItem={(id) => runMutation(() => delNavItemMut({ data: { id } }), refreshNavigation)}
-        />
-      )}
+        {activeDomainId === "content" && activeTabId === "navigation" && (
+          navigationLoading && !navigationData ? (
+            <AdminTabSkeleton type="form" cardCount={0} />
+          ) : (
+            <NavigationManager
+              menus={(navigationData?.menus ?? []) as any}
+              items={(navigationData?.items ?? []) as any}
+              onSaveMenu={(data) => runMutation(() => saveNavMenuMut({ data }), refreshNavigation)}
+              onSaveItem={(data) => runMutation(() => saveNavItemMut({ data }), refreshNavigation)}
+              onDeleteItem={(id) => runMutation(() => delNavItemMut({ data: { id } }), refreshNavigation)}
+            />
+          )
+        )}
 
-      {activeDomainId === "content" && activeTabId === "dna" && (
-        <DnaStudiesManager
-          initialData={(dnaData as any) ?? null}
-          onSaveData={(data) => runMutation(() => saveDnaMut({ data }), refreshDna)}
-        />
-      )}
+        {activeDomainId === "content" && activeTabId === "dna" && (
+          dnaLoading && !dnaData ? (
+            <AdminTabSkeleton type="form" cardCount={3} />
+          ) : (
+            <DnaStudiesManager
+              initialData={(dnaData as any) ?? null}
+              onSaveData={(data) => runMutation(() => saveDnaMut({ data }), refreshDna)}
+            />
+          )
+        )}
 
-      {/* 4. DOMAIN: MEDIA & ARCHIVE */}
-      {activeDomainId === "media" && activeTabId === "media_library" && (
-        <MediaLibrary
-          mediaAssets={(mediaData?.media ?? []) as any}
-          onRegisterMedia={(data) => runMutation(() => saveMediaMut({ data }), refreshMedia)}
-        />
-      )}
+        {/* 4. DOMAIN: MEDIA & ARCHIVE */}
+        {activeDomainId === "media" && activeTabId === "media_library" && (
+          mediaLoading && !mediaData ? (
+            <AdminTabSkeleton type="grid" cardCount={3} />
+          ) : (
+            <MediaLibrary
+              mediaAssets={(mediaData?.media ?? []) as any}
+              onRegisterMedia={(data) => runMutation(() => saveMediaMut({ data }), refreshMedia)}
+            />
+          )
+        )}
 
-      {activeDomainId === "media" && activeTabId === "library_items" && (
-        <LibraryItemsManager
-          libraryItems={(libraryData ?? []) as any}
-          onSaveLibraryItem={(data) => runMutation(() => saveLibMut({ data }), refreshLibrary)}
-          onDeleteLibraryItem={(id) => runMutation(() => delLibMut({ data: { id } }), refreshLibrary)}
-        />
-      )}
+        {activeDomainId === "media" && activeTabId === "library_items" && (
+          libraryLoading && !libraryData ? (
+            <AdminTabSkeleton type="table" cardCount={3} />
+          ) : (
+            <LibraryItemsManager
+              libraryItems={(libraryData ?? []) as any}
+              onSaveLibraryItem={(data) => runMutation(() => saveLibMut({ data }), refreshLibrary)}
+              onDeleteLibraryItem={(id) => runMutation(() => delLibMut({ data: { id } }), refreshLibrary)}
+            />
+          )
+        )}
 
-      {/* 5. DOMAIN: COMMUNITY & INQUIRIES */}
-      {activeDomainId === "community" && activeTabId === "inquiries" && (
-        <InquiriesManager
-          inquiries={(inquiriesData?.inquiries ?? []) as any}
-          notes={(inquiriesData?.notes ?? []) as any}
-          onUpdateStatus={(id, status) => runMutation(() => updateInqStatusMut({ data: { id, status } }), refreshInquiries)}
-          onAddNote={(inquiry_id, note) =>
-            runMutation(() => addNoteMut({ data: { inquiry_id, note } }), refreshInquiries)
-          }
-        />
-      )}
+        {/* 5. DOMAIN: COMMUNITY & INQUIRIES */}
+        {activeDomainId === "community" && activeTabId === "inquiries" && (
+          inquiriesLoading && !inquiriesData ? (
+            <AdminTabSkeleton type="table" cardCount={3} />
+          ) : (
+            <InquiriesManager
+              inquiries={(inquiriesData?.inquiries ?? []) as any}
+              notes={(inquiriesData?.notes ?? []) as any}
+              onUpdateStatus={(id, status) => runMutation(() => updateInqStatusMut({ data: { id, status } }), refreshInquiries)}
+              onAddNote={(inquiry_id, note) =>
+                runMutation(() => addNoteMut({ data: { inquiry_id, note } }), refreshInquiries)
+              }
+            />
+          )
+        )}
 
-      {activeDomainId === "community" && activeTabId === "directory" && (
-        <DirectoryManager
-          businesses={(directoryData?.businesses ?? []) as any}
-          membershipRequests={(directoryData?.membershipRequests ?? []) as any}
-          onSaveBusiness={(data) => runMutation(() => saveBizMut({ data }), refreshDirectory)}
-          onDeleteBusiness={(id) => runMutation(() => delBizMut({ data: { id } }), refreshDirectory)}
-          onReviewRequest={(data) => runMutation(() => reviewReqMut({ data }), refreshDirectory)}
-        />
-      )}
+        {activeDomainId === "community" && activeTabId === "directory" && (
+          directoryLoading && !directoryData ? (
+            <AdminTabSkeleton type="table" cardCount={4} />
+          ) : (
+            <DirectoryManager
+              businesses={(directoryData?.businesses ?? []) as any}
+              membershipRequests={(directoryData?.membershipRequests ?? []) as any}
+              onSaveBusiness={(data) => runMutation(() => saveBizMut({ data }), refreshDirectory)}
+              onDeleteBusiness={(id) => runMutation(() => delBizMut({ data: { id } }), refreshDirectory)}
+              onReviewRequest={(data) => runMutation(() => reviewReqMut({ data }), refreshDirectory)}
+            />
+          )
+        )}
 
-      {activeDomainId === "community" && activeTabId === "verification" && (
-        <DirectoryManager
-          businesses={(directoryData?.businesses ?? []) as any}
-          membershipRequests={(directoryData?.membershipRequests ?? []) as any}
-          defaultTab="requests"
-          onSaveBusiness={(data) => runMutation(() => saveBizMut({ data }), refreshDirectory)}
-          onDeleteBusiness={(id) => runMutation(() => delBizMut({ data: { id } }), refreshDirectory)}
-          onReviewRequest={(data) => runMutation(() => reviewReqMut({ data }), refreshDirectory)}
-        />
-      )}
+        {activeDomainId === "community" && activeTabId === "verification" && (
+          directoryLoading && !directoryData ? (
+            <AdminTabSkeleton type="table" cardCount={4} />
+          ) : (
+            <DirectoryManager
+              businesses={(directoryData?.businesses ?? []) as any}
+              membershipRequests={(directoryData?.membershipRequests ?? []) as any}
+              defaultTab="requests"
+              onSaveBusiness={(data) => runMutation(() => saveBizMut({ data }), refreshDirectory)}
+              onDeleteBusiness={(id) => runMutation(() => delBizMut({ data: { id } }), refreshDirectory)}
+              onReviewRequest={(data) => runMutation(() => reviewReqMut({ data }), refreshDirectory)}
+            />
+          )
+        )}
 
-      {/* 6. DOMAIN: TREASURY & INITIATIVES */}
-      {activeDomainId === "treasury" && activeTabId === "treasury_ledger" && (
-        <TreasuryManager
-          contributions={(treasuryData?.contributions ?? []) as any}
-          verifiedTotal={treasuryData?.verifiedTotal ?? 0}
-          pendingTotal={treasuryData?.pendingTotal ?? 0}
-          onReviewContribution={(data) => runMutation(() => reviewTreasuryMut({ data }), refreshTreasury)}
-        />
-      )}
+        {/* 6. DOMAIN: TREASURY & INITIATIVES */}
+        {activeDomainId === "treasury" && activeTabId === "treasury_ledger" && (
+          treasuryLoading && !treasuryData ? (
+            <AdminTabSkeleton type="table" cardCount={4} />
+          ) : (
+            <TreasuryManager
+              contributions={(treasuryData?.contributions ?? []) as any}
+              verifiedTotal={treasuryData?.verifiedTotal ?? 0}
+              pendingTotal={treasuryData?.pendingTotal ?? 0}
+              onReviewContribution={(data) => runMutation(() => reviewTreasuryMut({ data }), refreshTreasury)}
+            />
+          )
+        )}
 
-      {activeDomainId === "treasury" && activeTabId === "initiatives" && (
-        <InitiativesManager
-          initiatives={(initiativesData ?? []) as any}
-          onSaveInitiative={(data) => runMutation(() => saveInitMut({ data }), refreshInitiatives)}
-          onDeleteInitiative={(id) => runMutation(() => delInitMut({ data: { id } }), refreshInitiatives)}
-        />
-      )}
+        {activeDomainId === "treasury" && activeTabId === "initiatives" && (
+          initiativesLoading && !initiativesData ? (
+            <AdminTabSkeleton type="grid" cardCount={3} />
+          ) : (
+            <InitiativesManager
+              initiatives={(initiativesData ?? []) as any}
+              onSaveInitiative={(data) => runMutation(() => saveInitMut({ data }), refreshInitiatives)}
+              onDeleteInitiative={(id) => runMutation(() => delInitMut({ data: { id } }), refreshInitiatives)}
+            />
+          )
+        )}
 
-      {activeDomainId === "treasury" && activeTabId === "achievers" && (
-        <AchieversManager
-          achievers={(achieversData ?? []) as any}
-          onSaveAchiever={(data) => runMutation(() => saveAchMut({ data }), refreshAchievers)}
-          onDeleteAchiever={(id) => runMutation(() => delAchMut({ data: { id } }), refreshAchievers)}
-        />
-      )}
+        {activeDomainId === "treasury" && activeTabId === "achievers" && (
+          achieversLoading && !achieversData ? (
+            <AdminTabSkeleton type="grid" cardCount={3} />
+          ) : (
+            <AchieversManager
+              achievers={(achieversData ?? []) as any}
+              onSaveAchiever={(data) => runMutation(() => saveAchMut({ data }), refreshAchievers)}
+              onDeleteAchiever={(id) => runMutation(() => delAchMut({ data: { id } }), refreshAchievers)}
+            />
+          )
+        )}
 
-      {/* 7. DOMAIN: SYSTEM, SECURITY & GOVERNANCE */}
-      {activeDomainId === "system" && activeTabId === "users" && (
-        <UsersManager
-          profiles={(usersData?.profiles ?? []) as any}
-          userRoles={(usersData?.userRoles ?? []) as any}
-          onAssignRole={(user_id, role) => runMutation(() => assignRoleMut({ data: { user_id, role } }), refreshUsers)}
-          onRemoveRole={(user_id, role) => runMutation(() => removeRoleMut({ data: { user_id, role } }), refreshUsers)}
-        />
-      )}
+        {/* 7. DOMAIN: SYSTEM, SECURITY & GOVERNANCE */}
+        {activeDomainId === "system" && activeTabId === "users" && (
+          usersLoading && !usersData ? (
+            <AdminTabSkeleton type="table" cardCount={3} />
+          ) : (
+            <UsersManager
+              profiles={(usersData?.profiles ?? []) as any}
+              userRoles={(usersData?.userRoles ?? []) as any}
+              onAssignRole={(user_id, role) => runMutation(() => assignRoleMut({ data: { user_id, role } }), refreshUsers)}
+              onRemoveRole={(user_id, role) => runMutation(() => removeRoleMut({ data: { user_id, role } }), refreshUsers)}
+            />
+          )
+        )}
 
-      {activeDomainId === "system" && activeTabId === "roles_matrix" && (
-        <RolesPermissionMatrix />
-      )}
+        {activeDomainId === "system" && activeTabId === "roles_matrix" && (
+          <RolesPermissionMatrix />
+        )}
 
-      {activeDomainId === "system" && activeTabId === "audit_logs" && (
-        <AuditLogsViewer auditLogs={(auditData ?? []) as any} />
-      )}
+        {activeDomainId === "system" && activeTabId === "audit_logs" && (
+          auditLoading && !auditData ? (
+            <AdminTabSkeleton type="table" cardCount={0} />
+          ) : (
+            <AuditLogsViewer auditLogs={(auditData ?? []) as any} />
+          )
+        )}
 
-      {activeDomainId === "system" && activeTabId === "site_settings" && (
-        <SiteSettingsManager
-          settings={(settingsData ?? []) as any}
-          onSaveSetting={(data) =>
-            runMutation(() => saveSettingMut({ data }), () =>
-              queryClient.invalidateQueries({ queryKey: ["site-settings-data"] }),
-            )
-          }
-        />
-      )}
+        {activeDomainId === "system" && activeTabId === "site_settings" && (
+          settingsLoading && !settingsData ? (
+            <AdminTabSkeleton type="form" cardCount={0} />
+          ) : (
+            <SiteSettingsManager
+              settings={(settingsData ?? []) as any}
+              onSaveSetting={(data) =>
+                runMutation(() => saveSettingMut({ data }), () =>
+                  queryClient.invalidateQueries({ queryKey: ["site-settings-data"] }),
+                )
+              }
+            />
+          )
+        )}
+      </div>
 
       {/* CSV/JSON Import & Export Modal */}
       <FamilyImportExportDialog
