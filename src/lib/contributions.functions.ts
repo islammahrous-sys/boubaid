@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth, requireTreasuryAuth } from "@/integrations/supabase/auth-middleware";
 import {
   contributionInputSchema,
   contributionReviewSchema,
@@ -82,9 +82,9 @@ export type TreasuryOverview = {
   totals: { verified: number; pending: number; count: number };
 };
 
-/** Treasury ledger — treasurer/admin RLS policies are the boundary. */
+/** Treasury ledger — requireTreasuryAuth is the boundary (RLS is defense-in-depth). */
 export const getTreasuryOverview = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireTreasuryAuth])
   .handler(async ({ context }): Promise<TreasuryOverview> => {
     const { supabase, userId } = context;
 
@@ -109,7 +109,7 @@ export const getTreasuryOverview = createServerFn({ method: "GET" })
   });
 
 export const reviewContribution = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireTreasuryAuth])
   .validator((input: unknown) => contributionReviewSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: updated, error } = await context.supabase
