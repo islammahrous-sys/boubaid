@@ -504,18 +504,16 @@ function MasterAdminPage() {
       {/* 1. DOMAIN: DASHBOARD (Command Center) */}
       {activeDomainId === "dashboard" && activeTabId === "overview" && (
         <AdminDashboardOverview
-          overviewData={
-            overviewData ?? {
-              totalMembers: 0,
-              livingMembers: 0,
-              deceasedMembers: 0,
-              pendingInquiries: 0,
-              publishedArticles: 0,
-              draftArticles: 0,
-              upcomingEvents: 0,
-              recentActivity: [],
-            }
-          }
+          overviewData={{
+            totalMembers: overviewData?.totalMembers ?? 0,
+            livingMembers: overviewData?.livingMembers ?? 0,
+            deceasedMembers: overviewData?.deceasedMembers ?? 0,
+            pendingInquiries: overviewData?.pendingInquiries ?? 0,
+            publishedArticles: overviewData?.totalArticles ?? 0,
+            draftArticles: (articlesData?.articles ?? []).filter((a) => a.status === "draft").length,
+            upcomingEvents: overviewData?.totalEvents ?? 0,
+            recentActivity: overviewData?.recentActivity ?? [],
+          }}
           treasuryData={treasuryData}
           directoryData={directoryData}
           articlesData={articlesData}
@@ -663,7 +661,7 @@ function MasterAdminPage() {
 
       {activeDomainId === "content" && activeTabId === "dna" && (
         <DnaStudiesManager
-          initialData={dnaData ?? null}
+          initialData={(dnaData as any) ?? null}
           onSaveData={(data) => runMutation(() => saveDnaMut({ data }), refreshDna)}
         />
       )}

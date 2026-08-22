@@ -14,8 +14,8 @@ import { getPublicFamilyTreeData } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 
 const searchSchema = z.object({
-  branch: z.string().optional().default("all"),
-  id: z.string().optional().default(""),
+  branch: z.string().optional(),
+  id: z.string().optional(),
 });
 
 export const Route = createFileRoute("/family-tree")({
