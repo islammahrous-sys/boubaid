@@ -215,8 +215,16 @@ export function FamilyHistoryManager({
             {/* Media Upload */}
             <div className="space-y-1 pt-1 border-t border-border">
               <Label className="text-xs font-semibold">{isAr ? "صورة أو وثيقة المحطة التاريخية" : "Historical Media / Photo"}</Label>
+              {/* `family_history_entries` is governed by `private.can_manage_family`
+                  (admin/super_admin/family_manager), matching the
+                  `requireFamilyManagementAuth`-gated `upsertFamilyHistory` server
+                  function. The "site-media" bucket's write RLS only grants
+                  can_edit_content (admin/super_admin/editor/content_manager) —
+                  a family_manager could save the entry's text but would get a
+                  storage permission error uploading its photo. "family-photos"
+                  is the bucket whose write RLS matches can_manage_family. */}
               <ImageUploadInput
-                bucket="site-media"
+                bucket="family-photos"
                 value={form.media_path}
                 onChange={(url) => setForm({ ...form, media_path: url })}
                 placeholder={isAr ? "رابط الصورة أو ارفع صورة..." : "Image URL or upload..."}

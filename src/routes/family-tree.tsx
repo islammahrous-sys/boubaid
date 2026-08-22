@@ -130,13 +130,20 @@ function FamilyTreePage() {
         const genNum = (Math.min(Math.max(row.generation || 1, 1), 4) as 1 | 2 | 3 | 4);
         list.push({
           id: row.id,
+          // `family_members` has no `father_name_ar` / `lineage_notes` / `bio_ar`
+          // columns (verified against the live schema) — those were always
+          // `undefined`, so every DB-sourced member silently fell back to the
+          // placeholder lineage/bio text below regardless of what was actually
+          // entered. The real columns are `middle_name_ar` (used for the
+          // father's/grandfather's name per the admin form's own label) and
+          // `biography_ar`/`biography_en`.
           name: {
-            ar: `${row.first_name_ar} ${row.father_name_ar || ""} ${row.last_name_ar}`.trim(),
+            ar: `${row.first_name_ar} ${row.middle_name_ar || ""} ${row.last_name_ar}`.trim(),
             en: row.first_name_en ? `${row.first_name_en} ${row.last_name_en || ""}`.trim() : `${row.first_name_ar} ${row.last_name_ar}`,
           },
           lineage: {
-            ar: row.lineage_notes || `${row.first_name_ar} بن ${row.father_name_ar || "أحمد"} آل بوعبيد`,
-            en: row.lineage_notes || `${row.first_name_en || row.first_name_ar} Al Bu Obaid`,
+            ar: `${row.first_name_ar} بن ${row.middle_name_ar || "أحمد"} آل بوعبيد`,
+            en: `${row.first_name_en || row.first_name_ar} Al Bu Obaid`,
           },
           generation: genNum,
           generationTitle: generationLabels[genNum],
@@ -155,11 +162,11 @@ function FamilyTreePage() {
           },
           title: row.occupation_ar ? { ar: row.occupation_ar, en: row.occupation_en || row.occupation_ar } : undefined,
           bio: {
-            ar: row.bio_ar || "فرد موثق بسجلات أمانة مجلس الأسرة.",
-            en: row.bio_en || "Documented family member in council records.",
+            ar: row.biography_ar || "فرد موثق بسجلات أمانة مجلس الأسرة.",
+            en: row.biography_en || "Documented family member in council records.",
           },
           relations: {
-            father: row.father_name_ar ? { ar: row.father_name_ar, en: row.father_name_ar } : undefined,
+            father: row.middle_name_ar ? { ar: row.middle_name_ar, en: row.middle_name_en || row.middle_name_ar } : undefined,
             lineageChain: [],
           },
           isPatriarch: row.generation === 1,
