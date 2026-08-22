@@ -2044,7 +2044,77 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      replace_content_page_sections: {
+        Args: { p_page_id: string; p_sections: Json }
+        Returns: {
+          created_at: string
+          data: Json
+          id: string
+          page_id: string
+          settings: Json
+          sort_order: number
+          type: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["visibility_level"]
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "content_sections"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      restore_content_revision: {
+        Args: { p_revision_id: string }
+        Returns: {
+          created_at: string
+          data: Json
+          id: string
+          page_id: string
+          settings: Json
+          sort_order: number
+          type: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["visibility_level"]
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "content_sections"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      review_membership_request_as_admin: {
+        Args: {
+          p_actor_id: string
+          p_request_id: string
+          p_review_note: string
+          p_status: string
+        }
+        Returns: {
+          branch_slug: string | null
+          created_at: string
+          email: string
+          father_lineage: string | null
+          full_name_ar: string
+          full_name_en: string | null
+          id: string
+          notes: string | null
+          phone: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["request_status"]
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "membership_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role:

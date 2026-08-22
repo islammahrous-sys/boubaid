@@ -314,24 +314,23 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
 
     if (error) throw new Error(`Failed to save page: ${error.message}`);
 
-    // If sections were provided, sync sections. Both steps are checked: a
-    // failed re-insert after the delete must not be reported as a successful
-    // save — that would silently strip every content block from the page.
+    // If sections were provided, replace them atomically (delete+insert in a
+    // single DB transaction via the RPC below) so a failure partway through
+    // can never leave the page with some sections deleted and the rest never
+    // inserted — see supabase/migrations/20260822070000_atomic_content_page_sections.sql.
     if (sections) {
-      const { error: delError } = await supabase.from("content_sections").delete().eq("page_id", page.id);
-      if (delError) throw new Error(`Failed to save page sections: ${delError.message}`);
-      if (sections.length > 0) {
-        const sectionsToInsert = sections.map((s, idx) => ({
-          page_id: page.id,
-          type: s.type,
-          sort_order: idx,
-          data: s.data,
-          settings: s.settings,
-          visibility: s.visibility,
-        }));
-        const { error: insError } = await supabase.from("content_sections").insert(sectionsToInsert as never);
-        if (insError) throw new Error(`Failed to save page sections: ${insError.message}`);
-      }
+      const sectionsToReplace = sections.map((s, idx) => ({
+        type: s.type,
+        sort_order: idx,
+        data: s.data,
+        settings: s.settings,
+        visibility: s.visibility,
+      }));
+      const { error: sectionsError } = await supabase.rpc("replace_content_page_sections", {
+        p_page_id: page.id,
+        p_sections: sectionsToReplace as never,
+      });
+      if (sectionsError) throw new Error(`Failed to save page sections: ${sectionsError.message}`);
     }
 
     // Save revision snapshot
@@ -885,7 +884,9 @@ export const reviewMembershipRequest = createServerFn({ method: "POST" })
     const { data: req, error } = await supabaseAdmin.rpc("review_membership_request_as_admin", {
       p_request_id: data.id,
       p_status: data.status,
-      p_review_note: data.review_note || null,
+      // The RPC's p_review_note is a required string param; it does its own
+      // NULLIF(trim(p_review_note), '') to treat an empty string as "no note".
+      p_review_note: data.review_note || "",
       p_actor_id: actorId,
     });
 
