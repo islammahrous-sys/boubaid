@@ -98,71 +98,194 @@ function AuthPage() {
         )}
       />
 
-      <section className="container-page mt-12 max-w-md reveal-fade">
-        <div className="border border-border bg-card p-6">
-          <div className="mb-6 grid grid-cols-2 border border-border">
-            {(["signin", "signup"] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMode(m)}
-                className={`py-2 text-[13px] font-medium transition-colors ${
-                  mode === m
-                    ? "bg-ink text-ivory dark:bg-gold dark:text-ink"
-                    : "text-muted-foreground hover:bg-secondary"
-                }`}
-              >
-                {m === "signin"
-                  ? label("تسجيل الدخول", "Sign in")
-                  : label("حساب جديد", "Create account")}
-              </button>
-            ))}
-          </div>
+      <section className="container-page mt-12 reveal-fade">
+        <div className="mx-auto grid max-w-5xl overflow-hidden border border-border bg-card lg:grid-cols-[1.05fr_1fr]">
+          {/* Brand panel */}
+          <aside className="relative hidden min-h-[560px] lg:block">
+            <img
+              src={heroManuscript}
+              alt={label(
+                "مخطوطة تاريخية من أرشيف أسرة آل بوعبيد",
+                "A historic manuscript from the Al Bu Obaid family archive",
+              )}
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/80 to-ink/50" />
+            <div className="relative flex h-full flex-col justify-between p-10 text-ivory">
+              <img
+                src="/logo-mark-cream.svg"
+                alt={label("شعار مجلس أسرة آل بوعبيد", "Al Bu Obaid Family Council emblem")}
+                className="h-14 w-auto opacity-95"
+              />
+              <div className="space-y-6">
+                <h2 className="font-naskh text-2xl leading-relaxed text-ivory/95">
+                  {label(
+                    "سجلٌ عائلي واحد، وأمانةٌ واحدة، تُحفظ بها الصلة بين الفروع.",
+                    "One family register, one trust — keeping every branch connected.",
+                  )}
+                </h2>
+                <ul className="space-y-4 text-[13px] text-ivory/80">
+                  {[
+                    {
+                      icon: ShieldCheck,
+                      text: label("حساب موثّق ومعتمد من أمانة المجلس", "Account verified by the council secretariat"),
+                    },
+                    {
+                      icon: UsersRound,
+                      text: label("دليل الأعضاء والفروع والمشجرة الموثّقة", "Member directory, branches and the documented tree"),
+                    },
+                    {
+                      icon: Landmark,
+                      text: label("متابعة الاشتراكات ومساهمات الصندوق", "Track subscriptions and fund contributions"),
+                    },
+                  ].map(({ icon: Icon, text }) => (
+                    <li key={text} className="flex items-start gap-3">
+                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-gold" aria-hidden />
+                      <span className="leading-relaxed">{text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </aside>
 
-          <form onSubmit={onSubmit} className="space-y-4">
-            {mode === "signup" ? (
+          {/* Form panel */}
+          <div className="p-6 sm:p-10">
+            <div className="mb-8">
+              <p className="label-caps text-muted-foreground">
+                {label("الأمانة العامة — بوابة الأعضاء", "Secretariat — member portal")}
+              </p>
+              <h1 className="mt-2 font-naskh text-2xl text-foreground">
+                {mode === "signin"
+                  ? label("مرحباً بعودتك", "Welcome back")
+                  : label("إنشاء حساب عضو", "Create a member account")}
+              </h1>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                {mode === "signin"
+                  ? label(
+                      "أدخل بيانات حسابك للوصول إلى خدمات الأسرة.",
+                      "Enter your credentials to reach the family services.",
+                    )
+                  : label(
+                      "سجّل بياناتك، ثم قدّم طلب العضوية لاعتماده من الأمانة.",
+                      "Register your details, then submit a membership request for approval.",
+                    )}
+              </p>
+            </div>
+
+            <div
+              role="tablist"
+              aria-label={label("نوع الدخول", "Access mode")}
+              className="mb-7 grid grid-cols-2 border border-border p-1"
+            >
+              {(["signin", "signup"] as const).map((m) => (
+                <button
+                  key={m}
+                  role="tab"
+                  aria-selected={mode === m}
+                  type="button"
+                  onClick={() => setMode(m)}
+                  className={`py-2 text-[13px] font-medium transition-all duration-300 ${
+                    mode === m
+                      ? "bg-ink text-ivory shadow-sm dark:bg-gold dark:text-ink"
+                      : "text-muted-foreground hover:bg-secondary"
+                  }`}
+                >
+                  {m === "signin"
+                    ? label("تسجيل الدخول", "Sign in")
+                    : label("حساب جديد", "Create account")}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={onSubmit} className="space-y-5">
+              {mode === "signup" ? (
+                <Field
+                  id="full-name"
+                  label={label("الاسم الكامل (بالعربية)", "Full name (Arabic)")}
+                  value={fullName}
+                  onChange={setFullName}
+                  autoComplete="name"
+                  required
+                />
+              ) : null}
               <Field
-                id="full-name"
-                label={label("الاسم الكامل (بالعربية)", "Full name (Arabic)")}
-                value={fullName}
-                onChange={setFullName}
+                id="email"
+                type="email"
+                label={label("البريد الإلكتروني", "Email")}
+                value={email}
+                onChange={setEmail}
+                autoComplete="email"
+                dir="ltr"
                 required
               />
-            ) : null}
-            <Field
-              id="email"
-              type="email"
-              label={label("البريد الإلكتروني", "Email")}
-              value={email}
-              onChange={setEmail}
-              required
-            />
-            <Field
-              id="password"
-              type="password"
-              label={label("كلمة المرور", "Password")}
-              value={password}
-              onChange={setPassword}
-              required
-            />
-            <button
-              type="submit"
-              disabled={busy}
-              className="w-full border border-gold bg-gold px-4 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
-            >
-              {busy
-                ? label("جارٍ المعالجة…", "Working…")
-                : mode === "signin"
-                  ? label("دخول", "Sign in")
-                  : label("إنشاء الحساب", "Create account")}
-            </button>
-          </form>
+              <Field
+                id="password"
+                type={showPassword ? "text" : "password"}
+                label={label("كلمة المرور", "Password")}
+                value={password}
+                onChange={setPassword}
+                autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                dir="ltr"
+                required
+                hint={
+                  mode === "signup"
+                    ? label("٨ أحرف على الأقل.", "At least 8 characters.")
+                    : undefined
+                }
+                trailing={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={
+                      showPassword
+                        ? label("إخفاء كلمة المرور", "Hide password")
+                        : label("إظهار كلمة المرور", "Show password")
+                    }
+                    className="text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                }
+              />
 
-          <p className="mt-5 text-center text-[12px] text-muted-foreground">
-            <Link to="/contact" className="underline hover:text-foreground">
-              {label("تحتاج مساعدة؟ اتصل بالأمانة", "Need help? Contact the secretariat")}
-            </Link>
-          </p>
+              <button
+                type="submit"
+                disabled={busy}
+                className="flex w-full items-center justify-center gap-2 border border-gold bg-gold px-4 py-3 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
+              >
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+                {busy
+                  ? label("جارٍ المعالجة…", "Working…")
+                  : mode === "signin"
+                    ? label("دخول", "Sign in")
+                    : label("إنشاء الحساب", "Create account")}
+              </button>
+            </form>
+
+            <div className="mt-7 border-t border-border pt-5 text-center text-[12px] leading-relaxed text-muted-foreground">
+              <p>
+                {mode === "signin"
+                  ? label("ليس لديك حساب؟ ", "No account yet? ")
+                  : label("لديك حساب بالفعل؟ ", "Already registered? ")}
+                <button
+                  type="button"
+                  onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                  className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
+                >
+                  {mode === "signin"
+                    ? label("أنشئ حساباً جديداً", "Create one")
+                    : label("سجّل الدخول", "Sign in")}
+                </button>
+              </p>
+              <p className="mt-3">
+                <Link to="/contact" className="underline hover:text-foreground">
+                  {label("تحتاج مساعدة؟ اتصل بالأمانة", "Need help? Contact the secretariat")}
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -176,6 +299,10 @@ function Field({
   onChange,
   type = "text",
   required,
+  autoComplete,
+  dir,
+  hint,
+  trailing,
 }: {
   id: string;
   label: string;
@@ -183,20 +310,31 @@ function Field({
   onChange: (v: string) => void;
   type?: string;
   required?: boolean;
+  autoComplete?: string;
+  dir?: "ltr" | "rtl";
+  hint?: string;
+  trailing?: React.ReactNode;
 }) {
   return (
     <div>
       <label htmlFor={id} className="label-caps mb-1.5 block text-muted-foreground">
         {label}
       </label>
-      <input
-        id={id}
-        type={type}
-        required={required}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
-      />
+      <div className="flex items-center gap-2 border border-border bg-background px-3 transition-colors focus-within:border-gold">
+        <input
+          id={id}
+          type={type}
+          dir={dir}
+          required={required}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full bg-transparent py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+        />
+        {trailing}
+      </div>
+      {hint ? <p className="mt-1.5 text-[11px] text-muted-foreground">{hint}</p> : null}
     </div>
   );
 }
+
