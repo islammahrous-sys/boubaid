@@ -143,46 +143,49 @@ export const getPublishedNews = createServerFn({ method: "GET" }).handler(
       const { createPublicServerClient } = await import("./supabase-public.server");
       const supabase = createPublicServerClient();
 
-      const { data: articlesData } = await supabase
-        .from("articles")
-        .select("id, slug, title_ar, title_en, excerpt_ar, excerpt_en, content_ar, content_en, featured_media_path, status, published_at, created_at")
-        .eq("status", "published")
-        .order("created_at", { ascending: false });
+      const [{ data: articlesData }, { data: newsPostsData, error: newsPostsError }] = await Promise.all([
+        supabase
+          .from("articles")
+          .select("id, slug, title_ar, title_en, excerpt_ar, excerpt_en, content_ar, content_en, featured_media_path, status, published_at, created_at")
+          .eq("status", "published")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("news_posts")
+          .select(NEWS_COLS)
+          .order("sort_order", { ascending: false })
+          .order("created_at", { ascending: false })
+          .limit(200),
+      ]);
 
-      if (articlesData && articlesData.length > 0) {
-        const mapped: NewsRow[] = articlesData.map((a: any, idx: number) => ({
-          id: a.id,
-          slug: a.slug,
-          section: "fund",
-          title_ar: a.title_ar,
-          title_en: a.title_en,
-          excerpt_ar: a.excerpt_ar,
-          excerpt_en: a.excerpt_en,
-          body_ar: a.content_ar,
-          body_en: a.content_en,
-          hijri_date: "1447",
-          gregorian_date: (a.published_at ?? a.created_at)
-            ? new Date(a.published_at ?? a.created_at).toISOString().split("T")[0]
-            : null,
-          cover_path: a.featured_media_path,
-          is_published: true,
-          sort_order: idx + 1,
-          created_at: a.created_at,
-        }));
-        return withMedia(mapped, [{ from: "cover_path", to: "cover_url" }]);
+      if (newsPostsError) {
+        console.error("[cms] news read failed", newsPostsError.code, newsPostsError.message);
       }
 
-      const { data, error } = await supabase
-        .from("news_posts")
-        .select(NEWS_COLS)
-        .order("sort_order", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(200);
-      if (error) {
-        console.error("[cms] news read failed", error.code, error.message);
-        return [];
-      }
-      return withMedia((data ?? []) as NewsRow[], [{ from: "cover_path", to: "cover_url" }]);
+      const mappedArticles: NewsRow[] = (articlesData ?? []).map((a: any, idx: number) => ({
+        id: a.id,
+        slug: a.slug,
+        section: "fund",
+        title_ar: a.title_ar,
+        title_en: a.title_en,
+        excerpt_ar: a.excerpt_ar,
+        excerpt_en: a.excerpt_en,
+        body_ar: a.content_ar,
+        body_en: a.content_en,
+        hijri_date: "1447",
+        gregorian_date: (a.published_at ?? a.created_at)
+          ? new Date(a.published_at ?? a.created_at).toISOString().split("T")[0]
+          : null,
+        cover_path: a.featured_media_path,
+        is_published: true,
+        sort_order: idx + 1,
+        created_at: a.created_at,
+      }));
+
+      const merged: NewsRow[] = [...mappedArticles, ...((newsPostsData ?? []) as NewsRow[])].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+
+      return withMedia(merged, [{ from: "cover_path", to: "cover_url" }]);
     } catch (err) {
       console.error("[cms] getPublishedNews caught error", err);
       return [];
@@ -655,42 +658,49 @@ export const getPublicGlobalSearch = createServerFn({ method: "GET" })
   .handler(async ({ data: query }) => {
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
-    const cleanQuery = query.trim();
+    // `.or(...)` builds a raw PostgREST filter string where `,` separates
+    // conditions and `(` `)` nest logical groups. Left unescaped, user input
+    // containing those characters could append or restructure filter
+    // clauses (e.g. smuggling in an extra condition). Strip them so the
+    // query text can only ever land inside the intended ilike value slots.
+    const cleanQuery = query.trim().replace(/[,()]/g, "");
 
     const [membersRes, articlesRes, initiativesRes, achieversRes, libraryRes, branchesRes] = await Promise.all([
       supabase
         .from("family_members")
-        .select("id, slug, first_name_ar, last_name_ar, occupation_ar, avatar_path")
+        .select("id, slug, first_name_ar, last_name_ar, first_name_en, last_name_en, occupation_ar, avatar_path")
         .eq("visibility", "public")
-        .or(`first_name_ar.ilike.%${cleanQuery}%,last_name_ar.ilike.%${cleanQuery}%,slug.ilike.%${cleanQuery}%`)
+        .or(
+          `first_name_ar.ilike.%${cleanQuery}%,last_name_ar.ilike.%${cleanQuery}%,first_name_en.ilike.%${cleanQuery}%,last_name_en.ilike.%${cleanQuery}%,slug.ilike.%${cleanQuery}%`,
+        )
         .limit(6),
       supabase
         .from("articles")
-        .select("id, slug, title_ar, excerpt_ar, featured_media_path")
+        .select("id, slug, title_ar, excerpt_ar, title_en, excerpt_en, featured_media_path")
         .eq("status", "published")
-        .or(`title_ar.ilike.%${cleanQuery}%,excerpt_ar.ilike.%${cleanQuery}%`)
+        .or(`title_ar.ilike.%${cleanQuery}%,excerpt_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%,excerpt_en.ilike.%${cleanQuery}%`)
         .limit(4),
       supabase
         .from("initiatives")
-        .select("id, slug, title_ar, excerpt_ar, image_path")
-        .or(`title_ar.ilike.%${cleanQuery}%,excerpt_ar.ilike.%${cleanQuery}%`)
+        .select("id, slug, title_ar, summary_ar, title_en, summary_en, cover_path")
+        .or(`title_ar.ilike.%${cleanQuery}%,summary_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%,summary_en.ilike.%${cleanQuery}%`)
         .limit(4),
       supabase
         .from("achievers")
-        .select("id, name_ar, field_ar, achievement_ar, image_path")
+        .select("id, name_ar, field_ar, achievement_ar, name_en, field_en, image_path")
         .eq("is_published", true)
-        .or(`name_ar.ilike.%${cleanQuery}%,field_ar.ilike.%${cleanQuery}%`)
+        .or(`name_ar.ilike.%${cleanQuery}%,field_ar.ilike.%${cleanQuery}%,name_en.ilike.%${cleanQuery}%,field_en.ilike.%${cleanQuery}%`)
         .limit(4),
       supabase
         .from("library_items")
-        .select("id, title_ar, collection, kind, file_path")
+        .select("id, title_ar, title_en, collection, kind, file_path")
         .eq("is_published", true)
-        .ilike("title_ar", `%${cleanQuery}%`)
+        .or(`title_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%`)
         .limit(4),
       supabase
         .from("branches")
-        .select("id, slug, name_ar, elder_ar")
-        .or(`name_ar.ilike.%${cleanQuery}%,elder_ar.ilike.%${cleanQuery}%`)
+        .select("id, slug, name_ar, elder_ar, name_en, elder_en")
+        .or(`name_ar.ilike.%${cleanQuery}%,elder_ar.ilike.%${cleanQuery}%,name_en.ilike.%${cleanQuery}%,elder_en.ilike.%${cleanQuery}%`)
         .limit(4),
     ]);
 
