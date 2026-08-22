@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
@@ -34,6 +34,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+/** How many entries are shown per page in the register. */
+const PAGE_SIZE = 20;
 
 export const Route = createFileRoute("/achievers")({
   loader: async () => {
@@ -99,6 +110,7 @@ function AchieversPage() {
   const { achievers } = Route.useLoaderData();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
   const [activeAchiever, setActiveAchiever] = useState<any | null>(null);
   const [nominationOpen, setNominationOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -138,6 +150,18 @@ function AchieversPage() {
   }, [achievers, selectedCategory, searchQuery, t]);
 
   const fieldCount = new Set(achievers.map((a) => a.category)).size;
+
+  // Switching the search or category filter starts a fresh page 1 so the
+  // reader never lands on an out-of-range page for the new result set.
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, selectedCategory]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paged = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page],
+  );
 
   const handleNominationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -261,9 +285,9 @@ function AchieversPage() {
             </div>
 
             <ol>
-              {filtered.map((person, i) => (
+              {paged.map((person, i) => (
                 <li
-                  key={`${t(person.name)}-${i}`}
+                  key={`${t(person.name)}-${(page - 1) * PAGE_SIZE + i}`}
                   onClick={() => setActiveAchiever(person)}
                   className="group grid grid-cols-[4rem_1fr] items-start gap-x-5 gap-y-1.5 border-b border-border py-5 md:grid-cols-[2.5rem_4rem_minmax(0,14rem)_minmax(0,10rem)_1fr] md:gap-x-6 cursor-pointer hover:bg-secondary/30 transition-colors px-2 rounded-sm"
                 >
@@ -271,7 +295,7 @@ function AchieversPage() {
                     className="nums order-2 hidden font-mono text-sm text-bronze/70 md:order-none md:block dark:text-gold/60"
                     aria-hidden="true"
                   >
-                    {String(i + 1).padStart(2, "0")}
+                    {String((page - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}
                   </span>
 
                   <div className="w-16 h-20 rounded-md overflow-hidden border border-border shrink-0 bg-secondary/50">
@@ -316,6 +340,47 @@ function AchieversPage() {
                 </li>
               ))}
             </ol>
+
+            {totalPages > 1 && (
+              <Pagination className="mt-10">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage((p) => Math.max(1, p - 1));
+                      }}
+                      className={cn(page <= 1 && "pointer-events-none opacity-40")}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        href="#"
+                        isActive={p === page}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPage(p);
+                        }}
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage((p) => Math.min(totalPages, p + 1));
+                      }}
+                      className={cn(page >= totalPages && "pointer-events-none opacity-40")}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </>
         )}
       </div>

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -9,6 +10,18 @@ import { pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Status, Prose } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
+import { cn } from "@/lib/utils";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+/** How many programmes are shown per page in the schedule table. */
+const PAGE_SIZE = 20;
 
 export const Route = createFileRoute("/initiatives")({
   loader: async () => {
@@ -76,9 +89,16 @@ function InitiativesPage() {
   const { initiatives } = Route.useLoaderData();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
+  const [page, setPage] = useState(1);
 
   const activeCount = initiatives.filter((i) => i.status === "ongoing").length;
   const plannedCount = initiatives.length - activeCount;
+
+  const totalPages = Math.max(1, Math.ceil(initiatives.length / PAGE_SIZE));
+  const pagedInitiatives = useMemo(
+    () => initiatives.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [initiatives, page],
+  );
 
   return (
     <>
@@ -194,7 +214,7 @@ function InitiativesPage() {
         </h2>
 
         <ol className="mt-8 border-t border-ink/25 dark:border-ivory/20">
-          {initiatives.map((init, i) => (
+          {pagedInitiatives.map((init, i) => (
             <li key={init.slug} className="border-b border-border">
               <Link
                 to="/initiatives/$slug"
@@ -205,7 +225,7 @@ function InitiativesPage() {
                   className="nums font-mono text-sm text-bronze/70 dark:text-gold/60"
                   aria-hidden="true"
                 >
-                  {String(i + 1).padStart(2, "0")}
+                  {String((page - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}
                 </span>
 
                 <h3 className="text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
@@ -225,6 +245,47 @@ function InitiativesPage() {
             </li>
           ))}
         </ol>
+
+        {totalPages > 1 && (
+          <Pagination className="mt-10">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage((p) => Math.max(1, p - 1));
+                  }}
+                  className={cn(page <= 1 && "pointer-events-none opacity-40")}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <PaginationItem key={p}>
+                  <PaginationLink
+                    href="#"
+                    isActive={p === page}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage(p);
+                    }}
+                  >
+                    {p}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage((p) => Math.min(totalPages, p + 1));
+                  }}
+                  className={cn(page >= totalPages && "pointer-events-none opacity-40")}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </section>
 
       {/* ── Support ─────────────────────────────────────────── */}
