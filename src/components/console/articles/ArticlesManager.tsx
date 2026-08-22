@@ -1,0 +1,912 @@
+import { useState, useMemo } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { useLang } from "@/i18n/LanguageProvider";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Newspaper,
+  Star,
+  Search,
+  Filter,
+  CheckSquare,
+  X,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Eye,
+  FileText,
+  Clock,
+  Sparkles,
+  Layers,
+} from "lucide-react";
+import type { ArticleInput, BulkArticlesActionInput } from "@/lib/admin-hub.schemas";
+import { toast } from "sonner";
+import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
+
+export type ArticleRow = {
+  id: string;
+  slug: string;
+  title_ar: string;
+  title_en?: string | null;
+  excerpt_ar?: string | null;
+  excerpt_en?: string | null;
+  content_ar?: string | null;
+  content_en?: string | null;
+  featured_media_path?: string | null;
+  category_id?: string | null;
+  status: "draft" | "in_review" | "scheduled" | "published" | "archived";
+  is_featured: boolean;
+  published_at?: string | null;
+  created_at: string;
+  updated_at?: string;
+};
+
+export function ArticlesManager({
+  articles,
+  categories,
+  onSaveArticle,
+  onBulkAction,
+}: {
+  articles: ArticleRow[];
+  categories: { id: string; name_ar: string; name_en?: string | null }[];
+  onSaveArticle: (data: ArticleInput) => Promise<void>;
+  onBulkAction?: (data: BulkArticlesActionInput) => Promise<void>;
+}) {
+  const { lang } = useLang();
+  const isAr = lang === "ar";
+
+  // Filter States
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [featuredFilter, setFeaturedFilter] = useState("all");
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
+
+  // Selection
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkLoading, setBulkLoading] = useState(false);
+
+  // Dialogs
+  const [formOpen, setFormOpen] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<ArticleRow | null>(null);
+  const [previewArticle, setPreviewArticle] = useState<ArticleRow | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const [form, setForm] = useState<ArticleInput>({
+    id: undefined,
+    slug: "",
+    title_ar: "",
+    title_en: "",
+    excerpt_ar: "",
+    excerpt_en: "",
+    content_ar: "",
+    content_en: "",
+    featured_media_path: "",
+    category_id: null,
+    status: "published",
+    is_featured: false,
+  });
+
+  // Calculate live word count & reading time
+  const readingStats = useMemo(() => {
+    const text = (form.content_ar || "") + " " + (form.content_en || "");
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.ceil(words / 180));
+    return { words, minutes };
+  }, [form.content_ar, form.content_en]);
+
+  // Demographic Statistics
+  const stats = useMemo(() => {
+    const total = articles.length;
+    const published = articles.filter((a) => a.status === "published").length;
+    const drafts = articles.filter((a) => a.status === "draft").length;
+    const featured = articles.filter((a) => a.is_featured).length;
+    return { total, published, drafts, featured };
+  }, [articles]);
+
+  const filteredArticles = useMemo(() => {
+    return articles.filter((a) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        a.title_ar.toLowerCase().includes(q) ||
+        (a.title_en && a.title_en.toLowerCase().includes(q)) ||
+        a.slug.toLowerCase().includes(q) ||
+        (a.excerpt_ar && a.excerpt_ar.toLowerCase().includes(q));
+
+      const matchStatus = statusFilter === "all" || a.status === statusFilter;
+      const matchCategory = categoryFilter === "all" || a.category_id === categoryFilter;
+      const matchFeatured =
+        featuredFilter === "all" ||
+        (featuredFilter === "featured" && a.is_featured) ||
+        (featuredFilter === "standard" && !a.is_featured);
+
+      return matchSearch && matchStatus && matchCategory && matchFeatured;
+    });
+  }, [articles, search, statusFilter, categoryFilter, featuredFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / pageSize));
+  const paginatedArticles = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredArticles.slice(start, start + pageSize);
+  }, [filteredArticles, currentPage, pageSize]);
+
+  const handleOpenAdd = () => {
+    setSelectedArticle(null);
+    setForm({
+      id: undefined,
+      slug: "",
+      title_ar: "",
+      title_en: "",
+      excerpt_ar: "",
+      excerpt_en: "",
+      content_ar: "",
+      content_en: "",
+      featured_media_path: "",
+      category_id: null,
+      status: "published",
+      is_featured: false,
+    });
+    setFormOpen(true);
+  };
+
+  const handleOpenEdit = (art: ArticleRow) => {
+    setSelectedArticle(art);
+    setForm({
+      id: art.id,
+      slug: art.slug,
+      title_ar: art.title_ar,
+      title_en: art.title_en ?? "",
+      excerpt_ar: art.excerpt_ar ?? "",
+      excerpt_en: art.excerpt_en ?? "",
+      content_ar: art.content_ar ?? "",
+      content_en: art.content_en ?? "",
+      featured_media_path: art.featured_media_path ?? "",
+      category_id: art.category_id ?? null,
+      status: art.status,
+      is_featured: art.is_featured,
+    });
+    setFormOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title_ar.trim() || !form.slug.trim()) return;
+    try {
+      setLoading(true);
+      await onSaveArticle(form);
+      setFormOpen(false);
+      toast.success(isAr ? "تم حفظ المقال بنجاح" : "Article saved successfully");
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? "فشل حفظ المقال" : "Failed to save"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleFeatured = async (art: ArticleRow) => {
+    try {
+      await onSaveArticle({
+        id: art.id,
+        slug: art.slug,
+        title_ar: art.title_ar,
+        title_en: art.title_en ?? undefined,
+        excerpt_ar: art.excerpt_ar ?? undefined,
+        excerpt_en: art.excerpt_en ?? undefined,
+        content_ar: art.content_ar ?? undefined,
+        content_en: art.content_en ?? undefined,
+        featured_media_path: art.featured_media_path ?? undefined,
+        category_id: art.category_id ?? null,
+        status: art.status,
+        is_featured: !art.is_featured,
+      });
+      toast.success(isAr ? "تم تحديث تمييز المقال" : "Featured status updated");
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? "فشل التحديث" : "Failed to update"));
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* 1. SUMMARY STATS BANNER */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-3.5 rounded-2xl border border-border bg-card">
+          <span className="text-[11px] text-muted-foreground block font-medium">
+            {isAr ? "إجمالي المقالات" : "Total Articles"}
+          </span>
+          <span className="text-xl font-bold font-mono text-foreground mt-0.5 block">{stats.total}</span>
+        </div>
+        <div className="p-3.5 rounded-2xl border border-emerald-500/20 bg-emerald-500/5">
+          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 block font-medium">
+            {isAr ? "منشور ومتاح" : "Published"}
+          </span>
+          <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block">
+            {stats.published}
+          </span>
+        </div>
+        <div className="p-3.5 rounded-2xl border border-amber-500/20 bg-amber-500/5">
+          <span className="text-[11px] text-amber-600 dark:text-amber-400 block font-medium">
+            {isAr ? "مسودات قيد الإعداد" : "Drafts"}
+          </span>
+          <span className="text-xl font-bold font-mono text-amber-600 dark:text-amber-400 mt-0.5 block">
+            {stats.drafts}
+          </span>
+        </div>
+        <div className="p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/5">
+          <span className="text-[11px] text-purple-600 dark:text-purple-400 block font-medium">
+            {isAr ? "مقالات مميزة" : "Featured"}
+          </span>
+          <span className="text-xl font-bold font-mono text-purple-600 dark:text-purple-400 mt-0.5 block">
+            {stats.featured}
+          </span>
+        </div>
+      </div>
+
+      {/* 2. SEARCH & FILTER TOOLBAR */}
+      <div className="flex flex-col gap-3 bg-card p-4 rounded-2xl border border-border">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="relative flex-1 min-w-[240px]">
+            <Search className="w-4 h-4 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder={isAr ? "بحث في عناوين المقالات، المقتطفات، والمعرف..." : "Search articles..."}
+              className="ps-9 h-9 text-xs rounded-xl"
+            />
+          </div>
+
+          <Button size="sm" onClick={handleOpenAdd} className="h-9 text-xs gap-1.5 font-bold rounded-xl bg-primary text-primary-foreground">
+            <Plus className="w-4 h-4" />
+            <span>{isAr ? "كتابة مقال جديد" : "New Article"}</span>
+          </Button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/40">
+          <Select
+            value={statusFilter}
+            onValueChange={(val) => {
+              setStatusFilter(val);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="h-8 w-[130px] text-xs rounded-lg">
+              <Filter className="w-3 h-3 me-1 text-muted-foreground" />
+              <SelectValue placeholder={isAr ? "الحالة" : "Status"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{isAr ? "جميع الحالات" : "All Statuses"}</SelectItem>
+              <SelectItem value="published">{isAr ? "منشور" : "Published"}</SelectItem>
+              <SelectItem value="draft">{isAr ? "مسودة" : "Draft"}</SelectItem>
+              <SelectItem value="in_review">{isAr ? "قيد المراجعة" : "In Review"}</SelectItem>
+              <SelectItem value="archived">{isAr ? "مؤرشف" : "Archived"}</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={categoryFilter}
+            onValueChange={(val) => {
+              setCategoryFilter(val);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="h-8 w-[130px] text-xs rounded-lg">
+              <SelectValue placeholder={isAr ? "التصنيف" : "Category"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{isAr ? "كل التصنيفات" : "All Categories"}</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {isAr ? c.name_ar : c.name_en || c.name_ar}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={featuredFilter}
+            onValueChange={(val) => {
+              setFeaturedFilter(val);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="h-8 w-[110px] text-xs rounded-lg">
+              <SelectValue placeholder={isAr ? "التمييز" : "Featured"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{isAr ? "الكل" : "All"}</SelectItem>
+              <SelectItem value="featured">{isAr ? "مميز فقط" : "Featured"}</SelectItem>
+              <SelectItem value="standard">{isAr ? "عادي" : "Standard"}</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {(search || statusFilter !== "all" || categoryFilter !== "all" || featuredFilter !== "all") && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setSearch("");
+                setStatusFilter("all");
+                setCategoryFilter("all");
+                setFeaturedFilter("all");
+                setCurrentPage(1);
+              }}
+            >
+              <X className="w-3 h-3 me-1" />
+              {isAr ? "إعادة ضبط" : "Reset"}
+            </Button>
+          )}
+
+          <div className="ms-auto text-xs text-muted-foreground font-mono">
+            {isAr ? `النتائج: ${filteredArticles.length} من أصل ${articles.length}` : `${filteredArticles.length} of ${articles.length}`}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. BULK ACTIONS TOOLBAR */}
+      {selectedIds.length > 0 && onBulkAction && (
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-primary/10 border border-primary/30 rounded-2xl shadow-xs">
+          <div className="flex items-center gap-2">
+            <CheckSquare className="w-4 h-4 text-primary" />
+            <span className="text-xs font-bold text-foreground">
+              {isAr ? `تم تحديد ${selectedIds.length} مقال` : `${selectedIds.length} articles selected`}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs rounded-lg"
+              disabled={bulkLoading}
+              onClick={async () => {
+                setBulkLoading(true);
+                try {
+                  await onBulkAction({ ids: selectedIds, action: "published" });
+                  setSelectedIds([]);
+                  toast.success(isAr ? "تم نشر المقالات المحددة" : "Articles published");
+                } finally {
+                  setBulkLoading(false);
+                }
+              }}
+            >
+              {isAr ? "نشر المحدد" : "Publish Selected"}
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs rounded-lg"
+              disabled={bulkLoading}
+              onClick={async () => {
+                setBulkLoading(true);
+                try {
+                  await onBulkAction({ ids: selectedIds, action: "draft" });
+                  setSelectedIds([]);
+                  toast.success(isAr ? "تم تحويل المحدد إلى مسودات" : "Articles set to draft");
+                } finally {
+                  setBulkLoading(false);
+                }
+              }}
+            >
+              {isAr ? "تحويل لمسودة" : "Draft Selected"}
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs rounded-lg text-destructive hover:bg-destructive/10"
+              disabled={bulkLoading}
+              onClick={async () => {
+                if (window.confirm(isAr ? `هل أنت متأكد من حذف ${selectedIds.length} مقال؟` : "Delete articles?")) {
+                  setBulkLoading(true);
+                  try {
+                    await onBulkAction({ ids: selectedIds, action: "delete" });
+                    setSelectedIds([]);
+                    toast.success(isAr ? "تم حذف المقالات" : "Articles deleted");
+                  } finally {
+                    setBulkLoading(false);
+                  }
+                }
+              }}
+            >
+              <Trash2 className="w-3.5 h-3.5 me-1" />
+              {isAr ? "حذف المحدد" : "Delete"}
+            </Button>
+
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 text-xs rounded-lg"
+              onClick={() => setSelectedIds([])}
+            >
+              <X className="w-3.5 h-3.5 me-1" />
+              {isAr ? "إلغاء التحديد" : "Deselect"}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* 4. ARTICLES TABLE */}
+      <div className="border border-border rounded-2xl bg-card overflow-hidden shadow-xs">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/40 text-xs hover:bg-muted/40">
+              <TableHead className="w-[44px] text-center">
+                <Checkbox
+                  checked={
+                    paginatedArticles.length > 0 &&
+                    paginatedArticles.every((a) => selectedIds.includes(a.id))
+                  }
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      const newIds = Array.from(new Set([...selectedIds, ...paginatedArticles.map((a) => a.id)]));
+                      setSelectedIds(newIds);
+                    } else {
+                      const pageIds = paginatedArticles.map((a) => a.id);
+                      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+                    }
+                  }}
+                />
+              </TableHead>
+              <TableHead className="w-[40px] text-center">{isAr ? "تمييز" : "Star"}</TableHead>
+              <TableHead>{isAr ? "عنوان المقال" : "Title"}</TableHead>
+              <TableHead>{isAr ? "التصنيف" : "Category"}</TableHead>
+              <TableHead className="text-center">{isAr ? "المعرف (Slug)" : "Slug"}</TableHead>
+              <TableHead className="text-center">{isAr ? "الحالة" : "Status"}</TableHead>
+              <TableHead className="text-end">{isAr ? "إجراءات" : "Actions"}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedArticles.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground text-xs">
+                  {isAr ? "لا توجد مقالات منشورة تطابق معايير البحث" : "No articles found"}
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedArticles.map((a) => (
+                <TableRow key={a.id} className="text-xs hover:bg-muted/30 transition-colors">
+                  <TableCell className="text-center">
+                    <Checkbox
+                      checked={selectedIds.includes(a.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedIds((prev) => [...prev, a.id]);
+                        } else {
+                          setSelectedIds((prev) => prev.filter((id) => id !== a.id));
+                        }
+                      }}
+                    />
+                  </TableCell>
+
+                  {/* 1-Click Feature Toggle */}
+                  <TableCell className="text-center">
+                    <button
+                      onClick={() => handleToggleFeatured(a)}
+                      className="text-muted-foreground/50 hover:text-amber-500 transition-colors p-1"
+                      title={isAr ? "تبديل التمييز" : "Toggle Featured"}
+                    >
+                      <Star className={`w-4 h-4 ${a.is_featured ? "text-amber-500 fill-amber-500" : ""}`} />
+                    </button>
+                  </TableCell>
+
+                  <TableCell className="font-semibold text-foreground">
+                    <div className="flex items-center gap-3">
+                      {a.featured_media_path ? (
+                        <div className="w-10 h-10 rounded-lg border border-border overflow-hidden shrink-0 bg-muted/30">
+                          <img src={a.featured_media_path} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg border border-dashed border-border flex items-center justify-center shrink-0 bg-muted/20 text-muted-foreground/50">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                      )}
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-bold truncate">{a.title_ar}</span>
+                        {a.title_en && <span className="text-[11px] text-muted-foreground truncate">{a.title_en}</span>}
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <Badge variant="outline" className="text-[10px] font-normal">
+                      {categories.find((c) => c.id === a.category_id)?.name_ar || (isAr ? "عام" : "General")}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="text-center font-mono text-muted-foreground text-[11px]">
+                    {a.slug}
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    <Badge
+                      variant={
+                        a.status === "published"
+                          ? "default"
+                          : a.status === "draft"
+                          ? "secondary"
+                          : a.status === "in_review"
+                          ? "outline"
+                          : "destructive"
+                      }
+                      className="text-[10px]"
+                    >
+                      {a.status}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="text-end">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="w-7 h-7 text-muted-foreground hover:text-foreground"
+                        title={isAr ? "معاينة" : "Preview"}
+                        onClick={() => setPreviewArticle(a)}
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="w-7 h-7 text-muted-foreground hover:text-foreground"
+                        title={isAr ? "تعديل" : "Edit"}
+                        onClick={() => handleOpenEdit(a)}
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+
+        {/* Pagination */}
+        <div className="p-3.5 border-t border-border bg-muted/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span>{isAr ? "صفوف بالصفحة:" : "Rows per page:"}</span>
+            <Select
+              value={pageSize.toString()}
+              onValueChange={(val) => {
+                setPageSize(Number(val));
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="h-7 w-[70px] text-xs bg-background">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="15">15</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <span className="ms-2">
+              {isAr
+                ? `عرض ${(currentPage - 1) * pageSize + 1} إلى ${Math.min(currentPage * pageSize, filteredArticles.length)} من أصل ${filteredArticles.length}`
+                : `Showing ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, filteredArticles.length)} of ${filteredArticles.length}`}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-7 h-7"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(1)}
+            >
+              <ChevronsLeft className="w-3.5 h-3.5 rtl:rotate-180" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-7 h-7"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            >
+              <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
+            </Button>
+
+            <span className="px-3 py-1 text-xs font-mono font-semibold text-foreground">
+              {currentPage} / {totalPages}
+            </span>
+
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-7 h-7"
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            >
+              <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-7 h-7"
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage(totalPages)}
+            >
+              <ChevronsRight className="w-3.5 h-3.5 rtl:rotate-180" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. TABBED ARTICLE EDITOR MODAL */}
+      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center justify-between">
+              <span>{selectedArticle ? (isAr ? "تعديل مقال" : "Edit Article") : isAr ? "كتابة مقال جديد" : "Write Article"}</span>
+              <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+                <Clock className="w-3.5 h-3.5" />
+                <span>{readingStats.minutes} {isAr ? "دقيقة قراءة" : "min read"}</span>
+                <span>({readingStats.words} {isAr ? "كلمة" : "words"})</span>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            <Tabs defaultValue="arabic" className="w-full">
+              <TabsList className="grid grid-cols-3 w-full mb-4">
+                <TabsTrigger value="arabic" className="text-xs">{isAr ? "المحتوى بالعربية" : "Arabic Content"}</TabsTrigger>
+                <TabsTrigger value="english" className="text-xs">{isAr ? "English Content" : "English Content"}</TabsTrigger>
+                <TabsTrigger value="publishing" className="text-xs">{isAr ? "الوسائط والنشر والـ SEO" : "Media & SEO"}</TabsTrigger>
+              </TabsList>
+
+              {/* Arabic Content */}
+              <TabsContent value="arabic" className="space-y-3.5">
+                <div className="space-y-1">
+                  <Label className="text-xs">{isAr ? "عنوان المقال بالعربية *" : "Title (AR) *"}</Label>
+                  <Input
+                    required
+                    value={form.title_ar}
+                    onChange={(e) => {
+                      const title = e.target.value;
+                      setForm((prev) => ({
+                        ...prev,
+                        title_ar: title,
+                        slug: prev.slug || title.toLowerCase().replace(/[^\w\u0621-\u064A\s-]/g, "").replace(/\s+/g, "-"),
+                      }));
+                    }}
+                    placeholder="مثال: اختتام فعاليات الملتقى السنوي لأسرة آل بوعبيد"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">{isAr ? "المقتطف التمهيدي (AR)" : "Excerpt (AR)"}</Label>
+                  <Textarea
+                    rows={2}
+                    value={form.excerpt_ar ?? ""}
+                    onChange={(e) => setForm({ ...form, excerpt_ar: e.target.value })}
+                    placeholder="موجز يظهر في بطاقات الأخبار ومحركات البحث..."
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">{isAr ? "المحتوى الكامل للمقال (AR) *" : "Full Article Content (AR) *"}</Label>
+                  <Textarea
+                    required
+                    rows={8}
+                    value={form.content_ar ?? ""}
+                    onChange={(e) => setForm({ ...form, content_ar: e.target.value })}
+                    placeholder="نص المقال والبيان الصحفي..."
+                  />
+                </div>
+              </TabsContent>
+
+              {/* English Content */}
+              <TabsContent value="english" className="space-y-3.5">
+                <div className="space-y-1">
+                  <Label className="text-xs">{isAr ? "العنوان بالإنجليزية" : "Title (EN)"}</Label>
+                  <Input
+                    value={form.title_en ?? ""}
+                    onChange={(e) => setForm({ ...form, title_en: e.target.value })}
+                    placeholder="e.g. Annual Family Council Gathering 2026 Concludes"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">{isAr ? "المقتطف (EN)" : "Excerpt (EN)"}</Label>
+                  <Textarea
+                    rows={2}
+                    value={form.excerpt_en ?? ""}
+                    onChange={(e) => setForm({ ...form, excerpt_en: e.target.value })}
+                    placeholder="Brief teaser for English readers..."
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">{isAr ? "المحتوى الكامل (EN)" : "Full Content (EN)"}</Label>
+                  <Textarea
+                    rows={8}
+                    value={form.content_en ?? ""}
+                    onChange={(e) => setForm({ ...form, content_en: e.target.value })}
+                    placeholder="Full article text in English..."
+                  />
+                </div>
+              </TabsContent>
+
+              {/* Publishing & Media */}
+              <TabsContent value="publishing" className="space-y-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">{isAr ? "المعرف الفريد للرابط (Slug) *" : "Slug *"}</Label>
+                    <Input
+                      required
+                      value={form.slug}
+                      onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs">{isAr ? "التصنيف" : "Category"}</Label>
+                    <Select
+                      value={form.category_id ?? "none"}
+                      onValueChange={(val) => setForm({ ...form, category_id: val === "none" ? null : val })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={isAr ? "اختر التصنيف" : "Select category"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">{isAr ? "— بدون تصنيف —" : "— None —"}</SelectItem>
+                        {categories.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {isAr ? c.name_ar : c.name_en || c.name_ar}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">{isAr ? "حالة النشر" : "Status"}</Label>
+                    <Select value={form.status} onValueChange={(val: any) => setForm({ ...form, status: val })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="published">{isAr ? "منشور (Published)" : "Published"}</SelectItem>
+                        <SelectItem value="draft">{isAr ? "مسودة (Draft)" : "Draft"}</SelectItem>
+                        <SelectItem value="in_review">{isAr ? "قيد المراجعة" : "In Review"}</SelectItem>
+                        <SelectItem value="archived">{isAr ? "مؤرشف" : "Archived"}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1 sm:col-span-2">
+                    <Label className="text-xs font-semibold">{isAr ? "الصورة البارزة للمقال" : "Featured Article Cover Image"}</Label>
+                    <ImageUploadInput
+                      bucket="site-media"
+                      value={form.featured_media_path}
+                      onChange={(url) => setForm({ ...form, featured_media_path: url })}
+                      placeholder={isAr ? "رابط الصورة أو ارفع صورة المقال..." : "Image URL or upload..."}
+                      helperText={isAr ? "الصورة التي ستظهر أعلى المقال وفي بطاقة الخبر على الموقع" : "Cover image shown in news cards and article header"}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 border border-border rounded-xl bg-muted/20">
+                  <div>
+                    <p className="font-semibold text-foreground">{isAr ? "مقال مميز (Featured)" : "Featured Article"}</p>
+                    <p className="text-[11px] text-muted-foreground">{isAr ? "يظهر في الواجهة الرئيسية للأخبار" : "Showcase in homepage media rail"}</p>
+                  </div>
+                  <Switch
+                    checked={form.is_featured}
+                    onCheckedChange={(checked) => setForm({ ...form, is_featured: checked })}
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button type="button" variant="outline" size="sm" onClick={() => setFormOpen(false)}>
+                {isAr ? "إلغاء" : "Cancel"}
+              </Button>
+              <Button type="submit" size="sm" disabled={loading}>
+                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ المقال" : "Save Article"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* 6. ARTICLE PREVIEW MODAL */}
+      {previewArticle && (
+        <Dialog open={!!previewArticle} onOpenChange={() => setPreviewArticle(null)}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold">
+                {previewArticle.title_ar}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 text-xs pt-2">
+              <div className="flex items-center gap-2">
+                <Badge variant={previewArticle.status === "published" ? "default" : "secondary"}>
+                  {previewArticle.status}
+                </Badge>
+                {previewArticle.is_featured && (
+                  <Badge variant="outline" className="border-amber-500/30 text-amber-600">
+                    <Star className="w-3 h-3 me-1 fill-amber-500" />
+                    {isAr ? "مقال مميز" : "Featured"}
+                  </Badge>
+                )}
+                <span className="text-muted-foreground font-mono ms-auto">
+                  /{previewArticle.slug}
+                </span>
+              </div>
+
+              {previewArticle.featured_media_path && (
+                <div className="h-48 rounded-xl overflow-hidden border border-border">
+                  <img
+                    src={previewArticle.featured_media_path}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              {previewArticle.excerpt_ar && (
+                <p className="text-sm font-semibold text-foreground bg-muted/30 p-3 rounded-xl border border-border/50">
+                  {previewArticle.excerpt_ar}
+                </p>
+              )}
+
+              <div className="text-foreground leading-relaxed whitespace-pre-wrap">
+                {previewArticle.content_ar}
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const a = previewArticle;
+                  setPreviewArticle(null);
+                  handleOpenEdit(a);
+                }}
+              >
+                <Edit2 className="w-3.5 h-3.5 me-1.5" />
+                {isAr ? "تعديل" : "Edit"}
+              </Button>
+              <Button size="sm" onClick={() => setPreviewArticle(null)}>
+                {isAr ? "إغلاق" : "Close"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+}
