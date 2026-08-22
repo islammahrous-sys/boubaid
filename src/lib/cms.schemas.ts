@@ -169,3 +169,32 @@ export type InitiativeInput = z.infer<typeof initiativeInputSchema>;
 export type AchieverInput = z.infer<typeof achieverInputSchema>;
 export type LibraryInput = z.infer<typeof libraryInputSchema>;
 export type BranchInput = z.infer<typeof branchInputSchema>;
+
+/* ------------------- page builder: atomic sections + revisions ------------------- */
+
+/** Mirrors ContentSectionInput (admin-hub.schemas.ts) — kept independent since
+ *  this schema only guards the atomic-save/restore RPC bridge in cms.functions.ts. */
+export const contentSectionAtomicSchema = z.object({
+  type: z.string().trim().min(1).max(60),
+  sort_order: z.number().int().min(0).max(9999).optional(),
+  data: z.record(z.unknown()).default({}),
+  settings: z.record(z.unknown()).default({}),
+  visibility: z.enum(["public", "family_only", "admin_only", "private"]).default("public"),
+});
+
+export const saveContentPageSectionsSchema = z.object({
+  page_id: z.string().uuid(),
+  sections: z.array(contentSectionAtomicSchema).max(200),
+});
+export type SaveContentPageSectionsInput = z.infer<typeof saveContentPageSectionsSchema>;
+
+export const pageRevisionsQuerySchema = z.object({
+  page_id: z.string().uuid(),
+});
+
+export const restoreRevisionSchema = z.object({
+  revision_id: z.string().uuid(),
+});
+
+export const publicGalleryIdSchema = z.string().uuid();
+export const publicMemberSpotlightIdSchema = z.string().trim().min(1).max(200);

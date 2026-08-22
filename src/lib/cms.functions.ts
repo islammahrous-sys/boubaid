@@ -6,7 +6,17 @@ import {
   cmsRowRefSchema,
   cmsUpsertSchema,
   contentMediaUploadSchema,
+  saveContentPageSectionsSchema,
+  pageRevisionsQuerySchema,
+  restoreRevisionSchema,
+  publicGalleryIdSchema,
+  publicMemberSpotlightIdSchema,
 } from "./cms.schemas";
+
+const SUPABASE_STORAGE_BASE_URL =
+  process.env?.SUPABASE_URL ||
+  process.env?.VITE_SUPABASE_URL ||
+  "https://ywsvittlswbbyqhahorh.supabase.co";
 
 
 /* ------------------------------------------------------------------ *
@@ -797,6 +807,271 @@ export const getPublicNavigation = createServerFn({ method: "GET" }).handler(asy
     return {} as Record<string, PublicNavItem[]>;
   }
 });
+
+/* ========================================================================
+ * Page Builder block data — gallery embed & member spotlight
+ *
+ * Both back a Page Builder block type (BlockRegistry.tsx) with real rows
+ * from tables that already carry public SELECT policies (`galleries` /
+ * `gallery_media` / `media_assets` and `family_members`), so the public
+ * renderer (routes/p.$slug.tsx) never needs elevated privileges to hydrate
+ * these blocks.
+ * ======================================================================== */
+
+export type PublicGalleryMediaItem = {
+  id: string;
+  url: string;
+  caption_ar: string | null;
+  caption_en: string | null;
+  width: number | null;
+  height: number | null;
+};
+
+export type PublicGallery = {
+  id: string;
+  slug: string;
+  title_ar: string;
+  title_en: string | null;
+  media: PublicGalleryMediaItem[];
+};
+
+/** Resolves a media_assets row to a loadable URL — mirrors MediaLibrary.tsx's
+ *  client-side `getPublicUrl` fallback (assets live in public buckets, keyed
+ *  by their own `bucket` column, unlike the private `content` bucket used
+ *  elsewhere in this file). */
+function mediaAssetUrl(asset: { bucket: string; storage_path: string; public_url: string | null }): string {
+  return asset.public_url || `${SUPABASE_STORAGE_BASE_URL}/storage/v1/object/public/${asset.bucket}/${asset.storage_path}`;
+}
+
+/** Public gallery block data — a published, public-visibility gallery and its ordered media. */
+export const getPublicGallery = createServerFn({ method: "GET" })
+  .validator((galleryId: string) => publicGalleryIdSchema.parse(galleryId))
+  .handler(async ({ data: galleryId }): Promise<PublicGallery | null> => {
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const supabase = createPublicServerClient();
+
+      const { data: gallery } = await supabase
+        .from("galleries")
+        .select("id, slug, title_ar, title_en")
+        .eq("id", galleryId)
+        .eq("status", "published")
+        .eq("visibility", "public")
+        .maybeSingle();
+      if (!gallery) return null;
+
+      const { data: links } = await supabase
+        .from("gallery_media")
+        .select("media_asset_id, caption_ar, caption_en, sort_order")
+        .eq("gallery_id", galleryId)
+        .order("sort_order", { ascending: true });
+
+      const assetIds = [...new Set((links ?? []).map((l) => l.media_asset_id))];
+      if (assetIds.length === 0) return { ...gallery, media: [] };
+
+      const { data: assets } = await supabase
+        .from("media_assets")
+        .select("id, bucket, storage_path, public_url, width, height, caption_ar, caption_en")
+        .in("id", assetIds);
+
+      const assetsById = new Map((assets ?? []).map((a) => [a.id, a]));
+
+      const media = (links ?? [])
+        .map((l): PublicGalleryMediaItem | null => {
+          const asset = assetsById.get(l.media_asset_id);
+          if (!asset) return null;
+          return {
+            id: asset.id,
+            url: mediaAssetUrl(asset),
+            caption_ar: l.caption_ar ?? asset.caption_ar,
+            caption_en: l.caption_en ?? asset.caption_en,
+            width: asset.width,
+            height: asset.height,
+          };
+        })
+        .filter((m): m is PublicGalleryMediaItem => m !== null);
+
+      return { ...gallery, media };
+    } catch (err) {
+      console.error("[cms] getPublicGallery error", err);
+      return null;
+    }
+  });
+
+/** Editor-only picker list for the gallery block (id + title, no media payload). */
+export const listGalleriesForEditor = createServerFn({ method: "GET" })
+  .middleware([requireEditorAuth])
+  .handler(async (): Promise<{ id: string; title_ar: string; title_en: string | null }[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("galleries")
+      .select("id, title_ar, title_en")
+      .order("sort_order", { ascending: true })
+      .limit(200);
+    if (error) {
+      console.error("[cms] listGalleriesForEditor failed", error.code, error.message);
+      return [];
+    }
+    return data ?? [];
+  });
+
+export type PublicMemberSpotlight = {
+  id: string;
+  slug: string;
+  display_name_ar: string;
+  display_name_en: string | null;
+  occupation_ar: string | null;
+  occupation_en: string | null;
+  biography_ar: string | null;
+  biography_en: string | null;
+  avatar_url: string | null;
+};
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Public member-spotlight block data — one published, public-visibility family member by id or slug. */
+export const getPublicMemberSpotlight = createServerFn({ method: "GET" })
+  .validator((memberIdOrSlug: string) => publicMemberSpotlightIdSchema.parse(memberIdOrSlug))
+  .handler(async ({ data: memberIdOrSlug }): Promise<PublicMemberSpotlight | null> => {
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const supabase = createPublicServerClient();
+
+      const cols =
+        "id, slug, display_name_ar, display_name_en, first_name_ar, last_name_ar, first_name_en, last_name_en, occupation_ar, occupation_en, biography_ar, biography_en, avatar_path";
+
+      const base = supabase
+        .from("family_members")
+        .select(cols)
+        .eq("visibility", "public")
+        .eq("status", "published")
+        .is("deleted_at", null);
+
+      const { data } = UUID_RE.test(memberIdOrSlug)
+        ? await base.eq("id", memberIdOrSlug).maybeSingle()
+        : await base.eq("slug", memberIdOrSlug).maybeSingle();
+
+      if (!data) return null;
+
+      const fullNameAr = data.display_name_ar || `${data.first_name_ar} ${data.last_name_ar}`.trim();
+      const fullNameEn =
+        data.display_name_en || (data.first_name_en ? `${data.first_name_en} ${data.last_name_en ?? ""}`.trim() : null);
+
+      return {
+        id: data.id,
+        slug: data.slug,
+        display_name_ar: fullNameAr,
+        display_name_en: fullNameEn,
+        occupation_ar: data.occupation_ar,
+        occupation_en: data.occupation_en,
+        biography_ar: data.biography_ar,
+        biography_en: data.biography_en,
+        // avatar_path already stores a full public storage URL (see
+        // FamilyMemberFormDialog's upload flow) — no signing needed here.
+        avatar_url: data.avatar_path,
+      };
+    } catch (err) {
+      console.error("[cms] getPublicMemberSpotlight error", err);
+      return null;
+    }
+  });
+
+/* ========================================================================
+ * Page Builder — atomic section save & revision restore
+ *
+ * Both bridge to Postgres functions (migration
+ * 20260822070000_atomic_content_page_sections.sql) that run the
+ * delete-then-insert of content_sections inside a single PL/pgSQL function
+ * call, i.e. a single implicit transaction: a failure partway through rolls
+ * back the whole call instead of leaving the page's sections half-deleted.
+ * Both RPCs are SECURITY INVOKER, so they run as the calling (authenticated)
+ * user and stay fully subject to the existing `*_editor_all` RLS policies —
+ * this bridge grants no privilege the caller didn't already have.
+ * ======================================================================== */
+
+export type ContentSectionRow = {
+  id: string;
+  page_id: string;
+  type: string;
+  sort_order: number;
+  data: Record<string, any>;
+  settings: Record<string, any>;
+  visibility: string;
+};
+
+/**
+ * Both RPCs were added by migration 20260822070000 and aren't in the
+ * generated `Database` type (src/integrations/supabase/types.ts is
+ * regenerated from the live schema separately from this task), so `.rpc()`
+ * is called through a narrow, explicitly-typed wrapper here rather than
+ * widening the whole `supabase` client.
+ */
+type SectionsRpcClient = {
+  rpc: (
+    fn: "replace_content_page_sections" | "restore_content_revision",
+    args: Record<string, unknown>,
+  ) => Promise<{ data: ContentSectionRow[] | null; error: { code?: string; message: string } | null }>;
+};
+
+/** Atomically replaces every content_sections row for a page. */
+export const saveContentPageSectionsAtomic = createServerFn({ method: "POST" })
+  .middleware([requireEditorAuth])
+  .validator((input: unknown) => saveContentPageSectionsSchema.parse(input))
+  .handler(async ({ data, context }): Promise<{ ok: true; sections: ContentSectionRow[] } | { ok: false; error: string }> => {
+    const rpcClient = context.supabase as unknown as SectionsRpcClient;
+    const { data: rows, error } = await rpcClient.rpc("replace_content_page_sections", {
+      p_page_id: data.page_id,
+      p_sections: data.sections,
+    });
+    if (error) {
+      console.error("[cms] saveContentPageSectionsAtomic failed", error.code, error.message);
+      return { ok: false, error: error.message };
+    }
+    return { ok: true, sections: rows ?? [] };
+  });
+
+export type PageRevisionSummary = {
+  id: string;
+  version: number;
+  change_summary: string | null;
+  created_at: string;
+  created_by: string | null;
+};
+
+/** Revision history for one page, newest first — powers the Page Builder's restore panel. */
+export const listPageRevisions = createServerFn({ method: "GET" })
+  .middleware([requireEditorAuth])
+  .validator((input: unknown) => pageRevisionsQuerySchema.parse(input))
+  .handler(async ({ data, context }): Promise<PageRevisionSummary[]> => {
+    const { supabase } = context;
+    const { data: rows, error } = await supabase
+      .from("content_revisions")
+      .select("id, version, change_summary, created_at, created_by")
+      .eq("content_page_id", data.page_id)
+      .order("version", { ascending: false })
+      .limit(50);
+    if (error) {
+      console.error("[cms] listPageRevisions failed", error.code, error.message);
+      return [];
+    }
+    return rows ?? [];
+  });
+
+/** Restores a page's content_sections from a chosen revision's snapshot (atomically), then records the restore as a new revision. */
+export const restorePageRevision = createServerFn({ method: "POST" })
+  .middleware([requireEditorAuth])
+  .validator((input: unknown) => restoreRevisionSchema.parse(input))
+  .handler(async ({ data, context }): Promise<{ ok: true; sections: ContentSectionRow[] } | { ok: false; error: string }> => {
+    const rpcClient = context.supabase as unknown as SectionsRpcClient;
+    const { data: rows, error } = await rpcClient.rpc("restore_content_revision", {
+      p_revision_id: data.revision_id,
+    });
+    if (error) {
+      console.error("[cms] restorePageRevision failed", error.code, error.message);
+      return { ok: false, error: error.message };
+    }
+    return { ok: true, sections: (rows ?? []) as ContentSectionRow[] };
+  });
 
 
 

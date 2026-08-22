@@ -142,7 +142,13 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockMeta> = {
     icon: Clock,
     defaultData: {
       items: [
-        { year: "1340 هـ", title_ar: "تأسيس المجلس العائلي", title_en: "Establishment of the Council" },
+        {
+          year: "1340 هـ",
+          title_ar: "تأسيس المجلس العائلي",
+          title_en: "Establishment of the Council",
+          description_ar: "",
+          description_en: "",
+        },
       ],
     },
   },
@@ -238,8 +244,8 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockMeta> = {
     icon: CreditCard,
     defaultData: {
       cards: [
-        { title_ar: "التكافل العائلي", title_en: "Social Solidarity", desc_ar: "دعم ورعاية الأسر والمبادرات" },
-        { title_ar: "التوثيق والأرشيف", title_en: "Genealogy & Archive", desc_ar: "حفظ التاريخ والوثائق والنسب" },
+        { title_ar: "التكافل العائلي", title_en: "Social Solidarity", desc_ar: "دعم ورعاية الأسر والمبادرات", desc_en: "", link_url: "" },
+        { title_ar: "التوثيق والأرشيف", title_en: "Genealogy & Archive", desc_ar: "حفظ التاريخ والوثائق والنسب", desc_en: "", link_url: "" },
       ],
     },
   },
@@ -267,6 +273,8 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockMeta> = {
     icon: MapPin,
     defaultData: {
       title_ar: "مقر الأمانة وديوانيات الأسرة",
+      address: "",
+      embed_url: "",
     },
   },
   contact: {

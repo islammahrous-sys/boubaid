@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -19,10 +21,18 @@ import {
   Layers,
   Sparkles,
   FileCode,
+  History,
+  RotateCcw,
 } from "lucide-react";
 import { BLOCK_DEFINITIONS, type BlockType } from "./BlockRegistry";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { ContentPageInput, ContentSectionInput } from "@/lib/admin-hub.schemas";
+import {
+  listGalleriesForEditor,
+  listPageRevisions,
+  restorePageRevision,
+  type PageRevisionSummary,
+} from "@/lib/cms.functions";
 
 export function PageBuilderDialog({
   open,
@@ -40,6 +50,14 @@ export function PageBuilderDialog({
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("builder");
   const [selectedBlockIdx, setSelectedBlockIdx] = useState<number | null>(null);
+  const [galleries, setGalleries] = useState<{ id: string; title_ar: string; title_en: string | null }[]>([]);
+  const [revisions, setRevisions] = useState<PageRevisionSummary[]>([]);
+  const [revisionsLoading, setRevisionsLoading] = useState(false);
+  const [restoringId, setRestoringId] = useState<string | null>(null);
+
+  const fetchGalleries = useServerFn(listGalleriesForEditor);
+  const fetchRevisions = useServerFn(listPageRevisions);
+  const runRestoreRevision = useServerFn(restorePageRevision);
 
   const [form, setForm] = useState<ContentPageInput>({
     id: undefined,
@@ -123,6 +141,91 @@ export function PageBuilderDialog({
     }
   }, [initialData, open]);
 
+  // Gallery block editor needs a picker list; fetched once whenever the
+  // dialog opens (cheap, editor-only — see listGalleriesForEditor).
+  useEffect(() => {
+    if (!open) return;
+    fetchGalleries()
+      .then((rows) => setGalleries(rows ?? []))
+      .catch(() => setGalleries([]));
+  }, [open]);
+
+  const loadRevisions = () => {
+    if (!initialData?.id) return;
+    setRevisionsLoading(true);
+    fetchRevisions({ data: { page_id: initialData.id } })
+      .then((rows) => setRevisions(rows ?? []))
+      .catch(() => setRevisions([]))
+      .finally(() => setRevisionsLoading(false));
+  };
+
+  // Revision history only exists for a page that's already been saved once.
+  useEffect(() => {
+    if (!open || !initialData?.id) {
+      setRevisions([]);
+      return;
+    }
+    loadRevisions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialData?.id]);
+
+  const handleRestoreRevision = async (revisionId: string) => {
+    setRestoringId(revisionId);
+    try {
+      const result = await runRestoreRevision({ data: { revision_id: revisionId } });
+      if (!result.ok) {
+        toast.error(isAr ? "تعذّرت استعادة هذا الإصدار" : "Failed to restore this version");
+        return;
+      }
+      const restoredSections: ContentSectionInput[] = result.sections
+        .slice()
+        .sort((a: any, b: any) => a.sort_order - b.sort_order)
+        .map((s: any) => ({
+          type: s.type,
+          sort_order: s.sort_order,
+          data: s.data ?? {},
+          settings: s.settings ?? {},
+          visibility: s.visibility ?? "public",
+        }));
+      setForm((prev) => ({ ...prev, sections: restoredSections }));
+      setSelectedBlockIdx(null);
+      toast.success(isAr ? "تمت استعادة الإصدار بنجاح" : "Version restored successfully");
+      loadRevisions();
+      setActiveTab("builder");
+    } catch (err: any) {
+      toast.error(err?.message || (isAr ? "تعذّرت استعادة هذا الإصدار" : "Failed to restore this version"));
+    } finally {
+      setRestoringId(null);
+    }
+  };
+
+  const updateNestedArrayItem = (
+    idx: number,
+    key: string,
+    itemIdx: number,
+    patch: Record<string, any>,
+  ) => {
+    const next = [...sections];
+    const arr = [...(((next[idx].data as any)?.[key]) ?? [])];
+    arr[itemIdx] = { ...arr[itemIdx], ...patch };
+    next[idx] = { ...next[idx], data: { ...next[idx].data, [key]: arr } };
+    setForm((prev) => ({ ...prev, sections: next }));
+  };
+
+  const addNestedArrayItem = (idx: number, key: string, template: Record<string, any>) => {
+    const next = [...sections];
+    const arr = [...(((next[idx].data as any)?.[key]) ?? []), template];
+    next[idx] = { ...next[idx], data: { ...next[idx].data, [key]: arr } };
+    setForm((prev) => ({ ...prev, sections: next }));
+  };
+
+  const removeNestedArrayItem = (idx: number, key: string, itemIdx: number) => {
+    const next = [...sections];
+    const arr = (((next[idx].data as any)?.[key]) ?? []).filter((_: any, i: number) => i !== itemIdx);
+    next[idx] = { ...next[idx], data: { ...next[idx].data, [key]: arr } };
+    setForm((prev) => ({ ...prev, sections: next }));
+  };
+
   const handleAddBlock = (type: BlockType) => {
     const def = BLOCK_DEFINITIONS[type];
     const newSection: ContentSectionInput = {
@@ -193,7 +296,7 @@ export function PageBuilderDialog({
 
         <div className="flex-1 overflow-y-auto px-6 py-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-3 w-full mb-4">
+            <TabsList className="grid grid-cols-4 w-full mb-4">
               <TabsTrigger value="builder" className="text-xs gap-1.5">
                 <Layers className="w-3.5 h-3.5" />
                 {isAr ? "بناء الأقسام والكتل (Blocks)" : "Block Builder"}
@@ -205,6 +308,10 @@ export function PageBuilderDialog({
               <TabsTrigger value="preview" className="text-xs gap-1.5">
                 <Eye className="w-3.5 h-3.5" />
                 {isAr ? "معاينة الصفحة" : "Live Preview"}
+              </TabsTrigger>
+              <TabsTrigger value="history" className="text-xs gap-1.5" disabled={!form.id}>
+                <History className="w-3.5 h-3.5" />
+                {isAr ? "سجل الإصدارات" : "Revision History"}
               </TabsTrigger>
             </TabsList>
 
@@ -263,6 +370,11 @@ export function PageBuilderDialog({
                         // typed (Json/Record<string, unknown>) — narrow it once
                         // here instead of casting at every field below.
                         const secData = (sec.data ?? {}) as Record<string, any>;
+                        const setField = (field: string, value: any) => {
+                          const next = [...sections];
+                          next[idx] = { ...next[idx], data: { ...next[idx].data, [field]: value } };
+                          setForm((prev) => ({ ...prev, sections: next }));
+                        };
 
                         return (
                           <div
@@ -475,6 +587,313 @@ export function PageBuilderDialog({
                                     </div>
                                   </>
                                 )}
+
+                                {sec.type === "video" && (
+                                  <>
+                                    <div className="space-y-1">
+                                      <Label className="text-[11px] font-semibold">{isAr ? "رابط الفيديو (يوتيوب أو ملف مباشر)" : "Video URL (YouTube or direct file)"}</Label>
+                                      <Input
+                                        value={secData.url ?? ""}
+                                        placeholder="https://youtube.com/watch?v=... أو https://.../video.mp4"
+                                        onChange={(e) => setField("url", e.target.value)}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-[11px]">{isAr ? "عنوان الفيديو" : "Title"}</Label>
+                                      <Input value={secData.title_ar ?? ""} onChange={(e) => setField("title_ar", e.target.value)} />
+                                    </div>
+                                  </>
+                                )}
+
+                                {sec.type === "gallery" && (
+                                  <>
+                                    <div className="space-y-1">
+                                      <Label className="text-[11px] font-semibold">{isAr ? "اختر المعرض" : "Select Gallery"}</Label>
+                                      <Select
+                                        value={secData.gallery_id ?? ""}
+                                        onValueChange={(val) => setField("gallery_id", val)}
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder={isAr ? "اختر معرض صور منشور..." : "Select a published gallery..."} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {galleries.length === 0 ? (
+                                            <div className="px-3 py-2 text-xs text-muted-foreground">
+                                              {isAr ? "لا توجد معارض بعد" : "No galleries yet"}
+                                            </div>
+                                          ) : (
+                                            galleries.map((g) => (
+                                              <SelectItem key={g.id} value={g.id}>
+                                                {isAr ? g.title_ar : g.title_en || g.title_ar}
+                                              </SelectItem>
+                                            ))
+                                          )}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-[11px]">{isAr ? "عدد الأعمدة" : "Columns"}</Label>
+                                      <Input
+                                        type="number"
+                                        min={1}
+                                        max={6}
+                                        value={secData.columns ?? 3}
+                                        onChange={(e) => setField("columns", Number(e.target.value) || 3)}
+                                      />
+                                    </div>
+                                  </>
+                                )}
+
+                                {sec.type === "timeline" && (
+                                  <div className="space-y-2">
+                                    <Label className="text-[11px] font-semibold">{isAr ? "أحداث الخط الزمني" : "Timeline Events"}</Label>
+                                    {(secData.items ?? []).map((item: any, i: number) => (
+                                      <div key={i} className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10">
+                                        <div className="grid grid-cols-2 gap-1.5">
+                                          <Input
+                                            className="h-7 text-[11px]"
+                                            placeholder={isAr ? "السنة" : "Year"}
+                                            value={item.year ?? ""}
+                                            onChange={(e) => updateNestedArrayItem(idx, "items", i, { year: e.target.value })}
+                                          />
+                                          <Input
+                                            className="h-7 text-[11px]"
+                                            placeholder={isAr ? "العنوان" : "Title"}
+                                            value={item.title_ar ?? ""}
+                                            onChange={(e) => updateNestedArrayItem(idx, "items", i, { title_ar: e.target.value })}
+                                          />
+                                        </div>
+                                        <Textarea
+                                          className="text-[11px]"
+                                          rows={2}
+                                          placeholder={isAr ? "وصف مختصر (اختياري)" : "Short description (optional)"}
+                                          value={item.description_ar ?? ""}
+                                          onChange={(e) => updateNestedArrayItem(idx, "items", i, { description_ar: e.target.value })}
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 text-[10px] text-destructive gap-1"
+                                          onClick={() => removeNestedArrayItem(idx, "items", i)}
+                                        >
+                                          <Trash2 className="w-3 h-3" /> {isAr ? "حذف الحدث" : "Remove event"}
+                                        </Button>
+                                      </div>
+                                    ))}
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 text-[11px] gap-1"
+                                      onClick={() =>
+                                        addNestedArrayItem(idx, "items", { year: "", title_ar: "", title_en: "", description_ar: "", description_en: "" })
+                                      }
+                                    >
+                                      <Plus className="w-3 h-3" /> {isAr ? "إضافة حدث" : "Add event"}
+                                    </Button>
+                                  </div>
+                                )}
+
+                                {sec.type === "statistics" && (
+                                  <div className="space-y-2">
+                                    <Label className="text-[11px] font-semibold">{isAr ? "بنود الإحصائية" : "Stat items"}</Label>
+                                    {(secData.items ?? []).map((item: any, i: number) => (
+                                      <div key={i} className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10">
+                                        <div className="grid grid-cols-3 gap-1.5">
+                                          <Input
+                                            className="h-7 text-[11px]"
+                                            placeholder={isAr ? "الرقم" : "Number"}
+                                            value={item.number ?? ""}
+                                            onChange={(e) => updateNestedArrayItem(idx, "items", i, { number: e.target.value })}
+                                          />
+                                          <Input
+                                            className="h-7 text-[11px] col-span-2"
+                                            placeholder={isAr ? "الوصف" : "Label"}
+                                            value={item.label_ar ?? ""}
+                                            onChange={(e) => updateNestedArrayItem(idx, "items", i, { label_ar: e.target.value })}
+                                          />
+                                        </div>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 text-[10px] text-destructive gap-1"
+                                          onClick={() => removeNestedArrayItem(idx, "items", i)}
+                                        >
+                                          <Trash2 className="w-3 h-3" /> {isAr ? "حذف" : "Remove"}
+                                        </Button>
+                                      </div>
+                                    ))}
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 text-[11px] gap-1"
+                                      onClick={() => addNestedArrayItem(idx, "items", { number: "", label_ar: "", label_en: "" })}
+                                    >
+                                      <Plus className="w-3 h-3" /> {isAr ? "إضافة بند" : "Add item"}
+                                    </Button>
+                                  </div>
+                                )}
+
+                                {sec.type === "cards" && (
+                                  <div className="space-y-2">
+                                    <Label className="text-[11px] font-semibold">{isAr ? "بطاقات الميزات" : "Feature cards"}</Label>
+                                    {(secData.cards ?? []).map((card: any, i: number) => (
+                                      <div key={i} className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10">
+                                        <Input
+                                          className="h-7 text-[11px]"
+                                          placeholder={isAr ? "العنوان" : "Title"}
+                                          value={card.title_ar ?? ""}
+                                          onChange={(e) => updateNestedArrayItem(idx, "cards", i, { title_ar: e.target.value })}
+                                        />
+                                        <Textarea
+                                          className="text-[11px]"
+                                          rows={2}
+                                          placeholder={isAr ? "الوصف" : "Description"}
+                                          value={card.desc_ar ?? ""}
+                                          onChange={(e) => updateNestedArrayItem(idx, "cards", i, { desc_ar: e.target.value })}
+                                        />
+                                        <Input
+                                          className="h-7 text-[11px]"
+                                          placeholder={isAr ? "رابط عند الضغط (اختياري)" : "Link URL (optional)"}
+                                          value={card.link_url ?? ""}
+                                          onChange={(e) => updateNestedArrayItem(idx, "cards", i, { link_url: e.target.value })}
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 text-[10px] text-destructive gap-1"
+                                          onClick={() => removeNestedArrayItem(idx, "cards", i)}
+                                        >
+                                          <Trash2 className="w-3 h-3" /> {isAr ? "حذف البطاقة" : "Remove card"}
+                                        </Button>
+                                      </div>
+                                    ))}
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 text-[11px] gap-1"
+                                      onClick={() =>
+                                        addNestedArrayItem(idx, "cards", { title_ar: "", title_en: "", desc_ar: "", desc_en: "", link_url: "" })
+                                      }
+                                    >
+                                      <Plus className="w-3 h-3" /> {isAr ? "إضافة بطاقة" : "Add card"}
+                                    </Button>
+                                  </div>
+                                )}
+
+                                {sec.type === "member_spotlight" && (
+                                  <>
+                                    <div className="space-y-1">
+                                      <Label className="text-[11px] font-semibold">{isAr ? "معرّف الفرد (ID) أو الرابط المختصر (slug)" : "Member ID or slug"}</Label>
+                                      <Input
+                                        value={secData.member_id ?? ""}
+                                        placeholder={isAr ? "مثال: ahmad-al-bouabid" : "e.g. ahmad-al-bouabid"}
+                                        onChange={(e) => setField("member_id", e.target.value)}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-[11px]">{isAr ? "شارة الإبراز" : "Highlight badge"}</Label>
+                                      <Input value={secData.highlight_ar ?? ""} onChange={(e) => setField("highlight_ar", e.target.value)} />
+                                    </div>
+                                  </>
+                                )}
+
+                                {sec.type === "branches" && (
+                                  <div className="flex items-center justify-between">
+                                    <Label className="text-[11px]">{isAr ? "إظهار أسماء عمداء الفروع" : "Show branch elders"}</Label>
+                                    <Switch
+                                      checked={secData.show_elders ?? true}
+                                      onCheckedChange={(v) => setField("show_elders", v)}
+                                    />
+                                  </div>
+                                )}
+
+                                {sec.type === "tree" && (
+                                  <div className="space-y-1">
+                                    <Label className="text-[11px]">{isAr ? "عدد الأجيال المعروضة" : "Generations to show"}</Label>
+                                    <Input
+                                      type="number"
+                                      min={1}
+                                      max={10}
+                                      value={secData.max_generations ?? 4}
+                                      onChange={(e) => setField("max_generations", Number(e.target.value) || 4)}
+                                    />
+                                  </div>
+                                )}
+
+                                {sec.type === "events" && (
+                                  <div className="space-y-1">
+                                    <Label className="text-[11px]">{isAr ? "عدد الفعاليات المعروضة" : "Number of events"}</Label>
+                                    <Input
+                                      type="number"
+                                      min={1}
+                                      max={12}
+                                      value={secData.limit ?? 3}
+                                      onChange={(e) => setField("limit", Number(e.target.value) || 3)}
+                                    />
+                                  </div>
+                                )}
+
+                                {sec.type === "articles" && (
+                                  <div className="space-y-1">
+                                    <Label className="text-[11px]">{isAr ? "عدد المقالات المعروضة" : "Number of articles"}</Label>
+                                    <Input
+                                      type="number"
+                                      min={1}
+                                      max={12}
+                                      value={secData.limit ?? 3}
+                                      onChange={(e) => setField("limit", Number(e.target.value) || 3)}
+                                    />
+                                  </div>
+                                )}
+
+                                {sec.type === "announcements" && (
+                                  <div className="space-y-1">
+                                    <Label className="text-[11px]">{isAr ? "شكل العرض" : "Display style"}</Label>
+                                    <Select value={secData.style ?? "banner"} onValueChange={(v) => setField("style", v)}>
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="banner">{isAr ? "شريط عرض" : "Banner"}</SelectItem>
+                                        <SelectItem value="list">{isAr ? "قائمة" : "List"}</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                )}
+
+                                {sec.type === "map" && (
+                                  <>
+                                    <div className="space-y-1">
+                                      <Label className="text-[11px] font-semibold">{isAr ? "العنوان النصي" : "Address"}</Label>
+                                      <Input
+                                        value={secData.address ?? ""}
+                                        placeholder={isAr ? "المبرز، الأحساء، السعودية" : "Al Mubarraz, Al Ahsa, Saudi Arabia"}
+                                        onChange={(e) => setField("address", e.target.value)}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-[11px]">{isAr ? "أو رابط تضمين خرائط جوجل (اختياري)" : "Or a Google Maps embed URL (optional)"}</Label>
+                                      <Input
+                                        value={secData.embed_url ?? ""}
+                                        placeholder="https://www.google.com/maps?q=...&output=embed"
+                                        onChange={(e) => setField("embed_url", e.target.value)}
+                                      />
+                                    </div>
+                                  </>
+                                )}
+
+                                {sec.type === "contact" && (
+                                  <div className="space-y-1">
+                                    <Label className="text-[11px] font-semibold">{isAr ? "عنوان النموذج" : "Form title"}</Label>
+                                    <Input value={secData.title_ar ?? ""} onChange={(e) => setField("title_ar", e.target.value)} />
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -626,6 +1045,66 @@ export function PageBuilderDialog({
                   );
                 })}
               </div>
+            </TabsContent>
+
+            {/* TAB 4: Revision History */}
+            <TabsContent value="history" className="space-y-3">
+              {!form.id ? (
+                <div className="border-2 border-dashed border-border rounded-xl p-10 text-center text-xs text-muted-foreground">
+                  {isAr ? "احفظ الصفحة أولاً لتتوفر سجلات الإصدارات." : "Save the page first to start recording revisions."}
+                </div>
+              ) : revisionsLoading ? (
+                <div className="p-10 text-center text-xs text-muted-foreground">
+                  {isAr ? "جاري تحميل السجل..." : "Loading history..."}
+                </div>
+              ) : revisions.length === 0 ? (
+                <div className="border-2 border-dashed border-border rounded-xl p-10 text-center text-xs text-muted-foreground">
+                  {isAr ? "لا يوجد سجل إصدارات بعد لهذه الصفحة." : "No revisions recorded for this page yet."}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {revisions.map((rev, i) => (
+                    <div
+                      key={rev.id}
+                      className="flex items-center justify-between gap-3 border border-border rounded-xl p-3 bg-card"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-[10px] font-mono">
+                            v{rev.version}
+                          </Badge>
+                          {i === 0 && (
+                            <Badge className="text-[10px] bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
+                              {isAr ? "الحالي" : "Current"}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-foreground mt-1 truncate">{rev.change_summary || "—"}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5 font-mono">
+                          {new Date(rev.created_at).toLocaleString(isAr ? "ar" : "en")}
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-[11px] gap-1.5 shrink-0"
+                        disabled={i === 0 || restoringId === rev.id}
+                        onClick={() => handleRestoreRevision(rev.id)}
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        {restoringId === rev.id
+                          ? isAr
+                            ? "جاري الاستعادة..."
+                            : "Restoring..."
+                          : isAr
+                          ? "استعادة"
+                          : "Restore"}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
