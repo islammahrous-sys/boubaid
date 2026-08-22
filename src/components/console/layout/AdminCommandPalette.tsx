@@ -141,27 +141,43 @@ export function AdminCommandPalette({
 
         <CommandSeparator />
 
-        {/* System Navigation Sections */}
-        <CommandGroup heading={isAr ? "أقسام المنظومة الإدارية" : "Admin Sections"}>
-          {ADMIN_DOMAINS.map((domain) => {
-            const DomainIcon = domain.icon;
-            return (
-              <CommandItem
-                key={domain.id}
-                onSelect={() => {
-                  onSelectTab(domain.id, domain.tabs[0]?.id || "overview");
-                  onOpenChange(false);
-                }}
-              >
-                <DomainIcon className="w-4 h-4 me-2 text-muted-foreground" />
-                <span>{isAr ? domain.label_ar : domain.label_en}</span>
-                <span className="ms-auto text-[10px] text-muted-foreground font-mono">
-                  {domain.tabs.length} {isAr ? "أقسام فرعية" : "tabs"}
-                </span>
-              </CommandItem>
-            );
-          })}
-        </CommandGroup>
+        {/* System Navigation Sections — every domain AND every one of its sub-modules
+            is individually searchable/navigable here, not just the domain root. */}
+        {ADMIN_DOMAINS.map((domain) => {
+          const DomainIcon = domain.icon;
+          return (
+            <CommandGroup
+              key={domain.id}
+              heading={isAr ? domain.label_ar : domain.label_en}
+            >
+              {domain.tabs.map((tab) => {
+                const TabIcon = tab.icon;
+                const isOnlyTab = domain.tabs.length === 1;
+                return (
+                  <CommandItem
+                    key={`${domain.id}-${tab.id}`}
+                    onSelect={() => {
+                      onSelectTab(domain.id, tab.id);
+                      onOpenChange(false);
+                    }}
+                  >
+                    {isOnlyTab ? (
+                      <DomainIcon className="w-4 h-4 me-2 text-muted-foreground" />
+                    ) : (
+                      <TabIcon className="w-4 h-4 me-2 text-muted-foreground" />
+                    )}
+                    <span>{isAr ? tab.label_ar : tab.label_en}</span>
+                    {!isOnlyTab && (
+                      <span className="ms-auto text-[10px] text-muted-foreground font-mono">
+                        {isAr ? domain.label_ar : domain.label_en}
+                      </span>
+                    )}
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          );
+        })}
 
         {/* Dynamic Database Items */}
         {items.length > 0 && (
