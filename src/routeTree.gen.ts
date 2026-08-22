@@ -16,6 +16,7 @@ import { Route as LibraryRouteImport } from './routes/library'
 import { Route as InitiativesRouteImport } from './routes/initiatives'
 import { Route as FoundationRouteImport } from './routes/foundation'
 import { Route as FamilyTreeRouteImport } from './routes/family-tree'
+import { Route as EventsRouteImport } from './routes/events'
 import { Route as DnaRouteImport } from './routes/dna'
 import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContributeRouteImport } from './routes/contribute'
@@ -67,6 +68,11 @@ const FoundationRoute = FoundationRouteImport.update({
 const FamilyTreeRoute = FamilyTreeRouteImport.update({
   id: '/family-tree',
   path: '/family-tree',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DnaRoute = DnaRouteImport.update({
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
   '/dna': typeof DnaRoute
+  '/events': typeof EventsRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
   '/dna': typeof DnaRoute
+  '/events': typeof EventsRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
   '/dna': typeof DnaRoute
+  '/events': typeof EventsRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
@@ -243,6 +252,7 @@ export interface FileRouteTypes {
     | '/contribute'
     | '/directory'
     | '/dna'
+    | '/events'
     | '/family-tree'
     | '/foundation'
     | '/initiatives'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/contribute'
     | '/directory'
     | '/dna'
+    | '/events'
     | '/family-tree'
     | '/foundation'
     | '/initiatives'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/contribute'
     | '/directory'
     | '/dna'
+    | '/events'
     | '/family-tree'
     | '/foundation'
     | '/initiatives'
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   ContributeRoute: typeof ContributeRoute
   DirectoryRoute: typeof DirectoryRoute
   DnaRoute: typeof DnaRoute
+  EventsRoute: typeof EventsRoute
   FamilyTreeRoute: typeof FamilyTreeRoute
   FoundationRoute: typeof FoundationRoute
   InitiativesRoute: typeof InitiativesRouteWithChildren
@@ -380,6 +393,13 @@ declare module '@tanstack/react-router' {
       path: '/family-tree'
       fullPath: '/family-tree'
       preLoaderRoute: typeof FamilyTreeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dna': {
@@ -554,6 +574,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContributeRoute: ContributeRoute,
   DirectoryRoute: DirectoryRoute,
   DnaRoute: DnaRoute,
+  EventsRoute: EventsRoute,
   FamilyTreeRoute: FamilyTreeRoute,
   FoundationRoute: FoundationRoute,
   InitiativesRoute: InitiativesRouteWithChildren,
