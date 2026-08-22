@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { news as staticNews, siteMeta } from "@/content/site";
@@ -9,6 +9,17 @@ import { Eyebrow } from "@/components/site/Editorial";
 import { newsImage } from "@/content/news-images";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+/** How many "more news" stories are shown per page, after the pinned lead story. */
+const NEWS_PAGE_SIZE = 9;
 
 export const Route = createFileRoute("/news")({
   loader: async () => {
@@ -45,9 +56,22 @@ function NewsPage() {
   const { t, lang } = useLang();
   const { news } = Route.useLoaderData();
   const [tab, setTab] = useState<"all" | "family" | "fund">("all");
+  const [page, setPage] = useState(1);
 
   const filtered = tab === "all" ? news : news.filter((n) => n.section === tab);
   const [lead, ...rest] = filtered;
+
+  // Switching sections resets to page 1 so the reader never lands on an
+  // out-of-range page for the newly selected filter.
+  useEffect(() => {
+    setPage(1);
+  }, [tab]);
+
+  const totalPages = Math.max(1, Math.ceil(rest.length / NEWS_PAGE_SIZE));
+  const pagedRest = useMemo(
+    () => rest.slice((page - 1) * NEWS_PAGE_SIZE, page * NEWS_PAGE_SIZE),
+    [rest, page],
+  );
 
   const filters: { key: typeof tab; label: BiText }[] = [
     { key: "all", label: copy.filterAll },
@@ -156,7 +180,7 @@ function NewsPage() {
               <Eyebrow>{t(copy.more)}</Eyebrow>
 
               <div className="reveal-stagger mt-6 grid gap-x-12 md:grid-cols-2 lg:grid-cols-3">
-                {rest.map((n) => (
+                {pagedRest.map((n) => (
                   <article key={n.slug} className="border-t border-border py-6">
                     <Link to="/news/$slug" params={{ slug: n.slug }} className="group active-scale block">
                       <div className="flex items-center gap-3">
@@ -180,6 +204,47 @@ function NewsPage() {
                   </article>
                 ))}
               </div>
+
+              {totalPages > 1 && (
+                <Pagination className="mt-10">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPage((p) => Math.max(1, p - 1));
+                        }}
+                        className={cn(page <= 1 && "pointer-events-none opacity-40")}
+                      />
+                    </PaginationItem>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          href="#"
+                          isActive={p === page}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setPage(p);
+                          }}
+                        >
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPage((p) => Math.min(totalPages, p + 1));
+                        }}
+                        className={cn(page >= totalPages && "pointer-events-none opacity-40")}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
             </section>
           ) : null}
         </div>
