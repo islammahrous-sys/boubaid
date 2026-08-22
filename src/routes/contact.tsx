@@ -101,11 +101,18 @@ function ContactPage() {
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const sendContact = useServerFn(submitContactMessage);
 
-  const contactPhone = dynamicSettings.contact_phone || siteMeta.contact.phone;
-  const contactEmail = dynamicSettings.contact_email || siteMeta.contact.email;
-  const contactWhatsapp = dynamicSettings.contact_whatsapp || siteMeta.contact.whatsapp;
-  const addressText = (lang === "ar" ? dynamicSettings.national_address_ar : dynamicSettings.national_address_en) || t(siteMeta.nationalAddress.full);
-  const hoursText = (lang === "ar" ? dynamicSettings.working_hours_ar : dynamicSettings.working_hours_en) || t(copy.hoursValue);
+  // Live values are saved by the admin console under category-keyed rows
+  // (e.g. { site_contact: { phone, email, whatsapp }, site_general: { national_address } }) —
+  // see SiteSettingsManager.tsx / upsertSiteSetting. Fall back to the static
+  // content when a category hasn't been configured yet.
+  const siteContact = dynamicSettings.site_contact || {};
+  const siteGeneral = dynamicSettings.site_general || {};
+
+  const contactPhone = siteContact.phone || siteMeta.contact.phone;
+  const contactEmail = siteContact.email || siteMeta.contact.email;
+  const contactWhatsapp = siteContact.whatsapp || siteMeta.contact.whatsapp;
+  const addressText = siteGeneral.national_address || t(siteMeta.nationalAddress.full);
+  const hoursText = t(copy.hoursValue);
 
 
   const fieldClass =

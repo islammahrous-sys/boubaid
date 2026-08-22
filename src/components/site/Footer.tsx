@@ -35,11 +35,18 @@ export function Footer() {
   const liveFooterItems = liveNav?.footer ?? [];
   const usingLiveFooterNav = liveFooterItems.length > 0;
 
-  const contactPhone = dynamicSettings.contact_phone || siteMeta.contact.phone;
-  const contactEmail = dynamicSettings.contact_email || siteMeta.contact.email;
-  const contactWhatsapp = dynamicSettings.contact_whatsapp || siteMeta.contact.whatsapp;
-  const ncnpLicense = dynamicSettings.ncnp_license || siteMeta.ncnpLicense;
-  const hqText = (lang === "ar" ? dynamicSettings.headquarters_ar : dynamicSettings.headquarters_en) || t(siteMeta.headquarters);
+  // Live values are saved by the admin console under category-keyed rows
+  // (e.g. { site_contact: { phone, email, whatsapp }, site_general: { license, national_address } }) —
+  // see SiteSettingsManager.tsx / upsertSiteSetting. Fall back to the static
+  // content when a category hasn't been configured yet.
+  const siteContact = dynamicSettings.site_contact || {};
+  const siteGeneral = dynamicSettings.site_general || {};
+
+  const contactPhone = siteContact.phone || siteMeta.contact.phone;
+  const contactEmail = siteContact.email || siteMeta.contact.email;
+  const contactWhatsapp = siteContact.whatsapp || siteMeta.contact.whatsapp;
+  const ncnpLicense = siteGeneral.license || siteMeta.ncnpLicense;
+  const hqText = siteGeneral.national_address || t(siteMeta.headquarters);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
