@@ -160,8 +160,15 @@ export function InitiativesManager({
                   </TableCell>
                   <TableCell className="font-mono text-muted-foreground">{item.slug}</TableCell>
                   <TableCell className="text-center">
-                    <Badge variant={item.status === "ongoing" ? "default" : "secondary"} className="text-[10px]">
-                      {item.status === "ongoing" ? (isAr ? "جارية" : "Ongoing") : (isAr ? "مخططة" : "Planned")}
+                    <Badge
+                      variant={item.status === "ongoing" ? "default" : item.status === "completed" ? "outline" : "secondary"}
+                      className="text-[10px]"
+                    >
+                      {item.status === "ongoing"
+                        ? isAr ? "جارية" : "Ongoing"
+                        : item.status === "completed"
+                          ? isAr ? "مكتملة" : "Completed"
+                          : isAr ? "مخططة" : "Planned"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center font-mono">{item.sort_order}</TableCell>

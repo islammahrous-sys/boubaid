@@ -56,7 +56,12 @@ export function mergeNews(dbRows: NewsRow[], staticItems: NewsItem[]): NewsItem[
 export type InitiativeItem = {
   slug: string;
   title: BiText;
-  status: "ongoing" | "upcoming";
+  /**
+   * "upcoming" is this app's public-facing label for the DB's "planned"
+   * status (kept for compatibility with the static fallback content in
+   * content/site.ts, which predates the DB-backed "completed" state).
+   */
+  status: "ongoing" | "upcoming" | "completed";
   summary: BiText;
   body: BiText;
   /** Uploaded cover, when the editor attached one. */
@@ -67,7 +72,7 @@ export function mapInitiativeRow(row: InitiativeRow): InitiativeItem {
   return {
     slug: row.slug,
     title: { ar: row.title_ar, en: row.title_en ?? row.title_ar },
-    status: row.status === "ongoing" ? "ongoing" : "upcoming",
+    status: row.status === "ongoing" ? "ongoing" : row.status === "completed" ? "completed" : "upcoming",
     summary: { ar: row.summary_ar ?? "", en: row.summary_en ?? row.summary_ar ?? "" },
     body: { ar: row.body_ar ?? "", en: row.body_en ?? row.body_ar ?? "" },
     image: row.cover_url ?? undefined,

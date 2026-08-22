@@ -74,6 +74,7 @@ const copy = {
   colStatus: { ar: "الحالة", en: "Status" } as BiText,
   active: { ar: "جارية", en: "Active" } as BiText,
   planned: { ar: "مخططة", en: "Planned" } as BiText,
+  completed: { ar: "مكتملة", en: "Completed" } as BiText,
   details: { ar: "التفاصيل", en: "Details" } as BiText,
 
   supportTitle: { ar: "دعم البرامج", en: "Supporting the programmes" } as BiText,
@@ -92,7 +93,7 @@ function InitiativesPage() {
   const [page, setPage] = useState(1);
 
   const activeCount = initiatives.filter((i) => i.status === "ongoing").length;
-  const plannedCount = initiatives.length - activeCount;
+  const plannedCount = initiatives.filter((i) => i.status === "upcoming").length;
 
   const totalPages = Math.max(1, Math.ceil(initiatives.length / PAGE_SIZE));
   const pagedInitiatives = useMemo(
@@ -237,8 +238,16 @@ function InitiativesPage() {
                 </p>
 
                 <span className="justify-self-start md:justify-self-end">
-                  <Status tone={init.status === "ongoing" ? "active" : "pending"}>
-                    {init.status === "ongoing" ? t(copy.active) : t(copy.planned)}
+                  <Status
+                    tone={
+                      init.status === "ongoing" ? "active" : init.status === "completed" ? "neutral" : "pending"
+                    }
+                  >
+                    {init.status === "ongoing"
+                      ? t(copy.active)
+                      : init.status === "completed"
+                        ? t(copy.completed)
+                        : t(copy.planned)}
                   </Status>
                 </span>
               </Link>
