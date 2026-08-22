@@ -64,15 +64,19 @@ export function LibraryItemsManager({
 
   const handleOpenAdd = () => {
     setSelectedItem(null);
+    const collection = collectionFilter === "all" ? "documents" : (collectionFilter as any);
     setForm({
       id: undefined,
-      collection: collectionFilter === "all" ? "documents" : (collectionFilter as any),
+      collection,
       title_ar: "",
       title_en: "",
       description_ar: "",
       description_en: "",
       year: 1447,
-      kind: "PDF",
+      // `kind` means something different per collection (see the label logic
+      // below) — default it to a sensible starting value for whichever
+      // collection this new item was opened in, not always the document format.
+      kind: collection === "recordings" ? "" : collection === "photographs" ? "" : "PDF",
       reference: "",
       file_path: "",
       external_url: "",
@@ -299,11 +303,39 @@ export function LibraryItemsManager({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "النوع والامتداد" : "Kind / Format"}</Label>
+                {/* This single DB column (`kind`) is reused for three different
+                    meanings depending on `collection` — the public library
+                    page (src/routes/library.tsx via mergeLibrary) reads it as
+                    the document format, the photo category pill, or the
+                    recording's displayed duration respectively. The label and
+                    placeholder must match whichever meaning is live, or an
+                    editor will type a format string ("MP4") into what the
+                    public page renders as a video's duration badge. */}
+                <Label className="text-xs">
+                  {form.collection === "recordings"
+                    ? isAr
+                      ? "المدة (مثال 12:34)"
+                      : "Duration"
+                    : form.collection === "photographs"
+                      ? isAr
+                        ? "تصنيف الصورة"
+                        : "Category"
+                      : isAr
+                        ? "النوع والامتداد"
+                        : "Kind / Format"}
+                </Label>
                 <Input
                   value={form.kind ?? ""}
                   onChange={(e) => setForm({ ...form, kind: e.target.value })}
-                  placeholder="PDF / MP4 / JPG"
+                  placeholder={
+                    form.collection === "recordings"
+                      ? "12:34"
+                      : form.collection === "photographs"
+                        ? isAr
+                          ? "مثال: الاجتماعات العامة"
+                          : "e.g. General assemblies"
+                        : "PDF / DOCX"
+                  }
                 />
               </div>
               <div className="space-y-1">
