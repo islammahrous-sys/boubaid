@@ -2,14 +2,17 @@ import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetDescription } from "@/components/ui/sheet";
 import { useLang } from "@/i18n/LanguageProvider";
 import { supabase } from "@/integrations/supabase/client";
-import { Landmark, FileText, CheckCircle2, XCircle, Clock, Check, X, ExternalLink, Download } from "lucide-react";
+import { Landmark, FileText, CheckCircle2, XCircle, ExternalLink, Loader2, ArrowLeft, ArrowRight, AlertCircle, TrendingUp, Search, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getTreasuryContributionsPaginated } from "@/lib/admin-hub.functions";
 import { cn } from "@/lib/utils";
+import { useConfirm } from "@/hooks/useConfirm";
 import type { TreasuryContributionReviewInput } from "@/lib/admin-hub.schemas";
 
 export type ContributionItem = {
@@ -31,36 +34,75 @@ export type ContributionItem = {
 };
 
 export function TreasuryManager({
-  contributions,
   verifiedTotal,
   pendingTotal,
+  pendingCount,
+  verifiedCount,
+  rejectedCount,
+  totalCount,
   onReviewContribution,
 }: {
-  contributions: ContributionItem[];
   verifiedTotal: number;
   pendingTotal: number;
+  pendingCount: number;
+  verifiedCount: number;
+  rejectedCount: number;
+  totalCount: number;
   onReviewContribution: (data: TreasuryContributionReviewInput) => Promise<void>;
 }) {
-  const { lang } = useLang();
+  const { lang, dir } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedContribution, setSelectedContribution] = useState<ContributionItem | null>(null);
   const [reviewNote, setReviewNote] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const filtered = contributions.filter((c) => {
-    return statusFilter === "all" || c.status === statusFilter;
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 50;
+  
+  const fetchTreasuryPage = useServerFn(getTreasuryContributionsPaginated);
+  
+  const { data: queryData, isLoading } = useQuery({
+    queryKey: ["treasury-paginated", currentPage, pageSize, statusFilter],
+    queryFn: () => fetchTreasuryPage({
+      data: {
+        page: currentPage,
+        pageSize,
+        status: statusFilter === "all" ? undefined : statusFilter,
+      }
+    }),
+    staleTime: 1000 * 60,
   });
 
-  const getStatusBadge = (st: ContributionItem["status"]) => {
+  const filtered = queryData?.data ?? [];
+
+
+  const getStatusDisplay = (st: ContributionItem["status"]) => {
     switch (st) {
       case "verified":
-        return <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px]">{isAr ? "معتمد وموثق" : "Verified"}</Badge>;
+        return (
+          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium text-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            {isAr ? "معتمدة" : "Verified"}
+          </span>
+        );
       case "pending":
-        return <Badge variant="outline" className="text-amber-600 border-amber-500/30 text-[10px]">{isAr ? "قيد المراجعة" : "Pending"}</Badge>;
+        return (
+          <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-bold text-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            {isAr ? "قيد المراجعة" : "Pending"}
+          </span>
+        );
       case "rejected":
-        return <Badge variant="destructive" className="text-[10px]">{isAr ? "مرفوض" : "Rejected"}</Badge>;
+        return (
+          <span className="flex items-center gap-1.5 text-destructive font-medium text-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
+            {isAr ? "مرفوضة" : "Rejected"}
+          </span>
+        );
     }
   };
 
@@ -74,6 +116,20 @@ export function TreasuryManager({
 
   const handleReviewSubmit = async (status: "verified" | "rejected") => {
     if (!selectedContribution) return;
+
+    if (status === "rejected") {
+      const ok = await confirm({
+        title: isAr
+          ? `رفض مساهمة ${selectedContribution.contributor_name}؟`
+          : `Reject contribution from ${selectedContribution.contributor_name}?`,
+        description: isAr
+          ? "سيتم تسجيل المعاملة كمرفوضة، ويمكن للمساهم إعادة تقديمها لاحقاً."
+          : "The transaction will be rejected, and the contributor can resubmit later.",
+        tone: "destructive",
+      });
+      if (!ok) return;
+    }
+
     try {
       setLoading(true);
       await onReviewContribution({
@@ -82,9 +138,9 @@ export function TreasuryManager({
         review_note: reviewNote,
       });
       setSelectedContribution(null);
-      toast.success(isAr ? `تم تحديث المساهمة إلى: ${status === "verified" ? "معتمد" : "مرفوض"}` : `Contribution updated to ${status}`);
+      toast.success(isAr ? `تم تحديث المعاملة بنجاح` : `Transaction updated successfully`);
     } catch (err: any) {
-      toast.error(err.message || (isAr ? "فشل تحديث المساهمة" : "Failed to update"));
+      toast.error(err.message || (isAr ? "حدث خطأ أثناء الحفظ" : "Failed to update"));
     } finally {
       setLoading(false);
     }
@@ -96,185 +152,194 @@ export function TreasuryManager({
       if (data?.signedUrl) {
         window.open(data.signedUrl, "_blank", "noopener,noreferrer");
       } else {
-        toast.error(isAr ? "تعذر فتح ملف الإيصال" : "Could not open receipt");
+        toast.error(isAr ? "تعذر فتح الإيصال" : "Could not open receipt");
       }
     } catch (err) {
-      toast.error(isAr ? "تعذر فتح ملف الإيصال" : "Could not open receipt");
+      toast.error(isAr ? "تعذر فتح الإيصال" : "Could not open receipt");
     }
   };
 
   return (
-    <div className="space-y-4">
-      {/* Top Header & Overview Cards */}
-      <div className="flex items-center justify-between bg-card p-4 rounded-xl border border-border">
-        <div className="flex items-center gap-2.5">
-          <Landmark className="w-5 h-5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">
-            {isAr ? "سجل الخزينة والمساهمات والاشتراكات العائلية" : "Treasury & Contributions Ledger"}
-          </h3>
+    <div className="space-y-6 max-w-[1200px] mx-auto pb-12">
+      {/* 1. Page Context / Welcome Summary */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            {isAr ? "سجل الخزينة والمساهمات" : "Treasury & Contributions Ledger"}
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isAr ? "مراجعة وإدارة المساهمات والمعاملات المالية" : "Review and manage financial contributions and transactions"}
+          </p>
         </div>
+        {pendingCount > 0 && (
+          <div className="flex items-center gap-2 bg-amber-500/10 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-lg border border-amber-500/20 shadow-xs">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span className="text-sm font-bold">
+              {isAr ? `لديك ${pendingCount} عناصر تتطلب انتباهك` : `You have ${pendingCount} items requiring attention`}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-        <div className="p-4 rounded-xl border border-border bg-card">
-          <span className="text-xs text-muted-foreground block">{isAr ? "إجمالي المساهمات المعتمدة" : "Total Verified"}</span>
-          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-1 block">
-            {formatSar(verifiedTotal)}
-          </span>
-          <span className="text-[10px] text-muted-foreground mt-1 block">{isAr ? "في حساب الصندوق" : "In fund account"}</span>
-        </div>
-
-        <div className="p-4 rounded-xl border border-border bg-card">
-          <span className="text-xs text-muted-foreground block">{isAr ? "مبالغ قيد المراجعة" : "Pending Review"}</span>
-          <span className="text-2xl font-bold text-amber-600 dark:text-amber-400 font-mono mt-1 block">
-            {formatSar(pendingTotal)}
-          </span>
-          <span className="text-[10px] text-muted-foreground mt-1 block">{isAr ? "تتطلب اعتماد الإيصال" : "Awaiting receipt review"}</span>
-        </div>
-
-        <div className="p-4 rounded-xl border border-border bg-card">
-          <span className="text-xs text-muted-foreground block">{isAr ? "إجمالي القيود المسجلة" : "Total Entries"}</span>
-          <span className="text-2xl font-bold text-foreground font-mono mt-1 block">
-            {contributions.length}
-          </span>
-          <span className="text-[10px] text-muted-foreground mt-1 block">{isAr ? "عملية مساهمة واشتراك" : "operations recorded"}</span>
-        </div>
-      </div>
-
-      {/* Status Filter Tabs & Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card p-3 rounded-xl border border-border">
-        <div className="flex flex-wrap items-center gap-1.5">
-          {[
-            { id: "all", label_ar: "الكل", label_en: "All", count: contributions.length },
-            { id: "pending", label_ar: "قيد المراجعة", label_en: "Pending", count: contributions.filter((c) => c.status === "pending").length, isAlert: true },
-            { id: "verified", label_ar: "المعتمدة", label_en: "Verified", count: contributions.filter((c) => c.status === "verified").length },
-            { id: "rejected", label_ar: "المرفوضة", label_en: "Rejected", count: contributions.filter((c) => c.status === "rejected").length },
-          ].map((tab) => (
-            <Button
-              key={tab.id}
-              variant={statusFilter === tab.id ? "default" : "outline"}
-              size="sm"
-              className={cn(
-                "h-8 text-xs gap-1.5 rounded-lg font-medium",
-                statusFilter !== tab.id && tab.isAlert && tab.count > 0 && "border-amber-500/40 text-amber-600 bg-amber-500/5 hover:bg-amber-500/10"
-              )}
-              onClick={() => setStatusFilter(tab.id)}
+      {/* 2. Needs Your Attention / Operational KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className={cn(
+          "p-5 rounded-2xl border bg-card relative overflow-hidden group transition-all",
+          pendingCount > 0 ? "border-amber-500/30 shadow-sm" : "border-border"
+        )}>
+          {pendingCount > 0 && <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />}
+          <div className="flex flex-col h-full">
+            <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+              <span className={cn("w-2 h-2 rounded-full", pendingCount > 0 ? "bg-amber-500 animate-pulse" : "bg-muted-foreground")} />
+              {isAr ? "تحتاج إلى انتباهك (قيد المراجعة)" : "Needs Attention (Pending)"}
+            </h3>
+            <div className="mb-6 flex-1">
+              <span className="text-3xl font-black font-mono text-foreground block">{pendingCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "معاملة" : "transactions"}</span></span>
+              <span className="text-lg font-bold text-amber-600 dark:text-amber-400 font-mono mt-1 block">{formatSar(pendingTotal)}</span>
+            </div>
+            <button 
+              onClick={() => setStatusFilter("pending")}
+              className="text-xs font-bold text-primary flex items-center gap-1 hover:gap-2 transition-all w-fit"
             >
-              <span>{isAr ? tab.label_ar : tab.label_en}</span>
-              <Badge
-                variant={statusFilter === tab.id ? "secondary" : "outline"}
-                className={cn("h-4 px-1.5 text-[9px] font-mono", tab.isAlert && tab.count > 0 && "bg-amber-500 text-white font-bold")}
-              >
-                {tab.count}
-              </Badge>
-            </Button>
-          ))}
+              {isAr ? "مراجعة الآن" : "Review Now"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+            </button>
+          </div>
         </div>
 
-        <span className="text-xs text-muted-foreground font-mono">
-          {filtered.length} {isAr ? "عملية مطابقة" : "matches"}
-        </span>
+        <div className="p-5 rounded-2xl border border-border bg-card relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+          <div className="flex flex-col h-full">
+            <h3 className="text-sm font-bold text-muted-foreground mb-4 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              {isAr ? "المعاملات المعتمدة" : "Verified Transactions"}
+            </h3>
+            <div className="mb-6 flex-1">
+              <span className="text-3xl font-black font-mono text-foreground block">{verifiedCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "معاملة" : "transactions"}</span></span>
+              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-1 block">{formatSar(verifiedTotal)}</span>
+            </div>
+            <button 
+              onClick={() => setStatusFilter("verified")}
+              className="text-xs font-bold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors w-fit"
+            >
+              {isAr ? "عرض المعاملات" : "View Transactions"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="p-5 rounded-2xl border border-border bg-card relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+          <div className="flex flex-col h-full">
+            <h3 className="text-sm font-bold text-muted-foreground mb-4 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-blue-500" />
+              {isAr ? "إجمالي العمليات المسجلة" : "Total Operations"}
+            </h3>
+            <div className="mb-6 flex-1">
+              <span className="text-3xl font-black font-mono text-foreground block">{totalCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "عملية" : "operations"}</span></span>
+            </div>
+            <button 
+              onClick={() => setStatusFilter("all")}
+              className="text-xs font-bold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors w-fit"
+            >
+              {isAr ? "عرض الكل" : "View All"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="border border-border rounded-xl bg-card overflow-hidden">
+      {/* 3. Primary Work Queue / Filters */}
+      <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
+        <div className="border-b border-border p-2 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/20">
+          <div className="flex items-center gap-4 text-sm font-medium overflow-x-auto no-scrollbar">
+            <button 
+              onClick={() => setStatusFilter("all")}
+              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "all" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+            >
+              {isAr ? "الكل" : "All"} <span className="text-[10px] font-mono opacity-60 ml-1">({totalCount})</span>
+              {statusFilter === "all" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+            </button>
+            <button 
+              onClick={() => setStatusFilter("pending")}
+              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "pending" ? "text-primary font-bold" : "text-muted-foreground hover:text-foreground")}
+            >
+              {isAr ? "قيد المراجعة" : "Pending"} <span className="text-[10px] font-mono opacity-60 ml-1">({pendingCount})</span>
+              {statusFilter === "pending" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+            </button>
+            <button 
+              onClick={() => setStatusFilter("verified")}
+              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "verified" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+            >
+              {isAr ? "معتمدة" : "Verified"} <span className="text-[10px] font-mono opacity-60 ml-1">({verifiedCount})</span>
+              {statusFilter === "verified" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+            </button>
+            <button 
+              onClick={() => setStatusFilter("rejected")}
+              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "rejected" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+            >
+              {isAr ? "مرفوضة" : "Rejected"} <span className="text-[10px] font-mono opacity-60 ml-1">({rejectedCount})</span>
+              {statusFilter === "rejected" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+            </button>
+          </div>
+        </div>
+
+        {/* 4. Streamlined Main Table */}
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/40 text-xs">
-              <TableHead>{isAr ? "المساهم" : "Contributor"}</TableHead>
-              <TableHead>{isAr ? "الغرض" : "Purpose"}</TableHead>
-              <TableHead className="text-center">{isAr ? "المبلغ" : "Amount"}</TableHead>
-              <TableHead>{isAr ? "التاريخ والطريقة" : "Date & Method"}</TableHead>
-              <TableHead className="text-center">{isAr ? "الإيصال" : "Receipt"}</TableHead>
-              <TableHead className="text-center">{isAr ? "الحالة" : "Status"}</TableHead>
-              <TableHead className="text-end">{isAr ? "إجراء" : "Action"}</TableHead>
+            <TableRow className="hover:bg-transparent border-border">
+              <TableHead className="font-semibold">{isAr ? "المعاملة" : "Transaction"}</TableHead>
+              <TableHead className="font-semibold text-start">{isAr ? "المبلغ" : "Amount"}</TableHead>
+              <TableHead className="font-semibold">{isAr ? "التاريخ" : "Date"}</TableHead>
+              <TableHead className="font-semibold">{isAr ? "الحالة" : "Status"}</TableHead>
+              <TableHead className="font-semibold text-end">{isAr ? "الإجراء" : "Action"}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.length === 0 ? (
+            {isLoading && (
               <TableRow>
-                <TableCell colSpan={7} className="h-28 text-center text-muted-foreground text-xs">
-                  {isAr ? "لا توجد عمليات مساهمة مسجلة في هذا التبويب" : "No contributions found"}
+                <TableCell colSpan={6} className="h-48 text-center text-muted-foreground">
+                  جاري تحميل البيانات...
+                </TableCell>
+              </TableRow>
+            )}
+            {!isLoading && filtered.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-48 text-center">
+                  <div className="flex flex-col items-center justify-center text-muted-foreground">
+                    <Landmark className="w-8 h-8 mb-3 opacity-20" />
+                    <p className="text-sm font-medium">{isAr ? "لا توجد معاملات في هذه القائمة" : "No transactions found"}</p>
+                    <p className="text-xs opacity-70 mt-1">{isAr ? "ستظهر المعاملات الجديدة هنا فور تسجيلها." : "New transactions will appear here."}</p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               filtered.map((c) => (
-                <TableRow key={c.id} className="text-xs hover:bg-muted/30">
+                <TableRow key={c.id} className="group cursor-pointer hover:bg-muted/30" onClick={() => { setSelectedContribution(c); setReviewNote(c.review_note ?? ""); }}>
                   <TableCell>
-                    <span className="font-semibold text-foreground block">{c.contributor_name}</span>
-                    {c.phone && <span className="text-[10px] text-muted-foreground font-mono">{c.phone}</span>}
+                    <div className="font-bold text-foreground">{c.contributor_name}</div>
+                    <div className="text-[11px] text-muted-foreground mt-0.5">{c.purpose || (isAr ? "اشتراك عام" : "General")}</div>
                   </TableCell>
-                  <TableCell>
-                    <span className="font-medium text-foreground">{c.purpose || (isAr ? "اشتراك عام" : "General")}</span>
-                    {c.reference && <span className="block text-[10px] text-muted-foreground font-mono">Ref: {c.reference}</span>}
-                  </TableCell>
-                  <TableCell className="text-center font-mono font-bold text-foreground">
+                  <TableCell className="font-mono font-bold text-foreground text-start">
                     {formatSar(c.amount)}
                   </TableCell>
                   <TableCell>
-                    <span className="font-mono text-muted-foreground block">
-                      {new Date(c.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">{c.method}</span>
+                    <div className="text-sm font-medium">{new Date(c.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric" })}</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">{new Date(c.created_at).getFullYear()}</div>
                   </TableCell>
-                  <TableCell className="text-center">
-                    {c.receipt_path ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 text-[10px] gap-1 text-primary hover:bg-primary/10"
-                        onClick={() => handleOpenReceipt(c.receipt_path!)}
-                        title={isAr ? "معاينة ملف الإيصال" : "Preview Receipt"}
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        {isAr ? "عرض" : "View"}
-                      </Button>
-                    ) : (
-                      <span className="text-muted-foreground text-[10px]">—</span>
-                    )}
+                  <TableCell>
+                    {getStatusDisplay(c.status)}
                   </TableCell>
-                  <TableCell className="text-center">{getStatusBadge(c.status)}</TableCell>
                   <TableCell className="text-end">
-                    <div className="flex items-center justify-end gap-1.5">
-                      {c.status === "pending" && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={loading}
-                          className="h-7 text-xs bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/30 px-2 font-medium"
-                          onClick={async () => {
-                            try {
-                              setLoading(true);
-                              await onReviewContribution({
-                                id: c.id,
-                                status: "verified",
-                                review_note: "تم الاعتماد السريع من كشف الخزينة",
-                              });
-                              toast.success(isAr ? `تم اعتماد مساهمة: ${c.contributor_name}` : `Verified contribution from ${c.contributor_name}`);
-                            } catch (err: any) {
-                              toast.error(err.message || (isAr ? "فشل الاعتماد" : "Failed to verify"));
-                            } finally {
-                              setLoading(false);
-                            }
-                          }}
-                          title={isAr ? "اعتماد مباشر" : "Quick Verify"}
-                        >
-                          <Check className="w-3 h-3 me-1" />
-                          {isAr ? "اعتماد" : "Verify"}
-                        </Button>
-                      )}
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-7 text-xs px-2.5"
-                        onClick={() => {
-                          setSelectedContribution(c);
-                          setReviewNote(c.review_note ?? "");
-                        }}
-                      >
-                        {isAr ? "تدقيق" : "Details"}
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-3 text-xs font-bold transition-all text-primary hover:bg-primary/10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedContribution(c);
+                        setReviewNote(c.review_note ?? "");
+                      }}
+                    >
+                      {c.status === "pending" ? (isAr ? "مراجعة" : "Review") : (isAr ? "عرض التفاصيل" : "View Details")}
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
@@ -283,87 +348,117 @@ export function TreasuryManager({
         </Table>
       </div>
 
-      {/* Review Dialog */}
-      {selectedContribution && (
-        <Dialog open={!!selectedContribution} onOpenChange={() => setSelectedContribution(null)}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="text-base font-bold flex items-center gap-2">
-                <Landmark className="w-5 h-5 text-primary" />
-                {isAr ? "مراجعة واعتماد إيصال المساهمة" : "Review Contribution Entry"}
-              </DialogTitle>
-            </DialogHeader>
+      {/* 5. Contextual Side Drawer for Details */}
+      <Sheet open={!!selectedContribution} onOpenChange={(open) => !open && setSelectedContribution(null)}>
+        <SheetContent side={isAr ? "left" : "right"} className="w-full sm:max-w-md p-0 flex flex-col border-border gap-0">
+          {selectedContribution && (
+            <>
+              <div className="px-6 py-5 border-b border-border bg-muted/10 flex items-center justify-between">
+                <div>
+                  <SheetTitle className="text-lg font-bold">{isAr ? "تفاصيل المعاملة" : "Transaction Details"}</SheetTitle>
+                  <SheetDescription className="text-xs font-mono mt-1">Ref: {selectedContribution.reference || selectedContribution.id.split("-")[0]}</SheetDescription>
+                </div>
+                {getStatusDisplay(selectedContribution.status)}
+              </div>
+              
+              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
+                {/* Data Grid */}
+                <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                  <div className="col-span-2 bg-muted/20 p-4 rounded-xl border border-border">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-2">{isAr ? "المساهم" : "Contributor"}</span>
+                    <span className="text-base font-bold text-foreground block">{selectedContribution.contributor_name}</span>
+                    {selectedContribution.phone && <span className="text-xs font-mono text-muted-foreground mt-1 block">{selectedContribution.phone}</span>}
+                  </div>
+                  
+                  <div>
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-1">{isAr ? "المبلغ" : "Amount"}</span>
+                    <span className="text-2xl font-black font-mono text-foreground block">{formatSar(selectedContribution.amount)}</span>
+                  </div>
+                  
+                  <div>
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-1">{isAr ? "التاريخ" : "Date"}</span>
+                    <span className="text-sm font-medium text-foreground block">
+                      {new Date(selectedContribution.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "long", day: "numeric", year: "numeric" })}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-1">{isAr ? "وسيلة الدفع" : "Method"}</span>
+                    <span className="text-sm font-medium text-foreground block">{selectedContribution.method}</span>
+                  </div>
 
-            <div className="space-y-3.5 text-xs">
-              <div className="p-3.5 bg-muted/20 border border-border rounded-xl space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-foreground text-sm">{selectedContribution.contributor_name}</span>
-                  <span className="text-lg font-bold font-mono text-primary">{formatSar(selectedContribution.amount)}</span>
+                  <div className="col-span-2">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-1">{isAr ? "الغرض" : "Purpose"}</span>
+                    <span className="text-sm font-medium text-foreground block">{selectedContribution.purpose || (isAr ? "اشتراك عام" : "General")}</span>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
-                  <span>{isAr ? "الغرض:" : "Purpose:"} {selectedContribution.purpose || "اشتراك عام"}</span>
-                  <span>{isAr ? "طريقة التحويل:" : "Method:"} {selectedContribution.method}</span>
+
+                {/* Receipt Section */}
+                <div className="border border-border rounded-xl p-4 bg-muted/10">
+                  <span className="text-xs font-bold text-foreground flex items-center gap-2 mb-3">
+                    <FileText className="w-4 h-4 text-muted-foreground" />
+                    {isAr ? "المستند المرفق (الإيصال)" : "Attached Receipt"}
+                  </span>
+                  {selectedContribution.receipt_path ? (
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between h-12 rounded-lg bg-background"
+                      onClick={() => handleOpenReceipt(selectedContribution.receipt_path!)}
+                    >
+                      <span className="text-xs">{isAr ? "عرض صورة الإيصال" : "View Receipt Image"}</span>
+                      <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                  ) : (
+                    <div className="h-12 flex items-center justify-center text-xs text-muted-foreground border border-dashed border-border rounded-lg bg-background/50">
+                      {isAr ? "لا يوجد إيصال مرفق" : "No receipt attached"}
+                    </div>
+                  )}
                 </div>
-                {selectedContribution.receipt_path && (
-                  <div className="mt-2 pt-2 border-t border-border flex justify-between items-center">
-                    <span className="text-muted-foreground text-[11px]">{isAr ? "مستند الإيصال المرفق:" : "Attached Receipt:"}</span>
+
+                {/* Treasury Note */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground block">{isAr ? "ملاحظة الخزينة (اختياري)" : "Treasury Note (Optional)"}</label>
+                  <Textarea
+                    rows={4}
+                    value={reviewNote}
+                    onChange={(e) => setReviewNote(e.target.value)}
+                    placeholder={isAr ? "اكتب مرجع التحويل أو أي ملاحظات للتوثيق..." : "Add reference or notes..."}
+                    className="resize-none rounded-xl bg-background"
+                  />
+                </div>
+              </div>
+
+              {/* Action Footer */}
+              <div className="px-6 py-4 border-t border-border bg-muted/10 flex items-center justify-between gap-3">
+                {selectedContribution.status !== "verified" ? (
+                  <>
                     <Button
                       type="button"
                       variant="outline"
-                      size="sm"
-                      className="h-7 text-xs gap-1"
-                      onClick={() => handleOpenReceipt(selectedContribution.receipt_path!)}
+                      disabled={loading}
+                      onClick={() => handleReviewSubmit("rejected")}
+                      className="flex-1 h-11 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive border-transparent hover:border-destructive/20 font-bold"
                     >
-                      <ExternalLink className="w-3 h-3" />
-                      {isAr ? "فتح الإيصال في نافذة جديدة" : "Open Receipt"}
+                      {isAr ? "رفض" : "Reject"}
                     </Button>
-                  </div>
+                    <Button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => handleReviewSubmit("verified")}
+                      className="flex-[2] h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md"
+                    >
+                      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : isAr ? "اعتماد المعاملة" : "Approve"}
+                    </Button>
+                  </>
+                ) : (
+                  <Button type="button" variant="outline" className="w-full h-11 rounded-xl font-bold" onClick={() => setSelectedContribution(null)}>
+                    {isAr ? "إغلاق" : "Close"}
+                  </Button>
                 )}
               </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold">{isAr ? "ملاحظة أمانة الخزينة" : "Treasury Note"}</label>
-                <Textarea
-                  rows={3}
-                  value={reviewNote}
-                  onChange={(e) => setReviewNote(e.target.value)}
-                  placeholder={isAr ? "اكتب ملاحظة أو مرجع القيد في الكشف البنكي..." : "Review notes..."}
-                />
-              </div>
-            </div>
-
-            <DialogFooter className="flex sm:justify-between gap-2">
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                disabled={loading}
-                onClick={() => handleReviewSubmit("rejected")}
-                className="gap-1 text-xs"
-              >
-                <X className="w-3.5 h-3.5" />
-                {isAr ? "رفض الإيصال" : "Reject"}
-              </Button>
-
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setSelectedContribution(null)}>
-                  {isAr ? "إلغاء" : "Cancel"}
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={loading}
-                  onClick={() => handleReviewSubmit("verified")}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1 text-xs"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  {isAr ? "اعتماد الإيداع" : "Verify Contribution"}
-                </Button>
-              </div>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

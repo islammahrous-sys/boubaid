@@ -10,6 +10,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { Dna, Plus, Trash2, Save, Layers, Clock, Users, Globe, Sparkles, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { dnaStudiesDataSchema, type DnaStudiesDataInput } from "@/lib/admin-hub.schemas";
+import { useConfirm } from "@/hooks/useConfirm";
 
 export const DEFAULT_DNA_STUDIES_DATA: DnaStudiesDataInput = {
   haplogroup: "J-Z20777 / J-BY37877",
@@ -139,6 +140,7 @@ export function DnaStudiesManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(false);
 
   const [state, setState] = useState<DnaStudiesDataInput>(() => normalizeDnaData(initialData));
@@ -305,7 +307,13 @@ export function DnaStudiesManager({
               </Button>
             </div>
             <div className="space-y-2">
-              {(state.hierarchy ?? []).map((item, idx) => (
+              {(state.hierarchy ?? []).length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-10 text-center text-muted-foreground text-xs rounded-lg border border-dashed border-border">
+                  <Layers className="w-6 h-6 opacity-40" />
+                  <span>{isAr ? "لا توجد حلقات تحور مضافة بعد" : "No mutations added yet"}</span>
+                </div>
+              ) : (
+              (state.hierarchy ?? []).map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2 p-2.5 rounded-lg border border-border bg-card">
                   <Input
                     className="w-32 font-mono text-xs"
@@ -350,7 +358,18 @@ export function DnaStudiesManager({
                     variant="ghost"
                     size="icon"
                     className="w-7 h-7 text-destructive/70 hover:text-destructive"
-                    onClick={() => {
+                    onClick={async () => {
+                      if (
+                        !(await confirm({
+                          title: isAr ? `حذف التحور "${item.mutation}"؟` : `Remove mutation "${item.mutation}"?`,
+                          description: isAr
+                            ? "سيتم حذف هذه الحلقة من السلسلة التحورية. لن يُطبَّق الحذف نهائياً إلا بعد الضغط على 'حفظ كافة التغييرات'."
+                            : "This entry will be removed from the mutation hierarchy. It won't be permanent until you click 'Save All'.",
+                          tone: "destructive",
+                        }))
+                      ) {
+                        return;
+                      }
                       setState((prev) => ({
                         ...prev,
                         hierarchy: (prev.hierarchy ?? []).filter((_, i) => i !== idx),
@@ -360,7 +379,8 @@ export function DnaStudiesManager({
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </TabsContent>
 
@@ -431,7 +451,18 @@ export function DnaStudiesManager({
                     variant="ghost"
                     size="icon"
                     className="w-7 h-7 text-destructive/70 hover:text-destructive"
-                    onClick={() => {
+                    onClick={async () => {
+                      if (
+                        !(await confirm({
+                          title: isAr ? `حذف مرحلة "${item.mutation}"؟` : `Remove step "${item.mutation}"?`,
+                          description: isAr
+                            ? "سيتم حذف هذه المرحلة من التسلسل الزمني. لن يُطبَّق الحذف نهائياً إلا بعد الضغط على 'حفظ كافة التغييرات'."
+                            : "This entry will be removed from the chronology. It won't be permanent until you click 'Save All'.",
+                          tone: "destructive",
+                        }))
+                      ) {
+                        return;
+                      }
                       setState((prev) => ({
                         ...prev,
                         chronology: (prev.chronology ?? []).filter((_, i) => i !== idx),
@@ -499,7 +530,18 @@ export function DnaStudiesManager({
                     variant="ghost"
                     size="icon"
                     className="w-7 h-7 text-destructive/70 hover:text-destructive"
-                    onClick={() => {
+                    onClick={async () => {
+                      if (
+                        !(await confirm({
+                          title: isAr ? `حذف عائلة "${item.name_ar}"؟` : `Remove family "${item.name_ar}"?`,
+                          description: isAr
+                            ? "سيتم حذف هذه العائلة من قائمة العوائل المتحالفة. لن يُطبَّق الحذف نهائياً إلا بعد الضغط على 'حفظ كافة التغييرات'."
+                            : "This entry will be removed from the allied families list. It won't be permanent until you click 'Save All'.",
+                          tone: "destructive",
+                        }))
+                      ) {
+                        return;
+                      }
                       setState((prev) => ({
                         ...prev,
                         sibling_families: (prev.sibling_families ?? []).filter((_, i) => i !== idx),
@@ -581,7 +623,18 @@ export function DnaStudiesManager({
                     variant="ghost"
                     size="icon"
                     className="w-7 h-7 text-destructive/70 hover:text-destructive"
-                    onClick={() => {
+                    onClick={async () => {
+                      if (
+                        !(await confirm({
+                          title: isAr ? `حذف دولة "${item.country_ar}"؟` : `Remove country "${item.country_ar}"?`,
+                          description: isAr
+                            ? "سيتم حذف هذه الدولة من جدول الانتشار الجغرافي. لن يُطبَّق الحذف نهائياً إلا بعد الضغط على 'حفظ كافة التغييرات'."
+                            : "This entry will be removed from the distribution table. It won't be permanent until you click 'Save All'.",
+                          tone: "destructive",
+                        }))
+                      ) {
+                        return;
+                      }
                       setState((prev) => ({
                         ...prev,
                         distribution: (prev.distribution ?? []).filter((_, i) => i !== idx),

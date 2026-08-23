@@ -5,20 +5,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Download, Upload, FileSpreadsheet, CheckCircle2, AlertCircle } from "lucide-react";
+import { Download, Upload, FileSpreadsheet, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import type { MemberRow } from "./FamilyMembersTable";
+import { supabase } from "@/integrations/supabase/client";
 import type { FamilyMemberInput } from "@/lib/admin-hub.schemas";
 
 export function FamilyImportExportDialog({
   open,
   onOpenChange,
-  members,
+  initialStats,
   onImportMembers,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  members: MemberRow[];
+  initialStats?: { total: number; living: number; deceased: number };
   onImportMembers: (data: FamilyMemberInput[]) => Promise<void>;
 }) {
   const { lang } = useLang();
@@ -28,73 +28,110 @@ export function FamilyImportExportDialog({
   const [parsedMembers, setParsedMembers] = useState<FamilyMemberInput[]>([]);
   const [parseError, setParseError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
-  const handleExportCsv = () => {
-    const headers = [
-      "first_name_ar",
-      "middle_name_ar",
-      "last_name_ar",
-      "first_name_en",
-      "middle_name_en",
-      "last_name_en",
-      "slug",
-      "gender",
-      "date_of_birth",
-      "date_of_death",
-      "is_living",
-      "biography_ar",
-      "occupation_ar",
-      "education_ar",
-      "generation",
-      "visibility",
-      "status",
-    ];
+  const handleExportCsv = async () => {
+    try {
+      setExporting(true);
+      const { data: members, error } = await supabase
+        .from("family_members")
+        .select("*")
+        .order("sort_order", { ascending: true });
 
-    const rows = members.map((m) =>
-      [
-        `"${m.first_name_ar || ""}"`,
-        `"${m.middle_name_ar || ""}"`,
-        `"${m.last_name_ar || ""}"`,
-        `"${m.first_name_en || ""}"`,
-        `"${m.middle_name_en || ""}"`,
-        `"${m.last_name_en || ""}"`,
-        `"${m.slug || ""}"`,
-        `"${m.gender || "male"}"`,
-        `"${m.date_of_birth || ""}"`,
-        `"${m.date_of_death || ""}"`,
-        m.is_living ? "true" : "false",
-        `"${(m.biography_ar || "").replace(/"/g, '""')}"`,
-        `"${m.occupation_ar || ""}"`,
-        `"${m.education_ar || ""}"`,
-        m.generation || 1,
-        `"${m.visibility || "public"}"`,
-        `"${m.status || "published"}"`,
-      ].join(",")
-    );
+      if (error) throw error;
+      if (!members || members.length === 0) {
+        toast.info(isAr ? "لا توجد سجلات للتصدير" : "No records to export");
+        return;
+      }
 
-    const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `alaboubaid-family-members-${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success(isAr ? "تم تصدير ملف CSV بنجاح" : "CSV exported successfully");
+      const headers = [
+        "first_name_ar",
+        "middle_name_ar",
+        "last_name_ar",
+        "first_name_en",
+        "middle_name_en",
+        "last_name_en",
+        "slug",
+        "gender",
+        "date_of_birth",
+        "date_of_death",
+        "is_living",
+        "biography_ar",
+        "occupation_ar",
+        "education_ar",
+        "generation",
+        "visibility",
+        "status",
+      ];
+
+      const rows = members.map((m) =>
+        [
+          `"${m.first_name_ar || ""}"`,
+          `"${m.middle_name_ar || ""}"`,
+          `"${m.last_name_ar || ""}"`,
+          `"${m.first_name_en || ""}"`,
+          `"${m.middle_name_en || ""}"`,
+          `"${m.last_name_en || ""}"`,
+          `"${m.slug || ""}"`,
+          `"${m.gender || "male"}"`,
+          `"${m.date_of_birth || ""}"`,
+          `"${m.date_of_death || ""}"`,
+          m.is_living ? "true" : "false",
+          `"${(m.biography_ar || "").replace(/"/g, '""')}"`,
+          `"${m.occupation_ar || ""}"`,
+          `"${m.education_ar || ""}"`,
+          m.generation || 1,
+          `"${m.visibility || "public"}"`,
+          `"${m.status || "published"}"`,
+        ].join(",")
+      );
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `alaboubaid-family-members-${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success(isAr ? "تم تصدير ملف CSV بنجاح" : "CSV exported successfully");
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? "فشل تصدير البيانات" : "Failed to export data"));
+    } finally {
+      setExporting(false);
+    }
   };
 
-  const handleExportJson = () => {
-    const jsonContent = JSON.stringify(members, null, 2);
-    const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `alaboubaid-family-members-${new Date().toISOString().slice(0, 10)}.json`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success(isAr ? "تم تصدير ملف JSON بنجاح" : "JSON exported successfully");
+  const handleExportJson = async () => {
+    try {
+      setExporting(true);
+      const { data: members, error } = await supabase
+        .from("family_members")
+        .select("*")
+        .order("sort_order", { ascending: true });
+
+      if (error) throw error;
+      if (!members || members.length === 0) {
+        toast.info(isAr ? "لا توجد سجلات للتصدير" : "No records to export");
+        return;
+      }
+
+      const jsonContent = JSON.stringify(members, null, 2);
+      const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `alaboubaid-family-members-${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success(isAr ? "تم تصدير ملف JSON بنجاح" : "JSON exported successfully");
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? "فشل تصدير البيانات" : "Failed to export data"));
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handleParseCsv = () => {
@@ -162,6 +199,8 @@ export function FamilyImportExportDialog({
     }
   };
 
+  const totalCount = initialStats?.total ?? 0;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
@@ -192,18 +231,27 @@ export function FamilyImportExportDialog({
               </h4>
               <p className="text-xs text-muted-foreground">
                 {isAr
-                  ? `يمكنك تحميل كافة بيانات الأفراد الحالية المسجلة (${members.length} فرد) بصيغة CSV أو JSON للاستخدام المكتبي أو الأرشفة.`
-                  : `Download current database of ${members.length} members in standard CSV or JSON formats.`}
+                  ? `يمكنك تحميل كافة بيانات الأفراد الحالية المسجلة (${totalCount} فرد) بصيغة CSV أو JSON للاستخدام المكتبي أو الأرشفة.`
+                  : `Download current database of ${totalCount} members in standard CSV or JSON formats.`}
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={handleExportCsv} className="gap-2 text-xs bg-emerald-600 hover:bg-emerald-700 text-white">
-                <Download className="w-3.5 h-3.5" />
+              <Button 
+                onClick={handleExportCsv} 
+                disabled={exporting}
+                className="gap-2 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                 {isAr ? "تحميل ملف CSV (Excel متوافق)" : "Download CSV (Excel format)"}
               </Button>
-              <Button onClick={handleExportJson} variant="outline" className="gap-2 text-xs">
-                <Download className="w-3.5 h-3.5" />
+              <Button 
+                onClick={handleExportJson} 
+                variant="outline" 
+                disabled={exporting}
+                className="gap-2 text-xs"
+              >
+                {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                 {isAr ? "تحميل ملف JSON" : "Download JSON"}
               </Button>
             </div>
@@ -219,7 +267,7 @@ export function FamilyImportExportDialog({
                 rows={6}
                 value={csvText}
                 onChange={(e) => setCsvText(e.target.value)}
-                placeholder="first_name_ar,last_name_ar,gender,is_living,generation&#10;محمد,آل بوعبيد,male,true,1"
+                placeholder="first_name_ar,last_name_ar,gender,is_living,generation\nمحمد,آل بوعبيد,male,true,1"
                 className="font-mono text-xs"
               />
             </div>
@@ -248,19 +296,32 @@ export function FamilyImportExportDialog({
                     ? "انقر على زر تأكيد الاستيراد لإدراج هذه السجلات في قاعدة البيانات."
                     : "Click Confirm Import to insert records into the database."}
                 </p>
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={loading}
-                  onClick={handleExecuteImport}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white mt-2 text-xs"
-                >
-                  {loading ? (isAr ? "جاري الاستيراد..." : "Importing...") : isAr ? "تأكيد الاستيراد الآن" : "Confirm Import"}
-                </Button>
               </div>
             )}
           </TabsContent>
         </Tabs>
+
+        <DialogFooter className="pt-4 border-t border-border flex items-center justify-between sm:justify-between">
+          <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} className="text-xs">
+            {isAr ? "إلغاء" : "Cancel"}
+          </Button>
+
+          {parsedMembers.length > 0 && (
+            <Button
+              size="sm"
+              onClick={handleExecuteImport}
+              disabled={loading}
+              className="gap-2 text-xs bg-primary text-primary-foreground"
+            >
+              {loading ? (
+                <div className="w-3.5 h-3.5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Upload className="w-3.5 h-3.5" />
+              )}
+              {isAr ? `تأكيد استيراد (${parsedMembers.length})` : `Confirm Import (${parsedMembers.length})`}
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

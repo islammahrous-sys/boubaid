@@ -1915,10 +1915,11 @@ VALUES
   ('fa000000-0000-0000-0000-000000000002', 'footer', 'قائمة التذييل السفلية', 'Footer Menu', now())
 ON CONFLICT (id) DO UPDATE SET name_ar = EXCLUDED.name_ar;
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
     'fd000000-0000-0000-0000-000000000001',
     'fa000000-0000-0000-0000-000000000001',
+    NULL,
     'الرئيسية',
     'Home',
     '/',
@@ -1929,14 +1930,19 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
     'fd000000-0000-0000-0000-000000000002',
     'fa000000-0000-0000-0000-000000000001',
-    'عن الكيان',
-    'About',
+    NULL,
+    'النسب والتاريخ',
+    'Lineage & History',
     '/about',
     'custom',
     2,
@@ -1945,15 +1951,62 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
-    'fd000000-0000-0000-0000-000000000003',
+    'fd000000-0000-0000-0000-000000000021',
     'fa000000-0000-0000-0000-000000000001',
-    'الفروع السبعة',
-    'Branches',
+    'fd000000-0000-0000-0000-000000000002',
+    'الفروع',
+    'Family Branches',
     '/branches',
+    'custom',
+    1,
+    '_self',
+    'public',
+    now(), now()
+  ) ON CONFLICT (id) DO UPDATE SET
+    label_ar = EXCLUDED.label_ar,
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
+INSERT INTO public.navigation_items (
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+  ) VALUES (
+    'fd000000-0000-0000-0000-000000000022',
+    'fa000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000002',
+    'المشجرة - دقيقة',
+    'Detailed Family Tree',
+    '/family-tree',
+    'custom',
+    2,
+    '_self',
+    'public',
+    now(), now()
+  ) ON CONFLICT (id) DO UPDATE SET
+    label_ar = EXCLUDED.label_ar,
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
+INSERT INTO public.navigation_items (
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+  ) VALUES (
+    'fd000000-0000-0000-0000-000000000023',
+    'fa000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000002',
+    'الدراسة الجينية',
+    'Genetic Study',
+    '/dna',
     'custom',
     3,
     '_self',
@@ -1961,15 +2014,41 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+  ) VALUES (
+    'fd000000-0000-0000-0000-000000000003',
+    'fa000000-0000-0000-0000-000000000001',
+    NULL,
+    'الخدمات',
+    'Services',
+    '/directory',
+    'custom',
+    3,
+    '_self',
+    'public',
+    now(), now()
+  ) ON CONFLICT (id) DO UPDATE SET
+    label_ar = EXCLUDED.label_ar,
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
+INSERT INTO public.navigation_items (
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
     'fd000000-0000-0000-0000-000000000004',
     'fa000000-0000-0000-0000-000000000001',
-    'شجرة الأسرة',
-    'Family Tree',
-    '/family-tree',
+    NULL,
+    'المشاريع',
+    'Projects',
+    '/initiatives',
     'custom',
     4,
     '_self',
@@ -1977,15 +2056,20 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
     'fd000000-0000-0000-0000-000000000005',
     'fa000000-0000-0000-0000-000000000001',
-    'الدراسة الجينية',
-    'DNA Studies',
-    '/dna',
+    NULL,
+    'الأرشيف',
+    'Archive',
+    '/library',
     'custom',
     5,
     '_self',
@@ -1993,15 +2077,20 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
-    'fd000000-0000-0000-0000-000000000006',
+    'fd000000-0000-0000-0000-000000000007',
     'fa000000-0000-0000-0000-000000000001',
-    'المبادرات',
-    'Initiatives',
-    '/initiatives',
+    NULL,
+    'الحوكمة ومجلس الأمناء',
+    'Governance & Trustees',
+    '/foundation',
     'custom',
     6,
     '_self',
@@ -2009,14 +2098,19 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
-    'fd000000-0000-0000-0000-000000000007',
+    'fd000000-0000-0000-0000-000000000008',
     'fa000000-0000-0000-0000-000000000001',
+    NULL,
     'سجل المتميزين',
-    'Achievers',
+    'Roll of Honour',
     '/achievers',
     'custom',
     7,
@@ -2025,15 +2119,20 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
-    'fd000000-0000-0000-0000-000000000008',
+    'fd000000-0000-0000-0000-000000000009',
     'fa000000-0000-0000-0000-000000000001',
-    'المكتبة الرقمية',
-    'Digital Library',
-    '/library',
+    NULL,
+    'الأخبار والبيانات',
+    'News & Notices',
+    '/news',
     'custom',
     8,
     '_self',
@@ -2041,15 +2140,20 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
-    'fd000000-0000-0000-0000-000000000009',
+    'fd000000-0000-0000-0000-000000000010',
     'fa000000-0000-0000-0000-000000000001',
-    'الأخبار',
-    'News',
-    '/news',
+    NULL,
+    'الاشتراك والمساهمة',
+    'Subscribe & Contribute',
+    '/contribute',
     'custom',
     9,
     '_self',
@@ -2057,15 +2161,20 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
+
 INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
+    id, menu_id, parent_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
   ) VALUES (
-    'fd000000-0000-0000-0000-000000000010',
+    'fd000000-0000-0000-0000-000000000011',
     'fa000000-0000-0000-0000-000000000001',
-    'دليل الأعمال',
-    'Directory',
-    '/directory',
+    NULL,
+    'تواصل معنا',
+    'Contact',
+    '/contact',
     'custom',
     10,
     '_self',
@@ -2073,39 +2182,10 @@ INSERT INTO public.navigation_items (
     now(), now()
   ) ON CONFLICT (id) DO UPDATE SET
     label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
-INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
-  ) VALUES (
-    'fd000000-0000-0000-0000-000000000011',
-    'fa000000-0000-0000-0000-000000000001',
-    'الخزينة والمساهمة',
-    'Contribute',
-    '/contribute',
-    'custom',
-    11,
-    '_self',
-    'public',
-    now(), now()
-  ) ON CONFLICT (id) DO UPDATE SET
-    label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
-INSERT INTO public.navigation_items (
-    id, menu_id, label_ar, label_en, url, type, sort_order, target, visibility, created_at, updated_at
-  ) VALUES (
-    'fd000000-0000-0000-0000-000000000012',
-    'fa000000-0000-0000-0000-000000000001',
-    'تواصل معنا',
-    'Contact',
-    '/contact',
-    'custom',
-    12,
-    '_self',
-    'public',
-    now(), now()
-  ) ON CONFLICT (id) DO UPDATE SET
-    label_ar = EXCLUDED.label_ar,
-    url = EXCLUDED.url;
+    label_en = EXCLUDED.label_en,
+    url = EXCLUDED.url,
+    parent_id = EXCLUDED.parent_id,
+    sort_order = EXCLUDED.sort_order;
 
 -- 10. Site Settings
 INSERT INTO public.site_settings (id, category, key, value, is_public, updated_at)

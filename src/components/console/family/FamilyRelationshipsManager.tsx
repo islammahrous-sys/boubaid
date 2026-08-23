@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Plus, Trash2, Link2, Users } from "lucide-react";
+import { Plus, Trash2, Link2, Users, Loader2 } from "lucide-react";
 import type { FamilyRelationshipInput } from "@/lib/admin-hub.schemas";
+import { useConfirm } from "@/hooks/useConfirm";
 
 type MemberOption = {
   id: string;
@@ -38,9 +39,11 @@ export function FamilyRelationshipsManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [formOpen, setFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [form, setForm] = useState<FamilyRelationshipInput>({
     person_id: filterMemberId ?? "",
@@ -143,13 +146,34 @@ export function FamilyRelationshipsManager({
                       variant="ghost"
                       size="icon"
                       className="w-7 h-7 text-destructive hover:bg-destructive/10"
-                      onClick={() => {
-                        if (window.confirm(isAr ? "هل أنت متأكد من حذف هذه العلاقة؟" : "Delete this relationship?")) {
-                          onDeleteRelationship(r.id);
+                      disabled={deletingId === r.id}
+                      onClick={async () => {
+                        const personName = memberMap.get(r.person_id) || "—";
+                        const relatedName = memberMap.get(r.related_person_id) || "—";
+                        if (
+                          !(await confirm({
+                            title: isAr ? "حذف هذه العلاقة العائلية؟" : "Delete this relationship?",
+                            description: isAr
+                              ? `سيتم حذف الرابط بين "${personName}" و"${relatedName}". لا يمكن التراجع عن هذا الإجراء.`
+                              : `This will remove the link between "${personName}" and "${relatedName}". This can't be undone.`,
+                            tone: "destructive",
+                          }))
+                        ) {
+                          return;
+                        }
+                        setDeletingId(r.id);
+                        try {
+                          await onDeleteRelationship(r.id);
+                        } finally {
+                          setDeletingId(null);
                         }
                       }}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      {deletingId === r.id ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-3.5 h-3.5" />
+                      )}
                     </Button>
                   </TableCell>
                 </TableRow>

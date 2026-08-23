@@ -204,7 +204,7 @@ export function SiteSettingsManager({
                 }
               >
                 <Save className="w-3.5 h-3.5" />
-                {isAr ? "حفظ بيانات الهوية والترخيص" : "Save Identity Settings"}
+                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ بيانات الهوية والترخيص" : "Save Identity Settings"}
               </Button>
             </div>
           </TabsContent>
@@ -288,7 +288,7 @@ export function SiteSettingsManager({
                 }
               >
                 <Save className="w-3.5 h-3.5" />
-                {isAr ? "حفظ قنوات التواصل" : "Save Channels"}
+                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ قنوات التواصل" : "Save Channels"}
               </Button>
             </div>
           </TabsContent>

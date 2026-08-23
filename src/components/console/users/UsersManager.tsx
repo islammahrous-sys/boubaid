@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useLang } from "@/i18n/LanguageProvider";
 import { Shield, ShieldAlert, User, Plus, X } from "lucide-react";
 import { toast } from "sonner";
+import { useConfirm } from "@/hooks/useConfirm";
 
 export type ProfileRow = {
   id: string;
@@ -38,6 +39,7 @@ export function UsersManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [roleModalUser, setRoleModalUser] = useState<ProfileRow | null>(null);
   const [selectedRoleToAdd, setSelectedRoleToAdd] = useState<string>("editor");
@@ -54,8 +56,25 @@ export function UsersManager({
     { role: "viewer", label_ar: "مشاهد فقط", label_en: "Viewer" },
   ];
 
+  const getUserDisplayName = (user: ProfileRow) =>
+    user.full_name_ar || user.full_name_en || user.email || (isAr ? "هذا المستخدم" : "this user");
+
+  const getRoleLabel = (role: string) => {
+    const def = ALL_ROLES.find((r) => r.role === role);
+    return def ? (isAr ? def.label_ar : def.label_en) : role;
+  };
+
   const handleAddRole = async () => {
     if (!roleModalUser || !selectedRoleToAdd) return;
+    const userName = getUserDisplayName(roleModalUser);
+    const roleLabel = getRoleLabel(selectedRoleToAdd);
+    const ok = await confirm({
+      title: isAr ? `إسناد دور "${roleLabel}" إلى ${userName}؟` : `Assign the "${roleLabel}" role to ${userName}?`,
+      description: isAr
+        ? "سيحصل المستخدم فورًا على جميع صلاحيات هذا الدور."
+        : "The user will immediately gain all permissions granted by this role.",
+    });
+    if (!ok) return;
     try {
       setLoading(true);
       await onAssignRole(roleModalUser.id, selectedRoleToAdd);
@@ -67,7 +86,16 @@ export function UsersManager({
     }
   };
 
-  const handleRemoveRole = async (userId: string, role: string) => {
+  const handleRemoveRole = async (userId: string, role: string, userName: string) => {
+    const roleLabel = getRoleLabel(role);
+    const ok = await confirm({
+      title: isAr ? `إزالة دور "${roleLabel}" من ${userName}؟` : `Remove the "${roleLabel}" role from ${userName}?`,
+      description: isAr
+        ? "سيفقد المستخدم فورًا كافة الصلاحيات المرتبطة بهذا الدور. يمكن إعادة إسناده لاحقًا إذا لزم الأمر."
+        : "The user will immediately lose all permissions tied to this role. It can be reassigned again later if needed.",
+      tone: "destructive",
+    });
+    if (!ok) return;
     try {
       setLoading(true);
       await onRemoveRole(userId, role);
@@ -228,20 +256,26 @@ export function UsersManager({
               <div className="space-y-2">
                 <p className="font-semibold text-foreground">{isAr ? "الأدوار الحالية:" : "Current Roles:"}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {getUserRoles(roleModalUser.id).map((role) => (
-                    <span
-                      key={role}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted border border-border text-xs font-mono"
-                    >
-                      {role}
-                      <button
-                        onClick={() => handleRemoveRole(roleModalUser.id, role)}
-                        className="text-muted-foreground hover:text-destructive transition-colors"
+                  {getUserRoles(roleModalUser.id).length === 0 ? (
+                    <span className="text-[11px] text-muted-foreground">{isAr ? "لا توجد أدوار" : "No roles"}</span>
+                  ) : (
+                    getUserRoles(roleModalUser.id).map((role) => (
+                      <span
+                        key={role}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted border border-border text-xs font-mono"
                       >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
+                        {role}
+                        <button
+                          type="button"
+                          disabled={loading}
+                          onClick={() => handleRemoveRole(roleModalUser.id, role, getUserDisplayName(roleModalUser))}
+                          className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -267,7 +301,7 @@ export function UsersManager({
                     onClick={handleAddRole}
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    {isAr ? "إسناد" : "Assign"}
+                    {loading ? (isAr ? "جاري الإسناد..." : "Assigning...") : isAr ? "إسناد" : "Assign"}
                   </Button>
                 </div>
               </div>

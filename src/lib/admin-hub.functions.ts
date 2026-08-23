@@ -33,6 +33,50 @@ import {
 } from "./admin-hub.schemas";
 import { z } from "zod";
 
+export const paginationSchema = z.object({
+  page: z.number().min(1).default(1),
+  pageSize: z.number().min(1).max(100).default(50),
+  search: z.string().optional(),
+  status: z.string().optional(),
+});
+
+
+
+/* =========================================================================
+ * Global Admin Search (Command Palette)
+ * ========================================================================= */
+export const globalAdminSearch = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ query: z.string().min(1) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { query } = data;
+    const term = `%${query}%`;
+
+    const [profiles, members, articles, treasury] = await Promise.all([
+      supabase.from("profiles").select("id, full_name_ar, full_name_en, email").or(`full_name_ar.ilike.${term},full_name_en.ilike.${term},email.ilike.${term}`).limit(5),
+      supabase.from("family_members").select("id, first_name_ar, last_name_ar, first_name_en, last_name_en").or(`first_name_ar.ilike.${term},last_name_ar.ilike.${term},first_name_en.ilike.${term},last_name_en.ilike.${term}`).is("deleted_at", null).limit(5),
+      supabase.from("articles").select("id, title_ar, slug").ilike("title_ar", term).is("deleted_at", null).limit(5),
+      supabase.from("contributions").select("id, contributor_name, amount").ilike("contributor_name", term).limit(5),
+    ]);
+
+    type SearchResult = {
+      id: string;
+      title: string;
+      subtitle?: string | null;
+      category: string;
+      tab: string;
+    };
+
+    const results: SearchResult[] = [];
+    if (profiles.data) profiles.data.forEach(p => results.push({ id: p.id, title: p.full_name_ar || p.full_name_en || p.email || "", subtitle: p.email, category: "directory", tab: "users" }));
+    if (members.data) members.data.forEach(m => results.push({ id: m.id, title: `${m.first_name_ar} ${m.last_name_ar}`, subtitle: `${m.first_name_en || ""} ${m.last_name_en || ""}`.trim(), category: "family", tab: "members" }));
+    if (articles.data) articles.data.forEach(a => results.push({ id: a.id, title: a.title_ar, subtitle: a.slug, category: "content", tab: "articles" }));
+    if (treasury.data) treasury.data.forEach(t => results.push({ id: t.id, title: t.contributor_name, subtitle: `${t.amount} SAR`, category: "treasury", tab: "contributions" }));
+
+    return results;
+  });
+
 /* =========================================================================
  * 1. Admin Overview Stats & Global Search
  * ========================================================================= */
@@ -147,7 +191,7 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
     const { supabase } = context;
 
     const [membersRes, branchesRes, relationshipsRes, placesRes, historyRes] = await Promise.all([
-      supabase.from("family_members").select("*").is("deleted_at", null).order("sort_order", { ascending: true }),
+      supabase.from("family_members").select("id, first_name_ar, middle_name_ar, last_name_ar, first_name_en, middle_name_en, last_name_en, slug, branch_id, generation, gender, is_living, sort_order, status, visibility, updated_at").is("deleted_at", null).order("sort_order", { ascending: true }),
       supabase.from("branches").select("*").order("sort_order", { ascending: true }),
       supabase.from("family_relationships").select("*"),
       supabase.from("places").select("*").order("name_ar", { ascending: true }),
@@ -161,6 +205,38 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
       places: placesRes.data ?? [],
       history: historyRes.data ?? [],
     };
+  });
+
+
+export const getFamilyMembersPaginated = createServerFn({ method: "POST" })
+  .middleware([requireFamilyManagementAuth])
+  .validator((d: unknown) => paginationSchema.extend({ branchId: z.string().optional() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { page, pageSize, search, branchId, status } = data;
+    
+    let query = supabase.from("family_members").select("*", { count: "exact" }).is("deleted_at", null);
+    
+    if (search) {
+      const term = `%${search}%`;
+      query = query.or(`first_name_ar.ilike.${term},last_name_ar.ilike.${term},first_name_en.ilike.${term},last_name_en.ilike.${term}`);
+    }
+    if (branchId && branchId !== "all") {
+      query = query.eq("branch_id", branchId);
+    }
+    if (status === "living") {
+      query = query.eq("is_living", true);
+    } else if (status === "deceased") {
+      query = query.eq("is_living", false);
+    }
+
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    
+    const { data: members, count, error } = await query.order("sort_order", { ascending: true }).range(from, to);
+    if (error) throw new Error(error.message);
+    
+    return { data: members ?? [], count: count ?? 0, page, pageSize };
   });
 
 export const upsertFamilyMember = createServerFn({ method: "POST" })
@@ -657,6 +733,51 @@ export const getInquiriesData = createServerFn({ method: "GET" })
     };
   });
 
+
+export const getInquiriesPaginated = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => paginationSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { page, pageSize, search, status } = data;
+    
+    // Union-like fetch requires custom logic, but for simplicity we fetch both, sort, and slice in JS
+    // In a real app we'd use a SQL View for the UNION, but we will emulate it.
+    
+    const [inqRes, contactRes] = await Promise.all([
+      supabase.from("inquiries").select("*"),
+      supabase.from("contact_messages").select("*")
+    ]);
+    
+    let all = [
+      ...(inqRes.data ?? []).map(i => ({ ...i, source_table: "inquiries" as const })),
+      ...(contactRes.data ?? []).map(i => ({ ...i, source_table: "contact_messages" as const }))
+    ];
+    
+    if (search) {
+      const q = search.toLowerCase();
+      all = all.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.email && i.email.toLowerCase().includes(q)) || (i.subject && i.subject.toLowerCase().includes(q)));
+    }
+    if (status && status !== "all") {
+      if (status === "in_progress") {
+        all = all.filter(i => i.status === "in_progress" || i.status === "open");
+      } else if (status === "resolved") {
+        all = all.filter(i => i.status === "resolved" || i.status === "read");
+      } else {
+        all = all.filter(i => i.status === status);
+      }
+    }
+    
+    all.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    
+    const count = all.length;
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize;
+    const paginated = all.slice(from, to);
+    
+    return { data: paginated, count, page, pageSize };
+  });
+
 export const updateInquiryStatus = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
   .validator((d: unknown) => inquiryStatusUpdateSchema.parse(d))
@@ -965,10 +1086,7 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const { data: list, error } = await supabase
-      .from("contributions")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data: list, error } = await supabase.from("contributions").select("amount, status"); // Lightweight fetch for totals only
 
     if (error) throw new Error(error.message);
     const contributions = list ?? [];
@@ -986,6 +1104,32 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
       verifiedTotal,
       pendingTotal,
     };
+  });
+
+
+export const getTreasuryContributionsPaginated = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => paginationSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { page, pageSize, search, status } = data;
+    
+    let query = supabase.from("contributions").select("*", { count: "exact" });
+    
+    if (search) {
+      query = query.ilike("contributor_name", `%${search}%`);
+    }
+    if (status && status !== "all") {
+      query = query.eq("status", status as "pending" | "verified" | "rejected");
+    }
+
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    
+    const { data: contributions, count, error } = await query.order("created_at", { ascending: false }).range(from, to);
+    if (error) throw new Error(error.message);
+    
+    return { data: contributions ?? [], count: count ?? 0, page, pageSize };
   });
 
 export const reviewTreasuryContribution = createServerFn({ method: "POST" })

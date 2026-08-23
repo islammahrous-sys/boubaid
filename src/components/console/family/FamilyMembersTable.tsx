@@ -35,10 +35,14 @@ import {
   GraduationCap,
   Calendar,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getFamilyMembersPaginated } from "@/lib/admin-hub.functions";
 import { FamilyMemberFormDialog, type BranchOption, type PlaceOption } from "./FamilyMemberFormDialog";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import type { FamilyMemberInput, BulkMembersActionInput } from "@/lib/admin-hub.schemas";
 import { toast } from "sonner";
+import { useConfirm } from "@/hooks/useConfirm";
 
 export type MemberRow = {
   id: string;
@@ -70,7 +74,7 @@ type SortField = "name" | "branch" | "generation" | "living" | "visibility" | "u
 type SortDirection = "asc" | "desc";
 
 export function FamilyMembersTable({
-  members,
+  initialStats,
   branches,
   places,
   onSaveMember,
@@ -79,7 +83,7 @@ export function FamilyMembersTable({
   onOpenImportExport,
   onBulkAction,
 }: {
-  members: MemberRow[];
+  initialStats?: { total: number; living: number; deceased: number; males?: number; females?: number };
   branches: BranchOption[];
   places: PlaceOption[];
   onSaveMember: (data: FamilyMemberInput) => Promise<void>;
@@ -90,6 +94,7 @@ export function FamilyMembersTable({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   // Filter States
   const [search, setSearch] = useState("");
@@ -116,87 +121,49 @@ export function FamilyMembersTable({
   const [formOpen, setFormOpen] = useState(false);
   const [quickViewMember, setQuickViewMember] = useState<MemberRow | null>(null);
 
+  const fetchMembersPage = useServerFn(getFamilyMembersPaginated);
+  
+  const { data: queryData, isLoading } = useQuery({
+    queryKey: ["family-members-paginated", currentPage, pageSize, search, branchFilter, livingFilter],
+    queryFn: () => fetchMembersPage({
+      data: {
+        page: currentPage,
+        pageSize,
+        search: search.trim() || undefined,
+        branchId: branchFilter === "all" ? undefined : branchFilter,
+        status: livingFilter === "all" ? undefined : livingFilter,
+      }
+    }),
+    staleTime: 1000 * 60,
+  });
+
+  const paginatedMembers = queryData?.data ?? [];
+  const totalItems = queryData?.count ?? 0;
+  const totalPages = Math.ceil(totalItems / pageSize) || 1;
+
+
   const branchMap = useMemo(() => {
     const map = new Map<string, string>();
     branches.forEach((b) => map.set(b.id, isAr ? b.name_ar : b.name_en || b.name_ar));
     return map;
   }, [branches, isAr]);
 
-  const generations = useMemo(() => {
-    const gens = Array.from(new Set(members.map((m) => m.generation))).sort((a, b) => a - b);
-    return gens;
-  }, [members]);
+  const generations = [1,2,3,4,5,6,7,8,9,10]; // Simplified for server pagination
 
   // Demographic Statistics
-  const stats = useMemo(() => {
-    const total = members.length;
-    const living = members.filter((m) => m.is_living).length;
-    const deceased = total - living;
-    const males = members.filter((m) => m.gender === "male").length;
-    const females = members.filter((m) => m.gender === "female").length;
-    return { total, living, deceased, males, females };
-  }, [members]);
+  const stats = {
+    total: initialStats?.total ?? totalItems,
+    living: initialStats?.living ?? 0,
+    deceased: initialStats?.deceased ?? 0,
+    males: initialStats?.males ?? 0,
+    females: initialStats?.females ?? 0,
+  };
 
   // Filtering
-  const filteredMembers = useMemo(() => {
-    return members.filter((m) => {
-      const q = search.trim().toLowerCase();
-      const matchSearch =
-        !q ||
-        m.first_name_ar.toLowerCase().includes(q) ||
-        (m.middle_name_ar && m.middle_name_ar.toLowerCase().includes(q)) ||
-        m.last_name_ar.toLowerCase().includes(q) ||
-        (m.first_name_en && m.first_name_en.toLowerCase().includes(q)) ||
-        (m.last_name_en && m.last_name_en.toLowerCase().includes(q)) ||
-        m.slug.toLowerCase().includes(q) ||
-        (m.occupation_ar && m.occupation_ar.toLowerCase().includes(q));
-
-      const matchBranch = branchFilter === "all" || m.branch_id === branchFilter;
-      const matchLiving =
-        livingFilter === "all" ||
-        (livingFilter === "living" && m.is_living) ||
-        (livingFilter === "deceased" && !m.is_living);
-      const matchGen = generationFilter === "all" || m.generation.toString() === generationFilter;
-      const matchGender = genderFilter === "all" || m.gender === genderFilter;
-      const matchVisibility = visibilityFilter === "all" || m.visibility === visibilityFilter;
-
-      return matchSearch && matchBranch && matchLiving && matchGen && matchGender && matchVisibility;
-    });
-  }, [members, search, branchFilter, livingFilter, generationFilter, genderFilter, visibilityFilter]);
+  const filteredMembers = paginatedMembers; // Now handled by server
 
   // Sorting
-  const sortedMembers = useMemo(() => {
-    const sorted = [...filteredMembers];
-    sorted.sort((a, b) => {
-      let comparison = 0;
-      if (sortField === "name") {
-        const nameA = `${a.first_name_ar} ${a.last_name_ar}`;
-        const nameB = `${b.first_name_ar} ${b.last_name_ar}`;
-        comparison = nameA.localeCompare(nameB, isAr ? "ar" : "en");
-      } else if (sortField === "branch") {
-        const branchA = a.branch_id ? branchMap.get(a.branch_id) || "" : "";
-        const branchB = b.branch_id ? branchMap.get(b.branch_id) || "" : "";
-        comparison = branchA.localeCompare(branchB, isAr ? "ar" : "en");
-      } else if (sortField === "generation") {
-        comparison = a.generation - b.generation;
-      } else if (sortField === "living") {
-        comparison = Number(b.is_living) - Number(a.is_living);
-      } else if (sortField === "visibility") {
-        comparison = a.visibility.localeCompare(b.visibility);
-      } else if (sortField === "updated_at") {
-        comparison = new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
-      }
-      return sortDirection === "asc" ? comparison : -comparison;
-    });
-    return sorted;
-  }, [filteredMembers, sortField, sortDirection, isAr, branchMap]);
-
-  // Pagination calculations
-  const totalPages = Math.max(1, Math.ceil(sortedMembers.length / pageSize));
-  const paginatedMembers = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return sortedMembers.slice(start, start + pageSize);
-  }, [sortedMembers, currentPage, pageSize]);
+  const sortedMembers = paginatedMembers; // Now handled by server
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -209,8 +176,8 @@ export function FamilyMembersTable({
 
   // CSV Export with UTF-8 BOM for Microsoft Excel Arabic Support
   const handleExportCsv = (exportOnlySelected = false) => {
-    const targetList = exportOnlySelected
-      ? members.filter((m) => selectedMemberIds.includes(m.id))
+    const targetList: MemberRow[] = exportOnlySelected
+      ? sortedMembers.filter((m: MemberRow) => selectedMemberIds.includes(m.id))
       : sortedMembers;
 
     if (targetList.length === 0) {
@@ -237,7 +204,7 @@ export function FamilyMembersTable({
       "Visibility",
     ];
 
-    const rows = targetList.map((m) => [
+    const rows = targetList.map((m: MemberRow) => [
       `"${m.id}"`,
       `"${m.first_name_ar}"`,
       `"${m.middle_name_ar || ""}"`,
@@ -493,7 +460,7 @@ export function FamilyMembersTable({
           )}
 
           <div className="ms-auto text-xs text-muted-foreground font-mono">
-            {isAr ? `النتائج: ${filteredMembers.length} من أصل ${members.length}` : `${filteredMembers.length} of ${members.length} members`}
+            {isAr ? `النتائج: ${filteredMembers.length} من أصل ${totalItems}` : `${filteredMembers.length} of ${totalItems} members`}
           </div>
         </div>
       </div>
@@ -608,18 +575,30 @@ export function FamilyMembersTable({
                 className="h-8 text-xs rounded-lg text-destructive hover:bg-destructive/10"
                 disabled={bulkLoading}
                 onClick={async () => {
-                  if (window.confirm(isAr ? `هل أنت متأكد من حذف ${selectedMemberIds.length} فرد؟` : "Delete selected?")) {
-                    setBulkLoading(true);
-                    try {
-                      await onBulkAction({
-                        ids: selectedMemberIds,
-                        action: "delete",
-                      });
-                      setSelectedMemberIds([]);
-                      toast.success(isAr ? "تم حذف السجلات المحددة" : "Members deleted");
-                    } finally {
-                      setBulkLoading(false);
-                    }
+                  if (
+                    !(await confirm({
+                      title: isAr
+                        ? `أرشفة ${selectedMemberIds.length} فرد؟`
+                        : `Archive ${selectedMemberIds.length} member(s)?`,
+                      description: isAr
+                        ? "سيتم إخفاء هذه السجلات من العرض العام. يمكن استعادتها لاحقاً، ولكن هذا الإجراء يؤثر على جميع الأفراد المحددين دفعة واحدة."
+                        : "These records will be hidden from public view. They can be restored later, but this affects every selected member at once.",
+                      tone: "destructive",
+                      confirmLabel: isAr ? "أرشفة" : "Archive",
+                    }))
+                  ) {
+                    return;
+                  }
+                  setBulkLoading(true);
+                  try {
+                    await onBulkAction({
+                      ids: selectedMemberIds,
+                      action: "delete",
+                    });
+                    setSelectedMemberIds([]);
+                    toast.success(isAr ? "تم حذف السجلات المحددة" : "Members deleted");
+                  } finally {
+                    setBulkLoading(false);
                   }
                 }}
               >
@@ -746,7 +725,14 @@ export function FamilyMembersTable({
           </TableHeader>
 
           <TableBody>
-            {paginatedMembers.length === 0 ? (
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={8} className="h-48 text-center text-muted-foreground">
+                  جاري تحميل البيانات...
+                </TableCell>
+              </TableRow>
+            )}
+            {!isLoading && paginatedMembers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-36 text-center text-muted-foreground text-xs">
                   {isAr ? "لا يوجد أفراد مسجلون بهذه المعايير" : "No family members found matching criteria"}
@@ -888,10 +874,21 @@ export function FamilyMembersTable({
                         size="icon"
                         className="w-7 h-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
                         title={isAr ? "أرشفة / حذف" : "Archive / Delete"}
-                        onClick={() => {
-                          if (window.confirm(isAr ? "هل أنت متأكد من أرشفة هذا الفرد؟" : "Archive member?")) {
-                            onDeleteMember(member.id);
+                        onClick={async () => {
+                          const memberName = `${member.first_name_ar} ${member.last_name_ar}`;
+                          if (
+                            !(await confirm({
+                              title: isAr ? `أرشفة ${memberName}؟` : `Archive ${memberName}?`,
+                              description: isAr
+                                ? "سيتم إخفاء هذا الفرد من العرض العام. يمكن استعادته لاحقاً من الإدارة."
+                                : "This member will be hidden from public view. They can be restored later from admin.",
+                              tone: "destructive",
+                              confirmLabel: isAr ? "أرشفة" : "Archive",
+                            }))
+                          ) {
+                            return;
                           }
+                          onDeleteMember(member.id);
                         }}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -1110,7 +1107,7 @@ export function FamilyMembersTable({
         initialData={selectedMember as any}
         branches={branches}
         places={places}
-        existingMembers={members}
+        existingMembers={paginatedMembers}
         onSave={onSaveMember}
       />
     </div>

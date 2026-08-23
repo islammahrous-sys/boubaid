@@ -1,4 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { globalAdminSearch } from "@/lib/admin-hub.functions";
+import { Loader2 } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -52,6 +56,17 @@ export function AdminCommandPalette({
   const { lang, setLang } = useLang();
   const isAr = lang === "ar";
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const fetchGlobalSearch = useServerFn(globalAdminSearch);
+  
+  const { data: searchResults, isLoading: searchLoading } = useQuery({
+    queryKey: ["admin-global-search", searchQuery],
+    queryFn: () => fetchGlobalSearch({ data: { query: searchQuery } }),
+    enabled: searchQuery.length >= 2,
+    staleTime: 1000 * 60,
+  });
+
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -92,9 +107,46 @@ export function AdminCommandPalette({
             ? "ابحث في السجلات، الأعضاء، المقالات، أو اكتب أمراً..."
             : "Search records, members, articles, or type a command..."
         }
-      />
+       value={searchQuery} onValueChange={setSearchQuery} />
       <CommandList className="max-h-[380px]">
         <CommandEmpty>{isAr ? "لا توجد نتائج مطابقة." : "No results found."}</CommandEmpty>
+
+
+        {/* Dynamic Database Search Results */}
+        {searchQuery.length >= 2 && (
+          <CommandGroup heading={isAr ? "نتائج البحث" : "Search Results"}>
+            {searchLoading ? (
+              <div className="flex items-center justify-center p-4 text-muted-foreground">
+                <Loader2 className="w-5 h-5 animate-spin" />
+              </div>
+            ) : searchResults && searchResults.length > 0 ? (
+              searchResults.map((item) => (
+                <CommandItem
+                  key={`${item.category}-${item.id}`}
+                  onSelect={() => {
+                    onSelectTab(item.category, item.tab);
+                    // Also dispatch an event or logic to open the specific drawer
+                    // A quick hack is to dispatch a custom event
+                    window.dispatchEvent(new CustomEvent("open-admin-drawer", { detail: { type: item.tab, id: item.id } }));
+                    onOpenChange(false);
+                  }}
+                >
+                  {getCategoryIcon(item.category)}
+                  <div className="flex flex-col ms-2">
+                    <span className="font-semibold">{item.title}</span>
+                    {item.subtitle && <span className="text-xs text-muted-foreground">{item.subtitle}</span>}
+                  </div>
+                </CommandItem>
+              ))
+            ) : (
+              <CommandItem disabled className="text-muted-foreground">
+                {isAr ? "لا يوجد نتائج في قاعدة البيانات" : "No database records found"}
+              </CommandItem>
+            )}
+          </CommandGroup>
+        )}
+
+        <CommandSeparator />
 
         {/* Quick Actions Group */}
         <CommandGroup heading={isAr ? "إجراءات سريعة" : "Quick Actions"}>

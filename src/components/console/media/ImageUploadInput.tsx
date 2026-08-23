@@ -129,12 +129,14 @@ export function ImageUploadInput({
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
+    if (uploading) return;
     const file = e.dataTransfer.files?.[0];
     if (file) await processFile(file);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    if (uploading) return;
     setIsDragging(true);
   };
 
@@ -170,6 +172,7 @@ export function ImageUploadInput({
         type="file"
         accept={fileAccept}
         onChange={handleFileSelected}
+        disabled={uploading}
         className="hidden"
       />
 
@@ -255,14 +258,16 @@ export function ImageUploadInput({
           </div>
         ) : (
           <div
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => !uploading && fileInputRef.current?.click()}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
-            className={`cursor-pointer border-2 border-dashed transition-all rounded-xl p-5 flex flex-col items-center justify-center gap-2 text-center group ${
-              isDragging
-                ? "border-primary bg-primary/10 scale-[1.01]"
-                : "border-border hover:border-primary/50 bg-muted/20 hover:bg-muted/40"
+            className={`border-2 border-dashed transition-all rounded-xl p-5 flex flex-col items-center justify-center gap-2 text-center group ${
+              uploading
+                ? "cursor-not-allowed opacity-80 border-border bg-muted/20"
+                : isDragging
+                  ? "cursor-pointer border-primary bg-primary/10 scale-[1.01]"
+                  : "cursor-pointer border-border hover:border-primary/50 bg-muted/20 hover:bg-muted/40"
             }`}
           >
             <div className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center group-hover:scale-110 transition-transform text-muted-foreground group-hover:text-primary shadow-xs">

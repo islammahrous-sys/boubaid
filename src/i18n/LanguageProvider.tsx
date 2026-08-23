@@ -19,14 +19,25 @@ export const LANG_STORAGE_KEY = "alboabid.lang";
  * a returning visitor's stored language never flashes to Arabic first.
  */
 function readInitialLang(): Lang {
-  if (typeof document === "undefined") return "ar";
-  return document.documentElement.lang === "en" ? "en" : "ar";
+  // Always return "ar" initially so server and client match during hydration.
+  // The useEffect below will sync it with the actual DOM/localStorage state.
+  return "ar";
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(readInitialLang);
 
   useEffect(() => {
+    // Only run this ONCE on mount to sync React state with the initial SSR/DOM state
+    if (typeof document === "undefined") return;
+    const currentLang = document.documentElement.lang === "en" ? "en" : "ar";
+    if (lang !== currentLang) {
+      setLangState(currentLang);
+    }
+  }, []); // Empty dependency array so it only runs once!
+
+  useEffect(() => {
+    // Run this whenever the user changes the language to update the DOM
     if (typeof document === "undefined") return;
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";

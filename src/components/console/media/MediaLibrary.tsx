@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useLang } from "@/i18n/LanguageProvider";
 import { supabase } from "@/integrations/supabase/client";
-import { Image as ImageIcon, Upload, Search, Copy, Check, Filter, FileText, HardDrive, ExternalLink } from "lucide-react";
+import { Image as ImageIcon, Upload, Search, Copy, Check, Filter, FileText, HardDrive, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { MediaAssetInput } from "@/lib/admin-hub.schemas";
 
@@ -195,14 +195,19 @@ export function MediaLibrary({
         </div>
 
         <div>
-          <label className="inline-flex items-center gap-2 px-3.5 py-2 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold rounded-xl cursor-pointer transition-colors shadow-xs">
-            <Upload className="w-4 h-4" />
+          <label
+            className={`inline-flex items-center gap-2 px-3.5 py-2 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold rounded-xl transition-colors shadow-xs ${
+              uploading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+            }`}
+          >
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
             {uploading ? (isAr ? "جاري الرفع..." : "Uploading...") : isAr ? "رفع وسائط وملفات PDF" : "Upload Media / PDF"}
             <input
               type="file"
               multiple
               accept="image/*,application/pdf,.pdf"
               className="hidden"
+              disabled={uploading}
               onChange={(e) => handleFileUpload(e.target.files)}
             />
           </label>

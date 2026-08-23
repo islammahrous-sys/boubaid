@@ -254,7 +254,7 @@ function MasterAdminPage() {
   const { data: mediaData, isLoading: mediaLoading } = useQuery({
     queryKey: ["media-data"],
     queryFn: () => fetchMedia(),
-    enabled: canAccessConsole && activeDomainId === "media" && activeTabId === "media_library",
+    enabled: canAccessConsole && (activeDomainId === "media" || activeDomainId === "content") && activeTabId === "media_library",
     ...queryConfig,
   });
 
@@ -317,7 +317,7 @@ function MasterAdminPage() {
   const { data: libraryData, isLoading: libraryLoading } = useQuery({
     queryKey: ["library-management-data"],
     queryFn: () => fetchLibrary(),
-    enabled: canAccessConsole && activeDomainId === "media" && activeTabId === "library_items",
+    enabled: canAccessConsole && (activeDomainId === "media" || activeDomainId === "content") && activeTabId === "library_items",
     ...queryConfig,
   });
 
@@ -454,7 +454,7 @@ function MasterAdminPage() {
   // Search items index
   const searchItems = useMemo(() => {
     const list: any[] = [];
-    (familyData?.members ?? []).forEach((m) => {
+    (((familyData?.members as any[]) ?? [])).forEach((m: any) => {
       list.push({
         id: `member-${m.id}`,
         title: `${m.first_name_ar} ${m.last_name_ar}`,
@@ -591,7 +591,7 @@ function MasterAdminPage() {
             <AdminTabSkeleton type="table" cardCount={4} />
           ) : (
             <FamilyMembersTable
-              members={(familyData?.members ?? []) as any}
+              initialStats={{ total: overviewData?.totalMembers ?? 0, living: overviewData?.livingMembers ?? 0, deceased: overviewData?.deceasedMembers ?? 0 }}
               branches={(familyData?.branches ?? []) as any}
               places={(familyData?.places ?? []) as any}
               onSaveMember={(data) => runMutation(() => saveMemberMut({ data }), refreshFamily)}
@@ -671,7 +671,7 @@ function MasterAdminPage() {
             <AdminTabSkeleton type="table" cardCount={4} />
           ) : (
             <FamilyMembersTable
-              members={(familyData?.members ?? []) as any}
+              initialStats={{ total: overviewData?.totalMembers ?? 0, living: overviewData?.livingMembers ?? 0, deceased: overviewData?.deceasedMembers ?? 0 }}
               branches={(familyData?.branches ?? []) as any}
               places={(familyData?.places ?? []) as any}
               onSaveMember={(data) => runMutation(() => saveMemberMut({ data }), refreshFamily)}
@@ -781,7 +781,7 @@ function MasterAdminPage() {
         )}
 
         {/* 4. DOMAIN: MEDIA & ARCHIVE */}
-        {activeDomainId === "media" && activeTabId === "media_library" && (
+        {(activeDomainId === "media" || activeDomainId === "content") && activeTabId === "media_library" && (
           mediaLoading && !mediaData ? (
             <AdminTabSkeleton type="grid" cardCount={3} />
           ) : (
@@ -792,7 +792,7 @@ function MasterAdminPage() {
           )
         )}
 
-        {activeDomainId === "media" && activeTabId === "library_items" && (
+        {(activeDomainId === "media" || activeDomainId === "content") && activeTabId === "library_items" && (
           libraryLoading && !libraryData ? (
             <AdminTabSkeleton type="table" cardCount={3} />
           ) : (
@@ -810,8 +810,11 @@ function MasterAdminPage() {
             <AdminTabSkeleton type="table" cardCount={3} />
           ) : (
             <InquiriesManager
-              inquiries={(inquiriesData?.inquiries ?? []) as any}
               notes={(inquiriesData?.notes ?? []) as any}
+              newCount={overviewData?.pendingInquiries ?? 0}
+              inProgressCount={0}
+              resolvedCount={0}
+              totalCount={overviewData?.pendingInquiries ?? 0}
               onUpdateStatus={(id, status, sourceTable) =>
                 sourceTable === "contact_messages"
                   ? runMutation(() => updateContactStatusMut({ data: { id, status: status as any } }), refreshInquiries)
@@ -859,9 +862,12 @@ function MasterAdminPage() {
             <AdminTabSkeleton type="table" cardCount={4} />
           ) : (
             <TreasuryManager
-              contributions={(treasuryData?.contributions ?? []) as any}
               verifiedTotal={treasuryData?.verifiedTotal ?? 0}
               pendingTotal={treasuryData?.pendingTotal ?? 0}
+              pendingCount={(treasuryData?.contributions ?? []).filter(c => c.status === "pending").length}
+              verifiedCount={(treasuryData?.contributions ?? []).filter(c => c.status === "verified").length}
+              rejectedCount={(treasuryData?.contributions ?? []).filter(c => c.status === "rejected").length}
+              totalCount={(treasuryData?.contributions ?? []).length}
               onReviewContribution={(data) => runMutation(() => reviewTreasuryMut({ data }), refreshTreasury)}
             />
           )
@@ -937,7 +943,7 @@ function MasterAdminPage() {
       <FamilyImportExportDialog
         open={importExportOpen}
         onOpenChange={setImportExportOpen}
-        members={(familyData?.members ?? []) as any}
+        initialStats={{ total: overviewData?.totalMembers ?? 0, living: overviewData?.livingMembers ?? 0, deceased: overviewData?.deceasedMembers ?? 0 }}
         onImportMembers={(importedList) =>
           runMutation(async () => {
             for (const member of importedList) {

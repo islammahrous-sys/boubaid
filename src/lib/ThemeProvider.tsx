@@ -17,17 +17,21 @@ export const THEME_STORAGE_KEY = "alboabid.theme";
  * own writes from here on.
  */
 function readInitialTheme(): Theme {
-  if (typeof document === "undefined") return "light";
-  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  // Always return "light" initially so server and client match during hydration.
+  // The useEffect below will sync it with the actual DOM/localStorage state.
+  return "light";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(readInitialTheme);
 
   useEffect(() => {
-    // No stored preference yet — the page is still following the OS
-    // setting. Keep it in sync until the visitor makes an explicit choice.
     if (typeof window === "undefined") return;
+    
+    // Sync React state with the actual theme that was applied by the inline script
+    const currentTheme = document.documentElement.classList.contains("dark") ? "dark" : "light";
+    setThemeState(currentTheme);
+
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === "light" || stored === "dark") return;
 

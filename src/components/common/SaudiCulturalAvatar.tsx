@@ -37,7 +37,7 @@ export function SaudiCulturalAvatar({
         onError={(e) => {
           // Fallback to local default if remote fails
           const target = e.currentTarget;
-          if (target.src !== DEFAULT_SAUDI_AVATAR) {
+          if (!target.src.includes("default-saudi-avatar.jpg")) {
             target.src = DEFAULT_SAUDI_AVATAR;
           }
         }}

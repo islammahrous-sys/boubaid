@@ -14,6 +14,7 @@ import { Plus, Edit2, Trash2, Building2, UserCheck, Phone, Globe, ExternalLink, 
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { BusinessInput, MembershipRequestReviewInput } from "@/lib/admin-hub.schemas";
+import { useConfirm } from "@/hooks/useConfirm";
 
 export type BusinessRow = {
   id: string;
@@ -68,6 +69,7 @@ export function DirectoryManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [activeTab, setActiveTab] = useState(defaultTab);
 
@@ -213,6 +215,26 @@ export function DirectoryManager({
       toast.success(isAr ? "تم حفظ المنشأة بنجاح" : "Business saved successfully");
     } catch (err: any) {
       toast.error(err.message || (isAr ? "فشل حفظ المنشأة" : "Failed to save"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteBiz = async (b: BusinessRow) => {
+    const ok = await confirm({
+      title: isAr ? `حذف منشأة "${b.name_ar}"؟` : `Delete "${b.name_ar}"?`,
+      description: isAr
+        ? "سيتم حذف هذه المنشأة نهائيًا من دليل الأعمال ولا يمكن التراجع عن هذا الإجراء."
+        : "This business listing will be permanently removed from the directory. This action can't be undone.",
+      tone: "destructive",
+    });
+    if (!ok) return;
+    try {
+      setLoading(true);
+      await onDeleteBusiness(b.id);
+      toast.success(isAr ? "تم حذف المنشأة بنجاح" : "Business deleted successfully");
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? "فشل حذف المنشأة" : "Failed to delete business"));
     } finally {
       setLoading(false);
     }
@@ -378,6 +400,7 @@ export function DirectoryManager({
                               <Button
                                 variant="ghost"
                                 size="sm"
+                                disabled={loading}
                                 className="h-7 px-2 text-[11px] text-emerald-600 hover:bg-emerald-500/10 gap-1 font-semibold"
                                 onClick={() => handleQuickTogglePublish(b)}
                                 title={isAr ? "اعتماد ونشر فوري" : "Approve & Publish"}
@@ -398,12 +421,9 @@ export function DirectoryManager({
                             <Button
                               variant="ghost"
                               size="icon"
+                              disabled={loading}
                               className="w-7 h-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => {
-                                if (window.confirm(isAr ? "هل أنت متأكد من حذف هذه المنشأة؟" : "Are you sure?")) {
-                                  onDeleteBusiness(b.id);
-                                }
-                              }}
+                              onClick={() => handleDeleteBiz(b)}
                               title={isAr ? "حذف المنشأة" : "Delete"}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
