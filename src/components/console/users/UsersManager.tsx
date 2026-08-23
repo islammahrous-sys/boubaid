@@ -111,6 +111,36 @@ export function UsersManager({
     return userRoles.filter((r) => r.user_id === userId).map((r) => r.role);
   };
 
+  const getUserStatusBadge = (status?: string | null) => {
+    switch (status || "ACTIVE") {
+      case "DISABLED":
+        return (
+          <Badge variant="destructive" className="text-[10px]">
+            {isAr ? "معطل" : "Disabled"}
+          </Badge>
+        );
+      case "SUSPENDED":
+        return (
+          <Badge variant="outline" className="text-[10px] border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400">
+            {isAr ? "موقوف مؤقتًا" : "Suspended"}
+          </Badge>
+        );
+      case "INVITED":
+        return (
+          <Badge variant="outline" className="text-[10px] border-blue-500/40 bg-blue-500/10 text-blue-700 dark:text-blue-400">
+            {isAr ? "بانتظار التفعيل" : "Invited"}
+          </Badge>
+        );
+      case "ACTIVE":
+      default:
+        return (
+          <Badge variant="secondary" className="text-[10px]">
+            {isAr ? "نشط" : "Active"}
+          </Badge>
+        );
+    }
+  };
+
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
 
@@ -219,9 +249,7 @@ export function UsersManager({
                     </div>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge variant={user.status === "DISABLED" ? "destructive" : "secondary"} className="text-[10px]">
-                      {user.status || "ACTIVE"}
-                    </Badge>
+                    {getUserStatusBadge(user.status)}
                   </TableCell>
                   <TableCell className="text-end">
                     <Button
