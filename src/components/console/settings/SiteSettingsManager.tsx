@@ -334,7 +334,7 @@ export function SiteSettingsManager({
                 }
               >
                 <Save className="w-3.5 h-3.5" />
-                {isAr ? "حفظ قيادات الأمانة والمجلس" : "Save Board"}
+                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ قيادات الأمانة والمجلس" : "Save Board"}
               </Button>
             </div>
           </TabsContent>
@@ -370,7 +370,7 @@ export function SiteSettingsManager({
                 }
               >
                 <Save className="w-3.5 h-3.5" />
-                {isAr ? "حفظ إعدادات SEO" : "Save SEO Settings"}
+                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ إعدادات SEO" : "Save SEO Settings"}
               </Button>
             </div>
           </TabsContent>
