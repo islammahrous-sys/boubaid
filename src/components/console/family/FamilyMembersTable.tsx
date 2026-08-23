@@ -34,6 +34,7 @@ import {
   Briefcase,
   GraduationCap,
   Calendar,
+  Loader2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -120,6 +121,7 @@ export function FamilyMembersTable({
   const [selectedMember, setSelectedMember] = useState<MemberRow | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [quickViewMember, setQuickViewMember] = useState<MemberRow | null>(null);
+  const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
 
   const fetchMembersPage = useServerFn(getFamilyMembersPaginated);
   
@@ -874,6 +876,7 @@ export function FamilyMembersTable({
                         size="icon"
                         className="w-7 h-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
                         title={isAr ? "أرشفة / حذف" : "Archive / Delete"}
+                        disabled={deletingMemberId === member.id}
                         onClick={async () => {
                           const memberName = `${member.first_name_ar} ${member.last_name_ar}`;
                           if (
@@ -888,10 +891,19 @@ export function FamilyMembersTable({
                           ) {
                             return;
                           }
-                          onDeleteMember(member.id);
+                          setDeletingMemberId(member.id);
+                          try {
+                            await onDeleteMember(member.id);
+                          } finally {
+                            setDeletingMemberId(null);
+                          }
                         }}
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        {deletingMemberId === member.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-3.5 h-3.5" />
+                        )}
                       </Button>
                     </div>
                   </TableCell>

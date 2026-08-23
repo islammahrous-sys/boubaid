@@ -393,7 +393,13 @@ export function DnaStudiesManager({
               </Button>
             </div>
             <div className="space-y-2">
-              {(state.chronology ?? []).map((item, idx) => (
+              {(state.chronology ?? []).length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-10 text-center text-muted-foreground text-xs rounded-lg border border-dashed border-border">
+                  <Clock className="w-6 h-6 opacity-40" />
+                  <span>{isAr ? "لا توجد مراحل زمنية مضافة بعد" : "No chronology steps added yet"}</span>
+                </div>
+              ) : (
+              (state.chronology ?? []).map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2 p-2.5 rounded-lg border border-border bg-card">
                   <Input
                     className="w-28 font-mono text-xs"
@@ -472,7 +478,8 @@ export function DnaStudiesManager({
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </TabsContent>
 
@@ -485,7 +492,13 @@ export function DnaStudiesManager({
               </Button>
             </div>
             <div className="space-y-2">
-              {(state.sibling_families ?? []).map((item, idx) => (
+              {(state.sibling_families ?? []).length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-10 text-center text-muted-foreground text-xs rounded-lg border border-dashed border-border">
+                  <Users className="w-6 h-6 opacity-40" />
+                  <span>{isAr ? "لا توجد عوائل متحالفة مضافة بعد" : "No allied families added yet"}</span>
+                </div>
+              ) : (
+              (state.sibling_families ?? []).map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2 p-2.5 rounded-lg border border-border bg-card">
                   <Input
                     className="w-40 font-semibold text-xs"
@@ -551,7 +564,8 @@ export function DnaStudiesManager({
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </TabsContent>
 
@@ -564,7 +578,13 @@ export function DnaStudiesManager({
               </Button>
             </div>
             <div className="space-y-2">
-              {(state.distribution ?? []).map((item, idx) => (
+              {(state.distribution ?? []).length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-10 text-center text-muted-foreground text-xs rounded-lg border border-dashed border-border">
+                  <Globe className="w-6 h-6 opacity-40" />
+                  <span>{isAr ? "لا توجد دول مضافة بعد" : "No countries added yet"}</span>
+                </div>
+              ) : (
+              (state.distribution ?? []).map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2 p-2.5 rounded-lg border border-border bg-card">
                   <Input
                     className="w-36 font-semibold text-xs"
@@ -644,7 +664,8 @@ export function DnaStudiesManager({
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </TabsContent>
         </Tabs>
