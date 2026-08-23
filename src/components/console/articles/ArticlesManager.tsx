@@ -408,6 +408,7 @@ export function ArticlesManager({
                 }
               }}
             >
+              {bulkLoading && <Loader2 className="w-3.5 h-3.5 me-1 animate-spin" />}
               {isAr ? "نشر المحدد" : "Publish Selected"}
             </Button>
 
@@ -427,6 +428,7 @@ export function ArticlesManager({
                 }
               }}
             >
+              {bulkLoading && <Loader2 className="w-3.5 h-3.5 me-1 animate-spin" />}
               {isAr ? "تحويل لمسودة" : "Draft Selected"}
             </Button>
 
@@ -457,7 +459,11 @@ export function ArticlesManager({
                 }
               }}
             >
-              <Trash2 className="w-3.5 h-3.5 me-1" />
+              {bulkLoading ? (
+                <Loader2 className="w-3.5 h-3.5 me-1 animate-spin" />
+              ) : (
+                <Trash2 className="w-3.5 h-3.5 me-1" />
+              )}
               {isAr ? "حذف المحدد" : "Delete"}
             </Button>
 
