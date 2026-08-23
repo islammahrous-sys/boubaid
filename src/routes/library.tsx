@@ -1,14 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo, useEffect } from "react";
-import { Download, Play, Search, X, Eye, FileText, Image as ImageIcon, Video } from "lucide-react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import {
+  Download,
+  Play,
+  Search,
+  X,
+  Eye,
+  FileText,
+  Image as ImageIcon,
+  Video,
+  Grid,
+  List,
+  Share2,
+  Copy,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  BookOpen,
+  Landmark,
+  Compass,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { Record, EditorialButton, EditorialLink } from "@/components/site/Editorial";
+import { EditorialButton, EditorialLink } from "@/components/site/Editorial";
 import { libraryItems as staticLibraryItems, siteMeta } from "@/content/site";
 import { getPublishedLibrary } from "@/lib/cms.functions";
-import { mergeLibrary } from "@/content/cms-adapt";
+import { mergeLibrary, type LibraryDocument, type LibraryPhoto, type LibraryVideo } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -21,7 +41,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-/** How many rows/cards are shown per page in each tab of the archive. */
 const PAGE_SIZE = 12;
 
 function paginate<T>(items: T[], page: number, pageSize: number): T[] {
@@ -29,11 +48,7 @@ function paginate<T>(items: T[], page: number, pageSize: number): T[] {
   return items.slice(start, start + pageSize);
 }
 
-/**
- * Recognises a YouTube link (watch/short/embed forms, youtu.be) and returns
- * an embeddable player URL, or null if `url` isn't a YouTube link.
- */
-function getYouTubeEmbedUrl(url: string): string | null {
+function getYouTubeVideoId(url: string): string | null {
   try {
     const u = new URL(url);
     const host = u.hostname.replace(/^www\./, "");
@@ -53,18 +68,32 @@ function getYouTubeEmbedUrl(url: string): string | null {
       return null;
     }
 
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    return videoId;
   } catch {
     return null;
   }
 }
 
+function getYouTubeEmbedUrl(url: string): string | null {
+  const id = getYouTubeVideoId(url);
+  return id ? `https://www.youtube.com/embed/${id}` : null;
+}
+
+function getYouTubeThumbnailUrl(url: string): string | null {
+  const id = getYouTubeVideoId(url);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+}
+
 const VIDEO_FILE_EXTENSIONS = [".mp4", ".webm", ".ogg", ".ogv", ".mov", ".m4v"];
 
-/** True when `url` points at a stored video file (by extension) rather than an external link. */
 function isVideoFileUrl(url: string): boolean {
   const clean = url.split("?")[0].split("#")[0].toLowerCase();
   return VIDEO_FILE_EXTENSIONS.some((ext) => clean.endsWith(ext));
+}
+
+function isPdfUrl(url: string): boolean {
+  const clean = url.split("?")[0].split("#")[0].toLowerCase();
+  return clean.endsWith(".pdf");
 }
 
 export const Route = createFileRoute("/library")({
@@ -74,10 +103,10 @@ export const Route = createFileRoute("/library")({
   },
   head: () => ({
     meta: [
-      { title: "الأرشيف والمكتبة الرقمية | آل بوعبيد" },
-      { name: "description", content: "الأرشيف الرقمي المعتمد آل بوعبيد: اللوائح الرسمية، الدراسات التاريخية والجينية، ومجموعات الصور والتسجيلات." },
-      { property: "og:title", content: "الأرشيف والمكتبة الرقمية — آل بوعبيد" },
-      { property: "og:description", content: "الأرشيف الرقمي المعتمد لأسرة آل بوعبيد: اللوائح الرسمية، الدراسات التاريخية والجينية، ومجموعات الصور." },
+      { title: "المكتبة الرقمية والأرشيف التراثي | آل بوعبيد" },
+      { name: "description", content: "المكتبة الرقمية والأرشيف التراثي لأسرة آل بوعبيد: الوثائق التاريخية، الدراسات النسبية والجينية، والصور والتسجيلات." },
+      { property: "og:title", content: "المكتبة الرقمية والأرشيف التراثي — آل بوعبيد" },
+      { property: "og:description", content: "المكتبة الرقمية وأرشيف التراث: وثائق تاريخية، صور نادرة، وتسجيلات متاحة للجميع." },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/library") },
     ],
@@ -87,95 +116,116 @@ export const Route = createFileRoute("/library")({
 });
 
 type TabKey = "documents" | "photographs" | "recordings";
+type ViewMode = "table" | "grid";
+type SortOrder = "newest" | "oldest" | "title";
 
 const copy = {
-  eyebrow: { ar: "الأرشيف", en: "Archive" } as BiText,
+  eyebrow: { ar: "التراث والتوثيق", en: "Heritage & Archives" } as BiText,
   title: {
-    ar: "المكتبة الرقمية وأرشيف الوثائق",
-    en: "Digital Library & Document Archive",
+    ar: "المكتبة الرقمية وأرشيف التراث",
+    en: "Digital Library & Heritage Archive",
   } as BiText,
   subtitle: {
-    ar: "اللوائح المعتمدة، والدراسات النسبية والجينية، ومجموعات الصور والتسجيلات — مفهرسة ومتاحة لأبناء الأسرة والباحثين.",
-    en: "Approved bylaws, genealogical and genetic studies, and collections of photographs and recordings — catalogued and available to family members and researchers.",
+    ar: "مجموعة شاملة من الوثائق التاريخية، والمشجرات النسبية، والدراسات الجينية، والصور النادرة والتسجيلات المرئية المتاحة للجميع.",
+    en: "A comprehensive digital collection of historical deeds, family trees, genetic studies, archival photographs, and recordings available to all.",
   } as BiText,
 
-  metaHolder: { ar: "الجهة الحافظة", en: "Held by" } as BiText,
-  metaRef: { ar: "مرجع المجموعة", en: "Collection ref." } as BiText,
-  metaAccess: { ar: "الإتاحة", en: "Access" } as BiText,
-  metaAccessValue: { ar: "أبناء الأسرة والباحثون", en: "Family members & researchers" } as BiText,
+  metaEra: { ar: "فترة التوثيق", en: "Documented Era" } as BiText,
+  metaEraValue: { ar: "منذ عام ١١٠٢ هـ حتى اليوم", en: "Since 1102 AH to present" } as BiText,
+  metaScope: { ar: "نطاق المجموعة", en: "Archive Scope" } as BiText,
+  metaScopeValue: { ar: "الأحساء والخليج العربي", en: "Al-Ahsa & the Arabian Gulf" } as BiText,
+  metaAccess: { ar: "الإتاحة الرقمية", en: "Public Access" } as BiText,
+  metaAccessValue: { ar: "متاحة رقمياً للجميع", en: "Open digital access" } as BiText,
 
   tabs: {
-    documents: { ar: "الوثائق واللوائح", en: "Documents & Bylaws" } as BiText,
-    photographs: { ar: "المجموعة المصورة", en: "Photographs" } as BiText,
-    recordings: { ar: "التسجيلات المرئية", en: "Recordings" } as BiText,
+    documents: { ar: "الوثائق والمخطوطات", en: "Documents & Manuscripts" } as BiText,
+    photographs: { ar: "الصور واللوحات التاريخية", en: "Photographs & Heritage Plates" } as BiText,
+    recordings: { ar: "المرئيات والتسجيلات", en: "Recordings & Videos" } as BiText,
   },
 
-  colRef: { ar: "المرجع", en: "Ref." } as BiText,
+  stats: {
+    totalDocs: { ar: "وثيقة ومخطوطة تاريخية", en: "Historical Documents" } as BiText,
+    totalPhotos: { ar: "صورة ولوحة تراثية", en: "Heritage Photographs" } as BiText,
+    totalVideos: { ar: "تسجيلاً ومادة مرئية", en: "Video Recordings" } as BiText,
+    heritageIndex: { ar: "أرشيف رقمي مفتوح", en: "Public Heritage Archive" } as BiText,
+  },
+
+  colRef: { ar: "الرمز", en: "Code" } as BiText,
   colTitle: { ar: "العنوان", en: "Title" } as BiText,
   colYear: { ar: "السنة", en: "Year" } as BiText,
-  colFormat: { ar: "الصيغة", en: "Format" } as BiText,
-  colDuration: { ar: "المدة", en: "Duration" } as BiText,
-  colAction: { ar: "الإجراء", en: "" } as BiText,
+  colFormat: { ar: "التصنيف", en: "Category" } as BiText,
+  colAction: { ar: "الإجراء", en: "Action" } as BiText,
 
-  download: { ar: "تحميل", en: "Download" } as BiText,
-  play: { ar: "تشغيل", en: "Play" } as BiText,
-  plate: { ar: "صورة", en: "Plate" } as BiText,
+  download: { ar: "تحميل الملف", en: "Download" } as BiText,
+  play: { ar: "مشاهدة التسجيل", en: "Watch Recording" } as BiText,
+  plate: { ar: "لوحة", en: "Plate" } as BiText,
+  preview: { ar: "معاينة الوثيقة", en: "Preview" } as BiText,
 
   docsNote: {
-    ar: "الوثائق أدناه صادرة عن الصندوق أو معتمدة منها. ويُرجع في النصوص الرسمية إلى النسخة الموقعة المودعة لدى الأمانة العامة.",
-    en: "The documents below are issued or approved by the organisation. For official purposes, reference is made to the signed copy deposited with the secretariat.",
+    ar: "تضم هذه المجموعة صكوكاً تاريخية تعود لأكثر من ثلاثة قرون، ولوائح تنظيمية، ودراسات جينية ونسبية موثقة لأسرة آل بوعبيد.",
+    en: "This collection features historical court deeds dating back over 300 years, family charters, and documented genealogical studies.",
   } as BiText,
   photosNote: {
-    ar: "مجموعة مصورة موثقة لمناسبات الأسرة واجتماعاتها الرسمية.",
-    en: "A documented photographic collection of family occasions and official assemblies.",
+    ar: "سجل مصور يوثق مناسبات الأسرة واجتماعاتها وملتقياتها العامة على مدار العقود الماضية.",
+    en: "A photographic record capturing family assemblies, cultural gatherings, and memorable occasions across the decades.",
   } as BiText,
   videosNote: {
-    ar: "تسجيلات الكلمات والعروض والأفلام الوثائقية.",
-    en: "Recordings of addresses, presentations, and documentary films.",
+    ar: "تسجيلات مرئية للأفلام الوثائقية، والكلمات الرسمية، والمناسبات والاحتفالات السنوية.",
+    en: "Video recordings of documentary films, heritage addresses, and annual family assemblies.",
   } as BiText,
 
   pending: {
-    ar: "الملف قيد الرفع على الأرشيف الرقمي — يرجى مراجعة الأمانة العامة.",
-    en: "This file is still being uploaded to the digital archive — please contact the secretariat.",
+    ar: "الملف قيد الرقمنة والإتاحة — يرجى التواصل للمزيد من المعلومات.",
+    en: "This file is currently being digitized — please contact us for more information.",
   } as BiText,
   searchPlaceholder: {
-    ar: "البحث بالاسم، المرجع، أو السنة...",
-    en: "Search by title, ref, or year...",
+    ar: "البحث في الأرشيف بالعنوان، الموضوع، أو السنة...",
+    en: "Search the archive by title, topic, or year...",
   } as BiText,
   clearSearch: { ar: "مسح البحث", en: "Clear search" } as BiText,
-  allCategories: { ar: "الكل", en: "All" } as BiText,
-  preview: { ar: "معاينة", en: "Preview" } as BiText,
+  allCategories: { ar: "كل الأقسام", en: "All Categories" } as BiText,
   close: { ar: "إغلاق", en: "Close" } as BiText,
-  details: { ar: "تفاصيل الوثيقة", en: "Document Details" } as BiText,
+  details: { ar: "نبذة عن الوثيقة", en: "Document Overview" } as BiText,
+  shareWhatsApp: { ar: "مشاركة عبر واتساب", en: "Share via WhatsApp" } as BiText,
+  copyLink: { ar: "نسخ الرابط", en: "Copy Link" } as BiText,
+  copied: { ar: "تم النسخ بنجاح", en: "Copied to clipboard" } as BiText,
   noResults: {
-    ar: "لا توجد نتائج تطابق بحثك أو تصنيف الفرع المختار.",
-    en: "No results match your search query or selected category.",
+    ar: "لا توجد نتائج تطابق معايير البحث الحالية.",
+    en: "No archive records match your search or filter criteria.",
   } as BiText,
+
+  sortNewest: { ar: "الأحدث تاريخاً", en: "Newest First" } as BiText,
+  sortOldest: { ar: "الأقدم تاريخاً", en: "Oldest First" } as BiText,
+  sortTitle: { ar: "أبجدياً (أ-ي)", en: "Alphabetical" } as BiText,
+
+  depositTitle: { ar: "إيداع وثيقة أو صورة تاريخية", en: "Submit a Historical Document or Photograph" } as BiText,
+  depositBody: {
+    ar: "إذا كانت لديك صور تذكارية قديمة، أو وثائق تاريخية، أو مخطوطات عائلية ترغب في حفظها وفهرستها ضمن الأرشيف الرقمي الموحد، نرحب بتواصلك.",
+    en: "If you possess historical family photographs, court deeds, or manuscripts you wish to preserve in the digital archive, we welcome your contribution.",
+  } as BiText,
+  depositCta: { ar: "تواصل مع فريق التوثيق", en: "Contact Archival Team" } as BiText,
 };
 
 const sheet = pageImages.library.contactSheet;
 
-type LibraryDocument = (typeof staticLibraryItems.documents)[number];
-
-/** Shared between the table cell and the mobile record — a real download
- * where the archive holds the file, an honest "not yet uploaded" notice
- * otherwise, rather than pretending every row is downloadable. */
 function DownloadControl({
   doc,
   onUnavailable,
   label,
+  className,
 }: {
   doc: LibraryDocument;
   onUnavailable: () => void;
   label: string;
+  className?: string;
 }) {
   return doc.href ? (
-    <EditorialLink href={doc.href} target="_blank" rel="noopener noreferrer" size="sm">
+    <EditorialLink href={doc.href} target="_blank" rel="noopener noreferrer" size="sm" className={className}>
       <Download className="h-3.5 w-3.5" aria-hidden="true" />
       {label}
     </EditorialLink>
   ) : (
-    <EditorialButton type="button" onClick={onUnavailable} size="sm">
+    <EditorialButton type="button" onClick={onUnavailable} size="sm" className={className}>
       <Download className="h-3.5 w-3.5" aria-hidden="true" />
       {label}
     </EditorialButton>
@@ -186,8 +236,13 @@ function LibraryPage() {
   const { t, lang } = useLang();
   const { libraryItems } = Route.useLoaderData();
   const [tab, setTab] = useState<TabKey>("documents");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [page, setPage] = useState(1);
+
   const [previewModal, setPreviewModal] = useState<{
     type: TabKey;
     title: string;
@@ -197,31 +252,33 @@ function LibraryPage() {
     duration?: string;
     href?: string;
     doc?: LibraryDocument;
+    description?: string;
+    photoIndex?: number;
   } | null>(null);
-  const [page, setPage] = useState(1);
 
   const rtl = lang === "ar";
 
-  const notify = () => toast(t(copy.pending));
+  const notify = () => toast.info(t(copy.pending));
+
+  const resultsLabel = (shown: number, total: number) =>
+    lang === "ar" ? `عرض ${shown} من أصل ${total} مادة` : `Showing ${shown} of ${total} items`;
 
   const handleTabChange = (newTab: TabKey) => {
     setTab(newTab);
     setSelectedCategory(null);
+    setSearchQuery("");
   };
 
-  // Any change to the active tab, search query, or category filter starts a
-  // fresh page 1 — otherwise a user could land on an out-of-range page.
   useEffect(() => {
     setPage(1);
-  }, [tab, searchQuery, selectedCategory]);
+  }, [tab, searchQuery, selectedCategory, sortOrder]);
 
-  const tabDefs: { key: TabKey; label: BiText; count: number }[] = [
-    { key: "documents", label: copy.tabs.documents, count: libraryItems.documents.length },
-    { key: "photographs", label: copy.tabs.photographs, count: libraryItems.photos.length },
-    { key: "recordings", label: copy.tabs.recordings, count: libraryItems.videos.length },
+  const tabDefs: { key: TabKey; label: BiText; count: number; icon: React.ComponentType<{ className?: string }> }[] = [
+    { key: "documents", label: copy.tabs.documents, count: libraryItems.documents.length, icon: FileText },
+    { key: "photographs", label: copy.tabs.photographs, count: libraryItems.photos.length, icon: ImageIcon },
+    { key: "recordings", label: copy.tabs.recordings, count: libraryItems.videos.length, icon: Video },
   ];
 
-  // Derive category pills per tab
   const currentCategories = useMemo(() => {
     if (tab === "documents") {
       return Array.from(new Set(libraryItems.documents.map((d) => d.kind))).filter(Boolean);
@@ -233,55 +290,82 @@ function LibraryPage() {
       return Array.from(new Set(libraryItems.videos.map((v) => `${v.year} هـ`))).filter(Boolean);
     }
     return [];
-  }, [tab]);
+  }, [tab, libraryItems]);
 
-  // Filter items by search query and selected category
   const filteredDocuments = useMemo(() => {
-    return libraryItems.documents.filter((d) => {
+    let list = libraryItems.documents.filter((d) => {
+      const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
-        !searchQuery.trim() ||
-        t(d.title).toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.ncnpRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        String(d.year).includes(searchQuery.trim());
+        !q ||
+        t(d.title).toLowerCase().includes(q) ||
+        d.ncnpRef.toLowerCase().includes(q) ||
+        (d.description && t(d.description).toLowerCase().includes(q)) ||
+        String(d.year).includes(q);
       const matchesCat = !selectedCategory || d.kind === selectedCategory;
       return matchesSearch && matchesCat;
     });
-  }, [searchQuery, selectedCategory, t]);
 
-  // Plate numbers and the fallback-image rotation are keyed to a photo's
-  // position in the full (unfiltered) library, not the filtered view — build
-  // that lookup once instead of re-scanning the whole array per rendered card.
+    if (sortOrder === "newest") {
+      list = [...list].sort((a, b) => (b.year || 0) - (a.year || 0));
+    } else if (sortOrder === "oldest") {
+      list = [...list].sort((a, b) => (a.year || 0) - (b.year || 0));
+    } else if (sortOrder === "title") {
+      list = [...list].sort((a, b) => t(a.title).localeCompare(t(b.title)));
+    }
+    return list;
+  }, [libraryItems.documents, searchQuery, selectedCategory, sortOrder, t]);
+
   const photoIndex = useMemo(() => {
-    const map = new Map<(typeof libraryItems.photos)[number], number>();
+    const map = new Map<LibraryPhoto, number>();
     libraryItems.photos.forEach((p, i) => map.set(p, i));
     return map;
   }, [libraryItems.photos]);
 
   const filteredPhotos = useMemo(() => {
-    return libraryItems.photos.filter((p) => {
+    let list = libraryItems.photos.filter((p) => {
+      const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
-        !searchQuery.trim() ||
-        t(p.title).toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        String(p.year).includes(searchQuery.trim());
+        !q ||
+        t(p.title).toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q) ||
+        (p.description && t(p.description).toLowerCase().includes(q)) ||
+        String(p.year).includes(q);
       const matchesCat = !selectedCategory || p.category === selectedCategory;
       return matchesSearch && matchesCat;
     });
-  }, [searchQuery, selectedCategory, t]);
+
+    if (sortOrder === "newest") {
+      list = [...list].sort((a, b) => (b.year || 0) - (a.year || 0));
+    } else if (sortOrder === "oldest") {
+      list = [...list].sort((a, b) => (a.year || 0) - (b.year || 0));
+    } else if (sortOrder === "title") {
+      list = [...list].sort((a, b) => t(a.title).localeCompare(t(b.title)));
+    }
+    return list;
+  }, [libraryItems.photos, searchQuery, selectedCategory, sortOrder, t]);
 
   const filteredVideos = useMemo(() => {
-    return libraryItems.videos.filter((v) => {
+    let list = libraryItems.videos.filter((v) => {
+      const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
-        !searchQuery.trim() ||
-        t(v.title).toLowerCase().includes(searchQuery.toLowerCase()) ||
-        String(v.year).includes(searchQuery.trim());
+        !q ||
+        t(v.title).toLowerCase().includes(q) ||
+        (v.description && t(v.description).toLowerCase().includes(q)) ||
+        String(v.year).includes(q);
       const matchesCat = !selectedCategory || `${v.year} هـ` === selectedCategory;
       return matchesSearch && matchesCat;
     });
-  }, [searchQuery, selectedCategory, t]);
 
-  // Page-sliced view of whichever tab is active — the filters above still
-  // run over the full list so counts/pills stay accurate.
+    if (sortOrder === "newest") {
+      list = [...list].sort((a, b) => (b.year || 0) - (a.year || 0));
+    } else if (sortOrder === "oldest") {
+      list = [...list].sort((a, b) => (a.year || 0) - (b.year || 0));
+    } else if (sortOrder === "title") {
+      list = [...list].sort((a, b) => t(a.title).localeCompare(t(b.title)));
+    }
+    return list;
+  }, [libraryItems.videos, searchQuery, selectedCategory, sortOrder, t]);
+
   const pagedDocuments = useMemo(() => paginate(filteredDocuments, page, PAGE_SIZE), [filteredDocuments, page]);
   const pagedPhotos = useMemo(() => paginate(filteredPhotos, page, PAGE_SIZE), [filteredPhotos, page]);
   const pagedVideos = useMemo(() => paginate(filteredVideos, page, PAGE_SIZE), [filteredVideos, page]);
@@ -290,9 +374,68 @@ function LibraryPage() {
     tab === "documents" ? filteredDocuments.length : tab === "photographs" ? filteredPhotos.length : filteredVideos.length;
   const totalPages = Math.max(1, Math.ceil(activeTotal / PAGE_SIZE));
 
+  const handleCopyLink = (text?: string) => {
+    const url = text || window.location.href;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    toast.success(t(copy.copied));
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShareWhatsApp = (title: string, desc?: string) => {
+    const text = encodeURIComponent(`${title}\n${desc ? desc + "\n" : ""}${window.location.href}`);
+    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+  };
+
+  const handleNextPhoto = useCallback(() => {
+    if (!previewModal || previewModal.type !== "photographs" || typeof previewModal.photoIndex !== "number") return;
+    const nextIdx = (previewModal.photoIndex + 1) % filteredPhotos.length;
+    const p = filteredPhotos[nextIdx];
+    const imageSrc = p.image ?? sheet[(photoIndex.get(p) ?? nextIdx) % sheet.length];
+    setPreviewModal({
+      type: "photographs",
+      title: t(p.title),
+      subtitle: `${p.category} · ${p.year} هـ`,
+      image: imageSrc,
+      description: p.description ? t(p.description) : undefined,
+      photoIndex: nextIdx,
+    });
+  }, [previewModal, filteredPhotos, photoIndex, t]);
+
+  const handlePrevPhoto = useCallback(() => {
+    if (!previewModal || previewModal.type !== "photographs" || typeof previewModal.photoIndex !== "number") return;
+    const prevIdx = (previewModal.photoIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
+    const p = filteredPhotos[prevIdx];
+    const imageSrc = p.image ?? sheet[(photoIndex.get(p) ?? prevIdx) % sheet.length];
+    setPreviewModal({
+      type: "photographs",
+      title: t(p.title),
+      subtitle: `${p.category} · ${p.year} هـ`,
+      image: imageSrc,
+      description: p.description ? t(p.description) : undefined,
+      photoIndex: prevIdx,
+    });
+  }, [previewModal, filteredPhotos, photoIndex, t]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setPreviewModal(null);
+      } else if (previewModal?.type === "photographs") {
+        if (e.key === "ArrowRight") {
+          rtl ? handlePrevPhoto() : handleNextPhoto();
+        } else if (e.key === "ArrowLeft") {
+          rtl ? handleNextPhoto() : handlePrevPhoto();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [previewModal, handleNextPhoto, handlePrevPhoto, rtl]);
+
   const PageControls = () =>
     totalPages > 1 ? (
-      <Pagination className="mt-8">
+      <Pagination className="mt-10">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
@@ -340,22 +483,78 @@ function LibraryPage() {
         title={t(copy.title)}
         subtitle={t(copy.subtitle)}
         meta={[
-          { label: t(copy.metaHolder), value: t(siteMeta.shortName) },
-          { label: t(copy.metaRef), value: `NCNP/${siteMeta.ncnpLicense}`, mono: true },
+          { label: t(copy.metaEra), value: t(copy.metaEraValue) },
+          { label: t(copy.metaScope), value: t(copy.metaScopeValue) },
           { label: t(copy.metaAccess), value: t(copy.metaAccessValue) },
         ]}
       />
 
-      <div className="container-page pb-20">
-        {/* Flat editorial filter tabs and search bar */}
-        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* ── Archival Statistics Masthead ─────────────────────── */}
+      <section className="border-b border-border bg-secondary/30">
+        <div className="container-page py-6">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6">
+            <div className="flex items-center gap-3.5 border border-border/80 bg-card/60 p-3.5 shadow-sm rounded">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-bronze/10 text-bronze dark:text-gold">
+                <FileText className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="nums font-mono text-lg font-bold text-foreground">
+                  {libraryItems.documents.length}
+                </p>
+                <p className="text-xs text-muted-foreground">{t(copy.stats.totalDocs)}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3.5 border border-border/80 bg-card/60 p-3.5 shadow-sm rounded">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-bronze/10 text-bronze dark:text-gold">
+                <ImageIcon className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="nums font-mono text-lg font-bold text-foreground">
+                  {libraryItems.photos.length}
+                </p>
+                <p className="text-xs text-muted-foreground">{t(copy.stats.totalPhotos)}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3.5 border border-border/80 bg-card/60 p-3.5 shadow-sm rounded">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-bronze/10 text-bronze dark:text-gold">
+                <Video className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="nums font-mono text-lg font-bold text-foreground">
+                  {libraryItems.videos.length}
+                </p>
+                <p className="text-xs text-muted-foreground">{t(copy.stats.totalVideos)}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3.5 border border-border/80 bg-card/60 p-3.5 shadow-sm rounded">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <Landmark className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-sans text-xs font-bold text-foreground">
+                  {rtl ? "توثيق شامل موثوق" : "Heritage Archive"}
+                </p>
+                <p className="text-xs text-muted-foreground">{t(copy.stats.heritageIndex)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="container-page py-10 pb-20">
+        {/* ── Main Tab Navigation Bar ──────────────────────────── */}
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between border-b border-border pb-6">
           <div
             role="tablist"
             aria-label={t(copy.eyebrow)}
-            className="inline-flex gap-1 overflow-x-auto no-scrollbar border border-border bg-card p-1"
+            className="inline-flex gap-1 overflow-x-auto no-scrollbar border border-border bg-card p-1.5 rounded"
           >
             {tabDefs.map((d) => {
               const isSelected = tab === d.key;
+              const Icon = d.icon;
               return (
                 <button
                   key={d.key}
@@ -364,21 +563,19 @@ function LibraryPage() {
                   aria-selected={isSelected}
                   onClick={() => handleTabChange(d.key)}
                   className={cn(
-                    "label-caps flex shrink-0 items-center gap-2 border px-3.5 py-1.5 text-xs transition-colors duration-150",
+                    "flex shrink-0 items-center gap-2.5 px-4 py-2 text-xs font-semibold rounded transition-all duration-150 cursor-pointer",
                     isSelected
-                      ? "border-primary bg-primary text-primary-foreground font-semibold"
-                      : "border-transparent text-muted-foreground hover:border-border hover:bg-accent/40 hover:text-foreground",
+                      ? "bg-bronze text-white dark:bg-gold dark:text-ink shadow-sm"
+                      : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
                   )}
                 >
-                  {d.key === "documents" && <FileText className="h-3.5 w-3.5 shrink-0 opacity-70" />}
-                  {d.key === "photographs" && <ImageIcon className="h-3.5 w-3.5 shrink-0 opacity-70" />}
-                  {d.key === "recordings" && <Video className="h-3.5 w-3.5 shrink-0 opacity-70" />}
+                  <Icon className="h-4 w-4 shrink-0" />
                   <span>{t(d.label)}</span>
                   <span
                     className={cn(
-                      "nums text-[11px] px-1.5 py-0.2",
+                      "nums text-[11px] px-1.5 py-0.5 rounded font-mono font-bold",
                       isSelected
-                        ? "bg-primary-foreground/20 text-primary-foreground font-bold"
+                        ? "bg-white/20 text-white dark:bg-ink/20 dark:text-ink"
                         : "bg-muted text-muted-foreground",
                     )}
                   >
@@ -389,42 +586,91 @@ function LibraryPage() {
             })}
           </div>
 
-          {/* Search Bar */}
-          <div className="relative w-full md:w-80 shrink-0">
-            <Search
-              className="absolute top-1/2 -translate-y-1/2 start-3 h-4 w-4 text-muted-foreground pointer-events-none"
-              aria-hidden="true"
-            />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t(copy.searchPlaceholder)}
-              className="w-full border border-border bg-card py-2 text-xs font-serif text-foreground placeholder:text-muted-foreground outline-none transition-colors duration-150 ps-9 pe-8 focus:border-foreground focus:ring-1 focus:ring-ring"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery("")}
-                aria-label={t(copy.clearSearch)}
-                className="absolute top-1/2 -translate-y-1/2 end-2 p-1 text-muted-foreground transition-colors hover:text-foreground"
+          {/* Search & Utility Bar */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search Input */}
+            <div className="relative w-full sm:w-72">
+              <Search
+                className="absolute top-1/2 -translate-y-1/2 start-3 h-4 w-4 text-muted-foreground pointer-events-none"
+                aria-hidden="true"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t(copy.searchPlaceholder)}
+                className="w-full rounded border border-border bg-card py-2 text-xs font-sans text-foreground placeholder:text-muted-foreground outline-none transition-colors ps-9 pe-8 focus:border-bronze focus:ring-1 focus:ring-bronze dark:focus:border-gold"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  aria-label={t(copy.clearSearch)}
+                  className="absolute top-1/2 -translate-y-1/2 end-2 p-1 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Sort Dropdown */}
+            <div className="flex items-center gap-1.5 border border-border bg-card px-2.5 py-1.5 rounded text-xs text-muted-foreground">
+              <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+                className="bg-transparent text-xs font-medium text-foreground outline-none cursor-pointer"
               >
-                <X className="h-3.5 w-3.5" />
-              </button>
+                <option value="newest">{t(copy.sortNewest)}</option>
+                <option value="oldest">{t(copy.sortOldest)}</option>
+                <option value="title">{t(copy.sortTitle)}</option>
+              </select>
+            </div>
+
+            {/* View Switcher for Documents */}
+            {tab === "documents" && (
+              <div className="hidden sm:flex items-center border border-border bg-card p-1 rounded">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("table")}
+                  className={cn(
+                    "p-1.5 rounded transition-colors cursor-pointer",
+                    viewMode === "table"
+                      ? "bg-secondary text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                  title="Table View"
+                >
+                  <List className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={cn(
+                    "p-1.5 rounded transition-colors cursor-pointer",
+                    viewMode === "grid"
+                      ? "bg-secondary text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                  title="Grid Cards View"
+                >
+                  <Grid className="h-4 w-4" />
+                </button>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Category Filter Buttons */}
+        {/* ── Category Filter Pills ────────────────────────────── */}
         {currentCategories.length > 0 && (
-          <div className="mb-8 flex flex-wrap items-center gap-1.5">
+          <div className="mb-6 flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setSelectedCategory(null)}
               className={cn(
-                "label-caps border px-3 py-1 text-xs transition-colors duration-150",
+                "rounded border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer",
                 selectedCategory === null
-                  ? "border-primary bg-primary text-primary-foreground font-semibold"
+                  ? "border-bronze bg-bronze text-white dark:border-gold dark:bg-gold dark:text-ink"
                   : "border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground",
               )}
             >
@@ -438,9 +684,9 @@ function LibraryPage() {
                   type="button"
                   onClick={() => setSelectedCategory(isSelected ? null : cat)}
                   className={cn(
-                    "label-caps border px-3 py-1 text-xs transition-colors duration-150",
+                    "rounded border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer",
                     isSelected
-                      ? "border-primary bg-primary text-primary-foreground font-semibold"
+                      ? "border-bronze bg-bronze text-white dark:border-gold dark:bg-gold dark:text-ink"
                       : "border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground",
                   )}
                 >
@@ -451,320 +697,395 @@ function LibraryPage() {
           </div>
         )}
 
-        {/* ── Documents ──────────────────────────────────────── */}
-        {tab === "documents" ? (
+        {/* Results Counter */}
+        {activeTotal > 0 && (
+          <div className="mb-6 flex items-center justify-between text-xs text-muted-foreground">
+            <p className="nums font-mono font-medium">
+              {resultsLabel(
+                tab === "documents"
+                  ? pagedDocuments.length
+                  : tab === "photographs"
+                    ? pagedPhotos.length
+                    : pagedVideos.length,
+                activeTotal,
+              )}
+            </p>
+            {selectedCategory && (
+              <span className="inline-flex items-center gap-1 bg-secondary/80 px-2 py-0.5 rounded text-[11px] text-foreground">
+                <span>{selectedCategory}</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory(null)}
+                  className="ms-1 hover:text-destructive cursor-pointer"
+                >
+                  ×
+                </button>
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* ── Tab Content: Documents ──────────────────────────── */}
+        {tab === "documents" && (
           <section className="reveal-on-scroll">
-            <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.docsNote)}
             </p>
 
             {filteredDocuments.length > 0 ? (
               <>
-                <div className="hidden overflow-x-auto md:block">
-                  <div className="border border-border bg-card">
-                    <table className="w-full min-w-[40rem] border-collapse">
-                      <thead>
-                        <tr className="border-b border-border bg-muted/30">
-                          <th
-                            scope="col"
-                            className="label-caps py-3 ps-6 text-start text-muted-foreground"
-                          >
-                            {t(copy.colRef)}
-                          </th>
-                          <th
-                            scope="col"
-                            className="label-caps py-3 text-start text-muted-foreground"
-                          >
-                            {t(copy.colTitle)}
-                          </th>
-                          <th
-                            scope="col"
-                            className="label-caps py-3 text-start text-muted-foreground"
-                          >
-                            {t(copy.colYear)}
-                          </th>
-                          <th
-                            scope="col"
-                            className="label-caps py-3 text-start text-muted-foreground"
-                          >
-                            {t(copy.colFormat)}
-                          </th>
-                          <th scope="col" className="py-3 pe-6">
-                            <span className="sr-only">{t(copy.download)}</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pagedDocuments.map((d, i) => (
-                          <tr
-                            key={i}
-                            onClick={() =>
-                              setPreviewModal({
-                                type: "documents",
-                                title: t(d.title),
-                                subtitle: `${d.kind} · ${d.year} هـ`,
-                                meta: d.ncnpRef,
-                                doc: d,
-                              })
-                            }
-                            className="group cursor-pointer border-b border-border align-baseline transition-colors hover:bg-accent/40 last:border-0"
-                          >
-                            <td className="nums py-4 ps-6 pe-4 font-mono text-xs whitespace-nowrap font-semibold text-bronze dark:text-gold">
-                              {d.ncnpRef}
-                            </td>
-                            <td className="py-4 pe-6 text-sm leading-snug font-medium text-foreground group-hover:text-bronze transition-colors">
-                              {t(d.title)}
-                            </td>
-                            <td className="nums py-4 pe-6 text-[13px] whitespace-nowrap text-muted-foreground">
-                              {d.year} هـ
-                            </td>
-                            <td className="py-4 pe-6 text-[13px] text-muted-foreground">
-                              <span className="border border-border bg-muted px-2 py-0.5 font-mono text-xs font-semibold text-foreground">
-                                {d.kind}
-                              </span>
-                            </td>
-                            <td className="py-4 pe-6 text-end" onClick={(e) => e.stopPropagation()}>
-                              <DownloadControl
-                                doc={d}
-                                onUnavailable={notify}
-                                label={t(copy.download)}
-                              />
-                            </td>
+                {viewMode === "table" ? (
+                  <div className="border border-border bg-card rounded overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[44rem] border-collapse">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/40">
+                            <th scope="col" className="py-3.5 ps-6 text-start text-xs font-bold text-muted-foreground">
+                              {t(copy.colRef)}
+                            </th>
+                            <th scope="col" className="py-3.5 text-start text-xs font-bold text-muted-foreground">
+                              {t(copy.colTitle)}
+                            </th>
+                            <th scope="col" className="py-3.5 text-start text-xs font-bold text-muted-foreground">
+                              {t(copy.colYear)}
+                            </th>
+                            <th scope="col" className="py-3.5 text-start text-xs font-bold text-muted-foreground">
+                              {t(copy.colFormat)}
+                            </th>
+                            <th scope="col" className="py-3.5 pe-6 text-end text-xs font-bold text-muted-foreground">
+                              {t(copy.colAction)}
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                          {pagedDocuments.map((d, i) => (
+                            <tr
+                              key={i}
+                              onClick={() =>
+                                setPreviewModal({
+                                  type: "documents",
+                                  title: t(d.title),
+                                  subtitle: `${d.kind} · ${d.year} هـ`,
+                                  meta: d.ncnpRef,
+                                  doc: d,
+                                  href: d.href,
+                                  description: d.description ? t(d.description) : undefined,
+                                })
+                              }
+                              className="group cursor-pointer hover:bg-secondary/40 transition-colors"
+                            >
+                              <td className="nums py-4 ps-6 pe-4 font-mono text-xs font-bold text-bronze dark:text-gold whitespace-nowrap">
+                                <span className="border border-bronze/30 bg-bronze/5 dark:bg-gold/5 px-2 py-1 rounded">
+                                  {d.ncnpRef}
+                                </span>
+                              </td>
+                              <td className="py-4 pe-6 max-w-md">
+                                <p className="text-sm font-semibold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors">
+                                  {t(d.title)}
+                                </p>
+                                {d.description && (
+                                  <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+                                    {t(d.description)}
+                                  </p>
+                                )}
+                              </td>
+                              <td className="nums py-4 pe-6 text-xs whitespace-nowrap text-muted-foreground font-mono">
+                                {d.year} هـ
+                              </td>
+                              <td className="py-4 pe-6 text-xs text-muted-foreground">
+                                <span className="border border-border bg-secondary/80 px-2 py-0.5 rounded text-[11px] font-semibold text-foreground">
+                                  {d.kind}
+                                </span>
+                              </td>
+                              <td className="py-4 pe-6 text-end" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setPreviewModal({
+                                        type: "documents",
+                                        title: t(d.title),
+                                        subtitle: `${d.kind} · ${d.year} هـ`,
+                                        meta: d.ncnpRef,
+                                        doc: d,
+                                        href: d.href,
+                                        description: d.description ? t(d.description) : undefined,
+                                      })
+                                    }
+                                    className="inline-flex items-center gap-1 border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary rounded transition-colors cursor-pointer"
+                                  >
+                                    <Eye className="h-3 w-3" />
+                                    <span>{t(copy.preview)}</span>
+                                  </button>
+                                  <DownloadControl
+                                    doc={d}
+                                    onUnavailable={notify}
+                                    label={t(copy.download)}
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-
-                <div className="reveal-stagger grid gap-3 md:hidden">
-                  {pagedDocuments.map((d, i) => (
-                    <div
-                      key={i}
-                      onClick={() =>
-                        setPreviewModal({
-                          type: "documents",
-                          title: t(d.title),
-                          subtitle: `${d.kind} · ${d.year} هـ`,
-                          meta: d.ncnpRef,
-                          doc: d,
-                        })
-                      }
-                      className="group card-craft active-scale cursor-pointer border border-border bg-card p-4"
-                    >
-                      <div className="flex items-start justify-between gap-3">
+                ) : (
+                  /* Grid View for Documents */
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {pagedDocuments.map((d, i) => (
+                      <div
+                        key={i}
+                        onClick={() =>
+                          setPreviewModal({
+                            type: "documents",
+                            title: t(d.title),
+                            subtitle: `${d.kind} · ${d.year} هـ`,
+                            meta: d.ncnpRef,
+                            doc: d,
+                            href: d.href,
+                            description: d.description ? t(d.description) : undefined,
+                          })
+                        }
+                        className="group flex flex-col justify-between border border-border bg-card p-5 rounded hover:border-bronze dark:hover:border-gold transition-all duration-200 cursor-pointer shadow-sm"
+                      >
                         <div>
-                          <span className="nums inline-block border border-bronze/30 bg-bronze/10 px-2 py-0.5 font-mono text-xs font-semibold text-bronze dark:text-gold mb-2">
-                            {d.ncnpRef}
-                          </span>
-                          <h3 className="text-sm font-medium leading-snug text-foreground group-hover:text-bronze transition-colors">
+                          <div className="flex items-center justify-between gap-2 mb-3">
+                            <span className="nums border border-bronze/30 bg-bronze/10 px-2 py-0.5 rounded font-mono text-xs font-bold text-bronze dark:text-gold">
+                              {d.ncnpRef}
+                            </span>
+                            <span className="nums text-xs font-mono text-muted-foreground">{d.year} هـ</span>
+                          </div>
+                          <h3 className="text-sm font-bold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors mb-2">
                             {t(d.title)}
                           </h3>
+                          {d.description && (
+                            <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground mb-4">
+                              {t(d.description)}
+                            </p>
+                          )}
                         </div>
-                      </div>
-                      <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <span className="nums font-medium">{d.year} هـ</span>
-                          <span>·</span>
-                          <span className="border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] font-semibold text-foreground">
+
+                        <div className="flex items-center justify-between border-t border-border pt-3.5 mt-2">
+                          <span className="border border-border bg-secondary/80 px-2 py-0.5 rounded text-[11px] font-semibold text-foreground">
                             {d.kind}
                           </span>
-                        </div>
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <DownloadControl
-                            doc={d}
-                            onUnavailable={notify}
-                            label={t(copy.download)}
-                          />
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <DownloadControl
+                              doc={d}
+                              onUnavailable={notify}
+                              label={t(copy.download)}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
                 <PageControls />
               </>
             ) : null}
           </section>
-        ) : null}
+        )}
 
-        {/* ── Photographs — archive cards ─────────────────────── */}
-        {tab === "photographs" ? (
+        {/* ── Tab Content: Photographs ────────────────────────── */}
+        {tab === "photographs" && (
           <section className="reveal-on-scroll">
-            <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.photosNote)}
             </p>
 
             {filteredPhotos.length > 0 ? (
               <>
-              <ol className="reveal-stagger grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {pagedPhotos.map((p, i) => {
-                  // A CMS photo carries its own file; static plates fall back
-                  // to the rotating sheet of scanned images.
-                  const imageSrc =
-                    p.image ?? sheet[(photoIndex.get(p) ?? i) % sheet.length];
+                <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {pagedPhotos.map((p, i) => {
+                    const globalIdx = (page - 1) * PAGE_SIZE + i;
+                    const imageSrc = p.image ?? sheet[(photoIndex.get(p) ?? globalIdx) % sheet.length];
 
-                  return (
-                    <li key={i}>
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        onClick={() =>
-                          setPreviewModal({
-                            type: "photographs",
-                            title: t(p.title),
-                            subtitle: `${p.category} · ${p.year} هـ`,
-                            image: imageSrc,
-                          })
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
+                    return (
+                      <li key={i}>
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={() =>
                             setPreviewModal({
                               type: "photographs",
                               title: t(p.title),
                               subtitle: `${p.category} · ${p.year} هـ`,
                               image: imageSrc,
-                            });
+                              description: p.description ? t(p.description) : undefined,
+                              photoIndex: globalIdx,
+                            })
                           }
-                        }}
-                        className="group card-craft active-scale cursor-pointer border border-border bg-card focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                      >
-                        <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-                          <img
-                            src={imageSrc}
-                            alt={t(p.title)}
-                            className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
-                            loading="lazy"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 transition-opacity duration-150 group-hover:opacity-100 flex flex-col justify-end gap-0.5 p-4">
-                            <p className="line-clamp-2 text-xs font-serif text-white">
-                              {t(p.title)}
-                            </p>
-                            <p className="text-[11px] text-white/80">
-                              {p.category} · {p.year} هـ
-                            </p>
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setPreviewModal({
+                                type: "photographs",
+                                title: t(p.title),
+                                subtitle: `${p.category} · ${p.year} هـ`,
+                                image: imageSrc,
+                                description: p.description ? t(p.description) : undefined,
+                                photoIndex: globalIdx,
+                              });
+                            }
+                          }}
+                          className="group flex flex-col border border-border bg-card rounded overflow-hidden hover:border-bronze dark:hover:border-gold transition-all duration-200 cursor-pointer shadow-sm"
+                        >
+                          <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+                            <img
+                              src={imageSrc}
+                              alt={t(p.title)}
+                              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                              loading="lazy"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100 flex flex-col justify-end p-4">
+                              <span className="nums text-xs font-bold text-white/90">
+                                {t(copy.plate)} {String((photoIndex.get(p) ?? globalIdx) + 1).padStart(2, "0")} · {p.year} هـ
+                              </span>
+                              <p className="line-clamp-2 text-xs font-semibold text-white mt-1">
+                                {t(p.title)}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="p-4 flex flex-col justify-between flex-1">
+                            <div>
+                              <div className="flex items-baseline justify-between gap-2 mb-1.5">
+                                <span className="nums font-mono text-xs font-bold text-bronze dark:text-gold">
+                                  {t(copy.plate)} {String((photoIndex.get(p) ?? globalIdx) + 1).padStart(2, "0")}
+                                </span>
+                                <span className="nums text-xs font-mono text-muted-foreground">{p.year} هـ</span>
+                              </div>
+                              <p className="text-sm font-semibold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors line-clamp-2">
+                                {t(p.title)}
+                              </p>
+                            </div>
+
+                            <div className="mt-4 flex items-center justify-between border-t border-border pt-2.5">
+                              <span className="border border-border bg-secondary/80 px-2 py-0.5 rounded text-[11px] font-semibold text-foreground">
+                                {p.category}
+                              </span>
+                              <span className="inline-flex items-center gap-1 text-xs text-bronze dark:text-gold font-medium">
+                                <Eye className="h-3 w-3" />
+                                {t(copy.preview)}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <div className="p-4">
-                          <div className="flex items-baseline justify-between gap-3">
-                            <span className="nums label-caps text-xs font-semibold text-bronze dark:text-gold">
-                              {t(copy.plate)}{" "}
-                              {String((photoIndex.get(p) ?? i) + 1).padStart(2, "0")}
-                            </span>
-                            <span className="nums text-xs text-muted-foreground">{p.year} هـ</span>
-                          </div>
-                          <p className="mt-2 text-sm font-medium leading-snug text-foreground group-hover:text-bronze transition-colors line-clamp-2">
-                            {t(p.title)}
-                          </p>
-                          <div className="mt-3 flex items-center justify-between border-t border-border pt-2.5">
-                            <span className="label-caps text-xs text-muted-foreground">
-                              {p.category}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-              <PageControls />
+                      </li>
+                    );
+                  })}
+                </ol>
+                <PageControls />
               </>
             ) : null}
           </section>
-        ) : null}
+        )}
 
-        {/* ── Recordings — video cards ────────────────────────── */}
-        {tab === "recordings" ? (
+        {/* ── Tab Content: Recordings ─────────────────────────── */}
+        {tab === "recordings" && (
           <section className="reveal-on-scroll">
-            <p className="measure mb-7 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.videosNote)}
             </p>
 
             {filteredVideos.length > 0 ? (
               <>
-              <ol className="reveal-stagger grid gap-3">
-                {pagedVideos.map((v, i) => (
-                  <li key={i}>
-                    <div
-                      onClick={() =>
-                        setPreviewModal({
-                          type: "recordings",
-                          title: t(v.title),
-                          subtitle: `${v.year} هـ`,
-                          duration: v.duration,
-                          href: v.href,
-                        })
-                      }
-                      className="group card-craft active-scale flex cursor-pointer items-center justify-between gap-5 border border-border bg-card p-4"
-                    >
-                      <div className="flex items-center gap-4 min-w-0">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (v.href) {
-                              setPreviewModal({
-                                type: "recordings",
-                                title: t(v.title),
-                                subtitle: `${v.year} هـ`,
-                                duration: v.duration,
-                                href: v.href,
-                              });
-                            } else {
-                              notify();
+                <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {pagedVideos.map((v, i) => {
+                    const thumbnail = v.href ? getYouTubeThumbnailUrl(v.href) : null;
+                    const openPreview = () =>
+                      setPreviewModal({
+                        type: "recordings",
+                        title: t(v.title),
+                        subtitle: `${v.year} هـ`,
+                        duration: v.duration,
+                        href: v.href,
+                        description: v.description ? t(v.description) : undefined,
+                      });
+
+                    return (
+                      <li key={i}>
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={openPreview}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              openPreview();
                             }
                           }}
-                          aria-label={`${t(copy.play)} — ${t(v.title)}`}
-                          className="grid h-10 w-10 shrink-0 place-items-center border border-border bg-muted text-foreground transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground"
+                          className="group flex flex-col border border-border bg-card rounded overflow-hidden hover:border-bronze dark:hover:border-gold transition-all duration-200 cursor-pointer shadow-sm"
                         >
-                          <Play
-                            className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")}
-                            aria-hidden="true"
-                          />
-                        </button>
-
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium leading-snug text-foreground group-hover:text-bronze transition-colors">
-                            {t(v.title)}
-                          </p>
-                          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                            <span className="nums label-caps font-semibold">{v.year} هـ</span>
-                            <span>·</span>
-                            <span className="inline-flex items-center gap-1">
-                              <Video className="h-3 w-3" />
-                              {t(copy.tabs.recordings)}
+                          <div className="relative aspect-video w-full overflow-hidden bg-muted">
+                            {thumbnail ? (
+                              <img
+                                src={thumbnail}
+                                alt={t(v.title)}
+                                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="grid h-full w-full place-items-center bg-gradient-to-br from-secondary to-muted">
+                                <Video className="h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-black/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                            <div className="absolute inset-0 grid place-items-center">
+                              <span className="grid h-12 w-12 place-items-center rounded-full border border-white/50 bg-black/60 text-white backdrop-blur-sm transition-transform duration-200 group-hover:scale-110 group-hover:bg-bronze group-hover:border-bronze dark:group-hover:bg-gold dark:group-hover:text-ink">
+                                <Play className={cn("h-5 w-5 fill-current", rtl && "-scale-x-100")} />
+                              </span>
+                            </div>
+                            <span
+                              className="nums absolute bottom-2 end-2 rounded border border-white/20 bg-black/80 px-2 py-0.5 font-mono text-[11px] font-bold text-white"
+                              dir="ltr"
+                            >
+                              {v.duration}
                             </span>
                           </div>
-                        </div>
-                      </div>
 
-                      <div className="flex shrink-0 items-center gap-3">
-                        <span
-                          className="nums border border-border bg-muted px-2.5 py-1 font-mono text-xs font-medium text-muted-foreground"
-                          dir="ltr"
-                        >
-                          {v.duration}
-                        </span>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              <PageControls />
+                          <div className="p-4 flex flex-col justify-between flex-1">
+                            <div>
+                              <p className="text-sm font-bold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors line-clamp-2">
+                                {t(v.title)}
+                              </p>
+                              {v.description && (
+                                <p className="mt-1.5 line-clamp-2 text-xs text-muted-foreground leading-relaxed">
+                                  {t(v.description)}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="mt-4 flex items-center justify-between border-t border-border pt-2.5 text-xs text-muted-foreground">
+                              <span className="nums font-mono font-semibold">{v.year} هـ</span>
+                              <span className="inline-flex items-center gap-1.5 text-bronze dark:text-gold font-semibold">
+                                <Play className="h-3 w-3 fill-current" />
+                                {t(copy.play)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
+                <PageControls />
               </>
             ) : null}
           </section>
-        ) : null}
+        )}
 
-        {/* Empty state when search or category filter yields no results */}
+        {/* ── Empty Filter State ──────────────────────────────── */}
         {((tab === "documents" && filteredDocuments.length === 0) ||
           (tab === "photographs" && filteredPhotos.length === 0) ||
           (tab === "recordings" && filteredVideos.length === 0)) && (
-          <div className="my-12 flex flex-col items-center justify-center border border-border bg-card p-12 text-center">
-            <div className="grid h-12 w-12 place-items-center border border-border bg-muted text-muted-foreground mb-4">
-              <Search className="h-5 w-5 opacity-60" />
+          <div className="my-12 flex flex-col items-center justify-center border border-border bg-card p-12 text-center rounded">
+            <div className="grid h-14 w-14 place-items-center rounded-full border border-border bg-muted text-muted-foreground mb-4">
+              <Search className="h-6 w-6 opacity-60" />
             </div>
-            <p className="max-w-md text-sm font-medium text-foreground">{t(copy.noResults)}</p>
+            <p className="max-w-md text-sm font-semibold text-foreground">{t(copy.noResults)}</p>
             {(searchQuery || selectedCategory) && (
               <EditorialButton
                 type="button"
@@ -781,68 +1102,126 @@ function LibraryPage() {
             )}
           </div>
         )}
+
+        {/* ── Archive Contribution & Deposit Callout ─────────── */}
+        <section className="mt-16 border border-border bg-gradient-to-br from-card via-secondary/30 to-card p-8 rounded shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded bg-bronze/10 px-2.5 py-1 text-xs font-bold text-bronze dark:text-gold">
+              <BookOpen className="h-3.5 w-3.5" />
+              <span>{t(copy.depositTitle)}</span>
+            </div>
+            <h2 className="text-lg md:text-xl font-bold text-foreground">
+              {t(copy.depositTitle)}
+            </h2>
+            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+              {t(copy.depositBody)}
+            </p>
+          </div>
+          <EditorialLink
+            href="/contact"
+            variant="primary"
+            className="shrink-0"
+          >
+            {t(copy.depositCta)}
+          </EditorialLink>
+        </section>
       </div>
 
-      {/* ── Editorial Modal Dialog ───────────────── */}
+      {/* ── High-Fidelity Modal Dialog ─────────────────────────── */}
       {previewModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/75 backdrop-blur-sm animate-in fade-in-0 duration-200"
           onClick={() => setPreviewModal(null)}
+          role="dialog"
+          aria-modal="true"
         >
           <div
-            className="relative w-full max-w-2xl border border-border bg-card p-6 md:p-8"
+            className={cn(
+              "relative w-full max-h-[90vh] overflow-y-auto border border-border bg-card p-6 md:p-8 rounded shadow-2xl transition-all animate-in zoom-in-95 duration-200",
+              previewModal.type === "documents" && previewModal.href && isPdfUrl(previewModal.href)
+                ? "max-w-4xl"
+                : "max-w-2xl",
+            )}
             onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-title"
           >
+            {/* Modal Close Button */}
             <button
               type="button"
               onClick={() => setPreviewModal(null)}
+              className="absolute top-4 end-4 grid h-8 w-8 place-items-center border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground cursor-pointer rounded"
               aria-label={t(copy.close)}
-              className="absolute top-4 end-4 grid h-8 w-8 place-items-center border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </button>
 
+            {/* Modal Header */}
             <div className="pe-10 mb-6">
               {previewModal.meta && (
-                <span className="nums inline-block border border-bronze/30 bg-bronze/10 px-2.5 py-1 font-mono text-xs font-semibold text-bronze dark:text-gold mb-2.5">
+                <span className="nums inline-block border border-bronze/30 bg-bronze/10 px-2.5 py-1 rounded font-mono text-xs font-bold text-bronze dark:text-gold mb-2.5">
                   {previewModal.meta}
                 </span>
               )}
-              <h2
-                id="modal-title"
-                className="text-lg md:text-xl font-semibold leading-snug text-foreground"
-              >
+              <h2 className="text-xl md:text-2xl font-bold leading-snug text-foreground">
                 {previewModal.title}
               </h2>
               {previewModal.subtitle && (
-                <p className="nums mt-1.5 text-xs md:text-sm text-muted-foreground">
+                <p className="nums mt-1 text-xs md:text-sm font-medium text-muted-foreground">
                   {previewModal.subtitle}
                 </p>
               )}
             </div>
 
+            {/* Photo Lightbox Mode */}
             {previewModal.type === "photographs" && previewModal.image && (
-              <div className="border border-border bg-black/5 dark:bg-black/40 mb-6 max-h-[60vh] flex items-center justify-center">
-                <img
-                  src={previewModal.image}
-                  alt={previewModal.title}
-                  className="max-h-[60vh] w-auto object-contain mx-auto"
-                />
-              </div>
+              <>
+                <div className="relative border border-border bg-black/10 dark:bg-black/60 rounded mb-4 max-h-[60vh] flex items-center justify-center overflow-hidden">
+                  <img
+                    src={previewModal.image}
+                    alt={previewModal.title}
+                    className="max-h-[60vh] w-auto object-contain mx-auto"
+                  />
+
+                  {/* Previous / Next Lightbox Arrows */}
+                  {filteredPhotos.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handlePrevPhoto}
+                        aria-label="Previous image"
+                        className="absolute start-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white hover:bg-bronze transition-colors cursor-pointer"
+                      >
+                        <ChevronRight className={cn("h-5 w-5", !rtl && "rotate-180")} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleNextPhoto}
+                        aria-label="Next image"
+                        className="absolute end-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white hover:bg-bronze transition-colors cursor-pointer"
+                      >
+                        <ChevronLeft className={cn("h-5 w-5", !rtl && "rotate-180")} />
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {previewModal.description && (
+                  <p className="mb-6 text-sm leading-relaxed text-muted-foreground border-s-2 border-bronze dark:border-gold ps-3">
+                    {previewModal.description}
+                  </p>
+                )}
+              </>
             )}
 
+            {/* Video Player Mode */}
             {previewModal.type === "recordings" && (() => {
               const youtubeEmbed = previewModal.href ? getYouTubeEmbedUrl(previewModal.href) : null;
               const isFileVideo = previewModal.href && !youtubeEmbed && isVideoFileUrl(previewModal.href);
 
               if (youtubeEmbed) {
                 return (
-                  <div className="mb-6 aspect-video w-full overflow-hidden border border-border bg-black">
+                  <div className="mb-6 aspect-video w-full overflow-hidden border border-border rounded bg-black">
                     <iframe
-                      src={youtubeEmbed}
+                      src={`${youtubeEmbed}?autoplay=1`}
                       title={previewModal.title}
                       className="h-full w-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -854,7 +1233,7 @@ function LibraryPage() {
 
               if (isFileVideo && previewModal.href) {
                 return (
-                  <div className="mb-6 aspect-video w-full overflow-hidden border border-border bg-black">
+                  <div className="mb-6 aspect-video w-full overflow-hidden border border-border rounded bg-black">
                     <video
                       src={previewModal.href}
                       controls
@@ -868,11 +1247,11 @@ function LibraryPage() {
               }
 
               return (
-                <div className="flex flex-col items-center justify-center border border-border bg-muted/30 p-8 text-center mb-6">
-                  <div className="grid h-14 w-14 place-items-center border border-border bg-card text-foreground mb-4">
+                <div className="flex flex-col items-center justify-center border border-border bg-muted/30 p-8 text-center mb-6 rounded">
+                  <div className="grid h-14 w-14 place-items-center rounded-full border border-border bg-card text-foreground mb-4">
                     <Play className={cn("h-6 w-6 fill-current", rtl && "-scale-x-100")} />
                   </div>
-                  <p className="text-sm text-foreground font-medium mb-1">{previewModal.title}</p>
+                  <p className="text-sm text-foreground font-bold mb-1">{previewModal.title}</p>
                   {previewModal.duration && (
                     <span className="nums font-mono text-xs text-muted-foreground mb-6" dir="ltr">
                       {previewModal.duration}
@@ -893,37 +1272,78 @@ function LibraryPage() {
               );
             })()}
 
-            {previewModal.type === "documents" && (
-              <div className="border border-border bg-muted/30 p-6 mb-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <FileText className="h-6 w-6 text-bronze dark:text-gold" />
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">{t(copy.details)}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {t(copy.metaHolder)}: {t(siteMeta.shortName)}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xs leading-relaxed text-muted-foreground border-t border-border pt-3">
-                  {t(copy.docsNote)}
-                </p>
-              </div>
+            {previewModal.type === "recordings" && previewModal.description && (
+              <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
+                {previewModal.description}
+              </p>
             )}
 
-            <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
-              <EditorialButton type="button" onClick={() => setPreviewModal(null)} size="sm">
-                {t(copy.close)}
-              </EditorialButton>
-              {previewModal.type === "documents" && previewModal.doc && (
-                <DownloadControl
-                  doc={previewModal.doc}
-                  onUnavailable={() => {
-                    setPreviewModal(null);
-                    notify();
-                  }}
-                  label={t(copy.download)}
-                />
-              )}
+            {/* Document Reader Mode */}
+            {previewModal.type === "documents" && (
+              <>
+                {previewModal.href && isPdfUrl(previewModal.href) ? (
+                  <div className="mb-6 aspect-[4/3] w-full overflow-hidden border border-border rounded bg-muted/50">
+                    <iframe
+                      src={`${previewModal.href}#view=FitH`}
+                      title={previewModal.title}
+                      className="h-full w-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="border border-border bg-muted/30 p-6 mb-6 rounded">
+                    <div className="flex items-center gap-3 mb-4">
+                      <FileText className="h-6 w-6 text-bronze dark:text-gold" />
+                      <div>
+                        <h3 className="text-sm font-bold text-foreground">{t(copy.details)}</h3>
+                        <p className="text-xs text-muted-foreground">
+                          {t(siteMeta.shortName)}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs leading-relaxed text-muted-foreground border-t border-border pt-3">
+                      {previewModal.description || t(copy.docsNote)}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Modal Bottom Action Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5 mt-2">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleShareWhatsApp(previewModal.title, previewModal.description)}
+                  className="inline-flex items-center gap-1.5 border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer rounded"
+                >
+                  <Share2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  {t(copy.shareWhatsApp)}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCopyLink(previewModal.href)}
+                  className="inline-flex items-center gap-1.5 border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer rounded"
+                >
+                  {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? t(copy.copied) : t(copy.copyLink)}
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <EditorialButton type="button" onClick={() => setPreviewModal(null)} size="sm">
+                  {t(copy.close)}
+                </EditorialButton>
+                {previewModal.type === "documents" && previewModal.doc && (
+                  <DownloadControl
+                    doc={previewModal.doc}
+                    onUnavailable={() => {
+                      setPreviewModal(null);
+                      notify();
+                    }}
+                    label={t(copy.download)}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -931,5 +1351,3 @@ function LibraryPage() {
     </>
   );
 }
-
-

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -39,8 +39,17 @@ export const Route = createFileRoute("/initiatives")({
     ],
     links: [{ rel: "canonical", href: getCanonicalUrl("/initiatives") }],
   }),
-  component: InitiativesPage,
+  component: InitiativesLayout,
 });
+
+function InitiativesLayout() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isDetail = pathname !== "/initiatives" && pathname !== "/initiatives/";
+  if (isDetail) {
+    return <Outlet />;
+  }
+  return <InitiativesPage />;
+}
 
 const copy = {
   eyebrow: { ar: "البرامج والمشاريع", en: "Programmes & projects" } as BiText,
@@ -76,6 +85,11 @@ const copy = {
   planned: { ar: "مخططة", en: "Planned" } as BiText,
   completed: { ar: "مكتملة", en: "Completed" } as BiText,
   details: { ar: "التفاصيل", en: "Details" } as BiText,
+  viewDetails: { ar: "عرض التفاصيل الكاملة", en: "View full details" } as BiText,
+  close: { ar: "إغلاق", en: "Close" } as BiText,
+  shareWhatsApp: { ar: "مشاركة عبر واتساب", en: "Share on WhatsApp" } as BiText,
+  copyLink: { ar: "نسخ الرابط", en: "Copy link" } as BiText,
+  copied: { ar: "تم النسخ", en: "Copied" } as BiText,
 
   supportTitle: { ar: "دعم البرامج", en: "Supporting the programmes" } as BiText,
   supportBody: {
@@ -220,7 +234,7 @@ function InitiativesPage() {
               <Link
                 to="/initiatives/$slug"
                 params={{ slug: init.slug }}
-                className="group grid gap-x-6 gap-y-2 py-6 transition-[color,background-color,transform] duration-200 ease-out hover:bg-secondary/40 active:scale-[0.98] md:grid-cols-[2.5rem_minmax(0,18rem)_1fr_auto] md:items-baseline"
+                className="group grid gap-x-6 gap-y-2 py-6 transition-[color,background-color,transform] duration-200 ease-out hover:bg-secondary/40 active:scale-[0.99] md:grid-cols-[2.5rem_minmax(0,18rem)_1fr_auto] md:items-baseline cursor-pointer"
               >
                 <span
                   className="nums font-mono text-sm text-bronze/70 dark:text-gold/60"

@@ -387,6 +387,13 @@ export const eventRegistrationUpdateSchema = z.object({
 });
 export type EventRegistrationUpdateInput = z.infer<typeof eventRegistrationUpdateSchema>;
 
+// 25. Initiative Registration Update Schema
+export const initiativeRegistrationUpdateSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(["new", "contacted", "confirmed", "declined"]),
+});
+export type InitiativeRegistrationUpdateInput = z.infer<typeof initiativeRegistrationUpdateSchema>;
+
 // 25. Bulk Actions Schemas
 export const bulkMembersActionSchema = z
   .object({

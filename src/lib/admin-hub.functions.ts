@@ -26,6 +26,7 @@ import {
   navigationMenuInputSchema,
   navigationItemInputSchema,
   eventRegistrationUpdateSchema,
+  initiativeRegistrationUpdateSchema,
   bulkMembersActionSchema,
   bulkArticlesActionSchema,
   broadcastNotificationSchema,
@@ -1173,13 +1174,18 @@ export const getInitiativesManagementData = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const { data, error } = await supabase
-      .from("initiatives")
-      .select("*")
-      .order("sort_order", { ascending: true });
+    const [initiativesRes, registrationsRes] = await Promise.all([
+      supabase.from("initiatives").select("*").order("sort_order", { ascending: true }),
+      supabase.from("initiative_registrations").select("*").order("created_at", { ascending: false }),
+    ]);
 
-    if (error) throw new Error(error.message);
-    return data ?? [];
+    if (initiativesRes.error) throw new Error(initiativesRes.error.message);
+    if (registrationsRes.error) throw new Error(registrationsRes.error.message);
+
+    return {
+      initiatives: initiativesRes.data ?? [],
+      registrations: registrationsRes.data ?? [],
+    };
   });
 
 export const upsertInitiative = createServerFn({ method: "POST" })
@@ -1464,6 +1470,48 @@ export const deleteEventRegistration = createServerFn({ method: "POST" })
       actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       action: "delete_registration",
       entity_type: "event_registrations",
+      entity_id: data.id,
+    });
+
+    return { ok: true };
+  });
+
+export const updateInitiativeRegistrationStatus = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => initiativeRegistrationUpdateSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, session } = context;
+    const { data: reg, error } = await supabase
+      .from("initiative_registrations")
+      .update({ status: data.status })
+      .eq("id", data.id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({
+      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      action: "update_registration_status",
+      entity_type: "initiative_registrations",
+      entity_id: data.id,
+      after_data: reg,
+    });
+
+    return { ok: true, registration: reg };
+  });
+
+export const deleteInitiativeRegistration = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, session } = context;
+    const { error } = await supabase.from("initiative_registrations").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({
+      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      action: "delete_registration",
+      entity_type: "initiative_registrations",
       entity_id: data.id,
     });
 

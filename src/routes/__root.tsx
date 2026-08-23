@@ -221,7 +221,7 @@ function RootComponent() {
       <ThemeProvider>
         <AuthProvider>
           <LanguageProvider>
-            <div className={`flex min-h-screen flex-col ${isConsole ? "pb-0" : "pb-16 md:pb-0"}`}>
+            <div className={`flex min-h-screen w-full flex-col overflow-x-clip ${isConsole ? "pb-0" : "pb-16 md:pb-0"}`}>
               <a href="#main" className="skip-link">
                 تخطَّ إلى المحتوى — Skip to content
               </a>

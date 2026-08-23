@@ -1,38 +1,27 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import heroVideo from "@/assets/hero-video.mp4.asset.json";
 
+const SUPABASE_HERO_VIDEO_URL =
+  "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/general/hero-video.mp4";
+
 /**
  * Resolve the video URL.
- *
- * `heroVideo.url` is a `/__l5e/assets-v1/…` path that only resolves
- * behind the Lovable preview proxy (the editor, or `localhost` with
- * `LOVABLE_PREVIEW_HOST` set). In production the proxy doesn't exist,
- * so we construct the direct Cloudflare R2 / Lovable CDN URL instead.
- *
- * Hierarchy:
- *  1. If running inside the Lovable preview (origin contains "lovable"),
- *     use the relative proxy path — it's the fastest route.
- *  2. Otherwise build the public CDN URL from the r2_key stored in the
- *     asset manifest.
+ * Defaults to the permanent Supabase Storage CDN URL where the original video is hosted.
  */
 function resolveVideoUrl(): string {
-  // During SSR there is no `window`; return the relative path (unused
-  // because the video element is client-only anyway).
-  if (typeof window === "undefined") return heroVideo.url;
+  if (typeof window === "undefined") return SUPABASE_HERO_VIDEO_URL;
 
   const origin = window.location.origin;
-  if (origin.includes("lovable")) {
-    // Running inside Lovable preview — the proxy handles `/__l5e/…`.
+  if (origin.includes("lovable") && heroVideo?.url) {
     return heroVideo.url;
   }
 
-  // Production / self-hosted: build a direct URL from the R2 key.
-  // Lovable serves user assets from `https://lovable.dev/uploads/<r2_key>`.
-  return `https://lovable.dev/uploads/${heroVideo.r2_key}`;
+  return SUPABASE_HERO_VIDEO_URL;
 }
 
 interface HeroVideoProps {
   poster?: string;
+  videoUrl?: string | null;
   children: ReactNode;
   className?: string;
 }
@@ -42,7 +31,7 @@ interface HeroVideoProps {
  * with a gradient scrim; falls back to the poster image for users who
  * prefer reduced motion or on slow connections where autoplay is blocked.
  */
-export function HeroVideo({ poster, children, className }: HeroVideoProps) {
+export function HeroVideo({ poster, videoUrl, children, className }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showVideo, setShowVideo] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -58,9 +47,9 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
     ).connection;
     if (conn?.saveData || conn?.effectiveType === "2g" || conn?.effectiveType === "slow-2g") return;
 
-    setVideoSrc(resolveVideoUrl());
+    setVideoSrc(videoUrl && videoUrl.trim() !== "" ? videoUrl : resolveVideoUrl());
     setShowVideo(true);
-  }, []);
+  }, [videoUrl]);
 
   // ── Callback ref: kick playback as soon as the element mounts ──
   const attachVideo = useCallback(
@@ -68,10 +57,10 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
       (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = el;
       if (!el) return;
 
-      el.playbackRate = 0.6;
+      el.playbackRate = 1.0;
 
       const tryPlay = () => {
-        el.playbackRate = 0.6;
+        el.playbackRate = 1.0;
         el.play().catch(() => {
           /* autoplay blocked — poster stays visible */
         });
@@ -81,6 +70,7 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
         tryPlay();
       } else {
         el.addEventListener("loadeddata", tryPlay, { once: true });
+        el.addEventListener("canplay", () => setLoaded(true), { once: true });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,7 +91,10 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
           silently dropping the static scale. Splitting the desktop crop
           (outer, static) from the slow zoom (inner, animated) lets both
           apply at once. */}
-      <div className="absolute inset-0 z-0 origin-top scale-100 lg:origin-[30%_top]">
+      <div
+        className="absolute inset-0 z-0 origin-top scale-100 lg:origin-[30%_top]"
+        style={{ transform: "translate3d(0, 0, 0)", backfaceVisibility: "hidden" }}
+      >
         <div className="h-full w-full">
           {poster ? (
             <img
@@ -117,9 +110,10 @@ export function HeroVideo({ poster, children, className }: HeroVideoProps) {
             <video
               ref={attachVideo}
               className={
-                "absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1400ms] ease-out " +
+                "absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ease-out " +
                 (loaded ? "opacity-100" : "opacity-0")
               }
+              style={{ transform: "translate3d(0, 0, 0)", backfaceVisibility: "hidden" }}
               src={videoSrc}
               poster={poster}
               autoPlay

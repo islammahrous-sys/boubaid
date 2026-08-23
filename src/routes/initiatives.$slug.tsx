@@ -1,15 +1,22 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, HeartHandshake, Share2, Copy, Check } from "lucide-react";
+import { useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowLeft, ArrowRight, HeartHandshake, Share2, Copy, Check, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { initiatives as staticInitiatives } from "@/content/site";
 import { getPublishedInitiatives } from "@/lib/cms.functions";
+import { joinInitiative } from "@/lib/initiatives-public.functions";
 import { mergeInitiatives } from "@/content/cms-adapt";
 import { Eyebrow, Status, Ornament } from "@/components/site/Editorial";
 import { initiativeImage } from "@/content/images";
 import { getCanonicalUrl } from "@/lib/seo";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { TurnstileWidget, type TurnstileWidgetHandle } from "@/components/site/TurnstileWidget";
 
 export const Route = createFileRoute("/initiatives/$slug")({
   loader: async ({ params }) => {
@@ -51,17 +58,152 @@ const copy = {
   otherTitle: { ar: "برامج أخرى", en: "Other programmes" } as BiText,
   contactTitle: { ar: "المشاركة والاستفسار", en: "Taking part" } as BiText,
   contactBody: {
-    ar: "للاستفسار أو التسجيل في هذا البرنامج، يرجى مراسلة الأمانة العامة أو اللجنة المختصة.",
-    en: "To enquire about or register for this programme, write to the secretariat or the responsible committee.",
+    ar: "يسعدنا انضمامك لهذه المبادرة. سجّل رغبتك أدناه وسيتواصل معك فريق البرنامج، أو راسل الأمانة العامة مباشرة للاستفسار.",
+    en: "We'd welcome you joining this programme. Register your interest below and the programme team will be in touch, or write to the secretariat directly with questions.",
   } as BiText,
+  joinCta: { ar: "أرغب بالمشاركة", en: "I want to join" } as BiText,
   contactCta: { ar: "مراسلة الأمانة العامة", en: "Write to the secretariat" } as BiText,
   back: { ar: "كل المبادرات", en: "All initiatives" } as BiText,
+
+  joinDialogTitle: { ar: "التسجيل للمشاركة", en: "Register Your Interest" } as BiText,
+  fieldName: { ar: "الاسم الكامل", en: "Full name" } as BiText,
+  fieldEmail: { ar: "البريد الإلكتروني", en: "Email address" } as BiText,
+  fieldPhone: { ar: "رقم الهاتف (اختياري)", en: "Phone (optional)" } as BiText,
+  fieldNotes: { ar: "ملاحظات (اختياري)", en: "Notes (optional)" } as BiText,
+  joinSubmit: { ar: "إرسال الرغبة بالمشاركة", en: "Submit interest" } as BiText,
+  cancel: { ar: "إلغاء", en: "Cancel" } as BiText,
+  joinSuccess: {
+    ar: "تم تسجيل رغبتك بالمشاركة. سيتواصل معك فريق البرنامج قريباً.",
+    en: "Your interest has been registered. The programme team will be in touch soon.",
+  } as BiText,
+  joinErrorDuplicate: {
+    ar: "لديك تسجيل سابق بنفس البريد الإلكتروني لهذه المبادرة.",
+    en: "You've already registered interest in this initiative with this email.",
+  } as BiText,
+  joinErrorGeneric: {
+    ar: "تعذّر إتمام التسجيل. يرجى المحاولة مرة أخرى.",
+    en: "Could not complete registration. Please try again.",
+  } as BiText,
+  joinInvalid: { ar: "يرجى مراجعة الحقول المطلوبة.", en: "Please check the required fields." } as BiText,
 };
+
+function JoinInitiativeDialog({
+  slug,
+  open,
+  onOpenChange,
+}: {
+  slug: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const { t, lang } = useLang();
+  const joinFn = useServerFn(joinInitiative);
+  const [submitting, setSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    const payload = {
+      initiative_slug: slug,
+      name: String(fd.get("name") || ""),
+      email: String(fd.get("email") || ""),
+      phone: String(fd.get("phone") || ""),
+      notes: String(fd.get("notes") || ""),
+      website_url_check: String(fd.get("website_url_check") || ""),
+      locale: lang,
+      turnstile_token: turnstileToken || undefined,
+    };
+
+    setSubmitting(true);
+    try {
+      const res = await joinFn({ data: payload });
+      if (res.ok) {
+        toast.success(t(copy.joinSuccess));
+        form.reset();
+        setTurnstileToken("");
+        turnstileRef.current?.reset();
+        onOpenChange(false);
+      } else {
+        const messages: Record<string, BiText> = {
+          already_registered: copy.joinErrorDuplicate,
+          initiative_not_found: copy.joinErrorGeneric,
+          verification_failed: copy.joinErrorGeneric,
+          insert_failed: copy.joinErrorGeneric,
+        };
+        toast.error(t(messages[res.error] ?? copy.joinErrorGeneric));
+      }
+    } catch {
+      toast.error(t(copy.joinInvalid));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t(copy.joinDialogTitle)}</DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          {/* Anti-bot honeypot field */}
+          <div className="sr-only" aria-hidden="true">
+            <label htmlFor="join_website_url_check">Leave empty</label>
+            <input
+              type="text"
+              id="join_website_url_check"
+              name="website_url_check"
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="join_name">{t(copy.fieldName)}</Label>
+            <Input id="join_name" name="name" required minLength={2} maxLength={100} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="join_email">{t(copy.fieldEmail)}</Label>
+            <Input id="join_email" name="email" type="email" required maxLength={255} dir="ltr" />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="join_phone">{t(copy.fieldPhone)}</Label>
+            <Input id="join_phone" name="phone" dir="ltr" maxLength={30} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="join_notes">{t(copy.fieldNotes)}</Label>
+            <Input id="join_notes" name="notes" maxLength={500} />
+          </div>
+
+          <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              {t(copy.cancel)}
+            </Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "…" : t(copy.joinSubmit)}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function InitiativeDetail() {
   const { item, initiatives } = Route.useLoaderData();
   const { t, lang } = useLang();
   const [copied, setCopied] = useState(false);
+  const [joinOpen, setJoinOpen] = useState(false);
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
   const BackArrow = rtl ? ArrowRight : ArrowLeft;
@@ -186,7 +328,7 @@ function InitiativeDetail() {
 
         <Ornament className="my-12" />
 
-        {/* Enquiry */}
+        {/* Enquiry & joining */}
         <section className="reveal-on-scroll flex flex-wrap items-center justify-between gap-6 border-y border-border py-8">
           <div className="measure">
             <h2 className="text-lg text-foreground font-bold">{t(copy.contactTitle)}</h2>
@@ -194,14 +336,26 @@ function InitiativeDetail() {
               {t(copy.contactBody)}
             </p>
           </div>
-          <Link
-            to="/contact"
-            className="inline-flex shrink-0 items-center gap-2 border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
-          >
-            {t(copy.contactCta)}
-            <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-          </Link>
+          <div className="flex shrink-0 flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setJoinOpen(true)}
+              className="inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-semibold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+            >
+              <Users className="h-3.5 w-3.5" aria-hidden="true" />
+              {t(copy.joinCta)}
+            </button>
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-2 border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+            >
+              {t(copy.contactCta)}
+              <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          </div>
         </section>
+
+        <JoinInitiativeDialog slug={item.slug} open={joinOpen} onOpenChange={setJoinOpen} />
 
         {/* Other programmes */}
         <section className="reveal-on-scroll mt-12">

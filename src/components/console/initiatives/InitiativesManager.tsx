@@ -8,9 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useConfirm } from "@/hooks/useConfirm";
-import { Plus, Trash2, Rocket, ArrowLeft, ArrowRight, AlertCircle, BookOpen, TrendingUp, Loader2 } from "lucide-react";
+import { Plus, Trash2, Rocket, ArrowLeft, ArrowRight, AlertCircle, BookOpen, TrendingUp, Loader2, HeartHandshake } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import { cn } from "@/lib/utils";
@@ -31,14 +32,31 @@ export type InitiativeItem = {
   is_published: boolean;
 };
 
+export type InitiativeRegistrationRow = {
+  id: string;
+  initiative_id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  notes?: string | null;
+  status: string;
+  created_at: string;
+};
+
 export function InitiativesManager({
   initiatives,
+  registrations = [],
   onSaveInitiative,
   onDeleteInitiative,
+  onUpdateRegistrationStatus,
+  onDeleteRegistration,
 }: {
   initiatives: InitiativeItem[];
+  registrations?: InitiativeRegistrationRow[];
   onSaveInitiative: (data: InitiativeInput) => Promise<void>;
   onDeleteInitiative: (id: string) => Promise<void>;
+  onUpdateRegistrationStatus?: (id: string, status: "new" | "contacted" | "confirmed" | "declined") => Promise<void>;
+  onDeleteRegistration?: (id: string) => Promise<void>;
 }) {
   const { lang, dir } = useLang();
   const isAr = lang === "ar";
@@ -48,6 +66,8 @@ export function InitiativesManager({
   const [selectedInit, setSelectedInit] = useState<InitiativeItem | null>(null);
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [registrationsModalOpen, setRegistrationsModalOpen] = useState(false);
+  const [activeInitForRegistrations, setActiveInitForRegistrations] = useState<InitiativeItem | null>(null);
 
   const [form, setForm] = useState<InitiativeInput>({
     id: undefined,
@@ -147,6 +167,29 @@ export function InitiativesManager({
       }))
     ) return;
     await onDeleteInitiative(item.id);
+  };
+
+  const handleOpenRegistrations = (item: InitiativeItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveInitForRegistrations(item);
+    setRegistrationsModalOpen(true);
+  };
+
+  const initRegistrations = activeInitForRegistrations
+    ? registrations.filter((r) => r.initiative_id === activeInitForRegistrations.id)
+    : [];
+
+  const getRegistrationStatusLabel = (st: string) => {
+    switch (st) {
+      case "contacted":
+        return isAr ? "تم التواصل" : "Contacted";
+      case "confirmed":
+        return isAr ? "منضم" : "Confirmed";
+      case "declined":
+        return isAr ? "اعتذر" : "Declined";
+      default:
+        return isAr ? "جديد" : "New";
+    }
   };
 
   return (
@@ -275,13 +318,14 @@ export function InitiativesManager({
               <TableHead className="font-semibold">{isAr ? "المبادرة" : "Initiative"}</TableHead>
               <TableHead className="font-semibold">{isAr ? "الملخص" : "Summary"}</TableHead>
               <TableHead className="font-semibold">{isAr ? "الحالة" : "Status"}</TableHead>
+              <TableHead className="font-semibold text-center">{isAr ? "الراغبون بالمشاركة" : "Interested"}</TableHead>
               <TableHead className="font-semibold text-end">{isAr ? "الإجراء" : "Action"}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredInitiatives.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-48 text-center">
+                <TableCell colSpan={5} className="h-48 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Rocket className="w-8 h-8 mb-3 opacity-20" />
                     <p className="text-sm font-medium">{isAr ? "لا توجد مبادرات في هذه القائمة" : "No initiatives found"}</p>
@@ -307,6 +351,17 @@ export function InitiativesManager({
                   </TableCell>
                   <TableCell>
                     {getStatusDisplay(item.status)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-[10px] gap-1 text-primary hover:underline"
+                      onClick={(e) => handleOpenRegistrations(item, e)}
+                    >
+                      <HeartHandshake className="w-3 h-3" />
+                      {registrations.filter((r) => r.initiative_id === item.id).length}
+                    </Button>
                   </TableCell>
                   <TableCell className="text-end">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -470,6 +525,110 @@ export function InitiativesManager({
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Interested Members Dialog */}
+      {activeInitForRegistrations && (
+        <Dialog open={registrationsModalOpen} onOpenChange={setRegistrationsModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold flex items-center gap-2">
+                <HeartHandshake className="w-5 h-5 text-primary" />
+                {isAr
+                  ? `الراغبون بالمشاركة: ${activeInitForRegistrations.title_ar}`
+                  : `Interested members: ${activeInitForRegistrations.title_ar}`}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="border border-border rounded-xl overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/40 text-xs">
+                    <TableHead>{isAr ? "الاسم" : "Name"}</TableHead>
+                    <TableHead>{isAr ? "البريد والهاتف" : "Contact"}</TableHead>
+                    <TableHead>{isAr ? "ملاحظات" : "Notes"}</TableHead>
+                    <TableHead className="text-center">{isAr ? "الحالة" : "Status"}</TableHead>
+                    <TableHead className="text-end">{isAr ? "إجراء" : "Action"}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {initRegistrations.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-24 text-center text-muted-foreground text-xs">
+                        {isAr ? "لم يبدِ أحد رغبته بالمشاركة بعد" : "No one has expressed interest yet"}
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    initRegistrations.map((r) => (
+                      <TableRow key={r.id} className="text-xs hover:bg-muted/30">
+                        <TableCell className="font-semibold">{r.name}</TableCell>
+                        <TableCell className="font-mono text-muted-foreground">
+                          <span>{r.email}</span>
+                          {r.phone && <span className="block text-[10px]">{r.phone}</span>}
+                        </TableCell>
+                        <TableCell className="max-w-[180px] truncate text-muted-foreground">
+                          {r.notes || "—"}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Select
+                            value={r.status}
+                            onValueChange={async (val: any) => {
+                              if (onUpdateRegistrationStatus) {
+                                await onUpdateRegistrationStatus(r.id, val);
+                                toast.success(isAr ? "تم تحديث الحالة" : "Status updated");
+                              }
+                            }}
+                          >
+                            <SelectTrigger className="h-6 text-[10px] w-24">
+                              <SelectValue>{getRegistrationStatusLabel(r.status)}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new">{isAr ? "جديد" : "New"}</SelectItem>
+                              <SelectItem value="contacted">{isAr ? "تم التواصل" : "Contacted"}</SelectItem>
+                              <SelectItem value="confirmed">{isAr ? "منضم" : "Confirmed"}</SelectItem>
+                              <SelectItem value="declined">{isAr ? "اعتذر" : "Declined"}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell className="text-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-6 h-6 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                            onClick={async () => {
+                              if (
+                                !(await confirm({
+                                  title: isAr ? `حذف تسجيل "${r.name}"؟` : `Delete ${r.name}'s registration?`,
+                                  description: isAr
+                                    ? "سيتم حذف هذا التسجيل نهائيًا ولا يمكن التراجع عن هذا الإجراء."
+                                    : "This registration will be permanently removed. This can't be undone.",
+                                  tone: "destructive",
+                                }))
+                              )
+                                return;
+                              if (onDeleteRegistration) {
+                                await onDeleteRegistration(r.id);
+                                toast.success(isAr ? "تم حذف التسجيل" : "Registration deleted");
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" size="sm" onClick={() => setRegistrationsModalOpen(false)}>
+                {isAr ? "إغلاق" : "Close"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

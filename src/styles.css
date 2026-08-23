@@ -255,10 +255,15 @@
 @layer base {
   * {
     border-color: var(--color-border);
+    box-sizing: border-box;
   }
 
   html {
     scroll-behavior: smooth;
+    overflow-x: clip;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   /* Every link, button, and custom control on the site gets a visible
@@ -284,6 +289,11 @@
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
   }
 
   html[dir="rtl"] body {
@@ -384,18 +394,27 @@
 @utility container-page {
   margin-inline: auto;
   width: 100%;
-  max-width: 74rem;
+  max-width: 88rem;
+  padding-inline: 1.25rem;
+}
+
+@utility container-header {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 96rem;
   padding-inline: 1.25rem;
 }
 
 @media (min-width: 768px) {
-  .container-page {
+  .container-page,
+  .container-header {
     padding-inline: 2rem;
   }
 }
 
 @media (min-width: 1280px) {
-  .container-page {
+  .container-page,
+  .container-header {
     padding-inline: 2.5rem;
   }
 }
@@ -672,34 +691,24 @@ html[dir="rtl"] .reveal-rule {
 }
 
 /* ── Page transitions ───────────────────────────────────────────
-   Exit is deliberately shorter than entry: leaving should feel decisive,
-   arriving should feel composed. */
+   The outgoing page is unmounted the instant the route swaps (React has
+   no seam to hold it on screen for a real crossfade without a motion
+   library), so only the incoming page animates. Kept short — this plays
+   on every navigation, unlike the slower in-page reveal-on-scroll cascade
+   that only plays once per element. */
 @keyframes pageIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-@keyframes pageOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-6px);
   }
 }
 
 .page-transition[data-state="entering"] {
-  animation: pageIn var(--dur-slow) var(--ease-editorial) both;
-}
-.page-transition[data-state="exiting"] {
-  animation: pageOut var(--dur-quick) var(--ease-exit) both;
+  animation: pageIn var(--dur-normal) var(--ease-editorial) both;
 }
 
 /* ── Image resolve ─────────────────────────────────────────────

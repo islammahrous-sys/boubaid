@@ -48,44 +48,55 @@ export function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const primaryDropdownRef = useRef<HTMLDivElement>(null);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const moreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /** Masthead condenses once the page has moved — the wordmark stays present
-   *  but stops taking the whole first screen. */
-  const [condensed, setCondensed] = useState(false);
+  const handleDropdownEnter = (to: string) => {
+    if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+    setOpenDropdown(to);
+  };
 
-  /** Travelling underline. Measured from the active nav item so the rule
-   *  slides between destinations instead of jumping. */
-  const navRef = useRef<HTMLElement>(null);
-  const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
+  const handleDropdownLeave = () => {
+    if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 180);
+  };
+
+  const handleMoreEnter = () => {
+    if (moreTimeoutRef.current) clearTimeout(moreTimeoutRef.current);
+    setMoreOpen(true);
+  };
+
+  const handleMoreLeave = () => {
+    if (moreTimeoutRef.current) clearTimeout(moreTimeoutRef.current);
+    moreTimeoutRef.current = setTimeout(() => {
+      setMoreOpen(false);
+    }, 180);
+  };
 
   useEffect(() => {
-    const onScroll = () => setCondensed(window.scrollY > 28);
-    onScroll();
+    return () => {
+      if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+      if (moreTimeoutRef.current) clearTimeout(moreTimeoutRef.current);
+    };
+  }, []);
+
+  /** Masthead condenses once the page has moved */
+  const [condensed, setCondensed] = useState(false);
+
+  useEffect(() => {
+    let lastCondensed = window.scrollY > 40;
+    const onScroll = () => {
+      const nextCondensed = window.scrollY > 40;
+      if (nextCondensed !== lastCondensed) {
+        lastCondensed = nextCondensed;
+        setCondensed(nextCondensed);
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    const measure = () => {
-      const nav = navRef.current;
-      if (!nav) return;
-      const el = nav.querySelector<HTMLElement>("[data-nav-active='true']");
-      if (!el) {
-        setIndicator(null);
-        return;
-      }
-      const navBox = nav.getBoundingClientRect();
-      const box = el.getBoundingClientRect();
-      setIndicator({ left: box.left - navBox.left, width: box.width });
-    };
-    // Wait for fonts/layout to settle before measuring.
-    const raf = requestAnimationFrame(() => requestAnimationFrame(measure));
-    window.addEventListener("resize", measure);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", measure);
-    };
-  }, [pathname, lang, condensed]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -130,7 +141,7 @@ export function Header() {
   return (
     <header
       data-condensed={condensed ? "true" : "false"}
-      className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md text-foreground shadow-xs transition-shadow duration-500 data-[condensed=true]:shadow-sm"
+      className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-md text-foreground shadow-xs transition-shadow duration-500 data-[condensed=true]:shadow-sm"
     >
       {/* Registration line. Stated plainly as public record — and folded away
           once the reader has committed to the page. */}
@@ -140,7 +151,7 @@ export function Header() {
           condensed ? "max-h-0 opacity-0" : "max-h-12 opacity-100",
         )}
       >
-        <div className="container-page flex items-center justify-center gap-2.5 py-1.5 text-center text-xs">
+        <div className="container-header flex items-center justify-center gap-2.5 py-1.5 text-center text-xs">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-0.5 text-[11px] font-medium text-amber-900 dark:text-gold">
             <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" aria-hidden="true" />
             {lang === "ar" ? "كيان أهلي مرخص" : "Licensed Nonprofit"}
@@ -157,7 +168,7 @@ export function Header() {
 
       <div
         className={cn(
-          "container-page flex items-center justify-between gap-4 py-2 transition-[height] duration-500 ease-out",
+          "container-header flex items-center justify-between gap-6 xl:gap-8 py-2 transition-[height] duration-500 ease-out",
           condensed ? "h-16 md:h-18" : "h-24 md:h-28",
         )}
       >
@@ -206,20 +217,7 @@ export function Header() {
           </span>
         </Link>
 
-        <nav ref={navRef} className="relative hidden items-center gap-1 lg:flex" aria-label="Primary">
-          {/* One rule that travels, rather than a rule per item. */}
-          <span
-            aria-hidden="true"
-            className={cn(
-              "pointer-events-none absolute bottom-0 h-0.5 rounded-full bg-bronze transition-[transform,width,opacity] duration-500 dark:bg-gold",
-              indicator ? "opacity-100" : "opacity-0",
-            )}
-            style={{
-              width: indicator ? `${indicator.width - 14}px` : 0,
-              transform: `translateX(${indicator ? indicator.left + 7 : 0}px)`,
-              transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
-            }}
-          />
+        <nav className="relative hidden items-center gap-1.5 lg:flex" aria-label="Primary">
           {navPrimary.map((n) => {
             const hasChildren = Boolean(n.children && n.children.length > 0);
             const isItemActive = isNavItemActive(pathname, n);
@@ -231,8 +229,8 @@ export function Header() {
                   key={n.to}
                   className="relative"
                   ref={primaryDropdownRef}
-                  onMouseEnter={() => setOpenDropdown(n.to)}
-                  onMouseLeave={() => setOpenDropdown(null)}
+                  onMouseEnter={() => handleDropdownEnter(n.to)}
+                  onMouseLeave={handleDropdownLeave}
                 >
                   <button
                     type="button"
@@ -259,28 +257,34 @@ export function Header() {
                   </button>
 
                   {isDropdownOpen && (
-                    <div className="absolute top-full start-0 mt-1.5 min-w-[15rem] origin-top-start border border-border bg-popover p-2 shadow-lg transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 z-50">
-                      <ul className="space-y-1">
-                        {n.children!.map((child) => {
-                          const childActive = isRouteActive(pathname, child.to);
-                          return (
-                            <li key={child.to}>
-                              <Link
-                                to={child.to}
-                                onClick={() => setOpenDropdown(null)}
-                                className={cn(
-                                  "block rounded-md px-3 py-2 text-[13px] transition-colors",
-                                  childActive
-                                    ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
-                                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-                                )}
-                              >
-                                {typeof child.label === "string" ? child.label : t(child.label)}
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
+                    <div
+                      className="absolute top-full start-0 pt-1.5 z-50 before:absolute before:-top-3 before:inset-x-0 before:h-3 before:content-['']"
+                      onMouseEnter={() => handleDropdownEnter(n.to)}
+                      onMouseLeave={handleDropdownLeave}
+                    >
+                      <div className="min-w-[15rem] origin-top-start border border-border bg-popover p-2 shadow-lg transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rounded-md">
+                        <ul className="space-y-1">
+                          {n.children!.map((child) => {
+                            const childActive = isRouteActive(pathname, child.to);
+                            return (
+                              <li key={child.to}>
+                                <Link
+                                  to={child.to}
+                                  onClick={() => setOpenDropdown(null)}
+                                  className={cn(
+                                    "block rounded-md px-3 py-2 text-[13px] transition-colors",
+                                    childActive
+                                      ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
+                                      : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                                  )}
+                                >
+                                  {typeof child.label === "string" ? child.label : t(child.label)}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -305,7 +309,12 @@ export function Header() {
             );
           })}
 
-          <div className="relative" ref={dropdownRef}>
+          <div
+            className="relative"
+            ref={dropdownRef}
+            onMouseEnter={handleMoreEnter}
+            onMouseLeave={handleMoreLeave}
+          >
             <button
               type="button"
               suppressHydrationWarning
@@ -330,33 +339,37 @@ export function Header() {
               />
             </button>
 
-
             {moreOpen ? (
-              <div className="absolute top-full end-0 mt-2 w-[30rem] origin-top-right border border-border bg-popover p-6 transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rtl:origin-top-left z-50">
-                {navSecondaryFlat ? (
-                  <ul className="grid grid-cols-2 gap-x-8 gap-y-1.5">
-                    {navSecondaryFlat.map((n) => {
-                      const active = isRouteActive(pathname, n.to);
-                      return (
-                        <li key={n.to}>
-                          <Link
-                            to={n.to}
-                            onClick={() => setMoreOpen(false)}
-                            className={cn(
-                              "block py-1 text-[13px] transition-colors",
-                              active
-                                ? "font-bold text-bronze dark:text-gold"
-                                : "text-muted-foreground hover:text-foreground",
-                            )}
-                          >
-                            {typeof n.label === "string" ? n.label : t(n.label)}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+              <div
+                className="absolute top-full end-0 pt-2 z-50 before:absolute before:-top-3 before:inset-x-0 before:h-3 before:content-['']"
+                onMouseEnter={handleMoreEnter}
+                onMouseLeave={handleMoreLeave}
+              >
+                <div className="w-[30rem] origin-top-right border border-border bg-popover p-6 shadow-lg transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rtl:origin-top-left rounded-md">
+                  {navSecondaryFlat ? (
+                    <ul className="grid grid-cols-2 gap-x-8 gap-y-1.5">
+                      {navSecondaryFlat.map((n) => {
+                        const active = isRouteActive(pathname, n.to);
+                        return (
+                          <li key={n.to}>
+                            <Link
+                              to={n.to}
+                              onClick={() => setMoreOpen(false)}
+                              className={cn(
+                                "block py-1 text-[13px] transition-colors",
+                                active
+                                  ? "font-bold text-bronze dark:text-gold"
+                                  : "text-muted-foreground hover:text-foreground",
+                              )}
+                            >
+                              {typeof n.label === "string" ? n.label : t(n.label)}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-6">
                     {navGroups.map((group) => (
                       <div key={group.title.en}>
                         <p className="label-caps mb-2.5 border-b border-border pb-2 text-bronze">
@@ -385,8 +398,9 @@ export function Header() {
                         </ul>
                       </div>
                     ))}
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
               </div>
             ) : null}
           </div>

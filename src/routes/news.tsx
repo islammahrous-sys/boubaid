@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -37,8 +37,17 @@ export const Route = createFileRoute("/news")({
     ],
     links: [{ rel: "canonical", href: getCanonicalUrl("/news") }],
   }),
-  component: NewsPage,
+  component: NewsLayout,
 });
+
+function NewsLayout() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isDetail = pathname !== "/news" && pathname !== "/news/";
+  if (isDetail) {
+    return <Outlet />;
+  }
+  return <NewsPage />;
+}
 
 const copy = {
   masthead: { ar: "نشرة الأسرة", en: "The Family Bulletin" } as BiText,

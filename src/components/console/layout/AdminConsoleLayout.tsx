@@ -564,8 +564,12 @@ export function AdminConsoleLayout({
         <div className="h-16 px-3.5 flex items-center justify-between border-b border-border/70">
           {!sidebarCollapsed ? (
             <Link to="/" className="flex items-center gap-2.5 min-w-0 group">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
-                عب
+              <div className="w-9 h-9 rounded-xl bg-gold/10 border border-gold/30 p-1 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                <img
+                  src="/logo-mark-gold.svg"
+                  alt={isAr ? "شعار مجلس أسرة آل بوعبيد" : "Al Bu Obaid Logo"}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="min-w-0">
                 <span className="font-bold text-xs text-foreground block truncate">
@@ -577,8 +581,12 @@ export function AdminConsoleLayout({
               </div>
             </Link>
           ) : (
-            <div className="w-8 h-8 mx-auto rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary font-bold text-xs">
-              عب
+            <div className="w-9 h-9 mx-auto rounded-xl bg-gold/10 border border-gold/30 p-1 flex items-center justify-center shadow-2xs">
+              <img
+                src="/logo-mark-gold.svg"
+                alt={isAr ? "شعار مجلس أسرة آل بوعبيد" : "Al Bu Obaid Logo"}
+                className="w-full h-full object-contain"
+              />
             </div>
           )}
 
@@ -786,9 +794,15 @@ export function AdminConsoleLayout({
               </SheetTrigger>
               <SheetContent side={isRtl ? "right" : "left"} className="w-72 p-0 flex flex-col">
                 <div className="p-4 border-b border-border flex items-center justify-between">
-                  <SheetTitle className="text-xs font-bold text-foreground flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-primary" />
-                    {isAr ? "أمانة مجلس آل بوعبيد" : "Al Bu Obaid Hub"}
+                  <SheetTitle className="text-xs font-bold text-foreground flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-gold/10 border border-gold/30 p-0.5 flex items-center justify-center shrink-0">
+                      <img
+                        src="/logo-mark-gold.svg"
+                        alt="Logo"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <span>{isAr ? "أمانة مجلس آل بوعبيد" : "Al Bu Obaid Hub"}</span>
                   </SheetTitle>
                 </div>
                 <div className="flex-1 overflow-y-auto p-3">

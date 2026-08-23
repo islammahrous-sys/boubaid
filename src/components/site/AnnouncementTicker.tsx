@@ -75,9 +75,9 @@ export function AnnouncementTicker() {
   return (
     <aside
       aria-label={isAr ? "شريط الإعلانات العاجلة" : "Urgent Announcements Ticker"}
-      className={`relative z-50 border-b backdrop-blur-md transition-all duration-300 ${style.bg}`}
+      className={`relative z-50 w-full border-b backdrop-blur-md transition-all duration-300 ${style.bg}`}
     >
-      <div className="container-page flex items-center justify-between py-2 text-xs gap-3">
+      <div className="container-header flex items-center justify-between py-2 text-xs gap-3">
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <Badge className={`shrink-0 px-2 py-0.5 text-[10px] font-bold rounded-full ${style.badge}`}>
             <Icon className="w-3 h-3 me-1 inline-block shrink-0" />

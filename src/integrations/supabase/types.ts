@@ -1306,6 +1306,50 @@ export type Database = {
           },
         ]
       }
+      initiative_registrations: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          initiative_id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          registered_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          initiative_id: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          registered_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          initiative_id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          registered_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "initiative_registrations_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "initiatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       initiatives: {
         Row: {
           body_ar: string | null

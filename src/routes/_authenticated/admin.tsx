@@ -86,6 +86,8 @@ import {
   deleteNavigationItem,
   updateEventRegistrationStatus,
   deleteEventRegistration,
+  updateInitiativeRegistrationStatus,
+  deleteInitiativeRegistration,
   bulkFamilyMembersAction,
   bulkArticlesAction,
   broadcastNotification,
@@ -194,6 +196,8 @@ function MasterAdminPage() {
   const reviewTreasuryMut = useServerFn(reviewTreasuryContribution);
   const saveInitMut = useServerFn(upsertInitiative);
   const delInitMut = useServerFn(deleteInitiative);
+  const updateInitRegMut = useServerFn(updateInitiativeRegistrationStatus);
+  const delInitRegMut = useServerFn(deleteInitiativeRegistration);
   const saveAchMut = useServerFn(upsertAchiever);
   const delAchMut = useServerFn(deleteAchiever);
   const saveLibMut = useServerFn(upsertLibraryItem);
@@ -878,9 +882,14 @@ function MasterAdminPage() {
             <AdminTabSkeleton type="grid" cardCount={3} />
           ) : (
             <InitiativesManager
-              initiatives={(initiativesData ?? []) as any}
+              initiatives={(initiativesData?.initiatives ?? []) as any}
+              registrations={(initiativesData?.registrations ?? []) as any}
               onSaveInitiative={(data) => runMutation(() => saveInitMut({ data }), refreshInitiatives)}
               onDeleteInitiative={(id) => runMutation(() => delInitMut({ data: { id } }), refreshInitiatives)}
+              onUpdateRegistrationStatus={(id, status) =>
+                runMutation(() => updateInitRegMut({ data: { id, status } }), refreshInitiatives)
+              }
+              onDeleteRegistration={(id) => runMutation(() => delInitRegMut({ data: { id } }), refreshInitiatives)}
             />
           )
         )}
