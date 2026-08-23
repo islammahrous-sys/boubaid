@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { ConfirmProvider } from "@/hooks/useConfirm";
 import { AdminConsoleLayout } from "@/components/console/layout/AdminConsoleLayout";
 import { AdminTabSkeleton } from "@/components/console/layout/AdminTabSkeleton";
 import { ADMIN_DOMAINS } from "@/components/console/layout/AdminNavigation";
@@ -541,6 +542,7 @@ function MasterAdminPage() {
   }
 
   return (
+    <ConfirmProvider>
     <AdminConsoleLayout
       activeDomainId={activeDomainId}
       activeTabId={activeTabId}
@@ -945,5 +947,6 @@ function MasterAdminPage() {
         }
       />
     </AdminConsoleLayout>
+    </ConfirmProvider>
   );
 }
