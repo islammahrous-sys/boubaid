@@ -10,6 +10,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { Menu, Plus, Edit2, Trash2, ExternalLink, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useConfirm } from "@/hooks/useConfirm";
 import type { NavigationMenuInput, NavigationItemInput } from "@/lib/admin-hub.schemas";
 
 export type NavMenuRow = {
@@ -80,6 +81,7 @@ export function NavigationManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [selectedMenuId, setSelectedMenuId] = useState<string>(menus[0]?.id || "");
   const [itemModalOpen, setItemModalOpen] = useState(false);
@@ -335,10 +337,18 @@ export function NavigationManager({
                         variant="ghost"
                         size="icon"
                         className="w-7 h-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => {
-                          if (window.confirm(isAr ? "هل أنت متأكد من حذف هذا الرابط؟" : "Are you sure?")) {
-                            onDeleteItem(it.id);
-                          }
+                        onClick={async () => {
+                          const ok = await confirm({
+                            title: isAr
+                              ? `حذف الرابط "${it.label_ar}"؟`
+                              : `Delete "${it.label_en || it.label_ar}" link?`,
+                            description: isAr
+                              ? "سيتم حذف هذا الرابط نهائياً من القائمة. لا يمكن التراجع عن هذا الإجراء."
+                              : "This link will be permanently removed from the menu. This can't be undone.",
+                            tone: "destructive",
+                          });
+                          if (!ok) return;
+                          onDeleteItem(it.id);
                         }}
                       >
                         <Trash2 className="w-3.5 h-3.5" />

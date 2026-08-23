@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLang } from "@/i18n/LanguageProvider";
 import { toast } from "sonner";
+import { useConfirm } from "@/hooks/useConfirm";
 import {
   Plus,
   ArrowUp,
@@ -47,6 +48,7 @@ export function PageBuilderDialog({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("builder");
   const [selectedBlockIdx, setSelectedBlockIdx] = useState<number | null>(null);
@@ -254,8 +256,19 @@ export function PageBuilderDialog({
     setSelectedBlockIdx(targetIdx);
   };
 
-  const handleDeleteBlock = (idx: number) => {
+  const handleDeleteBlock = async (idx: number) => {
     if (!form.sections) return;
+    const sec = form.sections[idx];
+    const def = BLOCK_DEFINITIONS[sec.type as BlockType] || BLOCK_DEFINITIONS.rich_text;
+    const label = isAr ? def.label_ar : def.label_en;
+    const ok = await confirm({
+      title: isAr ? `حذف قسم "${label}"؟` : `Delete "${label}" block?`,
+      description: isAr
+        ? "سيتم حذف هذا القسم ومحتواه نهائياً من الصفحة. لا يمكن التراجع عن هذا الإجراء بعد الحفظ."
+        : "This block and its content will be permanently removed from the page. This can't be undone once saved.",
+      tone: "destructive",
+    });
+    if (!ok) return;
     const copy = form.sections.filter((_, i) => i !== idx);
     setForm((prev) => ({ ...prev, sections: copy }));
     setSelectedBlockIdx(null);

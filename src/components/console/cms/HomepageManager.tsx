@@ -414,6 +414,7 @@ export function HomepageManager({
               <div className="flex items-center gap-1.5 ms-2 ps-2 border-s border-border">
                 <Switch
                   checked={sec.enabled}
+                  disabled={saving}
                   onCheckedChange={(checked) => handleToggleSection(sec.id, checked)}
                 />
               </div>

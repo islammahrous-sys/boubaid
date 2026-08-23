@@ -32,10 +32,12 @@ import {
   Clock,
   Sparkles,
   Layers,
+  Loader2,
 } from "lucide-react";
 import type { ArticleInput, BulkArticlesActionInput } from "@/lib/admin-hub.schemas";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
+import { useConfirm } from "@/hooks/useConfirm";
 
 export type ArticleRow = {
   id: string;
@@ -68,6 +70,7 @@ export function ArticlesManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   // Filter States
   const [search, setSearch] = useState("");
@@ -88,6 +91,7 @@ export function ArticlesManager({
   const [selectedArticle, setSelectedArticle] = useState<ArticleRow | null>(null);
   const [previewArticle, setPreviewArticle] = useState<ArticleRow | null>(null);
   const [loading, setLoading] = useState(false);
+  const [publishingId, setPublishingId] = useState<string | null>(null);
 
   const [form, setForm] = useState<ArticleInput>({
     id: undefined,
@@ -432,15 +436,24 @@ export function ArticlesManager({
               className="h-8 text-xs rounded-lg text-destructive hover:bg-destructive/10"
               disabled={bulkLoading}
               onClick={async () => {
-                if (window.confirm(isAr ? `هل أنت متأكد من حذف ${selectedIds.length} مقال؟` : "Delete articles?")) {
-                  setBulkLoading(true);
-                  try {
-                    await onBulkAction({ ids: selectedIds, action: "delete" });
-                    setSelectedIds([]);
-                    toast.success(isAr ? "تم حذف المقالات" : "Articles deleted");
-                  } finally {
-                    setBulkLoading(false);
-                  }
+                const count = selectedIds.length;
+                const ok = await confirm({
+                  title: isAr
+                    ? `حذف ${count} ${count === 1 ? "مقال" : "مقالات"}؟`
+                    : `Delete ${count} article${count === 1 ? "" : "s"}?`,
+                  description: isAr
+                    ? "سيتم حذف المقالات المحددة نهائياً ولن يكون بالإمكان استرجاعها."
+                    : "The selected articles will be permanently deleted. This can't be undone.",
+                  tone: "destructive",
+                });
+                if (!ok) return;
+                setBulkLoading(true);
+                try {
+                  await onBulkAction({ ids: selectedIds, action: "delete" });
+                  setSelectedIds([]);
+                  toast.success(isAr ? "تم حذف المقالات" : "Articles deleted");
+                } finally {
+                  setBulkLoading(false);
                 }
               }}
             >
@@ -577,7 +590,9 @@ export function ArticlesManager({
                           variant="outline"
                           size="sm"
                           className="h-7 text-xs bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/30 px-2 font-medium"
+                          disabled={publishingId === a.id}
                           onClick={async () => {
+                            setPublishingId(a.id);
                             try {
                               await onSaveArticle({
                                 id: a.id,
@@ -596,11 +611,17 @@ export function ArticlesManager({
                               toast.success(isAr ? "تم نشر المقال بنجاح وإتاحته للعموم" : "Article published successfully");
                             } catch (err: any) {
                               toast.error(err.message || (isAr ? "فشل النشر" : "Failed to publish"));
+                            } finally {
+                              setPublishingId(null);
                             }
                           }}
                           title={isAr ? "نشر المقال فوراً" : "Quick Publish"}
                         >
-                          <Sparkles className="w-3 h-3 me-1" />
+                          {publishingId === a.id ? (
+                            <Loader2 className="w-3 h-3 me-1 animate-spin" />
+                          ) : (
+                            <Sparkles className="w-3 h-3 me-1" />
+                          )}
                           {isAr ? "نشر" : "Publish"}
                         </Button>
                       )}
