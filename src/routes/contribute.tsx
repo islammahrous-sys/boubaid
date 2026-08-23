@@ -762,35 +762,28 @@ function ContributePage() {
               ) : (
                 <ul className="mt-4 divide-y divide-border border border-border bg-card">
                   {(mine ?? []).map((c) => (
-                    <li key={c.id} className="px-5 py-3 text-sm">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                          <p className="nums font-medium text-foreground">{formatSar(c.amount, lang)}</p>
-                          <p className="text-[12px] text-muted-foreground">
-                            {formatDate(c.created_at, lang)}
-                            {c.purpose ? ` · ${c.purpose}` : ""}
-                          </p>
-                        </div>
-                        <span
-                          className={`label-caps rounded-full px-3 py-1 text-[11px] ${
-                            c.status === "verified"
-                              ? "bg-gold/15 text-bronze dark:text-gold"
-                              : c.status === "rejected"
-                                ? "bg-destructive/10 text-destructive"
-                                : "bg-secondary text-muted-foreground"
-                          }`}
-                        >
-                          {t(statusLabels[c.status])}
-                        </span>
-                      </div>
-                      {c.status === "rejected" && c.review_note ? (
-                        <p className="mt-2 text-[12px] text-muted-foreground">
-                          <span className="font-semibold text-destructive">
-                            {label("سبب الرفض: ", "Reason: ")}
-                          </span>
-                          {c.review_note}
+                    <li
+                      key={c.id}
+                      className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm"
+                    >
+                      <div>
+                        <p className="nums font-medium text-foreground">{formatSar(c.amount, lang)}</p>
+                        <p className="text-[12px] text-muted-foreground">
+                          {formatDate(c.created_at, lang)}
+                          {c.purpose ? ` · ${c.purpose}` : ""}
                         </p>
-                      ) : null}
+                      </div>
+                      <span
+                        className={`label-caps rounded-full px-3 py-1 text-[11px] ${
+                          c.status === "verified"
+                            ? "bg-gold/15 text-bronze dark:text-gold"
+                            : c.status === "rejected"
+                              ? "bg-destructive/10 text-destructive"
+                              : "bg-secondary text-muted-foreground"
+                        }`}
+                      >
+                        {t(statusLabels[c.status])}
+                      </span>
                     </li>
                   ))}
                   {(mine ?? []).length === 0 ? (
