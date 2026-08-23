@@ -46,6 +46,7 @@ const copy = {
   eyebrow: { ar: "بيان برنامج", en: "Programme note" } as BiText,
   active: { ar: "جارية", en: "Active" } as BiText,
   planned: { ar: "مخططة", en: "Planned" } as BiText,
+  completed: { ar: "منتهية", en: "Completed" } as BiText,
   aboutTitle: { ar: "عن البرنامج", en: "About the programme" } as BiText,
   otherTitle: { ar: "برامج أخرى", en: "Other programmes" } as BiText,
   contactTitle: { ar: "المشاركة والاستفسار", en: "Taking part" } as BiText,
@@ -121,8 +122,14 @@ function InitiativeDetail() {
         <div className="mt-7 flex flex-wrap items-center gap-3 border-b border-ink/25 pb-3 dark:border-ivory/20">
           <Eyebrow rule={false}>{t(copy.eyebrow)}</Eyebrow>
           <span className="h-3 w-px bg-border" aria-hidden="true" />
-          <Status tone={item.status === "ongoing" ? "active" : "pending"}>
-            {item.status === "ongoing" ? t(copy.active) : t(copy.planned)}
+          <Status
+            tone={item.status === "ongoing" ? "active" : item.status === "completed" ? "neutral" : "pending"}
+          >
+            {item.status === "ongoing"
+              ? t(copy.active)
+              : item.status === "completed"
+                ? t(copy.completed)
+                : t(copy.planned)}
           </Status>
         </div>
 

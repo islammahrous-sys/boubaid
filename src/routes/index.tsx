@@ -775,14 +775,26 @@ function HomePage() {
                         {t(init.title)}
                       </Link>
                     </h3>
-                    <Status tone={init.status === "ongoing" ? "active" : "pending"}>
+                    <Status
+                      tone={
+                        init.status === "ongoing"
+                          ? "active"
+                          : init.status === "completed"
+                            ? "neutral"
+                            : "pending"
+                      }
+                    >
                       {init.status === "ongoing"
                         ? rtl
                           ? "جارية"
                           : "Active"
-                        : rtl
-                          ? "قادمة"
-                          : "Planned"}
+                        : init.status === "completed"
+                          ? rtl
+                            ? "منتهية"
+                            : "Completed"
+                          : rtl
+                            ? "قادمة"
+                            : "Planned"}
                     </Status>
                   </div>
                   <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
