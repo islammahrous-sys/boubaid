@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
 import { useLang } from "@/i18n/LanguageProvider";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { branches } from "@/content/site";
@@ -13,6 +14,9 @@ import {
   getMyAccount,
   submitMembershipRequest,
   updateMyProfile,
+  getMyNotifications,
+  markMyNotificationRead,
+  markAllMyNotificationsRead,
 } from "@/lib/account.functions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,6 +55,7 @@ import {
   Upload,
   X,
   Loader2,
+  Bell,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/account")({
@@ -80,6 +85,9 @@ function AccountPage() {
   const fetchAccount = useServerFn(getMyAccount);
   const saveProfile = useServerFn(updateMyProfile);
   const requestMembership = useServerFn(submitMembershipRequest);
+  const fetchNotifications = useServerFn(getMyNotifications);
+  const markNotifReadFn = useServerFn(markMyNotificationRead);
+  const markAllNotifsReadFn = useServerFn(markAllMyNotificationsRead);
 
   const { data, isLoading } = useQuery({
     queryKey: ["account"],
@@ -87,6 +95,33 @@ function AccountPage() {
   });
 
   const [activeTab, setActiveTab] = useState("profile");
+
+  const { data: notifData } = useQuery({
+    queryKey: ["my-notifications"],
+    queryFn: () => fetchNotifications(),
+    refetchInterval: 60_000,
+  });
+  const unreadCount = notifData?.unreadCount ?? 0;
+
+  const markNotifRead = useMutation({
+    mutationFn: (id: string) => markNotifReadFn({ data: { id } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-notifications"] }),
+  });
+  const markAllNotifsRead = useMutation({
+    mutationFn: () => markAllNotifsReadFn(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-notifications"] }),
+  });
+
+  const formatNotifTime = (iso: string) => {
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffMins < 1) return isAr ? "الآن" : "just now";
+    if (diffMins < 60) return isAr ? `قبل ${diffMins} دقيقة` : `${diffMins}m ago`;
+    if (diffHours < 24) return isAr ? `قبل ${diffHours} ساعة` : `${diffHours}h ago`;
+    return isAr ? `قبل ${diffDays} يوم` : `${diffDays}d ago`;
+  };
   const [copiedIban, setCopiedIban] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
 
@@ -335,7 +370,7 @@ function AccountPage() {
       {/* ── Main Dashboard Tabs ─────────────────────────────────── */}
       <main className="container-page py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-card border border-border p-1 rounded-xl h-auto grid grid-cols-2 md:grid-cols-4 max-w-2xl gap-1">
+          <TabsList className="bg-card border border-border p-1 rounded-xl h-auto grid grid-cols-2 md:grid-cols-5 max-w-3xl gap-1">
             <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
               <User className="w-3.5 h-3.5" />
               {isAr ? "البيانات والنسب" : "Profile & Lineage"}
@@ -347,6 +382,15 @@ function AccountPage() {
             <TabsTrigger value="treasury" className="text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
               <CreditCard className="w-3.5 h-3.5" />
               {isAr ? "الخزينة والاشتراك" : "Treasury & Dues"}
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="relative text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
+              <Bell className="w-3.5 h-3.5" />
+              {isAr ? "الإشعارات" : "Notifications"}
+              {unreadCount > 0 && (
+                <span className="ms-0.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold font-mono">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger value="security" className="text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
               <Lock className="w-3.5 h-3.5" />
@@ -904,6 +948,97 @@ function AccountPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* ──────────────── TAB: Notifications ─────────── */}
+          <TabsContent value="notifications" className="space-y-6">
+            <Card className="max-w-2xl mx-auto">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <div>
+                  <CardTitle className="text-sm">{isAr ? "الإشعارات" : "Notifications"}</CardTitle>
+                  <CardDescription className="text-xs">
+                    {isAr ? "تحديثات طلب العضوية والمستجدات الموجهة لك." : "Membership updates and news addressed to you."}
+                  </CardDescription>
+                </div>
+                {unreadCount > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-8"
+                    disabled={markAllNotifsRead.isPending}
+                    onClick={() => markAllNotifsRead.mutate()}
+                  >
+                    {markAllNotifsRead.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : isAr ? (
+                      "تمييز الكل كمقروء"
+                    ) : (
+                      "Mark all read"
+                    )}
+                  </Button>
+                )}
+              </CardHeader>
+              <CardContent>
+                {!notifData?.notifications.length ? (
+                  <div className="py-10 text-center text-xs text-muted-foreground border border-dashed border-border rounded-lg">
+                    <Bell className="w-6 h-6 mx-auto mb-2 opacity-40" />
+                    {isAr ? "لا توجد إشعارات حتى الآن." : "No notifications yet."}
+                  </div>
+                ) : (
+                  <ul className="divide-y divide-border">
+                    {notifData.notifications.map((n) => {
+                      const content = (
+                        <div className="flex items-start gap-3 py-3">
+                          {!n.is_read && <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
+                          <div className={cn("flex-1 min-w-0", n.is_read && "ps-[15px]")}>
+                            <p className={cn("text-xs", n.is_read ? "text-muted-foreground" : "font-semibold text-foreground")}>
+                              {isAr ? n.title_ar : n.title_en || n.title_ar}
+                            </p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                              {isAr ? n.message_ar : n.message_en || n.message_ar}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground/70 mt-1 font-mono">
+                              {formatNotifTime(n.created_at)}
+                            </p>
+                          </div>
+                          {!n.is_read && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-[10px] h-6 px-2 shrink-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                markNotifRead.mutate(n.id);
+                              }}
+                            >
+                              {isAr ? "تمييز كمقروء" : "Mark read"}
+                            </Button>
+                          )}
+                        </div>
+                      );
+                      return (
+                        <li key={n.id}>
+                          {n.link ? (
+                            // n.link is an arbitrary DB-stored path, not a
+                            // route known at build time, so a plain <a> is
+                            // used here instead of the typed <Link>.
+                            <a
+                              href={n.link}
+                              className="block hover:bg-muted/40 -mx-1 px-1 rounded transition-colors"
+                              onClick={() => !n.is_read && markNotifRead.mutate(n.id)}
+                            >
+                              {content}
+                            </a>
+                          ) : (
+                            content
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* ──────────────── TAB 4: Security & Credentials ─────────── */}

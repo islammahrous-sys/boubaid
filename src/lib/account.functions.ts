@@ -241,3 +241,73 @@ export const submitMembershipRequest = createServerFn({ method: "POST" })
     }
     return { ok: true as const };
   });
+
+/* =========================================================================
+ * Member-facing notifications.
+ *
+ * The DB already creates notification rows addressed to a regular member
+ * (e.g. review_membership_request_as_admin() on approval/rejection), and
+ * notifications_select_own/_update_own/_delete_own RLS already scopes
+ * every row to auth.uid(). But the only fetch/mark-read/delete functions
+ * in the codebase (getAdminNotificationsList etc. in admin-hub.functions.ts)
+ * are gated by requireAdminAuth -- a plain member has no way to ever see
+ * or clear their own notifications. These are the member-scoped
+ * equivalents, gated by requireSupabaseAuth only.
+ * ========================================================================= */
+
+export type MyNotification = {
+  id: string;
+  type: string;
+  title_ar: string;
+  title_en: string | null;
+  message_ar: string;
+  message_en: string | null;
+  link: string | null;
+  is_read: boolean;
+  created_at: string;
+};
+
+export const getMyNotifications = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ notifications: MyNotification[]; unreadCount: number }> => {
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("id, type, title_ar, title_en, message_ar, message_en, link, is_read, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(30);
+
+    if (error) throw new Error(error.message);
+
+    const notifications = data ?? [];
+    return { notifications, unreadCount: notifications.filter((n) => !n.is_read).length };
+  });
+
+export const markMyNotificationRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { error } = await supabase
+      .from("notifications")
+      .update({ is_read: true })
+      .eq("id", data.id)
+      .eq("user_id", userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const markAllMyNotificationsRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { error } = await supabase
+      .from("notifications")
+      .update({ is_read: true })
+      .eq("user_id", userId)
+      .eq("is_read", false);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
