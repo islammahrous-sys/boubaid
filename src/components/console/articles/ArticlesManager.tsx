@@ -272,6 +272,7 @@ export function ArticlesManager({
             { id: "published", label_ar: "المنشورة والمتاحة", label_en: "Published", count: stats.published },
             { id: "draft", label_ar: "المسودات", label_en: "Drafts", count: stats.drafts, isAlert: true },
             { id: "in_review", label_ar: "قيد المراجعة", label_en: "In Review", count: articles.filter((a) => a.status === "in_review").length },
+            { id: "scheduled", label_ar: "مجدولة للنشر", label_en: "Scheduled", count: articles.filter((a) => a.status === "scheduled").length },
             { id: "archived", label_ar: "المؤرشفة", label_en: "Archived", count: articles.filter((a) => a.status === "archived").length },
           ].map((tab) => (
             <Button
@@ -581,9 +582,14 @@ export function ArticlesManager({
                           ? "secondary"
                           : a.status === "in_review"
                           ? "outline"
+                          : a.status === "scheduled"
+                          ? "outline"
                           : "destructive"
                       }
-                      className="text-[10px]"
+                      className={cn(
+                        "text-[10px]",
+                        a.status === "scheduled" && "border-sky-500/40 text-sky-600 bg-sky-500/10 dark:text-sky-400"
+                      )}
                     >
                       {a.status}
                     </Badge>
@@ -873,6 +879,7 @@ export function ArticlesManager({
                         <SelectItem value="published">{isAr ? "منشور (Published)" : "Published"}</SelectItem>
                         <SelectItem value="draft">{isAr ? "مسودة (Draft)" : "Draft"}</SelectItem>
                         <SelectItem value="in_review">{isAr ? "قيد المراجعة" : "In Review"}</SelectItem>
+                        <SelectItem value="scheduled">{isAr ? "مجدول للنشر" : "Scheduled"}</SelectItem>
                         <SelectItem value="archived">{isAr ? "مؤرشف" : "Archived"}</SelectItem>
                       </SelectContent>
                     </Select>
@@ -927,7 +934,18 @@ export function ArticlesManager({
 
             <div className="space-y-4 text-xs pt-2">
               <div className="flex items-center gap-2">
-                <Badge variant={previewArticle.status === "published" ? "default" : "secondary"}>
+                <Badge
+                  variant={
+                    previewArticle.status === "published"
+                      ? "default"
+                      : previewArticle.status === "scheduled"
+                      ? "outline"
+                      : "secondary"
+                  }
+                  className={cn(
+                    previewArticle.status === "scheduled" && "border-sky-500/40 text-sky-600 bg-sky-500/10 dark:text-sky-400"
+                  )}
+                >
                   {previewArticle.status}
                 </Badge>
                 {previewArticle.is_featured && (
