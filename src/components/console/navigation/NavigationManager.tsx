@@ -465,6 +465,58 @@ export function NavigationManager({
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* New Menu Dialog -- the "New Menu" button set this state but no
+          dialog ever rendered it, so clicking it did nothing visible. */}
+      <Dialog open={menuModalOpen} onOpenChange={setMenuModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold">{isAr ? "قائمة جديدة" : "New Menu"}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmitMenu} className="space-y-3.5 text-xs">
+            <div className="space-y-1">
+              <Label className="text-xs">{isAr ? "اسم القائمة (بالعربية) *" : "Menu Name (AR) *"}</Label>
+              <Input
+                required
+                value={menuForm.name_ar}
+                onChange={(e) => setMenuForm({ ...menuForm, name_ar: e.target.value })}
+                placeholder="مثال: قائمة الفوتر"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">{isAr ? "اسم القائمة (EN)" : "Menu Name (EN)"}</Label>
+              <Input
+                value={menuForm.name_en ?? ""}
+                onChange={(e) => setMenuForm({ ...menuForm, name_en: e.target.value })}
+                placeholder="Footer Menu"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">{isAr ? "المعرف (code) *" : "Code *"}</Label>
+              <Input
+                required
+                value={menuForm.code}
+                onChange={(e) => setMenuForm({ ...menuForm, code: e.target.value })}
+                placeholder="footer"
+                className="font-mono"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                {isAr
+                  ? "معرف فريد يُستخدم برمجياً (مثال: header، footer) — بأحرف إنجليزية صغيرة فقط."
+                  : "Unique machine identifier (e.g. header, footer) — lowercase, no spaces."}
+              </p>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" size="sm" onClick={() => setMenuModalOpen(false)}>
+                {isAr ? "إلغاء" : "Cancel"}
+              </Button>
+              <Button type="submit" size="sm" disabled={menuLoading}>
+                {menuLoading ? (isAr ? "جاري الإنشاء..." : "Creating...") : isAr ? "إنشاء القائمة" : "Create Menu"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
