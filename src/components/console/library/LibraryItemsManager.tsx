@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { useConfirm } from "@/hooks/useConfirm";
 import { Plus, Edit2, Trash2, Library, FileText, Image as ImageIcon, Video, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
@@ -40,6 +41,7 @@ export function LibraryItemsManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [collectionFilter, setCollectionFilter] = useState("all");
   const [formOpen, setFormOpen] = useState(false);
@@ -223,10 +225,20 @@ export function LibraryItemsManager({
                         variant="ghost"
                         size="icon"
                         className="w-7 h-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => {
-                          if (window.confirm(isAr ? "هل أنت متأكد من حذف هذه المادة؟" : "Are you sure?")) {
-                            onDeleteLibraryItem(item.id);
-                          }
+                        onClick={async () => {
+                          if (
+                            !(await confirm({
+                              title: isAr
+                                ? `حذف مادة "${item.title_ar}"؟`
+                                : `Delete "${item.title_ar}"?`,
+                              description: isAr
+                                ? "سيتم حذف هذه المادة الأرشيفية وملفها المرفق نهائيًا من المكتبة الرقمية ولا يمكن التراجع عن هذا الإجراء."
+                                : "This archive item and its attached file will be permanently removed from the digital library. This can't be undone.",
+                              tone: "destructive",
+                            }))
+                          )
+                            return;
+                          onDeleteLibraryItem(item.id);
                         }}
                       >
                         <Trash2 className="w-3.5 h-3.5" />

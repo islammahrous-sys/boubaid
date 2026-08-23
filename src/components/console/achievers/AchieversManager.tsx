@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { useConfirm } from "@/hooks/useConfirm";
 import { Plus, Edit2, Trash2, Award } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
@@ -40,6 +41,7 @@ export function AchieversManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [formOpen, setFormOpen] = useState(false);
   const [selectedAchiever, setSelectedAchiever] = useState<AchieverItem | null>(null);
@@ -182,10 +184,20 @@ export function AchieversManager({
                         variant="ghost"
                         size="icon"
                         className="w-7 h-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => {
-                          if (window.confirm(isAr ? "هل أنت متأكد من حذف هذا السجل؟" : "Are you sure?")) {
-                            onDeleteAchiever(item.id);
-                          }
+                        onClick={async () => {
+                          if (
+                            !(await confirm({
+                              title: isAr
+                                ? `حذف سجل "${item.name_ar}"؟`
+                                : `Delete "${item.name_ar}"?`,
+                              description: isAr
+                                ? "سيتم حذف هذا السجل من قائمة المتميزين ولوحة الشرف نهائيًا ولا يمكن التراجع عن هذا الإجراء."
+                                : "This achiever record will be permanently removed from the Achievers list and Roll of Honour. This can't be undone.",
+                              tone: "destructive",
+                            }))
+                          )
+                            return;
+                          onDeleteAchiever(item.id);
                         }}
                       >
                         <Trash2 className="w-3.5 h-3.5" />

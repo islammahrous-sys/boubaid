@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { useConfirm } from "@/hooks/useConfirm";
 import { Plus, Edit2, Calendar, MapPin, Users, Download, Trash2, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { EventInput } from "@/lib/admin-hub.schemas";
@@ -72,6 +73,7 @@ export function EventsManager({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [formOpen, setFormOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventRow | null>(null);
@@ -474,6 +476,20 @@ export function EventsManager({
                             <Select
                               value={a.status}
                               onValueChange={async (val: any) => {
+                                if (val === "cancelled") {
+                                  if (
+                                    !(await confirm({
+                                      title: isAr
+                                        ? `إلغاء تسجيل "${a.name}"؟`
+                                        : `Cancel ${a.name}'s registration?`,
+                                      description: isAr
+                                        ? "سيتم وضع علامة (اعتذر) على هذا التسجيل وقد يفسح مكانه لأحد المسجلين في قائمة الانتظار."
+                                        : "This registration will be marked as cancelled, which may free up a spot for someone on the waitlist.",
+                                      tone: "destructive",
+                                    }))
+                                  )
+                                    return;
+                                }
                                 if (onUpdateRegistrationStatus) {
                                   await onUpdateRegistrationStatus(a.id, val);
                                   toast.success(isAr ? "تم تحديث حالة الحضور" : "Status updated");
@@ -497,11 +513,21 @@ export function EventsManager({
                               size="icon"
                               className="w-6 h-6 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
                               onClick={async () => {
-                                if (window.confirm(isAr ? "هل أنت متأكد من حذف هذا التسجيل؟" : "Delete registration?")) {
-                                  if (onDeleteRegistration) {
-                                    await onDeleteRegistration(a.id);
-                                    toast.success(isAr ? "تم حذف التسجيل" : "Registration deleted");
-                                  }
+                                if (
+                                  !(await confirm({
+                                    title: isAr
+                                      ? `حذف تسجيل "${a.name}"؟`
+                                      : `Delete ${a.name}'s registration?`,
+                                    description: isAr
+                                      ? "سيتم حذف هذا التسجيل نهائيًا من قائمة المسجلين لهذه الفعالية ولا يمكن التراجع عن هذا الإجراء."
+                                      : "This registration will be permanently removed from this event's attendee list. This can't be undone.",
+                                    tone: "destructive",
+                                  }))
+                                )
+                                  return;
+                                if (onDeleteRegistration) {
+                                  await onDeleteRegistration(a.id);
+                                  toast.success(isAr ? "تم حذف التسجيل" : "Registration deleted");
                                 }
                               }}
                             >
