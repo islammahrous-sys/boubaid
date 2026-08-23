@@ -50,8 +50,11 @@ export const globalAdminSearch = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ query: z.string().min(1) }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { query } = data;
-    const term = `%${query}%`;
+    // PostgREST's .or() syntax uses "," to separate conditions and "()" to
+    // nest logical groups -- unescaped input could smuggle in extra filter
+    // clauses (same class of bug fixed earlier in getPublicGlobalSearch).
+    const cleanQuery = data.query.trim().replace(/[,()]/g, "");
+    const term = `%${cleanQuery}%`;
 
     const [profiles, members, articles, treasury] = await Promise.all([
       supabase.from("profiles").select("id, full_name_ar, full_name_en, email").or(`full_name_ar.ilike.${term},full_name_en.ilike.${term},email.ilike.${term}`).limit(5),
