@@ -524,8 +524,38 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
       supabase.from("family_relationships").select("*"),
     ]);
 
+    const members = membersRes.data ?? [];
+
+    // family_member_privacy holds real per-field opt-outs (show_biography,
+    // show_dob, show_contact, show_relationships) that nothing in the app
+    // enforced -- a member could ask for their biography to stay private
+    // and it would still be shown to every anonymous visitor. The table has
+    // no public RLS read policy (it also holds private_notes, which must
+    // never reach the client), so the flags are looked up server-side with
+    // the service-role client purely to redact this response -- the raw
+    // privacy table itself is never sent back.
+    let redacted = members;
+    if (members.length > 0) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: privacyRows } = await supabaseAdmin
+        .from("family_member_privacy")
+        .select("member_id, show_biography")
+        .in(
+          "member_id",
+          members.map((m) => m.id),
+        );
+      const hideBioFor = new Set(
+        (privacyRows ?? []).filter((p) => p.show_biography === false).map((p) => p.member_id),
+      );
+      if (hideBioFor.size > 0) {
+        redacted = members.map((m) =>
+          hideBioFor.has(m.id) ? { ...m, biography_ar: null, biography_en: null } : m,
+        );
+      }
+    }
+
     return {
-      members: membersRes.data ?? [],
+      members: redacted,
       branches: branchesRes.data ?? [],
       relationships: relationshipsRes.data ?? [],
     };
