@@ -102,8 +102,14 @@ export function InquiriesManager({
             {isAr ? "قيد المتابعة" : "In Progress"}
           </span>
         );
-      case "resolved":
       case "read":
+        return (
+          <span className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 font-medium text-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+            {isAr ? "مقروءة" : "Read"}
+          </span>
+        );
+      case "resolved":
       case "archived":
         return (
           <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium text-xs">
