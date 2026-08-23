@@ -97,7 +97,11 @@ const copy = {
 
 function formatEventDate(iso: string, lang: "ar" | "en", timezone: string) {
   try {
+    // calendar: "gregory" pinned -- "ar-SA" can otherwise resolve to the
+    // Hijri calendar in some ICU builds, differently between Node's SSR
+    // render and the browser, causing a hydration mismatch on every load.
     return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-US", {
+      calendar: "gregory",
       timeZone: timezone || "Asia/Riyadh",
       year: "numeric",
       month: "long",

@@ -262,6 +262,7 @@ type SectionConfig = {
   cta_label_en?: string;
   cta_url?: string;
   image_path?: string;
+  custom_payload?: Record<string, any>;
 };
 
 const DEFAULT_SECTIONS: SectionConfig[] = [
@@ -281,7 +282,11 @@ const DEFAULT_SECTIONS: SectionConfig[] = [
 /** Compact date for the homepage events preview cards (no weekday, unlike the full /events page). */
 function formatHomeEventDate(iso: string, lang: "ar" | "en", timezone: string) {
   try {
+    // calendar: "gregory" pinned -- "ar-SA" can otherwise resolve to the
+    // Hijri calendar in some ICU builds, differently between Node's SSR
+    // render and the browser, causing a hydration mismatch on every load.
     return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-US", {
+      calendar: "gregory",
       timeZone: timezone || "Asia/Riyadh",
       year: "numeric",
       month: "long",
@@ -324,7 +329,10 @@ function HomePage() {
       case "hero":
         return (
           <div key={sec.id}>
-            <HeroVideo poster={sec.image_path || "/images/ahsa_oasis.png"}>
+            <HeroVideo
+              poster={sec.image_path?.endsWith(".mp4") ? "/images/ahsa_oasis.png" : (sec.image_path || "/images/ahsa_oasis.png")}
+              videoUrl={sec.custom_payload?.video_url || (sec.image_path?.endsWith(".mp4") ? sec.image_path : null)}
+            >
               <div className="container-page flex min-h-[86vh] flex-col items-center justify-center py-24 text-center md:min-h-[92vh]">
                 {/* Emblem */}
                 <div className="mx-auto w-max motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">

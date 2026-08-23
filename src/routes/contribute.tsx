@@ -189,7 +189,12 @@ function formatSar(amount: number, lang: "ar" | "en") {
 }
 
 function formatDate(iso: string, lang: "ar" | "en") {
+  // calendar: "gregory" is pinned explicitly -- "ar-SA" can otherwise
+  // resolve to the Umm al-Qura (Hijri) calendar in some ICU builds, which
+  // differs between Node's SSR render and a browser's, causing a hydration
+  // mismatch on every load.
   return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-GB", {
+    calendar: "gregory",
     year: "numeric",
     month: "short",
     day: "numeric",
