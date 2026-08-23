@@ -270,6 +270,7 @@ function AccountPage() {
   const request = data?.request ?? null;
   const isApproved = request?.status === "approved" || authIsMember || isAdmin;
   const isPending = request?.status === "pending";
+  const isRejected = request?.status === "rejected" && !isApproved;
 
   const selectedBranchName = branches.find((b) => b.id === form.branch_slug)?.name;
 
@@ -314,6 +315,10 @@ function AccountPage() {
                   ) : isPending ? (
                     <Badge variant="outline" className="text-amber-500 border-amber-500/40 text-xs">
                       {isAr ? "قيد المراجعة" : "Pending Review"}
+                    </Badge>
+                  ) : isRejected ? (
+                    <Badge variant="outline" className="text-destructive border-destructive/40 text-xs">
+                      {isAr ? "لم يُعتمد الطلب" : "Not Approved"}
                     </Badge>
                   ) : (
                     <Badge variant="secondary" className="text-xs">
@@ -677,6 +682,35 @@ function AccountPage() {
                             ? "تم تسجيل طلبك وتوثيق بياناتك تحت إشراف لجنة الأنساب والعلاقات العائلية."
                             : "Your request is registered with the genealogical & family relations committee."}
                         </p>
+                      </div>
+                    ) : isRejected ? (
+                      <div className="space-y-2.5">
+                        <div className="flex items-center justify-between p-2.5 rounded-lg bg-destructive/10 border border-destructive/30">
+                          <span className="text-muted-foreground">{isAr ? "حالة الطلب:" : "Status:"}</span>
+                          <Badge variant="outline" className="text-destructive border-destructive/40 text-xs">
+                            {isAr ? "لم يُعتمد الطلب" : "Not Approved"}
+                          </Badge>
+                        </div>
+                        {request?.review_note && (
+                          <div className="p-3 rounded-lg bg-muted/40 border border-border text-[11px] text-muted-foreground space-y-1">
+                            <span className="font-semibold block text-foreground">{isAr ? "ملاحظة أمانة المجلس:" : "Secretariat Note:"}</span>
+                            <p>{request.review_note}</p>
+                          </div>
+                        )}
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">
+                          {isAr
+                            ? "لم يتم اعتماد طلبك السابق. راجع الملاحظة أعلاه إن وُجدت، وتأكد من استكمال بياناتك، ثم أعد تقديم الطلب."
+                            : "Your previous request wasn't approved. Review the note above if any, make sure your details are complete, and submit again."}
+                        </p>
+                        <Button
+                          type="button"
+                          onClick={() => apply.mutate()}
+                          disabled={apply.isPending || !form.full_name_ar.trim()}
+                          className="w-full h-8 text-xs font-semibold gap-1.5"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                          {apply.isPending ? (isAr ? "جاري الإرسال..." : "Submitting...") : isAr ? "إعادة تقديم الطلب" : "Resubmit Request"}
+                        </Button>
                       </div>
                     ) : (
                       <div className="space-y-3">
