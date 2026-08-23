@@ -438,7 +438,7 @@ export function TreasuryManager({
                       onClick={() => handleReviewSubmit("rejected")}
                       className="flex-1 h-11 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive border-transparent hover:border-destructive/20 font-bold"
                     >
-                      {isAr ? "رفض" : "Reject"}
+                      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : isAr ? "رفض" : "Reject"}
                     </Button>
                     <Button
                       type="button"

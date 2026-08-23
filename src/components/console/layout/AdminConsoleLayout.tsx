@@ -69,6 +69,7 @@ import {
 } from "lucide-react";
 import { ADMIN_DOMAINS, type AdminDomainGroup, type AdminSubTab, type AdminRole } from "./AdminNavigation";
 import { AdminCommandPalette, type SearchableItem } from "./AdminCommandPalette";
+import { useConfirm } from "@/hooks/useConfirm";
 
 export type AdminNotificationItem = {
   id: string;
@@ -118,6 +119,7 @@ export function AdminConsoleLayout({
   const isRtl = dir === "rtl";
   const { theme, setTheme } = useTheme();
   const { user, profile, roles, signOut, isAdmin, isSuperAdmin } = useAuth();
+  const confirm = useConfirm();
 
   // 1. Sidebar Collapsed State (Persisted in localStorage)
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
@@ -290,6 +292,15 @@ export function AdminConsoleLayout({
     e.preventDefault();
     if (!broadcastForm.title_ar.trim() || !broadcastForm.body_ar.trim()) return;
     if (!onBroadcastNotification) return;
+
+    const confirmed = await confirm({
+      title: isAr ? "بث هذا الإشعار لجميع المستخدمين؟" : "Broadcast this notification to all users?",
+      description: isAr
+        ? "سيصل هذا الإشعار فوراً إلى جميع أعضاء المنصة والمشرفين، ولا يمكن سحبه بعد الإرسال."
+        : "This will be delivered immediately to every member and admin on the platform, and can't be recalled once sent.",
+      confirmLabel: isAr ? "إرسال البث" : "Send Broadcast",
+    });
+    if (!confirmed) return;
 
     try {
       setSubmittingBroadcast(true);
