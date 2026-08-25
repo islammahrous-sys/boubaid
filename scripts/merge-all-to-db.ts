@@ -3,7 +3,11 @@ import { siteMeta, branches, initiatives, achievers, libraryItems, news, dnaInfo
 import { familyMembersData } from "../src/content/family-tree";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://ywsvittlswbbyqhahorh.supabase.co";
-// Using legacy service role / admin or publishable
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3c3ZpdHRsc3diYnlxaGFob3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjgwODcsImV4cCI6MjEwMjkwNDA4N30.TK3AgqMh5vHDzi16S7ILBP7fyIwoKuDDJURjT9r26K4";
+// Service role key is required — the anon key cannot bypass RLS for seeding.
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!SUPABASE_KEY) {
+  console.error("Missing SUPABASE_SERVICE_ROLE_KEY. Set it in your .env before running this script.");
+  process.exit(1);
+}
 
 console.log("Starting full website database merge...");

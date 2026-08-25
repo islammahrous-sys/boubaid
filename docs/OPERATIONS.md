@@ -108,47 +108,30 @@ storage you control (e.g. S3, a private bucket). Store dumps somewhere
 encrypted at rest and separate from the Supabase project itself; a dump
 contains full data, so treat it like the production database.
 
-## 3. Deployment target: Cloudflare vs. Vercel (unresolved — pick one)
+## 3. Deployment target: Vercel
 
-This repo currently has **conflicting signals** about where it deploys, and
-this was never resolved. Do not assume either one silently works end-to-end
-without checking the points below.
+The application is deployed on **Vercel** (`https://alboabid-heritage-hub.vercel.app`).
 
-**Signals pointing to Cloudflare:**
-- `vite.config.ts` uses `@lovable.dev/vite-tanstack-config`, whose nitro
-  preset defaults to `cloudflare` (see the comment at the top of that file).
-- A `.wrangler` directory exists in the repo root (Wrangler's local
-  build/dev cache), implying it has been built/run against the Cloudflare
-  Workers target at least once.
-- `src/server.ts` exports a `{ fetch(request, env, ctx) }` handler — the
-  Cloudflare Workers/Pages Functions signature — and reads `env`/`ctx` as
-  opaque platform objects, which is how Cloudflare passes bindings/context.
+### Build Configuration (`vercel.json`)
+The build is configured in `vercel.json`:
+```json
+{
+  "framework": null,
+  "buildCommand": "NITRO_PRESET=vercel npm run build"
+}
+```
+Nitro compiles the TanStack Start application to `.vercel/output`, ready for Vercel Serverless & Static delivery.
 
-**Signals pointing to Vercel:**
-- `docs/temporary-vercel-auth-setup.md` documents a live
-  `https://alboabid-heritage-hub.vercel.app` deployment, with Supabase Auth
-  redirect URLs and env vars already configured against Vercel.
+### Environment Variables on Vercel
+Set these in **Vercel Dashboard → Project Settings → Environment Variables**:
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (Server only - sensitive)
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SITE_URL` (e.g., `https://alboabid-heritage-hub.vercel.app` or custom domain)
+- `SITE_URL` (e.g., `https://alboabid-heritage-hub.vercel.app` or custom domain)
+- (Optional) `VITE_TURNSTILE_SITE_KEY` & `TURNSTILE_SECRET_KEY`
+- (Optional) `VITE_SENTRY_DSN`
+- (Optional) `VITE_GA_MEASUREMENT_ID`
 
-**What this means in practice:**
-- If you deploy to **Cloudflare** (Pages or Workers): confirm the nitro
-  build output matches what Cloudflare expects (`wrangler.toml` is not
-  present in this repo — you'll need to add one, or configure the target via
-  Cloudflare Pages' build settings), and set the env vars from
-  `.env.example` in the Cloudflare project's environment variables. Note
-  Cloudflare Workers does not support arbitrary Node APIs — verify
-  `pg_dump`-adjacent or Node-only code paths aren't reached at request time.
-- If you deploy to **Vercel**: nitro needs to target Vercel instead of the
-  Cloudflare default — check whether `@lovable.dev/vite-tanstack-config`
-  exposes a way to override the preset (it explicitly warns against manually
-  adding nitro config to avoid duplicate plugins, so this may require a
-  config option from that package rather than hand-rolled nitro config).
-  Confirm the existing Vercel project referenced in
-  `docs/temporary-vercel-auth-setup.md` is still the one in use, and that its
-  env vars are current.
-- Either way: `VITE_SENTRY_DSN` and `VITE_GA_MEASUREMENT_ID` (§1) need to be
-  set in whichever platform's dashboard actually serves production traffic —
-  setting them in the wrong platform's project silently does nothing.
-
-Until someone deliberately picks one and removes the other's leftover
-config/docs, treat this ambiguity as live and re-check both when debugging a
-deploy issue.

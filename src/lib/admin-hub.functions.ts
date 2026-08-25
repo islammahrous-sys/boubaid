@@ -39,6 +39,10 @@ import {
 } from "./admin-hub.schemas";
 import { z } from "zod";
 
+/** JSON-serializable value — satisfies TanStack Start's serialization
+ *  validator unlike `unknown` while avoiding `any`. */
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
 export const paginationSchema = z.object({
   page: z.number().int().min(1).max(100000).default(1),
   pageSize: z.number().int().min(1).max(100).default(50),
@@ -209,8 +213,10 @@ export type DashboardStats = {
     action: string;
     entity_type: string;
     created_at: string;
-    // Loosely typed: audit metadata is arbitrary JSON from the log rows.
-    metadata: any;
+    // Audit metadata is arbitrary JSON from the log rows. TanStack Start's
+    // serialization validator rejects `unknown`, so we model the full JSON
+    // value space explicitly.
+    metadata: JsonValue | null;
   }[];
 };
 

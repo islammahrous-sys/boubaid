@@ -137,9 +137,8 @@ export const submitAchieverNomination = createServerFn({ method: "POST" })
     const blocked = await guardPublicSubmission({
       scope: "nomination",
       honeypot: data.website_url_check,
-      // The nomination form doesn't render a Turnstile widget, so no token is
-      // expected — see the note on subscribeToNewsletter.
-      turnstileToken: undefined,
+      // The nomination form doesn't render a Turnstile widget, so `turnstile`
+      // is intentionally omitted — see the note on subscribeToNewsletter.
       max: 5,
       windowMs: 30 * 60 * 1000,
     });
@@ -187,8 +186,7 @@ export const submitBusinessListing = createServerFn({ method: "POST" })
     const blocked = await guardPublicSubmission({
       scope: "business_submission",
       honeypot: data.website_url_check,
-      // No Turnstile widget on this form either — see subscribeToNewsletter.
-      turnstileToken: undefined,
+      // No Turnstile widget on this form — `turnstile` intentionally omitted.
       max: 3,
       windowMs: 60 * 60 * 1000,
     });
