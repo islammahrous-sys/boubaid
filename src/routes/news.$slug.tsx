@@ -23,16 +23,17 @@ export const Route = createFileRoute("/news/$slug")({
     return { item, news };
   },
   head: ({ params, loaderData }) => {
-    const title = loaderData
-      ? `${loaderData.item.title.ar} — ${loaderData.item.title.en}`
-      : "خبر";
+    const title = loaderData ? `${loaderData.item.title.ar} — ${loaderData.item.title.en}` : "خبر";
     const url = getCanonicalUrl(`/news/${params.slug}`);
     return {
       meta: [
         { title },
         { name: "description", content: loaderData?.item.excerpt.ar ?? "" },
         { property: "og:title", content: title },
-        { property: "og:description", content: loaderData?.item.excerpt.en ?? loaderData?.item.excerpt.ar ?? "" },
+        {
+          property: "og:description",
+          content: loaderData?.item.excerpt.en ?? loaderData?.item.excerpt.ar ?? "",
+        },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
         ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
@@ -181,7 +182,11 @@ function NewsDetail() {
             onClick={copyLink}
             className="inline-flex items-center gap-1.5 text-sm text-foreground transition-colors hover:text-bronze dark:hover:text-gold cursor-pointer"
           >
-            {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Link2 className="h-3.5 w-3.5" aria-hidden="true" />}
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-emerald-600" />
+            ) : (
+              <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
             {copied ? (rtl ? "تم النسخ" : "Copied") : t(copy.copyLink)}
           </button>
         </div>

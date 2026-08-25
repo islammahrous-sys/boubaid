@@ -1,11 +1,30 @@
 import { useEffect, useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { Menu, Plus, Edit2, Trash2, ExternalLink, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -214,7 +233,9 @@ export function NavigationManager({
         <div className="flex items-center gap-2.5">
           <Menu className="w-5 h-5 text-primary" />
           <h3 className="text-sm font-bold text-foreground">
-            {isAr ? "إدارة قوائم التصفح والروابط (Header & Footer)" : "Navigation & Menu Management"}
+            {isAr
+              ? "إدارة قوائم التصفح والروابط (Header & Footer)"
+              : "Navigation & Menu Management"}
           </h3>
         </div>
 
@@ -278,9 +299,14 @@ export function NavigationManager({
               </TableRow>
             ) : (
               currentItems.map((it) => {
-                const parentItem = it.parent_id ? currentItems.find((p) => p.id === it.parent_id) : null;
+                const parentItem = it.parent_id
+                  ? currentItems.find((p) => p.id === it.parent_id)
+                  : null;
                 return (
-                  <TableRow key={it.id} className={cn("text-xs hover:bg-muted/30", it.parent_id && "bg-muted/15")}>
+                  <TableRow
+                    key={it.id}
+                    className={cn("text-xs hover:bg-muted/30", it.parent_id && "bg-muted/15")}
+                  >
                     <TableCell className="font-semibold text-foreground">
                       <div className="flex items-center gap-1.5">
                         {it.parent_id && (
@@ -290,7 +316,9 @@ export function NavigationManager({
                           <span>{it.label_ar}</span>
                           {parentItem && (
                             <span className="ms-2 inline-flex items-center px-1.5 py-0.2 rounded text-[10px] bg-secondary text-muted-foreground border border-border">
-                              {isAr ? `تابع لـ: ${parentItem.label_ar}` : `Under: ${parentItem.label_en || parentItem.label_ar}`}
+                              {isAr
+                                ? `تابع لـ: ${parentItem.label_ar}`
+                                : `Under: ${parentItem.label_en || parentItem.label_ar}`}
                             </span>
                           )}
                           {it.label_en && (
@@ -301,64 +329,66 @@ export function NavigationManager({
                         </div>
                       </div>
                     </TableCell>
-                  <TableCell className="font-mono text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <LinkIcon className="w-3 h-3 text-muted-foreground" />
-                      {it.url}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-center font-mono text-[11px]">
-                    {it.target === "_blank" ? (
-                      <Badge variant="outline" className="text-[10px] gap-1">
-                        <ExternalLink className="w-2.5 h-2.5" />
-                        {isAr ? "نافذة جديدة" : "New window"}
+                    <TableCell className="font-mono text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <LinkIcon className="w-3 h-3 text-muted-foreground" />
+                        {it.url}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center font-mono text-[11px]">
+                      {it.target === "_blank" ? (
+                        <Badge variant="outline" className="text-[10px] gap-1">
+                          <ExternalLink className="w-2.5 h-2.5" />
+                          {isAr ? "نافذة جديدة" : "New window"}
+                        </Badge>
+                      ) : isAr ? (
+                        "نفس الصفحة"
+                      ) : (
+                        "Same page"
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="secondary" className="text-[10px]">
+                        {it.visibility}
                       </Badge>
-                    ) : (
-                      isAr ? "نفس الصفحة" : "Same page"
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="secondary" className="text-[10px]">
-                      {it.visibility}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center font-mono">{it.sort_order}</TableCell>
-                  <TableCell className="text-end">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="w-7 h-7 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleOpenEditItem(it)}
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="w-7 h-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                        onClick={async () => {
-                          const ok = await confirm({
-                            title: isAr
-                              ? `حذف الرابط "${it.label_ar}"؟`
-                              : `Delete "${it.label_en || it.label_ar}" link?`,
-                            description: isAr
-                              ? "سيتم حذف هذا الرابط نهائياً من القائمة. لا يمكن التراجع عن هذا الإجراء."
-                              : "This link will be permanently removed from the menu. This can't be undone.",
-                            tone: "destructive",
-                          });
-                          if (!ok) return;
-                          onDeleteItem(it.id);
-                        }}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          )}
+                    </TableCell>
+                    <TableCell className="text-center font-mono">{it.sort_order}</TableCell>
+                    <TableCell className="text-end">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="w-7 h-7 text-muted-foreground hover:text-foreground"
+                          onClick={() => handleOpenEditItem(it)}
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="w-7 h-7 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                          onClick={async () => {
+                            const ok = await confirm({
+                              title: isAr
+                                ? `حذف الرابط "${it.label_ar}"؟`
+                                : `Delete "${it.label_en || it.label_ar}" link?`,
+                              description: isAr
+                                ? "سيتم حذف هذا الرابط نهائياً من القائمة. لا يمكن التراجع عن هذا الإجراء."
+                                : "This link will be permanently removed from the menu. This can't be undone.",
+                              tone: "destructive",
+                            });
+                            if (!ok) return;
+                            onDeleteItem(it.id);
+                          }}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </div>
@@ -368,12 +398,20 @@ export function NavigationManager({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">
-              {selectedItem ? (isAr ? "تعديل رابط القائمة" : "Edit Link") : isAr ? "إضافة رابط جديد" : "Add Link"}
+              {selectedItem
+                ? isAr
+                  ? "تعديل رابط القائمة"
+                  : "Edit Link"
+                : isAr
+                  ? "إضافة رابط جديد"
+                  : "Add Link"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmitItem} className="space-y-3.5 text-xs">
             <div className="space-y-1">
-              <Label className="text-xs">{isAr ? "عنوان الرابط (بالعربية) *" : "Title (AR) *"}</Label>
+              <Label className="text-xs">
+                {isAr ? "عنوان الرابط (بالعربية) *" : "Title (AR) *"}
+              </Label>
               <Input
                 required
                 value={itemForm.label_ar}
@@ -407,16 +445,22 @@ export function NavigationManager({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs">{isAr ? "الرابط الرئيسي (العنصر الأب)" : "Parent Menu Item"}</Label>
+              <Label className="text-xs">
+                {isAr ? "الرابط الرئيسي (العنصر الأب)" : "Parent Menu Item"}
+              </Label>
               <Select
                 value={itemForm.parent_id || "none"}
-                onValueChange={(val) => setItemForm({ ...itemForm, parent_id: val === "none" ? null : val })}
+                onValueChange={(val) =>
+                  setItemForm({ ...itemForm, parent_id: val === "none" ? null : val })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder={isAr ? "بدون (عنصر رئيسي)" : "None (Top-level)"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">{isAr ? "بدون (عنصر رئيسي)" : "None (Top-level)"}</SelectItem>
+                  <SelectItem value="none">
+                    {isAr ? "بدون (عنصر رئيسي)" : "None (Top-level)"}
+                  </SelectItem>
                   {currentItems
                     .filter((it) => !it.parent_id && (!selectedItem || it.id !== selectedItem.id))
                     .map((it) => (
@@ -439,8 +483,12 @@ export function NavigationManager({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="_self">{isAr ? "في نفس الصفحة (_self)" : "Same Tab"}</SelectItem>
-                    <SelectItem value="_blank">{isAr ? "في نافذة جديدة (_blank)" : "New Tab"}</SelectItem>
+                    <SelectItem value="_self">
+                      {isAr ? "في نفس الصفحة (_self)" : "Same Tab"}
+                    </SelectItem>
+                    <SelectItem value="_blank">
+                      {isAr ? "في نافذة جديدة (_blank)" : "New Tab"}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -449,17 +497,30 @@ export function NavigationManager({
                 <Input
                   type="number"
                   value={itemForm.sort_order}
-                  onChange={(e) => setItemForm({ ...itemForm, sort_order: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setItemForm({ ...itemForm, sort_order: parseInt(e.target.value) || 0 })
+                  }
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" size="sm" onClick={() => setItemModalOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setItemModalOpen(false)}
+              >
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button type="submit" size="sm" disabled={loading}>
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ الرابط" : "Save Link"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ الرابط"
+                    : "Save Link"}
               </Button>
             </DialogFooter>
           </form>
@@ -471,11 +532,15 @@ export function NavigationManager({
       <Dialog open={menuModalOpen} onOpenChange={setMenuModalOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold">{isAr ? "قائمة جديدة" : "New Menu"}</DialogTitle>
+            <DialogTitle className="text-base font-bold">
+              {isAr ? "قائمة جديدة" : "New Menu"}
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmitMenu} className="space-y-3.5 text-xs">
             <div className="space-y-1">
-              <Label className="text-xs">{isAr ? "اسم القائمة (بالعربية) *" : "Menu Name (AR) *"}</Label>
+              <Label className="text-xs">
+                {isAr ? "اسم القائمة (بالعربية) *" : "Menu Name (AR) *"}
+              </Label>
               <Input
                 required
                 value={menuForm.name_ar}
@@ -507,11 +572,22 @@ export function NavigationManager({
               </p>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" size="sm" onClick={() => setMenuModalOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setMenuModalOpen(false)}
+              >
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button type="submit" size="sm" disabled={menuLoading}>
-                {menuLoading ? (isAr ? "جاري الإنشاء..." : "Creating...") : isAr ? "إنشاء القائمة" : "Create Menu"}
+                {menuLoading
+                  ? isAr
+                    ? "جاري الإنشاء..."
+                    : "Creating..."
+                  : isAr
+                    ? "إنشاء القائمة"
+                    : "Create Menu"}
               </Button>
             </DialogFooter>
           </form>

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -43,7 +50,15 @@ export function PagesManager({
   onSavePage,
 }: {
   pages: PageRow[];
-  sections: { id: string; page_id: string; type: string; sort_order: number; data: any; settings: any; visibility: any }[];
+  sections: {
+    id: string;
+    page_id: string;
+    type: string;
+    sort_order: number;
+    data: any;
+    settings: any;
+    visibility: any;
+  }[];
   revisions: RevisionRow[];
   onSavePage: (data: ContentPageInput) => Promise<void>;
 }) {
@@ -81,15 +96,35 @@ export function PagesManager({
   const getStatusBadge = (st: PageRow["status"]) => {
     switch (st) {
       case "published":
-        return <Badge className="bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px]">{isAr ? "منشور" : "Published"}</Badge>;
+        return (
+          <Badge className="bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px]">
+            {isAr ? "منشور" : "Published"}
+          </Badge>
+        );
       case "draft":
-        return <Badge variant="secondary" className="text-[10px]">{isAr ? "مسودة" : "Draft"}</Badge>;
+        return (
+          <Badge variant="secondary" className="text-[10px]">
+            {isAr ? "مسودة" : "Draft"}
+          </Badge>
+        );
       case "in_review":
-        return <Badge variant="outline" className="text-amber-600 border-amber-500/30 text-[10px]">{isAr ? "قيد المراجعة" : "In Review"}</Badge>;
+        return (
+          <Badge variant="outline" className="text-amber-600 border-amber-500/30 text-[10px]">
+            {isAr ? "قيد المراجعة" : "In Review"}
+          </Badge>
+        );
       case "archived":
-        return <Badge variant="outline" className="text-zinc-400 text-[10px]">{isAr ? "مؤرشف" : "Archived"}</Badge>;
+        return (
+          <Badge variant="outline" className="text-zinc-400 text-[10px]">
+            {isAr ? "مؤرشف" : "Archived"}
+          </Badge>
+        );
       default:
-        return <Badge variant="outline" className="text-[10px]">{st}</Badge>;
+        return (
+          <Badge variant="outline" className="text-[10px]">
+            {st}
+          </Badge>
+        );
     }
   };
 

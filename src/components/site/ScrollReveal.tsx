@@ -41,7 +41,6 @@ export function ScrollReveal() {
       };
     }
 
-
     /**
      * Sequence siblings that share a reveal variant so a heading, its rule,
      * its body copy and its plate arrive as one choreographed phrase rather
@@ -99,8 +98,7 @@ export function ScrollReveal() {
      * start observing; bail out after a couple of seconds so a page that
      * somehow never hydrates still shows its content.
      */
-    const isHydrated = (el: Element) =>
-      Object.keys(el).some((k) => k.startsWith("__reactFiber$"));
+    const isHydrated = (el: Element) => Object.keys(el).some((k) => k.startsWith("__reactFiber$"));
 
     let tries = 0;
     let poll = 0;
@@ -110,9 +108,6 @@ export function ScrollReveal() {
       const all = document.querySelectorAll(ALL);
       const last = all[all.length - 1];
       if (!last || isHydrated(last) || tries > 60) {
-
-
-
         scan();
         return;
       }
@@ -150,11 +145,7 @@ export function ScrollReveal() {
       mo.disconnect();
       io.disconnect();
     };
-
   }, [router]);
-
-
-
 
   return null;
 }

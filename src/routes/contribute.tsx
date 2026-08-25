@@ -20,13 +20,23 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose, Ornament, Record, RecordField, Stamp } from "@/components/site/Editorial";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 import { supabase } from "@/integrations/supabase/client";
 import { TurnstileWidget, type TurnstileWidgetHandle } from "@/components/site/TurnstileWidget";
 import { useAuth } from "@/hooks/useAuth";
-import { submitContribution, getMyContributions, type ContributionRow } from "@/lib/contributions.functions";
+import {
+  submitContribution,
+  getMyContributions,
+  type ContributionRow,
+} from "@/lib/contributions.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -40,9 +50,17 @@ export const Route = createFileRoute("/contribute")({
   head: () => ({
     meta: [
       { title: "الاشتراك والمساهمة | آل بوعبيد" },
-      { name: "description", content: "الاشتراكات الشهرية والمساهمات في أوقاف ومشاريع صندوق التنمية العائلية (آل بوعبيد) عبر القنوات المعتمدة." },
+      {
+        name: "description",
+        content:
+          "الاشتراكات الشهرية والمساهمات في أوقاف ومشاريع صندوق التنمية العائلية (آل بوعبيد) عبر القنوات المعتمدة.",
+      },
       { property: "og:title", content: "الاشتراك والمساهمة — آل بوعبيد" },
-      { property: "og:description", content: "طرق الاشتراك الشهري والمساهمة في أوقاف ومشاريع صندوق التنمية العائلية (آل بوعبيد) عبر القنوات المعتمدة." },
+      {
+        property: "og:description",
+        content:
+          "طرق الاشتراك الشهري والمساهمة في أوقاف ومشاريع صندوق التنمية العائلية (آل بوعبيد) عبر القنوات المعتمدة.",
+      },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/contribute") },
     ],
@@ -139,7 +157,10 @@ const tiers: { category: BiText; amount: BiText; purpose: BiText }[] = [
 
 const contribCopy = {
   formEyebrow: { ar: "سجل مساهمتك", en: "Record a contribution" } as BiText,
-  formTitle: { ar: "تسجيل اشتراك أو مساهمة", en: "Record a subscription or contribution" } as BiText,
+  formTitle: {
+    ar: "تسجيل اشتراك أو مساهمة",
+    en: "Record a subscription or contribution",
+  } as BiText,
   formSubtitle: {
     ar: "سجّل تحويلك البنكي أو مساهمتك هنا ليتولى أمين الخزينة اعتمادها.",
     en: "Log your bank transfer or contribution here for the treasurer to verify.",
@@ -167,11 +188,29 @@ const contribCopy = {
   statusPending: { ar: "قيد المراجعة", en: "Pending" } as BiText,
   statusVerified: { ar: "معتمد", en: "Verified" } as BiText,
   statusRejected: { ar: "مرفوض", en: "Rejected" } as BiText,
-  successToast: { ar: "تم تسجيل المساهمة، بانتظار الاعتماد.", en: "Contribution recorded, awaiting verification." } as BiText,
+  successToast: {
+    ar: "تم تسجيل المساهمة، بانتظار الاعتماد.",
+    en: "Contribution recorded, awaiting verification.",
+  } as BiText,
   errorToast: { ar: "تعذر تسجيل المساهمة.", en: "We couldn't record that contribution." } as BiText,
   uploadError: { ar: "تعذر رفع الإيصال.", en: "We couldn't upload the receipt." } as BiText,
+  invalidAmount: {
+    ar: "يرجى إدخال مبلغ صحيح (ريال واحد فأكثر).",
+    en: "Please enter a valid amount (SAR 1 or more).",
+  } as BiText,
+  rateLimited: {
+    ar: "عدد كبير من المحاولات. يرجى المحاولة بعد قليل.",
+    en: "Too many attempts. Please try again shortly.",
+  } as BiText,
+  verificationFailed: {
+    ar: "تعذّر التحقق من أنك لست آلياً. يرجى إعادة المحاولة.",
+    en: "We couldn't complete the anti-bot check. Please try again.",
+  } as BiText,
   fileTooBig: { ar: "حجم الملف يتجاوز ٥ ميجابايت.", en: "The file exceeds 5MB." } as BiText,
-  fileType: { ar: "يُقبل الصور وملفات PDF فقط.", en: "Only images and PDF files are accepted." } as BiText,
+  fileType: {
+    ar: "يُقبل الصور وملفات PDF فقط.",
+    en: "Only images and PDF files are accepted.",
+  } as BiText,
 };
 
 const statusLabels: Record<ContributionRow["status"], BiText> = {
@@ -247,11 +286,21 @@ function ContributePage() {
 
   const record = useMutation({
     mutationFn: async () => {
+      const amount = Number(form.amount);
+      if (!Number.isFinite(amount) || amount < 1 || amount > 10_000_000) {
+        throw new Error("invalid_amount");
+      }
+      if (!user?.id) throw new Error("not_signed_in");
+
       let receipt_path = "";
       if (file) {
         setUploading(true);
-        const ext = file.name.split(".").pop() || "bin";
-        const path = `${user?.id}/${Date.now()}.${ext}`;
+        // Keep the object key to the `<uuid>/<name>` shape the server and the
+        // receipts bucket expect — the extension comes from a user-supplied
+        // filename, so strip anything that isn't a plain alphanumeric suffix.
+        const rawExt = file.name.split(".").pop() ?? "";
+        const ext = /^[A-Za-z0-9]{1,10}$/.test(rawExt) ? rawExt.toLowerCase() : "bin";
+        const path = `${user.id}/${Date.now()}.${ext}`;
         const { error: uploadErr } = await supabase.storage.from("receipts").upload(path, file, {
           contentType: file.type,
         });
@@ -262,7 +311,7 @@ function ContributePage() {
       return submit({
         data: {
           contributor_name: form.contributor_name,
-          amount: Number(form.amount),
+          amount,
           currency: "SAR",
           method: form.method,
           purpose: form.purpose,
@@ -275,18 +324,31 @@ function ContributePage() {
     onSuccess: (result) => {
       if (result?.ok) {
         toast.success(t(contribCopy.successToast));
-        setForm({ contributor_name: "", amount: "", method: "bank_transfer", purpose: "", reference: "" });
+        setForm({
+          contributor_name: "",
+          amount: "",
+          method: "bank_transfer",
+          purpose: "",
+          reference: "",
+        });
         setFile(null);
         setTurnstileToken("");
         turnstileRef.current?.reset();
         void queryClient.invalidateQueries({ queryKey: ["my-contributions"] });
       } else {
-        toast.error(t(contribCopy.errorToast));
+        const messages: Record<string, BiText> = {
+          rate_limited: contribCopy.rateLimited,
+          invalid_receipt: contribCopy.uploadError,
+          verification_failed: contribCopy.verificationFailed,
+        };
+        toast.error(t(messages[result?.error ?? ""] ?? contribCopy.errorToast));
       }
     },
     onError: (err: Error) => {
       if (err.message === "upload_failed") {
         toast.error(t(contribCopy.uploadError));
+      } else if (err.message === "invalid_amount") {
+        toast.error(t(contribCopy.invalidAmount));
       } else {
         toast.error(t(contribCopy.errorToast));
       }
@@ -389,7 +451,6 @@ function ContributePage() {
           </div>
         </section>
 
-
         {/* ── Channels ───────────────────────────────────────── */}
         <section className="reveal-on-scroll mt-16 border-t border-border pt-12">
           <Eyebrow>{t(copy.channelsEyebrow)}</Eyebrow>
@@ -426,7 +487,9 @@ function ContributePage() {
                   className="inline-flex items-center gap-2 border border-bronze bg-bronze/10 px-5 py-3 text-sm font-medium text-bronze transition-colors hover:bg-bronze hover:text-white dark:border-gold dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
                 >
                   <Building2 className="h-4 w-4" aria-hidden="true" />
-                  {lang === "ar" ? "عرض بيانات الحساب البنكي والآيبان" : "View Official Bank Details & IBAN"}
+                  {lang === "ar"
+                    ? "عرض بيانات الحساب البنكي والآيبان"
+                    : "View Official Bank Details & IBAN"}
                 </button>
                 <Link
                   to="/contact"
@@ -443,7 +506,9 @@ function ContributePage() {
             <DialogContent className="max-w-lg p-6">
               <DialogHeader>
                 <DialogTitle className="text-xl font-serif text-foreground">
-                  {lang === "ar" ? "بيانات الحساب البنكي الرسمي" : "Official Bank Account Particulars"}
+                  {lang === "ar"
+                    ? "بيانات الحساب البنكي الرسمي"
+                    : "Official Bank Account Particulars"}
                 </DialogTitle>
                 <DialogDescription className="text-sm text-muted-foreground">
                   {lang === "ar"
@@ -483,10 +548,15 @@ function ContributePage() {
 
                   <div className="border-t border-border pt-3">
                     <span className="text-xs text-muted-foreground block mb-1">
-                      {lang === "ar" ? "رقم الآيبان الدولي (IBAN)" : "International Bank Account Number (IBAN)"}
+                      {lang === "ar"
+                        ? "رقم الآيبان الدولي (IBAN)"
+                        : "International Bank Account Number (IBAN)"}
                     </span>
                     <div className="mt-1 flex items-center justify-between gap-2 rounded border border-border bg-background p-2.5">
-                      <code className="text-xs sm:text-sm font-mono font-bold tracking-wider text-foreground select-all" dir="ltr">
+                      <code
+                        className="text-xs sm:text-sm font-mono font-bold tracking-wider text-foreground select-all"
+                        dir="ltr"
+                      >
                         {siteMeta.bankAccount.iban}
                       </code>
                       <button
@@ -600,7 +670,10 @@ function ContributePage() {
               }}
             >
               <div className="sm:col-span-2">
-                <label htmlFor="contributor-name" className="label-caps mb-1.5 block text-muted-foreground">
+                <label
+                  htmlFor="contributor-name"
+                  className="label-caps mb-1.5 block text-muted-foreground"
+                >
                   {t(contribCopy.contributorName)}
                 </label>
                 <input
@@ -637,7 +710,7 @@ function ContributePage() {
                         "px-2 py-0.5 text-xs font-semibold rounded border transition-colors cursor-pointer",
                         form.amount === val.toString()
                           ? "bg-bronze text-white border-bronze dark:bg-gold dark:text-ink dark:border-gold"
-                          : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                          : "bg-secondary text-muted-foreground border-border hover:text-foreground",
                       )}
                     >
                       {val} {lang === "ar" ? "ريال" : "SAR"}
@@ -672,20 +745,29 @@ function ContributePage() {
                   id="purpose"
                   value={form.purpose}
                   onChange={(e) => setForm((f) => ({ ...f, purpose: e.target.value }))}
-                  placeholder={lang === "ar" ? "مثال: مشروع المقر الدائم / كفالة تعليمية" : "e.g. Headquarters / Educational Fund"}
+                  placeholder={
+                    lang === "ar"
+                      ? "مثال: مشروع المقر الدائم / كفالة تعليمية"
+                      : "e.g. Headquarters / Educational Fund"
+                  }
                   className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold rounded-sm"
                 />
               </div>
 
               <div>
-                <label htmlFor="reference" className="label-caps mb-1.5 block text-muted-foreground">
+                <label
+                  htmlFor="reference"
+                  className="label-caps mb-1.5 block text-muted-foreground"
+                >
                   {t(contribCopy.reference)}
                 </label>
                 <input
                   id="reference"
                   value={form.reference}
                   onChange={(e) => setForm((f) => ({ ...f, reference: e.target.value }))}
-                  placeholder={lang === "ar" ? "رقم الحوالة البنكية (اختياري)" : "Transfer Ref. No."}
+                  placeholder={
+                    lang === "ar" ? "رقم الحوالة البنكية (اختياري)" : "Transfer Ref. No."
+                  }
                   className="nums w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold rounded-sm"
                 />
               </div>
@@ -728,7 +810,9 @@ function ContributePage() {
                   disabled={record.isPending || uploading}
                   className="border border-gold bg-gold px-6 py-2.5 text-xs font-bold text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60 rounded-sm cursor-pointer"
                 >
-                  {record.isPending || uploading ? t(contribCopy.submitting) : t(contribCopy.submit)}
+                  {record.isPending || uploading
+                    ? t(contribCopy.submitting)
+                    : t(contribCopy.submit)}
                 </button>
               </div>
             </form>
@@ -753,7 +837,9 @@ function ContributePage() {
           {user ? (
             <div className="mt-10">
               <Eyebrow>{t(contribCopy.mineEyebrow)}</Eyebrow>
-              <h3 className="mt-2 text-xl leading-tight text-foreground">{t(contribCopy.mineTitle)}</h3>
+              <h3 className="mt-2 text-xl leading-tight text-foreground">
+                {t(contribCopy.mineTitle)}
+              </h3>
 
               {mineLoading ? (
                 <p className="mt-4 text-sm text-muted-foreground">
@@ -765,7 +851,9 @@ function ContributePage() {
                     <li key={c.id} className="px-5 py-3 text-sm">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <p className="nums font-medium text-foreground">{formatSar(c.amount, lang)}</p>
+                          <p className="nums font-medium text-foreground">
+                            {formatSar(c.amount, lang)}
+                          </p>
                           <p className="text-[12px] text-muted-foreground">
                             {formatDate(c.created_at, lang)}
                             {c.purpose ? ` · ${c.purpose}` : ""}
@@ -794,7 +882,9 @@ function ContributePage() {
                     </li>
                   ))}
                   {(mine ?? []).length === 0 ? (
-                    <li className="px-5 py-6 text-sm text-muted-foreground">{t(contribCopy.mineEmpty)}</li>
+                    <li className="px-5 py-6 text-sm text-muted-foreground">
+                      {t(contribCopy.mineEmpty)}
+                    </li>
                   ) : null}
                 </ul>
               )}

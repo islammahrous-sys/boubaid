@@ -26,10 +26,7 @@ export function AdminTabSkeleton({
       {cardCount > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {Array.from({ length: cardCount }).map((_, i) => (
-            <div
-              key={i}
-              className="p-4 rounded-xl border border-border/50 bg-card/60 space-y-3"
-            >
+            <div key={i} className="p-4 rounded-xl border border-border/50 bg-card/60 space-y-3">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-3.5 w-20 bg-muted/60" />
                 <Skeleton className="h-7 w-7 rounded-lg bg-muted/40" />
@@ -54,10 +51,7 @@ export function AdminTabSkeleton({
       {type === "grid" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="rounded-xl border border-border/50 bg-card/60 p-4 space-y-3"
-            >
+            <div key={i} className="rounded-xl border border-border/50 bg-card/60 p-4 space-y-3">
               <Skeleton className="h-36 w-full rounded-lg bg-muted/50" />
               <Skeleton className="h-5 w-3/4 bg-muted/70" />
               <Skeleton className="h-3.5 w-full bg-muted/40" />

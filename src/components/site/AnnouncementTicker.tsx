@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPublicAnnouncements } from "@/lib/cms.functions";
 import { useLang } from "@/i18n/LanguageProvider";
-import { AlertCircle, Bell, Sparkles, Heart, ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
+import {
+  AlertCircle,
+  Bell,
+  Sparkles,
+  Heart,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  ExternalLink,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@tanstack/react-router";
 
@@ -69,8 +78,8 @@ export function AnnouncementTicker() {
 
   const style = getPriorityStyle(current.priority || "normal");
   const Icon = style.icon;
-  const title = isAr ? current.title_ar : (current.title_en || current.title_ar);
-  const message = isAr ? current.message_ar : (current.message_en || current.message_ar);
+  const title = isAr ? current.title_ar : current.title_en || current.title_ar;
+  const message = isAr ? current.message_ar : current.message_en || current.message_ar;
 
   return (
     <aside
@@ -79,7 +88,9 @@ export function AnnouncementTicker() {
     >
       <div className="container-header flex items-center justify-between py-2 text-xs gap-3">
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <Badge className={`shrink-0 px-2 py-0.5 text-[10px] font-bold rounded-full ${style.badge}`}>
+          <Badge
+            className={`shrink-0 px-2 py-0.5 text-[10px] font-bold rounded-full ${style.badge}`}
+          >
             <Icon className="w-3 h-3 me-1 inline-block shrink-0" />
             <span>{style.label}</span>
           </Badge>
@@ -98,7 +109,9 @@ export function AnnouncementTicker() {
               to={current.link_url}
               className="shrink-0 inline-flex items-center gap-1 text-[11px] font-bold text-white underline underline-offset-2 hover:text-white/80 transition-opacity ms-1"
             >
-              <span>{isAr ? (current.link_label_ar || "تفاصيل") : (current.link_label_en || "Details")}</span>
+              <span>
+                {isAr ? current.link_label_ar || "تفاصيل" : current.link_label_en || "Details"}
+              </span>
               <ExternalLink className="w-3 h-3" />
             </Link>
           )}
@@ -111,7 +124,11 @@ export function AnnouncementTicker() {
               <span>/</span>
               <span>{announcements.length}</span>
               <button
-                onClick={() => setCurrentIndex((prev) => (prev - 1 + announcements.length) % announcements.length)}
+                onClick={() =>
+                  setCurrentIndex(
+                    (prev) => (prev - 1 + announcements.length) % announcements.length,
+                  )
+                }
                 className="p-0.5 text-white/80 hover:text-white rounded transition-colors"
                 aria-label="Previous announcement"
               >

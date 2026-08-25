@@ -25,7 +25,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   User,
@@ -56,6 +62,8 @@ import {
   X,
   Loader2,
   Bell,
+  RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/account")({
@@ -64,7 +72,8 @@ export const Route = createFileRoute("/_authenticated/account")({
       { title: "حسابي وبوابة الأعضاء | مجلس أسرة آل بوعبيد" },
       {
         name: "description",
-        content: "بوابة أفراد أسرة آل بوعبيد: السجل العائلي، بطاقة العضوية الرقمية، ومتابعة المساهمات.",
+        content:
+          "بوابة أفراد أسرة آل بوعبيد: السجل العائلي، بطاقة العضوية الرقمية، ومتابعة المساهمات.",
       },
       { property: "og:title", content: "حسابي | مجلس أسرة آل بوعبيد" },
       { property: "og:description", content: "بوابة أفراد أسرة آل بوعبيد." },
@@ -75,12 +84,28 @@ export const Route = createFileRoute("/_authenticated/account")({
   component: AccountPage,
 });
 
+/** Explains why the membership-request button is disabled. Without it the
+ *  button simply greys out for anyone whose profile has no Arabic name yet --
+ *  which is precisely the brand-new account the flow exists for. */
+function ApplyBlockedHint({ isAr }: { isAr: boolean }) {
+  return (
+    <p className="flex items-start gap-1.5 text-[11px] text-amber-600 dark:text-amber-500 leading-relaxed">
+      <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-px" />
+      <span>
+        {isAr
+          ? "أدخل الاسم الكامل بالعربية في بيانات السجل ثم احفظ التعديلات لتفعيل تقديم الطلب."
+          : "Enter your full Arabic name in the register form and save, to enable the request."}
+      </span>
+    </p>
+  );
+}
+
 function AccountPage() {
   const { lang, t } = useLang();
   const isAr = lang === "ar";
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user, isAdmin, isMember: authIsMember } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const fetchAccount = useServerFn(getMyAccount);
   const saveProfile = useServerFn(updateMyProfile);
@@ -89,28 +114,54 @@ function AccountPage() {
   const markNotifReadFn = useServerFn(markMyNotificationRead);
   const markAllNotifsReadFn = useServerFn(markAllMyNotificationsRead);
 
-  const { data, isLoading } = useQuery({
+  const {
+    data,
+    isLoading,
+    isError: accountFailed,
+    refetch: refetchAccount,
+    isFetching: accountFetching,
+  } = useQuery({
     queryKey: ["account"],
     queryFn: () => fetchAccount(),
   });
 
   const [activeTab, setActiveTab] = useState("profile");
 
-  const { data: notifData } = useQuery({
+  const {
+    data: notifData,
+    isLoading: notifsLoading,
+    isError: notifsFailed,
+    refetch: refetchNotifs,
+  } = useQuery({
     queryKey: ["my-notifications"],
     queryFn: () => fetchNotifications(),
     refetchInterval: 60_000,
   });
   const unreadCount = notifData?.unreadCount ?? 0;
 
+  const notifErrorToast = () =>
+    toast.error(isAr ? "تعذر تحديث حالة الإشعار." : "Could not update the notification.");
+
   const markNotifRead = useMutation({
     mutationFn: (id: string) => markNotifReadFn({ data: { id } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-notifications"] }),
+    onError: notifErrorToast,
   });
   const markAllNotifsRead = useMutation({
     mutationFn: () => markAllNotifsReadFn(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-notifications"] }),
+    onError: notifErrorToast,
   });
+
+  /**
+   * Notification links come from the `notifications.link` column, which is
+   * written by DB triggers today but is plain admin-writable text. Rendering
+   * it straight into an <a href> would execute a `javascript:` value, so only
+   * same-origin absolute paths are treated as navigable; anything else is
+   * shown as inert text.
+   */
+  const safeNotifLink = (link: string | null) =>
+    link && link.startsWith("/") && !link.startsWith("//") ? link : null;
 
   const formatNotifTime = (iso: string) => {
     const diffMs = Date.now() - new Date(iso).getTime();
@@ -173,7 +224,9 @@ function AccountPage() {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error(isAr ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)" : "Please select an image file");
+      toast.error(
+        isAr ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)" : "Please select an image file",
+      );
       return;
     }
 
@@ -182,11 +235,26 @@ function AccountPage() {
       return;
     }
 
+    if (!user?.id) {
+      toast.error(isAr ? "انتهت الجلسة، يرجى تسجيل الدخول." : "Session expired, please sign in.");
+      return;
+    }
+
     try {
       setAvatarUploading(true);
-      const fileExt = file.name.split(".").pop() || "jpg";
+      // The extension is taken from a user-supplied filename, so it is
+      // whitelisted rather than pasted into the object key as-is.
+      const rawExt = file.name.split(".").pop()?.toLowerCase() ?? "";
+      const fileExt = /^(jpe?g|png|webp|gif|avif)$/.test(rawExt) ? rawExt : "jpg";
       const cleanFileName = `avatar-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
-      const storagePath = `avatars/${cleanFileName}`;
+      // Keyed under the member's own id. The old `avatars/<file>` key put every
+      // member's photo in one flat, unattributable folder inside the `avatars`
+      // bucket (and produced a doubled `avatars/avatars/...` public URL); an
+      // owner-prefixed key matches the convention the rest of the buckets use
+      // and lets the storage policy be tightened to
+      // `(storage.foldername(name))[1] = auth.uid()::text` without a migration
+      // of the app code.
+      const storagePath = `${user.id}/${cleanFileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
@@ -200,7 +268,11 @@ function AccountPage() {
 
       const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(storagePath);
       setForm((prev) => ({ ...prev, avatar_path: urlData.publicUrl }));
-      toast.success(isAr ? "تم اختيار الصورة بنجاح. احفظ التغييرات لتثبيتها." : "Avatar updated. Save changes to persist.");
+      toast.success(
+        isAr
+          ? "تم اختيار الصورة بنجاح. احفظ التغييرات لتثبيتها."
+          : "Avatar updated. Save changes to persist.",
+      );
     } catch (err: any) {
       console.error("Avatar upload failed:", err);
       toast.error(err.message || (isAr ? "فشل رفع الصورة" : "Failed to upload avatar"));
@@ -214,7 +286,9 @@ function AccountPage() {
     mutationFn: () => saveProfile({ data: form }),
     onSuccess: (result) => {
       if (result.ok) {
-        toast.success(isAr ? "تم حفظ بيانات السجل والصورة بنجاح." : "Profile & avatar updated successfully.");
+        toast.success(
+          isAr ? "تم حفظ بيانات السجل والصورة بنجاح." : "Profile & avatar updated successfully.",
+        );
         void queryClient.invalidateQueries({ queryKey: ["account"] });
       } else {
         toast.error(isAr ? "تعذر حفظ البيانات." : "Failed to save profile.");
@@ -227,7 +301,8 @@ function AccountPage() {
     mutationFn: () =>
       requestMembership({
         data: {
-          full_name_ar: form.full_name_ar || (user?.user_metadata?.full_name as string) || "عضو الأسرة",
+          full_name_ar:
+            form.full_name_ar || (user?.user_metadata?.full_name as string) || "عضو الأسرة",
           full_name_en: form.full_name_en || "",
           phone: form.phone || "",
           branch_slug: form.branch_slug || "",
@@ -237,10 +312,30 @@ function AccountPage() {
       }),
     onSuccess: (result) => {
       if (result.ok) {
-        toast.success(isAr ? "تم رفع طلب العضوية للمراجعة بنجاح." : "Membership request submitted for review.");
+        toast.success(
+          isAr ? "تم رفع طلب العضوية للمراجعة بنجاح." : "Membership request submitted for review.",
+        );
         void queryClient.invalidateQueries({ queryKey: ["account"] });
+        void queryClient.invalidateQueries({ queryKey: ["my-notifications"] });
       } else if (result.error === "already_pending") {
-        toast.info(isAr ? "لديك طلب عضوية قيد المراجعة بالفعل." : "You already have a pending request.");
+        toast.info(
+          isAr ? "لديك طلب عضوية قيد المراجعة بالفعل." : "You already have a pending request.",
+        );
+        // The request is on file even though this call was refused -- refresh
+        // so the card switches to the "under review" state instead of
+        // continuing to offer the button.
+        void queryClient.invalidateQueries({ queryKey: ["account"] });
+      } else if (result.error === "already_member") {
+        toast.info(
+          isAr ? "عضويتك معتمدة بالفعل، لا حاجة لتقديم طلب." : "Your membership is already active.",
+        );
+        void queryClient.invalidateQueries({ queryKey: ["account"] });
+      } else if (result.error === "missing_email") {
+        toast.error(
+          isAr
+            ? "لا يوجد بريد إلكتروني مرتبط بحسابك، يتعذر إرسال الطلب."
+            : "No email is linked to your account, so the request cannot be filed.",
+        );
       } else {
         toast.error(isAr ? "تعذر إرسال الطلب." : "Failed to submit request.");
       }
@@ -250,6 +345,11 @@ function AccountPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    // Drop every cached account/notification payload -- otherwise the next
+    // person to sign in on this browser is briefly shown the previous
+    // member's profile, digital ID and notifications from the cache before
+    // their own queries resolve.
+    queryClient.clear();
     toast.success(isAr ? "تم تسجيل الخروج بنجاح." : "Signed out successfully.");
     await navigate({ to: "/" });
   };
@@ -261,16 +361,46 @@ function AccountPage() {
         redirectTo: window.location.origin + "/reset-password",
       });
       if (error) throw error;
-      toast.success(isAr ? "تم إرسال رابط تعيين كلمة المرور إلى بريدك الإلكتروني." : "Password reset email sent.");
+      toast.success(
+        isAr
+          ? "تم إرسال رابط تعيين كلمة المرور إلى بريدك الإلكتروني."
+          : "Password reset email sent.",
+      );
     } catch (err: any) {
       toast.error(err.message || (isAr ? "تعذر إرسال الرابط." : "Failed to send reset email."));
     }
   };
 
   const request = data?.request ?? null;
-  const isApproved = request?.status === "approved" || authIsMember || isAdmin;
-  const isPending = request?.status === "pending";
-  const isRejected = request?.status === "rejected" && !isApproved;
+
+  /**
+   * Membership standing is derived from the roles the *server* returned for
+   * this user, not from `useAuth().isMember` -- that flag is `roles.length > 0`,
+   * so any staff-only role (editor, treasurer, content_manager, viewer...)
+   * used to mark the holder as a fully verified member here. That contradicted
+   * the public QR check in `getMemberVerification`, which only accepts
+   * `member`/`admin`, so such an account was shown a "Verified Member" digital
+   * ID whose own QR seal reported it as unverified -- and was never offered
+   * the application form it actually still needed. The rule below is the same
+   * one the verification endpoint applies.
+   */
+  const roles = data?.roles ?? [];
+  const hasMemberRole =
+    roles.includes("member") || roles.includes("admin") || roles.includes("super_admin");
+
+  const isApproved = request?.status === "approved" || hasMemberRole || isAdmin;
+  const isPending = !isApproved && request?.status === "pending";
+  const isRejected = !isApproved && !isPending && request?.status === "rejected";
+  /** No request on file and no membership role -- the true "new account" state. */
+  const isUnsubmitted = !isApproved && !isPending && !isRejected;
+  /**
+   * Until the snapshot resolves, `request` is null and every derived flag
+   * collapses to "new account". Rendering that optimistically showed a
+   * pending or approved member a "New Account" badge and a live "Submit
+   * Verification" button for the first few hundred milliseconds -- long
+   * enough to click. Nothing status-dependent renders until this is true.
+   */
+  const statusKnown = !isLoading && !accountFailed;
 
   const selectedBranchName = branches.find((b) => b.id === form.branch_slug)?.name;
 
@@ -302,12 +432,20 @@ function AccountPage() {
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground font-naskh">
-                    {form.full_name_ar || user?.user_metadata?.full_name || (isAr ? "عضو أسرة آل بوعبيد" : "Family Member")}
+                    {form.full_name_ar ||
+                      user?.user_metadata?.full_name ||
+                      (isAr ? "عضو أسرة آل بوعبيد" : "Family Member")}
                   </h1>
                   {isAdmin ? (
                     <Badge className="bg-gold text-ink font-semibold text-xs border-0">
                       {isAr ? "أمانة المجلس" : "Admin"}
                     </Badge>
+                  ) : accountFailed ? (
+                    <Badge variant="outline" className="text-muted-foreground text-xs">
+                      {isAr ? "تعذر تحديد الحالة" : "Status unavailable"}
+                    </Badge>
+                  ) : !statusKnown ? (
+                    <span className="inline-block h-5 w-24 rounded-full bg-muted animate-pulse" />
                   ) : isApproved ? (
                     <Badge className="bg-emerald-600/90 text-white font-medium text-xs">
                       {isAr ? "عضو معتمد" : "Verified"}
@@ -317,7 +455,10 @@ function AccountPage() {
                       {isAr ? "قيد المراجعة" : "Pending Review"}
                     </Badge>
                   ) : isRejected ? (
-                    <Badge variant="outline" className="text-destructive border-destructive/40 text-xs">
+                    <Badge
+                      variant="outline"
+                      className="text-destructive border-destructive/40 text-xs"
+                    >
                       {isAr ? "لم يُعتمد الطلب" : "Not Approved"}
                     </Badge>
                   ) : (
@@ -345,14 +486,23 @@ function AccountPage() {
             {/* Quick Actions */}
             <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
               {isAdmin && (
-                <Button asChild size="sm" className="h-9 gap-1.5 bg-primary text-primary-foreground font-semibold shadow-sm">
+                <Button
+                  asChild
+                  size="sm"
+                  className="h-9 gap-1.5 bg-primary text-primary-foreground font-semibold shadow-sm"
+                >
                   <Link to="/admin">
                     <LayoutDashboard className="w-4 h-4" />
                     {isAr ? "لوحة الإدارة والأمانة" : "Admin Console"}
                   </Link>
                 </Button>
               )}
-              <Button asChild variant="outline" size="sm" className="h-9 gap-1.5 border-border hover:bg-secondary">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5 border-border hover:bg-secondary"
+              >
                 <Link to="/contribute">
                   <CreditCard className="w-4 h-4 text-gold" />
                   {isAr ? "المساهمة في الخزينة" : "Family Fund"}
@@ -375,20 +525,32 @@ function AccountPage() {
       {/* ── Main Dashboard Tabs ─────────────────────────────────── */}
       <main className="container-page py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-card border border-border p-1 rounded-xl h-auto grid grid-cols-2 md:grid-cols-5 max-w-3xl gap-1">
-            <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
+          <TabsList className="bg-card border border-border p-1 rounded-xl h-auto flex overflow-x-auto no-scrollbar md:grid md:grid-cols-5 max-w-4xl gap-1">
+            <TabsTrigger
+              value="profile"
+              className="shrink-0 text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground"
+            >
               <User className="w-3.5 h-3.5" />
               {isAr ? "البيانات والنسب" : "Profile & Lineage"}
             </TabsTrigger>
-            <TabsTrigger value="card" className="text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="card"
+              className="shrink-0 text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground"
+            >
               <Sparkles className="w-3.5 h-3.5 text-gold" />
               {isAr ? "بطاقة العضوية" : "Digital ID"}
             </TabsTrigger>
-            <TabsTrigger value="treasury" className="text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="treasury"
+              className="shrink-0 text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground"
+            >
               <CreditCard className="w-3.5 h-3.5" />
               {isAr ? "الخزينة والاشتراك" : "Treasury & Dues"}
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="relative text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="notifications"
+              className="shrink-0 relative text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground"
+            >
               <Bell className="w-3.5 h-3.5" />
               {isAr ? "الإشعارات" : "Notifications"}
               {unreadCount > 0 && (
@@ -397,7 +559,10 @@ function AccountPage() {
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="security" className="text-xs sm:text-sm py-2 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="security"
+              className="shrink-0 text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground"
+            >
               <Lock className="w-3.5 h-3.5" />
               {isAr ? "الأمان والحساب" : "Security"}
             </TabsTrigger>
@@ -425,6 +590,33 @@ function AccountPage() {
                     {isLoading ? (
                       <div className="p-8 text-center text-xs text-muted-foreground animate-pulse">
                         {isAr ? "جاري تحميل بيانات السجل..." : "Loading record..."}
+                      </div>
+                    ) : accountFailed ? (
+                      // Rendering an empty form on a failed load invites the
+                      // member to "save" blanks over a record that did load
+                      // fine on the server -- offer a retry instead.
+                      <div className="p-8 text-center space-y-3">
+                        <AlertTriangle className="w-6 h-6 mx-auto text-destructive/70" />
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {isAr
+                            ? "تعذر تحميل بيانات السجل العائلي. لم يتم تعديل أي بيانات."
+                            : "Could not load your family register data. Nothing has been changed."}
+                        </p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs gap-1.5"
+                          onClick={() => void refetchAccount()}
+                          disabled={accountFetching}
+                        >
+                          {accountFetching ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <RefreshCw className="w-3.5 h-3.5" />
+                          )}
+                          {isAr ? "إعادة المحاولة" : "Retry"}
+                        </Button>
                       </div>
                     ) : (
                       <form
@@ -520,7 +712,9 @@ function AccountPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold">{isAr ? "الاسم الكامل (بالعربية) *" : "Full Name (Arabic) *"}</Label>
+                            <Label className="text-xs font-semibold">
+                              {isAr ? "الاسم الكامل (بالعربية) *" : "Full Name (Arabic) *"}
+                            </Label>
                             <Input
                               required
                               value={form.full_name_ar}
@@ -530,7 +724,9 @@ function AccountPage() {
                           </div>
 
                           <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold">{isAr ? "الاسم بالإنجليزية" : "Full Name (English)"}</Label>
+                            <Label className="text-xs font-semibold">
+                              {isAr ? "الاسم بالإنجليزية" : "Full Name (English)"}
+                            </Label>
                             <Input
                               value={form.full_name_en}
                               onChange={(e) => setForm({ ...form, full_name_en: e.target.value })}
@@ -541,13 +737,17 @@ function AccountPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold">{isAr ? "فرع الأسرة *" : "Family Branch *"}</Label>
+                            <Label className="text-xs font-semibold">
+                              {isAr ? "فرع الأسرة *" : "Family Branch *"}
+                            </Label>
                             <Select
                               value={form.branch_slug}
                               onValueChange={(val) => setForm({ ...form, branch_slug: val })}
                             >
                               <SelectTrigger className="h-9 text-xs">
-                                <SelectValue placeholder={isAr ? "اختر فرع العائلة..." : "Select branch..."} />
+                                <SelectValue
+                                  placeholder={isAr ? "اختر فرع العائلة..." : "Select branch..."}
+                                />
                               </SelectTrigger>
                               <SelectContent>
                                 {branches.map((b) => (
@@ -560,7 +760,9 @@ function AccountPage() {
                           </div>
 
                           <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold">{isAr ? "رقم الجوال للتواصل" : "Phone Number"}</Label>
+                            <Label className="text-xs font-semibold">
+                              {isAr ? "رقم الجوال للتواصل" : "Phone Number"}
+                            </Label>
                             <div className="relative">
                               <Input
                                 value={form.phone}
@@ -575,14 +777,24 @@ function AccountPage() {
 
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <Label className="text-xs font-semibold">{isAr ? "سلسلة النسب والملاحظات العائلية" : "Lineage & Ancestral Notes"}</Label>
-                            <span className="text-[10px] text-muted-foreground">{isAr ? "اختياري" : "Optional"}</span>
+                            <Label className="text-xs font-semibold">
+                              {isAr
+                                ? "سلسلة النسب والملاحظات العائلية"
+                                : "Lineage & Ancestral Notes"}
+                            </Label>
+                            <span className="text-[10px] text-muted-foreground">
+                              {isAr ? "اختياري" : "Optional"}
+                            </span>
                           </div>
                           <Textarea
                             rows={3}
                             value={form.lineage_notes}
                             onChange={(e) => setForm({ ...form, lineage_notes: e.target.value })}
-                            placeholder={isAr ? "مثال: ابن فلان بن فلان، من أهالي المبرز / الصالحية..." : "Ancestral details..."}
+                            placeholder={
+                              isAr
+                                ? "مثال: ابن فلان بن فلان، من أهالي المبرز / الصالحية..."
+                                : "Ancestral details..."
+                            }
                           />
                         </div>
 
@@ -596,7 +808,9 @@ function AccountPage() {
                                 <EyeOff className="w-4 h-4 text-muted-foreground" />
                               )}
                               <Label className="text-xs font-bold text-foreground cursor-pointer">
-                                {isAr ? "الظهور في دليل الأسرة للأعضاء" : "Show in Members Directory"}
+                                {isAr
+                                  ? "الظهور في دليل الأسرة للأعضاء"
+                                  : "Show in Members Directory"}
                               </Label>
                             </div>
                             <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -612,8 +826,18 @@ function AccountPage() {
                         </div>
 
                         <div className="flex justify-end pt-2">
-                          <Button type="submit" disabled={save.isPending} className="px-6 font-bold text-xs h-9">
-                            {save.isPending ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ التعديلات" : "Save Changes"}
+                          <Button
+                            type="submit"
+                            disabled={save.isPending}
+                            className="px-6 font-bold text-xs h-9"
+                          >
+                            {save.isPending
+                              ? isAr
+                                ? "جاري الحفظ..."
+                                : "Saving..."
+                              : isAr
+                                ? "حفظ التعديلات"
+                                : "Save Changes"}
                           </Button>
                         </div>
                       </form>
@@ -634,18 +858,50 @@ function AccountPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3.5 text-xs">
-                    {isAdmin || isApproved ? (
+                    {accountFailed ? (
+                      <div className="space-y-3">
+                        <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-[11px] text-muted-foreground leading-relaxed">
+                          <span className="font-semibold block text-foreground mb-1">
+                            {isAr ? "تعذر تحميل حالة العضوية" : "Could not load membership status"}
+                          </span>
+                          {isAr
+                            ? "لم نتمكن من قراءة حالة طلبك من السجل. لا تقدّم طلباً جديداً قبل التحديث، فقد يكون طلبك مسجلاً بالفعل."
+                            : "We could not read your request status. Don't submit a new request before retrying — one may already be on file."}
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => void refetchAccount()}
+                          disabled={accountFetching}
+                          className="w-full h-8 text-xs font-semibold gap-1.5"
+                        >
+                          {accountFetching ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <RefreshCw className="w-3.5 h-3.5" />
+                          )}
+                          {isAr ? "إعادة المحاولة" : "Retry"}
+                        </Button>
+                      </div>
+                    ) : !statusKnown ? (
+                      <div className="space-y-2.5" aria-busy="true">
+                        <div className="h-10 rounded-lg bg-muted animate-pulse" />
+                        <div className="h-16 rounded-lg bg-muted/60 animate-pulse" />
+                      </div>
+                    ) : isAdmin || isApproved ? (
                       <div className="space-y-2.5">
                         <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
-                          <span className="text-muted-foreground">{isAr ? "صفة العضوية:" : "Membership Status:"}</span>
+                          <span className="text-muted-foreground">
+                            {isAr ? "صفة العضوية:" : "Membership Status:"}
+                          </span>
                           <Badge className="bg-emerald-600 text-white text-xs font-semibold">
                             {isAdmin
                               ? isAr
                                 ? "أمانة المجلس (مسؤول معتمد)"
                                 : "Council Secretariat (Admin)"
                               : isAr
-                              ? "عضو معتمد وموثق"
-                              : "Verified Member"}
+                                ? "عضو معتمد وموثق"
+                                : "Verified Member"}
                           </Badge>
                         </div>
                         <div className="p-3 rounded-lg bg-secondary/40 border border-border text-[11px] text-muted-foreground space-y-1">
@@ -658,22 +914,29 @@ function AccountPage() {
                                 ? "حسابك معتمد وموثق بصلاحيات أمانة المجلس وإدارة المنصة، ولديك كامل الصلاحيات لإدارة السجلات والمحتوى والخزينة."
                                 : "Your account is fully verified with executive council privileges to manage records, content, and the family fund."
                               : isAr
-                              ? "تم توثيق بياناتك بنجاح في السجل العائلي الرسمي وشجرة الأنساب."
-                              : "Your record has been officially verified in the family register."}
+                                ? "تم توثيق بياناتك بنجاح في السجل العائلي الرسمي وشجرة الأنساب."
+                                : "Your record has been officially verified in the family register."}
                           </p>
                         </div>
                       </div>
                     ) : isPending ? (
                       <div className="space-y-2.5">
                         <div className="flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                          <span className="text-muted-foreground">{isAr ? "حالة الطلب:" : "Status:"}</span>
-                          <Badge variant="outline" className="text-amber-500 border-amber-500/40 text-xs">
+                          <span className="text-muted-foreground">
+                            {isAr ? "حالة الطلب:" : "Status:"}
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="text-amber-500 border-amber-500/40 text-xs"
+                          >
                             {isAr ? "قيد مراجعة الأمانة" : "Under Review"}
                           </Badge>
                         </div>
                         {request?.review_note && (
                           <div className="p-3 rounded-lg bg-muted/40 border border-border text-[11px] text-muted-foreground space-y-1">
-                            <span className="font-semibold block text-foreground">{isAr ? "ملاحظة أمانة المجلس:" : "Secretariat Note:"}</span>
+                            <span className="font-semibold block text-foreground">
+                              {isAr ? "ملاحظة أمانة المجلس:" : "Secretariat Note:"}
+                            </span>
                             <p>{request.review_note}</p>
                           </div>
                         )}
@@ -686,14 +949,21 @@ function AccountPage() {
                     ) : isRejected ? (
                       <div className="space-y-2.5">
                         <div className="flex items-center justify-between p-2.5 rounded-lg bg-destructive/10 border border-destructive/30">
-                          <span className="text-muted-foreground">{isAr ? "حالة الطلب:" : "Status:"}</span>
-                          <Badge variant="outline" className="text-destructive border-destructive/40 text-xs">
+                          <span className="text-muted-foreground">
+                            {isAr ? "حالة الطلب:" : "Status:"}
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="text-destructive border-destructive/40 text-xs"
+                          >
                             {isAr ? "لم يُعتمد الطلب" : "Not Approved"}
                           </Badge>
                         </div>
                         {request?.review_note && (
                           <div className="p-3 rounded-lg bg-muted/40 border border-border text-[11px] text-muted-foreground space-y-1">
-                            <span className="font-semibold block text-foreground">{isAr ? "ملاحظة أمانة المجلس:" : "Secretariat Note:"}</span>
+                            <span className="font-semibold block text-foreground">
+                              {isAr ? "ملاحظة أمانة المجلس:" : "Secretariat Note:"}
+                            </span>
                             <p>{request.review_note}</p>
                           </div>
                         )}
@@ -709,8 +979,15 @@ function AccountPage() {
                           className="w-full h-8 text-xs font-semibold gap-1.5"
                         >
                           <Send className="w-3.5 h-3.5" />
-                          {apply.isPending ? (isAr ? "جاري الإرسال..." : "Submitting...") : isAr ? "إعادة تقديم الطلب" : "Resubmit Request"}
+                          {apply.isPending
+                            ? isAr
+                              ? "جاري الإرسال..."
+                              : "Submitting..."
+                            : isAr
+                              ? "إعادة تقديم الطلب"
+                              : "Resubmit Request"}
                         </Button>
+                        {!form.full_name_ar.trim() && <ApplyBlockedHint isAr={isAr} />}
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -726,8 +1003,15 @@ function AccountPage() {
                           className="w-full h-8 text-xs font-semibold gap-1.5"
                         >
                           <Send className="w-3.5 h-3.5" />
-                          {apply.isPending ? (isAr ? "جاري الإرسال..." : "Submitting...") : isAr ? "تقديم طلب اعتماد العضوية" : "Submit Verification"}
+                          {apply.isPending
+                            ? isAr
+                              ? "جاري الإرسال..."
+                              : "Submitting..."
+                            : isAr
+                              ? "تقديم طلب اعتماد العضوية"
+                              : "Submit Verification"}
                         </Button>
+                        {!form.full_name_ar.trim() && <ApplyBlockedHint isAr={isAr} />}
                       </div>
                     )}
                   </CardContent>
@@ -755,7 +1039,7 @@ function AccountPage() {
           <TabsContent value="card" className="space-y-6">
             <div className="max-w-xl mx-auto space-y-6">
               {/* Gold & Emerald Digital Card */}
-              <div className="relative overflow-hidden rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink p-7 text-ivory shadow-2xl">
+              <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink p-4 sm:p-6 md:p-7 text-ivory shadow-2xl">
                 {/* Background Pattern Watermark */}
                 <div className="absolute inset-0 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
@@ -770,15 +1054,53 @@ function AccountPage() {
                         {isAr ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
                       </h3>
                       <p className="text-[10px] text-ivory/60">
-                        {isAr ? "صندوق التنمية العائلية · بطاقة العضوية الرقمية" : "Family Development Fund · Digital ID"}
+                        {isAr
+                          ? "صندوق التنمية العائلية · بطاقة العضوية الرقمية"
+                          : "Family Development Fund · Digital ID"}
                       </p>
                     </div>
                   </div>
 
-                  <Badge className="bg-gold text-ink font-bold text-[10px] border-0">
-                    {isApproved ? (isAr ? "عضو معتمد" : "Verified") : (isAr ? "قيد الاعتماد" : "Pending")}
-                  </Badge>
+                  {/* The card used to carry a binary Verified/Pending seal, so a
+                      member whose request was *rejected* -- and a brand-new
+                      account that had never applied at all -- both received a
+                      gold "Pending" badge on an otherwise finished-looking
+                      membership card. Each real `request_status` value now maps
+                      to its own seal. */}
+                  {!statusKnown ? (
+                    <span className="inline-block h-5 w-20 rounded-full bg-ivory/20 animate-pulse" />
+                  ) : isApproved ? (
+                    <Badge className="bg-gold text-ink font-bold text-[10px] border-0">
+                      {isAr ? "عضو معتمد" : "Verified"}
+                    </Badge>
+                  ) : isPending ? (
+                    <Badge className="bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold text-[10px]">
+                      {isAr ? "قيد الاعتماد" : "Pending"}
+                    </Badge>
+                  ) : isRejected ? (
+                    <Badge className="bg-destructive/20 text-red-300 border border-red-400/40 font-bold text-[10px]">
+                      {isAr ? "غير معتمدة" : "Not Approved"}
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-ivory/10 text-ivory/70 border border-ivory/25 font-bold text-[10px]">
+                      {isAr ? "لم تُقدَّم بعد" : "Not Submitted"}
+                    </Badge>
+                  )}
                 </div>
+
+                {/* An unapproved card is a preview, not credentials. Saying so
+                    on the card itself keeps it from being presented as proof of
+                    membership that the public /verify endpoint would refuse. */}
+                {statusKnown && !isApproved && (
+                  <div className="relative mt-4 flex items-start gap-2 rounded-xl border border-gold/25 bg-ivory/5 p-2.5 text-[10px] leading-relaxed text-ivory/70">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-px text-gold" />
+                    <span>
+                      {isAr
+                        ? "هذه معاينة للبطاقة ولا تُعد إثبات عضوية. لن تُصدر البطاقة رسمياً ولن يعتمدها رمز الفحص إلا بعد اعتماد الأمانة."
+                        : "This is a preview, not proof of membership. The card is only issued — and the QR seal only verifies — once the secretariat approves your request."}
+                    </span>
+                  </div>
+                )}
 
                 {/* Card Body */}
                 <div className="relative my-6 flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -791,19 +1113,35 @@ function AccountPage() {
                     />
 
                     <div>
-                      <span className="text-[10px] text-ivory/50 block mb-0.5">{isAr ? "اسم العضو" : "Member Name"}</span>
+                      <span className="text-[10px] text-ivory/50 block mb-0.5">
+                        {isAr ? "اسم العضو" : "Member Name"}
+                      </span>
                       <h4 className="text-lg sm:text-xl font-bold font-naskh text-ivory">
                         {form.full_name_ar || (isAr ? "عضو أسرة آل بوعبيد" : "Family Member")}
                       </h4>
-                      {form.full_name_en && <p className="text-xs text-ivory/60 font-mono mt-0.5">{form.full_name_en}</p>}
-                      
+                      {form.full_name_en && (
+                        <p className="text-xs text-ivory/60 font-mono mt-0.5">
+                          {form.full_name_en}
+                        </p>
+                      )}
+
                       <div className="mt-3 flex items-center gap-4 text-xs">
                         <div>
-                          <span className="text-[9px] text-ivory/40 block">{isAr ? "الفرع" : "Branch"}</span>
-                          <span className="font-semibold text-gold">{selectedBranchName ? t(selectedBranchName) : (isAr ? "غير محدد" : "Unassigned")}</span>
+                          <span className="text-[9px] text-ivory/40 block">
+                            {isAr ? "الفرع" : "Branch"}
+                          </span>
+                          <span className="font-semibold text-gold">
+                            {selectedBranchName
+                              ? t(selectedBranchName)
+                              : isAr
+                                ? "غير محدد"
+                                : "Unassigned"}
+                          </span>
                         </div>
                         <div>
-                          <span className="text-[9px] text-ivory/40 block">{isAr ? "رقم العضوية" : "Member ID"}</span>
+                          <span className="text-[9px] text-ivory/40 block">
+                            {isAr ? "رقم العضوية" : "Member ID"}
+                          </span>
                           <span className="font-mono text-ivory/80">{memberCode}</span>
                         </div>
                       </div>
@@ -817,7 +1155,11 @@ function AccountPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group relative block p-2 rounded-2xl bg-white shadow-xl hover:scale-105 transition-all"
-                      title={isAr ? "انقر لعرض شهادة التوثيق الرسمية" : "Click to view official verification certificate"}
+                      title={
+                        isAr
+                          ? "انقر لعرض شهادة التوثيق الرسمية"
+                          : "Click to view official verification certificate"
+                      }
                     >
                       {qrCodeDataUrl ? (
                         <img
@@ -871,32 +1213,76 @@ function AccountPage() {
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-foreground">{isAr ? "١. إنشاء الحساب الرقمي" : "1. Account Created"}</p>
-                      <p className="text-[11px] text-muted-foreground">{isAr ? "تم التحقق من البريد الإلكتروني والوصول للمنصة." : "Email verified and access granted."}</p>
+                      <p className="font-semibold text-foreground">
+                        {isAr ? "١. إنشاء الحساب الرقمي" : "1. Account Created"}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {isAr
+                          ? "تم التحقق من البريد الإلكتروني والوصول للمنصة."
+                          : "Email verified and access granted."}
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className={form.full_name_ar || isAdmin ? "w-4 h-4 text-emerald-500 shrink-0 mt-0.5" : "w-4 h-4 text-muted-foreground/40 shrink-0 mt-0.5"} />
+                    <CheckCircle2
+                      className={
+                        form.full_name_ar || isAdmin
+                          ? "w-4 h-4 text-emerald-500 shrink-0 mt-0.5"
+                          : "w-4 h-4 text-muted-foreground/40 shrink-0 mt-0.5"
+                      }
+                    />
                     <div>
-                      <p className="font-semibold text-foreground">{isAr ? "٢. استكمال السجل والفرع" : "2. Complete Lineage & Branch"}</p>
-                      <p className="text-[11px] text-muted-foreground">{isAr ? "تحديد الاسم الرباعي والفرع وسلسلة النسب." : "Set full name, branch, and ancestral notes."}</p>
+                      <p className="font-semibold text-foreground">
+                        {isAr ? "٢. استكمال السجل والفرع" : "2. Complete Lineage & Branch"}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {isAr
+                          ? "تحديد الاسم الرباعي والفرع وسلسلة النسب."
+                          : "Set full name, branch, and ancestral notes."}
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className={isAdmin || isApproved ? "w-4 h-4 text-emerald-500 shrink-0 mt-0.5" : isPending ? "w-4 h-4 text-gold shrink-0 mt-0.5" : "w-4 h-4 text-muted-foreground/40 shrink-0 mt-0.5"} />
+                    <CheckCircle2
+                      className={
+                        isAdmin || isApproved
+                          ? "w-4 h-4 text-emerald-500 shrink-0 mt-0.5"
+                          : isPending
+                            ? "w-4 h-4 text-gold shrink-0 mt-0.5"
+                            : "w-4 h-4 text-muted-foreground/40 shrink-0 mt-0.5"
+                      }
+                    />
                     <div>
-                      <p className="font-semibold text-foreground">{isAr ? "٣. مطابقة الأمانة ولجنة الأنساب" : "3. Secretariat Review"}</p>
-                      <p className="text-[11px] text-muted-foreground">{isAr ? "مراجعة بيانات النسب ومطابقتها مع شجرة العائلة الرسمية." : "Cross-referenced with official family tree."}</p>
+                      <p className="font-semibold text-foreground">
+                        {isAr ? "٣. مطابقة الأمانة ولجنة الأنساب" : "3. Secretariat Review"}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {isAr
+                          ? "مراجعة بيانات النسب ومطابقتها مع شجرة العائلة الرسمية."
+                          : "Cross-referenced with official family tree."}
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <ShieldCheck className={isAdmin || isApproved ? "w-4 h-4 text-emerald-500 shrink-0 mt-0.5" : "w-4 h-4 text-muted-foreground/40 shrink-0 mt-0.5"} />
+                    <ShieldCheck
+                      className={
+                        isAdmin || isApproved
+                          ? "w-4 h-4 text-emerald-500 shrink-0 mt-0.5"
+                          : "w-4 h-4 text-muted-foreground/40 shrink-0 mt-0.5"
+                      }
+                    />
                     <div>
-                      <p className="font-semibold text-foreground">{isAr ? "٤. إصدار بطاقة العضوية والاعتماد" : "4. Official Digital Badge"}</p>
-                      <p className="text-[11px] text-muted-foreground">{isAr ? "تفعيل كامل الصلاحيات والوصول للمكتبة ودليل الأعضاء." : "Full access to member directory & archive."}</p>
+                      <p className="font-semibold text-foreground">
+                        {isAr ? "٤. إصدار بطاقة العضوية والاعتماد" : "4. Official Digital Badge"}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {isAr
+                          ? "تفعيل كامل الصلاحيات والوصول للمكتبة ودليل الأعضاء."
+                          : "Full access to member directory & archive."}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -922,15 +1308,23 @@ function AccountPage() {
                 <CardContent className="space-y-4 text-xs">
                   <div className="p-4 rounded-xl border border-border bg-secondary/30 space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{isAr ? "اسم الحساب:" : "Account Name:"}</span>
-                      <span className="font-bold text-foreground">{isAr ? "صندوق أسرة آل بوعبيد" : "Al Bu Obaid Family Fund"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "اسم الحساب:" : "Account Name:"}
+                      </span>
+                      <span className="font-bold text-foreground">
+                        {isAr ? "صندوق أسرة آل بوعبيد" : "Al Bu Obaid Family Fund"}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{isAr ? "البنك:" : "Bank:"}</span>
-                      <span className="font-semibold text-foreground">{isAr ? "مصرف الإنماء (Alinma Bank)" : "Alinma Bank"}</span>
+                      <span className="font-semibold text-foreground">
+                        {isAr ? "مصرف الإنماء (Alinma Bank)" : "Alinma Bank"}
+                      </span>
                     </div>
                     <div className="pt-2 border-t border-border/50">
-                      <span className="text-muted-foreground block text-[11px] mb-1">{isAr ? "رقم الآيبان (IBAN):" : "IBAN:"}</span>
+                      <span className="text-muted-foreground block text-[11px] mb-1">
+                        {isAr ? "رقم الآيبان (IBAN):" : "IBAN:"}
+                      </span>
                       <div className="flex items-center justify-between bg-background p-2 rounded-lg border border-border font-mono text-xs">
                         <span>SA03 0500 0000 1200 7584 0001</span>
                         <Button
@@ -944,7 +1338,11 @@ function AccountPage() {
                             setTimeout(() => setCopiedIban(false), 2000);
                           }}
                         >
-                          {copiedIban ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                          {copiedIban ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -968,16 +1366,34 @@ function AccountPage() {
                 </CardHeader>
                 <CardContent className="space-y-3 text-xs text-muted-foreground">
                   <div className="p-3 rounded-xl bg-secondary/20 border border-border">
-                    <h5 className="font-bold text-foreground mb-1">{isAr ? "مشروع المقر الدائم" : "Permanent Headquarters"}</h5>
-                    <p className="text-[11px]">{isAr ? "مقر اجتماعات الأسرة والديوانية العامة ومكتبة الوثائق التاريخية." : "Family majlis, assembly hall, and archive center."}</p>
+                    <h5 className="font-bold text-foreground mb-1">
+                      {isAr ? "مشروع المقر الدائم" : "Permanent Headquarters"}
+                    </h5>
+                    <p className="text-[11px]">
+                      {isAr
+                        ? "مقر اجتماعات الأسرة والديوانية العامة ومكتبة الوثائق التاريخية."
+                        : "Family majlis, assembly hall, and archive center."}
+                    </p>
                   </div>
                   <div className="p-3 rounded-xl bg-secondary/20 border border-border">
-                    <h5 className="font-bold text-foreground mb-1">{isAr ? "جائزة التفوق العلمي والمهني" : "Academic Excellence Award"}</h5>
-                    <p className="text-[11px]">{isAr ? "تكريم الخريجين وأصحاب الابتكارات والشهادات العليا سنوياً." : "Annual honouring of top graduates and innovators."}</p>
+                    <h5 className="font-bold text-foreground mb-1">
+                      {isAr ? "جائزة التفوق العلمي والمهني" : "Academic Excellence Award"}
+                    </h5>
+                    <p className="text-[11px]">
+                      {isAr
+                        ? "تكريم الخريجين وأصحاب الابتكارات والشهادات العليا سنوياً."
+                        : "Annual honouring of top graduates and innovators."}
+                    </p>
                   </div>
                   <div className="p-3 rounded-xl bg-secondary/20 border border-border">
-                    <h5 className="font-bold text-foreground mb-1">{isAr ? "صندوق التكافل الاجتماعي" : "Social Solidarity Fund"}</h5>
-                    <p className="text-[11px]">{isAr ? "مساعدة ودعم أسر وأفراد العائلة في الظروف الاجتماعية." : "Assisting family members in special community needs."}</p>
+                    <h5 className="font-bold text-foreground mb-1">
+                      {isAr ? "صندوق التكافل الاجتماعي" : "Social Solidarity Fund"}
+                    </h5>
+                    <p className="text-[11px]">
+                      {isAr
+                        ? "مساعدة ودعم أسر وأفراد العائلة في الظروف الاجتماعية."
+                        : "Assisting family members in special community needs."}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -991,7 +1407,9 @@ function AccountPage() {
                 <div>
                   <CardTitle className="text-sm">{isAr ? "الإشعارات" : "Notifications"}</CardTitle>
                   <CardDescription className="text-xs">
-                    {isAr ? "تحديثات طلب العضوية والمستجدات الموجهة لك." : "Membership updates and news addressed to you."}
+                    {isAr
+                      ? "تحديثات طلب العضوية والمستجدات الموجهة لك."
+                      : "Membership updates and news addressed to you."}
                   </CardDescription>
                 </div>
                 {unreadCount > 0 && (
@@ -1013,7 +1431,34 @@ function AccountPage() {
                 )}
               </CardHeader>
               <CardContent>
-                {!notifData?.notifications.length ? (
+                {/* Loading and failure both used to fall through to the empty
+                    state, so a member with unread approval news was told "no
+                    notifications yet" whenever the fetch was slow or failed. */}
+                {notifsLoading ? (
+                  <div className="space-y-3 py-2" aria-busy="true">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="h-12 rounded-lg bg-muted animate-pulse" />
+                    ))}
+                  </div>
+                ) : notifsFailed ? (
+                  <div className="py-8 px-4 text-center text-xs text-muted-foreground border border-dashed border-destructive/40 rounded-lg space-y-3">
+                    <AlertTriangle className="w-6 h-6 mx-auto text-destructive/70" />
+                    <p className="leading-relaxed">
+                      {isAr
+                        ? "تعذر تحميل الإشعارات. قد تكون هناك تحديثات لم تصلك بعد."
+                        : "Could not load your notifications. There may be updates you haven't seen."}
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-8 gap-1.5"
+                      onClick={() => void refetchNotifs()}
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      {isAr ? "إعادة المحاولة" : "Retry"}
+                    </Button>
+                  </div>
+                ) : !notifData?.notifications.length ? (
                   <div className="py-10 text-center text-xs text-muted-foreground border border-dashed border-border rounded-lg">
                     <Bell className="w-6 h-6 mx-auto mb-2 opacity-40" />
                     {isAr ? "لا توجد إشعارات حتى الآن." : "No notifications yet."}
@@ -1023,9 +1468,18 @@ function AccountPage() {
                     {notifData.notifications.map((n) => {
                       const content = (
                         <div className="flex items-start gap-3 py-3">
-                          {!n.is_read && <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
+                          {!n.is_read && (
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                          )}
                           <div className={cn("flex-1 min-w-0", n.is_read && "ps-[15px]")}>
-                            <p className={cn("text-xs", n.is_read ? "text-muted-foreground" : "font-semibold text-foreground")}>
+                            <p
+                              className={cn(
+                                "text-xs",
+                                n.is_read
+                                  ? "text-muted-foreground"
+                                  : "font-semibold text-foreground",
+                              )}
+                            >
                               {isAr ? n.title_ar : n.title_en || n.title_ar}
                             </p>
                             <p className="text-[11px] text-muted-foreground mt-0.5">
@@ -1050,16 +1504,30 @@ function AccountPage() {
                           )}
                         </div>
                       );
+                      const href = safeNotifLink(n.link);
                       return (
                         <li key={n.id}>
-                          {n.link ? (
+                          {href ? (
                             // n.link is an arbitrary DB-stored path, not a
                             // route known at build time, so a plain <a> is
                             // used here instead of the typed <Link>.
                             <a
-                              href={n.link}
+                              href={href}
                               className="block hover:bg-muted/40 -mx-1 px-1 rounded transition-colors"
-                              onClick={() => !n.is_read && markNotifRead.mutate(n.id)}
+                              onClick={(e) => {
+                                if (n.is_read) return;
+                                // A full navigation tears down the in-flight
+                                // mark-read POST, so the notification stayed
+                                // unread every time it was opened via its link.
+                                // Navigate only once the write has settled.
+                                e.preventDefault();
+                                void markNotifRead
+                                  .mutateAsync(n.id)
+                                  .catch(() => undefined)
+                                  .finally(() => {
+                                    window.location.href = href;
+                                  });
+                              }}
                             >
                               {content}
                             </a>
@@ -1085,22 +1553,31 @@ function AccountPage() {
                     {isAr ? "إعدادات الحساب وكلمة المرور" : "Security & Authentication"}
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    {isAr ? "إدارة الوصول وتأمين حسابك في البوابة." : "Manage your credentials and session."}
+                    {isAr
+                      ? "إدارة الوصول وتأمين حسابك في البوابة."
+                      : "Manage your credentials and session."}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-5 text-xs">
                   <div className="space-y-2">
-                    <Label className="text-xs font-semibold">{isAr ? "البريد الإلكتروني المعتمد" : "Registered Email"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "البريد الإلكتروني المعتمد" : "Registered Email"}
+                    </Label>
                     <div className="p-2.5 bg-secondary/40 border border-border rounded-lg font-mono text-muted-foreground flex items-center justify-between">
                       <span>{user?.email}</span>
-                      <Badge variant="outline" className="text-[10px] text-emerald-500 border-emerald-500/30">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] text-emerald-500 border-emerald-500/30"
+                      >
                         {isAr ? "موثق" : "Verified"}
                       </Badge>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-xs font-semibold">{isAr ? "معرف المستخدم (UUID)" : "User Identifier"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "معرف المستخدم (UUID)" : "User Identifier"}
+                    </Label>
                     <div className="p-2.5 bg-secondary/40 border border-border rounded-lg font-mono text-muted-foreground text-[11px]">
                       {user?.id}
                     </div>
@@ -1108,10 +1585,22 @@ function AccountPage() {
 
                   <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                      <p className="font-semibold text-foreground">{isAr ? "إعادة تعيين كلمة المرور" : "Reset Password"}</p>
-                      <p className="text-[11px] text-muted-foreground">{isAr ? "سيتم إرسال رابط آمن إلى بريدك لإعادة التعيين." : "We will send a secure link to your email."}</p>
+                      <p className="font-semibold text-foreground">
+                        {isAr ? "إعادة تعيين كلمة المرور" : "Reset Password"}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {isAr
+                          ? "سيتم إرسال رابط آمن إلى بريدك لإعادة التعيين."
+                          : "We will send a secure link to your email."}
+                      </p>
                     </div>
-                    <Button type="button" variant="outline" size="sm" onClick={handlePasswordReset} className="h-8 text-xs font-semibold">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePasswordReset}
+                      className="h-8 text-xs font-semibold"
+                    >
                       {isAr ? "إرسال رابط التعيين" : "Send Reset Link"}
                     </Button>
                   </div>
@@ -1124,4 +1613,3 @@ function AccountPage() {
     </div>
   );
 }
-

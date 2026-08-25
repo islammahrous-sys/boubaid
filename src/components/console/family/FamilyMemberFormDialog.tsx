@@ -1,16 +1,36 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLang } from "@/i18n/LanguageProvider";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { User, MapPin, BookOpen, Shield, Upload, AlertTriangle, Image as ImageIcon } from "lucide-react";
+import {
+  User,
+  MapPin,
+  BookOpen,
+  Shield,
+  Upload,
+  AlertTriangle,
+  Image as ImageIcon,
+} from "lucide-react";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { FamilyMemberInput } from "@/lib/admin-hub.schemas";
@@ -158,7 +178,7 @@ export function FamilyMemberFormDialog({
     existingMembers.some(
       (m) =>
         m.first_name_ar.trim().toLowerCase() === form.first_name_ar.trim().toLowerCase() &&
-        m.last_name_ar.trim().toLowerCase() === form.last_name_ar.trim().toLowerCase()
+        m.last_name_ar.trim().toLowerCase() === form.last_name_ar.trim().toLowerCase(),
     );
 
   const handleAvatarUpload = async (file: File) => {
@@ -212,8 +232,8 @@ export function FamilyMemberFormDialog({
                 ? "تعديل بيانات فرد في الأسرة"
                 : "Edit Family Member"
               : isAr
-              ? "إضافة فرد جديد للأسرة"
-              : "Add New Family Member"}
+                ? "إضافة فرد جديد للأسرة"
+                : "Add New Family Member"}
           </DialogTitle>
         </DialogHeader>
 
@@ -260,7 +280,9 @@ export function FamilyMemberFormDialog({
                     className="shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <Label className="text-xs font-semibold block">{isAr ? "الصورة الشخصية للعضو" : "Profile Avatar"}</Label>
+                    <Label className="text-xs font-semibold block">
+                      {isAr ? "الصورة الشخصية للعضو" : "Profile Avatar"}
+                    </Label>
                     <p className="text-[11px] text-muted-foreground mt-0.5 mb-2">
                       {isAr
                         ? "في حال عدم رفع صورة مخصصة، سيتم عرض الرمز التراثي السعودي تلقائياً."
@@ -270,7 +292,9 @@ export function FamilyMemberFormDialog({
                       bucket="family-photos"
                       value={form.avatar_path}
                       onChange={(url) => setForm((prev) => ({ ...prev, avatar_path: url }))}
-                      placeholder={isAr ? "رابط الصورة أو ارفع صورة شخصية..." : "Avatar URL or upload..."}
+                      placeholder={
+                        isAr ? "رابط الصورة أو ارفع صورة شخصية..." : "Avatar URL or upload..."
+                      }
                       hidePreview={true}
                     />
                   </div>
@@ -279,7 +303,9 @@ export function FamilyMemberFormDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "الاسم الأول (بالعربية) *" : "First Name (AR) *"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "الاسم الأول (بالعربية) *" : "First Name (AR) *"}
+                  </Label>
                   <Input
                     required
                     value={form.first_name_ar}
@@ -288,7 +314,9 @@ export function FamilyMemberFormDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "اسم الأب / الجد (بالعربية)" : "Middle Name (AR)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "اسم الأب / الجد (بالعربية)" : "Middle Name (AR)"}
+                  </Label>
                   <Input
                     value={form.middle_name_ar ?? ""}
                     onChange={(e) => setForm({ ...form, middle_name_ar: e.target.value })}
@@ -296,7 +324,9 @@ export function FamilyMemberFormDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "اسم العائلة (بالعربية) *" : "Last Name (AR) *"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "اسم العائلة (بالعربية) *" : "Last Name (AR) *"}
+                  </Label>
                   <Input
                     required
                     value={form.last_name_ar}
@@ -308,7 +338,9 @@ export function FamilyMemberFormDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "الاسم الأول (EN)" : "First Name (EN)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "الاسم الأول (EN)" : "First Name (EN)"}
+                  </Label>
                   <Input
                     value={form.first_name_en ?? ""}
                     onChange={(e) => setForm({ ...form, first_name_en: e.target.value })}
@@ -316,7 +348,9 @@ export function FamilyMemberFormDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "اسم الأب (EN)" : "Middle Name (EN)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "اسم الأب (EN)" : "Middle Name (EN)"}
+                  </Label>
                   <Input
                     value={form.middle_name_en ?? ""}
                     onChange={(e) => setForm({ ...form, middle_name_en: e.target.value })}
@@ -324,7 +358,9 @@ export function FamilyMemberFormDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "اسم العائلة (EN)" : "Last Name (EN)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "اسم العائلة (EN)" : "Last Name (EN)"}
+                  </Label>
                   <Input
                     value={form.last_name_en ?? ""}
                     onChange={(e) => setForm({ ...form, last_name_en: e.target.value })}
@@ -335,7 +371,9 @@ export function FamilyMemberFormDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "المعرف الفريد (Slug) *" : "Unique Slug *"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "المعرف الفريد (Slug) *" : "Unique Slug *"}
+                  </Label>
                   <Input
                     required
                     value={form.slug}
@@ -345,7 +383,10 @@ export function FamilyMemberFormDialog({
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold">{isAr ? "الجنس" : "Gender"}</Label>
-                  <Select value={form.gender} onValueChange={(val: any) => setForm({ ...form, gender: val })}>
+                  <Select
+                    value={form.gender}
+                    onValueChange={(val: any) => setForm({ ...form, gender: val })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -356,12 +397,16 @@ export function FamilyMemberFormDialog({
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "الجيل في الشجرة" : "Generation"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "الجيل في الشجرة" : "Generation"}
+                  </Label>
                   <Input
                     type="number"
                     min={1}
                     value={form.generation}
-                    onChange={(e) => setForm({ ...form, generation: parseInt(e.target.value) || 1 })}
+                    onChange={(e) =>
+                      setForm({ ...form, generation: parseInt(e.target.value) || 1 })
+                    }
                   />
                 </div>
               </div>
@@ -373,7 +418,9 @@ export function FamilyMemberFormDialog({
                 <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-card">
                   <div>
                     <p className="text-xs font-semibold">{isAr ? "على قيد الحياة" : "Is Living"}</p>
-                    <p className="text-[11px] text-muted-foreground">{isAr ? "حدد إذا كان الفرد حياً حفظه الله" : "Select if living"}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {isAr ? "حدد إذا كان الفرد حياً حفظه الله" : "Select if living"}
+                    </p>
                   </div>
                   <Switch
                     checked={form.is_living}
@@ -382,10 +429,14 @@ export function FamilyMemberFormDialog({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "فرع العائلة" : "Family Branch"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "فرع العائلة" : "Family Branch"}
+                  </Label>
                   <Select
                     value={form.branch_id ?? "none"}
-                    onValueChange={(val) => setForm({ ...form, branch_id: val === "none" ? null : val })}
+                    onValueChange={(val) =>
+                      setForm({ ...form, branch_id: val === "none" ? null : val })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={isAr ? "اختر الفرع" : "Select branch"} />
@@ -404,7 +455,9 @@ export function FamilyMemberFormDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "تاريخ الميلاد (ميلادي)" : "Date of Birth"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "تاريخ الميلاد (ميلادي)" : "Date of Birth"}
+                  </Label>
                   <Input
                     type="date"
                     value={form.date_of_birth ?? ""}
@@ -413,7 +466,9 @@ export function FamilyMemberFormDialog({
                 </div>
                 {!form.is_living && (
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "تاريخ الوفاة (رحمه الله)" : "Date of Death"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "تاريخ الوفاة (رحمه الله)" : "Date of Death"}
+                    </Label>
                     <Input
                       type="date"
                       value={form.date_of_death ?? ""}
@@ -425,10 +480,14 @@ export function FamilyMemberFormDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "مكان الميلاد / النشأة" : "Birth Place"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "مكان الميلاد / النشأة" : "Birth Place"}
+                  </Label>
                   <Select
                     value={form.birth_place_id ?? "none"}
-                    onValueChange={(val) => setForm({ ...form, birth_place_id: val === "none" ? null : val })}
+                    onValueChange={(val) =>
+                      setForm({ ...form, birth_place_id: val === "none" ? null : val })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={isAr ? "اختر المكان" : "Select place"} />
@@ -444,10 +503,14 @@ export function FamilyMemberFormDialog({
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "مكان الإقامة الحالي" : "Current Residence Place"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "مكان الإقامة الحالي" : "Current Residence Place"}
+                  </Label>
                   <Select
                     value={form.current_place_id ?? "none"}
-                    onValueChange={(val) => setForm({ ...form, current_place_id: val === "none" ? null : val })}
+                    onValueChange={(val) =>
+                      setForm({ ...form, current_place_id: val === "none" ? null : val })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={isAr ? "اختر المكان" : "Select place"} />
@@ -469,7 +532,9 @@ export function FamilyMemberFormDialog({
             <TabsContent value="bio" className="space-y-4 pt-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "المهنة / المنصب (بالعربية)" : "Occupation (AR)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "المهنة / المنصب (بالعربية)" : "Occupation (AR)"}
+                  </Label>
                   <Input
                     value={form.occupation_ar ?? ""}
                     onChange={(e) => setForm({ ...form, occupation_ar: e.target.value })}
@@ -477,7 +542,9 @@ export function FamilyMemberFormDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "المهنة / المنصب (EN)" : "Occupation (EN)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "المهنة / المنصب (EN)" : "Occupation (EN)"}
+                  </Label>
                   <Input
                     value={form.occupation_en ?? ""}
                     onChange={(e) => setForm({ ...form, occupation_en: e.target.value })}
@@ -488,7 +555,9 @@ export function FamilyMemberFormDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "المؤهل التعليمي (بالعربية)" : "Education (AR)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "المؤهل التعليمي (بالعربية)" : "Education (AR)"}
+                  </Label>
                   <Input
                     value={form.education_ar ?? ""}
                     onChange={(e) => setForm({ ...form, education_ar: e.target.value })}
@@ -496,7 +565,9 @@ export function FamilyMemberFormDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "المؤهل التعليمي (EN)" : "Education (EN)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "المؤهل التعليمي (EN)" : "Education (EN)"}
+                  </Label>
                   <Input
                     value={form.education_en ?? ""}
                     onChange={(e) => setForm({ ...form, education_en: e.target.value })}
@@ -506,7 +577,9 @@ export function FamilyMemberFormDialog({
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "السيرة الذاتية ونبذة عن الإنجازات (بالعربية)" : "Biography (AR)"}</Label>
+                <Label className="text-xs font-semibold">
+                  {isAr ? "السيرة الذاتية ونبذة عن الإنجازات (بالعربية)" : "Biography (AR)"}
+                </Label>
                 <Textarea
                   rows={4}
                   value={form.biography_ar ?? ""}
@@ -516,7 +589,9 @@ export function FamilyMemberFormDialog({
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "السيرة الذاتية (EN)" : "Biography (EN)"}</Label>
+                <Label className="text-xs font-semibold">
+                  {isAr ? "السيرة الذاتية (EN)" : "Biography (EN)"}
+                </Label>
                 <Textarea
                   rows={3}
                   value={form.biography_en ?? ""}
@@ -530,7 +605,9 @@ export function FamilyMemberFormDialog({
             <TabsContent value="privacy" className="space-y-4 pt-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "مستوى الظهور والخصوصية" : "Visibility Level"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "مستوى الظهور والخصوصية" : "Visibility Level"}
+                  </Label>
                   <Select
                     value={form.visibility}
                     onValueChange={(val: any) => setForm({ ...form, visibility: val })}
@@ -539,16 +616,26 @@ export function FamilyMemberFormDialog({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="public">{isAr ? "عام للجميع (Public)" : "Public"}</SelectItem>
-                      <SelectItem value="family_only">{isAr ? "لأفراد الأسرة فقط (Family Only)" : "Family Only"}</SelectItem>
-                      <SelectItem value="admin_only">{isAr ? "للإدارة فقط (Admin Only)" : "Admin Only"}</SelectItem>
-                      <SelectItem value="private">{isAr ? "خاص وسري (Private)" : "Private"}</SelectItem>
+                      <SelectItem value="public">
+                        {isAr ? "عام للجميع (Public)" : "Public"}
+                      </SelectItem>
+                      <SelectItem value="family_only">
+                        {isAr ? "لأفراد الأسرة فقط (Family Only)" : "Family Only"}
+                      </SelectItem>
+                      <SelectItem value="admin_only">
+                        {isAr ? "للإدارة فقط (Admin Only)" : "Admin Only"}
+                      </SelectItem>
+                      <SelectItem value="private">
+                        {isAr ? "خاص وسري (Private)" : "Private"}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "حالة السجل" : "Record Status"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "حالة السجل" : "Record Status"}
+                  </Label>
                   <Select
                     value={form.status}
                     onValueChange={(val: any) => setForm({ ...form, status: val })}
@@ -557,10 +644,16 @@ export function FamilyMemberFormDialog({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="published">{isAr ? "منشور (Published)" : "Published"}</SelectItem>
+                      <SelectItem value="published">
+                        {isAr ? "منشور (Published)" : "Published"}
+                      </SelectItem>
                       <SelectItem value="draft">{isAr ? "مسودة (Draft)" : "Draft"}</SelectItem>
-                      <SelectItem value="in_review">{isAr ? "قيد المراجعة (In Review)" : "In Review"}</SelectItem>
-                      <SelectItem value="archived">{isAr ? "مؤرشف (Archived)" : "Archived"}</SelectItem>
+                      <SelectItem value="in_review">
+                        {isAr ? "قيد المراجعة (In Review)" : "In Review"}
+                      </SelectItem>
+                      <SelectItem value="archived">
+                        {isAr ? "مؤرشف (Archived)" : "Archived"}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -573,7 +666,13 @@ export function FamilyMemberFormDialog({
               {isAr ? "إلغاء" : "Cancel"}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ التغييرات" : "Save Member"}
+              {loading
+                ? isAr
+                  ? "جاري الحفظ..."
+                  : "Saving..."
+                : isAr
+                  ? "حفظ التغييرات"
+                  : "Save Member"}
             </Button>
           </DialogFooter>
         </form>

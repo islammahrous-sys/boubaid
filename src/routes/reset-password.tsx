@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +39,16 @@ function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const redirectTimer = useRef<number | null>(null);
+
+  // The success screen redirects on a timer. Without this, a member who
+  // navigates away inside that window gets yanked to /account anyway.
+  useEffect(
+    () => () => {
+      if (redirectTimer.current !== null) window.clearTimeout(redirectTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     let active = true;
@@ -65,8 +75,13 @@ function ResetPasswordPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Guards the Enter-key path: a disabled button stops repeat clicks, but
+    // not a second implicit submit fired while the first is still in flight.
+    if (busy || done) return;
     if (password.length < 8) {
-      toast.error(label("كلمة المرور يجب ألا تقل عن ٨ أحرف.", "Password must be at least 8 characters."));
+      toast.error(
+        label("كلمة المرور يجب ألا تقل عن ٨ أحرف.", "Password must be at least 8 characters."),
+      );
       return;
     }
     if (password !== confirmPassword) {
@@ -79,7 +94,8 @@ function ResetPasswordPage() {
       if (error) throw error;
       setDone(true);
       toast.success(label("تم تحديث كلمة المرور بنجاح.", "Password updated successfully."));
-      window.setTimeout(() => {
+      redirectTimer.current = window.setTimeout(() => {
+        redirectTimer.current = null;
         void navigate({ to: "/account" });
       }, 1500);
     } catch (error) {

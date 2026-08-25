@@ -145,13 +145,17 @@ function TreasuryPage() {
 
       <section className="container-page mt-10 grid gap-4 sm:grid-cols-3">
         <div className="border border-border bg-card p-5">
-          <p className="label-caps text-muted-foreground">{label("إجمالي المعتمد", "Verified total")}</p>
+          <p className="label-caps text-muted-foreground">
+            {label("إجمالي المعتمد", "Verified total")}
+          </p>
           <p className="nums mt-2 text-2xl font-bold text-bronze dark:text-gold">
             {formatSar(totals.verified, lang)}
           </p>
         </div>
         <div className="border border-border bg-card p-5">
-          <p className="label-caps text-muted-foreground">{label("إجمالي المعلّق", "Pending total")}</p>
+          <p className="label-caps text-muted-foreground">
+            {label("إجمالي المعلّق", "Pending total")}
+          </p>
           <p className="nums mt-2 text-2xl font-bold text-foreground">
             {formatSar(totals.pending, lang)}
           </p>

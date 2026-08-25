@@ -393,7 +393,10 @@ function ContentPage() {
     return (
       <div className="container-page py-24">
         <h1 className="text-2xl font-bold text-foreground">
-          {label("هذه المنصة لأمانة المجلس والمحررين", "This console is for the secretariat and editors")}
+          {label(
+            "هذه المنصة لأمانة المجلس والمحررين",
+            "This console is for the secretariat and editors",
+          )}
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
           {label(
@@ -502,9 +505,7 @@ function ContentPage() {
                         : "text-bronze dark:text-gold"
                     }`}
                   >
-                    {row.is_published
-                      ? label("منشور", "Published")
-                      : label("مسودة", "Draft")}
+                    {row.is_published ? label("منشور", "Published") : label("مسودة", "Draft")}
                   </span>
                 </div>
                 {activeTab.subtitleOf ? (
@@ -526,9 +527,7 @@ function ContentPage() {
                   disabled={publishMutation.isPending}
                   className="border border-border px-3 py-1.5 text-[12px] hover:bg-secondary disabled:opacity-60"
                 >
-                  {row.is_published
-                    ? label("إلغاء النشر", "Unpublish")
-                    : label("نشر", "Publish")}
+                  {row.is_published ? label("إلغاء النشر", "Unpublish") : label("نشر", "Publish")}
                 </button>
                 <button
                   type="button"
@@ -544,10 +543,7 @@ function ContentPage() {
                   type="button"
                   onClick={() => {
                     const ok = window.confirm(
-                      label(
-                        "هل تريد حذف هذا العنصر نهائيًا؟",
-                        "Delete this item permanently?",
-                      ),
+                      label("هل تريد حذف هذا العنصر نهائيًا؟", "Delete this item permanently?"),
                     );
                     if (ok) deleteMutation.mutate({ table: activeTab.key, id: row.id as string });
                   }}
@@ -677,23 +673,18 @@ function CmsForm({
                 onChange={(next) => setValues((v) => ({ ...v, [field.name]: next }))}
               />
             ) : field.kind === "textarea" ? (
-
               <textarea
                 id={`f-${field.name}`}
                 rows={4}
                 value={String(values[field.name] ?? "")}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, [field.name]: e.target.value }))
-                }
+                onChange={(e) => setValues((v) => ({ ...v, [field.name]: e.target.value }))}
                 className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
               />
             ) : field.kind === "select" ? (
               <select
                 id={`f-${field.name}`}
                 value={String(values[field.name] ?? "")}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, [field.name]: e.target.value }))
-                }
+                onChange={(e) => setValues((v) => ({ ...v, [field.name]: e.target.value }))}
                 className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
               >
                 {field.options?.map((opt) => (
@@ -706,10 +697,12 @@ function CmsForm({
               <input
                 id={`f-${field.name}`}
                 type="number"
-                value={values[field.name] === null || values[field.name] === undefined ? "" : String(values[field.name])}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, [field.name]: e.target.value }))
+                value={
+                  values[field.name] === null || values[field.name] === undefined
+                    ? ""
+                    : String(values[field.name])
                 }
+                onChange={(e) => setValues((v) => ({ ...v, [field.name]: e.target.value }))}
                 className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
               />
             ) : (
@@ -717,9 +710,7 @@ function CmsForm({
                 id={`f-${field.name}`}
                 type="text"
                 value={String(values[field.name] ?? "")}
-                onChange={(e) =>
-                  setValues((v) => ({ ...v, [field.name]: e.target.value }))
-                }
+                onChange={(e) => setValues((v) => ({ ...v, [field.name]: e.target.value }))}
                 className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold"
               />
             )}

@@ -166,7 +166,9 @@ export function MobileNav() {
                                 onClick={() => setOpen(false)}
                                 className={cn(
                                   "block border-b border-border/60 py-2.5 text-sm transition-colors",
-                                  active ? "font-semibold text-foreground" : "text-muted-foreground",
+                                  active
+                                    ? "font-semibold text-foreground"
+                                    : "text-muted-foreground",
                                 )}
                               >
                                 {t(n.label)}

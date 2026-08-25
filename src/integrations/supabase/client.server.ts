@@ -2,17 +2,17 @@
 // Server-side Supabase client with service role key - bypasses RLS.
 // Use this for admin operations in server functions and server routes only.
 // For user-authenticated queries (with RLS), use the auth middleware instead.
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './types';
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "./types";
 
 function isNewSupabaseApiKey(value: string): boolean {
-  return value.startsWith('sb_publishable_') || value.startsWith('sb_secret_');
+  return value.startsWith("sb_publishable_") || value.startsWith("sb_secret_");
 }
 
 function createSupabaseFetch(supabaseKey: string): typeof fetch {
   return (input, init) => {
     const headers = new Headers(
-      typeof Request !== 'undefined' && input instanceof Request ? input.headers : undefined,
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
     );
 
     if (init?.headers) {
@@ -20,17 +20,21 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
     }
 
     // New Supabase API keys are opaque strings, not bearer JWTs.
-    if (isNewSupabaseApiKey(supabaseKey) && headers.get('Authorization') === `Bearer ${supabaseKey}`) {
-      headers.delete('Authorization');
+    if (
+      isNewSupabaseApiKey(supabaseKey) &&
+      headers.get("Authorization") === `Bearer ${supabaseKey}`
+    ) {
+      headers.delete("Authorization");
     }
 
-    headers.set('apikey', supabaseKey);
+    headers.set("apikey", supabaseKey);
     return fetch(input, { ...init, headers });
   };
 }
 
 const DEFAULT_SUPABASE_URL = "https://ywsvittlswbbyqhahorh.supabase.co";
-const DEFAULT_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3c3ZpdHRsc3diYnlxaGFob3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjgwODcsImV4cCI6MjEwMjkwNDA4N30.TK3AgqMh5vHDzi16S7ILBP7fyIwoKuDDJURjT9r26K4";
+const DEFAULT_SUPABASE_PUBLISHABLE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3c3ZpdHRsc3diYnlxaGFob3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjgwODcsImV4cCI6MjEwMjkwNDA4N30.TK3AgqMh5vHDzi16S7ILBP7fyIwoKuDDJURjT9r26K4";
 
 function createSupabaseAdminClient() {
   const SUPABASE_URL =
@@ -47,7 +51,8 @@ function createSupabaseAdminClient() {
   // error, and deletes would silently match zero rows and report success
   // while doing nothing -- exactly the failure mode that made role removal
   // appear to work but never persist. Fail loudly instead.
-  const SUPABASE_SERVICE_ROLE_KEY = process.env?.SUPABASE_SERVICE_ROLE_KEY || process.env?.SUPABASE_SECRET_KEY;
+  const SUPABASE_SERVICE_ROLE_KEY =
+    process.env?.SUPABASE_SERVICE_ROLE_KEY || process.env?.SUPABASE_SECRET_KEY;
 
   if (!SUPABASE_SERVICE_ROLE_KEY) {
     const message =
@@ -67,7 +72,7 @@ function createSupabaseAdminClient() {
       storage: undefined,
       persistSession: false,
       autoRefreshToken: false,
-    }
+    },
   });
 }
 

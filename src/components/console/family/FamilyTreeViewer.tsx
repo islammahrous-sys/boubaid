@@ -1,9 +1,25 @@
 import { useState, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useLang } from "@/i18n/LanguageProvider";
-import { ZoomIn, ZoomOut, RotateCcw, User, Heart, Filter, ChevronDown, ChevronRight, Layers } from "lucide-react";
+import {
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  User,
+  Heart,
+  Filter,
+  ChevronDown,
+  ChevronRight,
+  Layers,
+} from "lucide-react";
 import type { MemberRow } from "./FamilyMembersTable";
 import type { BranchOption } from "./FamilyMemberFormDialog";
 
@@ -46,7 +62,8 @@ export function FamilyTreeViewer({
 
   // Group members by generation
   const generationGroups = useMemo(() => {
-    const filtered = branchFilter === "all" ? members : members.filter((m) => m.branch_id === branchFilter);
+    const filtered =
+      branchFilter === "all" ? members : members.filter((m) => m.branch_id === branchFilter);
     const groups: Record<number, MemberRow[]> = {};
 
     filtered.forEach((m) => {
@@ -161,10 +178,16 @@ export function FamilyTreeViewer({
                       onClick={() => toggleGenCollapse(generation)}
                       className="flex items-center gap-1.5 px-3 py-1 bg-muted/80 hover:bg-muted text-xs font-semibold rounded-full border border-border shadow-sm transition-colors text-foreground"
                     >
-                      {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                      {isCollapsed ? (
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      ) : (
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      )}
                       <Layers className="w-3.5 h-3.5 text-primary" />
                       {isAr ? `الجيل رقم ${generation}` : `Generation ${generation}`}
-                      <span className="text-[10px] text-muted-foreground ms-1">({genMembers.length})</span>
+                      <span className="text-[10px] text-muted-foreground ms-1">
+                        ({genMembers.length})
+                      </span>
                     </button>
                   </div>
 
@@ -188,7 +211,11 @@ export function FamilyTreeViewer({
                             {/* Avatar */}
                             <div className="relative w-14 h-14 rounded-full border-2 border-border overflow-hidden bg-background mb-2 group-hover:scale-105 transition-transform">
                               {member.avatar_path ? (
-                                <img src={member.avatar_path} alt="" className="w-full h-full object-cover" />
+                                <img
+                                  src={member.avatar_path}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-muted/50">
                                   <User className="w-6 h-6 text-muted-foreground" />
@@ -216,7 +243,9 @@ export function FamilyTreeViewer({
                               {member.date_of_birth && (
                                 <span className="text-[9px] text-muted-foreground font-mono">
                                   {member.date_of_birth.slice(0, 4)}
-                                  {!member.is_living && member.date_of_death ? ` - ${member.date_of_death.slice(0, 4)}` : ""}
+                                  {!member.is_living && member.date_of_death
+                                    ? ` - ${member.date_of_death.slice(0, 4)}`
+                                    : ""}
                                 </span>
                               )}
                             </div>
@@ -225,7 +254,9 @@ export function FamilyTreeViewer({
                             {spouse && (
                               <div className="mt-2 pt-1.5 border-t border-border/40 w-full flex items-center justify-center gap-1 text-[10px] text-pink-600 dark:text-pink-400">
                                 <Heart className="w-2.5 h-2.5 fill-pink-500/20" />
-                                <span className="truncate max-w-[120px]">{spouse.first_name_ar}</span>
+                                <span className="truncate max-w-[120px]">
+                                  {spouse.first_name_ar}
+                                </span>
                               </div>
                             )}
                           </div>

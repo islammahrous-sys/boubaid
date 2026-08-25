@@ -1,10 +1,23 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Plus, Edit2, History, MapPin, Image as ImageIcon } from "lucide-react";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -172,7 +185,13 @@ export function FamilyHistoryManager({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">
-              {selectedItem ? (isAr ? "تعديل محطة تاريخية" : "Edit History Entry") : isAr ? "إضافة محطة تاريخية" : "Add Entry"}
+              {selectedItem
+                ? isAr
+                  ? "تعديل محطة تاريخية"
+                  : "Edit History Entry"
+                : isAr
+                  ? "إضافة محطة تاريخية"
+                  : "Add Entry"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -214,7 +233,9 @@ export function FamilyHistoryManager({
 
             {/* Media Upload */}
             <div className="space-y-1 pt-1 border-t border-border">
-              <Label className="text-xs font-semibold">{isAr ? "صورة أو وثيقة المحطة التاريخية" : "Historical Media / Photo"}</Label>
+              <Label className="text-xs font-semibold">
+                {isAr ? "صورة أو وثيقة المحطة التاريخية" : "Historical Media / Photo"}
+              </Label>
               {/* `family_history_entries` is governed by `private.can_manage_family`
                   (admin/super_admin/family_manager), matching the
                   `requireFamilyManagementAuth`-gated `upsertFamilyHistory` server
@@ -232,7 +253,9 @@ export function FamilyHistoryManager({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs">{isAr ? "الوصف والتفاصيل التاريخية" : "Historical Description"}</Label>
+              <Label className="text-xs">
+                {isAr ? "الوصف والتفاصيل التاريخية" : "Historical Description"}
+              </Label>
               <Textarea
                 rows={3}
                 value={form.description_ar ?? ""}

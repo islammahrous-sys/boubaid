@@ -244,8 +244,20 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockMeta> = {
     icon: CreditCard,
     defaultData: {
       cards: [
-        { title_ar: "التكافل العائلي", title_en: "Social Solidarity", desc_ar: "دعم ورعاية الأسر والمبادرات", desc_en: "", link_url: "" },
-        { title_ar: "التوثيق والأرشيف", title_en: "Genealogy & Archive", desc_ar: "حفظ التاريخ والوثائق والنسب", desc_en: "", link_url: "" },
+        {
+          title_ar: "التكافل العائلي",
+          title_en: "Social Solidarity",
+          desc_ar: "دعم ورعاية الأسر والمبادرات",
+          desc_en: "",
+          link_url: "",
+        },
+        {
+          title_ar: "التوثيق والأرشيف",
+          title_en: "Genealogy & Archive",
+          desc_ar: "حفظ التاريخ والوثائق والنسب",
+          desc_en: "",
+          link_url: "",
+        },
       ],
     },
   },

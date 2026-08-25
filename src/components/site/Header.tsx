@@ -5,7 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { siteMeta } from "@/content/site";
-import { primaryNav, secondaryNav, navGroups, isRouteActive, isNavItemActive, type NavItem } from "@/content/navigation";
+import {
+  primaryNav,
+  secondaryNav,
+  navGroups,
+  isRouteActive,
+  isNavItemActive,
+  type NavItem,
+} from "@/content/navigation";
 import { getPublicNavigation, getPublicSiteSettings } from "@/lib/cms.functions";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
@@ -103,7 +110,10 @@ export function Header() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setMoreOpen(false);
       }
-      if (primaryDropdownRef.current && !primaryDropdownRef.current.contains(event.target as Node)) {
+      if (
+        primaryDropdownRef.current &&
+        !primaryDropdownRef.current.contains(event.target as Node)
+      ) {
         setOpenDropdown(null);
       }
     };
@@ -151,16 +161,16 @@ export function Header() {
           condensed ? "max-h-0 opacity-0" : "max-h-12 opacity-100",
         )}
       >
-        <div className="container-header flex items-center justify-center gap-2.5 py-1.5 text-center text-xs">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-0.5 text-[11px] font-medium text-amber-900 dark:text-gold">
+        <div className="container-header flex items-center justify-center gap-2 sm:gap-2.5 py-1.5 text-center text-xs min-w-0">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-2.5 sm:px-3 py-0.5 text-[10px] sm:text-[11px] font-medium text-amber-900 dark:text-gold">
             <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" aria-hidden="true" />
             {lang === "ar" ? "كيان أهلي مرخص" : "Licensed Nonprofit"}
           </span>
-          <span className="h-3.5 w-px bg-border" aria-hidden="true" />
-          <span className="truncate text-[11px] text-muted-foreground">
+          <span className="h-3.5 w-px bg-border shrink-0" aria-hidden="true" />
+          <span className="truncate text-[10px] sm:text-[11px] text-muted-foreground min-w-0">
             {t(siteMeta.ncnpAuthority)}
           </span>
-          <span className="nums font-mono text-[11px] font-bold text-bronze dark:text-gold">
+          <span className="nums font-mono text-[10px] sm:text-[11px] font-bold text-bronze dark:text-gold shrink-0">
             {siteMeta.ncnpLicense}
           </span>
         </div>
@@ -168,13 +178,13 @@ export function Header() {
 
       <div
         className={cn(
-          "container-header flex items-center justify-between gap-6 xl:gap-8 py-2 transition-[height] duration-500 ease-out",
-          condensed ? "h-16 md:h-18" : "h-24 md:h-28",
+          "container-header flex items-center justify-between gap-2 sm:gap-4 md:gap-6 xl:gap-8 py-1.5 sm:py-2 transition-[height] duration-500 ease-out",
+          condensed ? "h-14 sm:h-16 md:h-18" : "h-16 sm:h-20 md:h-24 lg:h-28",
         )}
       >
         <Link
           to="/"
-          className="group active-scale flex shrink-0 items-center gap-4"
+          className="group active-scale flex shrink-0 items-center gap-2 sm:gap-3.5 md:gap-4 max-w-[62%] sm:max-w-none"
           onClick={() => setOpen(false)}
         >
           <img
@@ -182,7 +192,9 @@ export function Header() {
             alt=""
             className={cn(
               "shrink-0 object-contain transition-[height,width,transform] duration-500 ease-out group-hover:scale-105 dark:hidden",
-              condensed ? "h-11 w-11 md:h-12 md:w-12" : "h-16 w-16 md:h-20 md:w-20",
+              condensed
+                ? "h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12"
+                : "h-9 w-9 sm:h-12 sm:w-12 md:h-16 md:w-16 lg:h-20 lg:w-20",
             )}
             aria-hidden="true"
           />
@@ -191,7 +203,9 @@ export function Header() {
             alt=""
             className={cn(
               "hidden shrink-0 object-contain transition-[height,width,transform] duration-500 ease-out group-hover:scale-105 dark:block",
-              condensed ? "h-11 w-11 md:h-12 md:w-12" : "h-16 w-16 md:h-20 md:w-20",
+              condensed
+                ? "h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12"
+                : "h-9 w-9 sm:h-12 sm:w-12 md:h-16 md:w-16 lg:h-20 lg:w-20",
             )}
             aria-hidden="true"
           />
@@ -199,7 +213,9 @@ export function Header() {
             <span
               className={cn(
                 "truncate font-brand font-bold text-foreground transition-[color,font-size] duration-500 group-hover:text-bronze dark:group-hover:text-gold",
-                condensed ? "text-lg rtl:text-xl md:text-xl" : "text-xl rtl:text-2xl md:text-2xl",
+                condensed
+                  ? "text-sm sm:text-base rtl:text-[15px] sm:rtl:text-lg md:text-xl"
+                  : "text-base sm:text-lg rtl:text-base sm:rtl:text-xl md:text-2xl",
               )}
             >
               {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
@@ -209,7 +225,7 @@ export function Header() {
                 "label-caps truncate text-bronze transition-[max-height,opacity] duration-500 dark:text-gold-soft",
                 condensed
                   ? "max-h-0 opacity-0"
-                  : "max-h-6 text-xs opacity-100 md:text-sm",
+                  : "max-h-5 text-[10px] sm:text-xs opacity-100 md:text-sm",
               )}
             >
               {lang === "ar" ? "صندوق التنمية العائلية" : "Family Development Org."}
@@ -370,34 +386,34 @@ export function Header() {
                     </ul>
                   ) : (
                     <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                    {navGroups.map((group) => (
-                      <div key={group.title.en}>
-                        <p className="label-caps mb-2.5 border-b border-border pb-2 text-bronze">
-                          {t(group.title)}
-                        </p>
-                        <ul className="space-y-1.5">
-                          {group.items.map((n) => {
-                            const active = isRouteActive(pathname, n.to);
-                            return (
-                              <li key={n.to}>
-                                <Link
-                                  to={n.to}
-                                  onClick={() => setMoreOpen(false)}
-                                  className={cn(
-                                    "block py-1 text-[13px] transition-colors",
-                                    active
-                                      ? "font-bold text-bronze dark:text-gold"
-                                      : "text-muted-foreground hover:text-foreground",
-                                  )}
-                                >
-                                  {t(n.label)}
-                                </Link>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    ))}
+                      {navGroups.map((group) => (
+                        <div key={group.title.en}>
+                          <p className="label-caps mb-2.5 border-b border-border pb-2 text-bronze">
+                            {t(group.title)}
+                          </p>
+                          <ul className="space-y-1.5">
+                            {group.items.map((n) => {
+                              const active = isRouteActive(pathname, n.to);
+                              return (
+                                <li key={n.to}>
+                                  <Link
+                                    to={n.to}
+                                    onClick={() => setMoreOpen(false)}
+                                    className={cn(
+                                      "block py-1 text-[13px] transition-colors",
+                                      active
+                                        ? "font-bold text-bronze dark:text-gold"
+                                        : "text-muted-foreground hover:text-foreground",
+                                    )}
+                                  >
+                                    {t(n.label)}
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -406,13 +422,13 @@ export function Header() {
           </div>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2">
-          {/* Quick Search Button (Desktop) */}
+        <div className="flex shrink-0 items-center gap-1 sm:gap-1.5 md:gap-2">
+          {/* Quick Search Button (Wide Desktop Only) */}
           <button
             type="button"
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
-            className="hidden sm:inline-flex items-center gap-1.5 border border-border/60 bg-secondary/40 px-2.5 py-1 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="hidden xl:inline-flex items-center gap-1.5 border border-border/60 bg-secondary/40 px-2.5 py-1 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             aria-label={lang === "ar" ? "بحث في المنظومة (Ctrl+K)" : "Search portal (Ctrl+K)"}
             title="Ctrl + K"
           >
@@ -423,15 +439,15 @@ export function Header() {
             </kbd>
           </button>
 
-          {/* Search Button (Mobile) */}
+          {/* Search Icon Button (Mobile, Tablet & Compact Desktop) */}
           <button
             type="button"
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
-            className="grid h-9 w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary sm:hidden cursor-pointer"
+            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary xl:hidden cursor-pointer"
             aria-label={lang === "ar" ? "بحث" : "Search"}
           >
-            <Search className="h-4 w-4" />
+            <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
 
           {/* E-Commerce Store Icon Button */}
@@ -439,34 +455,33 @@ export function Header() {
             href={storeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="grid h-9 w-9 place-items-center border border-gold/40 bg-gold/10 text-amber-900 transition-all duration-200 hover:scale-105 hover:bg-gold hover:text-ink dark:border-gold/30 dark:bg-gold/15 dark:text-gold dark:hover:bg-gold dark:hover:text-ink cursor-pointer"
+            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-gold/40 bg-gold/10 text-amber-900 transition-all duration-200 hover:scale-105 hover:bg-gold hover:text-ink dark:border-gold/30 dark:bg-gold/15 dark:text-gold dark:hover:bg-gold dark:hover:text-ink cursor-pointer"
             aria-label={lang === "ar" ? "المتجر الإلكتروني" : "E-Commerce Store"}
             title={lang === "ar" ? "المتجر الإلكتروني (سلة)" : "Online Store (Salla)"}
           >
-            <ShoppingBag className="h-4 w-4" />
-            <span className="sr-only">{lang === "ar" ? "المتجر الإلكتروني" : "E-Commerce Store"}</span>
+            <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="sr-only">
+              {lang === "ar" ? "المتجر الإلكتروني" : "E-Commerce Store"}
+            </span>
           </a>
 
-          <div className="hidden items-center gap-1 border border-border/60 bg-secondary/40 px-1 py-1 sm:inline-flex">
-            <ThemeToggle tone="default" />
-            <span className="h-4 w-px bg-border" aria-hidden="true" />
-            <LanguageSwitcher tone="default" />
-          </div>
-          <div className="flex items-center gap-1 sm:hidden">
+          <div className="flex items-center gap-0.5 sm:gap-1">
             <ThemeToggle tone="default" />
             <LanguageSwitcher tone="default" />
           </div>
+
           {canReviewTreasury ? (
             <Link
               to="/treasury"
-              className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary md:inline-flex"
+              className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary 2xl:inline-flex"
             >
               {lang === "ar" ? "الخزينة" : "Treasury"}
             </Link>
           ) : null}
+
           <Link
             to={user ? "/account" : "/auth"}
-            className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary md:inline-flex"
+            className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary xl:inline-flex"
           >
             <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
             {user
@@ -477,14 +492,15 @@ export function Header() {
                 ? "دخول الأعضاء"
                 : "Member sign-in"}
           </Link>
+
           <Link
             to="/contribute"
-            className="hidden items-center border border-gold bg-gold px-4 py-2 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold sm:inline-flex"
+            className="hidden items-center border border-gold bg-gold px-4 py-2 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold xl:inline-flex"
           >
             {lang === "ar" ? "الاشتراك" : "Subscribe"}
           </Link>
 
-
+          {/* Mobile & Tablet Hamburger Menu Button */}
           <button
             type="button"
             aria-label={
@@ -497,10 +513,10 @@ export function Header() {
                   : "Open menu"
             }
             aria-expanded={open}
-            className="grid h-9 w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary lg:hidden cursor-pointer"
+            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary lg:hidden cursor-pointer shrink-0"
             onClick={() => setOpen((v) => !v)}
           >
-            {open ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
+            {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
       </div>
@@ -533,10 +549,19 @@ export function Header() {
                     const hasChildren = Boolean(n.children && n.children.length > 0);
                     const active = isNavItemActive(pathname, n);
                     return (
-                      <li key={n.to} className="menu-in border-b border-border/60 py-2.5" style={{ ["--menu-i" as string]: ii + 1 }}>
+                      <li
+                        key={n.to}
+                        className="menu-in border-b border-border/60 py-2.5"
+                        style={{ ["--menu-i" as string]: ii + 1 }}
+                      >
                         {hasChildren ? (
                           <div>
-                            <span className={cn("block py-1 text-sm font-bold", active ? "text-bronze dark:text-gold" : "text-foreground")}>
+                            <span
+                              className={cn(
+                                "block py-1 text-sm font-bold",
+                                active ? "text-bronze dark:text-gold" : "text-foreground",
+                              )}
+                            >
                               {typeof n.label === "string" ? n.label : t(n.label)}
                             </span>
                             <ul className="mt-1.5 ms-3 space-y-1.5 border-s-2 border-border/70 ps-3">
@@ -554,7 +579,9 @@ export function Header() {
                                           : "text-muted-foreground hover:text-foreground",
                                       )}
                                     >
-                                      {typeof child.label === "string" ? child.label : t(child.label)}
+                                      {typeof child.label === "string"
+                                        ? child.label
+                                        : t(child.label)}
                                     </Link>
                                   </li>
                                 );
@@ -592,10 +619,19 @@ export function Header() {
                       const hasChildren = Boolean(n.children && n.children.length > 0);
                       const active = isNavItemActive(pathname, n);
                       return (
-                        <li key={n.to} className="menu-in" style={{ ["--menu-i" as string]: ii + 1 }}>
+                        <li
+                          key={n.to}
+                          className="menu-in"
+                          style={{ ["--menu-i" as string]: ii + 1 }}
+                        >
                           {hasChildren ? (
                             <div className="py-1.5">
-                              <span className={cn("block text-sm font-bold", active ? "text-bronze dark:text-gold" : "text-foreground")}>
+                              <span
+                                className={cn(
+                                  "block text-sm font-bold",
+                                  active ? "text-bronze dark:text-gold" : "text-foreground",
+                                )}
+                              >
                                 {t(n.label)}
                               </span>
                               <ul className="mt-1.5 ms-3 space-y-1.5 border-s-2 border-border/70 ps-3">

@@ -1,11 +1,23 @@
 import { useState, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,7 +64,9 @@ export function PageBuilderDialog({
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("builder");
   const [selectedBlockIdx, setSelectedBlockIdx] = useState<number | null>(null);
-  const [galleries, setGalleries] = useState<{ id: string; title_ar: string; title_en: string | null }[]>([]);
+  const [galleries, setGalleries] = useState<
+    { id: string; title_ar: string; title_en: string | null }[]
+  >([]);
   const [revisions, setRevisions] = useState<PageRevisionSummary[]>([]);
   const [revisionsLoading, setRevisionsLoading] = useState(false);
   const [restoringId, setRestoringId] = useState<string | null>(null);
@@ -195,7 +209,9 @@ export function PageBuilderDialog({
       loadRevisions();
       setActiveTab("builder");
     } catch (err: any) {
-      toast.error(err?.message || (isAr ? "تعذّرت استعادة هذا الإصدار" : "Failed to restore this version"));
+      toast.error(
+        err?.message || (isAr ? "تعذّرت استعادة هذا الإصدار" : "Failed to restore this version"),
+      );
     } finally {
       setRestoringId(null);
     }
@@ -208,7 +224,7 @@ export function PageBuilderDialog({
     patch: Record<string, any>,
   ) => {
     const next = [...sections];
-    const arr = [...(((next[idx].data as any)?.[key]) ?? [])];
+    const arr = [...((next[idx].data as any)?.[key] ?? [])];
     arr[itemIdx] = { ...arr[itemIdx], ...patch };
     next[idx] = { ...next[idx], data: { ...next[idx].data, [key]: arr } };
     setForm((prev) => ({ ...prev, sections: next }));
@@ -216,14 +232,14 @@ export function PageBuilderDialog({
 
   const addNestedArrayItem = (idx: number, key: string, template: Record<string, any>) => {
     const next = [...sections];
-    const arr = [...(((next[idx].data as any)?.[key]) ?? []), template];
+    const arr = [...((next[idx].data as any)?.[key] ?? []), template];
     next[idx] = { ...next[idx], data: { ...next[idx].data, [key]: arr } };
     setForm((prev) => ({ ...prev, sections: next }));
   };
 
   const removeNestedArrayItem = (idx: number, key: string, itemIdx: number) => {
     const next = [...sections];
-    const arr = (((next[idx].data as any)?.[key]) ?? []).filter((_: any, i: number) => i !== itemIdx);
+    const arr = ((next[idx].data as any)?.[key] ?? []).filter((_: any, i: number) => i !== itemIdx);
     next[idx] = { ...next[idx], data: { ...next[idx].data, [key]: arr } };
     setForm((prev) => ({ ...prev, sections: next }));
   };
@@ -232,7 +248,7 @@ export function PageBuilderDialog({
     const def = BLOCK_DEFINITIONS[type];
     const newSection: ContentSectionInput = {
       type,
-      sort_order: (form.sections?.length ?? 0),
+      sort_order: form.sections?.length ?? 0,
       data: { ...def.defaultData },
       settings: {},
       visibility: "public",
@@ -241,7 +257,7 @@ export function PageBuilderDialog({
       ...prev,
       sections: [...(prev.sections ?? []), newSection],
     }));
-    setSelectedBlockIdx((form.sections?.length ?? 0));
+    setSelectedBlockIdx(form.sections?.length ?? 0);
   };
 
   const handleMoveBlock = (idx: number, dir: "up" | "down") => {
@@ -302,8 +318,8 @@ export function PageBuilderDialog({
                 ? "محرر وبناء الصفحة (Page Builder)"
                 : "Edit Page & Blocks"
               : isAr
-              ? "إنشاء صفحة جديدة وبناء الأقسام"
-              : "Create New Page & Build Blocks"}
+                ? "إنشاء صفحة جديدة وبناء الأقسام"
+                : "Create New Page & Build Blocks"}
           </DialogTitle>
         </DialogHeader>
 
@@ -352,8 +368,12 @@ export function PageBuilderDialog({
                             <Icon className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />
                           </div>
                           <div className="min-w-0">
-                            <p className="font-semibold text-foreground truncate">{isAr ? def.label_ar : def.label_en}</p>
-                            <p className="text-[10px] text-muted-foreground truncate">{isAr ? def.description_ar : def.description_en}</p>
+                            <p className="font-semibold text-foreground truncate">
+                              {isAr ? def.label_ar : def.label_en}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground truncate">
+                              {isAr ? def.description_ar : def.description_en}
+                            </p>
                           </div>
                         </button>
                       );
@@ -365,18 +385,23 @@ export function PageBuilderDialog({
                 <div className="md:col-span-2 space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-bold text-foreground">
-                      {isAr ? `أقسام الصفحة الحالية (${sections.length})` : `Current Page Blocks (${sections.length})`}
+                      {isAr
+                        ? `أقسام الصفحة الحالية (${sections.length})`
+                        : `Current Page Blocks (${sections.length})`}
                     </h4>
                   </div>
 
                   {sections.length === 0 ? (
                     <div className="border-2 border-dashed border-border rounded-xl p-10 text-center text-xs text-muted-foreground">
-                      {isAr ? "لم يتم إضافة أي كتل محتوى بعد. اختر قسماً من القائمة الجانبية." : "No blocks added yet. Click a block from the palette to add."}
+                      {isAr
+                        ? "لم يتم إضافة أي كتل محتوى بعد. اختر قسماً من القائمة الجانبية."
+                        : "No blocks added yet. Click a block from the palette to add."}
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {sections.map((sec, idx) => {
-                        const def = BLOCK_DEFINITIONS[sec.type as BlockType] || BLOCK_DEFINITIONS.rich_text;
+                        const def =
+                          BLOCK_DEFINITIONS[sec.type as BlockType] || BLOCK_DEFINITIONS.rich_text;
                         const Icon = def.icon;
                         const isSelected = selectedBlockIdx === idx;
                         // Block payloads vary by type, so `sec.data` is loosely
@@ -453,29 +478,41 @@ export function PageBuilderDialog({
                                 {sec.type === "hero" && (
                                   <>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "العنوان الرئيسي" : "Title"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr ? "العنوان الرئيسي" : "Title"}
+                                      </Label>
                                       <Input
                                         value={secData.title_ar ?? ""}
                                         onChange={(e) => {
                                           const next = [...sections];
-                                          next[idx].data = { ...next[idx].data, title_ar: e.target.value };
+                                          next[idx].data = {
+                                            ...next[idx].data,
+                                            title_ar: e.target.value,
+                                          };
                                           setForm({ ...form, sections: next });
                                         }}
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "النص الفرعي" : "Subtitle"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr ? "النص الفرعي" : "Subtitle"}
+                                      </Label>
                                       <Input
                                         value={secData.subtitle_ar ?? ""}
                                         onChange={(e) => {
                                           const next = [...sections];
-                                          next[idx].data = { ...next[idx].data, subtitle_ar: e.target.value };
+                                          next[idx].data = {
+                                            ...next[idx].data,
+                                            subtitle_ar: e.target.value,
+                                          };
                                           setForm({ ...form, sections: next });
                                         }}
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px] font-semibold">{isAr ? "صورة خلفية القسم" : "Background Image"}</Label>
+                                      <Label className="text-[11px] font-semibold">
+                                        {isAr ? "صورة خلفية القسم" : "Background Image"}
+                                      </Label>
                                       <ImageUploadInput
                                         bucket="site-media"
                                         value={secData.bg_image_url}
@@ -484,7 +521,11 @@ export function PageBuilderDialog({
                                           next[idx].data = { ...next[idx].data, bg_image_url: url };
                                           setForm({ ...form, sections: next });
                                         }}
-                                        placeholder={isAr ? "رابط الصورة أو ارفع صورة..." : "Image URL or upload..."}
+                                        placeholder={
+                                          isAr
+                                            ? "رابط الصورة أو ارفع صورة..."
+                                            : "Image URL or upload..."
+                                        }
                                       />
                                     </div>
                                   </>
@@ -493,7 +534,9 @@ export function PageBuilderDialog({
                                 {sec.type === "image" && (
                                   <>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px] font-semibold">{isAr ? "الصورة" : "Image"}</Label>
+                                      <Label className="text-[11px] font-semibold">
+                                        {isAr ? "الصورة" : "Image"}
+                                      </Label>
                                       <ImageUploadInput
                                         bucket="site-media"
                                         value={secData.url}
@@ -502,17 +545,28 @@ export function PageBuilderDialog({
                                           next[idx].data = { ...next[idx].data, url };
                                           setForm({ ...form, sections: next });
                                         }}
-                                        placeholder={isAr ? "رابط الصورة أو ارفع صورة..." : "Image URL or upload..."}
+                                        placeholder={
+                                          isAr
+                                            ? "رابط الصورة أو ارفع صورة..."
+                                            : "Image URL or upload..."
+                                        }
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "التعليق التوضيحي (Caption)" : "Caption"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr ? "التعليق التوضيحي (Caption)" : "Caption"}
+                                      </Label>
                                       <Input
                                         value={secData.caption_ar ?? ""}
-                                        placeholder={isAr ? "تعليق يظهر أسفل الصورة" : "Caption below image"}
+                                        placeholder={
+                                          isAr ? "تعليق يظهر أسفل الصورة" : "Caption below image"
+                                        }
                                         onChange={(e) => {
                                           const next = [...sections];
-                                          next[idx].data = { ...next[idx].data, caption_ar: e.target.value };
+                                          next[idx].data = {
+                                            ...next[idx].data,
+                                            caption_ar: e.target.value,
+                                          };
                                           setForm({ ...form, sections: next });
                                         }}
                                       />
@@ -522,13 +576,18 @@ export function PageBuilderDialog({
 
                                 {sec.type === "rich_text" && (
                                   <div className="space-y-1">
-                                    <Label className="text-[11px]">{isAr ? "المحتوى النصي" : "Content Text"}</Label>
+                                    <Label className="text-[11px]">
+                                      {isAr ? "المحتوى النصي" : "Content Text"}
+                                    </Label>
                                     <Textarea
                                       rows={4}
                                       value={secData.content_ar ?? ""}
                                       onChange={(e) => {
                                         const next = [...sections];
-                                        next[idx].data = { ...next[idx].data, content_ar: e.target.value };
+                                        next[idx].data = {
+                                          ...next[idx].data,
+                                          content_ar: e.target.value,
+                                        };
                                         setForm({ ...form, sections: next });
                                       }}
                                     />
@@ -538,23 +597,33 @@ export function PageBuilderDialog({
                                 {sec.type === "quote" && (
                                   <>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "نص الاقتباس" : "Quote Text"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr ? "نص الاقتباس" : "Quote Text"}
+                                      </Label>
                                       <Input
                                         value={secData.quote_ar ?? ""}
                                         onChange={(e) => {
                                           const next = [...sections];
-                                          next[idx].data = { ...next[idx].data, quote_ar: e.target.value };
+                                          next[idx].data = {
+                                            ...next[idx].data,
+                                            quote_ar: e.target.value,
+                                          };
                                           setForm({ ...form, sections: next });
                                         }}
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "القائل / المصدر" : "Author"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr ? "القائل / المصدر" : "Author"}
+                                      </Label>
                                       <Input
                                         value={secData.author_ar ?? ""}
                                         onChange={(e) => {
                                           const next = [...sections];
-                                          next[idx].data = { ...next[idx].data, author_ar: e.target.value };
+                                          next[idx].data = {
+                                            ...next[idx].data,
+                                            author_ar: e.target.value,
+                                          };
                                           setForm({ ...form, sections: next });
                                         }}
                                       />
@@ -565,25 +634,35 @@ export function PageBuilderDialog({
                                 {sec.type === "cta" && (
                                   <>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "عنوان الإجراء" : "CTA Title"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr ? "عنوان الإجراء" : "CTA Title"}
+                                      </Label>
                                       <Input
                                         value={secData.title_ar ?? ""}
                                         onChange={(e) => {
                                           const next = [...sections];
-                                          next[idx].data = { ...next[idx].data, title_ar: e.target.value };
+                                          next[idx].data = {
+                                            ...next[idx].data,
+                                            title_ar: e.target.value,
+                                          };
                                           setForm({ ...form, sections: next });
                                         }}
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "نص الزر والرابط" : "Button text & URL"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr ? "نص الزر والرابط" : "Button text & URL"}
+                                      </Label>
                                       <div className="grid grid-cols-2 gap-2">
                                         <Input
                                           value={secData.button_text_ar ?? ""}
                                           placeholder="نص الزر"
                                           onChange={(e) => {
                                             const next = [...sections];
-                                            next[idx].data = { ...next[idx].data, button_text_ar: e.target.value };
+                                            next[idx].data = {
+                                              ...next[idx].data,
+                                              button_text_ar: e.target.value,
+                                            };
                                             setForm({ ...form, sections: next });
                                           }}
                                         />
@@ -592,7 +671,10 @@ export function PageBuilderDialog({
                                           placeholder="/contact"
                                           onChange={(e) => {
                                             const next = [...sections];
-                                            next[idx].data = { ...next[idx].data, button_url: e.target.value };
+                                            next[idx].data = {
+                                              ...next[idx].data,
+                                              button_url: e.target.value,
+                                            };
                                             setForm({ ...form, sections: next });
                                           }}
                                         />
@@ -604,7 +686,11 @@ export function PageBuilderDialog({
                                 {sec.type === "video" && (
                                   <>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px] font-semibold">{isAr ? "رابط الفيديو (يوتيوب أو ملف مباشر)" : "Video URL (YouTube or direct file)"}</Label>
+                                      <Label className="text-[11px] font-semibold">
+                                        {isAr
+                                          ? "رابط الفيديو (يوتيوب أو ملف مباشر)"
+                                          : "Video URL (YouTube or direct file)"}
+                                      </Label>
                                       <Input
                                         value={secData.url ?? ""}
                                         placeholder="https://youtube.com/watch?v=... أو https://.../video.mp4"
@@ -612,8 +698,13 @@ export function PageBuilderDialog({
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "عنوان الفيديو" : "Title"}</Label>
-                                      <Input value={secData.title_ar ?? ""} onChange={(e) => setField("title_ar", e.target.value)} />
+                                      <Label className="text-[11px]">
+                                        {isAr ? "عنوان الفيديو" : "Title"}
+                                      </Label>
+                                      <Input
+                                        value={secData.title_ar ?? ""}
+                                        onChange={(e) => setField("title_ar", e.target.value)}
+                                      />
                                     </div>
                                   </>
                                 )}
@@ -621,13 +712,21 @@ export function PageBuilderDialog({
                                 {sec.type === "gallery" && (
                                   <>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px] font-semibold">{isAr ? "اختر المعرض" : "Select Gallery"}</Label>
+                                      <Label className="text-[11px] font-semibold">
+                                        {isAr ? "اختر المعرض" : "Select Gallery"}
+                                      </Label>
                                       <Select
                                         value={secData.gallery_id ?? ""}
                                         onValueChange={(val) => setField("gallery_id", val)}
                                       >
                                         <SelectTrigger>
-                                          <SelectValue placeholder={isAr ? "اختر معرض صور منشور..." : "Select a published gallery..."} />
+                                          <SelectValue
+                                            placeholder={
+                                              isAr
+                                                ? "اختر معرض صور منشور..."
+                                                : "Select a published gallery..."
+                                            }
+                                          />
                                         </SelectTrigger>
                                         <SelectContent>
                                           {galleries.length === 0 ? (
@@ -645,13 +744,17 @@ export function PageBuilderDialog({
                                       </Select>
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "عدد الأعمدة" : "Columns"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr ? "عدد الأعمدة" : "Columns"}
+                                      </Label>
                                       <Input
                                         type="number"
                                         min={1}
                                         max={6}
                                         value={secData.columns ?? 3}
-                                        onChange={(e) => setField("columns", Number(e.target.value) || 3)}
+                                        onChange={(e) =>
+                                          setField("columns", Number(e.target.value) || 3)
+                                        }
                                       />
                                     </div>
                                   </>
@@ -659,29 +762,50 @@ export function PageBuilderDialog({
 
                                 {sec.type === "timeline" && (
                                   <div className="space-y-2">
-                                    <Label className="text-[11px] font-semibold">{isAr ? "أحداث الخط الزمني" : "Timeline Events"}</Label>
+                                    <Label className="text-[11px] font-semibold">
+                                      {isAr ? "أحداث الخط الزمني" : "Timeline Events"}
+                                    </Label>
                                     {(secData.items ?? []).map((item: any, i: number) => (
-                                      <div key={i} className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10">
+                                      <div
+                                        key={i}
+                                        className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10"
+                                      >
                                         <div className="grid grid-cols-2 gap-1.5">
                                           <Input
                                             className="h-7 text-[11px]"
                                             placeholder={isAr ? "السنة" : "Year"}
                                             value={item.year ?? ""}
-                                            onChange={(e) => updateNestedArrayItem(idx, "items", i, { year: e.target.value })}
+                                            onChange={(e) =>
+                                              updateNestedArrayItem(idx, "items", i, {
+                                                year: e.target.value,
+                                              })
+                                            }
                                           />
                                           <Input
                                             className="h-7 text-[11px]"
                                             placeholder={isAr ? "العنوان" : "Title"}
                                             value={item.title_ar ?? ""}
-                                            onChange={(e) => updateNestedArrayItem(idx, "items", i, { title_ar: e.target.value })}
+                                            onChange={(e) =>
+                                              updateNestedArrayItem(idx, "items", i, {
+                                                title_ar: e.target.value,
+                                              })
+                                            }
                                           />
                                         </div>
                                         <Textarea
                                           className="text-[11px]"
                                           rows={2}
-                                          placeholder={isAr ? "وصف مختصر (اختياري)" : "Short description (optional)"}
+                                          placeholder={
+                                            isAr
+                                              ? "وصف مختصر (اختياري)"
+                                              : "Short description (optional)"
+                                          }
                                           value={item.description_ar ?? ""}
-                                          onChange={(e) => updateNestedArrayItem(idx, "items", i, { description_ar: e.target.value })}
+                                          onChange={(e) =>
+                                            updateNestedArrayItem(idx, "items", i, {
+                                              description_ar: e.target.value,
+                                            })
+                                          }
                                         />
                                         <Button
                                           type="button"
@@ -690,7 +814,8 @@ export function PageBuilderDialog({
                                           className="h-6 text-[10px] text-destructive gap-1"
                                           onClick={() => removeNestedArrayItem(idx, "items", i)}
                                         >
-                                          <Trash2 className="w-3 h-3" /> {isAr ? "حذف الحدث" : "Remove event"}
+                                          <Trash2 className="w-3 h-3" />{" "}
+                                          {isAr ? "حذف الحدث" : "Remove event"}
                                         </Button>
                                       </div>
                                     ))}
@@ -700,31 +825,51 @@ export function PageBuilderDialog({
                                       size="sm"
                                       className="h-7 text-[11px] gap-1"
                                       onClick={() =>
-                                        addNestedArrayItem(idx, "items", { year: "", title_ar: "", title_en: "", description_ar: "", description_en: "" })
+                                        addNestedArrayItem(idx, "items", {
+                                          year: "",
+                                          title_ar: "",
+                                          title_en: "",
+                                          description_ar: "",
+                                          description_en: "",
+                                        })
                                       }
                                     >
-                                      <Plus className="w-3 h-3" /> {isAr ? "إضافة حدث" : "Add event"}
+                                      <Plus className="w-3 h-3" />{" "}
+                                      {isAr ? "إضافة حدث" : "Add event"}
                                     </Button>
                                   </div>
                                 )}
 
                                 {sec.type === "statistics" && (
                                   <div className="space-y-2">
-                                    <Label className="text-[11px] font-semibold">{isAr ? "بنود الإحصائية" : "Stat items"}</Label>
+                                    <Label className="text-[11px] font-semibold">
+                                      {isAr ? "بنود الإحصائية" : "Stat items"}
+                                    </Label>
                                     {(secData.items ?? []).map((item: any, i: number) => (
-                                      <div key={i} className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10">
+                                      <div
+                                        key={i}
+                                        className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10"
+                                      >
                                         <div className="grid grid-cols-3 gap-1.5">
                                           <Input
                                             className="h-7 text-[11px]"
                                             placeholder={isAr ? "الرقم" : "Number"}
                                             value={item.number ?? ""}
-                                            onChange={(e) => updateNestedArrayItem(idx, "items", i, { number: e.target.value })}
+                                            onChange={(e) =>
+                                              updateNestedArrayItem(idx, "items", i, {
+                                                number: e.target.value,
+                                              })
+                                            }
                                           />
                                           <Input
                                             className="h-7 text-[11px] col-span-2"
                                             placeholder={isAr ? "الوصف" : "Label"}
                                             value={item.label_ar ?? ""}
-                                            onChange={(e) => updateNestedArrayItem(idx, "items", i, { label_ar: e.target.value })}
+                                            onChange={(e) =>
+                                              updateNestedArrayItem(idx, "items", i, {
+                                                label_ar: e.target.value,
+                                              })
+                                            }
                                           />
                                         </div>
                                         <Button
@@ -743,7 +888,13 @@ export function PageBuilderDialog({
                                       variant="outline"
                                       size="sm"
                                       className="h-7 text-[11px] gap-1"
-                                      onClick={() => addNestedArrayItem(idx, "items", { number: "", label_ar: "", label_en: "" })}
+                                      onClick={() =>
+                                        addNestedArrayItem(idx, "items", {
+                                          number: "",
+                                          label_ar: "",
+                                          label_en: "",
+                                        })
+                                      }
                                     >
                                       <Plus className="w-3 h-3" /> {isAr ? "إضافة بند" : "Add item"}
                                     </Button>
@@ -752,27 +903,48 @@ export function PageBuilderDialog({
 
                                 {sec.type === "cards" && (
                                   <div className="space-y-2">
-                                    <Label className="text-[11px] font-semibold">{isAr ? "بطاقات الميزات" : "Feature cards"}</Label>
+                                    <Label className="text-[11px] font-semibold">
+                                      {isAr ? "بطاقات الميزات" : "Feature cards"}
+                                    </Label>
                                     {(secData.cards ?? []).map((card: any, i: number) => (
-                                      <div key={i} className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10">
+                                      <div
+                                        key={i}
+                                        className="border border-border rounded-lg p-2 space-y-1.5 bg-muted/10"
+                                      >
                                         <Input
                                           className="h-7 text-[11px]"
                                           placeholder={isAr ? "العنوان" : "Title"}
                                           value={card.title_ar ?? ""}
-                                          onChange={(e) => updateNestedArrayItem(idx, "cards", i, { title_ar: e.target.value })}
+                                          onChange={(e) =>
+                                            updateNestedArrayItem(idx, "cards", i, {
+                                              title_ar: e.target.value,
+                                            })
+                                          }
                                         />
                                         <Textarea
                                           className="text-[11px]"
                                           rows={2}
                                           placeholder={isAr ? "الوصف" : "Description"}
                                           value={card.desc_ar ?? ""}
-                                          onChange={(e) => updateNestedArrayItem(idx, "cards", i, { desc_ar: e.target.value })}
+                                          onChange={(e) =>
+                                            updateNestedArrayItem(idx, "cards", i, {
+                                              desc_ar: e.target.value,
+                                            })
+                                          }
                                         />
                                         <Input
                                           className="h-7 text-[11px]"
-                                          placeholder={isAr ? "رابط عند الضغط (اختياري)" : "Link URL (optional)"}
+                                          placeholder={
+                                            isAr
+                                              ? "رابط عند الضغط (اختياري)"
+                                              : "Link URL (optional)"
+                                          }
                                           value={card.link_url ?? ""}
-                                          onChange={(e) => updateNestedArrayItem(idx, "cards", i, { link_url: e.target.value })}
+                                          onChange={(e) =>
+                                            updateNestedArrayItem(idx, "cards", i, {
+                                              link_url: e.target.value,
+                                            })
+                                          }
                                         />
                                         <Button
                                           type="button"
@@ -781,7 +953,8 @@ export function PageBuilderDialog({
                                           className="h-6 text-[10px] text-destructive gap-1"
                                           onClick={() => removeNestedArrayItem(idx, "cards", i)}
                                         >
-                                          <Trash2 className="w-3 h-3" /> {isAr ? "حذف البطاقة" : "Remove card"}
+                                          <Trash2 className="w-3 h-3" />{" "}
+                                          {isAr ? "حذف البطاقة" : "Remove card"}
                                         </Button>
                                       </div>
                                     ))}
@@ -791,10 +964,17 @@ export function PageBuilderDialog({
                                       size="sm"
                                       className="h-7 text-[11px] gap-1"
                                       onClick={() =>
-                                        addNestedArrayItem(idx, "cards", { title_ar: "", title_en: "", desc_ar: "", desc_en: "", link_url: "" })
+                                        addNestedArrayItem(idx, "cards", {
+                                          title_ar: "",
+                                          title_en: "",
+                                          desc_ar: "",
+                                          desc_en: "",
+                                          link_url: "",
+                                        })
                                       }
                                     >
-                                      <Plus className="w-3 h-3" /> {isAr ? "إضافة بطاقة" : "Add card"}
+                                      <Plus className="w-3 h-3" />{" "}
+                                      {isAr ? "إضافة بطاقة" : "Add card"}
                                     </Button>
                                   </div>
                                 )}
@@ -802,23 +982,36 @@ export function PageBuilderDialog({
                                 {sec.type === "member_spotlight" && (
                                   <>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px] font-semibold">{isAr ? "معرّف الفرد (ID) أو الرابط المختصر (slug)" : "Member ID or slug"}</Label>
+                                      <Label className="text-[11px] font-semibold">
+                                        {isAr
+                                          ? "معرّف الفرد (ID) أو الرابط المختصر (slug)"
+                                          : "Member ID or slug"}
+                                      </Label>
                                       <Input
                                         value={secData.member_id ?? ""}
-                                        placeholder={isAr ? "مثال: ahmad-al-bouabid" : "e.g. ahmad-al-bouabid"}
+                                        placeholder={
+                                          isAr ? "مثال: ahmad-al-bouabid" : "e.g. ahmad-al-bouabid"
+                                        }
                                         onChange={(e) => setField("member_id", e.target.value)}
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "شارة الإبراز" : "Highlight badge"}</Label>
-                                      <Input value={secData.highlight_ar ?? ""} onChange={(e) => setField("highlight_ar", e.target.value)} />
+                                      <Label className="text-[11px]">
+                                        {isAr ? "شارة الإبراز" : "Highlight badge"}
+                                      </Label>
+                                      <Input
+                                        value={secData.highlight_ar ?? ""}
+                                        onChange={(e) => setField("highlight_ar", e.target.value)}
+                                      />
                                     </div>
                                   </>
                                 )}
 
                                 {sec.type === "branches" && (
                                   <div className="flex items-center justify-between">
-                                    <Label className="text-[11px]">{isAr ? "إظهار أسماء عمداء الفروع" : "Show branch elders"}</Label>
+                                    <Label className="text-[11px]">
+                                      {isAr ? "إظهار أسماء عمداء الفروع" : "Show branch elders"}
+                                    </Label>
                                     <Switch
                                       checked={secData.show_elders ?? true}
                                       onCheckedChange={(v) => setField("show_elders", v)}
@@ -828,53 +1021,74 @@ export function PageBuilderDialog({
 
                                 {sec.type === "tree" && (
                                   <div className="space-y-1">
-                                    <Label className="text-[11px]">{isAr ? "عدد الأجيال المعروضة" : "Generations to show"}</Label>
+                                    <Label className="text-[11px]">
+                                      {isAr ? "عدد الأجيال المعروضة" : "Generations to show"}
+                                    </Label>
                                     <Input
                                       type="number"
                                       min={1}
                                       max={10}
                                       value={secData.max_generations ?? 4}
-                                      onChange={(e) => setField("max_generations", Number(e.target.value) || 4)}
+                                      onChange={(e) =>
+                                        setField("max_generations", Number(e.target.value) || 4)
+                                      }
                                     />
                                   </div>
                                 )}
 
                                 {sec.type === "events" && (
                                   <div className="space-y-1">
-                                    <Label className="text-[11px]">{isAr ? "عدد الفعاليات المعروضة" : "Number of events"}</Label>
+                                    <Label className="text-[11px]">
+                                      {isAr ? "عدد الفعاليات المعروضة" : "Number of events"}
+                                    </Label>
                                     <Input
                                       type="number"
                                       min={1}
                                       max={12}
                                       value={secData.limit ?? 3}
-                                      onChange={(e) => setField("limit", Number(e.target.value) || 3)}
+                                      onChange={(e) =>
+                                        setField("limit", Number(e.target.value) || 3)
+                                      }
                                     />
                                   </div>
                                 )}
 
                                 {sec.type === "articles" && (
                                   <div className="space-y-1">
-                                    <Label className="text-[11px]">{isAr ? "عدد المقالات المعروضة" : "Number of articles"}</Label>
+                                    <Label className="text-[11px]">
+                                      {isAr ? "عدد المقالات المعروضة" : "Number of articles"}
+                                    </Label>
                                     <Input
                                       type="number"
                                       min={1}
                                       max={12}
                                       value={secData.limit ?? 3}
-                                      onChange={(e) => setField("limit", Number(e.target.value) || 3)}
+                                      onChange={(e) =>
+                                        setField("limit", Number(e.target.value) || 3)
+                                      }
                                     />
                                   </div>
                                 )}
 
                                 {sec.type === "announcements" && (
                                   <div className="space-y-1">
-                                    <Label className="text-[11px]">{isAr ? "شكل العرض" : "Display style"}</Label>
-                                    <Select value={secData.style ?? "banner"} onValueChange={(v) => setField("style", v)}>
+                                    <Label className="text-[11px]">
+                                      {isAr ? "شكل العرض" : "Display style"}
+                                    </Label>
+                                    <Select
+                                      value={secData.style ?? "banner"}
+                                      onValueChange={(v) => setField("style", v)}
+                                    >
                                       <SelectTrigger>
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        <SelectItem value="banner">{isAr ? "شريط عرض" : "Banner"}</SelectItem>
-                                        <SelectItem value="list">{isAr ? "قائمة" : "List"}</SelectItem>
+                                        <SelectItem value="banner">
+                                          {isAr ? "شريط عرض" : "Banner"}
+                                        </SelectItem>
+                                        <SelectItem value="list">
+                                          {isAr ? "قائمة" : "List"}
+                                        </SelectItem>
                                       </SelectContent>
                                     </Select>
                                   </div>
@@ -883,15 +1097,25 @@ export function PageBuilderDialog({
                                 {sec.type === "map" && (
                                   <>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px] font-semibold">{isAr ? "العنوان النصي" : "Address"}</Label>
+                                      <Label className="text-[11px] font-semibold">
+                                        {isAr ? "العنوان النصي" : "Address"}
+                                      </Label>
                                       <Input
                                         value={secData.address ?? ""}
-                                        placeholder={isAr ? "المبرز، الأحساء، السعودية" : "Al Mubarraz, Al Ahsa, Saudi Arabia"}
+                                        placeholder={
+                                          isAr
+                                            ? "المبرز، الأحساء، السعودية"
+                                            : "Al Mubarraz, Al Ahsa, Saudi Arabia"
+                                        }
                                         onChange={(e) => setField("address", e.target.value)}
                                       />
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-[11px]">{isAr ? "أو رابط تضمين خرائط جوجل (اختياري)" : "Or a Google Maps embed URL (optional)"}</Label>
+                                      <Label className="text-[11px]">
+                                        {isAr
+                                          ? "أو رابط تضمين خرائط جوجل (اختياري)"
+                                          : "Or a Google Maps embed URL (optional)"}
+                                      </Label>
                                       <Input
                                         value={secData.embed_url ?? ""}
                                         placeholder="https://www.google.com/maps?q=...&output=embed"
@@ -903,8 +1127,13 @@ export function PageBuilderDialog({
 
                                 {sec.type === "contact" && (
                                   <div className="space-y-1">
-                                    <Label className="text-[11px] font-semibold">{isAr ? "عنوان النموذج" : "Form title"}</Label>
-                                    <Input value={secData.title_ar ?? ""} onChange={(e) => setField("title_ar", e.target.value)} />
+                                    <Label className="text-[11px] font-semibold">
+                                      {isAr ? "عنوان النموذج" : "Form title"}
+                                    </Label>
+                                    <Input
+                                      value={secData.title_ar ?? ""}
+                                      onChange={(e) => setField("title_ar", e.target.value)}
+                                    />
                                   </div>
                                 )}
                               </div>
@@ -922,7 +1151,9 @@ export function PageBuilderDialog({
             <TabsContent value="settings" className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "عنوان الصفحة (بالعربية) *" : "Page Title (AR) *"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "عنوان الصفحة (بالعربية) *" : "Page Title (AR) *"}
+                  </Label>
                   <Input
                     required
                     value={form.title_ar}
@@ -938,7 +1169,9 @@ export function PageBuilderDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "عنوان الصفحة (EN)" : "Page Title (EN)"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "عنوان الصفحة (EN)" : "Page Title (EN)"}
+                  </Label>
                   <Input
                     value={form.title_en ?? ""}
                     onChange={(e) => setForm({ ...form, title_en: e.target.value })}
@@ -949,7 +1182,9 @@ export function PageBuilderDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "المعرف الفريد (Slug) *" : "Slug *"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "المعرف الفريد (Slug) *" : "Slug *"}
+                  </Label>
                   <Input
                     required
                     value={form.slug}
@@ -959,35 +1194,53 @@ export function PageBuilderDialog({
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold">{isAr ? "حالة النشر" : "Status"}</Label>
-                  <Select value={form.status} onValueChange={(val: any) => setForm({ ...form, status: val })}>
+                  <Select
+                    value={form.status}
+                    onValueChange={(val: any) => setForm({ ...form, status: val })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="published">{isAr ? "منشور (Published)" : "Published"}</SelectItem>
+                      <SelectItem value="published">
+                        {isAr ? "منشور (Published)" : "Published"}
+                      </SelectItem>
                       <SelectItem value="draft">{isAr ? "مسودة (Draft)" : "Draft"}</SelectItem>
-                      <SelectItem value="in_review">{isAr ? "قيد المراجعة" : "In Review"}</SelectItem>
+                      <SelectItem value="in_review">
+                        {isAr ? "قيد المراجعة" : "In Review"}
+                      </SelectItem>
                       <SelectItem value="archived">{isAr ? "مؤرشف" : "Archived"}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "مستوى الظهور" : "Visibility"}</Label>
-                  <Select value={form.visibility} onValueChange={(val: any) => setForm({ ...form, visibility: val })}>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "مستوى الظهور" : "Visibility"}
+                  </Label>
+                  <Select
+                    value={form.visibility}
+                    onValueChange={(val: any) => setForm({ ...form, visibility: val })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="public">{isAr ? "عام للجميع" : "Public"}</SelectItem>
-                      <SelectItem value="family_only">{isAr ? "أفراد الأسرة فقط" : "Family Only"}</SelectItem>
-                      <SelectItem value="admin_only">{isAr ? "للإدارة فقط" : "Admin Only"}</SelectItem>
+                      <SelectItem value="family_only">
+                        {isAr ? "أفراد الأسرة فقط" : "Family Only"}
+                      </SelectItem>
+                      <SelectItem value="admin_only">
+                        {isAr ? "للإدارة فقط" : "Admin Only"}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "مقتطف / نبذة تمهيدية" : "Excerpt"}</Label>
+                <Label className="text-xs font-semibold">
+                  {isAr ? "مقتطف / نبذة تمهيدية" : "Excerpt"}
+                </Label>
                 <Textarea
                   rows={2}
                   value={form.excerpt_ar ?? ""}
@@ -997,26 +1250,38 @@ export function PageBuilderDialog({
 
               {/* Cover Photo */}
               <div className="space-y-1.5 pt-2 border-t border-border">
-                <Label className="text-xs font-semibold">{isAr ? "صورة الغلاف / البانر للصفحة" : "Page Cover Image"}</Label>
+                <Label className="text-xs font-semibold">
+                  {isAr ? "صورة الغلاف / البانر للصفحة" : "Page Cover Image"}
+                </Label>
                 <ImageUploadInput
                   bucket="site-media"
                   value={form.featured_media_path}
                   onChange={(url) => setForm({ ...form, featured_media_path: url })}
-                  placeholder={isAr ? "رابط الصورة أو ارفع صورة جديدة..." : "Image URL or upload..."}
-                  helperText={isAr ? "الصورة البارزة المعروضة أعلى الصفحة" : "Featured header image for this page"}
+                  placeholder={
+                    isAr ? "رابط الصورة أو ارفع صورة جديدة..." : "Image URL or upload..."
+                  }
+                  helperText={
+                    isAr
+                      ? "الصورة البارزة المعروضة أعلى الصفحة"
+                      : "Featured header image for this page"
+                  }
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "عنوان السيو (SEO Title)" : "SEO Title"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "عنوان السيو (SEO Title)" : "SEO Title"}
+                  </Label>
                   <Input
                     value={form.seo_title_ar ?? ""}
                     onChange={(e) => setForm({ ...form, seo_title_ar: e.target.value })}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "وصف السيو (SEO Description)" : "SEO Description"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "وصف السيو (SEO Description)" : "SEO Description"}
+                  </Label>
                   <Input
                     value={form.seo_description_ar ?? ""}
                     onChange={(e) => setForm({ ...form, seo_description_ar: e.target.value })}
@@ -1026,32 +1291,50 @@ export function PageBuilderDialog({
             </TabsContent>
 
             {/* TAB 3: Preview */}
-            <TabsContent value="preview" className="space-y-6 bg-muted/10 p-6 rounded-xl border border-border">
+            <TabsContent
+              value="preview"
+              className="space-y-6 bg-muted/10 p-6 rounded-xl border border-border"
+            >
               <div className="text-center space-y-2 border-b border-border pb-4">
                 <Badge variant="outline">{form.template}</Badge>
-                <h1 className="text-2xl font-bold text-foreground">{form.title_ar || "عنوان الصفحة"}</h1>
-                {form.excerpt_ar && <p className="text-sm text-muted-foreground">{form.excerpt_ar}</p>}
+                <h1 className="text-2xl font-bold text-foreground">
+                  {form.title_ar || "عنوان الصفحة"}
+                </h1>
+                {form.excerpt_ar && (
+                  <p className="text-sm text-muted-foreground">{form.excerpt_ar}</p>
+                )}
               </div>
 
               <div className="space-y-6 max-w-2xl mx-auto">
                 {sections.map((sec, idx) => {
                   const secData = (sec.data ?? {}) as Record<string, any>;
                   return (
-                    <div key={idx} className="p-4 rounded-xl border border-border/60 bg-card shadow-sm">
-                      <Badge variant="secondary" className="text-[10px] mb-2">{sec.type}</Badge>
+                    <div
+                      key={idx}
+                      className="p-4 rounded-xl border border-border/60 bg-card shadow-sm"
+                    >
+                      <Badge variant="secondary" className="text-[10px] mb-2">
+                        {sec.type}
+                      </Badge>
                       {sec.type === "hero" && (
                         <div className="text-center py-6">
                           <h2 className="text-xl font-bold text-foreground">{secData.title_ar}</h2>
-                          <p className="text-xs text-muted-foreground mt-1">{secData.subtitle_ar}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {secData.subtitle_ar}
+                          </p>
                         </div>
                       )}
                       {sec.type === "rich_text" && (
-                        <p className="text-xs leading-relaxed text-foreground">{secData.content_ar}</p>
+                        <p className="text-xs leading-relaxed text-foreground">
+                          {secData.content_ar}
+                        </p>
                       )}
                       {sec.type === "quote" && (
                         <blockquote className="border-s-4 border-primary ps-3 italic text-xs">
                           "{secData.quote_ar}"
-                          <span className="block not-italic font-semibold mt-1 text-muted-foreground">— {secData.author_ar}</span>
+                          <span className="block not-italic font-semibold mt-1 text-muted-foreground">
+                            — {secData.author_ar}
+                          </span>
                         </blockquote>
                       )}
                     </div>
@@ -1064,7 +1347,9 @@ export function PageBuilderDialog({
             <TabsContent value="history" className="space-y-3">
               {!form.id ? (
                 <div className="border-2 border-dashed border-border rounded-xl p-10 text-center text-xs text-muted-foreground">
-                  {isAr ? "احفظ الصفحة أولاً لتتوفر سجلات الإصدارات." : "Save the page first to start recording revisions."}
+                  {isAr
+                    ? "احفظ الصفحة أولاً لتتوفر سجلات الإصدارات."
+                    : "Save the page first to start recording revisions."}
                 </div>
               ) : revisionsLoading ? (
                 <div className="p-10 text-center text-xs text-muted-foreground">
@@ -1072,7 +1357,9 @@ export function PageBuilderDialog({
                 </div>
               ) : revisions.length === 0 ? (
                 <div className="border-2 border-dashed border-border rounded-xl p-10 text-center text-xs text-muted-foreground">
-                  {isAr ? "لا يوجد سجل إصدارات بعد لهذه الصفحة." : "No revisions recorded for this page yet."}
+                  {isAr
+                    ? "لا يوجد سجل إصدارات بعد لهذه الصفحة."
+                    : "No revisions recorded for this page yet."}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -1092,7 +1379,9 @@ export function PageBuilderDialog({
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-foreground mt-1 truncate">{rev.change_summary || "—"}</p>
+                        <p className="text-xs text-foreground mt-1 truncate">
+                          {rev.change_summary || "—"}
+                        </p>
                         <p className="text-[10px] text-muted-foreground mt-0.5 font-mono">
                           {new Date(rev.created_at).toLocaleString(isAr ? "ar" : "en")}
                         </p>
@@ -1111,8 +1400,8 @@ export function PageBuilderDialog({
                             ? "جاري الاستعادة..."
                             : "Restoring..."
                           : isAr
-                          ? "استعادة"
-                          : "Restore"}
+                            ? "استعادة"
+                            : "Restore"}
                       </Button>
                     </div>
                   ))}
@@ -1127,7 +1416,13 @@ export function PageBuilderDialog({
             {isAr ? "إلغاء" : "Cancel"}
           </Button>
           <Button type="button" size="sm" disabled={loading} onClick={handleSubmit}>
-            {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ ونشر الصفحة" : "Save Page"}
+            {loading
+              ? isAr
+                ? "جاري الحفظ..."
+                : "Saving..."
+              : isAr
+                ? "حفظ ونشر الصفحة"
+                : "Save Page"}
           </Button>
         </DialogFooter>
       </DialogContent>

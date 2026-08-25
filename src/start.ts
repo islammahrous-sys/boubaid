@@ -13,12 +13,13 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       throw error;
     }
     console.error("[start.ts errorMiddleware]", error);
-    
+
     // Check if request is a serverFn / RPC call or expects JSON
     try {
       const req = getRequest();
       const accept = req?.headers?.get("accept") || "";
-      const isServerFn = req?.headers?.get("x-tanstack-start-server-fn") || !accept.includes("text/html");
+      const isServerFn =
+        req?.headers?.get("x-tanstack-start-server-fn") || !accept.includes("text/html");
       if (isServerFn) {
         throw error;
       }

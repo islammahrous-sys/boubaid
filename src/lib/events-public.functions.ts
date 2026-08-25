@@ -70,7 +70,9 @@ export const getPublishedEvents = createServerFn({ method: "GET" }).handler(
       const rows = data ?? [];
       if (rows.length === 0) return [];
 
-      const placeIds = [...new Set(rows.map((r) => r.place_id).filter((id): id is string => Boolean(id)))];
+      const placeIds = [
+        ...new Set(rows.map((r) => r.place_id).filter((id): id is string => Boolean(id))),
+      ];
 
       const [placesRes, { signContentPaths, resolveMedia }] = await Promise.all([
         placeIds.length
@@ -97,7 +99,7 @@ export const getPublishedEvents = createServerFn({ method: "GET" }).handler(
         registration_enabled: r.registration_enabled,
         registration_deadline: r.registration_deadline,
         max_attendees: r.max_attendees,
-        place: r.place_id ? placesById.get(r.place_id) ?? null : null,
+        place: r.place_id ? (placesById.get(r.place_id) ?? null) : null,
       }));
     } catch (err) {
       console.error("[events-public] getPublishedEvents caught error", err);
@@ -114,8 +116,10 @@ const eventRegistrationSchema = z.object({
   attendees_count: z.coerce.number().int().min(1).max(20),
   notes: z.string().trim().max(500).optional().or(z.literal("")),
   locale: z.enum(["ar", "en"]).default("ar"),
-  // Anti-bot honeypot — real visitors never fill this in.
-  website_url_check: z.string().max(0).optional(),
+  // Anti-bot honeypot — real visitors never fill this in. Accepted (not capped
+  // at length 0) so the handler can silently drop the submission instead of
+  // failing validation; see forms.schemas.ts for the same reasoning.
+  website_url_check: z.string().max(200).optional(),
   turnstile_token: z.string().max(2048).optional(),
 });
 
@@ -127,6 +131,7 @@ export type EventRegistrationResult =
       ok: false;
       error:
         | "verification_failed"
+        | "rate_limited"
         | "event_not_found"
         | "registration_closed"
         | "deadline_passed"
@@ -151,8 +156,17 @@ export const submitEventRegistration = createServerFn({ method: "POST" })
       return { ok: true };
     }
 
+    // This handler writes with the service-role client, so RLS is not a second
+    // line of defence here — throttle before doing anything else.
+    const { isPublicSubmissionRateLimited, getRequestIp } =
+      await import("./public-forms-rate-limit.server");
+    if (isPublicSubmissionRateLimited("event_registration", { max: 6 })) {
+      console.warn("[events-public] rate limited");
+      return { ok: false, error: "rate_limited" };
+    }
+
     const { verifyTurnstileToken } = await import("./turnstile.server");
-    const verification = await verifyTurnstileToken(data.turnstile_token);
+    const verification = await verifyTurnstileToken(data.turnstile_token, getRequestIp());
     if (!verification.ok) {
       console.error("[events-public] turnstile verification failed", verification.error);
       return { ok: false, error: "verification_failed" };
@@ -176,7 +190,10 @@ export const submitEventRegistration = createServerFn({ method: "POST" })
     if (!event.registration_enabled) {
       return { ok: false, error: "registration_closed" };
     }
-    if (event.registration_deadline && new Date(event.registration_deadline).getTime() < Date.now()) {
+    if (
+      event.registration_deadline &&
+      new Date(event.registration_deadline).getTime() < Date.now()
+    ) {
       return { ok: false, error: "deadline_passed" };
     }
 
@@ -188,7 +205,11 @@ export const submitEventRegistration = createServerFn({ method: "POST" })
         .neq("status", "cancelled");
 
       if (countError) {
-        console.error("[events-public] registration count failed", countError.code, countError.message);
+        console.error(
+          "[events-public] registration count failed",
+          countError.code,
+          countError.message,
+        );
         return { ok: false, error: "insert_failed" };
       }
 

@@ -1,10 +1,23 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { Plus, Edit2, GitBranch } from "lucide-react";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
@@ -137,7 +150,9 @@ export function FamilyBranchesManager({
               branches.map((b) => (
                 <TableRow key={b.id} className="text-xs hover:bg-muted/30">
                   <TableCell className="font-semibold text-foreground">{b.name_ar}</TableCell>
-                  <TableCell className="text-muted-foreground font-mono">{b.name_en || "—"}</TableCell>
+                  <TableCell className="text-muted-foreground font-mono">
+                    {b.name_en || "—"}
+                  </TableCell>
                   <TableCell>{b.elder_ar || "—"}</TableCell>
                   <TableCell className="font-mono text-muted-foreground">{b.slug}</TableCell>
                   <TableCell className="text-center font-mono">{b.sort_order}</TableCell>
@@ -162,12 +177,20 @@ export function FamilyBranchesManager({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">
-              {selectedBranch ? (isAr ? "تعديل فرع" : "Edit Branch") : isAr ? "إضافة فرع جديد" : "Add Branch"}
+              {selectedBranch
+                ? isAr
+                  ? "تعديل فرع"
+                  : "Edit Branch"
+                : isAr
+                  ? "إضافة فرع جديد"
+                  : "Add Branch"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div className="space-y-1">
-              <Label className="text-xs">{isAr ? "اسم الفرع (بالعربية) *" : "Branch Name (AR) *"}</Label>
+              <Label className="text-xs">
+                {isAr ? "اسم الفرع (بالعربية) *" : "Branch Name (AR) *"}
+              </Label>
               <Input
                 required
                 value={form.name_ar}
@@ -221,7 +244,11 @@ export function FamilyBranchesManager({
               value={form.image_path}
               onChange={(url) => setForm({ ...form, image_path: url })}
               bucket="site-media"
-              helperText={isAr ? "تظهر هذه الصورة في صفحة الفروع وبطاقات التعريف بالفرع" : "Appears in the Branches page and branch cards"}
+              helperText={
+                isAr
+                  ? "تظهر هذه الصورة في صفحة الفروع وبطاقات التعريف بالفرع"
+                  : "Appears in the Branches page and branch cards"
+              }
             />
             <DialogFooter>
               <Button type="button" variant="outline" size="sm" onClick={() => setFormOpen(false)}>

@@ -1,12 +1,37 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useLang } from "@/i18n/LanguageProvider";
-import { MessageSquare, Mail, Phone, Clock, Send, CheckCircle2, ArrowLeft, ArrowRight, AlertCircle, Activity, Loader2 } from "lucide-react";
+import {
+  MessageSquare,
+  Mail,
+  Phone,
+  Clock,
+  Send,
+  CheckCircle2,
+  ArrowLeft,
+  ArrowRight,
+  AlertCircle,
+  Activity,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -52,7 +77,7 @@ export function InquiriesManager({
   onUpdateStatus: (
     id: string,
     status: "new" | "open" | "in_progress" | "resolved" | "spam" | "read" | "archived",
-    sourceTable: "inquiries" | "contact_messages"
+    sourceTable: "inquiries" | "contact_messages",
   ) => Promise<void>;
   onAddNote: (inquiryId: string, note: string) => Promise<void>;
 }) {
@@ -64,26 +89,25 @@ export function InquiriesManager({
   const [newNote, setNewNote] = useState("");
   const [submittingNote, setSubmittingNote] = useState(false);
 
-
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
-  
+
   const fetchInquiriesPage = useServerFn(getInquiriesPaginated);
-  
+
   const { data: queryData, isLoading } = useQuery({
     queryKey: ["inquiries-paginated", currentPage, pageSize, statusFilter],
-    queryFn: () => fetchInquiriesPage({
-      data: {
-        page: currentPage,
-        pageSize,
-        status: statusFilter === "all" ? undefined : statusFilter,
-      }
-    }),
+    queryFn: () =>
+      fetchInquiriesPage({
+        data: {
+          page: currentPage,
+          pageSize,
+          status: statusFilter === "all" ? undefined : statusFilter,
+        },
+      }),
     staleTime: 1000 * 60,
   });
 
   const filteredInquiries = (queryData?.data ?? []) as InquiryRow[];
-
 
   const getStatusDisplay = (st: string) => {
     switch (st) {
@@ -154,7 +178,9 @@ export function InquiriesManager({
             {isAr ? "مركز الاستفسارات والدعم" : "Inquiries & Support Center"}
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {isAr ? "إدارة رسائل التواصل واستفسارات العائلة" : "Manage contact messages and family inquiries"}
+            {isAr
+              ? "إدارة رسائل التواصل واستفسارات العائلة"
+              : "Manage contact messages and family inquiries"}
           </p>
         </div>
         {newCount > 0 && (
@@ -169,24 +195,43 @@ export function InquiriesManager({
 
       {/* 2. Needs Your Attention / Operational KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className={cn(
-          "p-5 rounded-2xl border bg-card relative overflow-hidden group transition-all",
-          newCount > 0 ? "border-blue-500/30 shadow-sm" : "border-border"
-        )}>
-          {newCount > 0 && <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />}
+        <div
+          className={cn(
+            "p-5 rounded-2xl border bg-card relative overflow-hidden group transition-all",
+            newCount > 0 ? "border-blue-500/30 shadow-sm" : "border-border",
+          )}
+        >
+          {newCount > 0 && (
+            <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+          )}
           <div className="flex flex-col h-full">
             <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-              <span className={cn("w-2 h-2 rounded-full", newCount > 0 ? "bg-blue-500 animate-pulse" : "bg-muted-foreground")} />
+              <span
+                className={cn(
+                  "w-2 h-2 rounded-full",
+                  newCount > 0 ? "bg-blue-500 animate-pulse" : "bg-muted-foreground",
+                )}
+              />
               {isAr ? "تذاكر جديدة (غير مقروءة)" : "New Tickets (Unread)"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{newCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "تذكرة" : "tickets"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {newCount}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "تذكرة" : "tickets"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("new")}
               className="text-xs font-bold text-primary flex items-center gap-1 hover:gap-2 transition-all w-fit"
             >
-              {isAr ? "الرد الآن" : "Reply Now"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "الرد الآن" : "Reply Now"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -199,13 +244,23 @@ export function InquiriesManager({
               {isAr ? "تذاكر قيد المتابعة" : "Tickets In Progress"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{inProgressCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "تذكرة" : "tickets"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {inProgressCount}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "تذكرة" : "tickets"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("in_progress")}
               className="text-xs font-bold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors w-fit"
             >
-              {isAr ? "متابعة العمل" : "Continue Work"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "متابعة العمل" : "Continue Work"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -218,13 +273,23 @@ export function InquiriesManager({
               {isAr ? "التذاكر المغلقة" : "Resolved Tickets"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{resolvedCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "تذكرة" : "tickets"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {resolvedCount}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "تذكرة" : "tickets"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("resolved")}
               className="text-xs font-bold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors w-fit"
             >
-              {isAr ? "عرض الأرشيف" : "View Archive"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "عرض الأرشيف" : "View Archive"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -234,33 +299,65 @@ export function InquiriesManager({
       <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
         <div className="border-b border-border p-2 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/20">
           <div className="flex items-center gap-4 text-sm font-medium overflow-x-auto no-scrollbar">
-            <button 
+            <button
               onClick={() => setStatusFilter("all")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "all" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "all"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "الكل" : "All"} <span className="text-[10px] font-mono opacity-60 ml-1">({totalCount})</span>
-              {statusFilter === "all" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "الكل" : "All"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({totalCount})</span>
+              {statusFilter === "all" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setStatusFilter("new")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "new" ? "text-primary font-bold" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "new"
+                  ? "text-primary font-bold"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "جديدة" : "New"} <span className="text-[10px] font-mono opacity-60 ml-1">({newCount})</span>
-              {statusFilter === "new" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "جديدة" : "New"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({newCount})</span>
+              {statusFilter === "new" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setStatusFilter("in_progress")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "in_progress" ? "text-primary font-bold" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "in_progress"
+                  ? "text-primary font-bold"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "قيد المتابعة" : "In Progress"} <span className="text-[10px] font-mono opacity-60 ml-1">({inProgressCount})</span>
-              {statusFilter === "in_progress" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "قيد المتابعة" : "In Progress"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({inProgressCount})</span>
+              {statusFilter === "in_progress" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setStatusFilter("resolved")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "resolved" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "resolved"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "مغلقة" : "Resolved"} <span className="text-[10px] font-mono opacity-60 ml-1">({resolvedCount})</span>
-              {statusFilter === "resolved" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "مغلقة" : "Resolved"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({resolvedCount})</span>
+              {statusFilter === "resolved" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
           </div>
         </div>
@@ -273,7 +370,9 @@ export function InquiriesManager({
               <TableHead className="font-semibold">{isAr ? "الموضوع" : "Subject"}</TableHead>
               <TableHead className="font-semibold">{isAr ? "التاريخ" : "Date"}</TableHead>
               <TableHead className="font-semibold">{isAr ? "الحالة" : "Status"}</TableHead>
-              <TableHead className="font-semibold text-end">{isAr ? "الإجراء" : "Action"}</TableHead>
+              <TableHead className="font-semibold text-end">
+                {isAr ? "الإجراء" : "Action"}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -289,28 +388,45 @@ export function InquiriesManager({
                 <TableCell colSpan={5} className="h-48 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <MessageSquare className="w-8 h-8 mb-3 opacity-20" />
-                    <p className="text-sm font-medium">{isAr ? "لا توجد رسائل في هذه القائمة" : "No messages found"}</p>
+                    <p className="text-sm font-medium">
+                      {isAr ? "لا توجد رسائل في هذه القائمة" : "No messages found"}
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
             ) : (
               filteredInquiries.map((inq) => (
-                <TableRow key={inq.id} className="group cursor-pointer hover:bg-muted/30" onClick={() => setSelectedInquiry(inq)}>
+                <TableRow
+                  key={inq.id}
+                  className="group cursor-pointer hover:bg-muted/30"
+                  onClick={() => setSelectedInquiry(inq)}
+                >
                   <TableCell>
                     <div className="font-bold text-foreground">{inq.name}</div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">{inq.email}</div>
+                    <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">
+                      {inq.email}
+                    </div>
                   </TableCell>
                   <TableCell className="max-w-[250px]">
-                    <div className="font-medium text-foreground truncate">{inq.subject || (isAr ? "استفسار عام" : "General Inquiry")}</div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5 truncate">{inq.message}</div>
+                    <div className="font-medium text-foreground truncate">
+                      {inq.subject || (isAr ? "استفسار عام" : "General Inquiry")}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                      {inq.message}
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm font-medium">{new Date(inq.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric" })}</div>
-                    <div className="text-[10px] text-muted-foreground mt-0.5">{new Date(inq.created_at).getFullYear()}</div>
+                    <div className="text-sm font-medium">
+                      {new Date(inq.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">
+                      {new Date(inq.created_at).getFullYear()}
+                    </div>
                   </TableCell>
-                  <TableCell>
-                    {getStatusDisplay(inq.status)}
-                  </TableCell>
+                  <TableCell>{getStatusDisplay(inq.status)}</TableCell>
                   <TableCell className="text-end">
                     <Button
                       variant="ghost"
@@ -321,7 +437,13 @@ export function InquiriesManager({
                         setSelectedInquiry(inq);
                       }}
                     >
-                      {inq.status === "new" ? (isAr ? "الرد" : "Reply") : (isAr ? "عرض التفاصيل" : "View Details")}
+                      {inq.status === "new"
+                        ? isAr
+                          ? "الرد"
+                          : "Reply"
+                        : isAr
+                          ? "عرض التفاصيل"
+                          : "View Details"}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -333,20 +455,27 @@ export function InquiriesManager({
 
       {/* 5. Contextual Side Drawer for Details */}
       <Sheet open={!!selectedInquiry} onOpenChange={(open) => !open && setSelectedInquiry(null)}>
-        <SheetContent side={isAr ? "left" : "right"} className="w-full sm:max-w-md p-0 flex flex-col border-border gap-0 bg-background">
+        <SheetContent
+          side={isAr ? "left" : "right"}
+          className="w-full sm:max-w-md p-0 flex flex-col border-border gap-0 bg-background"
+        >
           {selectedInquiry && (
             <>
               <div className="px-6 py-5 border-b border-border bg-muted/10 flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <SheetTitle className="text-lg font-bold">{selectedInquiry.subject || (isAr ? "تذكرة دعم فني" : "Support Ticket")}</SheetTitle>
-                    <SheetDescription className="text-xs font-mono mt-1">Ref: {selectedInquiry.id.split("-")[0]}</SheetDescription>
+                    <SheetTitle className="text-lg font-bold">
+                      {selectedInquiry.subject || (isAr ? "تذكرة دعم فني" : "Support Ticket")}
+                    </SheetTitle>
+                    <SheetDescription className="text-xs font-mono mt-1">
+                      Ref: {selectedInquiry.id.split("-")[0]}
+                    </SheetDescription>
                   </div>
                   <Select
                     value={selectedInquiry.status}
                     onValueChange={async (val: any) => {
                       await onUpdateStatus(selectedInquiry.id, val, selectedInquiry.source_table);
-                      setSelectedInquiry((prev) => prev ? { ...prev, status: val } : null);
+                      setSelectedInquiry((prev) => (prev ? { ...prev, status: val } : null));
                       toast.success(isAr ? "تم تحديث الحالة" : "Status updated");
                     }}
                   >
@@ -356,35 +485,61 @@ export function InquiriesManager({
                     <SelectContent>
                       {selectedInquiry.source_table === "contact_messages" ? (
                         <>
-                          <SelectItem value="new" className="text-xs">{isAr ? "جديدة" : "New"}</SelectItem>
-                          <SelectItem value="read" className="text-xs">{isAr ? "مقروءة" : "Read"}</SelectItem>
-                          <SelectItem value="archived" className="text-xs">{isAr ? "مؤرشفة" : "Archived"}</SelectItem>
+                          <SelectItem value="new" className="text-xs">
+                            {isAr ? "جديدة" : "New"}
+                          </SelectItem>
+                          <SelectItem value="read" className="text-xs">
+                            {isAr ? "مقروءة" : "Read"}
+                          </SelectItem>
+                          <SelectItem value="archived" className="text-xs">
+                            {isAr ? "مؤرشفة" : "Archived"}
+                          </SelectItem>
                         </>
                       ) : (
                         <>
-                          <SelectItem value="new" className="text-xs">{isAr ? "جديدة" : "New"}</SelectItem>
-                          <SelectItem value="open" className="text-xs">{isAr ? "مفتوحة" : "Open"}</SelectItem>
-                          <SelectItem value="in_progress" className="text-xs">{isAr ? "قيد المتابعة" : "In Progress"}</SelectItem>
-                          <SelectItem value="resolved" className="text-xs">{isAr ? "تم الرد والإنهاء" : "Resolved"}</SelectItem>
-                          <SelectItem value="spam" className="text-xs">{isAr ? "مزعجة" : "Spam"}</SelectItem>
+                          <SelectItem value="new" className="text-xs">
+                            {isAr ? "جديدة" : "New"}
+                          </SelectItem>
+                          <SelectItem value="open" className="text-xs">
+                            {isAr ? "مفتوحة" : "Open"}
+                          </SelectItem>
+                          <SelectItem value="in_progress" className="text-xs">
+                            {isAr ? "قيد المتابعة" : "In Progress"}
+                          </SelectItem>
+                          <SelectItem value="resolved" className="text-xs">
+                            {isAr ? "تم الرد والإنهاء" : "Resolved"}
+                          </SelectItem>
+                          <SelectItem value="spam" className="text-xs">
+                            {isAr ? "مزعجة" : "Spam"}
+                          </SelectItem>
                         </>
                       )}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Contact Info */}
                 <div className="bg-muted/20 p-4 rounded-xl border border-border">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-2">{isAr ? "المرسل" : "Sender"}</span>
-                  <span className="text-base font-bold text-foreground block">{selectedInquiry.name}</span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-2">
+                    {isAr ? "المرسل" : "Sender"}
+                  </span>
+                  <span className="text-base font-bold text-foreground block">
+                    {selectedInquiry.name}
+                  </span>
                   <div className="mt-3 flex flex-col gap-2">
-                    <a href={`mailto:${selectedInquiry.email}`} className="flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors">
+                    <a
+                      href={`mailto:${selectedInquiry.email}`}
+                      className="flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors"
+                    >
                       <Mail className="w-3.5 h-3.5" /> {selectedInquiry.email}
                     </a>
                     {selectedInquiry.phone && (
-                      <a href={`tel:${selectedInquiry.phone}`} className="flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors">
+                      <a
+                        href={`tel:${selectedInquiry.phone}`}
+                        className="flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors"
+                      >
                         <Phone className="w-3.5 h-3.5" /> {selectedInquiry.phone}
                       </a>
                     )}
@@ -393,7 +548,9 @@ export function InquiriesManager({
 
                 {/* Message Body */}
                 <div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-2">{isAr ? "نص الرسالة" : "Message Body"}</span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-2">
+                    {isAr ? "نص الرسالة" : "Message Body"}
+                  </span>
                   <div className="p-4 bg-card border border-border rounded-xl">
                     <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                       {selectedInquiry.message}
@@ -412,17 +569,24 @@ export function InquiriesManager({
                       {isAr ? "ملاحظات الدعم الفني الداخلية" : "Internal Support Notes"}
                     </h4>
                     <p className="text-[11px] text-muted-foreground">
-                      {isAr ? "هذه الملاحظات خاصة بفريق الإدارة ولا تظهر للمستخدم." : "These notes are internal and invisible to the user."}
+                      {isAr
+                        ? "هذه الملاحظات خاصة بفريق الإدارة ولا تظهر للمستخدم."
+                        : "These notes are internal and invisible to the user."}
                     </p>
 
                     <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
                       {currentNotes.length === 0 ? (
                         <div className="h-16 flex items-center justify-center border border-dashed border-border rounded-xl bg-muted/10">
-                          <p className="text-[11px] text-muted-foreground">{isAr ? "لا توجد ملاحظات داخلية" : "No internal notes yet"}</p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {isAr ? "لا توجد ملاحظات داخلية" : "No internal notes yet"}
+                          </p>
                         </div>
                       ) : (
                         currentNotes.map((n) => (
-                          <div key={n.id} className="p-3 rounded-xl bg-primary/5 border border-primary/10 text-xs relative">
+                          <div
+                            key={n.id}
+                            className="p-3 rounded-xl bg-primary/5 border border-primary/10 text-xs relative"
+                          >
                             <p className="text-foreground leading-relaxed">{n.note}</p>
                             <span className="text-[9px] text-muted-foreground mt-2 block font-mono">
                               {new Date(n.created_at).toLocaleString(isAr ? "ar-SA" : "en-US")}
@@ -437,7 +601,11 @@ export function InquiriesManager({
                         rows={3}
                         value={newNote}
                         onChange={(e) => setNewNote(e.target.value)}
-                        placeholder={isAr ? "أضف ملاحظة أو تحديث حول هذه التذكرة..." : "Add an internal update..."}
+                        placeholder={
+                          isAr
+                            ? "أضف ملاحظة أو تحديث حول هذه التذكرة..."
+                            : "Add an internal update..."
+                        }
                         className="text-xs resize-none rounded-xl bg-background"
                       />
                       <Button
@@ -446,7 +614,11 @@ export function InquiriesManager({
                         onClick={handleAddNoteSubmit}
                         className="w-full text-xs font-bold rounded-xl h-9"
                       >
-                        {submittingNote ? <Loader2 className="w-3 h-3 animate-spin me-2" /> : <Send className="w-3 h-3 me-2" />}
+                        {submittingNote ? (
+                          <Loader2 className="w-3 h-3 animate-spin me-2" />
+                        ) : (
+                          <Send className="w-3 h-3 me-2" />
+                        )}
                         {isAr ? "إضافة ملاحظة" : "Add Note"}
                       </Button>
                     </div>

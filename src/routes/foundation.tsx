@@ -207,7 +207,10 @@ function FoundationPage() {
 
       <div className="container-page py-14 md:py-16">
         {/* ── Article I — mandate ────────────────────────────── */}
-        <section id="mandate" className="scroll-mt-28 reveal-on-scroll grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
+        <section
+          id="mandate"
+          className="scroll-mt-28 reveal-on-scroll grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16"
+        >
           <div>
             <Eyebrow>{t(copy.mandateEyebrow)}</Eyebrow>
             <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
@@ -253,7 +256,10 @@ function FoundationPage() {
         </section>
 
         {/* ── Article II — the board as a table of offices ───── */}
-        <section id="board" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12">
+        <section
+          id="board"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12"
+        >
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.boardEyebrow)}</Eyebrow>
@@ -329,7 +335,10 @@ function FoundationPage() {
         </section>
 
         {/* ── Article III — committees ───────────────────────── */}
-        <section id="committees" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12">
+        <section
+          id="committees"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12"
+        >
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.committeesEyebrow)}</Eyebrow>
@@ -391,7 +400,10 @@ function FoundationPage() {
         </section>
 
         {/* ── Article IV — financial governance ──────────────── */}
-        <section id="finance" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12">
+        <section
+          id="finance"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12"
+        >
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.financeEyebrow)}</Eyebrow>
@@ -439,7 +451,10 @@ function FoundationPage() {
         </section>
 
         {/* ── Article V — the audited financial report ───────── */}
-        <section id="reports" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12">
+        <section
+          id="reports"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12"
+        >
           <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
             <div>
               <Eyebrow>{t(copy.financeReportEyebrow)}</Eyebrow>

@@ -283,6 +283,15 @@
     border-radius: 1px;
   }
 
+  /* Prevent automatic iOS Safari viewport zoom on form field focus */
+  @media (max-width: 640px) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -326,7 +335,6 @@
   blockquote {
     hanging-punctuation: first last;
   }
-
 
   html[dir="rtl"] h1,
   html[dir="rtl"] h2,
@@ -752,7 +760,6 @@ html[dir="rtl"] .reveal-rule {
   }
 }
 
-
 /* ── Misc ───────────────────────────────────────────────────── */
 
 @utility no-scrollbar {
@@ -857,7 +864,6 @@ html[dir="rtl"] .link-sweep {
   }
 }
 
-
 /* Primary nav: inactive items get a hairline that grows from the centre on
    hover. The active item is marked by the travelling rule the header
    measures, so this one is deliberately quieter — a hint, not a second
@@ -940,7 +946,8 @@ html[dir="rtl"] .link-sweep {
   outline-offset: 2px;
   border-radius: 1px;
 }
-.dark :where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+.dark
+  :where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
   outline-color: var(--color-gold);
 }
 

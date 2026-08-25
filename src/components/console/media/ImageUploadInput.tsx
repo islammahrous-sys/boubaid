@@ -5,7 +5,15 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useLang } from "@/i18n/LanguageProvider";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, Image as ImageIcon, X, Link as LinkIcon, Loader2, FileText, ExternalLink } from "lucide-react";
+import {
+  Upload,
+  Image as ImageIcon,
+  X,
+  Link as LinkIcon,
+  Loader2,
+  FileText,
+  ExternalLink,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export interface ImageUploadInputProps {
@@ -48,8 +56,13 @@ export function ImageUploadInput({
   // excluded from the accepted image types for this general-purpose upload
   // input (none of its current uses need vector/logo uploads).
   const fileAccept =
-    accept || (allowPdf ? "image/png,image/jpeg,image/webp,image/gif,application/pdf,.pdf" : "image/png,image/jpeg,image/webp,image/gif");
-  const isPdf = value ? (value.toLowerCase().includes(".pdf") || value.toLowerCase().endsWith(".pdf")) : false;
+    accept ||
+    (allowPdf
+      ? "image/png,image/jpeg,image/webp,image/gif,application/pdf,.pdf"
+      : "image/png,image/jpeg,image/webp,image/gif");
+  const isPdf = value
+    ? value.toLowerCase().includes(".pdf") || value.toLowerCase().endsWith(".pdf")
+    : false;
 
   const processFile = async (file: File) => {
     const isFilePdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
@@ -60,7 +73,7 @@ export function ImageUploadInput({
       toast.error(
         isAr
           ? "ملفات SVG غير مسموح بها لأسباب أمنية. يرجى استخدام PNG أو JPG أو WebP"
-          : "SVG files are not allowed for security reasons. Please use PNG, JPG, or WebP"
+          : "SVG files are not allowed for security reasons. Please use PNG, JPG, or WebP",
       );
       return;
     }
@@ -73,7 +86,7 @@ export function ImageUploadInput({
             : "Please choose a valid PDF or image file (PNG, JPG, WebP)"
           : isAr
             ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)"
-            : "Please choose a valid image file"
+            : "Please choose a valid image file",
       );
       return;
     }
@@ -82,7 +95,7 @@ export function ImageUploadInput({
       toast.error(
         isAr
           ? `حجم الملف يتجاوز الحد الأقصى المسموح به (${maxSizeMB} ميغابايت)`
-          : `File size exceeds ${maxSizeMB}MB limit`
+          : `File size exceeds ${maxSizeMB}MB limit`,
       );
       return;
     }
@@ -110,11 +123,14 @@ export function ImageUploadInput({
             : "PDF document uploaded successfully"
           : isAr
             ? "تم رفع الصورة بنجاح"
-            : "Image uploaded successfully"
+            : "Image uploaded successfully",
       );
     } catch (err: any) {
       console.error("Storage upload failed:", err);
-      toast.error(err.message || (isAr ? "فشل رفع الملف إلى وحدة التخزين" : "Failed to upload file to storage"));
+      toast.error(
+        err.message ||
+          (isAr ? "فشل رفع الملف إلى وحدة التخزين" : "Failed to upload file to storage"),
+      );
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -179,8 +195,8 @@ export function ImageUploadInput({
       <div className="flex flex-col gap-2.5">
         {value ? (
           <div className="relative group flex items-center gap-3 p-2.5 bg-muted/40 rounded-xl border border-border">
-            {!hidePreview && (
-              isPdf ? (
+            {!hidePreview &&
+              (isPdf ? (
                 <div className="relative w-16 h-16 rounded-lg bg-rose-500/10 border border-rose-500/20 shrink-0 flex flex-col items-center justify-center shadow-xs">
                   <FileText className="w-6 h-6 text-rose-500" />
                   <Badge variant="destructive" className="h-3.5 px-1 text-[8px] font-mono mt-0.5">
@@ -199,15 +215,18 @@ export function ImageUploadInput({
                   />
                   <ImageIcon className="w-5 h-5 text-muted-foreground/40 -z-10 absolute" />
                 </div>
-              )
-            )}
+              ))}
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0">
                 <Badge variant="outline" className="text-[10px] font-mono shrink-0">
                   {isPdf ? "PDF" : isAr ? "صورة" : "Image"}
                 </Badge>
-                <span className="truncate text-[11px] text-muted-foreground font-mono" dir="ltr" title={value}>
+                <span
+                  className="truncate text-[11px] text-muted-foreground font-mono"
+                  dir="ltr"
+                  title={value}
+                >
                   {value.split("/").pop() || (isAr ? "ملف مرفوع" : "Uploaded file")}
                 </span>
               </div>
@@ -220,7 +239,11 @@ export function ImageUploadInput({
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
                 >
-                  {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                  {uploading ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Upload className="w-3 h-3" />
+                  )}
                   {isPdf
                     ? isAr
                       ? "استبدال ملف PDF"
@@ -271,7 +294,11 @@ export function ImageUploadInput({
             }`}
           >
             <div className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center group-hover:scale-110 transition-transform text-muted-foreground group-hover:text-primary shadow-xs">
-              {uploading ? <Loader2 className="w-4 h-4 animate-spin text-primary" /> : <Upload className="w-4 h-4" />}
+              {uploading ? (
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+              ) : (
+                <Upload className="w-4 h-4" />
+              )}
             </div>
             <div>
               <p className="text-xs font-semibold text-foreground">
@@ -288,7 +315,9 @@ export function ImageUploadInput({
                       : "Click to upload or drag and drop image here"}
               </p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                {allowPdf ? `PDF, PNG, JPG, WebP (حتى ${maxSizeMB}MB)` : `PNG, JPG, WebP (حتى ${maxSizeMB}MB)`}
+                {allowPdf
+                  ? `PDF, PNG, JPG, WebP (حتى ${maxSizeMB}MB)`
+                  : `PNG, JPG, WebP (حتى ${maxSizeMB}MB)`}
               </p>
             </div>
           </div>
@@ -319,4 +348,3 @@ export function ImageUploadInput({
     </div>
   );
 }
-

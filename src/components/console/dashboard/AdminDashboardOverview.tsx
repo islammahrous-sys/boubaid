@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, type KeyboardEvent } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +22,7 @@ import {
   Database,
   Megaphone,
   UserCheck,
-  Clock
+  Clock,
 } from "lucide-react";
 
 export type DashboardOverviewProps = {
@@ -61,20 +61,47 @@ export function AdminDashboardOverview({
   const isAr = lang === "ar";
   const [activityCategory, setActivityCategory] = useState<string>("all");
 
-  const totalNeedsAttention = 
-    overviewData.pendingReceipts + 
-    overviewData.pendingVerifications + 
-    overviewData.pendingInquiries + 
+  const totalNeedsAttention =
+    overviewData.pendingReceipts +
+    overviewData.pendingVerifications +
+    overviewData.pendingInquiries +
     overviewData.draftArticles;
+
+  /** The KPI/entity tiles navigate on click but are plain <div>s, so without
+   *  this they are unreachable by keyboard and announced as static text rather
+   *  than as controls. Spread onto every clickable tile. */
+  const tileActivation = (onActivate: () => void, label: string) => ({
+    role: "button" as const,
+    tabIndex: 0,
+    "aria-label": label,
+    onClick: onActivate,
+    onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onActivate();
+      }
+    },
+  });
 
   const filteredActivity = useMemo(() => {
     if (activityCategory === "all") return overviewData.recentActivity;
     return overviewData.recentActivity.filter((act) => {
       const type = act.entity_type.toLowerCase();
-      if (activityCategory === "family") return type.includes("member") || type.includes("branch") || type.includes("tree");
-      if (activityCategory === "treasury") return type.includes("treasury") || type.includes("contribution") || type.includes("initiative");
-      if (activityCategory === "content") return type.includes("article") || type.includes("event") || type.includes("page") || type.includes("announcement");
-      if (activityCategory === "system") return type.includes("user") || type.includes("role") || type.includes("setting");
+      if (activityCategory === "family")
+        return type.includes("member") || type.includes("branch") || type.includes("tree");
+      if (activityCategory === "treasury")
+        return (
+          type.includes("treasury") || type.includes("contribution") || type.includes("initiative")
+        );
+      if (activityCategory === "content")
+        return (
+          type.includes("article") ||
+          type.includes("event") ||
+          type.includes("page") ||
+          type.includes("announcement")
+        );
+      if (activityCategory === "system")
+        return type.includes("user") || type.includes("role") || type.includes("setting");
       return true;
     });
   }, [overviewData.recentActivity, activityCategory]);
@@ -92,7 +119,10 @@ export function AdminDashboardOverview({
   };
 
   const treasuryTarget = 500000;
-  const treasuryPercentage = Math.min(100, Math.round((overviewData.treasuryVerified / treasuryTarget) * 100));
+  const treasuryPercentage = Math.min(
+    100,
+    Math.round((overviewData.treasuryVerified / treasuryTarget) * 100),
+  );
 
   return (
     <div className="space-y-6">
@@ -116,7 +146,10 @@ export function AdminDashboardOverview({
                 {totalNeedsAttention} {isAr ? "عنصر يحتاج مراجعة" : "items need attention"}
               </Badge>
             ) : (
-              <Badge variant="secondary" className="gap-1 font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1">
+              <Badge
+                variant="secondary"
+                className="gap-1 font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1"
+              >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 {isAr ? "كل شيء تحت السيطرة" : "All caught up"}
               </Badge>
@@ -151,7 +184,9 @@ export function AdminDashboardOverview({
             <div className="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center shrink-0">
               <Megaphone className="w-4 h-4" />
             </div>
-            <span className="text-sm">{isAr ? "بث إشعار" : "Broadcast"}</span>
+            {/* Opens the announcements tab -- the push-notification broadcaster
+                lives in the header's notification centre, not here. */}
+            <span className="text-sm">{isAr ? "الإعلانات" : "Announcements"}</span>
           </Button>
 
           <Button
@@ -204,7 +239,9 @@ export function AdminDashboardOverview({
           <div className="p-6 rounded-2xl border border-border bg-card/60 text-center space-y-2">
             <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-500" />
             <p className="text-xs font-bold text-foreground">
-              {isAr ? "ممتاز! لا توجد عناصر معلّقة بحاجة إلى مراجعة." : "All caught up! No pending items require review."}
+              {isAr
+                ? "ممتاز! لا توجد عناصر معلّقة بحاجة إلى مراجعة."
+                : "All caught up! No pending items require review."}
             </p>
             <p className="text-[11px] text-muted-foreground max-w-md mx-auto">
               {isAr
@@ -218,10 +255,15 @@ export function AdminDashboardOverview({
             {overviewData.pendingReceipts > 0 && (
               <div className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-500/40">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] text-amber-600 border-amber-500/40"
+                  >
                     {isAr ? "الخزينة" : "Treasury"}
                   </Badge>
-                  <span className="text-xs font-bold font-mono text-amber-600">{overviewData.pendingReceipts}</span>
+                  <span className="text-xs font-bold font-mono text-amber-600">
+                    {overviewData.pendingReceipts}
+                  </span>
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">
@@ -250,7 +292,9 @@ export function AdminDashboardOverview({
                   <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-500/40">
                     {isAr ? "التحقق" : "Verification"}
                   </Badge>
-                  <span className="text-xs font-bold font-mono text-blue-600">{overviewData.pendingVerifications}</span>
+                  <span className="text-xs font-bold font-mono text-blue-600">
+                    {overviewData.pendingVerifications}
+                  </span>
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">
@@ -276,10 +320,15 @@ export function AdminDashboardOverview({
             {overviewData.pendingInquiries > 0 && (
               <div className="p-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/5 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-[10px] text-indigo-600 border-indigo-500/40">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] text-indigo-600 border-indigo-500/40"
+                  >
                     {isAr ? "الاستفسارات" : "Inquiries"}
                   </Badge>
-                  <span className="text-xs font-bold font-mono text-indigo-600">{overviewData.pendingInquiries}</span>
+                  <span className="text-xs font-bold font-mono text-indigo-600">
+                    {overviewData.pendingInquiries}
+                  </span>
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">
@@ -305,10 +354,15 @@ export function AdminDashboardOverview({
             {overviewData.draftArticles > 0 && (
               <div className="p-4 rounded-2xl border border-purple-500/30 bg-purple-500/5 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-[10px] text-purple-600 border-purple-500/40">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] text-purple-600 border-purple-500/40"
+                  >
                     {isAr ? "المحتوى" : "Content"}
                   </Badge>
-                  <span className="text-xs font-bold font-mono text-purple-600">{overviewData.draftArticles}</span>
+                  <span className="text-xs font-bold font-mono text-purple-600">
+                    {overviewData.draftArticles}
+                  </span>
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">
@@ -341,11 +395,16 @@ export function AdminDashboardOverview({
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
           {/* Family Members */}
           <div
-            onClick={() => onNavigateTab("family", "members")}
-            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group"
+            {...tileActivation(
+              () => onNavigateTab("family", "members"),
+              isAr ? "عرض أفراد الأسرة" : "View family members",
+            )}
+            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <div className="flex items-center justify-between text-muted-foreground mb-2">
-              <span className="text-xs font-semibold">{isAr ? "أفراد الأسرة" : "Family Members"}</span>
+              <span className="text-xs font-semibold">
+                {isAr ? "أفراد الأسرة" : "Family Members"}
+              </span>
               <Users className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
             </div>
             <div className="text-2xl font-bold text-foreground font-mono">
@@ -358,15 +417,22 @@ export function AdminDashboardOverview({
 
           {/* Treasury SAR */}
           <div
-            onClick={() => onNavigateTab("treasury", "treasury_ledger")}
-            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group"
+            {...tileActivation(
+              () => onNavigateTab("treasury", "treasury_ledger"),
+              isAr ? "عرض سجل الخزينة" : "View treasury ledger",
+            )}
+            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <div className="flex items-center justify-between text-muted-foreground mb-2">
-              <span className="text-xs font-semibold">{isAr ? "أموال الخزينة" : "Treasury Funds"}</span>
+              <span className="text-xs font-semibold">
+                {isAr ? "أموال الخزينة" : "Treasury Funds"}
+              </span>
               <Landmark className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
             </div>
             <div className="text-2xl font-bold text-foreground font-mono">
-              {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US", { maximumFractionDigits: 0 }).format(overviewData.treasuryVerified)}
+              {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US", { maximumFractionDigits: 0 }).format(
+                overviewData.treasuryVerified,
+              )}
             </div>
             <div className="text-[11px] text-muted-foreground font-medium mt-1">
               {isAr ? "ريال سعودي معتمد" : "SAR verified"}
@@ -375,8 +441,11 @@ export function AdminDashboardOverview({
 
           {/* Business Directory */}
           <div
-            onClick={() => onNavigateTab("community", "directory")}
-            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group"
+            {...tileActivation(
+              () => onNavigateTab("community", "directory"),
+              isAr ? "عرض دليل المنشآت" : "View business directory",
+            )}
+            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <div className="flex items-center justify-between text-muted-foreground mb-2">
               <span className="text-xs font-semibold">{isAr ? "المنشآت" : "Businesses"}</span>
@@ -392,8 +461,11 @@ export function AdminDashboardOverview({
 
           {/* Initiatives */}
           <div
-            onClick={() => onNavigateTab("treasury", "initiatives")}
-            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group"
+            {...tileActivation(
+              () => onNavigateTab("treasury", "initiatives"),
+              isAr ? "عرض المبادرات" : "View initiatives",
+            )}
+            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <div className="flex items-center justify-between text-muted-foreground mb-2">
               <span className="text-xs font-semibold">{isAr ? "المبادرات" : "Initiatives"}</span>
@@ -409,8 +481,11 @@ export function AdminDashboardOverview({
 
           {/* Achievers */}
           <div
-            onClick={() => onNavigateTab("treasury", "achievers")}
-            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group"
+            {...tileActivation(
+              () => onNavigateTab("treasury", "achievers"),
+              isAr ? "عرض لوحة الشرف" : "View roll of honour",
+            )}
+            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <div className="flex items-center justify-between text-muted-foreground mb-2">
               <span className="text-xs font-semibold">{isAr ? "المتميزون" : "Achievers"}</span>
@@ -426,8 +501,11 @@ export function AdminDashboardOverview({
 
           {/* Articles */}
           <div
-            onClick={() => onNavigateTab("content", "articles")}
-            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group"
+            {...tileActivation(
+              () => onNavigateTab("content", "articles"),
+              isAr ? "عرض المقالات" : "View articles",
+            )}
+            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <div className="flex items-center justify-between text-muted-foreground mb-2">
               <span className="text-xs font-semibold">{isAr ? "المقالات" : "Articles"}</span>
@@ -454,7 +532,10 @@ export function AdminDashboardOverview({
                 {isAr ? "التقدم السنوي لصندوق التنمية" : "Annual Fund Progress"}
               </h3>
             </div>
-            <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/30 text-emerald-600">
+            <Badge
+              variant="outline"
+              className="text-[10px] font-mono border-emerald-500/30 text-emerald-600"
+            >
               {treasuryPercentage}%
             </Badge>
           </div>
@@ -463,13 +544,19 @@ export function AdminDashboardOverview({
             <div className="flex justify-between text-xs font-mono">
               <span className="text-muted-foreground">{isAr ? "المحصّل:" : "Collected:"}</span>
               <span className="font-bold text-foreground">
-                {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US").format(overviewData.treasuryVerified)} SAR
+                {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US").format(
+                  overviewData.treasuryVerified,
+                )}{" "}
+                SAR
               </span>
             </div>
             <Progress value={treasuryPercentage} className="h-2" />
             <div className="flex justify-between text-[11px] text-muted-foreground font-mono">
               <span>0 SAR</span>
-              <span>{new Intl.NumberFormat(isAr ? "ar-SA" : "en-US").format(treasuryTarget)} SAR {isAr ? "الهدف" : "Target"}</span>
+              <span>
+                {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US").format(treasuryTarget)} SAR{" "}
+                {isAr ? "الهدف" : "Target"}
+              </span>
             </div>
           </div>
         </div>
@@ -491,28 +578,45 @@ export function AdminDashboardOverview({
 
           <div className="grid grid-cols-3 gap-2 text-xs">
             <div
-              onClick={() => onNavigateTab("family", "members")}
-              className="p-2.5 rounded-xl border border-border/50 hover:border-primary/40 bg-muted/20 cursor-pointer transition-colors text-center"
+              {...tileActivation(
+                () => onNavigateTab("family", "members"),
+                isAr ? "عرض أفراد الأسرة" : "View family members",
+              )}
+              className="p-2.5 rounded-xl border border-border/50 hover:border-primary/40 bg-muted/20 cursor-pointer transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <Users className="w-3.5 h-3.5 mx-auto text-emerald-500 mb-1" />
               <span className="font-bold font-mono text-sm block">{overviewData.totalMembers}</span>
-              <span className="text-[10px] text-muted-foreground block truncate">{isAr ? "الأعضاء" : "Members"}</span>
+              <span className="text-[10px] text-muted-foreground block truncate">
+                {isAr ? "الأعضاء" : "Members"}
+              </span>
             </div>
             <div
-              onClick={() => onNavigateTab("content", "articles")}
-              className="p-2.5 rounded-xl border border-border/50 hover:border-primary/40 bg-muted/20 cursor-pointer transition-colors text-center"
+              {...tileActivation(
+                () => onNavigateTab("content", "articles"),
+                isAr ? "عرض المقالات" : "View articles",
+              )}
+              className="p-2.5 rounded-xl border border-border/50 hover:border-primary/40 bg-muted/20 cursor-pointer transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <FileText className="w-3.5 h-3.5 mx-auto text-indigo-500 mb-1" />
-              <span className="font-bold font-mono text-sm block">{overviewData.totalArticles}</span>
-              <span className="text-[10px] text-muted-foreground block truncate">{isAr ? "المقالات" : "Articles"}</span>
+              <span className="font-bold font-mono text-sm block">
+                {overviewData.totalArticles}
+              </span>
+              <span className="text-[10px] text-muted-foreground block truncate">
+                {isAr ? "المقالات" : "Articles"}
+              </span>
             </div>
             <div
-              onClick={() => onNavigateTab("content", "events")}
-              className="p-2.5 rounded-xl border border-border/50 hover:border-primary/40 bg-muted/20 cursor-pointer transition-colors text-center"
+              {...tileActivation(
+                () => onNavigateTab("content", "events"),
+                isAr ? "عرض الفعاليات" : "View events",
+              )}
+              className="p-2.5 rounded-xl border border-border/50 hover:border-primary/40 bg-muted/20 cursor-pointer transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <Calendar className="w-3.5 h-3.5 mx-auto text-purple-500 mb-1" />
               <span className="font-bold font-mono text-sm block">{overviewData.totalEvents}</span>
-              <span className="text-[10px] text-muted-foreground block truncate">{isAr ? "الفعاليات" : "Events"}</span>
+              <span className="text-[10px] text-muted-foreground block truncate">
+                {isAr ? "الفعاليات" : "Events"}
+              </span>
             </div>
           </div>
         </div>
@@ -552,7 +656,9 @@ export function AdminDashboardOverview({
         <div className="divide-y divide-border/40 max-h-80 overflow-y-auto pr-2">
           {filteredActivity.length === 0 ? (
             <p className="text-xs text-muted-foreground py-8 text-center">
-              {isAr ? "لا يوجد نشاط حديث لهذه الفئة." : "No recent activity found for this category."}
+              {isAr
+                ? "لا يوجد نشاط حديث لهذه الفئة."
+                : "No recent activity found for this category."}
             </p>
           ) : (
             filteredActivity.map((act) => (
@@ -560,7 +666,8 @@ export function AdminDashboardOverview({
                 <div className="w-2 h-2 mt-1.5 rounded-full bg-primary/40 shrink-0" />
                 <div className="flex-1 space-y-0.5 min-w-0">
                   <p className="text-xs text-foreground font-medium truncate">
-                    {act.action} <span className="text-muted-foreground font-normal">({act.entity_type})</span>
+                    {act.action}{" "}
+                    <span className="text-muted-foreground font-normal">({act.entity_type})</span>
                   </p>
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1.5">
                     <Clock className="w-3 h-3" />

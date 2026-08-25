@@ -28,7 +28,12 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { EditorialButton, EditorialLink } from "@/components/site/Editorial";
 import { libraryItems as staticLibraryItems, siteMeta } from "@/content/site";
 import { getPublishedLibrary } from "@/lib/cms.functions";
-import { mergeLibrary, type LibraryDocument, type LibraryPhoto, type LibraryVideo } from "@/content/cms-adapt";
+import {
+  mergeLibrary,
+  type LibraryDocument,
+  type LibraryPhoto,
+  type LibraryVideo,
+} from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -104,9 +109,16 @@ export const Route = createFileRoute("/library")({
   head: () => ({
     meta: [
       { title: "المكتبة الرقمية والأرشيف التراثي | آل بوعبيد" },
-      { name: "description", content: "المكتبة الرقمية والأرشيف التراثي لأسرة آل بوعبيد: الوثائق التاريخية، الدراسات النسبية والجينية، والصور والتسجيلات." },
+      {
+        name: "description",
+        content:
+          "المكتبة الرقمية والأرشيف التراثي لأسرة آل بوعبيد: الوثائق التاريخية، الدراسات النسبية والجينية، والصور والتسجيلات.",
+      },
       { property: "og:title", content: "المكتبة الرقمية والأرشيف التراثي — آل بوعبيد" },
-      { property: "og:description", content: "المكتبة الرقمية وأرشيف التراث: وثائق تاريخية، صور نادرة، وتسجيلات متاحة للجميع." },
+      {
+        property: "og:description",
+        content: "المكتبة الرقمية وأرشيف التراث: وثائق تاريخية، صور نادرة، وتسجيلات متاحة للجميع.",
+      },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/library") },
     ],
@@ -198,7 +210,10 @@ const copy = {
   sortOldest: { ar: "الأقدم تاريخاً", en: "Oldest First" } as BiText,
   sortTitle: { ar: "أبجدياً (أ-ي)", en: "Alphabetical" } as BiText,
 
-  depositTitle: { ar: "إيداع وثيقة أو صورة تاريخية", en: "Submit a Historical Document or Photograph" } as BiText,
+  depositTitle: {
+    ar: "إيداع وثيقة أو صورة تاريخية",
+    en: "Submit a Historical Document or Photograph",
+  } as BiText,
   depositBody: {
     ar: "إذا كانت لديك صور تذكارية قديمة، أو وثائق تاريخية، أو مخطوطات عائلية ترغب في حفظها وفهرستها ضمن الأرشيف الرقمي الموحد، نرحب بتواصلك.",
     en: "If you possess historical family photographs, court deeds, or manuscripts you wish to preserve in the digital archive, we welcome your contribution.",
@@ -220,7 +235,13 @@ function DownloadControl({
   className?: string;
 }) {
   return doc.href ? (
-    <EditorialLink href={doc.href} target="_blank" rel="noopener noreferrer" size="sm" className={className}>
+    <EditorialLink
+      href={doc.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      size="sm"
+      className={className}
+    >
       <Download className="h-3.5 w-3.5" aria-hidden="true" />
       {label}
     </EditorialLink>
@@ -273,10 +294,30 @@ function LibraryPage() {
     setPage(1);
   }, [tab, searchQuery, selectedCategory, sortOrder]);
 
-  const tabDefs: { key: TabKey; label: BiText; count: number; icon: React.ComponentType<{ className?: string }> }[] = [
-    { key: "documents", label: copy.tabs.documents, count: libraryItems.documents.length, icon: FileText },
-    { key: "photographs", label: copy.tabs.photographs, count: libraryItems.photos.length, icon: ImageIcon },
-    { key: "recordings", label: copy.tabs.recordings, count: libraryItems.videos.length, icon: Video },
+  const tabDefs: {
+    key: TabKey;
+    label: BiText;
+    count: number;
+    icon: React.ComponentType<{ className?: string }>;
+  }[] = [
+    {
+      key: "documents",
+      label: copy.tabs.documents,
+      count: libraryItems.documents.length,
+      icon: FileText,
+    },
+    {
+      key: "photographs",
+      label: copy.tabs.photographs,
+      count: libraryItems.photos.length,
+      icon: ImageIcon,
+    },
+    {
+      key: "recordings",
+      label: copy.tabs.recordings,
+      count: libraryItems.videos.length,
+      icon: Video,
+    },
   ];
 
   const currentCategories = useMemo(() => {
@@ -366,12 +407,25 @@ function LibraryPage() {
     return list;
   }, [libraryItems.videos, searchQuery, selectedCategory, sortOrder, t]);
 
-  const pagedDocuments = useMemo(() => paginate(filteredDocuments, page, PAGE_SIZE), [filteredDocuments, page]);
-  const pagedPhotos = useMemo(() => paginate(filteredPhotos, page, PAGE_SIZE), [filteredPhotos, page]);
-  const pagedVideos = useMemo(() => paginate(filteredVideos, page, PAGE_SIZE), [filteredVideos, page]);
+  const pagedDocuments = useMemo(
+    () => paginate(filteredDocuments, page, PAGE_SIZE),
+    [filteredDocuments, page],
+  );
+  const pagedPhotos = useMemo(
+    () => paginate(filteredPhotos, page, PAGE_SIZE),
+    [filteredPhotos, page],
+  );
+  const pagedVideos = useMemo(
+    () => paginate(filteredVideos, page, PAGE_SIZE),
+    [filteredVideos, page],
+  );
 
   const activeTotal =
-    tab === "documents" ? filteredDocuments.length : tab === "photographs" ? filteredPhotos.length : filteredVideos.length;
+    tab === "documents"
+      ? filteredDocuments.length
+      : tab === "photographs"
+        ? filteredPhotos.length
+        : filteredVideos.length;
   const totalPages = Math.max(1, Math.ceil(activeTotal / PAGE_SIZE));
 
   const handleCopyLink = (text?: string) => {
@@ -388,7 +442,12 @@ function LibraryPage() {
   };
 
   const handleNextPhoto = useCallback(() => {
-    if (!previewModal || previewModal.type !== "photographs" || typeof previewModal.photoIndex !== "number") return;
+    if (
+      !previewModal ||
+      previewModal.type !== "photographs" ||
+      typeof previewModal.photoIndex !== "number"
+    )
+      return;
     const nextIdx = (previewModal.photoIndex + 1) % filteredPhotos.length;
     const p = filteredPhotos[nextIdx];
     const imageSrc = p.image ?? sheet[(photoIndex.get(p) ?? nextIdx) % sheet.length];
@@ -403,7 +462,12 @@ function LibraryPage() {
   }, [previewModal, filteredPhotos, photoIndex, t]);
 
   const handlePrevPhoto = useCallback(() => {
-    if (!previewModal || previewModal.type !== "photographs" || typeof previewModal.photoIndex !== "number") return;
+    if (
+      !previewModal ||
+      previewModal.type !== "photographs" ||
+      typeof previewModal.photoIndex !== "number"
+    )
+      return;
     const prevIdx = (previewModal.photoIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
     const p = filteredPhotos[prevIdx];
     const imageSrc = p.image ?? sheet[(photoIndex.get(p) ?? prevIdx) % sheet.length];
@@ -423,9 +487,17 @@ function LibraryPage() {
         setPreviewModal(null);
       } else if (previewModal?.type === "photographs") {
         if (e.key === "ArrowRight") {
-          rtl ? handlePrevPhoto() : handleNextPhoto();
+          if (rtl) {
+            handlePrevPhoto();
+          } else {
+            handleNextPhoto();
+          }
         } else if (e.key === "ArrowLeft") {
-          rtl ? handleNextPhoto() : handlePrevPhoto();
+          if (rtl) {
+            handleNextPhoto();
+          } else {
+            handlePrevPhoto();
+          }
         }
       }
     };
@@ -735,101 +807,195 @@ function LibraryPage() {
             {filteredDocuments.length > 0 ? (
               <>
                 {viewMode === "table" ? (
-                  <div className="border border-border bg-card rounded overflow-hidden shadow-sm">
-                    <div className="overflow-x-auto">
-                      <table className="w-full min-w-[44rem] border-collapse">
-                        <thead>
-                          <tr className="border-b border-border bg-muted/40">
-                            <th scope="col" className="py-3.5 ps-6 text-start text-xs font-bold text-muted-foreground">
-                              {t(copy.colRef)}
-                            </th>
-                            <th scope="col" className="py-3.5 text-start text-xs font-bold text-muted-foreground">
-                              {t(copy.colTitle)}
-                            </th>
-                            <th scope="col" className="py-3.5 text-start text-xs font-bold text-muted-foreground">
-                              {t(copy.colYear)}
-                            </th>
-                            <th scope="col" className="py-3.5 text-start text-xs font-bold text-muted-foreground">
-                              {t(copy.colFormat)}
-                            </th>
-                            <th scope="col" className="py-3.5 pe-6 text-end text-xs font-bold text-muted-foreground">
-                              {t(copy.colAction)}
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border">
-                          {pagedDocuments.map((d, i) => (
-                            <tr
-                              key={i}
-                              onClick={() =>
-                                setPreviewModal({
-                                  type: "documents",
-                                  title: t(d.title),
-                                  subtitle: `${d.kind} · ${d.year} هـ`,
-                                  meta: d.ncnpRef,
-                                  doc: d,
-                                  href: d.href,
-                                  description: d.description ? t(d.description) : undefined,
-                                })
-                              }
-                              className="group cursor-pointer hover:bg-secondary/40 transition-colors"
-                            >
-                              <td className="nums py-4 ps-6 pe-4 font-mono text-xs font-bold text-bronze dark:text-gold whitespace-nowrap">
-                                <span className="border border-bronze/30 bg-bronze/5 dark:bg-gold/5 px-2 py-1 rounded">
-                                  {d.ncnpRef}
-                                </span>
-                              </td>
-                              <td className="py-4 pe-6 max-w-md">
-                                <p className="text-sm font-semibold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors">
-                                  {t(d.title)}
-                                </p>
-                                {d.description && (
-                                  <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
-                                    {t(d.description)}
-                                  </p>
-                                )}
-                              </td>
-                              <td className="nums py-4 pe-6 text-xs whitespace-nowrap text-muted-foreground font-mono">
-                                {d.year} هـ
-                              </td>
-                              <td className="py-4 pe-6 text-xs text-muted-foreground">
-                                <span className="border border-border bg-secondary/80 px-2 py-0.5 rounded text-[11px] font-semibold text-foreground">
-                                  {d.kind}
-                                </span>
-                              </td>
-                              <td className="py-4 pe-6 text-end" onClick={(e) => e.stopPropagation()}>
-                                <div className="flex items-center justify-end gap-2">
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setPreviewModal({
-                                        type: "documents",
-                                        title: t(d.title),
-                                        subtitle: `${d.kind} · ${d.year} هـ`,
-                                        meta: d.ncnpRef,
-                                        doc: d,
-                                        href: d.href,
-                                        description: d.description ? t(d.description) : undefined,
-                                      })
-                                    }
-                                    className="inline-flex items-center gap-1 border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary rounded transition-colors cursor-pointer"
-                                  >
-                                    <Eye className="h-3 w-3" />
-                                    <span>{t(copy.preview)}</span>
-                                  </button>
-                                  <DownloadControl
-                                    doc={d}
-                                    onUnavailable={notify}
-                                    label={t(copy.download)}
-                                  />
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  <>
+                    {/* Mobile cards view (< sm) */}
+                    <div className="space-y-3 sm:hidden">
+                      {pagedDocuments.map((d, i) => (
+                        <div
+                          key={i}
+                          onClick={() =>
+                            setPreviewModal({
+                              type: "documents",
+                              title: t(d.title),
+                              subtitle: `${d.kind} · ${d.year} هـ`,
+                              meta: d.ncnpRef,
+                              doc: d,
+                              href: d.href,
+                              description: d.description ? t(d.description) : undefined,
+                            })
+                          }
+                          className="group border border-border bg-card p-4 rounded-lg hover:border-bronze dark:hover:border-gold transition-colors cursor-pointer shadow-2xs space-y-3"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="nums border border-bronze/30 bg-bronze/5 dark:bg-gold/5 px-2 py-0.5 rounded font-mono text-xs font-bold text-bronze dark:text-gold">
+                              {d.ncnpRef}
+                            </span>
+                            <span className="nums text-xs text-muted-foreground font-mono">
+                              {d.year} هـ
+                            </span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors">
+                              {t(d.title)}
+                            </p>
+                            {d.description && (
+                              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                                {t(d.description)}
+                              </p>
+                            )}
+                          </div>
+                          <div
+                            className="flex items-center justify-between pt-2 border-t border-border/60"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span className="border border-border bg-secondary/80 px-2 py-0.5 rounded text-[11px] font-semibold text-foreground">
+                              {d.kind}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setPreviewModal({
+                                    type: "documents",
+                                    title: t(d.title),
+                                    subtitle: `${d.kind} · ${d.year} هـ`,
+                                    meta: d.ncnpRef,
+                                    doc: d,
+                                    href: d.href,
+                                    description: d.description ? t(d.description) : undefined,
+                                  })
+                                }
+                                className="inline-flex items-center gap-1 border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary rounded transition-colors cursor-pointer"
+                              >
+                                <Eye className="h-3 w-3" />
+                                <span>{t(copy.preview)}</span>
+                              </button>
+                              <DownloadControl
+                                doc={d}
+                                onUnavailable={notify}
+                                label={t(copy.download)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
+
+                    {/* Desktop table (>= sm) */}
+                    <div className="hidden sm:block border border-border bg-card rounded overflow-hidden shadow-sm">
+                      <div className="overflow-x-auto">
+                        <table className="w-full min-w-[44rem] border-collapse">
+                          <thead>
+                            <tr className="border-b border-border bg-muted/40">
+                              <th
+                                scope="col"
+                                className="py-3.5 ps-6 text-start text-xs font-bold text-muted-foreground"
+                              >
+                                {t(copy.colRef)}
+                              </th>
+                              <th
+                                scope="col"
+                                className="py-3.5 text-start text-xs font-bold text-muted-foreground"
+                              >
+                                {t(copy.colTitle)}
+                              </th>
+                              <th
+                                scope="col"
+                                className="py-3.5 text-start text-xs font-bold text-muted-foreground"
+                              >
+                                {t(copy.colYear)}
+                              </th>
+                              <th
+                                scope="col"
+                                className="py-3.5 text-start text-xs font-bold text-muted-foreground"
+                              >
+                                {t(copy.colFormat)}
+                              </th>
+                              <th
+                                scope="col"
+                                className="py-3.5 pe-6 text-end text-xs font-bold text-muted-foreground"
+                              >
+                                {t(copy.colAction)}
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border">
+                            {pagedDocuments.map((d, i) => (
+                              <tr
+                                key={i}
+                                onClick={() =>
+                                  setPreviewModal({
+                                    type: "documents",
+                                    title: t(d.title),
+                                    subtitle: `${d.kind} · ${d.year} هـ`,
+                                    meta: d.ncnpRef,
+                                    doc: d,
+                                    href: d.href,
+                                    description: d.description ? t(d.description) : undefined,
+                                  })
+                                }
+                                className="group cursor-pointer hover:bg-secondary/40 transition-colors"
+                              >
+                                <td className="nums py-4 ps-6 pe-4 font-mono text-xs font-bold text-bronze dark:text-gold whitespace-nowrap">
+                                  <span className="border border-bronze/30 bg-bronze/5 dark:bg-gold/5 px-2 py-1 rounded">
+                                    {d.ncnpRef}
+                                  </span>
+                                </td>
+                                <td className="py-4 pe-6 max-w-md">
+                                  <p className="text-sm font-semibold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors">
+                                    {t(d.title)}
+                                  </p>
+                                  {d.description && (
+                                    <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+                                      {t(d.description)}
+                                    </p>
+                                  )}
+                                </td>
+                                <td className="nums py-4 pe-6 text-xs whitespace-nowrap text-muted-foreground font-mono">
+                                  {d.year} هـ
+                                </td>
+                                <td className="py-4 pe-6 text-xs text-muted-foreground">
+                                  <span className="border border-border bg-secondary/80 px-2 py-0.5 rounded text-[11px] font-semibold text-foreground">
+                                    {d.kind}
+                                  </span>
+                                </td>
+                                <td
+                                  className="py-4 pe-6 text-end"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div className="flex items-center justify-end gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setPreviewModal({
+                                          type: "documents",
+                                          title: t(d.title),
+                                          subtitle: `${d.kind} · ${d.year} هـ`,
+                                          meta: d.ncnpRef,
+                                          doc: d,
+                                          href: d.href,
+                                          description: d.description ? t(d.description) : undefined,
+                                        })
+                                      }
+                                      className="inline-flex items-center gap-1 border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary rounded transition-colors cursor-pointer"
+                                    >
+                                      <Eye className="h-3 w-3" />
+                                      <span>{t(copy.preview)}</span>
+                                    </button>
+                                    <DownloadControl
+                                      doc={d}
+                                      onUnavailable={notify}
+                                      label={t(copy.download)}
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   /* Grid View for Documents */
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -854,7 +1020,9 @@ function LibraryPage() {
                             <span className="nums border border-bronze/30 bg-bronze/10 px-2 py-0.5 rounded font-mono text-xs font-bold text-bronze dark:text-gold">
                               {d.ncnpRef}
                             </span>
-                            <span className="nums text-xs font-mono text-muted-foreground">{d.year} هـ</span>
+                            <span className="nums text-xs font-mono text-muted-foreground">
+                              {d.year} هـ
+                            </span>
                           </div>
                           <h3 className="text-sm font-bold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors mb-2">
                             {t(d.title)}
@@ -900,7 +1068,8 @@ function LibraryPage() {
                 <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {pagedPhotos.map((p, i) => {
                     const globalIdx = (page - 1) * PAGE_SIZE + i;
-                    const imageSrc = p.image ?? sheet[(photoIndex.get(p) ?? globalIdx) % sheet.length];
+                    const imageSrc =
+                      p.image ?? sheet[(photoIndex.get(p) ?? globalIdx) % sheet.length];
 
                     return (
                       <li key={i}>
@@ -941,7 +1110,9 @@ function LibraryPage() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100 flex flex-col justify-end p-4">
                               <span className="nums text-xs font-bold text-white/90">
-                                {t(copy.plate)} {String((photoIndex.get(p) ?? globalIdx) + 1).padStart(2, "0")} · {p.year} هـ
+                                {t(copy.plate)}{" "}
+                                {String((photoIndex.get(p) ?? globalIdx) + 1).padStart(2, "0")} ·{" "}
+                                {p.year} هـ
                               </span>
                               <p className="line-clamp-2 text-xs font-semibold text-white mt-1">
                                 {t(p.title)}
@@ -953,9 +1124,12 @@ function LibraryPage() {
                             <div>
                               <div className="flex items-baseline justify-between gap-2 mb-1.5">
                                 <span className="nums font-mono text-xs font-bold text-bronze dark:text-gold">
-                                  {t(copy.plate)} {String((photoIndex.get(p) ?? globalIdx) + 1).padStart(2, "0")}
+                                  {t(copy.plate)}{" "}
+                                  {String((photoIndex.get(p) ?? globalIdx) + 1).padStart(2, "0")}
                                 </span>
-                                <span className="nums text-xs font-mono text-muted-foreground">{p.year} هـ</span>
+                                <span className="nums text-xs font-mono text-muted-foreground">
+                                  {p.year} هـ
+                                </span>
                               </div>
                               <p className="text-sm font-semibold leading-snug text-foreground group-hover:text-bronze dark:group-hover:text-gold transition-colors line-clamp-2">
                                 {t(p.title)}
@@ -1029,13 +1203,18 @@ function LibraryPage() {
                               />
                             ) : (
                               <div className="grid h-full w-full place-items-center bg-gradient-to-br from-secondary to-muted">
-                                <Video className="h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
+                                <Video
+                                  className="h-10 w-10 text-muted-foreground/40"
+                                  aria-hidden="true"
+                                />
                               </div>
                             )}
                             <div className="absolute inset-0 bg-black/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                             <div className="absolute inset-0 grid place-items-center">
                               <span className="grid h-12 w-12 place-items-center rounded-full border border-white/50 bg-black/60 text-white backdrop-blur-sm transition-transform duration-200 group-hover:scale-110 group-hover:bg-bronze group-hover:border-bronze dark:group-hover:bg-gold dark:group-hover:text-ink">
-                                <Play className={cn("h-5 w-5 fill-current", rtl && "-scale-x-100")} />
+                                <Play
+                                  className={cn("h-5 w-5 fill-current", rtl && "-scale-x-100")}
+                                />
                               </span>
                             </div>
                             <span
@@ -1110,18 +1289,12 @@ function LibraryPage() {
               <BookOpen className="h-3.5 w-3.5" />
               <span>{t(copy.depositTitle)}</span>
             </div>
-            <h2 className="text-lg md:text-xl font-bold text-foreground">
-              {t(copy.depositTitle)}
-            </h2>
+            <h2 className="text-lg md:text-xl font-bold text-foreground">{t(copy.depositTitle)}</h2>
             <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
               {t(copy.depositBody)}
             </p>
           </div>
-          <EditorialLink
-            href="/contact"
-            variant="primary"
-            className="shrink-0"
-          >
+          <EditorialLink href="/contact" variant="primary" className="shrink-0">
             {t(copy.depositCta)}
           </EditorialLink>
         </section>
@@ -1213,64 +1386,63 @@ function LibraryPage() {
             )}
 
             {/* Video Player Mode */}
-            {previewModal.type === "recordings" && (() => {
-              const youtubeEmbed = previewModal.href ? getYouTubeEmbedUrl(previewModal.href) : null;
-              const isFileVideo = previewModal.href && !youtubeEmbed && isVideoFileUrl(previewModal.href);
+            {previewModal.type === "recordings" &&
+              (() => {
+                const youtubeEmbed = previewModal.href
+                  ? getYouTubeEmbedUrl(previewModal.href)
+                  : null;
+                const isFileVideo =
+                  previewModal.href && !youtubeEmbed && isVideoFileUrl(previewModal.href);
 
-              if (youtubeEmbed) {
-                return (
-                  <div className="mb-6 aspect-video w-full overflow-hidden border border-border rounded bg-black">
-                    <iframe
-                      src={`${youtubeEmbed}?autoplay=1`}
-                      title={previewModal.title}
-                      className="h-full w-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                );
-              }
+                if (youtubeEmbed) {
+                  return (
+                    <div className="mb-6 aspect-video w-full overflow-hidden border border-border rounded bg-black">
+                      <iframe
+                        src={`${youtubeEmbed}?autoplay=1`}
+                        title={previewModal.title}
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  );
+                }
 
-              if (isFileVideo && previewModal.href) {
+                if (isFileVideo && previewModal.href) {
+                  return (
+                    <div className="mb-6 aspect-video w-full overflow-hidden border border-border rounded bg-black">
+                      <video src={previewModal.href} controls autoPlay className="h-full w-full">
+                        {t(copy.pending)}
+                      </video>
+                    </div>
+                  );
+                }
+
                 return (
-                  <div className="mb-6 aspect-video w-full overflow-hidden border border-border rounded bg-black">
-                    <video
-                      src={previewModal.href}
-                      controls
-                      autoPlay
-                      className="h-full w-full"
+                  <div className="flex flex-col items-center justify-center border border-border bg-muted/30 p-8 text-center mb-6 rounded">
+                    <div className="grid h-14 w-14 place-items-center rounded-full border border-border bg-card text-foreground mb-4">
+                      <Play className={cn("h-6 w-6 fill-current", rtl && "-scale-x-100")} />
+                    </div>
+                    <p className="text-sm text-foreground font-bold mb-1">{previewModal.title}</p>
+                    {previewModal.duration && (
+                      <span className="nums font-mono text-xs text-muted-foreground mb-6" dir="ltr">
+                        {previewModal.duration}
+                      </span>
+                    )}
+                    <EditorialButton
+                      type="button"
+                      variant="primary"
+                      onClick={() => {
+                        setPreviewModal(null);
+                        notify();
+                      }}
                     >
-                      {t(copy.pending)}
-                    </video>
+                      <Play className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")} />
+                      {t(copy.play)}
+                    </EditorialButton>
                   </div>
                 );
-              }
-
-              return (
-                <div className="flex flex-col items-center justify-center border border-border bg-muted/30 p-8 text-center mb-6 rounded">
-                  <div className="grid h-14 w-14 place-items-center rounded-full border border-border bg-card text-foreground mb-4">
-                    <Play className={cn("h-6 w-6 fill-current", rtl && "-scale-x-100")} />
-                  </div>
-                  <p className="text-sm text-foreground font-bold mb-1">{previewModal.title}</p>
-                  {previewModal.duration && (
-                    <span className="nums font-mono text-xs text-muted-foreground mb-6" dir="ltr">
-                      {previewModal.duration}
-                    </span>
-                  )}
-                  <EditorialButton
-                    type="button"
-                    variant="primary"
-                    onClick={() => {
-                      setPreviewModal(null);
-                      notify();
-                    }}
-                  >
-                    <Play className={cn("h-4 w-4 fill-current", rtl && "-scale-x-100")} />
-                    {t(copy.play)}
-                  </EditorialButton>
-                </div>
-              );
-            })()}
+              })()}
 
             {previewModal.type === "recordings" && previewModal.description && (
               <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
@@ -1295,9 +1467,7 @@ function LibraryPage() {
                       <FileText className="h-6 w-6 text-bronze dark:text-gold" />
                       <div>
                         <h3 className="text-sm font-bold text-foreground">{t(copy.details)}</h3>
-                        <p className="text-xs text-muted-foreground">
-                          {t(siteMeta.shortName)}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{t(siteMeta.shortName)}</p>
                       </div>
                     </div>
                     <p className="text-xs leading-relaxed text-muted-foreground border-t border-border pt-3">
@@ -1324,7 +1494,11 @@ function LibraryPage() {
                   onClick={() => handleCopyLink(previewModal.href)}
                   className="inline-flex items-center gap-1.5 border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer rounded"
                 >
-                  {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
                   {copied ? t(copy.copied) : t(copy.copyLink)}
                 </button>
               </div>

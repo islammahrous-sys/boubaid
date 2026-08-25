@@ -31,15 +31,34 @@ export const submitContribution = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => contributionInputSchema.parse(input))
   .handler(async ({ data, context }) => {
+    const { supabase, userId, claims } = context;
+
+    const { isUserSubmissionRateLimited, getRequestIp } =
+      await import("./public-forms-rate-limit.server");
+    if (isUserSubmissionRateLimited("contribution", userId, { max: 15 })) {
+      console.warn("[contributions] rate limited", userId);
+      return { ok: false as const, error: "rate_limited" };
+    }
+
     const { verifyTurnstileToken } = await import("./turnstile.server");
-    const verification = await verifyTurnstileToken(data.turnstile_token);
+    const verification = await verifyTurnstileToken(data.turnstile_token, getRequestIp());
     if (!verification.ok) {
       console.error("[contributions] turnstile verification failed", verification.error);
       return { ok: false as const, error: "verification_failed" };
     }
 
-    const { supabase, userId, claims } = context;
+    // A receipt may only be claimed from the caller's own folder. The path is
+    // supplied by the client (the file is uploaded straight to storage from the
+    // browser), so without this a member could point their pending contribution
+    // at somebody else's receipt to make it look substantiated to the treasury.
+    if (data.receipt_path && !data.receipt_path.startsWith(`${userId}/`)) {
+      console.error("[contributions] receipt path does not belong to caller", userId);
+      return { ok: false as const, error: "invalid_receipt" };
+    }
 
+    // NOTE: `status` is deliberately NOT part of the insert payload — it falls
+    // to the column default ('pending') and only reviewContribution (treasury
+    // middleware) can move it. Do not add it here.
     const { error } = await supabase.from("contributions").insert({
       user_id: userId,
       contributor_name: data.contributor_name,
@@ -90,7 +109,11 @@ export const getTreasuryOverview = createServerFn({ method: "GET" })
 
     const [roles, rows] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
-      supabase.from("contributions").select(COLS).order("created_at", { ascending: false }).limit(500),
+      supabase
+        .from("contributions")
+        .select(COLS)
+        .order("created_at", { ascending: false })
+        .limit(500),
     ]);
 
     const roleList = (roles.data ?? []).map((r) => r.role as string);
@@ -103,7 +126,10 @@ export const getTreasuryOverview = createServerFn({ method: "GET" })
 
     return {
       contributions,
-      canReview: roleList.includes("admin") || roleList.includes("super_admin") || roleList.includes("treasurer"),
+      canReview:
+        roleList.includes("admin") ||
+        roleList.includes("super_admin") ||
+        roleList.includes("treasurer"),
       totals: { verified: sum("verified"), pending: sum("pending"), count: contributions.length },
     };
   });

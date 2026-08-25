@@ -12,6 +12,9 @@ export const verifyTurnstile = createServerFn({ method: "POST" })
     return { token: typeof data.token === "string" ? data.token : "" };
   })
   .handler(async ({ data }) => {
-    const { verifyTurnstileToken } = await import("./turnstile.server");
-    return verifyTurnstileToken(data.token);
+    const [{ verifyTurnstileToken }, { getRequestIp }] = await Promise.all([
+      import("./turnstile.server"),
+      import("./public-forms-rate-limit.server"),
+    ]);
+    return verifyTurnstileToken(data.token, getRequestIp());
   });

@@ -1,10 +1,29 @@
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { Plus, Trash2, Link2, Users, Loader2 } from "lucide-react";
 import type { FamilyRelationshipInput } from "@/lib/admin-hub.schemas";
@@ -56,8 +75,8 @@ export function FamilyRelationshipsManager({
     members.forEach((m) =>
       map.set(
         m.id,
-        `${m.first_name_ar} ${m.middle_name_ar ? m.middle_name_ar + " " : ""}${m.last_name_ar}`
-      )
+        `${m.first_name_ar} ${m.middle_name_ar ? m.middle_name_ar + " " : ""}${m.last_name_ar}`,
+      ),
     );
     return map;
   }, [members]);
@@ -65,7 +84,7 @@ export function FamilyRelationshipsManager({
   const filtered = useMemo(() => {
     if (!filterMemberId) return relationships;
     return relationships.filter(
-      (r) => r.person_id === filterMemberId || r.related_person_id === filterMemberId
+      (r) => r.person_id === filterMemberId || r.related_person_id === filterMemberId,
     );
   }, [relationships, filterMemberId]);
 
@@ -84,11 +103,26 @@ export function FamilyRelationshipsManager({
   const getRelBadge = (type: RelationshipItem["relationship_type"]) => {
     switch (type) {
       case "parent":
-        return <Badge variant="outline" className="text-blue-600 dark:text-blue-400 border-blue-500/30">{isAr ? "والد / والدة" : "Parent"}</Badge>;
+        return (
+          <Badge variant="outline" className="text-blue-600 dark:text-blue-400 border-blue-500/30">
+            {isAr ? "والد / والدة" : "Parent"}
+          </Badge>
+        );
       case "child":
-        return <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30">{isAr ? "ابن / ابنة" : "Child"}</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+          >
+            {isAr ? "ابن / ابنة" : "Child"}
+          </Badge>
+        );
       case "spouse":
-        return <Badge variant="outline" className="text-pink-600 dark:text-pink-400 border-pink-500/30">{isAr ? "زوج / زوجة" : "Spouse"}</Badge>;
+        return (
+          <Badge variant="outline" className="text-pink-600 dark:text-pink-400 border-pink-500/30">
+            {isAr ? "زوج / زوجة" : "Spouse"}
+          </Badge>
+        );
     }
   };
 
@@ -103,7 +137,9 @@ export function FamilyRelationshipsManager({
             </h3>
             {filterMemberId && memberMap.has(filterMemberId) && (
               <p className="text-xs text-muted-foreground">
-                {isAr ? `تصفية لـ: ${memberMap.get(filterMemberId)}` : `Filtered for: ${memberMap.get(filterMemberId)}`}
+                {isAr
+                  ? `تصفية لـ: ${memberMap.get(filterMemberId)}`
+                  : `Filtered for: ${memberMap.get(filterMemberId)}`}
               </p>
             )}
           </div>
@@ -211,7 +247,9 @@ export function FamilyRelationshipsManager({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs">{isAr ? "هو / هي بالنسبة للطرف الثاني *" : "Is the following to *"}</Label>
+              <Label className="text-xs">
+                {isAr ? "هو / هي بالنسبة للطرف الثاني *" : "Is the following to *"}
+              </Label>
               <Select
                 value={form.relationship_type}
                 onValueChange={(val: any) => setForm({ ...form, relationship_type: val })}
@@ -220,7 +258,9 @@ export function FamilyRelationshipsManager({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="parent">{isAr ? "والد / والدة (Parent)" : "Parent"}</SelectItem>
+                  <SelectItem value="parent">
+                    {isAr ? "والد / والدة (Parent)" : "Parent"}
+                  </SelectItem>
                   <SelectItem value="child">{isAr ? "ابن / ابنة (Child)" : "Child"}</SelectItem>
                   <SelectItem value="spouse">{isAr ? "زوج / زوجة (Spouse)" : "Spouse"}</SelectItem>
                 </SelectContent>
@@ -234,7 +274,9 @@ export function FamilyRelationshipsManager({
                 onValueChange={(val) => setForm({ ...form, related_person_id: val })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={isAr ? "اختر الفرد المرتبط" : "Select related person"} />
+                  <SelectValue
+                    placeholder={isAr ? "اختر الفرد المرتبط" : "Select related person"}
+                  />
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
                   {members
@@ -253,7 +295,13 @@ export function FamilyRelationshipsManager({
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button type="submit" size="sm" disabled={loading}>
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ العلاقة" : "Save Link"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ العلاقة"
+                    : "Save Link"}
               </Button>
             </DialogFooter>
           </form>

@@ -1,16 +1,45 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useConfirm } from "@/hooks/useConfirm";
-import { Plus, Edit2, Calendar, MapPin, Users, Download, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Plus,
+  Edit2,
+  Calendar,
+  MapPin,
+  Users,
+  Download,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { EventInput } from "@/lib/admin-hub.schemas";
 
@@ -37,7 +66,9 @@ const RIYADH_OFFSET_MINUTES = 3 * 60;
 
 /** UTC ISO timestamp (from the DB) -> the Riyadh wall-clock value a datetime-local input expects. */
 function toRiyadhLocalInput(iso: string): string {
-  return new Date(new Date(iso).getTime() + RIYADH_OFFSET_MINUTES * 60000).toISOString().slice(0, 16);
+  return new Date(new Date(iso).getTime() + RIYADH_OFFSET_MINUTES * 60000)
+    .toISOString()
+    .slice(0, 16);
 }
 
 /** A datetime-local value (entered as Riyadh wall-clock time) -> a UTC ISO timestamp for the DB. */
@@ -68,7 +99,10 @@ export function EventsManager({
   registrations: EventRegistrationRow[];
   places: { id: string; name_ar: string }[];
   onSaveEvent: (data: EventInput) => Promise<void>;
-  onUpdateRegistrationStatus?: (id: string, status: "registered" | "attended" | "cancelled" | "waitlist") => Promise<void>;
+  onUpdateRegistrationStatus?: (
+    id: string,
+    status: "registered" | "attended" | "cancelled" | "waitlist",
+  ) => Promise<void>;
   onDeleteRegistration?: (id: string) => Promise<void>;
 }) {
   const { lang } = useLang();
@@ -176,7 +210,9 @@ export function EventsManager({
       a.status,
       `"${a.created_at}"`,
     ]);
-    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const csvContent =
+      "data:text/csv;charset=utf-8,\uFEFF" +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -209,7 +245,9 @@ export function EventsManager({
               <TableHead>{isAr ? "عنوان الفعالية" : "Event Title"}</TableHead>
               <TableHead>{isAr ? "الموعد" : "Date & Time"}</TableHead>
               <TableHead>{isAr ? "المكان" : "Place"}</TableHead>
-              <TableHead className="text-center">{isAr ? "التسجيل والمقاعد" : "Registrations"}</TableHead>
+              <TableHead className="text-center">
+                {isAr ? "التسجيل والمقاعد" : "Registrations"}
+              </TableHead>
               <TableHead className="text-center">{isAr ? "الحالة" : "Status"}</TableHead>
               <TableHead className="text-end">{isAr ? "إجراءات" : "Actions"}</TableHead>
             </TableRow>
@@ -251,11 +289,15 @@ export function EventsManager({
                           {regCount} / {evt.max_attendees || "∞"} {isAr ? "مسجل" : "registered"}
                         </Button>
                       ) : (
-                        <span className="text-muted-foreground text-[10px]">{isAr ? "مغلق" : "Off"}</span>
+                        <span className="text-muted-foreground text-[10px]">
+                          {isAr ? "مغلق" : "Off"}
+                        </span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge variant="secondary" className="text-[10px]">{evt.status}</Badge>
+                      <Badge variant="secondary" className="text-[10px]">
+                        {evt.status}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-end">
                       <div className="flex items-center justify-end gap-1">
@@ -293,12 +335,20 @@ export function EventsManager({
         <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">
-              {selectedEvent ? (isAr ? "تعديل فعالية" : "Edit Event") : isAr ? "إضافة فعالية جديدة" : "Add Event"}
+              {selectedEvent
+                ? isAr
+                  ? "تعديل فعالية"
+                  : "Edit Event"
+                : isAr
+                  ? "إضافة فعالية جديدة"
+                  : "Add Event"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
             <div className="space-y-1">
-              <Label className="text-xs">{isAr ? "عنوان الفعالية بالعربية *" : "Event Title (AR) *"}</Label>
+              <Label className="text-xs">
+                {isAr ? "عنوان الفعالية بالعربية *" : "Event Title (AR) *"}
+              </Label>
               <Input
                 required
                 value={form.title_ar}
@@ -327,7 +377,9 @@ export function EventsManager({
                 <Label className="text-xs">{isAr ? "المكان" : "Place"}</Label>
                 <Select
                   value={form.place_id ?? "none"}
-                  onValueChange={(val) => setForm({ ...form, place_id: val === "none" ? null : val })}
+                  onValueChange={(val) =>
+                    setForm({ ...form, place_id: val === "none" ? null : val })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder={isAr ? "اختر المكان" : "Select place"} />
@@ -367,8 +419,12 @@ export function EventsManager({
             <div className="p-3 bg-muted/20 border border-border rounded-xl space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label className="text-xs font-semibold">{isAr ? "تفعيل تسجيل الحضور" : "Enable Registration"}</Label>
-                  <p className="text-[11px] text-muted-foreground">{isAr ? "السماح لأبناء الأسرة بالتسجيل المسبق" : "Allow members to RSVP"}</p>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "تفعيل تسجيل الحضور" : "Enable Registration"}
+                  </Label>
+                  <p className="text-[11px] text-muted-foreground">
+                    {isAr ? "السماح لأبناء الأسرة بالتسجيل المسبق" : "Allow members to RSVP"}
+                  </p>
                 </div>
                 <Switch
                   checked={form.registration_enabled}
@@ -378,11 +434,15 @@ export function EventsManager({
 
               {form.registration_enabled && (
                 <div className="space-y-1">
-                  <Label className="text-xs">{isAr ? "الحد الأقصى للحضور (اختياري)" : "Max Attendees"}</Label>
+                  <Label className="text-xs">
+                    {isAr ? "الحد الأقصى للحضور (اختياري)" : "Max Attendees"}
+                  </Label>
                   <Input
                     type="number"
                     value={form.max_attendees ?? ""}
-                    onChange={(e) => setForm({ ...form, max_attendees: parseInt(e.target.value) || null })}
+                    onChange={(e) =>
+                      setForm({ ...form, max_attendees: parseInt(e.target.value) || null })
+                    }
                     placeholder="100"
                   />
                 </div>
@@ -391,7 +451,10 @@ export function EventsManager({
 
             <div className="space-y-1">
               <Label className="text-xs">{isAr ? "الحالة" : "Status"}</Label>
-              <Select value={form.status} onValueChange={(val: any) => setForm({ ...form, status: val })}>
+              <Select
+                value={form.status}
+                onValueChange={(val: any) => setForm({ ...form, status: val })}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -418,7 +481,13 @@ export function EventsManager({
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button type="submit" size="sm" disabled={loading}>
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ الفعالية" : "Save Event"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ الفعالية"
+                    : "Save Event"}
               </Button>
             </DialogFooter>
           </form>
@@ -433,10 +502,17 @@ export function EventsManager({
               <div className="flex items-center justify-between">
                 <DialogTitle className="text-base font-bold flex items-center gap-2">
                   <Users className="w-5 h-5 text-primary" />
-                  {isAr ? `قائمة المسجلين: ${activeEventForAttendees.title_ar}` : `Attendees: ${activeEventForAttendees.title_ar}`}
+                  {isAr
+                    ? `قائمة المسجلين: ${activeEventForAttendees.title_ar}`
+                    : `Attendees: ${activeEventForAttendees.title_ar}`}
                 </DialogTitle>
                 {eventAttendees.length > 0 && (
-                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={exportAttendeesCsv}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 text-xs gap-1"
+                    onClick={exportAttendeesCsv}
+                  >
                     <Download className="w-3 h-3" />
                     {isAr ? "تصدير CSV" : "Export"}
                   </Button>
@@ -459,7 +535,10 @@ export function EventsManager({
                   <TableBody>
                     {eventAttendees.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center text-muted-foreground text-xs">
+                        <TableCell
+                          colSpan={5}
+                          className="h-24 text-center text-muted-foreground text-xs"
+                        >
                           {isAr ? "لم يسجل أحد في هذه الفعالية بعد" : "No attendees registered yet"}
                         </TableCell>
                       </TableRow>
@@ -471,7 +550,9 @@ export function EventsManager({
                             <span>{a.email}</span>
                             {a.phone && <span className="block text-[10px]">{a.phone}</span>}
                           </TableCell>
-                          <TableCell className="text-center font-mono">{a.attendees_count}</TableCell>
+                          <TableCell className="text-center font-mono">
+                            {a.attendees_count}
+                          </TableCell>
                           <TableCell className="text-center">
                             <Select
                               value={a.status}
@@ -500,10 +581,18 @@ export function EventsManager({
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="registered">{isAr ? "مسجل" : "Registered"}</SelectItem>
-                                <SelectItem value="attended">{isAr ? "حضر" : "Attended"}</SelectItem>
-                                <SelectItem value="cancelled">{isAr ? "اعتذر" : "Cancelled"}</SelectItem>
-                                <SelectItem value="waitlist">{isAr ? "انتظار" : "Waitlist"}</SelectItem>
+                                <SelectItem value="registered">
+                                  {isAr ? "مسجل" : "Registered"}
+                                </SelectItem>
+                                <SelectItem value="attended">
+                                  {isAr ? "حضر" : "Attended"}
+                                </SelectItem>
+                                <SelectItem value="cancelled">
+                                  {isAr ? "اعتذر" : "Cancelled"}
+                                </SelectItem>
+                                <SelectItem value="waitlist">
+                                  {isAr ? "انتظار" : "Waitlist"}
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                           </TableCell>
@@ -543,7 +632,12 @@ export function EventsManager({
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" size="sm" onClick={() => setAttendeesModalOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setAttendeesModalOpen(false)}
+              >
                 {isAr ? "إغلاق" : "Close"}
               </Button>
             </DialogFooter>

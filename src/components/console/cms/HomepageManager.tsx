@@ -6,7 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Globe,
   ArrowUp,
@@ -53,8 +59,10 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
     order: 1,
     title_ar: "منظومة أسرة آل بوعبيد",
     title_en: "Al Bu Obaid Family Heritage Hub",
-    subtitle_ar: "صرح توثيقي ورقمي موحد يجمع شمل الأسرة، يوثق الأنساب، ويدير المبادرات التنموية والخزينة.",
-    subtitle_en: "A unified platform connecting family, documenting lineage, and advancing community initiatives.",
+    subtitle_ar:
+      "صرح توثيقي ورقمي موحد يجمع شمل الأسرة، يوثق الأنساب، ويدير المبادرات التنموية والخزينة.",
+    subtitle_en:
+      "A unified platform connecting family, documenting lineage, and advancing community initiatives.",
     badge_ar: "الأصالة والتلاحم",
     badge_en: "Heritage & Unity",
     cta_label_ar: "استكشف شجرة الأسرة",
@@ -274,7 +282,9 @@ export function HomepageManager({
         value: { sections: list, updated_at: new Date().toISOString() },
         is_public: true,
       });
-      toast.success(isAr ? "تم تحديث ترتيب وإعدادات أقسام الرئيسية بنجاح" : "Homepage configuration saved");
+      toast.success(
+        isAr ? "تم تحديث ترتيب وإعدادات أقسام الرئيسية بنجاح" : "Homepage configuration saved",
+      );
     } catch (err: any) {
       toast.error(err.message || (isAr ? "فشل الحفظ" : "Failed to save"));
     } finally {
@@ -351,7 +361,10 @@ export function HomepageManager({
                   <h4 className="font-bold text-xs text-foreground truncate">
                     {isAr ? sec.name_ar : sec.name_en}
                   </h4>
-                  <Badge variant={sec.enabled ? "secondary" : "outline"} className="text-[10px] shrink-0 font-mono">
+                  <Badge
+                    variant={sec.enabled ? "secondary" : "outline"}
+                    className="text-[10px] shrink-0 font-mono"
+                  >
                     {sec.enabled ? (isAr ? "مفعّل" : "Active") : isAr ? "معطّل" : "Hidden"}
                   </Badge>
                   {UNIMPLEMENTED_SECTION_IDS.has(sec.id) && (
@@ -431,63 +444,88 @@ export function HomepageManager({
               <DialogTitle className="text-base font-bold flex items-center gap-2">
                 <Edit2 className="w-4 h-4 text-primary" />
                 <span>
-                  {isAr ? "تعديل محتوى القسم:" : "Edit Section:"} {isAr ? editingSection.name_ar : editingSection.name_en}
+                  {isAr ? "تعديل محتوى القسم:" : "Edit Section:"}{" "}
+                  {isAr ? editingSection.name_ar : editingSection.name_en}
                 </span>
               </DialogTitle>
             </DialogHeader>
 
             <form onSubmit={handleSaveEdit} className="space-y-3.5 text-xs">
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "العنوان الرئيسي (بالعربية) *" : "Main Headline (AR) *"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "العنوان الرئيسي (بالعربية) *" : "Main Headline (AR) *"}
+                </Label>
                 <Input
                   required
                   value={editingSection.title_ar}
-                  onChange={(e) => setEditingSection({ ...editingSection, title_ar: e.target.value })}
+                  onChange={(e) =>
+                    setEditingSection({ ...editingSection, title_ar: e.target.value })
+                  }
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "العنوان الرئيسي (EN)" : "Main Headline (EN)"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "العنوان الرئيسي (EN)" : "Main Headline (EN)"}
+                </Label>
                 <Input
                   value={editingSection.title_en}
-                  onChange={(e) => setEditingSection({ ...editingSection, title_en: e.target.value })}
+                  onChange={(e) =>
+                    setEditingSection({ ...editingSection, title_en: e.target.value })
+                  }
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "النص التوضيحي والفرعي (بالعربية)" : "Subtitle (AR)"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "النص التوضيحي والفرعي (بالعربية)" : "Subtitle (AR)"}
+                </Label>
                 <Textarea
                   rows={2}
                   value={editingSection.subtitle_ar ?? ""}
-                  onChange={(e) => setEditingSection({ ...editingSection, subtitle_ar: e.target.value })}
+                  onChange={(e) =>
+                    setEditingSection({ ...editingSection, subtitle_ar: e.target.value })
+                  }
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "النص التوضيحي والفرعي (EN)" : "Subtitle (EN)"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "النص التوضيحي والفرعي (EN)" : "Subtitle (EN)"}
+                </Label>
                 <Textarea
                   rows={2}
                   value={editingSection.subtitle_en ?? ""}
-                  onChange={(e) => setEditingSection({ ...editingSection, subtitle_en: e.target.value })}
+                  onChange={(e) =>
+                    setEditingSection({ ...editingSection, subtitle_en: e.target.value })
+                  }
                 />
               </div>
 
               {/* Badge / Tagline */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <Label className="text-xs">{isAr ? "الشارة / التصنيف العلوي (AR)" : "Top Badge / Tag (AR)"}</Label>
+                  <Label className="text-xs">
+                    {isAr ? "الشارة / التصنيف العلوي (AR)" : "Top Badge / Tag (AR)"}
+                  </Label>
                   <Input
                     placeholder={isAr ? "مثال: الأصالة والتلاحم" : "e.g. Heritage & Unity"}
                     value={editingSection.badge_ar ?? ""}
-                    onChange={(e) => setEditingSection({ ...editingSection, badge_ar: e.target.value })}
+                    onChange={(e) =>
+                      setEditingSection({ ...editingSection, badge_ar: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">{isAr ? "الشارة العلوي (EN)" : "Top Badge / Tag (EN)"}</Label>
+                  <Label className="text-xs">
+                    {isAr ? "الشارة العلوي (EN)" : "Top Badge / Tag (EN)"}
+                  </Label>
                   <Input
                     placeholder={isAr ? "Heritage & Unity" : "e.g. Heritage & Unity"}
                     value={editingSection.badge_en ?? ""}
-                    onChange={(e) => setEditingSection({ ...editingSection, badge_en: e.target.value })}
+                    onChange={(e) =>
+                      setEditingSection({ ...editingSection, badge_en: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -496,40 +534,65 @@ export function HomepageManager({
               <div className="space-y-1 pt-1 border-t border-border">
                 <Label className="text-xs font-semibold flex items-center gap-1.5">
                   <ImageIcon className="w-3.5 h-3.5 text-primary" />
-                  <span>{isAr ? "صورة الخلفية / الغلاف للقسم" : "Section Background / Cover Photo"}</span>
+                  <span>
+                    {isAr ? "صورة الخلفية / الغلاف للقسم" : "Section Background / Cover Photo"}
+                  </span>
                 </Label>
                 <ImageUploadInput
                   bucket="site-media"
                   value={editingSection.image_path}
                   onChange={(url) => setEditingSection({ ...editingSection, image_path: url })}
-                  placeholder={isAr ? "رابط الصورة أو ارفع صورة جديدة..." : "Image URL or upload..."}
-                  helperText={isAr ? "صورة الغلاف أو الخلفية الظاهرة لهذا القسم في الصفحة الرئيسية" : "Cover or background image displayed in this section"}
+                  placeholder={
+                    isAr ? "رابط الصورة أو ارفع صورة جديدة..." : "Image URL or upload..."
+                  }
+                  helperText={
+                    isAr
+                      ? "صورة الغلاف أو الخلفية الظاهرة لهذا القسم في الصفحة الرئيسية"
+                      : "Cover or background image displayed in this section"
+                  }
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <Label className="text-xs">{isAr ? "نص زر الإجراء (CTA AR)" : "CTA Button Label (AR)"}</Label>
+                  <Label className="text-xs">
+                    {isAr ? "نص زر الإجراء (CTA AR)" : "CTA Button Label (AR)"}
+                  </Label>
                   <Input
                     value={editingSection.cta_label_ar ?? ""}
-                    onChange={(e) => setEditingSection({ ...editingSection, cta_label_ar: e.target.value })}
+                    onChange={(e) =>
+                      setEditingSection({ ...editingSection, cta_label_ar: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">{isAr ? "رابط الزر (URL)" : "CTA URL"}</Label>
                   <Input
                     value={editingSection.cta_url ?? ""}
-                    onChange={(e) => setEditingSection({ ...editingSection, cta_url: e.target.value })}
+                    onChange={(e) =>
+                      setEditingSection({ ...editingSection, cta_url: e.target.value })
+                    }
                   />
                 </div>
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" size="sm" onClick={() => setEditModalOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditModalOpen(false)}
+                >
                   {isAr ? "إلغاء" : "Cancel"}
                 </Button>
                 <Button type="submit" size="sm" disabled={saving}>
-                  {saving ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ التعديلات" : "Save Changes"}
+                  {saving
+                    ? isAr
+                      ? "جاري الحفظ..."
+                      : "Saving..."
+                    : isAr
+                      ? "حفظ التعديلات"
+                      : "Save Changes"}
                 </Button>
               </DialogFooter>
             </form>

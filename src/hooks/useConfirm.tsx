@@ -55,7 +55,8 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     setOptions(null);
   };
 
-  const defaultConfirmLabel = options?.tone === "destructive" ? (isAr ? "حذف" : "Delete") : isAr ? "تأكيد" : "Confirm";
+  const defaultConfirmLabel =
+    options?.tone === "destructive" ? (isAr ? "حذف" : "Delete") : isAr ? "تأكيد" : "Confirm";
 
   return (
     <ConfirmContext.Provider value={confirm}>
@@ -64,7 +65,9 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{options?.title}</AlertDialogTitle>
-            {options?.description && <AlertDialogDescription>{options.description}</AlertDialogDescription>}
+            {options?.description && (
+              <AlertDialogDescription>{options.description}</AlertDialogDescription>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => settle(false)}>

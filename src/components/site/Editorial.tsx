@@ -399,4 +399,3 @@ export function EditorialLink({
     </a>
   );
 }
-

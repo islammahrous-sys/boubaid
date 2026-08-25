@@ -29,9 +29,17 @@ export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
       { title: "الأخبار والبيانات الرسمية | آل بوعبيد" },
-      { name: "description", content: "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها ومبادراتها." },
+      {
+        name: "description",
+        content:
+          "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها ومبادراتها.",
+      },
       { property: "og:title", content: "أخبار آل بوعبيد" },
-      { property: "og:description", content: "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها ومبادراتها." },
+      {
+        property: "og:description",
+        content:
+          "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها ومبادراتها.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/news") },
     ],
@@ -147,7 +155,11 @@ function NewsPage() {
         <div className="container-page py-12 md:py-14">
           {/* Lead */}
           <article className="border-b border-border pb-12">
-            <Link to="/news/$slug" params={{ slug: lead.slug }} className="group active-scale block">
+            <Link
+              to="/news/$slug"
+              params={{ slug: lead.slug }}
+              className="group active-scale block"
+            >
               <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
                 <img
                   src={lead.image ?? newsImage(lead.slug)}
@@ -191,7 +203,11 @@ function NewsPage() {
               <div className="reveal-stagger mt-6 grid gap-x-12 md:grid-cols-2 lg:grid-cols-3">
                 {pagedRest.map((n) => (
                   <article key={n.slug} className="border-t border-border py-6">
-                    <Link to="/news/$slug" params={{ slug: n.slug }} className="group active-scale block">
+                    <Link
+                      to="/news/$slug"
+                      params={{ slug: n.slug }}
+                      className="group active-scale block"
+                    >
                       <div className="flex items-center gap-3">
                         <span className="label-caps text-bronze dark:text-gold">
                           {sectionLabel(n.section)}

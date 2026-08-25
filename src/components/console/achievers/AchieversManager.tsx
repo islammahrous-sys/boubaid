@@ -1,15 +1,39 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useConfirm } from "@/hooks/useConfirm";
-import { Plus, Edit2, Trash2, Award, ArrowLeft, ArrowRight, BookOpen, AlertCircle, TrendingUp, Loader2 } from "lucide-react";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Award,
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  AlertCircle,
+  TrendingUp,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
@@ -65,8 +89,8 @@ export function AchieversManager({
     is_published: true,
   });
 
-  const publishedCount = achievers.filter(a => a.is_published).length;
-  const draftCount = achievers.filter(a => !a.is_published).length;
+  const publishedCount = achievers.filter((a) => a.is_published).length;
+  const draftCount = achievers.filter((a) => !a.is_published).length;
 
   const filteredAchievers = achievers.filter((a) => {
     if (statusFilter === "all") return true;
@@ -132,9 +156,7 @@ export function AchieversManager({
     e.stopPropagation();
     if (
       !(await confirm({
-        title: isAr
-          ? `حذف سجل "${item.name_ar}"؟`
-          : `Delete "${item.name_ar}"?`,
+        title: isAr ? `حذف سجل "${item.name_ar}"؟` : `Delete "${item.name_ar}"?`,
         description: isAr
           ? "سيتم حذف هذا السجل من قائمة المتميزين ولوحة الشرف نهائيًا ولا يمكن التراجع عن هذا الإجراء."
           : "This achiever record will be permanently removed from the Achievers list and Roll of Honour. This can't be undone.",
@@ -154,7 +176,9 @@ export function AchieversManager({
             {isAr ? "لوحة شرف المتميزين" : "Roll of Honour"}
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {isAr ? "إدارة سجلات المتميزين والرواد في العائلة" : "Manage achievers and pioneers records"}
+            {isAr
+              ? "إدارة سجلات المتميزين والرواد في العائلة"
+              : "Manage achievers and pioneers records"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -162,11 +186,16 @@ export function AchieversManager({
             <div className="flex items-center gap-2 bg-amber-500/10 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-lg border border-amber-500/20 shadow-xs">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span className="text-sm font-bold">
-                {isAr ? `لديك ${draftCount} سجلات غير منشورة` : `You have ${draftCount} unpublished records`}
+                {isAr
+                  ? `لديك ${draftCount} سجلات غير منشورة`
+                  : `You have ${draftCount} unpublished records`}
               </span>
             </div>
           )}
-          <Button onClick={handleOpenAdd} className="h-10 px-5 gap-2 font-bold shadow-sm rounded-lg">
+          <Button
+            onClick={handleOpenAdd}
+            className="h-10 px-5 gap-2 font-bold shadow-sm rounded-lg"
+          >
             <Plus className="w-4 h-4" />
             {isAr ? "إضافة متميز جديد" : "Add New Achiever"}
           </Button>
@@ -175,24 +204,43 @@ export function AchieversManager({
 
       {/* 2. Needs Your Attention / Operational KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className={cn(
-          "p-5 rounded-2xl border bg-card relative overflow-hidden group transition-all",
-          draftCount > 0 ? "border-amber-500/30 shadow-sm" : "border-border"
-        )}>
-          {draftCount > 0 && <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />}
+        <div
+          className={cn(
+            "p-5 rounded-2xl border bg-card relative overflow-hidden group transition-all",
+            draftCount > 0 ? "border-amber-500/30 shadow-sm" : "border-border",
+          )}
+        >
+          {draftCount > 0 && (
+            <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+          )}
           <div className="flex flex-col h-full">
             <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-              <span className={cn("w-2 h-2 rounded-full", draftCount > 0 ? "bg-amber-500 animate-pulse" : "bg-muted-foreground")} />
+              <span
+                className={cn(
+                  "w-2 h-2 rounded-full",
+                  draftCount > 0 ? "bg-amber-500 animate-pulse" : "bg-muted-foreground",
+                )}
+              />
               {isAr ? "مسودات وسجلات مخفية" : "Drafts & Hidden Records"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{draftCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "سجل" : "records"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {draftCount}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "سجل" : "records"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("draft")}
               className="text-xs font-bold text-primary flex items-center gap-1 hover:gap-2 transition-all w-fit"
             >
-              {isAr ? "مراجعة المسودات" : "Review Drafts"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "مراجعة المسودات" : "Review Drafts"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -205,13 +253,23 @@ export function AchieversManager({
               {isAr ? "السجلات المنشورة" : "Published Records"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{publishedCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "سجل" : "records"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {publishedCount}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "سجل" : "records"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("published")}
               className="text-xs font-bold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors w-fit"
             >
-              {isAr ? "عرض المنشورات" : "View Published"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "عرض المنشورات" : "View Published"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -224,13 +282,23 @@ export function AchieversManager({
               {isAr ? "إجمالي رواد العائلة" : "Total Pioneers"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{achievers.length} <span className="text-sm font-normal text-muted-foreground">{isAr ? "رائد" : "pioneers"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {achievers.length}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "رائد" : "pioneers"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("all")}
               className="text-xs font-bold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors w-fit"
             >
-              {isAr ? "عرض الكل" : "View All"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "عرض الكل" : "View All"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -240,26 +308,50 @@ export function AchieversManager({
       <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
         <div className="border-b border-border p-2 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/20">
           <div className="flex items-center gap-4 text-sm font-medium overflow-x-auto no-scrollbar">
-            <button 
+            <button
               onClick={() => setStatusFilter("all")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "all" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "all"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "الكل" : "All"} <span className="text-[10px] font-mono opacity-60 ml-1">({achievers.length})</span>
-              {statusFilter === "all" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "الكل" : "All"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({achievers.length})</span>
+              {statusFilter === "all" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setStatusFilter("published")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "published" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "published"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "منشور" : "Published"} <span className="text-[10px] font-mono opacity-60 ml-1">({publishedCount})</span>
-              {statusFilter === "published" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "منشور" : "Published"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({publishedCount})</span>
+              {statusFilter === "published" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setStatusFilter("draft")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "draft" ? "text-primary font-bold" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "draft"
+                  ? "text-primary font-bold"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "مسودات" : "Drafts"} <span className="text-[10px] font-mono opacity-60 ml-1">({draftCount})</span>
-              {statusFilter === "draft" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "مسودات" : "Drafts"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({draftCount})</span>
+              {statusFilter === "draft" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
           </div>
         </div>
@@ -269,10 +361,14 @@ export function AchieversManager({
           <TableHeader>
             <TableRow className="hover:bg-transparent border-border">
               <TableHead className="font-semibold">{isAr ? "المتميز" : "Achiever"}</TableHead>
-              <TableHead className="font-semibold">{isAr ? "المجال والإنجاز" : "Field & Achievement"}</TableHead>
+              <TableHead className="font-semibold">
+                {isAr ? "المجال والإنجاز" : "Field & Achievement"}
+              </TableHead>
               <TableHead className="font-semibold">{isAr ? "الفرع" : "Branch"}</TableHead>
               <TableHead className="font-semibold">{isAr ? "الترتيب" : "Order"}</TableHead>
-              <TableHead className="font-semibold text-end">{isAr ? "الإجراء" : "Action"}</TableHead>
+              <TableHead className="font-semibold text-end">
+                {isAr ? "الإجراء" : "Action"}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -281,13 +377,19 @@ export function AchieversManager({
                 <TableCell colSpan={5} className="h-48 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Award className="w-8 h-8 mb-3 opacity-20" />
-                    <p className="text-sm font-medium">{isAr ? "لا توجد سجلات في هذه القائمة" : "No records found"}</p>
+                    <p className="text-sm font-medium">
+                      {isAr ? "لا توجد سجلات في هذه القائمة" : "No records found"}
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
             ) : (
               filteredAchievers.map((item) => (
-                <TableRow key={item.id} className="group cursor-pointer hover:bg-muted/30" onClick={() => handleOpenEdit(item)}>
+                <TableRow
+                  key={item.id}
+                  className="group cursor-pointer hover:bg-muted/30"
+                  onClick={() => handleOpenEdit(item)}
+                >
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <SaudiCulturalAvatar src={item.image_path} alt={item.name_ar} size="sm" />
@@ -295,18 +397,27 @@ export function AchieversManager({
                         <div className="font-bold text-foreground flex items-center gap-2">
                           {item.name_ar}
                           {!item.is_published && (
-                            <Badge variant="outline" className="text-[9px] bg-amber-500/10 text-amber-600 border-amber-500/20 px-1 py-0 h-4">
+                            <Badge
+                              variant="outline"
+                              className="text-[9px] bg-amber-500/10 text-amber-600 border-amber-500/20 px-1 py-0 h-4"
+                            >
                               {isAr ? "مسودة" : "Draft"}
                             </Badge>
                           )}
                         </div>
-                        {item.name_en && <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">{item.name_en}</div>}
+                        {item.name_en && (
+                          <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">
+                            {item.name_en}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="max-w-[250px]">
                     <div className="font-medium text-foreground truncate">{item.field_ar}</div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5 truncate">{item.achievement_ar}</div>
+                    <div className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                      {item.achievement_ar}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm font-medium">{item.branch_ar || "—"}</div>
@@ -346,43 +457,65 @@ export function AchieversManager({
 
       {/* 5. Contextual Side Drawer for Add/Edit */}
       <Sheet open={formOpen} onOpenChange={setFormOpen}>
-        <SheetContent side={isAr ? "left" : "right"} className="w-full sm:max-w-md p-0 flex flex-col border-border gap-0 bg-background overflow-hidden">
+        <SheetContent
+          side={isAr ? "left" : "right"}
+          className="w-full sm:max-w-md p-0 flex flex-col border-border gap-0 bg-background overflow-hidden"
+        >
           <div className="px-6 py-5 border-b border-border bg-muted/10 flex items-center justify-between z-10">
             <div>
               <SheetTitle className="text-lg font-bold">
-                {selectedAchiever ? (isAr ? "تعديل سجل متميز" : "Edit Achiever") : isAr ? "إضافة متميز جديد" : "Add Achiever"}
+                {selectedAchiever
+                  ? isAr
+                    ? "تعديل سجل متميز"
+                    : "Edit Achiever"
+                  : isAr
+                    ? "إضافة متميز جديد"
+                    : "Add Achiever"}
               </SheetTitle>
               <SheetDescription className="text-xs font-mono mt-1">
-                {selectedAchiever ? `ID: ${selectedAchiever.id.split("-")[0]}` : (isAr ? "سجل جديد" : "New Record")}
+                {selectedAchiever
+                  ? `ID: ${selectedAchiever.id.split("-")[0]}`
+                  : isAr
+                    ? "سجل جديد"
+                    : "New Record"}
               </SheetDescription>
             </div>
-            
+
             {/* Visibility Toggle built into header */}
             <div className="flex items-center gap-2">
-              <Label className="text-xs font-bold text-muted-foreground">{isAr ? "منشور" : "Published"}</Label>
-              <Switch 
+              <Label className="text-xs font-bold text-muted-foreground">
+                {isAr ? "منشور" : "Published"}
+              </Label>
+              <Switch
                 checked={form.is_published}
                 onCheckedChange={(c) => setForm({ ...form, is_published: c })}
               />
             </div>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
             <form id="achiever-form" onSubmit={handleSubmit} className="space-y-6">
-              
               <ImageUploadInput
                 label={isAr ? "صورة الشخصية / المكرم" : "Honouree Photo"}
                 value={form.image_path}
                 onChange={(url) => setForm({ ...form, image_path: url })}
                 bucket="family-photos"
-                helperText={isAr ? "تظهر في لوحة الشرف وقائمة المتميزين" : "Appears on Roll of Honour and Achievers cards"}
+                helperText={
+                  isAr
+                    ? "تظهر في لوحة الشرف وقائمة المتميزين"
+                    : "Appears on Roll of Honour and Achievers cards"
+                }
               />
 
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">{isAr ? "المعلومات الأساسية" : "Basic Info"}</h4>
+                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">
+                  {isAr ? "المعلومات الأساسية" : "Basic Info"}
+                </h4>
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "الاسم الكامل (بالعربية) *" : "Full Name (AR) *"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "الاسم الكامل (بالعربية) *" : "Full Name (AR) *"}
+                    </Label>
                     <Input
                       required
                       value={form.name_ar}
@@ -392,7 +525,9 @@ export function AchieversManager({
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "الاسم (EN)" : "Full Name (EN)"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "الاسم (EN)" : "Full Name (EN)"}
+                    </Label>
                     <Input
                       value={form.name_en ?? ""}
                       onChange={(e) => setForm({ ...form, name_en: e.target.value })}
@@ -403,11 +538,15 @@ export function AchieversManager({
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">{isAr ? "التخصص والإنجاز" : "Field & Achievement"}</h4>
+                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">
+                  {isAr ? "التخصص والإنجاز" : "Field & Achievement"}
+                </h4>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-bold">{isAr ? "المجال (AR)" : "Field (AR)"}</Label>
+                      <Label className="text-xs font-bold">
+                        {isAr ? "المجال (AR)" : "Field (AR)"}
+                      </Label>
                       <Input
                         value={form.field_ar ?? ""}
                         onChange={(e) => setForm({ ...form, field_ar: e.target.value })}
@@ -416,7 +555,9 @@ export function AchieversManager({
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-bold">{isAr ? "المجال (EN)" : "Field (EN)"}</Label>
+                      <Label className="text-xs font-bold">
+                        {isAr ? "المجال (EN)" : "Field (EN)"}
+                      </Label>
                       <Input
                         value={form.field_en ?? ""}
                         onChange={(e) => setForm({ ...form, field_en: e.target.value })}
@@ -426,24 +567,41 @@ export function AchieversManager({
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "تصنيف التميز *" : "Category *"}</Label>
-                    <Select value={form.category} onValueChange={(value) => setForm({ ...form, category: value })}>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "تصنيف التميز *" : "Category *"}
+                    </Label>
+                    <Select
+                      value={form.category}
+                      onValueChange={(value) => setForm({ ...form, category: value })}
+                    >
                       <SelectTrigger className="h-10 text-xs bg-background">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="academic">{isAr ? "أكاديمي وتعليمي" : "Academic"}</SelectItem>
-                        <SelectItem value="medical">{isAr ? "طب وصحة" : "Medical & Health"}</SelectItem>
-                        <SelectItem value="military">{isAr ? "خدمة عسكرية ووطنية" : "Military & Defense"}</SelectItem>
-                        <SelectItem value="business">{isAr ? "أعمال وابتكار وتقنية" : "Business & Technology"}</SelectItem>
+                        <SelectItem value="academic">
+                          {isAr ? "أكاديمي وتعليمي" : "Academic"}
+                        </SelectItem>
+                        <SelectItem value="medical">
+                          {isAr ? "طب وصحة" : "Medical & Health"}
+                        </SelectItem>
+                        <SelectItem value="military">
+                          {isAr ? "خدمة عسكرية ووطنية" : "Military & Defense"}
+                        </SelectItem>
+                        <SelectItem value="business">
+                          {isAr ? "أعمال وابتكار وتقنية" : "Business & Technology"}
+                        </SelectItem>
                         <SelectItem value="sports">{isAr ? "رياضة وبطولات" : "Sports"}</SelectItem>
-                        <SelectItem value="public">{isAr ? "الخدمة العامة" : "Public Service"}</SelectItem>
+                        <SelectItem value="public">
+                          {isAr ? "الخدمة العامة" : "Public Service"}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "الإنجاز أو التميز العلمي" : "Achievement / Distinction"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "الإنجاز أو التميز العلمي" : "Achievement / Distinction"}
+                    </Label>
                     <Input
                       value={form.achievement_ar ?? ""}
                       onChange={(e) => setForm({ ...form, achievement_ar: e.target.value })}
@@ -455,10 +613,14 @@ export function AchieversManager({
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">{isAr ? "معلومات إضافية" : "Additional Info"}</h4>
+                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">
+                  {isAr ? "معلومات إضافية" : "Additional Info"}
+                </h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "فرع الأسرة" : "Family Branch"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "فرع الأسرة" : "Family Branch"}
+                    </Label>
                     <Input
                       value={form.branch_ar ?? ""}
                       onChange={(e) => setForm({ ...form, branch_ar: e.target.value })}
@@ -467,11 +629,15 @@ export function AchieversManager({
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "ترتيب الظهور" : "Sort Order"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "ترتيب الظهور" : "Sort Order"}
+                    </Label>
                     <Input
                       type="number"
                       value={form.sort_order}
-                      onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
+                      onChange={(e) =>
+                        setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })
+                      }
                       className="bg-background font-mono"
                     />
                   </div>
@@ -481,12 +647,28 @@ export function AchieversManager({
           </div>
 
           <div className="px-6 py-4 border-t border-border bg-muted/10 flex items-center justify-between gap-3">
-            <Button type="button" variant="outline" className="w-1/3 h-11 rounded-xl font-bold" onClick={() => setFormOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-1/3 h-11 rounded-xl font-bold"
+              onClick={() => setFormOpen(false)}
+            >
               {isAr ? "إلغاء" : "Cancel"}
             </Button>
-            <Button type="submit" form="achiever-form" disabled={loading} className="w-2/3 h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md">
+            <Button
+              type="submit"
+              form="achiever-form"
+              disabled={loading}
+              className="w-2/3 h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md"
+            >
               {loading ? <Loader2 className="w-4 h-4 animate-spin me-2" /> : null}
-              {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ السجل" : "Save Achiever"}
+              {loading
+                ? isAr
+                  ? "جاري الحفظ..."
+                  : "Saving..."
+                : isAr
+                  ? "حفظ السجل"
+                  : "Save Achiever"}
             </Button>
           </div>
         </SheetContent>

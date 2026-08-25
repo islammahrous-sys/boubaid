@@ -1,9 +1,28 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
 import { Shield, Search, Eye, Filter } from "lucide-react";
@@ -20,11 +39,7 @@ export type AuditLogRow = {
   created_at: string;
 };
 
-export function AuditLogsViewer({
-  auditLogs,
-}: {
-  auditLogs: AuditLogRow[];
-}) {
+export function AuditLogsViewer({ auditLogs }: { auditLogs: AuditLogRow[] }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
 
@@ -45,18 +60,42 @@ export function AuditLogsViewer({
   const getActionBadge = (action: string) => {
     switch (action) {
       case "create":
-        return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">CREATE</Badge>;
+        return (
+          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">
+            CREATE
+          </Badge>
+        );
       case "update":
-        return <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 text-[10px]">UPDATE</Badge>;
+        return (
+          <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 text-[10px]">
+            UPDATE
+          </Badge>
+        );
       case "delete":
       case "archive":
-        return <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-[10px]">DELETE</Badge>;
+        return (
+          <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-[10px]">
+            DELETE
+          </Badge>
+        );
       case "role_change":
-        return <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20 text-[10px]">ROLE</Badge>;
+        return (
+          <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20 text-[10px]">
+            ROLE
+          </Badge>
+        );
       case "publish":
-        return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px]">PUBLISH</Badge>;
+        return (
+          <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px]">
+            PUBLISH
+          </Badge>
+        );
       default:
-        return <Badge variant="outline" className="text-[10px]">{action.toUpperCase()}</Badge>;
+        return (
+          <Badge variant="outline" className="text-[10px]">
+            {action.toUpperCase()}
+          </Badge>
+        );
     }
   };
 
@@ -66,7 +105,9 @@ export function AuditLogsViewer({
         <div className="flex items-center gap-2.5">
           <Shield className="w-5 h-5 text-primary" />
           <h3 className="text-sm font-bold text-foreground">
-            {isAr ? "سجل الرقابة وتتبع العمليات (Audit Logs)" : "System Audit Logs & Security History"}
+            {isAr
+              ? "سجل الرقابة وتتبع العمليات (Audit Logs)"
+              : "System Audit Logs & Security History"}
           </h3>
         </div>
 
@@ -121,7 +162,9 @@ export function AuditLogsViewer({
               filteredLogs.map((log) => (
                 <TableRow key={log.id} className="text-xs hover:bg-muted/30">
                   <TableCell>{getActionBadge(log.action)}</TableCell>
-                  <TableCell className="font-mono text-foreground font-medium">{log.entity_type}</TableCell>
+                  <TableCell className="font-mono text-foreground font-medium">
+                    {log.entity_type}
+                  </TableCell>
                   <TableCell className="font-mono text-muted-foreground truncate max-w-[140px]">
                     {log.entity_id || "—"}
                   </TableCell>
@@ -159,12 +202,16 @@ export function AuditLogsViewer({
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-2 p-3 bg-muted/30 rounded-lg font-mono text-[11px]">
                 <div>
-                  <span className="text-muted-foreground block">{isAr ? "الكيان:" : "Entity:"}</span>
+                  <span className="text-muted-foreground block">
+                    {isAr ? "الكيان:" : "Entity:"}
+                  </span>
                   <span className="font-bold text-foreground">{selectedLog.entity_type}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground block">{isAr ? "التاريخ:" : "Date:"}</span>
-                  <span className="text-foreground">{new Date(selectedLog.created_at).toLocaleString()}</span>
+                  <span className="text-foreground">
+                    {new Date(selectedLog.created_at).toLocaleString()}
+                  </span>
                 </div>
               </div>
 
@@ -192,7 +239,12 @@ export function AuditLogsViewer({
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" size="sm" onClick={() => setSelectedLog(null)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedLog(null)}
+              >
                 {isAr ? "إغلاق" : "Close"}
               </Button>
             </DialogFooter>

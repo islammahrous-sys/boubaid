@@ -49,43 +49,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    // Which user id the `roles`/`profile` state currently describes. Supabase
+    // fires INITIAL_SESSION on mount and TOKEN_REFRESHED roughly hourly for
+    // the *same* user; without this both would re-run the two queries below
+    // for no new information. Cleared on failure so a later event retries.
+    let loadedFor: string | null = null;
 
     const loadRoles = async (userId: string | undefined) => {
       if (!userId) {
+        loadedFor = null;
         if (active) {
           setRoles([]);
           setProfile(null);
         }
         return;
       }
+      if (loadedFor === userId) return;
+      loadedFor = userId;
       try {
         const [rolesRes, profileRes] = await Promise.all([
           supabase.from("user_roles").select("role").eq("user_id", userId),
-          supabase.from("profiles").select("full_name_ar, full_name_en, avatar_path").eq("id", userId).maybeSingle(),
+          supabase
+            .from("profiles")
+            .select("full_name_ar, full_name_en, avatar_path")
+            .eq("id", userId)
+            .maybeSingle(),
         ]);
         if (!active) return;
+        if (rolesRes.error) throw rolesRes.error;
         setRoles(((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role));
         setProfile((profileRes.data as AuthProfile | null) ?? null);
       } catch (err) {
+        if (loadedFor === userId) loadedFor = null;
         console.error("Failed to load user roles:", err);
       }
+    };
+
+    /**
+     * `loading` has to stay true until the roles for the *current* user are
+     * in hand, not merely until the session is known. Consumers gate on it —
+     * the admin console renders "this area is for council administrators"
+     * whenever `canAccessConsole` is false — so flipping it to false with
+     * `roles` still empty flashes an access-denied screen at an admin who
+     * has just signed in.
+     */
+    const syncSession = async (next: Session | null) => {
+      if (!active) return;
+      setSession(next);
+      const userId = next?.user?.id;
+      if (userId && loadedFor !== userId) setLoading(true);
+      await loadRoles(userId);
+      if (active) setLoading(false);
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
       if (!active) return;
       // Defer state update to ensure component is fully mounted
       queueMicrotask(() => {
-        if (!active) return;
-        setSession(next);
-        void loadRoles(next?.user?.id);
+        void syncSession(next);
       });
     });
 
-    void supabase.auth.getSession().then(async ({ data }) => {
-      if (!active) return;
-      setSession(data.session);
-      await loadRoles(data.session?.user?.id);
-      if (active) setLoading(false);
+    void supabase.auth.getSession().then(({ data }) => {
+      void syncSession(data.session);
     });
 
     return () => {
@@ -105,10 +131,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isSuperAdmin: roles.includes("super_admin"),
       isMember: roles.length > 0,
       canAccessConsole: roles.some((r) =>
-        (["admin", "super_admin", "editor", "treasurer", "content_manager", "family_manager"] as AppRole[]).includes(r),
+        (
+          [
+            "admin",
+            "super_admin",
+            "editor",
+            "treasurer",
+            "content_manager",
+            "family_manager",
+          ] as AppRole[]
+        ).includes(r),
       ),
       signOut: async () => {
-        await supabase.auth.signOut();
+        const { error } = await supabase.auth.signOut();
+        if (!error) return;
+        // A global sign-out that fails (offline, or a refresh token the
+        // server has already revoked) must still clear *this* device —
+        // otherwise the console keeps rendering as signed-in against a
+        // session every subsequent request will reject.
+        console.error("Global sign-out failed, clearing local session:", error);
+        await supabase.auth.signOut({ scope: "local" });
       },
     }),
     [session, profile, roles, loading],

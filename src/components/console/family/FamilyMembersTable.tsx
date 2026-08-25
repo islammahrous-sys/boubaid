@@ -1,11 +1,30 @@
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import {
   Plus,
@@ -39,7 +58,11 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getFamilyMembersPaginated } from "@/lib/admin-hub.functions";
-import { FamilyMemberFormDialog, type BranchOption, type PlaceOption } from "./FamilyMemberFormDialog";
+import {
+  FamilyMemberFormDialog,
+  type BranchOption,
+  type PlaceOption,
+} from "./FamilyMemberFormDialog";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import type { FamilyMemberInput, BulkMembersActionInput } from "@/lib/admin-hub.schemas";
 import { toast } from "sonner";
@@ -84,7 +107,13 @@ export function FamilyMembersTable({
   onOpenImportExport,
   onBulkAction,
 }: {
-  initialStats?: { total: number; living: number; deceased: number; males?: number; females?: number };
+  initialStats?: {
+    total: number;
+    living: number;
+    deceased: number;
+    males?: number;
+    females?: number;
+  };
   branches: BranchOption[];
   places: PlaceOption[];
   onSaveMember: (data: FamilyMemberInput) => Promise<void>;
@@ -124,18 +153,26 @@ export function FamilyMembersTable({
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
 
   const fetchMembersPage = useServerFn(getFamilyMembersPaginated);
-  
+
   const { data: queryData, isLoading } = useQuery({
-    queryKey: ["family-members-paginated", currentPage, pageSize, search, branchFilter, livingFilter],
-    queryFn: () => fetchMembersPage({
-      data: {
-        page: currentPage,
-        pageSize,
-        search: search.trim() || undefined,
-        branchId: branchFilter === "all" ? undefined : branchFilter,
-        status: livingFilter === "all" ? undefined : livingFilter,
-      }
-    }),
+    queryKey: [
+      "family-members-paginated",
+      currentPage,
+      pageSize,
+      search,
+      branchFilter,
+      livingFilter,
+    ],
+    queryFn: () =>
+      fetchMembersPage({
+        data: {
+          page: currentPage,
+          pageSize,
+          search: search.trim() || undefined,
+          branchId: branchFilter === "all" ? undefined : branchFilter,
+          status: livingFilter === "all" ? undefined : livingFilter,
+        },
+      }),
     staleTime: 1000 * 60,
   });
 
@@ -143,14 +180,13 @@ export function FamilyMembersTable({
   const totalItems = queryData?.count ?? 0;
   const totalPages = Math.ceil(totalItems / pageSize) || 1;
 
-
   const branchMap = useMemo(() => {
     const map = new Map<string, string>();
     branches.forEach((b) => map.set(b.id, isAr ? b.name_ar : b.name_en || b.name_ar));
     return map;
   }, [branches, isAr]);
 
-  const generations = [1,2,3,4,5,6,7,8,9,10]; // Simplified for server pagination
+  const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Simplified for server pagination
 
   // Demographic Statistics
   const stats = {
@@ -235,7 +271,9 @@ export function FamilyMembersTable({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success(isAr ? `تم تصدير ${targetList.length} فرد بنجاح` : `Exported ${targetList.length} members`);
+    toast.success(
+      isAr ? `تم تصدير ${targetList.length} فرد بنجاح` : `Exported ${targetList.length} members`,
+    );
   };
 
   return (
@@ -296,7 +334,11 @@ export function FamilyMembersTable({
                 setSearch(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder={isAr ? "بحث بالاسم، اللقب، المهنة، أو المعرف..." : "Search by name, occupation, or slug..."}
+              placeholder={
+                isAr
+                  ? "بحث بالاسم، اللقب، المهنة، أو المعرف..."
+                  : "Search by name, occupation, or slug..."
+              }
               className="ps-9 h-9 text-xs rounded-xl"
             />
           </div>
@@ -441,7 +483,12 @@ export function FamilyMembersTable({
           </Select>
 
           {/* Reset Filters */}
-          {(search || branchFilter !== "all" || livingFilter !== "all" || generationFilter !== "all" || genderFilter !== "all" || visibilityFilter !== "all") && (
+          {(search ||
+            branchFilter !== "all" ||
+            livingFilter !== "all" ||
+            generationFilter !== "all" ||
+            genderFilter !== "all" ||
+            visibilityFilter !== "all") && (
             <Button
               variant="ghost"
               size="sm"
@@ -462,7 +509,9 @@ export function FamilyMembersTable({
           )}
 
           <div className="ms-auto text-xs text-muted-foreground font-mono">
-            {isAr ? `النتائج: ${filteredMembers.length} من أصل ${totalItems}` : `${filteredMembers.length} of ${totalItems} members`}
+            {isAr
+              ? `النتائج: ${filteredMembers.length} من أصل ${totalItems}`
+              : `${filteredMembers.length} of ${totalItems} members`}
           </div>
         </div>
       </div>
@@ -473,7 +522,9 @@ export function FamilyMembersTable({
           <div className="flex items-center gap-2">
             <CheckSquare className="w-4 h-4 text-primary" />
             <span className="text-xs font-bold text-foreground">
-              {isAr ? `تم تحديد ${selectedMemberIds.length} فرد` : `${selectedMemberIds.length} members selected`}
+              {isAr
+                ? `تم تحديد ${selectedMemberIds.length} فرد`
+                : `${selectedMemberIds.length} members selected`}
             </span>
           </div>
 
@@ -509,7 +560,9 @@ export function FamilyMembersTable({
                     });
                     setSelectedMemberIds([]);
                     setTargetBulkBranch("");
-                    toast.success(isAr ? "تم نقل الأفراد للفرع المحدد بنجاح" : "Members moved to branch");
+                    toast.success(
+                      isAr ? "تم نقل الأفراد للفرع المحدد بنجاح" : "Members moved to branch",
+                    );
                   } finally {
                     setBulkLoading(false);
                   }
@@ -636,7 +689,9 @@ export function FamilyMembersTable({
                   }
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      const newIds = Array.from(new Set([...selectedMemberIds, ...paginatedMembers.map((m) => m.id)]));
+                      const newIds = Array.from(
+                        new Set([...selectedMemberIds, ...paginatedMembers.map((m) => m.id)]),
+                      );
                       setSelectedMemberIds(newIds);
                     } else {
                       const pageIds = paginatedMembers.map((m) => m.id);
@@ -655,7 +710,11 @@ export function FamilyMembersTable({
                 <div className="flex items-center gap-1.5">
                   <span>{isAr ? "الاسم الكامل" : "Full Name"}</span>
                   {sortField === "name" ? (
-                    sortDirection === "asc" ? <ArrowUp className="w-3 h-3 text-primary" /> : <ArrowDown className="w-3 h-3 text-primary" />
+                    sortDirection === "asc" ? (
+                      <ArrowUp className="w-3 h-3 text-primary" />
+                    ) : (
+                      <ArrowDown className="w-3 h-3 text-primary" />
+                    )
                   ) : (
                     <ArrowUpDown className="w-3 h-3 text-muted-foreground/40" />
                   )}
@@ -670,7 +729,11 @@ export function FamilyMembersTable({
                 <div className="flex items-center gap-1.5">
                   <span>{isAr ? "الفرع" : "Branch"}</span>
                   {sortField === "branch" ? (
-                    sortDirection === "asc" ? <ArrowUp className="w-3 h-3 text-primary" /> : <ArrowDown className="w-3 h-3 text-primary" />
+                    sortDirection === "asc" ? (
+                      <ArrowUp className="w-3 h-3 text-primary" />
+                    ) : (
+                      <ArrowDown className="w-3 h-3 text-primary" />
+                    )
                   ) : (
                     <ArrowUpDown className="w-3 h-3 text-muted-foreground/40" />
                   )}
@@ -685,7 +748,11 @@ export function FamilyMembersTable({
                 <div className="flex items-center justify-center gap-1">
                   <span>{isAr ? "الجيل" : "Gen"}</span>
                   {sortField === "generation" ? (
-                    sortDirection === "asc" ? <ArrowUp className="w-3 h-3 text-primary" /> : <ArrowDown className="w-3 h-3 text-primary" />
+                    sortDirection === "asc" ? (
+                      <ArrowUp className="w-3 h-3 text-primary" />
+                    ) : (
+                      <ArrowDown className="w-3 h-3 text-primary" />
+                    )
                   ) : (
                     <ArrowUpDown className="w-3 h-3 text-muted-foreground/40" />
                   )}
@@ -700,7 +767,11 @@ export function FamilyMembersTable({
                 <div className="flex items-center justify-center gap-1">
                   <span>{isAr ? "الحياة" : "Living"}</span>
                   {sortField === "living" ? (
-                    sortDirection === "asc" ? <ArrowUp className="w-3 h-3 text-primary" /> : <ArrowDown className="w-3 h-3 text-primary" />
+                    sortDirection === "asc" ? (
+                      <ArrowUp className="w-3 h-3 text-primary" />
+                    ) : (
+                      <ArrowDown className="w-3 h-3 text-primary" />
+                    )
                   ) : (
                     <ArrowUpDown className="w-3 h-3 text-muted-foreground/40" />
                   )}
@@ -715,7 +786,11 @@ export function FamilyMembersTable({
                 <div className="flex items-center justify-center gap-1">
                   <span>{isAr ? "الظهور" : "Visibility"}</span>
                   {sortField === "visibility" ? (
-                    sortDirection === "asc" ? <ArrowUp className="w-3 h-3 text-primary" /> : <ArrowDown className="w-3 h-3 text-primary" />
+                    sortDirection === "asc" ? (
+                      <ArrowUp className="w-3 h-3 text-primary" />
+                    ) : (
+                      <ArrowDown className="w-3 h-3 text-primary" />
+                    )
                   ) : (
                     <ArrowUpDown className="w-3 h-3 text-muted-foreground/40" />
                   )}
@@ -737,7 +812,9 @@ export function FamilyMembersTable({
             {!isLoading && paginatedMembers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-36 text-center text-muted-foreground text-xs">
-                  {isAr ? "لا يوجد أفراد مسجلون بهذه المعايير" : "No family members found matching criteria"}
+                  {isAr
+                    ? "لا يوجد أفراد مسجلون بهذه المعايير"
+                    : "No family members found matching criteria"}
                 </TableCell>
               </TableRow>
             ) : (
@@ -776,7 +853,9 @@ export function FamilyMembersTable({
                   <TableCell>
                     <div className="cursor-pointer" onClick={() => setQuickViewMember(member)}>
                       <span className="font-bold text-foreground hover:text-primary transition-colors">
-                        {member.first_name_ar} {member.middle_name_ar ? member.middle_name_ar + " " : ""}{member.last_name_ar}
+                        {member.first_name_ar}{" "}
+                        {member.middle_name_ar ? member.middle_name_ar + " " : ""}
+                        {member.last_name_ar}
                       </span>
                       {member.first_name_en && (
                         <span className="block text-[11px] text-muted-foreground font-mono">
@@ -789,7 +868,10 @@ export function FamilyMembersTable({
                   {/* Branch */}
                   <TableCell>
                     {member.branch_id && branchMap.has(member.branch_id) ? (
-                      <Badge variant="outline" className="text-[11px] font-normal border-primary/30 text-primary">
+                      <Badge
+                        variant="outline"
+                        className="text-[11px] font-normal border-primary/30 text-primary"
+                      >
                         {branchMap.get(member.branch_id)}
                       </Badge>
                     ) : (
@@ -1000,7 +1082,13 @@ export function FamilyMembersTable({
               <DialogTitle className="text-base font-bold flex items-center justify-between">
                 <span>{isAr ? "بطاقة فرد الأسرة" : "Member Profile Card"}</span>
                 <Badge variant={quickViewMember.is_living ? "default" : "secondary"}>
-                  {quickViewMember.is_living ? (isAr ? "على قيد الحياة" : "Living") : (isAr ? "متوفى" : "Deceased")}
+                  {quickViewMember.is_living
+                    ? isAr
+                      ? "على قيد الحياة"
+                      : "Living"
+                    : isAr
+                      ? "متوفى"
+                      : "Deceased"}
                 </Badge>
               </DialogTitle>
             </DialogHeader>
@@ -1016,7 +1104,9 @@ export function FamilyMembersTable({
                 />
                 <div>
                   <h4 className="text-sm font-black text-foreground">
-                    {quickViewMember.first_name_ar} {quickViewMember.middle_name_ar ? quickViewMember.middle_name_ar + " " : ""}{quickViewMember.last_name_ar}
+                    {quickViewMember.first_name_ar}{" "}
+                    {quickViewMember.middle_name_ar ? quickViewMember.middle_name_ar + " " : ""}
+                    {quickViewMember.last_name_ar}
                   </h4>
                   {quickViewMember.first_name_en && (
                     <span className="text-xs text-muted-foreground font-mono block">

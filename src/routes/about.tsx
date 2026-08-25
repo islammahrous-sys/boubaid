@@ -16,9 +16,17 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "النسب والتاريخ | أسرة آل بوعبيد — الأحساء" },
-      { name: "description", content: "التاريخ والنسب الموثق لأسرة آل بوعبيد، هجرتهم واستقرارهم بالمبرز بالأحساء، وتفرعهم من بني تميم." },
+      {
+        name: "description",
+        content:
+          "التاريخ والنسب الموثق لأسرة آل بوعبيد، هجرتهم واستقرارهم بالمبرز بالأحساء، وتفرعهم من بني تميم.",
+      },
       { property: "og:title", content: "النسب والتاريخ — آل بوعبيد" },
-      { property: "og:description", content: "نسب أسرة آل بوعبيد من العبادل من بني تميم، وهجرتهم واستقرارهم في المبرز بالأحساء، وأقدم وثائقهم." },
+      {
+        property: "og:description",
+        content:
+          "نسب أسرة آل بوعبيد من العبادل من بني تميم، وهجرتهم واستقرارهم في المبرز بالأحساء، وأقدم وثائقهم.",
+      },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/about") },
     ],
@@ -146,7 +154,6 @@ const railSections: RailSection[] = [
   { id: "plates", label: { ar: "اللوحات", en: "Plates" } },
   { id: "bibliography", label: { ar: "المراجع", en: "Bibliography" } },
 ];
-
 
 function AboutPage() {
   const { t, lang } = useLang();
@@ -289,7 +296,10 @@ function AboutPage() {
       </section>
 
       {/* ── The nasab column — this page's signature ─────────── */}
-      <section id="chain" className="scroll-mt-28 border-y border-border bg-secondary/40 reveal-on-scroll">
+      <section
+        id="chain"
+        className="scroll-mt-28 border-y border-border bg-secondary/40 reveal-on-scroll"
+      >
         <div className="container-page py-16 md:py-20">
           <SectionHeading
             align="center"
@@ -361,7 +371,10 @@ function AboutPage() {
       </section>
 
       {history.length > 0 && (
-        <section id="timeline" className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll border-t border-border">
+        <section
+          id="timeline"
+          className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll border-t border-border"
+        >
           <SectionHeading
             eyebrow={rtl ? "المحطات والشواهد" : "Milestones & Records"}
             title={rtl ? "المحطات التاريخية والوقائع الموثقة" : "Documented Historical Milestones"}
@@ -374,26 +387,35 @@ function AboutPage() {
 
           <div className="mt-12 space-y-8 relative before:absolute before:inset-0 before:start-4 before:w-0.5 before:bg-border md:before:start-1/2">
             {history.map((entry, idx) => (
-              <div key={entry.id || idx} className="relative flex flex-col md:flex-row items-start gap-6 group">
+              <div
+                key={entry.id || idx}
+                className="relative flex flex-col md:flex-row items-start gap-6 group"
+              >
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-background border-2 border-bronze dark:border-gold z-10 shrink-0 font-mono text-xs font-bold text-bronze dark:text-gold md:absolute md:start-1/2 md:-translate-x-1/2">
                   {idx + 1}
                 </div>
 
-                <div className={`w-full md:w-[46%] ${idx % 2 === 0 ? "md:me-auto md:text-end" : "md:ms-auto md:text-start"} bg-card border border-border p-6 rounded-xl shadow-xs`}>
+                <div
+                  className={`w-full md:w-[46%] ${idx % 2 === 0 ? "md:me-auto md:text-end" : "md:ms-auto md:text-start"} bg-card border border-border p-6 rounded-xl shadow-xs`}
+                >
                   {entry.date_text_ar && (
                     <span className="inline-block px-2.5 py-1 text-xs font-mono font-bold rounded-md bg-secondary text-bronze dark:text-gold mb-3">
-                      {rtl ? entry.date_text_ar : (entry.date_text_en || entry.date_text_ar)}
+                      {rtl ? entry.date_text_ar : entry.date_text_en || entry.date_text_ar}
                     </span>
                   )}
                   <h3 className="font-brand text-lg font-bold text-foreground">
-                    {rtl ? entry.title_ar : (entry.title_en || entry.title_ar)}
+                    {rtl ? entry.title_ar : entry.title_en || entry.title_ar}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {rtl ? entry.description_ar : (entry.description_en || entry.description_ar)}
+                    {rtl ? entry.description_ar : entry.description_en || entry.description_ar}
                   </p>
                   {entry.media_path && (
                     <div className="mt-4 overflow-hidden rounded-lg border border-border">
-                      <img src={entry.media_path} alt="" className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300" />
+                      <img
+                        src={entry.media_path}
+                        alt=""
+                        className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
                   )}
                 </div>
@@ -429,7 +451,10 @@ function AboutPage() {
       </section>
 
       {/* ── Bibliography ─────────────────────────────────────── */}
-      <section id="bibliography" className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll">
+      <section
+        id="bibliography"
+        className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll"
+      >
         <Eyebrow>{t(copy.biblioTitle)}</Eyebrow>
 
         <ol className="mt-6 max-w-3xl border-t border-border">

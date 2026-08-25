@@ -17,9 +17,17 @@ export const Route = createFileRoute("/branches")({
   head: () => ({
     meta: [
       { title: "الفروع السبعة | أسرة آل بوعبيد" },
-      { name: "description", content: "سجل الفروع السبعة الموثقة لأسرة آل بوعبيد: الجد الجامع لكل فرع، أفرعه الداخلية، مناطق استقراره، وأعلامه." },
+      {
+        name: "description",
+        content:
+          "سجل الفروع السبعة الموثقة لأسرة آل بوعبيد: الجد الجامع لكل فرع، أفرعه الداخلية، مناطق استقراره، وأعلامه.",
+      },
       { property: "og:title", content: "الفروع السبعة — آل بوعبيد" },
-      { property: "og:description", content: "الفروع السبعة الموثقة لأسرة آل بوعبيد: الجد الجامع لكل فرع، أفرعه الداخلية، ومناطق استقراره وأعلامه." },
+      {
+        property: "og:description",
+        content:
+          "الفروع السبعة الموثقة لأسرة آل بوعبيد: الجد الجامع لكل فرع، أفرعه الداخلية، ومناطق استقراره وأعلامه.",
+      },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/branches") },
     ],
@@ -231,7 +239,7 @@ function BranchesPage() {
                   holds a dedicated portrait of the patriarch it is used in
                   place of the generic branch plate, never in addition to it. */}
               <div className="lg:sticky lg:top-32 lg:self-start">
-                <figure>
+                <figure className="max-w-[16rem] mx-auto sm:max-w-none">
                   <div className="plate-frame">
                     <img
                       src={branchPortraits[b.id] || b.image || "/images/sheikh-mohammed-ahmed.png"}
@@ -243,7 +251,7 @@ function BranchesPage() {
                       loading="lazy"
                     />
                   </div>
-                  <figcaption className="nums label-caps mt-2.5 border-t border-border pt-2.5 text-bronze dark:text-gold">
+                  <figcaption className="nums label-caps mt-2.5 border-t border-border pt-2.5 text-bronze dark:text-gold text-center sm:text-start">
                     {t(copy.entryLabel)} {rtl ? (ordinals[i] ?? String(i + 1)) : `0${i + 1}`}
                   </figcaption>
                 </figure>
@@ -403,7 +411,11 @@ function BranchesPage() {
             </div>
           ) : null}
           <div className="mt-4 flex justify-between items-center text-xs text-muted-foreground">
-            <span>{rtl ? "حقوق اللوحة محفوظة لمجلس أسرة آل بوعبيد" : "Copyright © Al Bu Obaid Family Council"}</span>
+            <span>
+              {rtl
+                ? "حقوق اللوحة محفوظة لمجلس أسرة آل بوعبيد"
+                : "Copyright © Al Bu Obaid Family Council"}
+            </span>
             {activePoster ? (
               <a
                 href={activePoster.url}

@@ -9,7 +9,13 @@ import { getPublishedEvents, submitEventRegistration } from "@/lib/events-public
 import type { PublicEventRow } from "@/lib/events-public.functions";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Status } from "@/components/site/Editorial";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -92,7 +98,10 @@ const copy = {
     ar: "تعذّر إتمام التسجيل. يرجى المحاولة مرة أخرى.",
     en: "Registration could not be completed. Please try again.",
   } as BiText,
-  invalid: { ar: "يرجى مراجعة الحقول المطلوبة.", en: "Please check the required fields." } as BiText,
+  invalid: {
+    ar: "يرجى مراجعة الحقول المطلوبة.",
+    en: "Please check the required fields.",
+  } as BiText,
 };
 
 function formatEventDate(iso: string, lang: "ar" | "en", timezone: string) {
@@ -142,11 +151,7 @@ function EventsPage() {
         ) : (
           <ol className="reveal-stagger grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {events.map((evt) => (
-              <EventCard
-                key={evt.id}
-                event={evt}
-                onRegister={() => setActiveEvent(evt)}
-              />
+              <EventCard key={evt.id} event={evt} onRegister={() => setActiveEvent(evt)} />
             ))}
           </ol>
         )}
@@ -162,13 +167,7 @@ function EventsPage() {
   );
 }
 
-function EventCard({
-  event,
-  onRegister,
-}: {
-  event: PublicEventRow;
-  onRegister: () => void;
-}) {
+function EventCard({ event, onRegister }: { event: PublicEventRow; onRegister: () => void }) {
   const { t, lang } = useLang();
   const location = placeLabel(event.place, lang);
 
@@ -192,9 +191,11 @@ function EventCard({
           <span className="nums">{formatEventDate(event.start_at, lang, event.timezone)}</span>
         </div>
 
-        <h3 className="mt-3 text-lg leading-snug text-foreground">{t({ ar: event.title_ar, en: event.title_en || event.title_ar })}</h3>
+        <h3 className="mt-3 text-lg leading-snug text-foreground">
+          {t({ ar: event.title_ar, en: event.title_en || event.title_ar })}
+        </h3>
 
-        {(event.description_ar || event.description_en) ? (
+        {event.description_ar || event.description_en ? (
           <p className="mt-2.5 line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">
             {t({
               ar: event.description_ar || "",
@@ -318,7 +319,13 @@ function RegistrationDialog({
               {/* Anti-bot honeypot field */}
               <div className="sr-only" aria-hidden="true">
                 <label htmlFor="website_url_check">Leave empty</label>
-                <input type="text" id="website_url_check" name="website_url_check" tabIndex={-1} autoComplete="off" />
+                <input
+                  type="text"
+                  id="website_url_check"
+                  name="website_url_check"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -328,7 +335,14 @@ function RegistrationDialog({
 
               <div className="space-y-1.5">
                 <Label htmlFor="reg_email">{t(copy.fieldEmail)}</Label>
-                <Input id="reg_email" name="email" type="email" required maxLength={255} dir="ltr" />
+                <Input
+                  id="reg_email"
+                  name="email"
+                  type="email"
+                  required
+                  maxLength={255}
+                  dir="ltr"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">

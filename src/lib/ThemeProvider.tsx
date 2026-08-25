@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    
+
     // Sync React state with the actual theme that was applied by the inline script
     const currentTheme = document.documentElement.classList.contains("dark") ? "dark" : "light";
     setThemeState(currentTheme);

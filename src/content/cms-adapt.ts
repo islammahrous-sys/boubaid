@@ -7,7 +7,6 @@ import type {
   NewsRow,
 } from "@/lib/cms.functions";
 
-
 /**
  * Adapter layer between the admin-managed CMS rows (Supabase) and the
  * exact shapes the public pages already consume from `src/content/site.ts`.
@@ -44,7 +43,6 @@ export function mapNewsRow(row: NewsRow): NewsItem {
   };
 }
 
-
 export function mergeNews(dbRows: NewsRow[], staticItems: NewsItem[]): NewsItem[] {
   const dbItems = dbRows.map(mapNewsRow);
   const dbSlugs = new Set(dbItems.map((i) => i.slug));
@@ -72,13 +70,13 @@ export function mapInitiativeRow(row: InitiativeRow): InitiativeItem {
   return {
     slug: row.slug,
     title: { ar: row.title_ar, en: row.title_en ?? row.title_ar },
-    status: row.status === "ongoing" ? "ongoing" : row.status === "completed" ? "completed" : "upcoming",
+    status:
+      row.status === "ongoing" ? "ongoing" : row.status === "completed" ? "completed" : "upcoming",
     summary: { ar: row.summary_ar ?? "", en: row.summary_en ?? row.summary_ar ?? "" },
     body: { ar: row.body_ar ?? "", en: row.body_en ?? row.body_ar ?? "" },
     image: row.cover_url ?? undefined,
   };
 }
-
 
 export function mergeInitiatives(
   dbRows: InitiativeRow[],
@@ -116,10 +114,7 @@ export function mapAchieverRow(row: AchieverRow): AchieverItem {
   };
 }
 
-export function mergeAchievers(
-  dbRows: AchieverRow[],
-  staticItems: AchieverItem[],
-): AchieverItem[] {
+export function mergeAchievers(dbRows: AchieverRow[], staticItems: AchieverItem[]): AchieverItem[] {
   const dbItems = dbRows.map(mapAchieverRow);
   const dbNames = new Set(dbItems.map((i) => i.name.ar));
   return [...dbItems, ...staticItems.filter((i) => !dbNames.has(i.name.ar))];
@@ -202,10 +197,7 @@ function mapLibraryVideoRow(row: LibraryRow): LibraryVideo {
  * what the admin console's Library form (LibraryItemsManager) lets an
  * editor pick, so this mapping must stay in lockstep with that form.
  */
-export function mergeLibrary(
-  dbRows: LibraryRow[],
-  staticItems: LibraryData,
-): LibraryData {
+export function mergeLibrary(dbRows: LibraryRow[], staticItems: LibraryData): LibraryData {
   const documentRows = dbRows.filter((r) => r.collection === "documents");
   const photoRows = dbRows.filter((r) => r.collection === "photographs");
   const videoRows = dbRows.filter((r) => r.collection === "recordings");
@@ -219,10 +211,7 @@ export function mergeLibrary(
   const videoKeys = new Set(dbVideos.map((v) => v.title.ar));
 
   return {
-    documents: [
-      ...dbDocuments,
-      ...staticItems.documents.filter((d) => !docKeys.has(d.title.ar)),
-    ],
+    documents: [...dbDocuments, ...staticItems.documents.filter((d) => !docKeys.has(d.title.ar))],
     photos: [...dbPhotos, ...staticItems.photos.filter((p) => !photoKeys.has(p.title.ar))],
     videos: [...dbVideos, ...staticItems.videos.filter((v) => !videoKeys.has(v.title.ar))],
   };
@@ -259,4 +248,3 @@ export function mergeBranches<T extends { slug: string }>(
   const dbSlugs = new Set(dbItems.map((b) => b.slug));
   return [...dbItems, ...staticItems.filter((b) => !dbSlugs.has(b.slug))];
 }
-

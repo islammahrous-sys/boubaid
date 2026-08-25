@@ -2,7 +2,13 @@ import { z } from "zod";
 
 export const genderSchema = z.enum(["male", "female"]);
 export const visibilityLevelSchema = z.enum(["public", "family_only", "admin_only", "private"]);
-export const recordStatusSchema = z.enum(["draft", "in_review", "scheduled", "published", "archived"]);
+export const recordStatusSchema = z.enum([
+  "draft",
+  "in_review",
+  "scheduled",
+  "published",
+  "archived",
+]);
 export const relationshipTypeSchema = z.enum(["parent", "child", "spouse"]);
 export const userStatusSchema = z.enum(["ACTIVE", "INVITED", "SUSPENDED", "DISABLED"]);
 
@@ -17,7 +23,11 @@ export const familyMemberInputSchema = z.object({
   middle_name_en: z.string().trim().optional().nullable(),
   last_name_en: z.string().trim().optional().nullable(),
   display_name_en: z.string().trim().optional().nullable(),
-  slug: z.string().trim().min(2, "المعرف الفريد (Slug) مطلوب").regex(/^[a-z0-9-]+$/i, "أحرف وأرقام وشرطات فقط"),
+  slug: z
+    .string()
+    .trim()
+    .min(2, "المعرف الفريد (Slug) مطلوب")
+    .regex(/^[a-z0-9-]+$/i, "أحرف وأرقام وشرطات فقط"),
   gender: genderSchema.default("male"),
   date_of_birth: z.string().optional().nullable(),
   date_of_death: z.string().optional().nullable(),
@@ -43,7 +53,11 @@ export type FamilyMemberInput = z.infer<typeof familyMemberInputSchema>;
 // 2. Family Branch Schema
 export const familyBranchInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().trim().min(2, "Slug is required").regex(/^[a-z0-9-]+$/i),
+  slug: z
+    .string()
+    .trim()
+    .min(2, "Slug is required")
+    .regex(/^[a-z0-9-]+$/i),
   name_ar: z.string().trim().min(2, "اسم الفرع بالعربية مطلوب"),
   name_en: z.string().trim().optional().nullable(),
   description_ar: z.string().optional().nullable(),
@@ -113,7 +127,11 @@ export type ContentSectionInput = z.infer<typeof contentSectionInputSchema>;
 // 7. Content Page Schema
 export const contentPageInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().trim().min(2, "Slug is required").regex(/^[a-z0-9-/]+$/i),
+  slug: z
+    .string()
+    .trim()
+    .min(2, "Slug is required")
+    .regex(/^[a-z0-9-/]+$/i),
   slug_ar: z.string().trim().optional().nullable(),
   title_ar: z.string().trim().min(2, "عنوان الصفحة بالعربية مطلوب"),
   title_en: z.string().trim().optional().nullable(),
@@ -152,7 +170,11 @@ export type NavigationItemInput = z.infer<typeof navigationItemInputSchema>;
 // 9. Articles Schema
 export const articleInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().trim().min(2, "Slug is required").regex(/^[a-z0-9-]+$/i),
+  slug: z
+    .string()
+    .trim()
+    .min(2, "Slug is required")
+    .regex(/^[a-z0-9-]+$/i),
   slug_ar: z.string().trim().optional().nullable(),
   title_ar: z.string().trim().min(2, "عنوان المقال مطلوب"),
   title_en: z.string().trim().optional().nullable(),
@@ -176,7 +198,11 @@ export type ArticleInput = z.infer<typeof articleInputSchema>;
 // 10. Events Schema
 export const eventInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().trim().min(2, "Slug is required").regex(/^[a-z0-9-]+$/i),
+  slug: z
+    .string()
+    .trim()
+    .min(2, "Slug is required")
+    .regex(/^[a-z0-9-]+$/i),
   title_ar: z.string().trim().min(2, "عنوان الفعالية مطلوب"),
   title_en: z.string().trim().optional().nullable(),
   description_ar: z.string().optional().nullable(),
@@ -216,7 +242,11 @@ export const mediaAssetInputSchema = z.object({
   file_name: z.string().min(1),
   original_file_name: z.string().optional().nullable(),
   mime_type: z.string().min(1),
-  file_size: z.number().int().min(0).max(10 * 1024 * 1024, "الحد الأقصى 10 ميغابايت"),
+  file_size: z
+    .number()
+    .int()
+    .min(0)
+    .max(10 * 1024 * 1024, "الحد الأقصى 10 ميغابايت"),
   width: z.number().int().optional().nullable(),
   height: z.number().int().optional().nullable(),
   alt_text_ar: z.string().optional().nullable(),
@@ -230,7 +260,11 @@ export type MediaAssetInput = z.infer<typeof mediaAssetInputSchema>;
 // 13. Gallery Schema
 export const galleryInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().trim().min(2).regex(/^[a-z0-9-]+$/i),
+  slug: z
+    .string()
+    .trim()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/i),
   title_ar: z.string().trim().min(2, "عنوان المعرض مطلوب"),
   title_en: z.string().trim().optional().nullable(),
   description_ar: z.string().optional().nullable(),
@@ -283,7 +317,11 @@ export type SiteSettingInput = z.infer<typeof siteSettingInputSchema>;
 // 17. Business Directory Schema
 export const businessInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().trim().min(2).regex(/^[a-z0-9-]+$/i, "أحرف وأرقام وشرطات فقط"),
+  slug: z
+    .string()
+    .trim()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/i, "أحرف وأرقام وشرطات فقط"),
   name_ar: z.string().trim().min(2, "اسم المنشأة بالعربية مطلوب"),
   name_en: z.string().trim().optional().nullable(),
   category_ar: z.string().trim().min(2, "القطاع بالعربية مطلوب"),
@@ -303,17 +341,24 @@ export const businessInputSchema = z.object({
 export type BusinessInput = z.infer<typeof businessInputSchema>;
 
 // 18. Membership Request Review Schema
+// A review decision is only ever "approved" or "rejected" — "pending" is the
+// initial state, and the `review_membership_request_as_admin` RPC rejects it
+// with a raw `Invalid membership review status` exception, so it is refused
+// here as a validation error instead.
 export const membershipRequestReviewSchema = z.object({
   id: z.string().uuid(),
-  status: z.enum(["pending", "approved", "rejected"]),
-  review_note: z.string().optional().nullable(),
+  status: z.enum(["approved", "rejected"]),
+  review_note: z.string().trim().max(2000).optional().nullable(),
 });
 export type MembershipRequestReviewInput = z.infer<typeof membershipRequestReviewSchema>;
 
 // 19. Treasury Contribution Review Schema
+/** Mirrors the live `contribution_status` Postgres enum. */
+export const contributionStatusSchema = z.enum(["pending", "verified", "rejected"]);
+
 export const treasuryContributionReviewSchema = z.object({
   id: z.string().uuid(),
-  status: z.enum(["pending", "verified", "rejected"]),
+  status: contributionStatusSchema,
   review_note: z.string().optional().nullable(),
 });
 export type TreasuryContributionReviewInput = z.infer<typeof treasuryContributionReviewSchema>;
@@ -321,7 +366,11 @@ export type TreasuryContributionReviewInput = z.infer<typeof treasuryContributio
 // 20. Initiative Schema
 export const initiativeInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().trim().min(2).regex(/^[a-z0-9-]+$/i),
+  slug: z
+    .string()
+    .trim()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/i),
   title_ar: z.string().trim().min(2, "عنوان المبادرة مطلوب"),
   title_en: z.string().trim().optional().nullable(),
   summary_ar: z.string().optional().nullable(),
@@ -444,41 +493,48 @@ export const dnaStudiesDataSchema = z.object({
   haplogroup: z.string().default("J-Z20777"),
   terminal_mutation: z.string().default("J-BY37877"),
   root_haplogroup: z.string().default("J1-M267"),
-  hierarchy: z.array(
-    z.object({
-      mutation: z.string(),
-      label_ar: z.string(),
-      label_en: z.string(),
-      description_ar: z.string().optional(),
-    })
-  ).default([]),
-  chronology: z.array(
-    z.object({
-      mutation: z.string(),
-      approx_date: z.string(),
-      tmrca: z.string(),
-      note_ar: z.string(),
-      note_en: z.string(),
-    })
-  ).default([]),
-  sibling_families: z.array(
-    z.object({
-      name_ar: z.string(),
-      name_en: z.string(),
-      origin_ar: z.string(),
-      origin_en: z.string(),
-      notes_ar: z.string().optional(),
-    })
-  ).default([]),
-  distribution: z.array(
-    z.object({
-      country_ar: z.string(),
-      country_en: z.string(),
-      samples_count: z.number().int(),
-      regions_ar: z.string(),
-      note_ar: z.string().optional(),
-    })
-  ).default([]),
+  hierarchy: z
+    .array(
+      z.object({
+        mutation: z.string(),
+        label_ar: z.string(),
+        label_en: z.string(),
+        description_ar: z.string().optional(),
+      }),
+    )
+    .default([]),
+  chronology: z
+    .array(
+      z.object({
+        mutation: z.string(),
+        approx_date: z.string(),
+        tmrca: z.string(),
+        note_ar: z.string(),
+        note_en: z.string(),
+      }),
+    )
+    .default([]),
+  sibling_families: z
+    .array(
+      z.object({
+        name_ar: z.string(),
+        name_en: z.string(),
+        origin_ar: z.string(),
+        origin_en: z.string(),
+        notes_ar: z.string().optional(),
+      }),
+    )
+    .default([]),
+  distribution: z
+    .array(
+      z.object({
+        country_ar: z.string(),
+        country_en: z.string(),
+        samples_count: z.number().int(),
+        regions_ar: z.string(),
+        note_ar: z.string().optional(),
+      }),
+    )
+    .default([]),
 });
 export type DnaStudiesDataInput = z.infer<typeof dnaStudiesDataSchema>;
-

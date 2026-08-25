@@ -1,16 +1,47 @@
 import { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Plus, Edit2, Trash2, Building2, UserCheck, Phone, Globe, ExternalLink, Check, X, ShieldAlert } from "lucide-react";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Building2,
+  UserCheck,
+  Phone,
+  Globe,
+  ExternalLink,
+  Check,
+  X,
+  ShieldAlert,
+} from "lucide-react";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { BusinessInput, MembershipRequestReviewInput } from "@/lib/admin-hub.schemas";
@@ -172,8 +203,8 @@ export function DirectoryManager({
             ? "تم اعتماد المنشأة ونشرها في الدليل العام"
             : "تم تحويل المنشأة إلى مسودة"
           : !b.is_published
-          ? "Business approved and published"
-          : "Business moved to draft"
+            ? "Business approved and published"
+            : "Business moved to draft",
       );
     } catch (err: any) {
       toast.error(err.message || (isAr ? "فشل تحديث الحالة" : "Failed to update status"));
@@ -250,7 +281,11 @@ export function DirectoryManager({
         review_note: reqReviewNote,
       });
       setReqModalOpen(false);
-      toast.success(isAr ? `تم تحديث الطلب إلى: ${status === "approved" ? "معتمد" : "مرفوض"}` : `Request updated to ${status}`);
+      toast.success(
+        isAr
+          ? `تم تحديث الطلب إلى: ${status === "approved" ? "معتمد" : "مرفوض"}`
+          : `Request updated to ${status}`,
+      );
     } catch (err: any) {
       toast.error(err.message || (isAr ? "فشل تحديث الطلب" : "Failed to update"));
     } finally {
@@ -264,13 +299,19 @@ export function DirectoryManager({
         <div className="flex items-center gap-2.5">
           <Building2 className="w-5 h-5 text-primary" />
           <h3 className="text-sm font-bold text-foreground">
-            {isAr ? "إدارة دليل المنشآت وطلبات توثيق الأعضاء" : "Directory & Membership Verification"}
+            {isAr
+              ? "إدارة دليل المنشآت وطلبات توثيق الأعضاء"
+              : "Directory & Membership Verification"}
           </h3>
         </div>
       </div>
 
       <div className="border border-border rounded-xl bg-card p-4">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "businesses" | "requests")} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as "businesses" | "requests")}
+          className="w-full"
+        >
           <TabsList className="grid grid-cols-2 max-w-md mb-4">
             <TabsTrigger value="businesses" className="text-xs gap-1.5">
               <Building2 className="w-3.5 h-3.5" />
@@ -283,7 +324,9 @@ export function DirectoryManager({
             </TabsTrigger>
             <TabsTrigger value="requests" className="text-xs gap-1.5">
               <UserCheck className="w-3.5 h-3.5" />
-              {isAr ? `طلبات العضوية (${membershipRequests.length})` : `Applications (${membershipRequests.length})`}
+              {isAr
+                ? `طلبات العضوية (${membershipRequests.length})`
+                : `Applications (${membershipRequests.length})`}
             </TabsTrigger>
           </TabsList>
 
@@ -303,7 +346,9 @@ export function DirectoryManager({
                     type="button"
                     onClick={() => setBizFilterStatus("all")}
                     className={`px-2.5 py-1 rounded text-xs transition-colors ${
-                      bizFilterStatus === "all" ? "bg-background text-foreground font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground"
+                      bizFilterStatus === "all"
+                        ? "bg-background text-foreground font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {isAr ? "الكل" : "All"} ({businesses.length})
@@ -312,7 +357,9 @@ export function DirectoryManager({
                     type="button"
                     onClick={() => setBizFilterStatus("published")}
                     className={`px-2.5 py-1 rounded text-xs transition-colors ${
-                      bizFilterStatus === "published" ? "bg-background text-foreground font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground"
+                      bizFilterStatus === "published"
+                        ? "bg-background text-foreground font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {isAr ? "المنشور" : "Published"} ({businesses.length - pendingCount})
@@ -321,7 +368,9 @@ export function DirectoryManager({
                     type="button"
                     onClick={() => setBizFilterStatus("pending")}
                     className={`px-2.5 py-1 rounded text-xs transition-colors ${
-                      bizFilterStatus === "pending" ? "bg-background text-foreground font-semibold shadow-xs text-amber-600 dark:text-amber-400" : "text-muted-foreground hover:text-foreground"
+                      bizFilterStatus === "pending"
+                        ? "bg-background text-foreground font-semibold shadow-xs text-amber-600 dark:text-amber-400"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {isAr ? "بانتظار المراجعة" : "Pending Audit"} ({pendingCount})
@@ -350,8 +399,13 @@ export function DirectoryManager({
                 <TableBody>
                   {filteredBusinesses.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="h-28 text-center text-muted-foreground text-xs">
-                        {isAr ? "لا توجد منشآت مطابقة لمعايير البحث" : "No matching business listings found"}
+                      <TableCell
+                        colSpan={6}
+                        className="h-28 text-center text-muted-foreground text-xs"
+                      >
+                        {isAr
+                          ? "لا توجد منشآت مطابقة لمعايير البحث"
+                          : "No matching business listings found"}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -359,14 +413,24 @@ export function DirectoryManager({
                       <TableRow key={b.id} className="text-xs hover:bg-muted/30">
                         <TableCell className="font-semibold text-foreground">
                           {b.name_ar}
-                          {b.name_en && <span className="block text-[11px] text-muted-foreground font-mono">{b.name_en}</span>}
+                          {b.name_en && (
+                            <span className="block text-[11px] text-muted-foreground font-mono">
+                              {b.name_en}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-[10px] font-normal">{b.category_ar}</Badge>
+                          <Badge variant="outline" className="text-[10px] font-normal">
+                            {b.category_ar}
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           <span className="block text-foreground">{b.city_ar}</span>
-                          {b.owner_branch_ar && <span className="text-[10px] text-muted-foreground">{b.owner_branch_ar}</span>}
+                          {b.owner_branch_ar && (
+                            <span className="text-[10px] text-muted-foreground">
+                              {b.owner_branch_ar}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <span className="font-mono text-muted-foreground flex items-center gap-1">
@@ -390,7 +454,13 @@ export function DirectoryManager({
                                   : "bg-emerald-600 hover:bg-emerald-700 text-white"
                               }`}
                             >
-                              {b.is_published ? (isAr ? "معتمد ومنشور" : "Published") : (isAr ? "بانتظار المراجعة" : "Pending Audit")}
+                              {b.is_published
+                                ? isAr
+                                  ? "معتمد ومنشور"
+                                  : "Published"
+                                : isAr
+                                  ? "بانتظار المراجعة"
+                                  : "Pending Audit"}
                             </Badge>
                           </button>
                         </TableCell>
@@ -455,7 +525,10 @@ export function DirectoryManager({
                 <TableBody>
                   {membershipRequests.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="h-28 text-center text-muted-foreground text-xs">
+                      <TableCell
+                        colSpan={6}
+                        className="h-28 text-center text-muted-foreground text-xs"
+                      >
                         {isAr ? "لا توجد طلبات عضوية معلقة" : "No membership requests found"}
                       </TableCell>
                     </TableRow>
@@ -464,27 +537,58 @@ export function DirectoryManager({
                       <TableRow key={req.id} className="text-xs hover:bg-muted/30">
                         <TableCell className="font-semibold text-foreground">
                           {req.full_name_ar}
-                          {req.full_name_en && <span className="block text-[11px] text-muted-foreground font-mono">{req.full_name_en}</span>}
+                          {req.full_name_en && (
+                            <span className="block text-[11px] text-muted-foreground font-mono">
+                              {req.full_name_en}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <span className="block font-mono text-muted-foreground">{req.email}</span>
-                          {req.phone && <span className="block font-mono text-[10px] text-muted-foreground">{req.phone}</span>}
+                          {req.phone && (
+                            <span className="block font-mono text-[10px] text-muted-foreground">
+                              {req.phone}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] border-primary/30 text-primary"
+                          >
                             {req.branch_slug || "غير محدد"}
                           </Badge>
-                          {req.notes && <span className="block text-[10px] text-muted-foreground line-clamp-1 mt-0.5">{req.notes}</span>}
+                          {req.notes && (
+                            <span className="block text-[10px] text-muted-foreground line-clamp-1 mt-0.5">
+                              {req.notes}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell className="font-mono text-muted-foreground">
                           {new Date(req.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge
-                            variant={req.status === "approved" ? "default" : req.status === "rejected" ? "destructive" : "secondary"}
+                            variant={
+                              req.status === "approved"
+                                ? "default"
+                                : req.status === "rejected"
+                                  ? "destructive"
+                                  : "secondary"
+                            }
                             className="text-[10px]"
                           >
-                            {req.status === "approved" ? (isAr ? "معتمد" : "Approved") : req.status === "rejected" ? (isAr ? "مرفوض" : "Rejected") : (isAr ? "قيد المراجعة" : "Pending")}
+                            {req.status === "approved"
+                              ? isAr
+                                ? "معتمد"
+                                : "Approved"
+                              : req.status === "rejected"
+                                ? isAr
+                                  ? "مرفوض"
+                                  : "Rejected"
+                                : isAr
+                                  ? "قيد المراجعة"
+                                  : "Pending"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-end">
@@ -503,9 +607,15 @@ export function DirectoryManager({
                                       status: "approved",
                                       review_note: "تم الاعتماد وتوثيق العضوية بنجاح",
                                     });
-                                    toast.success(isAr ? `تم توثيق عضوية: ${req.full_name_ar}` : `Approved membership for ${req.full_name_ar}`);
+                                    toast.success(
+                                      isAr
+                                        ? `تم توثيق عضوية: ${req.full_name_ar}`
+                                        : `Approved membership for ${req.full_name_ar}`,
+                                    );
                                   } catch (err: any) {
-                                    toast.error(err.message || (isAr ? "فشل الاعتماد" : "Failed to approve"));
+                                    toast.error(
+                                      err.message || (isAr ? "فشل الاعتماد" : "Failed to approve"),
+                                    );
                                   } finally {
                                     setLoading(false);
                                   }
@@ -546,13 +656,21 @@ export function DirectoryManager({
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">
-              {selectedBiz ? (isAr ? "تعديل بيانات المنشأة" : "Edit Business Listing") : isAr ? "إدراج منشأة جديدة" : "Add Business"}
+              {selectedBiz
+                ? isAr
+                  ? "تعديل بيانات المنشأة"
+                  : "Edit Business Listing"
+                : isAr
+                  ? "إدراج منشأة جديدة"
+                  : "Add Business"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmitBiz} className="space-y-3.5 text-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "اسم المنشأة (بالعربية) *" : "Business Name (AR) *"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "اسم المنشأة (بالعربية) *" : "Business Name (AR) *"}
+                </Label>
                 <Input
                   required
                   value={bizForm.name_ar}
@@ -568,7 +686,9 @@ export function DirectoryManager({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "اسم المنشأة (EN)" : "Business Name (EN)"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "اسم المنشأة (EN)" : "Business Name (EN)"}
+                </Label>
                 <Input
                   value={bizForm.name_en ?? ""}
                   onChange={(e) => setBizForm({ ...bizForm, name_en: e.target.value })}
@@ -657,11 +777,22 @@ export function DirectoryManager({
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" size="sm" onClick={() => setBizModalOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setBizModalOpen(false)}
+              >
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button type="submit" size="sm" disabled={loading}>
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ المنشأة" : "Save Business"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ المنشأة"
+                    : "Save Business"}
               </Button>
             </DialogFooter>
           </form>
@@ -682,7 +813,9 @@ export function DirectoryManager({
             <div className="space-y-3.5 text-xs">
               <div className="p-3.5 bg-muted/20 border border-border rounded-xl space-y-2">
                 <div className="flex justify-between">
-                  <span className="font-bold text-foreground text-sm">{selectedReq.full_name_ar}</span>
+                  <span className="font-bold text-foreground text-sm">
+                    {selectedReq.full_name_ar}
+                  </span>
                   <Badge variant="outline">{selectedReq.branch_slug || "بدون فرع"}</Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground font-mono">
@@ -691,14 +824,18 @@ export function DirectoryManager({
                 </div>
                 {selectedReq.notes && (
                   <div className="mt-2 pt-2 border-t border-border/50 text-[11px]">
-                    <span className="text-muted-foreground block font-semibold">{isAr ? "ملاحظات النسب والانتساب:" : "Lineage notes:"}</span>
+                    <span className="text-muted-foreground block font-semibold">
+                      {isAr ? "ملاحظات النسب والانتساب:" : "Lineage notes:"}
+                    </span>
                     <p className="text-foreground mt-0.5">{selectedReq.notes}</p>
                   </div>
                 )}
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs">{isAr ? "ملاحظات وتوجيه الأمانة العامة" : "Secretariat Review Note"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "ملاحظات وتوجيه الأمانة العامة" : "Secretariat Review Note"}
+                </Label>
                 <Textarea
                   rows={3}
                   value={reqReviewNote}
@@ -722,7 +859,12 @@ export function DirectoryManager({
               </Button>
 
               <div className="flex gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setReqModalOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setReqModalOpen(false)}
+                >
                   {isAr ? "إغلاق" : "Cancel"}
                 </Button>
                 <Button

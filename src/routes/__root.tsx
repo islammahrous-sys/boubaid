@@ -90,7 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "آل بوعبيد — صندوق التنمية العائلية | البوابة الرسمية" },
       {
         name: "description",
@@ -193,10 +193,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: langInitScript }} />
         {gaMeasurementId && gaInitScript && (
           <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-            />
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
             <script dangerouslySetInnerHTML={{ __html: gaInitScript }} />
           </>
         )}
@@ -214,14 +211,19 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   const pathname = router.state.location.pathname;
-  const isConsole = pathname.startsWith("/admin") || pathname.startsWith("/treasury") || pathname.startsWith("/content");
+  const isConsole =
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/treasury") ||
+    pathname.startsWith("/content");
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
           <LanguageProvider>
-            <div className={`flex min-h-screen w-full flex-col overflow-x-clip ${isConsole ? "pb-0" : "pb-16 md:pb-0"}`}>
+            <div
+              className={`flex min-h-screen w-full flex-col overflow-x-clip ${isConsole ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"}`}
+            >
               <a href="#main" className="skip-link">
                 تخطَّ إلى المحتوى — Skip to content
               </a>

@@ -12,7 +12,13 @@ import { mergeInitiatives } from "@/content/cms-adapt";
 import { Eyebrow, Status, Ornament } from "@/components/site/Editorial";
 import { initiativeImage } from "@/content/images";
 import { getCanonicalUrl } from "@/lib/seo";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -40,9 +46,7 @@ export const Route = createFileRoute("/initiatives/$slug")({
         { property: "og:url", content: getCanonicalUrl(`/initiatives/${params.slug}`) },
         ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
       ],
-      links: [
-        { rel: "canonical", href: getCanonicalUrl(`/initiatives/${params.slug}`) },
-      ],
+      links: [{ rel: "canonical", href: getCanonicalUrl(`/initiatives/${params.slug}`) }],
     };
   },
   component: InitiativeDetail,
@@ -84,7 +88,10 @@ const copy = {
     ar: "تعذّر إتمام التسجيل. يرجى المحاولة مرة أخرى.",
     en: "Could not complete registration. Please try again.",
   } as BiText,
-  joinInvalid: { ar: "يرجى مراجعة الحقول المطلوبة.", en: "Please check the required fields." } as BiText,
+  joinInvalid: {
+    ar: "يرجى مراجعة الحقول المطلوبة.",
+    en: "Please check the required fields.",
+  } as BiText,
 };
 
 function JoinInitiativeDialog({
@@ -223,7 +230,7 @@ function InitiativeDetail() {
 
   const handleShareWhatsApp = () => {
     const text = encodeURIComponent(
-      `${t(item.title)}\n${t(item.summary)}\n\n${window.location.href}`
+      `${t(item.title)}\n${t(item.summary)}\n\n${window.location.href}`,
     );
     window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
   };
@@ -255,8 +262,12 @@ function InitiativeDetail() {
               onClick={handleCopyLink}
               className="inline-flex items-center gap-1.5 rounded border border-border bg-card px-3 py-1 text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? (rtl ? "تم النسخ" : "Copied") : (rtl ? "نسخ الرابط" : "Copy")}</span>
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+              <span>{copied ? (rtl ? "تم النسخ" : "Copied") : rtl ? "نسخ الرابط" : "Copy"}</span>
             </button>
           </div>
         </div>
@@ -265,7 +276,13 @@ function InitiativeDetail() {
           <Eyebrow rule={false}>{t(copy.eyebrow)}</Eyebrow>
           <span className="h-3 w-px bg-border" aria-hidden="true" />
           <Status
-            tone={item.status === "ongoing" ? "active" : item.status === "completed" ? "neutral" : "pending"}
+            tone={
+              item.status === "ongoing"
+                ? "active"
+                : item.status === "completed"
+                  ? "neutral"
+                  : "pending"
+            }
           >
             {item.status === "ongoing"
               ? t(copy.active)
@@ -308,7 +325,9 @@ function InitiativeDetail() {
               {rtl ? "دعم وتمويل البرنامج" : "Program Funding & Support"}
             </span>
             <h3 className="text-base font-bold text-foreground">
-              {rtl ? "ساهم في دعم وتحقيق أهداف هذه المبادرة" : "Support and contribute to this initiative"}
+              {rtl
+                ? "ساهم في دعم وتحقيق أهداف هذه المبادرة"
+                : "Support and contribute to this initiative"}
             </h3>
             <p className="text-xs text-muted-foreground">
               {rtl

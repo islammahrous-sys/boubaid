@@ -28,9 +28,17 @@ export const Route = createFileRoute("/family-tree")({
   head: () => ({
     meta: [
       { title: "المشجرة التفاعلية | آل بوعبيد" },
-      { name: "description", content: "المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم، وتغطي الأجيال الموثقة عبر الفروع السبعة." },
+      {
+        name: "description",
+        content:
+          "المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم، وتغطي الأجيال الموثقة عبر الفروع السبعة.",
+      },
       { property: "og:title", content: "المشجرة التفاعلية — آل بوعبيد" },
-      { property: "og:description", content: "المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم، تغطي الأجيال الموثقة عبر الفروع السبعة." },
+      {
+        property: "og:description",
+        content:
+          "المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم، تغطي الأجيال الموثقة عبر الفروع السبعة.",
+      },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/family-tree") },
     ],
@@ -127,7 +135,7 @@ function FamilyTreePage() {
     (treeData?.members ?? []).forEach((row: any) => {
       if (!existingIds.has(row.id)) {
         const branchRow = (treeData?.branches ?? []).find((b: any) => b.id === row.branch_id);
-        const genNum = (Math.min(Math.max(row.generation || 1, 1), 4) as 1 | 2 | 3 | 4);
+        const genNum = Math.min(Math.max(row.generation || 1, 1), 4) as 1 | 2 | 3 | 4;
         list.push({
           id: row.id,
           // `family_members` has no `father_name_ar` / `lineage_notes` / `bio_ar`
@@ -139,7 +147,9 @@ function FamilyTreePage() {
           // `biography_ar`/`biography_en`.
           name: {
             ar: `${row.first_name_ar} ${row.middle_name_ar || ""} ${row.last_name_ar}`.trim(),
-            en: row.first_name_en ? `${row.first_name_en} ${row.last_name_en || ""}`.trim() : `${row.first_name_ar} ${row.last_name_ar}`,
+            en: row.first_name_en
+              ? `${row.first_name_en} ${row.last_name_en || ""}`.trim()
+              : `${row.first_name_ar} ${row.last_name_ar}`,
           },
           lineage: {
             ar: `${row.first_name_ar} بن ${row.middle_name_ar || "أحمد"} آل بوعبيد`,
@@ -160,13 +170,17 @@ function FamilyTreePage() {
             ar: row.residence_ar || "المبرز، الأحساء",
             en: row.residence_en || "Al-Mubarraz, Al-Ahsa",
           },
-          title: row.occupation_ar ? { ar: row.occupation_ar, en: row.occupation_en || row.occupation_ar } : undefined,
+          title: row.occupation_ar
+            ? { ar: row.occupation_ar, en: row.occupation_en || row.occupation_ar }
+            : undefined,
           bio: {
             ar: row.biography_ar || "فرد موثق بسجلات أمانة مجلس الأسرة.",
             en: row.biography_en || "Documented family member in council records.",
           },
           relations: {
-            father: row.middle_name_ar ? { ar: row.middle_name_ar, en: row.middle_name_en || row.middle_name_ar } : undefined,
+            father: row.middle_name_ar
+              ? { ar: row.middle_name_ar, en: row.middle_name_en || row.middle_name_ar }
+              : undefined,
             lineageChain: [],
           },
           isPatriarch: row.generation === 1,
@@ -271,7 +285,7 @@ function FamilyTreePage() {
         <iframe
           src="/interactive-tree.html"
           title={t(copy.title)}
-          className="block h-[70vh] min-h-[32rem] w-full border-0 bg-card"
+          className="block h-[50vh] sm:h-[65vh] min-h-[22rem] sm:min-h-[32rem] w-full border-0 bg-card"
         />
       </div>
 
@@ -287,7 +301,6 @@ function FamilyTreePage() {
           </p>
         </div>
       </aside>
-
 
       {/* ── The official commissioned artwork, alongside the digital explorer ── */}
       <section className="reveal-on-scroll container-page py-12 md:py-14">
@@ -342,7 +355,7 @@ function FamilyTreePage() {
         </div>
 
         {/* Controls */}
-        <div className="mt-7 grid gap-5 border border-border bg-card p-5 md:grid-cols-[1fr_auto_auto] md:items-end">
+        <div className="mt-7 grid gap-4 sm:gap-5 border border-border bg-card p-3.5 sm:p-5 md:grid-cols-[1fr_auto_auto] md:items-end">
           <div>
             <label htmlFor="tree-search" className="label-caps mb-2 block text-muted-foreground">
               {t(copy.searchLabel)}
@@ -527,9 +540,7 @@ function FamilyTreePage() {
               </div>
 
               <div className="px-6 py-6">
-                <p className="text-sm leading-[1.85] text-foreground">
-                  {t(selected.bio)}
-                </p>
+                <p className="text-sm leading-[1.85] text-foreground">{t(selected.bio)}</p>
 
                 <dl className="mt-6 divide-y divide-border border-y border-border">
                   {[
@@ -620,5 +631,3 @@ function FamilyTreePage() {
     </>
   );
 }
-
-

@@ -50,60 +50,61 @@ export type TurnstileWidgetHandle = { reset: () => void };
  * unconditionally and forms fall back to their existing honeypot-only
  * protection with no visual change and no broken build.
  */
-export const TurnstileWidget = forwardRef<TurnstileWidgetHandle, { onToken: (token: string) => void }>(
-  function TurnstileWidget({ onToken }, ref) {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const widgetIdRef = useRef<string | null>(null);
-    const onTokenRef = useRef(onToken);
-    onTokenRef.current = onToken;
-    const reactId = useId();
+export const TurnstileWidget = forwardRef<
+  TurnstileWidgetHandle,
+  { onToken: (token: string) => void }
+>(function TurnstileWidget({ onToken }, ref) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const widgetIdRef = useRef<string | null>(null);
+  const onTokenRef = useRef(onToken);
+  onTokenRef.current = onToken;
+  const reactId = useId();
 
-    useImperativeHandle(ref, () => ({
-      reset: () => {
-        if (widgetIdRef.current && window.turnstile) {
-          try {
-            window.turnstile.reset(widgetIdRef.current);
-          } catch {
-            /* noop */
-          }
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      if (widgetIdRef.current && window.turnstile) {
+        try {
+          window.turnstile.reset(widgetIdRef.current);
+        } catch {
+          /* noop */
         }
-      },
-    }));
+      }
+    },
+  }));
 
-    useEffect(() => {
-      if (!TURNSTILE_SITE_KEY) return;
-      let cancelled = false;
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return;
+    let cancelled = false;
 
-      loadTurnstileScript()
-        .then(() => {
-          if (cancelled || !containerRef.current || !window.turnstile) return;
-          widgetIdRef.current = window.turnstile.render(containerRef.current, {
-            sitekey: TURNSTILE_SITE_KEY,
-            callback: (token: string) => onTokenRef.current(token),
-            "expired-callback": () => onTokenRef.current(""),
-            "error-callback": () => onTokenRef.current(""),
-          });
-        })
-        .catch((err) => {
-          // Script blocked/offline — leave the rest of the form usable; the
-          // server only enforces a token when TURNSTILE_SECRET_KEY is set.
-          console.error("[turnstile] widget failed to load", err);
+    loadTurnstileScript()
+      .then(() => {
+        if (cancelled || !containerRef.current || !window.turnstile) return;
+        widgetIdRef.current = window.turnstile.render(containerRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: (token: string) => onTokenRef.current(token),
+          "expired-callback": () => onTokenRef.current(""),
+          "error-callback": () => onTokenRef.current(""),
         });
+      })
+      .catch((err) => {
+        // Script blocked/offline — leave the rest of the form usable; the
+        // server only enforces a token when TURNSTILE_SECRET_KEY is set.
+        console.error("[turnstile] widget failed to load", err);
+      });
 
-      return () => {
-        cancelled = true;
-        if (widgetIdRef.current && window.turnstile) {
-          try {
-            window.turnstile.remove(widgetIdRef.current);
-          } catch {
-            /* noop */
-          }
+    return () => {
+      cancelled = true;
+      if (widgetIdRef.current && window.turnstile) {
+        try {
+          window.turnstile.remove(widgetIdRef.current);
+        } catch {
+          /* noop */
         }
-      };
-    }, []);
+      }
+    };
+  }, []);
 
-    if (!TURNSTILE_SITE_KEY) return null;
+  if (!TURNSTILE_SITE_KEY) return null;
 
-    return <div ref={containerRef} data-turnstile-id={reactId} className="cf-turnstile" />;
-  },
-);
+  return <div ref={containerRef} data-turnstile-id={reactId} className="cf-turnstile" />;
+});

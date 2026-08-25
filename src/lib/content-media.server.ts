@@ -51,8 +51,8 @@ export async function signContentPaths(
       const bucket = key.startsWith("library/")
         ? "documents-public"
         : key.startsWith("achievers/")
-        ? "family-photos"
-        : "site-media";
+          ? "family-photos"
+          : "site-media";
       map[key] = `${SUPABASE_BASE_URL}/storage/v1/object/public/${bucket}/${key}`;
     }
   });
@@ -71,8 +71,8 @@ export function resolveMedia(
     const bucket = value.startsWith("library/")
       ? "documents-public"
       : value.startsWith("achievers/")
-      ? "family-photos"
-      : "site-media";
+        ? "family-photos"
+        : "site-media";
     return `${SUPABASE_BASE_URL}/storage/v1/object/public/${bucket}/${value}`;
   }
   return value;

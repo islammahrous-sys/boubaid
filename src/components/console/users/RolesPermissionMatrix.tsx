@@ -1,6 +1,13 @@
 import { useState, useMemo } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Check, X, Shield, ShieldCheck, Search, Info, Lock } from "lucide-react";
@@ -92,57 +99,320 @@ type PermissionItem = {
 
 const PERMISSIONS_MATRIX: PermissionItem[] = [
   // 1. Genealogy
-  { key: "family.read_public", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "عرض السجلات العامة للأفراد", name_en: "View Public Members", allowedRoles: ["super_admin", "admin", "editor", "content_manager", "family_manager", "treasurer", "member", "viewer"] },
-  { key: "family.read_private", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "عرض السجلات الخاصة بالأفراد والأحياء", name_en: "View Private & Living Members", allowedRoles: ["super_admin", "admin", "family_manager", "member"] },
-  { key: "family.create", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "إضافة أفراد جدد للشجرة", name_en: "Create Family Members", allowedRoles: ["super_admin", "admin", "family_manager"] },
-  { key: "family.update", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "تعديل بيانات الأفراد والقرابة", name_en: "Update Member Details", allowedRoles: ["super_admin", "admin", "family_manager"] },
-  { key: "family.delete", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "حذف أو أرشفة أفراد من السجل", name_en: "Delete / Archive Members", allowedRoles: ["super_admin", "admin", "family_manager"] },
-  { key: "family.branches", category_ar: "شجرة العائلة والأنساب", category_en: "Genealogy", name_ar: "إدارة الفروع السبعة وتعيين الرؤساء", name_en: "Manage 7 Branches", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
+  {
+    key: "family.read_public",
+    category_ar: "شجرة العائلة والأنساب",
+    category_en: "Genealogy",
+    name_ar: "عرض السجلات العامة للأفراد",
+    name_en: "View Public Members",
+    allowedRoles: [
+      "super_admin",
+      "admin",
+      "editor",
+      "content_manager",
+      "family_manager",
+      "treasurer",
+      "member",
+      "viewer",
+    ],
+  },
+  {
+    key: "family.read_private",
+    category_ar: "شجرة العائلة والأنساب",
+    category_en: "Genealogy",
+    name_ar: "عرض السجلات الخاصة بالأفراد والأحياء",
+    name_en: "View Private & Living Members",
+    allowedRoles: ["super_admin", "admin", "family_manager", "member"],
+  },
+  {
+    key: "family.create",
+    category_ar: "شجرة العائلة والأنساب",
+    category_en: "Genealogy",
+    name_ar: "إضافة أفراد جدد للشجرة",
+    name_en: "Create Family Members",
+    allowedRoles: ["super_admin", "admin", "family_manager"],
+  },
+  {
+    key: "family.update",
+    category_ar: "شجرة العائلة والأنساب",
+    category_en: "Genealogy",
+    name_ar: "تعديل بيانات الأفراد والقرابة",
+    name_en: "Update Member Details",
+    allowedRoles: ["super_admin", "admin", "family_manager"],
+  },
+  {
+    key: "family.delete",
+    category_ar: "شجرة العائلة والأنساب",
+    category_en: "Genealogy",
+    name_ar: "حذف أو أرشفة أفراد من السجل",
+    name_en: "Delete / Archive Members",
+    allowedRoles: ["super_admin", "admin", "family_manager"],
+  },
+  {
+    key: "family.branches",
+    category_ar: "شجرة العائلة والأنساب",
+    category_en: "Genealogy",
+    name_ar: "إدارة الفروع السبعة وتعيين الرؤساء",
+    name_en: "Manage 7 Branches",
+    allowedRoles: ["super_admin", "admin", "editor", "content_manager"],
+  },
 
   // 2. CMS & Content
-  { key: "cms.pages_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "بناء وتعديل صفحات الـ CMS الديناميكية", name_en: "Build & Edit CMS Pages", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
-  { key: "cms.homepage_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "إدارة أقسام وترتيب الصفحة الرئيسية", name_en: "Manage Homepage Layout", allowedRoles: ["super_admin", "admin"] },
-  { key: "cms.articles_write", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "كتابة ونشر المقالات والأخبار", name_en: "Create & Publish Articles", allowedRoles: ["super_admin", "admin", "editor", "content_manager"] },
-  { key: "cms.events_manage", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "جدولة الفعاليات وإدارة الحضور", name_en: "Schedule Events & RSVPs", allowedRoles: ["super_admin", "admin", "editor"] },
-  { key: "cms.announcements", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "بث الإعلانات العاجلة وتنبيهات الأعضاء", name_en: "Broadcast Urgent Announcements", allowedRoles: ["super_admin", "admin"] },
-  { key: "cms.dna_studies", category_ar: "المحتوى والـ CMS", category_en: "CMS & Content", name_ar: "إدارة الدراسات الجينية وتفرعات الهابلوغروب", name_en: "Manage Y-DNA Studies Data", allowedRoles: ["super_admin", "admin"] },
+  {
+    key: "cms.pages_manage",
+    category_ar: "المحتوى والـ CMS",
+    category_en: "CMS & Content",
+    name_ar: "بناء وتعديل صفحات الـ CMS الديناميكية",
+    name_en: "Build & Edit CMS Pages",
+    allowedRoles: ["super_admin", "admin", "editor", "content_manager"],
+  },
+  {
+    key: "cms.homepage_manage",
+    category_ar: "المحتوى والـ CMS",
+    category_en: "CMS & Content",
+    name_ar: "إدارة أقسام وترتيب الصفحة الرئيسية",
+    name_en: "Manage Homepage Layout",
+    allowedRoles: ["super_admin", "admin"],
+  },
+  {
+    key: "cms.articles_write",
+    category_ar: "المحتوى والـ CMS",
+    category_en: "CMS & Content",
+    name_ar: "كتابة ونشر المقالات والأخبار",
+    name_en: "Create & Publish Articles",
+    allowedRoles: ["super_admin", "admin", "editor", "content_manager"],
+  },
+  {
+    key: "cms.events_manage",
+    category_ar: "المحتوى والـ CMS",
+    category_en: "CMS & Content",
+    name_ar: "جدولة الفعاليات وإدارة الحضور",
+    name_en: "Schedule Events & RSVPs",
+    allowedRoles: ["super_admin", "admin", "editor"],
+  },
+  {
+    key: "cms.announcements",
+    category_ar: "المحتوى والـ CMS",
+    category_en: "CMS & Content",
+    name_ar: "بث الإعلانات العاجلة وتنبيهات الأعضاء",
+    name_en: "Broadcast Urgent Announcements",
+    allowedRoles: ["super_admin", "admin"],
+  },
+  {
+    key: "cms.dna_studies",
+    category_ar: "المحتوى والـ CMS",
+    category_en: "CMS & Content",
+    name_ar: "إدارة الدراسات الجينية وتفرعات الهابلوغروب",
+    name_en: "Manage Y-DNA Studies Data",
+    allowedRoles: ["super_admin", "admin"],
+  },
 
   // 3. Media & Storage
-  { key: "media.upload", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "رفع ملفات إلى الحاويات السحابية", name_en: "Upload to Storage Buckets", allowedRoles: ["super_admin", "admin", "editor"] },
-  { key: "media.delete", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "حذف وسائط وتعديل النصوص البديلة", name_en: "Delete Media Assets", allowedRoles: ["super_admin", "admin"] },
-  { key: "media.private_docs", category_ar: "الوسائط والتخزين", category_en: "Media & Assets", name_ar: "استعراض الوثائق والمخطوطات الخاصة", name_en: "Access Private Documents", allowedRoles: ["super_admin", "admin", "member"] },
+  {
+    key: "media.upload",
+    category_ar: "الوسائط والتخزين",
+    category_en: "Media & Assets",
+    name_ar: "رفع ملفات إلى الحاويات السحابية",
+    name_en: "Upload to Storage Buckets",
+    allowedRoles: ["super_admin", "admin", "editor"],
+  },
+  {
+    key: "media.delete",
+    category_ar: "الوسائط والتخزين",
+    category_en: "Media & Assets",
+    name_ar: "حذف وسائط وتعديل النصوص البديلة",
+    name_en: "Delete Media Assets",
+    allowedRoles: ["super_admin", "admin"],
+  },
+  {
+    key: "media.private_docs",
+    category_ar: "الوسائط والتخزين",
+    category_en: "Media & Assets",
+    name_ar: "استعراض الوثائق والمخطوطات الخاصة",
+    name_en: "Access Private Documents",
+    allowedRoles: ["super_admin", "admin", "member"],
+  },
 
   // 4. Treasury & Funds
-  { key: "treasury.view_ledger", category_ar: "الخزينة والمساهمات", category_en: "Treasury", name_ar: "استعراض سجل الخزينة والمبالغ المعتمدة", name_en: "View Treasury Ledger", allowedRoles: ["super_admin", "admin", "treasurer"] },
-  { key: "treasury.verify_receipts", category_ar: "الخزينة والمساهمات", category_en: "Treasury", name_ar: "مراجعة واعتماد إيصالات التحويل البنكي", name_en: "Verify Bank Transfer Receipts", allowedRoles: ["super_admin", "treasurer"] },
-  { key: "treasury.export", category_ar: "الخزينة والمساهمات", category_en: "Treasury", name_ar: "تصدير التقارير المالية كملفات CSV", name_en: "Export Financial Reports", allowedRoles: ["super_admin", "treasurer"] },
+  {
+    key: "treasury.view_ledger",
+    category_ar: "الخزينة والمساهمات",
+    category_en: "Treasury",
+    name_ar: "استعراض سجل الخزينة والمبالغ المعتمدة",
+    name_en: "View Treasury Ledger",
+    allowedRoles: ["super_admin", "admin", "treasurer"],
+  },
+  {
+    key: "treasury.verify_receipts",
+    category_ar: "الخزينة والمساهمات",
+    category_en: "Treasury",
+    name_ar: "مراجعة واعتماد إيصالات التحويل البنكي",
+    name_en: "Verify Bank Transfer Receipts",
+    allowedRoles: ["super_admin", "treasurer"],
+  },
+  {
+    key: "treasury.export",
+    category_ar: "الخزينة والمساهمات",
+    category_en: "Treasury",
+    name_ar: "تصدير التقارير المالية كملفات CSV",
+    name_en: "Export Financial Reports",
+    allowedRoles: ["super_admin", "treasurer"],
+  },
 
   // 5. Directory & Verification
-  { key: "directory.manage", category_ar: "الدليل والعضوية", category_en: "Directory & Verification", name_ar: "إدارة دليل المنشآت والأعمال الأسرية", name_en: "Manage Business Listings", allowedRoles: ["super_admin", "admin"] },
-  { key: "verification.review", category_ar: "الدليل والعضوية", category_en: "Directory & Verification", name_ar: "تدقيق واعتماد طلبات توثيق العضوية", name_en: "Approve Membership Requests", allowedRoles: ["super_admin", "admin"] },
+  {
+    key: "directory.manage",
+    category_ar: "الدليل والعضوية",
+    category_en: "Directory & Verification",
+    name_ar: "إدارة دليل المنشآت والأعمال الأسرية",
+    name_en: "Manage Business Listings",
+    allowedRoles: ["super_admin", "admin"],
+  },
+  {
+    key: "verification.review",
+    category_ar: "الدليل والعضوية",
+    category_en: "Directory & Verification",
+    name_ar: "تدقيق واعتماد طلبات توثيق العضوية",
+    name_en: "Approve Membership Requests",
+    allowedRoles: ["super_admin", "admin"],
+  },
 
   // 6. System & Governance
-  { key: "users.manage_roles", category_ar: "النظام والحوكمة", category_en: "System & Governance", name_ar: "إسناد وسحب أدوار المستخدمين (RBAC)", name_en: "Assign & Revoke User Roles", allowedRoles: ["super_admin"] },
-  { key: "audit.view_logs", category_ar: "النظام والحوكمة", category_en: "System & Governance", name_ar: "استعراض سجل الرقابة الأمنية والعمليات", name_en: "View Security Audit Trail", allowedRoles: ["super_admin", "admin"] },
-  { key: "settings.update", category_ar: "النظام والحوكمة", category_en: "System & Governance", name_ar: "تعديل بيانات الترخيص والهوية ومجلس الأمناء", name_en: "Update Platform Identity & SEO", allowedRoles: ["super_admin"] },
+  {
+    key: "users.manage_roles",
+    category_ar: "النظام والحوكمة",
+    category_en: "System & Governance",
+    name_ar: "إسناد وسحب أدوار المستخدمين (RBAC)",
+    name_en: "Assign & Revoke User Roles",
+    allowedRoles: ["super_admin"],
+  },
+  {
+    key: "audit.view_logs",
+    category_ar: "النظام والحوكمة",
+    category_en: "System & Governance",
+    name_ar: "استعراض سجل الرقابة الأمنية والعمليات",
+    name_en: "View Security Audit Trail",
+    allowedRoles: ["super_admin", "admin"],
+  },
+  {
+    key: "settings.update",
+    category_ar: "النظام والحوكمة",
+    category_en: "System & Governance",
+    name_ar: "تعديل بيانات الترخيص والهوية ومجلس الأمناء",
+    name_en: "Update Platform Identity & SEO",
+    allowedRoles: ["super_admin"],
+  },
 ];
 
-export function RolesPermissionMatrix() {
+/** Rows of the live `permissions` / `role_permissions` tables, as returned by
+ *  `getUsersAndRolesData`. */
+export type PermissionRow = {
+  id: string;
+  name: string;
+  description?: string | null;
+  category: string;
+};
+
+export type RolePermissionRow = {
+  id: string;
+  role: string;
+  permission_id: string;
+};
+
+/** Arabic headings for the live `permissions.category` values. Anything not
+ *  listed falls back to the raw category string rather than being hidden. */
+const CATEGORY_LABELS_AR: Record<string, string> = {
+  articles: "المقالات والأخبار",
+  audit: "الرقابة والتدقيق",
+  content: "المحتوى والصفحات",
+  dashboard: "لوحة القيادة",
+  documents: "الوثائق والمستندات",
+  events: "الفعاليات واللقاءات",
+  family: "شجرة العائلة والأنساب",
+  galleries: "معارض الصور",
+  inquiries: "الاستفسارات والرسائل",
+  media: "الوسائط والتخزين",
+  navigation: "قوائم التصفح",
+  notifications: "الإشعارات",
+  settings: "إعدادات المنصة",
+  treasury: "الخزينة والمساهمات",
+  users: "المستخدمون والصلاحيات",
+};
+
+type MatrixRow = {
+  id: string;
+  title_ar: string;
+  title_en: string;
+  subtitle: string;
+  category_ar: string;
+  category_en: string;
+  allowedRoles: string[];
+};
+
+export function RolesPermissionMatrix({
+  permissions = [],
+  rolePermissions = [],
+}: {
+  permissions?: PermissionRow[];
+  rolePermissions?: RolePermissionRow[];
+} = {}) {
   const { lang } = useLang();
   const isAr = lang === "ar";
   const [filterQuery, setFilterQuery] = useState("");
 
+  /* This matrix used to be a hand-maintained constant that had drifted away
+   * from what the platform actually enforces (it claimed, for instance, that
+   * only super_admin may assign roles, while both the `role_permissions` table
+   * and `assignUserRole` allow any admin). Render the live grants whenever the
+   * console has them, and fall back to the static list -- clearly labelled as
+   * a reference -- only when it doesn't. */
+  const isLive = permissions.length > 0;
+
+  const matrixRows: MatrixRow[] = useMemo(() => {
+    if (!isLive) {
+      return PERMISSIONS_MATRIX.map((p) => ({
+        id: p.key,
+        title_ar: p.name_ar,
+        title_en: p.name_en,
+        subtitle: p.key,
+        category_ar: p.category_ar,
+        category_en: p.category_en,
+        allowedRoles: p.allowedRoles,
+      }));
+    }
+
+    const grantsByPermission = new Map<string, string[]>();
+    for (const grant of rolePermissions) {
+      const list = grantsByPermission.get(grant.permission_id) ?? [];
+      list.push(grant.role);
+      grantsByPermission.set(grant.permission_id, list);
+    }
+
+    return [...permissions]
+      .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
+      .map((p) => ({
+        id: p.id,
+        title_ar: p.name,
+        title_en: p.name,
+        subtitle: p.description || p.category,
+        category_ar: CATEGORY_LABELS_AR[p.category] ?? p.category,
+        category_en: p.category,
+        allowedRoles: grantsByPermission.get(p.id) ?? [],
+      }));
+  }, [isLive, permissions, rolePermissions]);
+
   const filteredPermissions = useMemo(() => {
-    if (!filterQuery.trim()) return PERMISSIONS_MATRIX;
+    if (!filterQuery.trim()) return matrixRows;
     const q = filterQuery.toLowerCase();
-    return PERMISSIONS_MATRIX.filter(
+    return matrixRows.filter(
       (p) =>
-        p.name_ar.toLowerCase().includes(q) ||
-        p.name_en.toLowerCase().includes(q) ||
+        p.title_ar.toLowerCase().includes(q) ||
+        p.title_en.toLowerCase().includes(q) ||
+        p.subtitle.toLowerCase().includes(q) ||
         p.category_ar.toLowerCase().includes(q) ||
-        p.category_en.toLowerCase().includes(q)
+        p.category_en.toLowerCase().includes(q),
     );
-  }, [filterQuery]);
+  }, [filterQuery, matrixRows]);
 
   return (
     <div className="space-y-6">
@@ -153,14 +423,33 @@ export function RolesPermissionMatrix() {
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-primary" />
               <h2 className="text-sm font-bold text-foreground">
-                {isAr ? "مصفوفة الصلاحيات وقواعد الوصول (RBAC Matrix)" : "Role-Based Access Control (RBAC) Matrix"}
+                {isAr
+                  ? "مصفوفة الصلاحيات وقواعد الوصول (RBAC Matrix)"
+                  : "Role-Based Access Control (RBAC) Matrix"}
               </h2>
             </div>
             <p className="text-xs text-muted-foreground">
               {isAr
-                ? "توضيح شامل للصلاحيات الممنوحة لكل دور قيادي وتشغيلي عبر 47 قاعدة حماية ومستوى أمان مشدد."
-                : "Full visualization of permission rules mapped to system roles enforced by database RLS and server guards."}
+                ? `الصلاحيات الممنوحة لكل دور عبر ${matrixRows.length} قاعدة وصول.`
+                : `Permission grants mapped to system roles across ${matrixRows.length} access rules.`}
             </p>
+            <Badge
+              variant="outline"
+              className={
+                isLive
+                  ? "text-[10px] gap-1 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
+                  : "text-[10px] gap-1 border-amber-500/40 text-amber-600 dark:text-amber-400"
+              }
+            >
+              {isLive ? <Lock className="w-3 h-3" /> : <Info className="w-3 h-3" />}
+              {isLive
+                ? isAr
+                  ? "مصدر مباشر: جدولا permissions و role_permissions"
+                  : "Live source: permissions / role_permissions tables"
+                : isAr
+                  ? "جدول مرجعي — لم تُحمّل بيانات الصلاحيات بعد"
+                  : "Reference table — live permission data not loaded"}
+            </Badge>
           </div>
 
           <div className="relative w-full sm:w-64">
@@ -177,7 +466,10 @@ export function RolesPermissionMatrix() {
         {/* Role Descriptions Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-2 border-t border-border/40">
           {SYSTEM_ROLES.map((role) => (
-            <div key={role.key} className="p-3 rounded-xl border border-border/60 bg-muted/20 space-y-1">
+            <div
+              key={role.key}
+              className="p-3 rounded-xl border border-border/60 bg-muted/20 space-y-1"
+            >
               <div className="flex items-center justify-between">
                 <Badge variant="outline" className={`text-[10px] font-bold ${role.badgeColor}`}>
                   {isAr ? role.name_ar : role.name_en}
@@ -197,7 +489,9 @@ export function RolesPermissionMatrix() {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/40 text-xs">
-              <TableHead className="w-[300px]">{isAr ? "الصلاحية / الإجراء" : "Permission / Operation"}</TableHead>
+              <TableHead className="w-[300px]">
+                {isAr ? "الصلاحية / الإجراء" : "Permission / Operation"}
+              </TableHead>
               <TableHead className="text-center">{isAr ? "القسم" : "Domain"}</TableHead>
               {SYSTEM_ROLES.map((r) => (
                 <TableHead key={r.key} className="text-center font-bold">
@@ -225,16 +519,21 @@ export function RolesPermissionMatrix() {
           <TableBody>
             {filteredPermissions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={SYSTEM_ROLES.length + 2} className="h-28 text-center text-muted-foreground text-xs">
+                <TableCell
+                  colSpan={SYSTEM_ROLES.length + 2}
+                  className="h-28 text-center text-muted-foreground text-xs"
+                >
                   {isAr ? "لا توجد نتائج مطابقة لبحثك" : "No permissions matching search"}
                 </TableCell>
               </TableRow>
             ) : (
               filteredPermissions.map((perm) => (
-                <TableRow key={perm.key} className="text-xs hover:bg-muted/30">
+                <TableRow key={perm.id} className="text-xs hover:bg-muted/30">
                   <TableCell className="font-semibold text-foreground">
-                    <span>{isAr ? perm.name_ar : perm.name_en}</span>
-                    <span className="block text-[10px] text-muted-foreground font-mono">{perm.key}</span>
+                    <span>{isAr ? perm.title_ar : perm.title_en}</span>
+                    <span className="block text-[10px] text-muted-foreground font-mono">
+                      {perm.subtitle}
+                    </span>
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge variant="outline" className="text-[10px] text-muted-foreground">
@@ -263,6 +562,17 @@ export function RolesPermissionMatrix() {
           </TableBody>
         </Table>
       </div>
+
+      {isLive && (
+        <p className="flex items-start gap-2 text-[11px] text-muted-foreground px-1">
+          <Info className="w-3.5 h-3.5 shrink-0 mt-px text-primary" />
+          <span>
+            {isAr
+              ? "هذه المصفوفة تعرض جدول الصلاحيات في قاعدة البيانات فقط. بعض القيود إضافية وتُطبَّق في الخادم وسياسات RLS (مثل صلاحيات أمين الصندوق ومدير الأنساب)، لذلك قد لا يظهر لها صف هنا."
+              : "This matrix reflects the database permission grants only. Some rules are enforced separately in the server guards and RLS policies (treasurer and family-manager access, for example) and have no row here."}
+          </span>
+        </p>
+      )}
     </div>
   );
 }

@@ -25,7 +25,11 @@ import {
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
 import { HeroVideo } from "@/components/site/HeroVideo";
-import { getPublishedNews, getPublishedInitiatives, getPublicHomepageConfig } from "@/lib/cms.functions";
+import {
+  getPublishedNews,
+  getPublishedInitiatives,
+  getPublicHomepageConfig,
+} from "@/lib/cms.functions";
 import { getPublishedEvents } from "@/lib/events-public.functions";
 import type { PublicEventRow } from "@/lib/events-public.functions";
 import { mergeNews, mergeInitiatives } from "@/content/cms-adapt";
@@ -106,7 +110,8 @@ const getHomepageGalleryPreview = createServerFn({ method: "GET" }).handler(
           const asset = row.media_assets;
           if (!asset) return null;
           const url: string | null =
-            asset.public_url || (asset.bucket && asset.storage_path
+            asset.public_url ||
+            (asset.bucket && asset.storage_path
               ? `${baseUrl}/storage/v1/object/public/${asset.bucket}/${asset.storage_path}`
               : null);
           if (!url) return null;
@@ -131,13 +136,14 @@ const getHomepageGalleryPreview = createServerFn({ method: "GET" }).handler(
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const [newsRows, initiativeRows, homepageConfig, upcomingEvents, galleryPreview] = await Promise.all([
-      getPublishedNews(),
-      getPublishedInitiatives(),
-      getPublicHomepageConfig(),
-      getPublishedEvents(),
-      getHomepageGalleryPreview(),
-    ]);
+    const [newsRows, initiativeRows, homepageConfig, upcomingEvents, galleryPreview] =
+      await Promise.all([
+        getPublishedNews(),
+        getPublishedInitiatives(),
+        getPublicHomepageConfig(),
+        getPublishedEvents(),
+        getHomepageGalleryPreview(),
+      ]);
     return {
       news: mergeNews(newsRows, staticNews),
       initiatives: mergeInitiatives(initiativeRows, staticInitiatives),
@@ -330,30 +336,45 @@ function HomePage() {
         return (
           <div key={sec.id}>
             <HeroVideo
-              poster={sec.image_path?.endsWith(".mp4") ? "/images/ahsa_oasis.png" : (sec.image_path || "/images/ahsa_oasis.png")}
-              videoUrl={sec.custom_payload?.video_url || (sec.image_path?.endsWith(".mp4") ? sec.image_path : null)}
+              poster={
+                sec.image_path?.endsWith(".mp4")
+                  ? "/images/ahsa_oasis.png"
+                  : sec.image_path || "/images/ahsa_oasis.png"
+              }
+              videoUrl={
+                sec.custom_payload?.video_url ||
+                (sec.image_path?.endsWith(".mp4") ? sec.image_path : null)
+              }
             >
-              <div className="container-page flex min-h-[86vh] flex-col items-center justify-center py-24 text-center md:min-h-[92vh]">
+              <div className="container-page flex min-h-[75vh] sm:min-h-[86vh] md:min-h-[92vh] flex-col items-center justify-center py-14 sm:py-20 md:py-24 text-center">
                 {/* Emblem */}
                 <div className="mx-auto w-max motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                   <img
                     src="/logo-mark-gold.svg"
                     alt=""
-                    className="h-24 w-24 object-contain md:h-32 md:w-32"
+                    className="h-16 w-16 sm:h-24 sm:w-24 md:h-32 md:w-32 object-contain"
                     aria-hidden="true"
                   />
                 </div>
 
-                <p className="label-caps mt-8 text-gold/90 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
-                  {sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : t(siteMeta.ncnpAuthority)}
+                <p className="label-caps mt-5 sm:mt-8 text-xs sm:text-sm text-gold/90 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                  {sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : t(siteMeta.ncnpAuthority)}
                 </p>
 
-                <h1 className="mx-auto mt-5 max-w-4xl text-balance font-brand text-4xl leading-[1.2] font-bold text-ivory motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 md:text-6xl lg:text-7xl">
-                  {sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(siteMeta.officialName)}
+                <h1 className="mx-auto mt-3 sm:mt-5 max-w-4xl text-balance font-brand text-3xl sm:text-4xl md:text-6xl lg:text-7xl leading-[1.2] font-bold text-ivory motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                  {sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                      ? sec.title_en
+                      : t(siteMeta.officialName)}
                 </h1>
 
                 <div
-                  className="mx-auto mt-8 flex max-w-xs items-center gap-4 text-gold/70 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-500"
+                  className="mx-auto mt-5 sm:mt-8 flex max-w-xs items-center gap-4 text-gold/70 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-500"
                   aria-hidden="true"
                 >
                   <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
@@ -361,30 +382,34 @@ function HomePage() {
                   <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
                 </div>
 
-                <p className="measure mx-auto mt-8 text-balance text-base leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-700 md:text-lg">
-                  {sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : t(copy.standfirst)}
+                <p className="measure mx-auto mt-5 sm:mt-8 text-balance text-sm sm:text-base leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-700 md:text-lg">
+                  {sec.subtitle_ar && rtl
+                    ? sec.subtitle_ar
+                    : sec.subtitle_en && !rtl
+                      ? sec.subtitle_en
+                      : t(copy.standfirst)}
                 </p>
 
-                <div className="mt-12 flex flex-wrap items-center justify-center gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-1000 motion-safe:delay-1000">
+                <div className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-1000 motion-safe:delay-1000">
                   <Link
                     to={sec.cta_url || "/family-tree"}
-                    className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-7 py-3.5 text-sm font-bold text-ink shadow-[0_10px_40px_-10px_rgba(237,167,70,0.6)] transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.03] hover:shadow-[0_15px_50px_-10px_rgba(237,167,70,0.8)] active:scale-[0.98]"
+                    className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-bold text-ink shadow-[0_10px_40px_-10px_rgba(237,167,70,0.6)] transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.03] hover:shadow-[0_15px_50px_-10px_rgba(237,167,70,0.8)] active:scale-[0.98]"
                   >
                     <span>
                       {sec.cta_label_ar && rtl
                         ? sec.cta_label_ar
                         : sec.cta_label_en && !rtl
-                        ? sec.cta_label_en
-                        : lang === "ar"
-                        ? "تصفح مشجرة النسب"
-                        : "Explore Family Tree"}
+                          ? sec.cta_label_en
+                          : lang === "ar"
+                            ? "تصفح مشجرة النسب"
+                            : "Explore Family Tree"}
                     </span>
                     <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
                   </Link>
 
                   <Link
                     to="/about"
-                    className="inline-flex items-center gap-2 border border-ivory/40 bg-ivory/5 px-7 py-3.5 text-sm font-medium text-ivory backdrop-blur-md transition-[color,background-color,border-color,transform] duration-300 ease-out hover:border-gold/70 hover:bg-ivory/10 hover:text-gold active:scale-[0.98]"
+                    className="inline-flex items-center gap-2 border border-ivory/40 bg-ivory/5 px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-medium text-ivory backdrop-blur-md transition-[color,background-color,border-color,transform] duration-300 ease-out hover:border-gold/70 hover:bg-ivory/10 hover:text-gold active:scale-[0.98]"
                   >
                     <span>{lang === "ar" ? "قصة الأسرة" : "Our Story"}</span>
                   </Link>
@@ -392,11 +417,11 @@ function HomePage() {
 
                 {/* Scroll cue — mobile only */}
                 <div
-                  className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto flex w-full justify-center motion-safe:animate-bounce lg:hidden"
+                  className="pointer-events-none absolute inset-x-0 bottom-4 sm:bottom-6 mx-auto flex w-full justify-center motion-safe:animate-bounce lg:hidden"
                   aria-hidden="true"
                 >
-                  <div className="flex h-10 w-6 justify-center rounded-full border border-ivory/40 pt-2">
-                    <span className="h-2 w-0.5 rounded-full bg-ivory/70" />
+                  <div className="flex h-8 w-5 sm:h-10 sm:w-6 justify-center rounded-full border border-ivory/40 pt-1.5 sm:pt-2">
+                    <span className="h-1.5 w-0.5 sm:h-2 rounded-full bg-ivory/70" />
                   </div>
                 </div>
               </div>
@@ -421,19 +446,19 @@ function HomePage() {
                     { label: copy.seat, value: t(copy.seatValue), mono: false, link: "/contact" },
                   ].map((item, i) => {
                     const content = (
-                      <div className="flex h-full flex-col justify-center px-4 py-6 transition-[background-color,transform] duration-200 ease-out group-hover:bg-ivory/[0.06] active:scale-[0.98] sm:px-6 sm:text-center sm:first:ps-0 sm:last:pe-0">
-                        <dt className="label-caps flex items-center justify-center gap-1.5 text-ivory/50 transition-colors group-hover:text-gold">
+                      <div className="flex h-full flex-col justify-center px-3 py-4 sm:px-6 sm:py-6 transition-[background-color,transform] duration-200 ease-out group-hover:bg-ivory/[0.06] active:scale-[0.98] sm:text-center sm:first:ps-0 sm:last:pe-0">
+                        <dt className="label-caps flex items-center justify-center gap-1 text-[10px] sm:text-xs text-ivory/50 transition-colors group-hover:text-gold">
                           {t(item.label)}
                           {item.link && (
                             <Arrow
-                              className="h-3 w-3 opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-x-0.5 group-hover:opacity-100 rtl:group-hover:-translate-x-0.5"
+                              className="h-2.5 w-2.5 sm:h-3 sm:w-3 opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-x-0.5 group-hover:opacity-100 rtl:group-hover:-translate-x-0.5"
                               aria-hidden="true"
                             />
                           )}
                         </dt>
                         <dd
                           className={cn(
-                            "mt-2 text-sm font-semibold text-ivory transition-colors group-hover:text-gold sm:text-base",
+                            "mt-1 sm:mt-2 text-xs sm:text-base font-semibold text-ivory transition-colors group-hover:text-gold",
                             item.mono && "nums font-mono text-gold group-hover:text-gold-soft",
                           )}
                         >
@@ -443,7 +468,10 @@ function HomePage() {
                     );
 
                     return (
-                      <div key={i} className="group relative transition-transform duration-200 ease-out">
+                      <div
+                        key={i}
+                        className="group relative transition-transform duration-200 ease-out"
+                      >
                         {item.link ? (
                           <Link to={item.link} className="block h-full w-full">
                             {content}
@@ -468,15 +496,31 @@ function HomePage() {
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
               <div>
-                <Eyebrow>{sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : t(copy.openingEyebrow)}</Eyebrow>
+                <Eyebrow>
+                  {sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : t(copy.openingEyebrow)}
+                </Eyebrow>
                 <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                  {sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(copy.openingTitle)}
+                  {sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                      ? sec.title_en
+                      : t(copy.openingTitle)}
                 </h2>
               </div>
 
               <div>
                 <Prose dropCap>
-                  <p>{sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : t(copy.openingP1)}</p>
+                  <p>
+                    {sec.subtitle_ar && rtl
+                      ? sec.subtitle_ar
+                      : sec.subtitle_en && !rtl
+                        ? sec.subtitle_en
+                        : t(copy.openingP1)}
+                  </p>
                   <p>{t(copy.openingP2)}</p>
                 </Prose>
 
@@ -484,7 +528,11 @@ function HomePage() {
                   to={sec.cta_url || "/about"}
                   className="mt-6 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
-                  {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : t(copy.openingLink)}
+                  {sec.cta_label_ar && rtl
+                    ? sec.cta_label_ar
+                    : sec.cta_label_en && !rtl
+                      ? sec.cta_label_en
+                      : t(copy.openingLink)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
@@ -498,9 +546,27 @@ function HomePage() {
           <section key={sec.id} className="border-y border-border bg-secondary/40 reveal-on-scroll">
             <div className="container-page py-16 md:py-20">
               <SectionHeading
-                eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : t(copy.branchesEyebrow)}
-                title={sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(copy.branchesTitle)}
-                subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : t(copy.branchesSub)}
+                eyebrow={
+                  sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : t(copy.branchesEyebrow)
+                }
+                title={
+                  sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                      ? sec.title_en
+                      : t(copy.branchesTitle)
+                }
+                subtitle={
+                  sec.subtitle_ar && rtl
+                    ? sec.subtitle_ar
+                    : sec.subtitle_en && !rtl
+                      ? sec.subtitle_en
+                      : t(copy.branchesSub)
+                }
               />
 
               <ol className="mt-10 border-t border-border">
@@ -509,7 +575,7 @@ function HomePage() {
                     <Link
                       to="/branches"
                       hash={b.id}
-                      className="group grid grid-cols-[2rem_1fr_auto] items-baseline gap-x-4 border-b border-border py-4 transition-[color,background-color,transform] duration-150 ease-out hover:bg-background/60 active:scale-[0.99] sm:grid-cols-[2.5rem_minmax(0,16rem)_1fr_auto] sm:gap-x-6"
+                      className="group grid grid-cols-[1.5rem_1fr_auto] items-baseline gap-x-2.5 sm:gap-x-6 border-b border-border py-3.5 sm:py-4 transition-[color,background-color,transform] duration-150 ease-out hover:bg-background/60 active:scale-[0.99] sm:grid-cols-[2.5rem_minmax(0,16rem)_1fr_auto]"
                     >
                       <span
                         className="nums font-naskh text-lg text-bronze/60 dark:text-gold/50"
@@ -538,7 +604,11 @@ function HomePage() {
                 to={sec.cta_url || "/branches"}
                 className="mt-7 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
-                {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : t(copy.allBranches)}
+                {sec.cta_label_ar && rtl
+                  ? sec.cta_label_ar
+                  : sec.cta_label_en && !rtl
+                    ? sec.cta_label_en
+                    : t(copy.allBranches)}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -563,12 +633,26 @@ function HomePage() {
               </figure>
 
               <div>
-                <Eyebrow>{sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : t(copy.hqEyebrow)}</Eyebrow>
+                <Eyebrow>
+                  {sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : t(copy.hqEyebrow)}
+                </Eyebrow>
                 <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                  {sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(hqProject.title)}
+                  {sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                      ? sec.title_en
+                      : t(hqProject.title)}
                 </h2>
                 <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
-                  {sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : t(hqProject.fundingModel)}
+                  {sec.subtitle_ar && rtl
+                    ? sec.subtitle_ar
+                    : sec.subtitle_en && !rtl
+                      ? sec.subtitle_en
+                      : t(hqProject.fundingModel)}
                 </p>
 
                 {/* Progress */}
@@ -629,7 +713,11 @@ function HomePage() {
                   to={sec.cta_url || "/initiatives"}
                   className="mt-7 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
-                  {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : t(copy.hqDetails)}
+                  {sec.cta_label_ar && rtl
+                    ? sec.cta_label_ar
+                    : sec.cta_label_en && !rtl
+                      ? sec.cta_label_en
+                      : t(copy.hqDetails)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
@@ -643,15 +731,37 @@ function HomePage() {
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
               <SectionHeading
-                eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : t(copy.newsEyebrow)}
-                title={sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(copy.newsTitle)}
-                subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+                eyebrow={
+                  sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : t(copy.newsEyebrow)
+                }
+                title={
+                  sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                      ? sec.title_en
+                      : t(copy.newsTitle)
+                }
+                subtitle={
+                  sec.subtitle_ar && rtl
+                    ? sec.subtitle_ar
+                    : sec.subtitle_en && !rtl
+                      ? sec.subtitle_en
+                      : undefined
+                }
               />
               <Link
                 to={sec.cta_url || "/news"}
                 className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
-                {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : t(copy.allNews)}
+                {sec.cta_label_ar && rtl
+                  ? sec.cta_label_ar
+                  : sec.cta_label_en && !rtl
+                    ? sec.cta_label_en
+                    : t(copy.allNews)}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -712,15 +822,37 @@ function HomePage() {
             <div className="container-page py-16 md:py-20">
               <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
                 <SectionHeading
-                  eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : t(copy.honoursEyebrow)}
-                  title={sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(copy.honoursTitle)}
-                  subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+                  eyebrow={
+                    sec.badge_ar && rtl
+                      ? sec.badge_ar
+                      : sec.badge_en && !rtl
+                        ? sec.badge_en
+                        : t(copy.honoursEyebrow)
+                  }
+                  title={
+                    sec.title_ar && rtl
+                      ? sec.title_ar
+                      : sec.title_en && !rtl
+                        ? sec.title_en
+                        : t(copy.honoursTitle)
+                  }
+                  subtitle={
+                    sec.subtitle_ar && rtl
+                      ? sec.subtitle_ar
+                      : sec.subtitle_en && !rtl
+                        ? sec.subtitle_en
+                        : undefined
+                  }
                 />
                 <Link
                   to={sec.cta_url || "/achievers"}
                   className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
-                  {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : t(copy.allHonours)}
+                  {sec.cta_label_ar && rtl
+                    ? sec.cta_label_ar
+                    : sec.cta_label_en && !rtl
+                      ? sec.cta_label_en
+                      : t(copy.allHonours)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
@@ -746,15 +878,37 @@ function HomePage() {
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
               <SectionHeading
-                eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : t(copy.programmesEyebrow)}
-                title={sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(copy.programmesTitle)}
-                subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+                eyebrow={
+                  sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : t(copy.programmesEyebrow)
+                }
+                title={
+                  sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                      ? sec.title_en
+                      : t(copy.programmesTitle)
+                }
+                subtitle={
+                  sec.subtitle_ar && rtl
+                    ? sec.subtitle_ar
+                    : sec.subtitle_en && !rtl
+                      ? sec.subtitle_en
+                      : undefined
+                }
               />
               <Link
                 to={sec.cta_url || "/initiatives"}
                 className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
-                {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : t(copy.allProgrammes)}
+                {sec.cta_label_ar && rtl
+                  ? sec.cta_label_ar
+                  : sec.cta_label_en && !rtl
+                    ? sec.cta_label_en
+                    : t(copy.allProgrammes)}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -813,16 +967,32 @@ function HomePage() {
             <div className="container-page py-16 md:py-20">
               <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
                 <div>
-                  <Eyebrow>{sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : t(copy.dnaEyebrow)}</Eyebrow>
-                  <p className="nums mt-4 font-mono text-3xl text-foreground">{dnaInfo.haplogroup}</p>
+                  <Eyebrow>
+                    {sec.badge_ar && rtl
+                      ? sec.badge_ar
+                      : sec.badge_en && !rtl
+                        ? sec.badge_en
+                        : t(copy.dnaEyebrow)}
+                  </Eyebrow>
+                  <p className="nums mt-4 font-mono text-3xl text-foreground">
+                    {dnaInfo.haplogroup}
+                  </p>
                 </div>
 
                 <div>
                   <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                    {sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(dnaInfo.title)}
+                    {sec.title_ar && rtl
+                      ? sec.title_ar
+                      : sec.title_en && !rtl
+                        ? sec.title_en
+                        : t(dnaInfo.title)}
                   </h2>
                   <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
-                    {sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : t(dnaInfo.overview)}
+                    {sec.subtitle_ar && rtl
+                      ? sec.subtitle_ar
+                      : sec.subtitle_en && !rtl
+                        ? sec.subtitle_en
+                        : t(dnaInfo.overview)}
                   </p>
 
                   <div className="mt-6 border-y border-border py-3">
@@ -840,7 +1010,11 @@ function HomePage() {
                       to={sec.cta_url || "/dna"}
                       className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                     >
-                      {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : t(copy.dnaLink)}
+                      {sec.cta_label_ar && rtl
+                        ? sec.cta_label_ar
+                        : sec.cta_label_en && !rtl
+                          ? sec.cta_label_en
+                          : t(copy.dnaLink)}
                       <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                     </Link>
                     {dnaInfo.databases.map((db) => (
@@ -873,9 +1047,31 @@ function HomePage() {
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <SectionHeading
-              eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : (rtl ? "أرقام ومنجزات" : "Numbers & Achievements")}
-              title={sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : (rtl ? "الأسرة في أرقام ومنجزات" : "The Family in Numbers")}
-              subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+              eyebrow={
+                sec.badge_ar && rtl
+                  ? sec.badge_ar
+                  : sec.badge_en && !rtl
+                    ? sec.badge_en
+                    : rtl
+                      ? "أرقام ومنجزات"
+                      : "Numbers & Achievements"
+              }
+              title={
+                sec.title_ar && rtl
+                  ? sec.title_ar
+                  : sec.title_en && !rtl
+                    ? sec.title_en
+                    : rtl
+                      ? "الأسرة في أرقام ومنجزات"
+                      : "The Family in Numbers"
+              }
+              subtitle={
+                sec.subtitle_ar && rtl
+                  ? sec.subtitle_ar
+                  : sec.subtitle_en && !rtl
+                    ? sec.subtitle_en
+                    : undefined
+              }
             />
             <dl className="mt-10 grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4">
               {statItems.map((s, i) => (
@@ -896,10 +1092,22 @@ function HomePage() {
           <section key={sec.id} className="border-y border-border bg-secondary/40 reveal-on-scroll">
             <div className="container-page py-16 text-center md:py-20">
               <Eyebrow>
-                {sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : (rtl ? "الشجرة التفاعلية" : "Interactive Tree")}
+                {sec.badge_ar && rtl
+                  ? sec.badge_ar
+                  : sec.badge_en && !rtl
+                    ? sec.badge_en
+                    : rtl
+                      ? "الشجرة التفاعلية"
+                      : "Interactive Tree"}
               </Eyebrow>
               <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                {sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : (rtl ? "شجرة العائلة الرقمية التفاعلية" : "Interactive Digital Family Tree")}
+                {sec.title_ar && rtl
+                  ? sec.title_ar
+                  : sec.title_en && !rtl
+                    ? sec.title_en
+                    : rtl
+                      ? "شجرة العائلة الرقمية التفاعلية"
+                      : "Interactive Digital Family Tree"}
               </h2>
               {(sec.subtitle_ar || sec.subtitle_en) && (
                 <p className="measure mx-auto mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -910,7 +1118,13 @@ function HomePage() {
                 to={sec.cta_url || "/family-tree"}
                 className="mt-7 inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
               >
-                {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : (rtl ? "فتح الشجرة التفاعلية" : "Open Tree Canvas")}
+                {sec.cta_label_ar && rtl
+                  ? sec.cta_label_ar
+                  : sec.cta_label_en && !rtl
+                    ? sec.cta_label_en
+                    : rtl
+                      ? "فتح الشجرة التفاعلية"
+                      : "Open Tree Canvas"}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -924,10 +1138,18 @@ function HomePage() {
             <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
               <div>
                 <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                  {sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : t(copy.joinTitle)}
+                  {sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                      ? sec.title_en
+                      : t(copy.joinTitle)}
                 </h2>
                 <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
-                  {sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : t(copy.joinBody)}
+                  {sec.subtitle_ar && rtl
+                    ? sec.subtitle_ar
+                    : sec.subtitle_en && !rtl
+                      ? sec.subtitle_en
+                      : t(copy.joinBody)}
                 </p>
               </div>
 
@@ -942,7 +1164,11 @@ function HomePage() {
                   to={sec.cta_url || "/contact"}
                   className="inline-flex items-center border border-border px-5 py-3 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-secondary active:scale-[0.97]"
                 >
-                  {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : t(copy.contactCta)}
+                  {sec.cta_label_ar && rtl
+                    ? sec.cta_label_ar
+                    : sec.cta_label_en && !rtl
+                      ? sec.cta_label_en
+                      : t(copy.contactCta)}
                 </Link>
               </div>
             </div>
@@ -956,15 +1182,43 @@ function HomePage() {
             <div className="container-page py-16 md:py-20">
               <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
                 <SectionHeading
-                  eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : (rtl ? "التقويم" : "Calendar")}
-                  title={sec.title_ar && rtl ? sec.title_ar : sec.title_en && !rtl ? sec.title_en : (rtl ? "الفعاليات والاجتماعات العائلية" : "Family Events & Council Meetings")}
-                  subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+                  eyebrow={
+                    sec.badge_ar && rtl
+                      ? sec.badge_ar
+                      : sec.badge_en && !rtl
+                        ? sec.badge_en
+                        : rtl
+                          ? "التقويم"
+                          : "Calendar"
+                  }
+                  title={
+                    sec.title_ar && rtl
+                      ? sec.title_ar
+                      : sec.title_en && !rtl
+                        ? sec.title_en
+                        : rtl
+                          ? "الفعاليات والاجتماعات العائلية"
+                          : "Family Events & Council Meetings"
+                  }
+                  subtitle={
+                    sec.subtitle_ar && rtl
+                      ? sec.subtitle_ar
+                      : sec.subtitle_en && !rtl
+                        ? sec.subtitle_en
+                        : undefined
+                  }
                 />
                 <Link
                   to={sec.cta_url || "/events"}
                   className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
-                  {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : (rtl ? "سجل الفعاليات" : "View all events")}
+                  {sec.cta_label_ar && rtl
+                    ? sec.cta_label_ar
+                    : sec.cta_label_en && !rtl
+                      ? sec.cta_label_en
+                      : rtl
+                        ? "سجل الفعاليات"
+                        : "View all events"}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
@@ -986,7 +1240,9 @@ function HomePage() {
                       ) : null}
                       <div className="flex items-center gap-2 text-xs text-bronze dark:text-gold">
                         <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span className="nums">{formatHomeEventDate(evt.start_at, lang, evt.timezone)}</span>
+                        <span className="nums">
+                          {formatHomeEventDate(evt.start_at, lang, evt.timezone)}
+                        </span>
                       </div>
                       <h3 className="mt-3 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
                         {rtl ? evt.title_ar : evt.title_en || evt.title_ar}
@@ -1011,24 +1267,44 @@ function HomePage() {
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
               <SectionHeading
-                eyebrow={sec.badge_ar && rtl ? sec.badge_ar : sec.badge_en && !rtl ? sec.badge_en : (rtl ? "الأرشيف" : "Archive")}
+                eyebrow={
+                  sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : rtl
+                        ? "الأرشيف"
+                        : "Archive"
+                }
                 title={
                   sec.title_ar && rtl
                     ? sec.title_ar
                     : sec.title_en && !rtl
-                    ? sec.title_en
-                    : rtl
-                    ? galleryPreview.title_ar
-                    : galleryPreview.title_en || galleryPreview.title_ar
+                      ? sec.title_en
+                      : rtl
+                        ? galleryPreview.title_ar
+                        : galleryPreview.title_en || galleryPreview.title_ar
                 }
-                subtitle={sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en && !rtl ? sec.subtitle_en : undefined}
+                subtitle={
+                  sec.subtitle_ar && rtl
+                    ? sec.subtitle_ar
+                    : sec.subtitle_en && !rtl
+                      ? sec.subtitle_en
+                      : undefined
+                }
               />
               {sec.cta_url ? (
                 <Link
                   to={sec.cta_url}
                   className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
-                  {sec.cta_label_ar && rtl ? sec.cta_label_ar : sec.cta_label_en && !rtl ? sec.cta_label_en : (rtl ? "المزيد" : "More")}
+                  {sec.cta_label_ar && rtl
+                    ? sec.cta_label_ar
+                    : sec.cta_label_en && !rtl
+                      ? sec.cta_label_en
+                      : rtl
+                        ? "المزيد"
+                        : "More"}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               ) : null}
@@ -1039,7 +1315,11 @@ function HomePage() {
                 <li key={item.id} className="hover-lift active-scale aspect-square overflow-hidden">
                   <img
                     src={item.url}
-                    alt={(rtl ? item.alt_ar : item.alt_en) || (rtl ? item.caption_ar : item.caption_en) || ""}
+                    alt={
+                      (rtl ? item.alt_ar : item.alt_en) ||
+                      (rtl ? item.caption_ar : item.caption_en) ||
+                      ""
+                    }
                     className="h-full w-full object-cover"
                     loading="lazy"
                   />

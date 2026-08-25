@@ -18,12 +18,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/lib/ThemeProvider";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import {
@@ -67,7 +80,12 @@ import {
   Settings,
   X,
 } from "lucide-react";
-import { ADMIN_DOMAINS, type AdminDomainGroup, type AdminSubTab, type AdminRole } from "./AdminNavigation";
+import {
+  ADMIN_DOMAINS,
+  type AdminDomainGroup,
+  type AdminSubTab,
+  type AdminRole,
+} from "./AdminNavigation";
 import { AdminCommandPalette, type SearchableItem } from "./AdminCommandPalette";
 import { useConfirm } from "@/hooks/useConfirm";
 
@@ -239,11 +257,17 @@ export function AdminConsoleLayout({
 
   // Current domain and tab objects
   const currentDomain = useMemo(() => {
-    return visibleDomains.find((d) => d.id === activeDomainId) || visibleDomains[0] || ADMIN_DOMAINS[0];
+    return (
+      visibleDomains.find((d) => d.id === activeDomainId) || visibleDomains[0] || ADMIN_DOMAINS[0]
+    );
   }, [visibleDomains, activeDomainId]);
 
   const currentTab = useMemo(() => {
-    return currentDomain.tabs.find((t) => t.id === activeTabId) || currentDomain.tabs[0] || ADMIN_DOMAINS[0].tabs[0];
+    return (
+      currentDomain.tabs.find((t) => t.id === activeTabId) ||
+      currentDomain.tabs[0] ||
+      ADMIN_DOMAINS[0].tabs[0]
+    );
   }, [currentDomain, activeTabId]);
 
   // Meaningful Actionable Attention Count (No vanity numbers)
@@ -294,7 +318,9 @@ export function AdminConsoleLayout({
     if (!onBroadcastNotification) return;
 
     const confirmed = await confirm({
-      title: isAr ? "بث هذا الإشعار لجميع المستخدمين؟" : "Broadcast this notification to all users?",
+      title: isAr
+        ? "بث هذا الإشعار لجميع المستخدمين؟"
+        : "Broadcast this notification to all users?",
       description: isAr
         ? "سيصل هذا الإشعار فوراً إلى جميع أعضاء المنصة والمشرفين، ولا يمكن سحبه بعد الإرسال."
         : "This will be delivered immediately to every member and admin on the platform, and can't be recalled once sent.",
@@ -305,7 +331,9 @@ export function AdminConsoleLayout({
     try {
       setSubmittingBroadcast(true);
       await onBroadcastNotification(broadcastForm);
-      toast.success(isAr ? "تم بث الإشعار بنجاح لجميع المستخدمين" : "Broadcast sent successfully to all users");
+      toast.success(
+        isAr ? "تم بث الإشعار بنجاح لجميع المستخدمين" : "Broadcast sent successfully to all users",
+      );
       setBroadcastModalOpen(false);
       setBroadcastForm({
         title_ar: "",
@@ -319,6 +347,48 @@ export function AdminConsoleLayout({
       toast.error(err.message || (isAr ? "فشل إرسال البث" : "Failed to broadcast notification"));
     } finally {
       setSubmittingBroadcast(false);
+    }
+  };
+
+  /* Every notification callback resolves to a server mutation that rethrows on
+   * failure (see runMutation in routes/_authenticated/admin.tsx). Calling them
+   * straight from onClick left the rejection unhandled and gave no confirmation
+   * on success, so each one is routed through a handler that awaits, reports,
+   * and -- for the destructive delete -- confirms first. */
+  const handleMarkNotificationRead = async (id: string) => {
+    if (!onMarkNotificationRead) return;
+    try {
+      await onMarkNotificationRead(id);
+    } catch {
+      // runMutation already surfaced the failure as a toast.
+    }
+  };
+
+  const handleMarkAllNotificationsRead = async () => {
+    if (!onMarkAllNotificationsRead) return;
+    try {
+      await onMarkAllNotificationsRead();
+      toast.success(isAr ? "تم تحديد الكل كمقروء" : "All marked as read");
+    } catch {
+      // runMutation already surfaced the failure as a toast.
+    }
+  };
+
+  const handleDeleteNotification = async (id: string) => {
+    if (!onDeleteNotification) return;
+    const confirmed = await confirm({
+      title: isAr ? "حذف هذا الإشعار؟" : "Delete this notification?",
+      description: isAr
+        ? "سيُحذف الإشعار من مركز التنبيهات نهائيًا ولا يمكن استرجاعه."
+        : "The notification will be permanently removed from your inbox and can't be restored.",
+      tone: "destructive",
+    });
+    if (!confirmed) return;
+    try {
+      await onDeleteNotification(id);
+      toast.success(isAr ? "تم حذف الإشعار" : "Notification deleted");
+    } catch {
+      // runMutation already surfaced the failure as a toast.
     }
   };
 
@@ -350,7 +420,11 @@ export function AdminConsoleLayout({
                   </TooltipTrigger>
                   <TooltipContent side={isRtl ? "left" : "right"} className="text-xs font-medium">
                     <p className="font-bold">{isAr ? "تحتاج إلى انتباهك" : "Needs Attention"}</p>
-                    <p className="text-[11px] opacity-80">{isAr ? `${totalPendingAlerts} مهام تتطلب تدخلك` : `${totalPendingAlerts} actionable items`}</p>
+                    <p className="text-[11px] opacity-80">
+                      {isAr
+                        ? `${totalPendingAlerts} مهام تتطلب تدخلك`
+                        : `${totalPendingAlerts} actionable items`}
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               ) : (
@@ -374,7 +448,10 @@ export function AdminConsoleLayout({
                       </span>
                     </div>
                   </div>
-                  <Badge variant="outline" className="bg-amber-500 text-white border-amber-600 font-mono font-bold text-[10px] h-5 px-1.5 shrink-0">
+                  <Badge
+                    variant="outline"
+                    className="bg-amber-500 text-white border-amber-600 font-mono font-bold text-[10px] h-5 px-1.5 shrink-0"
+                  >
                     {totalPendingAlerts}
                   </Badge>
                 </button>
@@ -386,8 +463,10 @@ export function AdminConsoleLayout({
           {visibleDomains.map((domain) => {
             const DomainIcon = domain.icon;
             const isDomainActive = domain.id === activeDomainId;
-            const isExpanded = isMobile ? (expandedDomains[domain.id] ?? true) : !!expandedDomains[domain.id];
-            
+            const isExpanded = isMobile
+              ? (expandedDomains[domain.id] ?? true)
+              : !!expandedDomains[domain.id];
+
             // Aggregate domain badge count
             const domainBadge = domain.tabs.reduce((sum, tab) => {
               return sum + (tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0);
@@ -406,7 +485,7 @@ export function AdminConsoleLayout({
                         "w-10 h-10 mx-auto rounded-xl flex items-center justify-center transition-all relative group",
                         isDomainActive
                           ? "bg-primary text-primary-foreground font-bold shadow-sm"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                       )}
                     >
                       <DomainIcon className="w-4 h-4" />
@@ -417,15 +496,23 @@ export function AdminConsoleLayout({
                       )}
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side={isRtl ? "left" : "right"} className="text-xs p-2.5 max-w-xs">
+                  <TooltipContent
+                    side={isRtl ? "left" : "right"}
+                    className="text-xs p-2.5 max-w-xs"
+                  >
                     <p className="font-bold text-xs">{isAr ? domain.label_ar : domain.label_en}</p>
                     {domain.description_ar && (
-                      <p className="text-[10px] opacity-80 mt-0.5">{isAr ? domain.description_ar : domain.description_en}</p>
+                      <p className="text-[10px] opacity-80 mt-0.5">
+                        {isAr ? domain.description_ar : domain.description_en}
+                      </p>
                     )}
                     {domain.tabs.length > 1 && (
                       <div className="mt-2 pt-1.5 border-t border-primary-foreground/20 space-y-1">
                         {domain.tabs.map((t) => (
-                          <div key={t.id} className="text-[11px] flex items-center gap-1.5 opacity-90">
+                          <div
+                            key={t.id}
+                            className="text-[11px] flex items-center gap-1.5 opacity-90"
+                          >
                             <span className="w-1 h-1 rounded-full bg-current" />
                             <span>{isAr ? t.label_ar : t.label_en}</span>
                           </div>
@@ -455,8 +542,8 @@ export function AdminConsoleLayout({
                     isDomainActive && domain.tabs.length === 1
                       ? "bg-primary text-primary-foreground shadow-xs font-bold"
                       : isDomainActive
-                      ? "text-primary font-bold bg-primary/5 hover:bg-primary/10"
-                      : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
+                        ? "text-primary font-bold bg-primary/5 hover:bg-primary/10"
+                        : "text-foreground/80 hover:text-foreground hover:bg-muted/50",
                   )}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -466,8 +553,8 @@ export function AdminConsoleLayout({
                         isDomainActive && domain.tabs.length === 1
                           ? "text-primary-foreground"
                           : isDomainActive
-                          ? "text-primary"
-                          : "text-muted-foreground group-hover:text-foreground"
+                            ? "text-primary"
+                            : "text-muted-foreground group-hover:text-foreground",
                       )}
                     />
                     <span className="truncate">{isAr ? domain.label_ar : domain.label_en}</span>
@@ -486,7 +573,7 @@ export function AdminConsoleLayout({
                       <ChevronDown
                         className={cn(
                           "w-3.5 h-3.5 transition-transform duration-200 text-muted-foreground/70 group-hover:text-foreground",
-                          isExpanded ? "transform rotate-180" : ""
+                          isExpanded ? "transform rotate-180" : "",
                         )}
                       />
                     )}
@@ -498,13 +585,15 @@ export function AdminConsoleLayout({
                   <div
                     className={cn(
                       "py-1 space-y-0.5",
-                      isRtl ? "pe-1 ps-3 border-r border-border/60 mr-3.5" : "ps-3 pe-1 border-l border-border/60 ml-3.5"
+                      isRtl
+                        ? "pe-1 ps-3 border-r border-border/60 mr-3.5"
+                        : "ps-3 pe-1 border-l border-border/60 ml-3.5",
                     )}
                   >
                     {domain.tabs.map((tab) => {
                       const TabIcon = tab.icon;
                       const isTabActive = isDomainActive && tab.id === activeTabId;
-                      const tabBadge = tab.badgeKey ? badgeCounts[tab.badgeKey] ?? 0 : 0;
+                      const tabBadge = tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0;
 
                       return (
                         <button
@@ -519,13 +608,20 @@ export function AdminConsoleLayout({
                             isTabActive
                               ? cn(
                                   "bg-primary/10 text-primary font-bold dark:bg-primary/20",
-                                  isRtl ? "border-r-2 border-primary -mr-[13px] pr-3" : "border-l-2 border-primary -ml-[13px] pl-3"
+                                  isRtl
+                                    ? "border-r-2 border-primary -mr-[13px] pr-3"
+                                    : "border-l-2 border-primary -ml-[13px] pl-3",
                                 )
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
                           )}
                         >
                           <div className="flex items-center gap-2 min-w-0">
-                            <TabIcon className={cn("w-3.5 h-3.5 shrink-0", isTabActive ? "text-primary" : "opacity-70 group-hover:opacity-100")} />
+                            <TabIcon
+                              className={cn(
+                                "w-3.5 h-3.5 shrink-0",
+                                isTabActive ? "text-primary" : "opacity-70 group-hover:opacity-100",
+                              )}
+                            />
                             <span className="truncate">{isAr ? tab.label_ar : tab.label_en}</span>
                           </div>
                           {tabBadge > 0 && (
@@ -557,7 +653,7 @@ export function AdminConsoleLayout({
       <aside
         className={cn(
           "hidden md:flex flex-col border-e border-border/70 bg-card/70 backdrop-blur-xl shrink-0 transition-all duration-300 z-30 sticky top-0 h-screen select-none",
-          sidebarCollapsed ? "w-16" : "w-64"
+          sidebarCollapsed ? "w-16" : "w-64",
         )}
       >
         {/* Brand Header */}
@@ -595,12 +691,26 @@ export function AdminConsoleLayout({
             size="icon"
             onClick={handleToggleSidebar}
             className="w-7 h-7 text-muted-foreground hover:text-foreground hidden lg:flex rounded-lg"
-            title={sidebarCollapsed ? (isAr ? "توسيع القائمة (Ctrl+\\)" : "Expand Sidebar") : (isAr ? "طي القائمة" : "Collapse Sidebar")}
+            title={
+              sidebarCollapsed
+                ? isAr
+                  ? "توسيع القائمة (Ctrl+\\)"
+                  : "Expand Sidebar"
+                : isAr
+                  ? "طي القائمة"
+                  : "Collapse Sidebar"
+            }
           >
             {sidebarCollapsed ? (
-              isRtl ? <PanelLeftOpen className="w-4 h-4 transform rotate-180" /> : <PanelLeftOpen className="w-4 h-4" />
+              isRtl ? (
+                <PanelLeftOpen className="w-4 h-4 transform rotate-180" />
+              ) : (
+                <PanelLeftOpen className="w-4 h-4" />
+              )
+            ) : isRtl ? (
+              <PanelLeftClose className="w-4 h-4 transform rotate-180" />
             ) : (
-              isRtl ? <PanelLeftClose className="w-4 h-4 transform rotate-180" /> : <PanelLeftClose className="w-4 h-4" />
+              <PanelLeftClose className="w-4 h-4" />
             )}
           </Button>
         </div>
@@ -624,9 +734,7 @@ export function AdminConsoleLayout({
         )}
 
         {/* Navigation Groups (Scrollable) */}
-        <div className="flex-1 overflow-y-auto px-2 py-2 no-scrollbar">
-          {renderNavList(false)}
-        </div>
+        <div className="flex-1 overflow-y-auto px-2 py-2 no-scrollbar">{renderNavList(false)}</div>
 
         {/* Bottom Utility & User Profile Strip */}
         <div className="p-2 border-t border-border/70 bg-card/40 space-y-1">
@@ -659,7 +767,11 @@ export function AdminConsoleLayout({
                   className="w-7 h-7 text-muted-foreground hover:text-foreground"
                   title={isAr ? "تغيير المظهر" : "Toggle Theme"}
                 >
-                  {theme === "dark" ? <Sun className="w-3.5 h-3.5 text-amber-500" /> : <Moon className="w-3.5 h-3.5" />}
+                  {theme === "dark" ? (
+                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  ) : (
+                    <Moon className="w-3.5 h-3.5" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -689,7 +801,7 @@ export function AdminConsoleLayout({
               <button
                 className={cn(
                   "w-full flex items-center gap-2.5 p-1.5 rounded-xl text-start hover:bg-muted/60 transition-colors cursor-pointer",
-                  sidebarCollapsed && "justify-center p-1"
+                  sidebarCollapsed && "justify-center p-1",
                 )}
               >
                 <Avatar className="w-8 h-8 rounded-full border border-primary/30 shadow-2xs shrink-0 bg-primary/10">
@@ -701,7 +813,10 @@ export function AdminConsoleLayout({
                     />
                   )}
                   <AvatarFallback className="bg-primary/15 text-primary font-bold text-xs">
-                    {profile?.full_name_ar?.[0] || profile?.full_name_en?.[0] || user?.email?.[0]?.toUpperCase() || "A"}
+                    {profile?.full_name_ar?.[0] ||
+                      profile?.full_name_en?.[0] ||
+                      user?.email?.[0]?.toUpperCase() ||
+                      "A"}
                   </AvatarFallback>
                 </Avatar>
                 {!sidebarCollapsed && (
@@ -710,7 +825,17 @@ export function AdminConsoleLayout({
                       {profile?.full_name_ar || profile?.full_name_en || user?.email?.split("@")[0]}
                     </span>
                     <span className="text-[10px] text-muted-foreground font-mono block truncate">
-                      {isSuperAdmin ? (isAr ? "مشرف عام" : "Super Admin") : isAdmin ? (isAr ? "مدير نظام" : "Admin") : (isAr ? "مسؤول قطاع" : "Officer")}
+                      {isSuperAdmin
+                        ? isAr
+                          ? "مشرف عام"
+                          : "Super Admin"
+                        : isAdmin
+                          ? isAr
+                            ? "مدير نظام"
+                            : "Admin"
+                          : isAr
+                            ? "مسؤول قطاع"
+                            : "Officer"}
                     </span>
                   </div>
                 )}
@@ -728,11 +853,16 @@ export function AdminConsoleLayout({
                       />
                     )}
                     <AvatarFallback className="bg-primary/15 text-primary font-bold text-xs">
-                      {profile?.full_name_ar?.[0] || profile?.full_name_en?.[0] || user?.email?.[0]?.toUpperCase() || "A"}
+                      {profile?.full_name_ar?.[0] ||
+                        profile?.full_name_en?.[0] ||
+                        user?.email?.[0]?.toUpperCase() ||
+                        "A"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
-                    <span className="block font-bold text-foreground truncate">{profile?.full_name_ar || profile?.full_name_en || "مشرف المنظومة"}</span>
+                    <span className="block font-bold text-foreground truncate">
+                      {profile?.full_name_ar || profile?.full_name_en || "مشرف المنظومة"}
+                    </span>
                     <span className="block text-[11px] font-normal text-muted-foreground font-mono truncate">
                       {user?.email}
                     </span>
@@ -746,7 +876,10 @@ export function AdminConsoleLayout({
                   {isAr ? "الملف الشخصي والحساب" : "My Profile"}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setHelpModalOpen(true)} className="text-xs cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => setHelpModalOpen(true)}
+                className="text-xs cursor-pointer"
+              >
                 <HelpCircle className="w-3.5 h-3.5 me-2 text-primary" />
                 {isAr ? "دليل الاستخدام والمساعدة" : "Help & Documentation"}
               </DropdownMenuItem>
@@ -754,8 +887,18 @@ export function AdminConsoleLayout({
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="text-xs cursor-pointer"
               >
-                {theme === "dark" ? <Sun className="w-3.5 h-3.5 me-2 text-amber-500" /> : <Moon className="w-3.5 h-3.5 me-2 text-primary" />}
-                {isAr ? (theme === "dark" ? "المظهر الفاتح" : "المظهر الداكن") : (theme === "dark" ? "Light Mode" : "Dark Mode")}
+                {theme === "dark" ? (
+                  <Sun className="w-3.5 h-3.5 me-2 text-amber-500" />
+                ) : (
+                  <Moon className="w-3.5 h-3.5 me-2 text-primary" />
+                )}
+                {isAr
+                  ? theme === "dark"
+                    ? "المظهر الفاتح"
+                    : "المظهر الداكن"
+                  : theme === "dark"
+                    ? "Light Mode"
+                    : "Dark Mode"}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setLang(isAr ? "en" : "ar")}
@@ -788,7 +931,11 @@ export function AdminConsoleLayout({
             {/* Mobile Sheet Trigger */}
             <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden w-8 h-8 text-muted-foreground shrink-0 rounded-lg">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden w-8 h-8 text-muted-foreground shrink-0 rounded-lg"
+                >
                   <MenuIcon className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
@@ -805,9 +952,7 @@ export function AdminConsoleLayout({
                     <span>{isAr ? "أمانة مجلس آل بوعبيد" : "Al Bu Obaid Hub"}</span>
                   </SheetTitle>
                 </div>
-                <div className="flex-1 overflow-y-auto p-3">
-                  {renderNavList(true)}
-                </div>
+                <div className="flex-1 overflow-y-auto p-3">{renderNavList(true)}</div>
                 <div className="p-3 border-t border-border/70 bg-card/60 flex items-center gap-2.5">
                   <Avatar className="w-8 h-8 rounded-full border border-primary/30 shadow-2xs shrink-0 bg-primary/10">
                     {avatarUrl && (
@@ -818,7 +963,10 @@ export function AdminConsoleLayout({
                       />
                     )}
                     <AvatarFallback className="bg-primary/15 text-primary font-bold text-xs">
-                      {profile?.full_name_ar?.[0] || profile?.full_name_en?.[0] || user?.email?.[0]?.toUpperCase() || "A"}
+                      {profile?.full_name_ar?.[0] ||
+                        profile?.full_name_en?.[0] ||
+                        user?.email?.[0]?.toUpperCase() ||
+                        "A"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
@@ -826,7 +974,17 @@ export function AdminConsoleLayout({
                       {profile?.full_name_ar || profile?.full_name_en || user?.email?.split("@")[0]}
                     </span>
                     <span className="text-[10px] text-muted-foreground font-mono block truncate">
-                      {isSuperAdmin ? (isAr ? "مشرف عام" : "Super Admin") : isAdmin ? (isAr ? "مدير نظام" : "Admin") : (isAr ? "مسؤول قطاع" : "Officer")}
+                      {isSuperAdmin
+                        ? isAr
+                          ? "مشرف عام"
+                          : "Super Admin"
+                        : isAdmin
+                          ? isAr
+                            ? "مدير نظام"
+                            : "Admin"
+                          : isAr
+                            ? "مسؤول قطاع"
+                            : "Officer"}
                     </span>
                   </div>
                 </div>
@@ -842,7 +1000,9 @@ export function AdminConsoleLayout({
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Search className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">{isAr ? "بحث شامل وأوامر سريعة..." : "Search across admin..."}</span>
+                <span className="truncate">
+                  {isAr ? "بحث شامل وأوامر سريعة..." : "Search across admin..."}
+                </span>
               </div>
               <kbd className="text-[9px] bg-muted px-1.5 py-0.5 rounded border border-border font-mono hidden lg:inline-flex">
                 ⌘K
@@ -852,7 +1012,10 @@ export function AdminConsoleLayout({
 
           {/* Center: Business Context & Breadcrumb Switcher */}
           <div className="flex items-center justify-start lg:justify-center flex-1 min-w-0 overflow-x-auto no-scrollbar">
-            <nav aria-label="Admin Breadcrumbs" className="flex items-center gap-1.5 text-xs whitespace-nowrap">
+            <nav
+              aria-label="Admin Breadcrumbs"
+              className="flex items-center gap-1.5 text-xs whitespace-nowrap"
+            >
               <button
                 type="button"
                 onClick={() => onSelectTab("dashboard", "overview")}
@@ -870,7 +1033,7 @@ export function AdminConsoleLayout({
                   ) : (
                     <ChevronRight className="w-3 h-3 text-muted-foreground/60 shrink-0" />
                   )}
-                  
+
                   {/* Domain Dropdown Switcher */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -882,7 +1045,10 @@ export function AdminConsoleLayout({
                         <ChevronDown className="w-3 h-3 text-muted-foreground" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align={isRtl ? "end" : "start"} className="w-60 p-1.5 shadow-xl border-border">
+                    <DropdownMenuContent
+                      align={isRtl ? "end" : "start"}
+                      className="w-60 p-1.5 shadow-xl border-border"
+                    >
                       <DropdownMenuLabel className="text-[11px] text-muted-foreground font-semibold">
                         {isAr ? "الانتقال المباشر إلى قطاع آخر" : "Switch Management Domain"}
                       </DropdownMenuLabel>
@@ -896,7 +1062,7 @@ export function AdminConsoleLayout({
                             onClick={() => onSelectTab(dom.id, dom.tabs[0]?.id || "")}
                             className={cn(
                               "text-xs cursor-pointer flex items-center justify-between py-2 rounded-lg",
-                              isCurrent && "font-bold text-primary bg-primary/10"
+                              isCurrent && "font-bold text-primary bg-primary/10",
                             )}
                           >
                             <div className="flex items-center gap-2">
@@ -915,7 +1081,7 @@ export function AdminConsoleLayout({
                   ) : (
                     <ChevronRight className="w-3 h-3 text-muted-foreground/60 shrink-0" />
                   )}
-                  
+
                   {/* Active Sub-Tab Dropdown / Badge */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -925,13 +1091,20 @@ export function AdminConsoleLayout({
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                         <span>{isAr ? currentTab.label_ar : currentTab.label_en}</span>
-                        {currentDomain.tabs.length > 1 && <ChevronDown className="w-3 h-3 text-primary/70" />}
+                        {currentDomain.tabs.length > 1 && (
+                          <ChevronDown className="w-3 h-3 text-primary/70" />
+                        )}
                       </button>
                     </DropdownMenuTrigger>
                     {currentDomain.tabs.length > 1 && (
-                      <DropdownMenuContent align={isRtl ? "end" : "start"} className="w-56 p-1.5 shadow-xl border-border">
+                      <DropdownMenuContent
+                        align={isRtl ? "end" : "start"}
+                        className="w-56 p-1.5 shadow-xl border-border"
+                      >
                         <DropdownMenuLabel className="text-[11px] text-muted-foreground font-semibold">
-                          {isAr ? `صفحات ${currentDomain.label_ar}` : `${currentDomain.label_en} Sections`}
+                          {isAr
+                            ? `صفحات ${currentDomain.label_ar}`
+                            : `${currentDomain.label_en} Sections`}
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {currentDomain.tabs.map((tab) => {
@@ -943,7 +1116,7 @@ export function AdminConsoleLayout({
                               onClick={() => onSelectTab(currentDomain.id, tab.id)}
                               className={cn(
                                 "text-xs cursor-pointer flex items-center justify-between py-1.5 rounded-lg",
-                                isCurrent && "font-bold text-primary bg-primary/10"
+                                isCurrent && "font-bold text-primary bg-primary/10",
                               )}
                             >
                               <div className="flex items-center gap-2">
@@ -977,7 +1150,9 @@ export function AdminConsoleLayout({
                   variant="ghost"
                   size="icon"
                   className="w-8 h-8 relative text-muted-foreground hover:text-foreground rounded-lg"
-                  title={isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & Attention Center"}
+                  title={
+                    isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & Attention Center"
+                  }
                 >
                   <BellRing className="w-4 h-4" />
                   {totalCombinedBadge > 0 && (
@@ -987,7 +1162,10 @@ export function AdminConsoleLayout({
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-88 sm:w-96 p-0 shadow-2xl border-border bg-card">
+              <PopoverContent
+                align="end"
+                className="w-[calc(100vw-2rem)] sm:w-96 max-w-sm p-0 shadow-2xl border-border bg-card"
+              >
                 {/* Popover Header */}
                 <div className="p-3.5 border-b border-border bg-muted/40 flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1007,7 +1185,9 @@ export function AdminConsoleLayout({
                           setBroadcastModalOpen(true);
                         }}
                         className="h-6 text-[10px] px-2 text-primary hover:bg-primary/10 gap-1 rounded-md"
-                        title={isAr ? "إرسال إشعار فوري لجميع المستخدمين" : "Broadcast notification"}
+                        title={
+                          isAr ? "إرسال إشعار فوري لجميع المستخدمين" : "Broadcast notification"
+                        }
                       >
                         <Megaphone className="w-3 h-3" />
                         <span>{isAr ? "بث إشعار" : "Broadcast"}</span>
@@ -1018,10 +1198,7 @@ export function AdminConsoleLayout({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={async () => {
-                          await onMarkAllNotificationsRead();
-                          toast.success(isAr ? "تم تحديد الكل كمقروء" : "All marked as read");
-                        }}
+                        onClick={() => void handleMarkAllNotificationsRead()}
                         className="h-6 text-[10px] px-2 text-muted-foreground hover:text-foreground gap-1 rounded-md"
                         title={isAr ? "تحديد الكل كمقروء" : "Mark all as read"}
                       >
@@ -1037,17 +1214,25 @@ export function AdminConsoleLayout({
                   <TabsList className="grid grid-cols-2 p-1 m-2 bg-muted/60 rounded-xl">
                     <TabsTrigger value="alerts" className="text-xs py-1">
                       {isAr ? "التنبيهات الحية" : "Live Alerts"}{" "}
-                      {unreadLiveCount > 0 && <span className="ms-1 font-mono text-[10px]">({unreadLiveCount})</span>}
+                      {unreadLiveCount > 0 && (
+                        <span className="ms-1 font-mono text-[10px]">({unreadLiveCount})</span>
+                      )}
                     </TabsTrigger>
                     <TabsTrigger value="tasks" className="text-xs py-1">
                       {isAr ? "المهام المعلقة" : "Action Queue"}{" "}
-                      {totalPendingAlerts > 0 && <span className="ms-1 font-mono text-[10px]">({totalPendingAlerts})</span>}
+                      {totalPendingAlerts > 0 && (
+                        <span className="ms-1 font-mono text-[10px]">({totalPendingAlerts})</span>
+                      )}
                     </TabsTrigger>
                   </TabsList>
 
                   {/* Tab 1: Live Notifications */}
-                  <TabsContent value="alerts" className="max-h-72 overflow-y-auto p-2 space-y-1 mt-0">
-                    {(!notificationsData?.notifications || notificationsData.notifications.length === 0) ? (
+                  <TabsContent
+                    value="alerts"
+                    className="max-h-72 overflow-y-auto p-2 space-y-1 mt-0"
+                  >
+                    {!notificationsData?.notifications ||
+                    notificationsData.notifications.length === 0 ? (
                       <div className="py-8 text-center text-muted-foreground text-xs space-y-1">
                         <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-500/60" />
                         <p>{isAr ? "لا توجد تنبيهات غير مقروءة" : "No new notifications"}</p>
@@ -1060,7 +1245,7 @@ export function AdminConsoleLayout({
                             "p-2.5 rounded-xl border text-xs flex items-start gap-2.5 transition-all",
                             item.is_read
                               ? "bg-card border-border/40 text-muted-foreground opacity-75"
-                              : "bg-primary/5 border-primary/20 text-foreground font-medium"
+                              : "bg-primary/5 border-primary/20 text-foreground font-medium",
                           )}
                         >
                           <div className="mt-0.5 shrink-0">{getNotifIcon(item.type)}</div>
@@ -1080,8 +1265,10 @@ export function AdminConsoleLayout({
                           <div className="flex items-center gap-1 shrink-0">
                             {!item.is_read && onMarkNotificationRead && (
                               <button
-                                onClick={() => onMarkNotificationRead(item.id)}
+                                type="button"
+                                onClick={() => void handleMarkNotificationRead(item.id)}
                                 className="text-muted-foreground hover:text-primary p-1"
+                                aria-label={isAr ? "تحديد كمقروء" : "Mark as read"}
                                 title={isAr ? "تحديد كمقروء" : "Mark as read"}
                               >
                                 <Check className="w-3 h-3" />
@@ -1089,8 +1276,10 @@ export function AdminConsoleLayout({
                             )}
                             {onDeleteNotification && (
                               <button
-                                onClick={() => onDeleteNotification(item.id)}
+                                type="button"
+                                onClick={() => void handleDeleteNotification(item.id)}
                                 className="text-muted-foreground hover:text-destructive p-1"
+                                aria-label={isAr ? "حذف الإشعار" : "Delete notification"}
                                 title={isAr ? "حذف" : "Delete"}
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -1103,7 +1292,10 @@ export function AdminConsoleLayout({
                   </TabsContent>
 
                   {/* Tab 2: Action Tasks Queue */}
-                  <TabsContent value="tasks" className="max-h-72 overflow-y-auto p-2 space-y-1.5 mt-0">
+                  <TabsContent
+                    value="tasks"
+                    className="max-h-72 overflow-y-auto p-2 space-y-1.5 mt-0"
+                  >
                     {(badgeCounts.pendingReceipts ?? 0) > 0 && (
                       <button
                         onClick={() => {
@@ -1116,10 +1308,14 @@ export function AdminConsoleLayout({
                           <Landmark className="w-4 h-4 text-amber-500" />
                           <div>
                             <span className="font-bold block text-foreground">
-                              {isAr ? "إيصالات مساهمة مالية بانتظار الاعتماد" : "Pending Treasury Receipts"}
+                              {isAr
+                                ? "إيصالات مساهمة مالية بانتظار الاعتماد"
+                                : "Pending Treasury Receipts"}
                             </span>
                             <span className="text-[10px] text-muted-foreground">
-                              {isAr ? "تحتاج لمراجعة المستند وتأكيد التحويل البنكي" : "Review bank slips"}
+                              {isAr
+                                ? "تحتاج لمراجعة المستند وتأكيد التحويل البنكي"
+                                : "Review bank slips"}
                             </span>
                           </div>
                         </div>
@@ -1141,7 +1337,9 @@ export function AdminConsoleLayout({
                           <UserCheck className="w-4 h-4 text-blue-500" />
                           <div>
                             <span className="font-bold block text-foreground">
-                              {isAr ? "طلبات توثيق حسابات عائلية جديدة" : "Membership Verifications"}
+                              {isAr
+                                ? "طلبات توثيق حسابات عائلية جديدة"
+                                : "Membership Verifications"}
                             </span>
                             <span className="text-[10px] text-muted-foreground">
                               {isAr ? "تحقق من صلة القرابة والفرع" : "Verify tribal lineage"}
@@ -1207,7 +1405,11 @@ export function AdminConsoleLayout({
                     {totalPendingAlerts === 0 && (
                       <div className="py-8 text-center text-muted-foreground text-xs space-y-1">
                         <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-500/60" />
-                        <p>{isAr ? "لا توجد مهام معلقة، كل العمليات مكتملة!" : "All tasks are resolved!"}</p>
+                        <p>
+                          {isAr
+                            ? "لا توجد مهام معلقة، كل العمليات مكتملة!"
+                            : "All tasks are resolved!"}
+                        </p>
                       </div>
                     )}
                   </TabsContent>
@@ -1229,10 +1431,40 @@ export function AdminConsoleLayout({
           </div>
         </header>
 
+        {/* Mobile Sub-Tab Navigation Ribbon */}
+        {currentDomain.tabs.length > 1 && (
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2 px-3 border-b border-border/60 bg-card/40 md:hidden">
+            {currentDomain.tabs.map((tab) => {
+              const TabIcon = tab.icon;
+              const isTabActive = tab.id === activeTabId;
+              const tabBadge = tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => onSelectTab(currentDomain.id, tab.id)}
+                  className={cn(
+                    "flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
+                    isTabActive
+                      ? "bg-primary text-primary-foreground font-bold shadow-2xs"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                  )}
+                >
+                  <TabIcon className="w-3.5 h-3.5" />
+                  <span>{isAr ? tab.label_ar : tab.label_en}</span>
+                  {tabBadge > 0 && (
+                    <span className="ms-0.5 px-1 py-0.2 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold font-mono">
+                      {tabBadge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* Content Body Area */}
-        <main className="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto space-y-6">
-          {children}
-        </main>
+        <main className="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto space-y-6">{children}</main>
       </div>
 
       {/* =========================================================================
@@ -1265,18 +1497,26 @@ export function AdminConsoleLayout({
 
           <form onSubmit={handleBroadcastSubmit} className="space-y-3.5 pt-2">
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">{isAr ? "عنوان الإشعار (بالعربية)" : "Title (Arabic)"}</Label>
+              <Label className="text-xs font-semibold">
+                {isAr ? "عنوان الإشعار (بالعربية)" : "Title (Arabic)"}
+              </Label>
               <Input
                 required
                 value={broadcastForm.title_ar}
                 onChange={(e) => setBroadcastForm({ ...broadcastForm, title_ar: e.target.value })}
-                placeholder={isAr ? "مثال: تحديث شجرة الأنساب أو موعد اللقاء القادم" : "e.g. Family gathering notice"}
+                placeholder={
+                  isAr
+                    ? "مثال: تحديث شجرة الأنساب أو موعد اللقاء القادم"
+                    : "e.g. Family gathering notice"
+                }
                 className="text-xs h-9"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">{isAr ? "نص الرسالة (بالعربية)" : "Message Body (Arabic)"}</Label>
+              <Label className="text-xs font-semibold">
+                {isAr ? "نص الرسالة (بالعربية)" : "Message Body (Arabic)"}
+              </Label>
               <Textarea
                 required
                 rows={3}
@@ -1289,7 +1529,9 @@ export function AdminConsoleLayout({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "نوع التنبيه" : "Alert Type"}</Label>
+                <Label className="text-xs font-semibold">
+                  {isAr ? "نوع التنبيه" : "Alert Type"}
+                </Label>
                 <Select
                   value={broadcastForm.type}
                   onValueChange={(val) => setBroadcastForm({ ...broadcastForm, type: val })}
@@ -1299,7 +1541,9 @@ export function AdminConsoleLayout({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="info">{isAr ? "معلوماتي عادي" : "Information"}</SelectItem>
-                    <SelectItem value="announcement">{isAr ? "إعلان رسمي" : "Official Announcement"}</SelectItem>
+                    <SelectItem value="announcement">
+                      {isAr ? "إعلان رسمي" : "Official Announcement"}
+                    </SelectItem>
                     <SelectItem value="event">{isAr ? "مناسبة وفعالية" : "Event"}</SelectItem>
                     <SelectItem value="urgent">{isAr ? "تنبيه عاجل" : "Urgent Notice"}</SelectItem>
                   </SelectContent>
@@ -1307,7 +1551,9 @@ export function AdminConsoleLayout({
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "رابط توجيه (اختياري)" : "Action Link (Optional)"}</Label>
+                <Label className="text-xs font-semibold">
+                  {isAr ? "رابط توجيه (اختياري)" : "Action Link (Optional)"}
+                </Label>
                 <Input
                   value={broadcastForm.link_url}
                   onChange={(e) => setBroadcastForm({ ...broadcastForm, link_url: e.target.value })}
@@ -1371,28 +1617,64 @@ export function AdminConsoleLayout({
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
                 <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">1. {isAr ? "الرئيسية والمتابعة" : "Dashboard"}</span>
-                  <span className="text-muted-foreground">{isAr ? "المؤشرات العامة وقائمة المهام التي تتطلب تدخلك." : "Key metrics and pending action items."}</span>
+                  <span className="font-bold text-foreground block">
+                    1. {isAr ? "الرئيسية والمتابعة" : "Dashboard"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {isAr
+                      ? "المؤشرات العامة وقائمة المهام التي تتطلب تدخلك."
+                      : "Key metrics and pending action items."}
+                  </span>
                 </div>
                 <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">2. {isAr ? "الأسرة والأنساب" : "Family & Tree"}</span>
-                  <span className="text-muted-foreground">{isAr ? "سجل الأفراد، الشجرة التفاعلية، الفروع والنسب." : "Genealogy, interactive tree, and branches."}</span>
+                  <span className="font-bold text-foreground block">
+                    2. {isAr ? "الأسرة والأنساب" : "Family & Tree"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {isAr
+                      ? "سجل الأفراد، الشجرة التفاعلية، الفروع والنسب."
+                      : "Genealogy, interactive tree, and branches."}
+                  </span>
                 </div>
                 <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">3. {isAr ? "المحتوى والنشر" : "Content & Media"}</span>
-                  <span className="text-muted-foreground">{isAr ? "المقالات، الفعاليات، الإعلانات، ومكتبة الوسائط." : "Articles, events, notices, and media library."}</span>
+                  <span className="font-bold text-foreground block">
+                    3. {isAr ? "المحتوى والنشر" : "Content & Media"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {isAr
+                      ? "المقالات، الفعاليات، الإعلانات، ومكتبة الوسائط."
+                      : "Articles, events, notices, and media library."}
+                  </span>
                 </div>
                 <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">4. {isAr ? "التواصل والمجتمع" : "Community"}</span>
-                  <span className="text-muted-foreground">{isAr ? "صندوق الرسائل، دليل الأعمال، وتوثيق العضويات." : "Inquiries, directory, and verification."}</span>
+                  <span className="font-bold text-foreground block">
+                    4. {isAr ? "التواصل والمجتمع" : "Community"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {isAr
+                      ? "صندوق الرسائل، دليل الأعمال، وتوثيق العضويات."
+                      : "Inquiries, directory, and verification."}
+                  </span>
                 </div>
                 <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">5. {isAr ? "الخزينة والمشاريع" : "Treasury"}</span>
-                  <span className="text-muted-foreground">{isAr ? "المساهمات المالية، مبادرات المقر، ولوحة الشرف." : "Contributions, HQ campaign, and honor roll."}</span>
+                  <span className="font-bold text-foreground block">
+                    5. {isAr ? "الخزينة والمشاريع" : "Treasury"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {isAr
+                      ? "المساهمات المالية، مبادرات المقر، ولوحة الشرف."
+                      : "Contributions, HQ campaign, and honor roll."}
+                  </span>
                 </div>
                 <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">6. {isAr ? "الإدارة والنظام" : "Governance"}</span>
-                  <span className="text-muted-foreground">{isAr ? "المستخدمون، الصلاحيات، وسجل الأمان والرقابة." : "Access control, audit trail, and settings."}</span>
+                  <span className="font-bold text-foreground block">
+                    6. {isAr ? "الإدارة والنظام" : "Governance"}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {isAr
+                      ? "المستخدمون، الصلاحيات، وسجل الأمان والرقابة."
+                      : "Access control, audit trail, and settings."}
+                  </span>
                 </div>
               </div>
             </div>
@@ -1404,14 +1686,22 @@ export function AdminConsoleLayout({
                 {isAr ? "اختصارات لوحة المفاتيح:" : "Keyboard Shortcuts:"}
               </h4>
               <div className="flex items-center justify-between p-1.5 rounded-lg bg-muted/40 font-mono text-[11px]">
-                <span>{isAr ? "البحث الشامل والأوامر السريعة" : "Global Search & Command Palette"}</span>
-                <kbd className="bg-background px-2 py-0.5 rounded border border-border font-bold">⌘K / Ctrl+K</kbd>
+                <span>
+                  {isAr ? "البحث الشامل والأوامر السريعة" : "Global Search & Command Palette"}
+                </span>
+                <kbd className="bg-background px-2 py-0.5 rounded border border-border font-bold">
+                  ⌘K / Ctrl+K
+                </kbd>
               </div>
             </div>
           </div>
 
           <DialogFooter className="pt-3 border-t border-border">
-            <Button size="sm" onClick={() => setHelpModalOpen(false)} className="text-xs bg-primary font-bold">
+            <Button
+              size="sm"
+              onClick={() => setHelpModalOpen(false)}
+              className="text-xs bg-primary font-bold"
+            >
               {isAr ? "فهمت ذلك، إغلاق" : "Got it"}
             </Button>
           </DialogFooter>

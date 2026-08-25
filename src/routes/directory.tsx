@@ -39,7 +39,14 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -71,9 +78,15 @@ export const Route = createFileRoute("/directory")({
   head: () => ({
     meta: [
       { title: "دليل الأعمال والمنشآت العائلية | آل بوعبيد" },
-      { name: "description", content: "دليل المنشآت والأعمال وأفراد أسرة آل بوعبيد المعتمدين في المملكة والخليج." },
+      {
+        name: "description",
+        content: "دليل المنشآت والأعمال وأفراد أسرة آل بوعبيد المعتمدين في المملكة والخليج.",
+      },
       { property: "og:title", content: "دليل الأعمال والمنشآت العائلية | آل بوعبيد" },
-      { property: "og:description", content: "دليل المنشآت والأعمال وأفراد أسرة آل بوعبيد المعتمدين." },
+      {
+        property: "og:description",
+        content: "دليل المنشآت والأعمال وأفراد أسرة آل بوعبيد المعتمدين.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/directory") },
     ],
@@ -126,7 +139,10 @@ const copy = {
   viewDetails: { ar: "تفاصيل المنشأة", en: "Details" } as BiText,
   verifiedBadge: { ar: "منشأة عائلية معتمدة", en: "Verified Family Enterprise" } as BiText,
 
-  listTitle: { ar: "هل تمتلك منشأة أو نشاطاً تجارياً؟", en: "Own a business or professional venture?" } as BiText,
+  listTitle: {
+    ar: "هل تمتلك منشأة أو نشاطاً تجارياً؟",
+    en: "Own a business or professional venture?",
+  } as BiText,
   listBody: {
     ar: "ندعو أبناء وبنات الأسرة لإدراج منشآتهم في الدليل لتعزيز التكامل والتعاون الاقتصادي وتبادل الخبرات بين أفراد العائلة.",
     en: "We invite family members to list their enterprises to foster mutual business synergy and professional networking.",
@@ -167,22 +183,58 @@ type BusinessItem = {
 
 function getSectorIcon(categoryName: string) {
   const cat = categoryName.toLowerCase();
-  if (cat.includes("عقار") || cat.includes("بناء") || cat.includes("مقاول") || cat.includes("estate") || cat.includes("construction")) {
+  if (
+    cat.includes("عقار") ||
+    cat.includes("بناء") ||
+    cat.includes("مقاول") ||
+    cat.includes("estate") ||
+    cat.includes("construction")
+  ) {
     return Building2;
   }
-  if (cat.includes("هندس") || cat.includes("استشار") || cat.includes("engineering") || cat.includes("consult")) {
+  if (
+    cat.includes("هندس") ||
+    cat.includes("استشار") ||
+    cat.includes("engineering") ||
+    cat.includes("consult")
+  ) {
     return Compass;
   }
-  if (cat.includes("طب") || cat.includes("صح") || cat.includes("عياد") || cat.includes("medical") || cat.includes("health")) {
+  if (
+    cat.includes("طب") ||
+    cat.includes("صح") ||
+    cat.includes("عياد") ||
+    cat.includes("medical") ||
+    cat.includes("health")
+  ) {
     return Stethoscope;
   }
-  if (cat.includes("تقن") || cat.includes("برمج") || cat.includes("معلومات") || cat.includes("tech") || cat.includes("software")) {
+  if (
+    cat.includes("تقن") ||
+    cat.includes("برمج") ||
+    cat.includes("معلومات") ||
+    cat.includes("tech") ||
+    cat.includes("software")
+  ) {
     return Code;
   }
-  if (cat.includes("غذا") || cat.includes("طعام") || cat.includes("مطعم") || cat.includes("مخبز") || cat.includes("food") || cat.includes("hospitality")) {
+  if (
+    cat.includes("غذا") ||
+    cat.includes("طعام") ||
+    cat.includes("مطعم") ||
+    cat.includes("مخبز") ||
+    cat.includes("food") ||
+    cat.includes("hospitality")
+  ) {
     return Utensils;
   }
-  if (cat.includes("تجار") || cat.includes("تجزئ") || cat.includes("بيع") || cat.includes("retail") || cat.includes("store")) {
+  if (
+    cat.includes("تجار") ||
+    cat.includes("تجزئ") ||
+    cat.includes("بيع") ||
+    cat.includes("retail") ||
+    cat.includes("store")
+  ) {
     return Store;
   }
   return Briefcase;
@@ -190,12 +242,18 @@ function getSectorIcon(categoryName: string) {
 
 function getSectorBadgeColor(categoryName: string) {
   const cat = categoryName.toLowerCase();
-  if (cat.includes("عقار") || cat.includes("بناء") || cat.includes("مقاول")) return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
-  if (cat.includes("هندس") || cat.includes("استشار")) return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
-  if (cat.includes("طب") || cat.includes("صح")) return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
-  if (cat.includes("تقن") || cat.includes("برمج")) return "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20";
-  if (cat.includes("غذا") || cat.includes("مطعم")) return "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20";
-  if (cat.includes("تجار") || cat.includes("تجزئ")) return "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
+  if (cat.includes("عقار") || cat.includes("بناء") || cat.includes("مقاول"))
+    return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
+  if (cat.includes("هندس") || cat.includes("استشار"))
+    return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
+  if (cat.includes("طب") || cat.includes("صح"))
+    return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
+  if (cat.includes("تقن") || cat.includes("برمج"))
+    return "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20";
+  if (cat.includes("غذا") || cat.includes("مطعم"))
+    return "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20";
+  if (cat.includes("تجار") || cat.includes("تجزئ"))
+    return "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
   return "bg-primary/10 text-primary border-primary/20";
 }
 
@@ -267,7 +325,11 @@ function DirectoryPage() {
       const res = await sendBizListing({ data: bizForm });
       if (res.ok) {
         setBizSuccess(true);
-        toast.success(isAr ? "تم إرسال طلب تسجيل المنشأة للأمانة العامة بنجاح" : "Business listing submitted successfully");
+        toast.success(
+          isAr
+            ? "تم إرسال طلب تسجيل المنشأة للأمانة العامة بنجاح"
+            : "Business listing submitted successfully",
+        );
       } else {
         toast.error(isAr ? "تعذر حفظ البيانات، يرجى المحاولة لاحقاً" : "Failed to submit listing");
       }
@@ -331,7 +393,8 @@ function DirectoryPage() {
       }
       // Branch filter
       if (selectedBranch !== "all") {
-        const branchMatch = b.ownerBranch.ar.includes(selectedBranch) || b.ownerBranch.en.includes(selectedBranch);
+        const branchMatch =
+          b.ownerBranch.ar.includes(selectedBranch) || b.ownerBranch.en.includes(selectedBranch);
         if (!branchMatch) return false;
       }
       // City filter
@@ -377,7 +440,9 @@ function DirectoryPage() {
   const handleCopyBizInfo = (b: BusinessItem) => {
     const text = `${t(b.name)}\n${t(b.category)} - ${t(b.city)}\n${t(copy.labelContact)}: ${b.contact}${b.website ? `\n${t(copy.visit)}: ${b.website}` : ""}`;
     navigator.clipboard.writeText(text);
-    toast.success(isAr ? "تم نسخ بيانات المنشأة للحافظة" : "Business contact info copied to clipboard");
+    toast.success(
+      isAr ? "تم نسخ بيانات المنشأة للحافظة" : "Business contact info copied to clipboard",
+    );
   };
 
   const handleShareBiz = (b: BusinessItem) => {
@@ -470,7 +535,6 @@ function DirectoryPage() {
           {/* TAB 1: BUSINESS DIRECTORY (GUEST & PUBLIC ACCESSIBLE)           */}
           {/* ════════════════════════════════════════════════════════════════ */}
           <TabsContent value="businesses" className="mt-0 focus-visible:ring-0 space-y-8">
-            
             {/* Top Metrics & Value Banner */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-gradient-to-r from-card via-card to-muted/30 border border-border">
               <div className="flex items-center gap-3">
@@ -478,8 +542,12 @@ function DirectoryPage() {
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-foreground nums">{allBusinesses.length}</div>
-                  <div className="text-[11px] text-muted-foreground">{isAr ? "منشأة معتمدة" : "Active Businesses"}</div>
+                  <div className="text-lg font-bold text-foreground nums">
+                    {allBusinesses.length}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {isAr ? "منشأة معتمدة" : "Active Businesses"}
+                  </div>
                 </div>
               </div>
 
@@ -489,7 +557,9 @@ function DirectoryPage() {
                 </div>
                 <div>
                   <div className="text-lg font-bold text-foreground nums">{sectors.length}</div>
-                  <div className="text-[11px] text-muted-foreground">{isAr ? "قطاعات اقتصادية" : "Industry Sectors"}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {isAr ? "قطاعات اقتصادية" : "Industry Sectors"}
+                  </div>
                 </div>
               </div>
 
@@ -499,7 +569,9 @@ function DirectoryPage() {
                 </div>
                 <div>
                   <div className="text-lg font-bold text-foreground nums">{cities.length || 3}</div>
-                  <div className="text-[11px] text-muted-foreground">{isAr ? "مدن ومناطق" : "Cities Covered"}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {isAr ? "مدن ومناطق" : "Cities Covered"}
+                  </div>
                 </div>
               </div>
 
@@ -508,8 +580,12 @@ function DirectoryPage() {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-foreground">{isAr ? "شبكة موثقة" : "Verified Hub"}</div>
-                  <div className="text-[11px] text-muted-foreground">{isAr ? "اعتماد رسمي" : "Family Network"}</div>
+                  <div className="text-xs font-bold text-foreground">
+                    {isAr ? "شبكة موثقة" : "Verified Hub"}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {isAr ? "اعتماد رسمي" : "Family Network"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -579,7 +655,9 @@ function DirectoryPage() {
                       type="button"
                       onClick={() => setViewMode("grid")}
                       className={`p-1.5 rounded text-xs transition-colors ${
-                        viewMode === "grid" ? "bg-background text-foreground shadow-xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                        viewMode === "grid"
+                          ? "bg-background text-foreground shadow-xs font-semibold"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                       title={isAr ? "عرض شبكي" : "Grid View"}
                     >
@@ -589,7 +667,9 @@ function DirectoryPage() {
                       type="button"
                       onClick={() => setViewMode("list")}
                       className={`p-1.5 rounded text-xs transition-colors ${
-                        viewMode === "list" ? "bg-background text-foreground shadow-xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                        viewMode === "list"
+                          ? "bg-background text-foreground shadow-xs font-semibold"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                       title={isAr ? "عرض قائمة" : "List View"}
                     >
@@ -636,9 +716,14 @@ function DirectoryPage() {
             {/* Results Count & Active Filters Indicator */}
             <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground nums">{filteredBusinesses.length}</span>
+                <span className="font-semibold text-foreground nums">
+                  {filteredBusinesses.length}
+                </span>
                 <span>{t(copy.resultsCount)}</span>
-                {(selectedCategory !== "all" || selectedBranch !== "all" || selectedCity !== "all" || query) && (
+                {(selectedCategory !== "all" ||
+                  selectedBranch !== "all" ||
+                  selectedCity !== "all" ||
+                  query) && (
                   <button
                     type="button"
                     onClick={resetFilters}
@@ -657,7 +742,9 @@ function DirectoryPage() {
                 <Building2 className="w-10 h-10 text-muted-foreground/50 mx-auto" />
                 <h4 className="text-sm font-semibold text-foreground">{t(copy.empty)}</h4>
                 <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                  {isAr ? "جرب تغيير مصطلحات البحث أو إعادة تعيين الفلاتر لعرض المنشآت." : "Try clearing search or filters to see all listings."}
+                  {isAr
+                    ? "جرب تغيير مصطلحات البحث أو إعادة تعيين الفلاتر لعرض المنشآت."
+                    : "Try clearing search or filters to see all listings."}
                 </p>
                 <Button variant="outline" size="sm" onClick={resetFilters} className="text-xs">
                   {isAr ? "عرض كافة المنشآت" : "Show All Businesses"}
@@ -672,7 +759,7 @@ function DirectoryPage() {
                   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
                     isAr
                       ? `السلام عليكم ورحمة الله، أتواصل معكم عبر دليل أعمال أسرة آل بوعبيد بخصوص منشأة (${t(b.name)})`
-                      : `Hello, reaching out via Al Bu Obaid Business Directory regarding ${t(b.name)}`
+                      : `Hello, reaching out via Al Bu Obaid Business Directory regarding ${t(b.name)}`,
                   )}`;
 
                   return (
@@ -688,13 +775,18 @@ function DirectoryPage() {
                               <SectorIcon className="w-5 h-5" />
                             </div>
                             <div>
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${badgeColor}`}>
+                              <span
+                                className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${badgeColor}`}
+                              >
                                 {t(b.category)}
                               </span>
                             </div>
                           </div>
 
-                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-medium" title={t(copy.verifiedBadge)}>
+                          <span
+                            className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-medium"
+                            title={t(copy.verifiedBadge)}
+                          >
                             <ShieldCheck className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">{isAr ? "موثقة" : "Verified"}</span>
                           </span>
@@ -791,7 +883,11 @@ function DirectoryPage() {
                           className="h-8 text-xs font-semibold gap-1 text-primary hover:text-primary"
                         >
                           {t(copy.viewDetails)}
-                          {isAr ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                          {isAr ? (
+                            <ArrowLeft className="w-3.5 h-3.5" />
+                          ) : (
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -824,7 +920,9 @@ function DirectoryPage() {
                             >
                               {t(b.name)}
                             </h3>
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${badgeColor}`}>
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${badgeColor}`}
+                            >
                               {t(b.category)}
                             </span>
                             <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded">
@@ -981,7 +1079,9 @@ function DirectoryPage() {
                 </div>
 
                 <div className="text-xs text-muted-foreground px-1">
-                  <span className="font-semibold text-foreground nums">{filteredMembers.length}</span>{" "}
+                  <span className="font-semibold text-foreground nums">
+                    {filteredMembers.length}
+                  </span>{" "}
                   {isAr ? "عضو معتمد مشارك في الدليل" : "verified members listed"}
                 </div>
 
@@ -1055,7 +1155,9 @@ function DirectoryPage() {
                 )}
 
                 <aside className="mt-8 border-s-2 border-bronze/40 ps-4 dark:border-gold/40">
-                  <p className="label-caps mb-1 text-bronze dark:text-gold">{isAr ? "إشعار الخصوصية" : "Privacy Notice"}</p>
+                  <p className="label-caps mb-1 text-bronze dark:text-gold">
+                    {isAr ? "إشعار الخصوصية" : "Privacy Notice"}
+                  </p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     {t(copy.memberOptInNote)}
                   </p>
@@ -1080,7 +1182,9 @@ function DirectoryPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${getSectorBadgeColor(detailBiz.category.ar)}`}>
+                    <span
+                      className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${getSectorBadgeColor(detailBiz.category.ar)}`}
+                    >
                       {t(detailBiz.category)}
                     </span>
                     <span className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-medium">
@@ -1112,7 +1216,9 @@ function DirectoryPage() {
                     <GitBranch className="w-3.5 h-3.5 text-bronze dark:text-gold" />
                     {t(copy.labelBranch)}
                   </div>
-                  <div className="font-semibold text-foreground">{t(detailBiz.ownerBranch) || "—"}</div>
+                  <div className="font-semibold text-foreground">
+                    {t(detailBiz.ownerBranch) || "—"}
+                  </div>
                 </div>
 
                 <div className="p-3 rounded-lg border border-border bg-card">
@@ -1138,8 +1244,12 @@ function DirectoryPage() {
                       <Phone className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[11px] text-muted-foreground">{t(copy.labelContact)}</div>
-                      <div className="font-mono text-xs font-semibold text-foreground truncate">{detailBiz.contact}</div>
+                      <div className="text-[11px] text-muted-foreground">
+                        {t(copy.labelContact)}
+                      </div>
+                      <div className="font-mono text-xs font-semibold text-foreground truncate">
+                        {detailBiz.contact}
+                      </div>
                     </div>
                   </a>
 
@@ -1148,7 +1258,7 @@ function DirectoryPage() {
                       href={`https://wa.me/${cleanPhoneForWhatsApp(detailBiz.contact)}?text=${encodeURIComponent(
                         isAr
                           ? `السلام عليكم ورحمة الله، أتواصل معكم عبر دليل أعمال أسرة آل بوعبيد بخصوص منشأة (${t(detailBiz.name)})`
-                          : `Hello, reaching out via Al Bu Obaid Business Directory regarding ${t(detailBiz.name)}`
+                          : `Hello, reaching out via Al Bu Obaid Business Directory regarding ${t(detailBiz.name)}`,
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1158,8 +1268,12 @@ function DirectoryPage() {
                         <MessageCircle className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <div className="text-[11px] text-emerald-600 font-medium">{t(copy.whatsapp)}</div>
-                        <div className="text-xs font-semibold text-foreground truncate">{isAr ? "محادثة فورية" : "Instant Chat"}</div>
+                        <div className="text-[11px] text-emerald-600 font-medium">
+                          {t(copy.whatsapp)}
+                        </div>
+                        <div className="text-xs font-semibold text-foreground truncate">
+                          {isAr ? "محادثة فورية" : "Instant Chat"}
+                        </div>
                       </div>
                     </a>
                   )}
@@ -1317,7 +1431,9 @@ function DirectoryPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "اسم المنشأة بالعربية *" : "Business Name (Arabic) *"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "اسم المنشأة بالعربية *" : "Business Name (Arabic) *"}
+                    </Label>
                     <Input
                       required
                       value={bizForm.name_ar}
@@ -1328,7 +1444,9 @@ function DirectoryPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "اسم المنشأة بالإنجليزية" : "Business Name (English)"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "اسم المنشأة بالإنجليزية" : "Business Name (English)"}
+                    </Label>
                     <Input
                       value={bizForm.name_en}
                       onChange={(e) => setBizForm({ ...bizForm, name_en: e.target.value })}
@@ -1338,25 +1456,43 @@ function DirectoryPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "قطاع النشاط *" : "Industry Sector *"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "قطاع النشاط *" : "Industry Sector *"}
+                    </Label>
                     <select
                       value={bizForm.category}
                       onChange={(e) => setBizForm({ ...bizForm, category: e.target.value })}
                       className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                     >
-                      <option value="العقارات والمقاولات">{isAr ? "العقارات والمقاولات" : "Real Estate & Construction"}</option>
-                      <option value="الهندسة والاستشارات">{isAr ? "الهندسة والاستشارات" : "Engineering & Consulting"}</option>
-                      <option value="الخدمات الطبية والرعاية">{isAr ? "الخدمات الطبية والرعاية" : "Medical & Healthcare"}</option>
-                      <option value="التكنولوجيا والبرمجيات">{isAr ? "التكنولوجيا والبرمجيات" : "Technology & Software"}</option>
-                      <option value="الأغذية والضيافة">{isAr ? "الأغذية والضيافة" : "Food & Hospitality"}</option>
-                      <option value="تجارة وتجزئة">{isAr ? "تجارة وتجزئة" : "Retail & Commerce"}</option>
-                      <option value="خدمات مهنية">{isAr ? "خدمات مهنية وقانونية" : "Professional & Legal"}</option>
+                      <option value="العقارات والمقاولات">
+                        {isAr ? "العقارات والمقاولات" : "Real Estate & Construction"}
+                      </option>
+                      <option value="الهندسة والاستشارات">
+                        {isAr ? "الهندسة والاستشارات" : "Engineering & Consulting"}
+                      </option>
+                      <option value="الخدمات الطبية والرعاية">
+                        {isAr ? "الخدمات الطبية والرعاية" : "Medical & Healthcare"}
+                      </option>
+                      <option value="التكنولوجيا والبرمجيات">
+                        {isAr ? "التكنولوجيا والبرمجيات" : "Technology & Software"}
+                      </option>
+                      <option value="الأغذية والضيافة">
+                        {isAr ? "الأغذية والضيافة" : "Food & Hospitality"}
+                      </option>
+                      <option value="تجارة وتجزئة">
+                        {isAr ? "تجارة وتجزئة" : "Retail & Commerce"}
+                      </option>
+                      <option value="خدمات مهنية">
+                        {isAr ? "خدمات مهنية وقانونية" : "Professional & Legal"}
+                      </option>
                       <option value="أخرى">{isAr ? "قطاع آخر" : "Other Sector"}</option>
                     </select>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "المدينة / المقر الرئيسي *" : "City / HQ *"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "المدينة / المقر الرئيسي *" : "City / HQ *"}
+                    </Label>
                     <Input
                       required
                       value={bizForm.city}
@@ -1376,7 +1512,9 @@ function DirectoryPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "اسم المالك / المدير المسؤول *" : "Owner / Manager Name *"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "اسم المالك / المدير المسؤول *" : "Owner / Manager Name *"}
+                    </Label>
                     <Input
                       required
                       value={bizForm.owner_name_ar}
@@ -1387,13 +1525,17 @@ function DirectoryPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "الفرع العائلي" : "Family Branch"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "الفرع العائلي" : "Family Branch"}
+                    </Label>
                     <select
                       value={bizForm.branch_slug}
                       onChange={(e) => setBizForm({ ...bizForm, branch_slug: e.target.value })}
                       className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                     >
-                      <option value="">{isAr ? "-- اختر الفرع العائلي --" : "-- Select Branch --"}</option>
+                      <option value="">
+                        {isAr ? "-- اختر الفرع العائلي --" : "-- Select Branch --"}
+                      </option>
                       {branches.map((b) => (
                         <option key={b.id} value={t(b.name)}>
                           {t(b.name)}
@@ -1412,7 +1554,9 @@ function DirectoryPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "هاتف التواصل / واتساب *" : "Phone / WhatsApp *"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "هاتف التواصل / واتساب *" : "Phone / WhatsApp *"}
+                    </Label>
                     <Input
                       type="tel"
                       required
@@ -1424,7 +1568,9 @@ function DirectoryPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "البريد الإلكتروني" : "Email"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "البريد الإلكتروني" : "Email"}
+                    </Label>
                     <Input
                       type="email"
                       value={bizForm.email}
@@ -1435,7 +1581,9 @@ function DirectoryPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">{isAr ? "الموقع الإلكتروني" : "Website"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "الموقع الإلكتروني" : "Website"}
+                    </Label>
                     <Input
                       type="url"
                       value={bizForm.website}
@@ -1447,13 +1595,19 @@ function DirectoryPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">{isAr ? "نبذة عن النشاط والخدمات *" : "Business Description *"}</Label>
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "نبذة عن النشاط والخدمات *" : "Business Description *"}
+                  </Label>
                   <textarea
                     rows={3}
                     required
                     value={bizForm.description_ar}
                     onChange={(e) => setBizForm({ ...bizForm, description_ar: e.target.value })}
-                    placeholder={isAr ? "صف نشاط منشأتك وخدماتها لأبناء الأسرة والعموم…" : "Brief overview of products and services…"}
+                    placeholder={
+                      isAr
+                        ? "صف نشاط منشأتك وخدماتها لأبناء الأسرة والعموم…"
+                        : "Brief overview of products and services…"
+                    }
                     className="w-full rounded-md border border-border bg-background p-3 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                   />
                 </div>
@@ -1474,8 +1628,12 @@ function DirectoryPage() {
                   className="text-xs font-bold gap-1.5"
                 >
                   {isSubmittingBiz
-                    ? (isAr ? "جاري الإرسال…" : "Submitting…")
-                    : (isAr ? "إرسال طلب التسجيل" : "Submit Listing")}
+                    ? isAr
+                      ? "جاري الإرسال…"
+                      : "Submitting…"
+                    : isAr
+                      ? "إرسال طلب التسجيل"
+                      : "Submit Listing"}
                 </Button>
               </div>
             </form>

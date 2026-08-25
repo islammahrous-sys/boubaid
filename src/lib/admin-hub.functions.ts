@@ -1,5 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireAdminAuth, requireTreasuryAuth, requireFamilyManagementAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  requireAdminAuth,
+  requireTreasuryAuth,
+  requireFamilyManagementAuth,
+} from "@/integrations/supabase/auth-middleware";
 import {
   familyMemberInputSchema,
   familyBranchInputSchema,
@@ -31,37 +35,97 @@ import {
   bulkArticlesActionSchema,
   broadcastNotificationSchema,
   dnaStudiesDataSchema,
+  contributionStatusSchema,
 } from "./admin-hub.schemas";
 import { z } from "zod";
 
 export const paginationSchema = z.object({
-  page: z.number().min(1).default(1),
-  pageSize: z.number().min(1).max(100).default(50),
-  search: z.string().optional(),
-  status: z.string().optional(),
+  page: z.number().int().min(1).max(100000).default(1),
+  pageSize: z.number().int().min(1).max(100).default(50),
+  // Capped so a caller cannot push a multi-megabyte ILIKE pattern (or a
+  // non-integer page offset) through the admin list endpoints.
+  search: z.string().trim().max(120).optional(),
+  status: z.string().trim().max(40).optional(),
 });
 
+/* =========================================================================
+ * Shared server-side guards
+ * ========================================================================= */
 
+/** PostgREST's `.or()` grammar separates conditions with "," and groups them
+ *  with "()", so leaving those characters in caller-supplied text lets the
+ *  caller append filter clauses of their own to the query. Every `.or()`
+ *  built from user input in this file must run its term through here. */
+function sanitizeFilterTerm(raw: string): string {
+  return raw.trim().replace(/[,()]/g, "");
+}
+
+/** Postgres treats an UPDATE/DELETE matching zero rows as a success with an
+ *  empty result, so a mutation that never inspects what came back happily
+ *  reports "saved" for a row it never touched (wrong id, already deleted, or
+ *  filtered out by RLS). Mutations here pass their `.select(...)` rows through
+ *  this so a no-op becomes a real, visible error. */
+function assertRowsAffected(rows: unknown[] | null, entity: string, id: string): void {
+  if (!rows || rows.length === 0) {
+    throw new Error(
+      `لم يُعثر على السجل المطلوب في "${entity}" (المعرّف ${id}) ولم يتغيّر أي صف. ` +
+        `No matching "${entity}" row for id ${id} — nothing was changed.`,
+    );
+  }
+}
+
+/** Supabase returns read errors in-band; ignoring them turns an RLS rejection
+ *  or a transport fault into a silently empty admin screen that looks like
+ *  "no data yet" instead of a failure. */
+function unwrapRows<T>(
+  res: { data: T[] | null; error: { message: string } | null },
+  label: string,
+): T[] {
+  if (res.error)
+    throw new Error(`تعذّر تحميل ${label}. Failed to load ${label}: ${res.error.message}`);
+  return res.data ?? [];
+}
 
 /* =========================================================================
  * Global Admin Search (Command Palette)
  * ========================================================================= */
 export const globalAdminSearch = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
-  .validator((d: unknown) => z.object({ query: z.string().min(1) }).parse(d))
+  .validator((d: unknown) => z.object({ query: z.string().trim().min(1).max(120) }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     // PostgREST's .or() syntax uses "," to separate conditions and "()" to
     // nest logical groups -- unescaped input could smuggle in extra filter
     // clauses (same class of bug fixed earlier in getPublicGlobalSearch).
-    const cleanQuery = data.query.trim().replace(/[,()]/g, "");
+    const cleanQuery = sanitizeFilterTerm(data.query);
+    if (!cleanQuery) return [];
     const term = `%${cleanQuery}%`;
 
     const [profiles, members, articles, treasury] = await Promise.all([
-      supabase.from("profiles").select("id, full_name_ar, full_name_en, email").or(`full_name_ar.ilike.${term},full_name_en.ilike.${term},email.ilike.${term}`).limit(5),
-      supabase.from("family_members").select("id, first_name_ar, last_name_ar, first_name_en, last_name_en").or(`first_name_ar.ilike.${term},last_name_ar.ilike.${term},first_name_en.ilike.${term},last_name_en.ilike.${term}`).is("deleted_at", null).limit(5),
-      supabase.from("articles").select("id, title_ar, slug").ilike("title_ar", term).is("deleted_at", null).limit(5),
-      supabase.from("contributions").select("id, contributor_name, amount").ilike("contributor_name", term).limit(5),
+      supabase
+        .from("profiles")
+        .select("id, full_name_ar, full_name_en, email")
+        .or(`full_name_ar.ilike.${term},full_name_en.ilike.${term},email.ilike.${term}`)
+        .limit(5),
+      supabase
+        .from("family_members")
+        .select("id, first_name_ar, last_name_ar, first_name_en, last_name_en")
+        .or(
+          `first_name_ar.ilike.${term},last_name_ar.ilike.${term},first_name_en.ilike.${term},last_name_en.ilike.${term}`,
+        )
+        .is("deleted_at", null)
+        .limit(5),
+      supabase
+        .from("articles")
+        .select("id, title_ar, slug")
+        .ilike("title_ar", term)
+        .is("deleted_at", null)
+        .limit(5),
+      supabase
+        .from("contributions")
+        .select("id, contributor_name, amount")
+        .ilike("contributor_name", term)
+        .limit(5),
     ]);
 
     type SearchResult = {
@@ -73,10 +137,46 @@ export const globalAdminSearch = createServerFn({ method: "POST" })
     };
 
     const results: SearchResult[] = [];
-    if (profiles.data) profiles.data.forEach(p => results.push({ id: p.id, title: p.full_name_ar || p.full_name_en || p.email || "", subtitle: p.email, category: "directory", tab: "users" }));
-    if (members.data) members.data.forEach(m => results.push({ id: m.id, title: `${m.first_name_ar} ${m.last_name_ar}`, subtitle: `${m.first_name_en || ""} ${m.last_name_en || ""}`.trim(), category: "family", tab: "members" }));
-    if (articles.data) articles.data.forEach(a => results.push({ id: a.id, title: a.title_ar, subtitle: a.slug, category: "content", tab: "articles" }));
-    if (treasury.data) treasury.data.forEach(t => results.push({ id: t.id, title: t.contributor_name, subtitle: `${t.amount} SAR`, category: "treasury", tab: "contributions" }));
+    if (profiles.data)
+      profiles.data.forEach((p) =>
+        results.push({
+          id: p.id,
+          title: p.full_name_ar || p.full_name_en || p.email || "",
+          subtitle: p.email,
+          category: "directory",
+          tab: "users",
+        }),
+      );
+    if (members.data)
+      members.data.forEach((m) =>
+        results.push({
+          id: m.id,
+          title: `${m.first_name_ar} ${m.last_name_ar}`,
+          subtitle: `${m.first_name_en || ""} ${m.last_name_en || ""}`.trim(),
+          category: "family",
+          tab: "members",
+        }),
+      );
+    if (articles.data)
+      articles.data.forEach((a) =>
+        results.push({
+          id: a.id,
+          title: a.title_ar,
+          subtitle: a.slug,
+          category: "content",
+          tab: "articles",
+        }),
+      );
+    if (treasury.data)
+      treasury.data.forEach((t) =>
+        results.push({
+          id: t.id,
+          title: t.contributor_name,
+          subtitle: `${t.amount} SAR`,
+          category: "treasury",
+          tab: "contributions",
+        }),
+      );
 
     return results;
   });
@@ -139,29 +239,59 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       achieversRes,
       activityRes,
     ] = await Promise.all([
-      supabase.from("family_members").select("*", { count: "exact", head: true }).is("deleted_at", null),
-      supabase.from("family_members").select("*", { count: "exact", head: true }).is("deleted_at", null).eq("is_living", true),
+      supabase
+        .from("family_members")
+        .select("*", { count: "exact", head: true })
+        .is("deleted_at", null),
+      supabase
+        .from("family_members")
+        .select("*", { count: "exact", head: true })
+        .is("deleted_at", null)
+        .eq("is_living", true),
       supabase.from("branches").select("*", { count: "exact", head: true }),
       supabase.from("articles").select("*", { count: "exact", head: true }).is("deleted_at", null),
-      supabase.from("articles").select("*", { count: "exact", head: true }).is("deleted_at", null).eq("status", "draft"),
-      supabase.from("content_pages").select("*", { count: "exact", head: true }).is("deleted_at", null),
+      supabase
+        .from("articles")
+        .select("*", { count: "exact", head: true })
+        .is("deleted_at", null)
+        .eq("status", "draft"),
+      supabase
+        .from("content_pages")
+        .select("*", { count: "exact", head: true })
+        .is("deleted_at", null),
       supabase.from("events").select("*", { count: "exact", head: true }),
       supabase.from("media_assets").select("*", { count: "exact", head: true }),
       supabase.from("inquiries").select("*", { count: "exact", head: true }).eq("status", "new"),
-      supabase.from("contact_messages").select("*", { count: "exact", head: true }).eq("status", "new"),
+      supabase
+        .from("contact_messages")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "new"),
       supabase.from("profiles").select("*", { count: "exact", head: true }),
-      supabase.from("contributions").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabase
+        .from("contributions")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending"),
       supabase.from("contributions").select("amount").eq("status", "verified"),
-      supabase.from("membership_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabase
+        .from("membership_requests")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending"),
       supabase.from("businesses").select("*", { count: "exact", head: true }),
       supabase.from("initiatives").select("*", { count: "exact", head: true }),
       supabase.from("achievers").select("*", { count: "exact", head: true }),
-      supabase.from("audit_logs").select("id, action, entity_type, created_at, metadata").order("created_at", { ascending: false }).limit(10),
+      supabase
+        .from("audit_logs")
+        .select("id, action, entity_type, created_at, metadata")
+        .order("created_at", { ascending: false })
+        .limit(10),
     ]);
 
     const totalMembers = membersTotalRes.count ?? 0;
     const livingMembers = membersLivingRes.count ?? 0;
-    const treasuryVerified = (verifiedAmountsRes.data ?? []).reduce((sum, row) => sum + Number(row.amount || 0), 0);
+    const treasuryVerified = (verifiedAmountsRes.data ?? []).reduce(
+      (sum, row) => sum + Number(row.amount || 0),
+      0,
+    );
 
     return {
       totalMembers,
@@ -195,7 +325,13 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
     const { supabase } = context;
 
     const [membersRes, branchesRes, relationshipsRes, placesRes, historyRes] = await Promise.all([
-      supabase.from("family_members").select("id, first_name_ar, middle_name_ar, last_name_ar, first_name_en, middle_name_en, last_name_en, slug, branch_id, generation, gender, is_living, sort_order, status, visibility, updated_at").is("deleted_at", null).order("sort_order", { ascending: true }),
+      supabase
+        .from("family_members")
+        .select(
+          "id, first_name_ar, middle_name_ar, last_name_ar, first_name_en, middle_name_en, last_name_en, slug, branch_id, generation, gender, is_living, sort_order, status, visibility, updated_at",
+        )
+        .is("deleted_at", null)
+        .order("sort_order", { ascending: true }),
       supabase.from("branches").select("*").order("sort_order", { ascending: true }),
       supabase.from("family_relationships").select("*"),
       supabase.from("places").select("*").order("name_ar", { ascending: true }),
@@ -203,27 +339,41 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
     ]);
 
     return {
-      members: membersRes.data ?? [],
-      branches: branchesRes.data ?? [],
-      relationships: relationshipsRes.data ?? [],
-      places: placesRes.data ?? [],
-      history: historyRes.data ?? [],
+      members: unwrapRows(membersRes, "أفراد العائلة / family members"),
+      branches: unwrapRows(branchesRes, "الفروع / branches"),
+      relationships: unwrapRows(relationshipsRes, "صلات القرابة / relationships"),
+      places: unwrapRows(placesRes, "الأماكن / places"),
+      history: unwrapRows(historyRes, "تاريخ العائلة / family history"),
     };
   });
 
-
 export const getFamilyMembersPaginated = createServerFn({ method: "POST" })
   .middleware([requireFamilyManagementAuth])
-  .validator((d: unknown) => paginationSchema.extend({ branchId: z.string().optional() }).parse(d))
+  .validator((d: unknown) =>
+    paginationSchema
+      // A free-form string here reaches `.eq("branch_id", ...)` and a non-UUID
+      // value comes back as a raw Postgres "invalid input syntax" error.
+      .extend({ branchId: z.union([z.string().uuid(), z.literal("all")]).optional() })
+      .parse(d),
+  )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { page, pageSize, search, branchId, status } = data;
-    
-    let query = supabase.from("family_members").select("*", { count: "exact" }).is("deleted_at", null);
-    
-    if (search) {
-      const term = `%${search}%`;
-      query = query.or(`first_name_ar.ilike.${term},last_name_ar.ilike.${term},first_name_en.ilike.${term},last_name_en.ilike.${term}`);
+
+    let query = supabase
+      .from("family_members")
+      .select("*", { count: "exact" })
+      .is("deleted_at", null);
+
+    // `search` is interpolated straight into a PostgREST `.or()` group, so it
+    // has to be stripped of the "," / "()" that delimit that grammar -- without
+    // this a caller can append arbitrary filter clauses to the query.
+    const cleanSearch = search ? sanitizeFilterTerm(search) : "";
+    if (cleanSearch) {
+      const term = `%${cleanSearch}%`;
+      query = query.or(
+        `first_name_ar.ilike.${term},last_name_ar.ilike.${term},first_name_en.ilike.${term},last_name_en.ilike.${term}`,
+      );
     }
     if (branchId && branchId !== "all") {
       query = query.eq("branch_id", branchId);
@@ -236,10 +386,14 @@ export const getFamilyMembersPaginated = createServerFn({ method: "POST" })
 
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
-    
-    const { data: members, count, error } = await query.order("sort_order", { ascending: true }).range(from, to);
+
+    const {
+      data: members,
+      count,
+      error,
+    } = await query.order("sort_order", { ascending: true }).range(from, to);
     if (error) throw new Error(error.message);
-    
+
     return { data: members ?? [], count: count ?? 0, page, pageSize };
   });
 
@@ -251,12 +405,12 @@ export const upsertFamilyMember = createServerFn({ method: "POST" })
 
     const payload: Record<string, any> = {
       ...data,
-      updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      updated_by: context.userId || session?.user?.id || (context.claims?.sub as string),
       updated_at: new Date().toISOString(),
     };
 
     if (!payload.id) {
-      payload.created_by = (context.userId || session?.user?.id || (context.claims?.sub as string));
+      payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
     }
 
     const { data: member, error } = await supabase
@@ -269,7 +423,7 @@ export const upsertFamilyMember = createServerFn({ method: "POST" })
 
     // Audit log
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "family_members",
       entity_id: member.id,
@@ -285,15 +439,18 @@ export const deleteFamilyMember = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
 
-    const { error } = await supabase
+    const { data: archived, error } = await supabase
       .from("family_members")
       .update({ deleted_at: new Date().toISOString() })
-      .eq("id", data.id);
+      .eq("id", data.id)
+      .is("deleted_at", null)
+      .select("id");
 
     if (error) throw new Error(error.message);
+    assertRowsAffected(archived, "family_members", data.id);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "archive",
       entity_type: "family_members",
       entity_id: data.id,
@@ -308,16 +465,12 @@ export const upsertFamilyBranch = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
 
-    const { data: branch, error } = await supabase
-      .from("branches")
-      .upsert(data)
-      .select()
-      .single();
+    const { data: branch, error } = await supabase.from("branches").upsert(data).select().single();
 
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "branches",
       entity_id: branch.id,
@@ -352,8 +505,13 @@ export const deleteFamilyRelationship = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { error } = await supabase.from("family_relationships").delete().eq("id", data.id);
+    const { data: deleted, error } = await supabase
+      .from("family_relationships")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "family_relationships", data.id);
     return { ok: true };
   });
 
@@ -372,7 +530,11 @@ export const upsertFamilyHistory = createServerFn({ method: "POST" })
   .validator((d: unknown) => familyHistoryInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { data: item, error } = await supabase.from("family_history_entries").upsert(data).select().single();
+    const { data: item, error } = await supabase
+      .from("family_history_entries")
+      .upsert(data)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
     return { ok: true, item };
   });
@@ -387,15 +549,22 @@ export const getCmsPagesData = createServerFn({ method: "GET" })
     const { supabase } = context;
 
     const [pagesRes, sectionsRes, revisionsRes] = await Promise.all([
-      supabase.from("content_pages").select("*").is("deleted_at", null).order("updated_at", { ascending: false }),
+      supabase
+        .from("content_pages")
+        .select("*")
+        .is("deleted_at", null)
+        .order("updated_at", { ascending: false }),
       supabase.from("content_sections").select("*").order("sort_order", { ascending: true }),
-      supabase.from("content_revisions").select("id, content_page_id, version, change_summary, created_at").order("version", { ascending: false }),
+      supabase
+        .from("content_revisions")
+        .select("id, content_page_id, version, change_summary, created_at")
+        .order("version", { ascending: false }),
     ]);
 
     return {
-      pages: pagesRes.data ?? [],
-      sections: sectionsRes.data ?? [],
-      revisions: revisionsRes.data ?? [],
+      pages: unwrapRows(pagesRes, "الصفحات / pages"),
+      sections: unwrapRows(sectionsRes, "أقسام الصفحات / page sections"),
+      revisions: unwrapRows(revisionsRes, "النسخ / revisions"),
     };
   });
 
@@ -408,12 +577,12 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
 
     const payload: Record<string, any> = {
       ...pageData,
-      updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      updated_by: context.userId || session?.user?.id || (context.claims?.sub as string),
       updated_at: new Date().toISOString(),
     };
 
     if (!payload.id) {
-      payload.created_by = (context.userId || session?.user?.id || (context.claims?.sub as string));
+      payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
     }
 
     if (payload.status === "published" && !payload.published_at) {
@@ -447,21 +616,40 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
       if (sectionsError) throw new Error(`Failed to save page sections: ${sectionsError.message}`);
     }
 
-    // Save revision snapshot
-    const { count } = await supabase.from("content_revisions").select("*", { count: "exact", head: true }).eq("content_page_id", page.id);
-    const nextVersion = (count ?? 0) + 1;
+    // Save revision snapshot. The next version comes from the highest existing
+    // version rather than a row count -- a count hands out a number that
+    // already exists as soon as any older revision is pruned.
+    const { data: latestRevision, error: revisionLookupError } = await supabase
+      .from("content_revisions")
+      .select("version")
+      .eq("content_page_id", page.id)
+      .order("version", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (revisionLookupError) {
+      throw new Error(`Failed to read page revisions: ${revisionLookupError.message}`);
+    }
+    const nextVersion = (latestRevision?.version ?? 0) + 1;
 
-    await supabase.from("content_revisions").insert({
+    // Surfaced rather than ignored: the page itself is already saved at this
+    // point, but silently losing the snapshot leaves the revision history
+    // lying about what happened.
+    const { error: revisionError } = await supabase.from("content_revisions").insert({
       content_page_id: page.id,
       version: nextVersion,
       snapshot: { page, sections: sections ?? [] } as never,
       change_summary: `Version ${nextVersion} saved by user`,
-      created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      created_by: context.userId || session?.user?.id || (context.claims?.sub as string),
     });
+    if (revisionError) {
+      throw new Error(
+        `تم حفظ الصفحة لكن تعذّر حفظ نسخة المراجعة. Page saved, but its revision snapshot failed: ${revisionError.message}`,
+      );
+    }
 
     // Audit log
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "content_pages",
       entity_id: page.id,
@@ -481,15 +669,19 @@ export const getArticlesData = createServerFn({ method: "GET" })
     const { supabase } = context;
 
     const [articlesRes, categoriesRes, tagsRes] = await Promise.all([
-      supabase.from("articles").select("*").is("deleted_at", null).order("created_at", { ascending: false }),
+      supabase
+        .from("articles")
+        .select("*")
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false }),
       supabase.from("article_categories").select("*").order("sort_order", { ascending: true }),
       supabase.from("article_tags").select("*").order("name_ar", { ascending: true }),
     ]);
 
     return {
-      articles: articlesRes.data ?? [],
-      categories: categoriesRes.data ?? [],
-      tags: tagsRes.data ?? [],
+      articles: unwrapRows(articlesRes, "المقالات / articles"),
+      categories: unwrapRows(categoriesRes, "التصنيفات / categories"),
+      tags: unwrapRows(tagsRes, "الوسوم / tags"),
     };
   });
 
@@ -502,12 +694,12 @@ export const upsertArticle = createServerFn({ method: "POST" })
 
     const payload: Record<string, any> = {
       ...articleData,
-      updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      updated_by: context.userId || session?.user?.id || (context.claims?.sub as string),
       updated_at: new Date().toISOString(),
     };
 
     if (!payload.id) {
-      payload.created_by = (context.userId || session?.user?.id || (context.claims?.sub as string));
+      payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
     }
 
     if (payload.status === "published" && !payload.published_at) {
@@ -523,18 +715,21 @@ export const upsertArticle = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     if (tag_ids) {
-      const { error: delError } = await supabase.from("article_tag_relations").delete().eq("article_id", article.id);
+      const { error: delError } = await supabase
+        .from("article_tag_relations")
+        .delete()
+        .eq("article_id", article.id);
       if (delError) throw new Error(`Failed to save article tags: ${delError.message}`);
       if (tag_ids.length > 0) {
-        const { error: insError } = await supabase.from("article_tag_relations").insert(
-          tag_ids.map((tagId) => ({ article_id: article.id, tag_id: tagId })),
-        );
+        const { error: insError } = await supabase
+          .from("article_tag_relations")
+          .insert(tag_ids.map((tagId) => ({ article_id: article.id, tag_id: tagId })));
         if (insError) throw new Error(`Failed to save article tags: ${insError.message}`);
       }
     }
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "articles",
       entity_id: article.id,
@@ -559,8 +754,8 @@ export const getEventsData = createServerFn({ method: "GET" })
     ]);
 
     return {
-      events: eventsRes.data ?? [],
-      registrations: registrationsRes.data ?? [],
+      events: unwrapRows(eventsRes, "الفعاليات / events"),
+      registrations: unwrapRows(registrationsRes, "التسجيلات / registrations"),
     };
   });
 
@@ -572,12 +767,12 @@ export const upsertEvent = createServerFn({ method: "POST" })
 
     const payload: Record<string, any> = {
       ...data,
-      updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      updated_by: context.userId || session?.user?.id || (context.claims?.sub as string),
       updated_at: new Date().toISOString(),
     };
 
     if (!payload.id) {
-      payload.created_by = (context.userId || session?.user?.id || (context.claims?.sub as string));
+      payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
     }
 
     const { data: event, error } = await supabase
@@ -589,7 +784,7 @@ export const upsertEvent = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "events",
       entity_id: event.id,
@@ -607,8 +802,11 @@ export const getAnnouncementsData = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const { data } = await supabase.from("announcements").select("*").order("created_at", { ascending: false });
-    return data ?? [];
+    const res = await supabase
+      .from("announcements")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return unwrapRows(res, "الإعلانات / announcements");
   });
 
 export const upsertAnnouncement = createServerFn({ method: "POST" })
@@ -616,8 +814,19 @@ export const upsertAnnouncement = createServerFn({ method: "POST" })
   .validator((d: unknown) => announcementInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = { ...data, created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)) };
-    const { data: ann, error } = await supabase.from("announcements").upsert(payload as never).select().single();
+    // `created_by` is stamped only when the row is first created -- sending it
+    // on every upsert rewrites the original author to whoever edited last.
+    const payload = data.id
+      ? { ...data }
+      : {
+          ...data,
+          created_by: context.userId || session?.user?.id || (context.claims?.sub as string),
+        };
+    const { data: ann, error } = await supabase
+      .from("announcements")
+      .upsert(payload as never)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
     return { ok: true, announcement: ann };
   });
@@ -634,10 +843,10 @@ export const getMediaAssetsData = createServerFn({ method: "GET" })
     ]);
 
     return {
-      media: mediaRes.data ?? [],
-      galleries: galleriesRes.data ?? [],
-      galleryMedia: galleryMediaRes.data ?? [],
-      documents: docsRes.data ?? [],
+      media: unwrapRows(mediaRes, "الوسائط / media"),
+      galleries: unwrapRows(galleriesRes, "المعارض / galleries"),
+      galleryMedia: unwrapRows(galleryMediaRes, "وسائط المعارض / gallery media"),
+      documents: unwrapRows(docsRes, "الوثائق / documents"),
     };
   });
 
@@ -646,7 +855,10 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
   .validator((d: unknown) => mediaAssetInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = { ...data, uploaded_by: (context.userId || session?.user?.id || (context.claims?.sub as string)) };
+    const payload = {
+      ...data,
+      uploaded_by: context.userId || session?.user?.id || (context.claims?.sub as string),
+    };
     // A plain insert for new uploads — `onConflict: "storage_path"` would
     // silently overwrite an unrelated existing row's metadata (including its
     // uploaded_by) if a storage path ever collided, rather than surfacing it.
@@ -658,7 +870,7 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "upload",
       entity_type: "media_assets",
       entity_id: asset.id,
@@ -673,8 +885,18 @@ export const upsertGallery = createServerFn({ method: "POST" })
   .validator((d: unknown) => galleryInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = { ...data, created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)) };
-    const { data: gal, error } = await supabase.from("galleries").upsert(payload as never).select().single();
+    // Stamp the creator only on insert -- see upsertAnnouncement.
+    const payload = data.id
+      ? { ...data }
+      : {
+          ...data,
+          created_by: context.userId || session?.user?.id || (context.claims?.sub as string),
+        };
+    const { data: gal, error } = await supabase
+      .from("galleries")
+      .upsert(payload as never)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
     return { ok: true, gallery: gal };
   });
@@ -684,8 +906,18 @@ export const upsertDocument = createServerFn({ method: "POST" })
   .validator((d: unknown) => documentInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const payload = { ...data, uploaded_by: (context.userId || session?.user?.id || (context.claims?.sub as string)) };
-    const { data: doc, error } = await supabase.from("documents").upsert(payload as never).select().single();
+    // Stamp the uploader only on insert -- see upsertAnnouncement.
+    const payload = data.id
+      ? { ...data }
+      : {
+          ...data,
+          uploaded_by: context.userId || session?.user?.id || (context.claims?.sub as string),
+        };
+    const { data: doc, error } = await supabase
+      .from("documents")
+      .upsert(payload as never)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
     return { ok: true, document: doc };
   });
@@ -708,12 +940,12 @@ export const getInquiriesData = createServerFn({ method: "GET" })
       supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
     ]);
 
-    const inquiryRows = (inquiriesRes.data ?? []).map((row) => ({
+    const inquiryRows = unwrapRows(inquiriesRes, "الاستفسارات / inquiries").map((row) => ({
       ...row,
       source_table: "inquiries" as const,
     }));
 
-    const contactRows = (contactRes.data ?? []).map((row) => ({
+    const contactRows = unwrapRows(contactRes, "رسائل التواصل / contact messages").map((row) => ({
       id: row.id,
       name: row.name,
       email: row.email,
@@ -728,15 +960,14 @@ export const getInquiriesData = createServerFn({ method: "GET" })
     }));
 
     const merged = [...inquiryRows, ...contactRows].sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
 
     return {
       inquiries: merged,
-      notes: notesRes.data ?? [],
+      notes: unwrapRows(notesRes, "ملاحظات الاستفسارات / inquiry notes"),
     };
   });
-
 
 export const getInquiriesPaginated = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
@@ -744,41 +975,63 @@ export const getInquiriesPaginated = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { page, pageSize, search, status } = data;
-    
-    // Union-like fetch requires custom logic, but for simplicity we fetch both, sort, and slice in JS
-    // In a real app we'd use a SQL View for the UNION, but we will emulate it.
-    
-    const [inqRes, contactRes] = await Promise.all([
-      supabase.from("inquiries").select("*"),
-      supabase.from("contact_messages").select("*")
-    ]);
-    
-    let all = [
-      ...(inqRes.data ?? []).map(i => ({ ...i, source_table: "inquiries" as const })),
-      ...(contactRes.data ?? []).map(i => ({ ...i, source_table: "contact_messages" as const }))
-    ];
-    
-    if (search) {
-      const q = search.toLowerCase();
-      all = all.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.email && i.email.toLowerCase().includes(q)) || (i.subject && i.subject.toLowerCase().includes(q)));
+
+    // There is no SQL view for the inquiries + contact_messages union, so the
+    // two are merged, sorted and sliced here. The search term is pushed down to
+    // Postgres and each side is capped so a growing mailbox cannot drag both
+    // tables through the server in full on every keystroke. The term is
+    // sanitized first because it is interpolated into a PostgREST `.or()` group.
+    const MAX_ROWS_PER_SOURCE = 2000;
+    const cleanSearch = search ? sanitizeFilterTerm(search) : "";
+
+    let inquiriesQuery = supabase
+      .from("inquiries")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(MAX_ROWS_PER_SOURCE);
+    let contactQuery = supabase
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(MAX_ROWS_PER_SOURCE);
+
+    if (cleanSearch) {
+      const term = `%${cleanSearch}%`;
+      const orFilter = `name.ilike.${term},email.ilike.${term},subject.ilike.${term}`;
+      inquiriesQuery = inquiriesQuery.or(orFilter);
+      contactQuery = contactQuery.or(orFilter);
     }
+
+    const [inqRes, contactRes] = await Promise.all([inquiriesQuery, contactQuery]);
+
+    let all = [
+      ...unwrapRows(inqRes, "الاستفسارات / inquiries").map((i) => ({
+        ...i,
+        source_table: "inquiries" as const,
+      })),
+      ...unwrapRows(contactRes, "رسائل التواصل / contact messages").map((i) => ({
+        ...i,
+        source_table: "contact_messages" as const,
+      })),
+    ];
+
     if (status && status !== "all") {
       if (status === "in_progress") {
-        all = all.filter(i => i.status === "in_progress" || i.status === "open");
+        all = all.filter((i) => i.status === "in_progress" || i.status === "open");
       } else if (status === "resolved") {
-        all = all.filter(i => i.status === "resolved" || i.status === "read");
+        all = all.filter((i) => i.status === "resolved" || i.status === "read");
       } else {
-        all = all.filter(i => i.status === status);
+        all = all.filter((i) => i.status === status);
       }
     }
-    
+
     all.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    
+
     const count = all.length;
     const from = (page - 1) * pageSize;
     const to = from + pageSize;
     const paginated = all.slice(from, to);
-    
+
     return { data: paginated, count, page, pageSize };
   });
 
@@ -787,8 +1040,17 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
   .validator((d: unknown) => inquiryStatusUpdateSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { error } = await supabase.from("inquiries").update({ status: data.status, assigned_to: data.assigned_to }).eq("id", data.id);
+    // The admin Inquiries panel shows a merged list of `inquiries` and
+    // `contact_messages`; without a row-count check, calling this with a
+    // contact_messages id (or any stale id) updates nothing and still reports
+    // success, so the row silently keeps its old status in the UI.
+    const { data: updated, error } = await supabase
+      .from("inquiries")
+      .update({ status: data.status, assigned_to: data.assigned_to })
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(updated, "inquiries", data.id);
     return { ok: true };
   });
 
@@ -797,8 +1059,13 @@ export const updateContactMessageStatus = createServerFn({ method: "POST" })
   .validator((d: unknown) => contactMessageStatusUpdateSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { error } = await supabase.from("contact_messages").update({ status: data.status }).eq("id", data.id);
+    const { data: updated, error } = await supabase
+      .from("contact_messages")
+      .update({ status: data.status })
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(updated, "contact_messages", data.id);
     return { ok: true };
   });
 
@@ -807,11 +1074,15 @@ export const addInquiryNote = createServerFn({ method: "POST" })
   .validator((d: unknown) => inquiryNoteInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { data: note, error } = await supabase.from("inquiry_notes").insert({
-      inquiry_id: data.inquiry_id,
-      note: data.note,
-      author_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
-    }).select().single();
+    const { data: note, error } = await supabase
+      .from("inquiry_notes")
+      .insert({
+        inquiry_id: data.inquiry_id,
+        note: data.note,
+        author_id: context.userId || session?.user?.id || (context.claims?.sub as string),
+      })
+      .select()
+      .single();
 
     if (error) throw new Error(error.message);
     return { ok: true, note };
@@ -830,10 +1101,10 @@ export const getUsersAndRolesData = createServerFn({ method: "GET" })
     ]);
 
     return {
-      profiles: profilesRes.data ?? [],
-      userRoles: rolesRes.data ?? [],
-      permissions: permissionsRes.data ?? [],
-      rolePermissions: rolePermissionsRes.data ?? [],
+      profiles: unwrapRows(profilesRes, "الحسابات / profiles"),
+      userRoles: unwrapRows(rolesRes, "الأدوار / user roles"),
+      permissions: unwrapRows(permissionsRes, "الصلاحيات / permissions"),
+      rolePermissions: unwrapRows(rolePermissionsRes, "صلاحيات الأدوار / role permissions"),
     };
   });
 
@@ -867,7 +1138,11 @@ async function requireCallerIsAdmin(supabase: unknown, userId: string): Promise<
 /** A plain `admin` must not be able to mint `super_admin` (including for
  *  themselves) — only an existing `super_admin` may grant or revoke that
  *  specific role. Every other role stays grantable by any admin. */
-async function requireCallerCanGrantRole(supabase: unknown, userId: string, role: string): Promise<void> {
+async function requireCallerCanGrantRole(
+  supabase: unknown,
+  userId: string,
+  role: string,
+): Promise<void> {
   if (role !== "super_admin") {
     await requireCallerIsAdmin(supabase, userId);
     return;
@@ -877,7 +1152,8 @@ async function requireCallerCanGrantRole(supabase: unknown, userId: string, role
     .select("role")
     .eq("user_id", userId)
     .eq("role", "super_admin");
-  if (!data || data.length === 0) throw new Error("forbidden: only super_admin may grant super_admin");
+  if (!data || data.length === 0)
+    throw new Error("forbidden: only super_admin may grant super_admin");
 }
 
 export const assignUserRole = createServerFn({ method: "POST" })
@@ -893,17 +1169,21 @@ export const assignUserRole = createServerFn({ method: "POST" })
       role: data.role,
       granted_by: userId,
     });
-    if (error && error.code !== "23505") throw new Error(error.message);
+    // 23505 = the (user_id, role) unique constraint, i.e. the user already had
+    // this role. That is a no-op rather than a failure, but the audit trail
+    // must not claim a grant that never happened.
+    const alreadyAssigned = error?.code === "23505";
+    if (error && !alreadyAssigned) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
       actor_user_id: userId,
       action: "role_change",
       entity_type: "user_roles",
       entity_id: data.user_id,
-      metadata: { role: data.role },
+      metadata: { role: data.role, already_assigned: alreadyAssigned },
     });
 
-    return { ok: true };
+    return { ok: true, alreadyAssigned };
   });
 
 export const removeUserRole = createServerFn({ method: "POST" })
@@ -912,6 +1192,26 @@ export const removeUserRole = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     await requireCallerCanGrantRole(supabase, userId, data.role);
+
+    // Removing the final admin/super_admin permanently locks everyone out of
+    // the console: `user_roles` has no INSERT policy for `authenticated`, so
+    // nobody left inside the app could ever grant the role back.
+    if (data.role === "admin" || data.role === "super_admin") {
+      const { data: privileged, error: privilegedError } = await supabase
+        .from("user_roles")
+        .select("user_id, role")
+        .in("role", ["admin", "super_admin"]);
+      if (privilegedError) throw new Error(privilegedError.message);
+      const remaining = (privileged ?? []).filter(
+        (r) => !(r.user_id === data.user_id && (r.role as string) === data.role),
+      );
+      if (remaining.length === 0) {
+        throw new Error(
+          "لا يمكن إزالة آخر دور إداري؛ سيؤدي ذلك إلى فقدان الوصول إلى لوحة التحكم نهائياً. " +
+            "Refusing to remove the last remaining admin/super_admin role — that would lock everyone out of the console.",
+        );
+      }
+    }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // DELETE matching zero rows is not an error as far as Supabase/Postgres
@@ -952,16 +1252,20 @@ export const getAuditLogsData = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const { data } = await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(200);
-    return data ?? [];
+    const res = await supabase
+      .from("audit_logs")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    return unwrapRows(res, "سجل النشاط / audit logs");
   });
 
 export const getSiteSettingsData = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const { data } = await supabase.from("site_settings").select("*");
-    return data ?? [];
+    const res = await supabase.from("site_settings").select("*");
+    return unwrapRows(res, "إعدادات الموقع / site settings");
   });
 
 export const upsertSiteSetting = createServerFn({ method: "POST" })
@@ -971,7 +1275,7 @@ export const upsertSiteSetting = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const payload: Record<string, any> = {
       ...data,
-      updated_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      updated_by: context.userId || session?.user?.id || (context.claims?.sub as string),
       updated_at: new Date().toISOString(),
     };
     const { data: setting, error } = await supabase
@@ -982,7 +1286,7 @@ export const upsertSiteSetting = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "settings_change",
       entity_type: "site_settings",
       entity_id: data.key,
@@ -1006,8 +1310,8 @@ export const getDirectoryManagementData = createServerFn({ method: "GET" })
     ]);
 
     return {
-      businesses: bizRes.data ?? [],
-      membershipRequests: reqRes.data ?? [],
+      businesses: unwrapRows(bizRes, "المنشآت / businesses"),
+      membershipRequests: unwrapRows(reqRes, "طلبات العضوية / membership requests"),
     };
   });
 
@@ -1018,14 +1322,21 @@ export const upsertBusiness = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const payload: Record<string, any> = {
       ...data,
-      created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
-    const { data: biz, error } = await supabase.from("businesses").upsert(payload as never).select().single();
+    // Stamp the creator only on insert -- see upsertAnnouncement.
+    if (!data.id) {
+      payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
+    }
+    const { data: biz, error } = await supabase
+      .from("businesses")
+      .upsert(payload as never)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "businesses",
       entity_id: biz.id,
@@ -1040,11 +1351,16 @@ export const deleteBusiness = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { error } = await supabase.from("businesses").delete().eq("id", data.id);
+    const { data: deleted, error } = await supabase
+      .from("businesses")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "businesses", data.id);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "delete",
       entity_type: "businesses",
       entity_id: data.id,
@@ -1110,29 +1426,44 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
     };
   });
 
-
 export const getTreasuryContributionsPaginated = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
   .validator((d: unknown) => paginationSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { page, pageSize, search, status } = data;
-    
+
     let query = supabase.from("contributions").select("*", { count: "exact" });
-    
+
     if (search) {
-      query = query.ilike("contributor_name", `%${search}%`);
+      // Strip LIKE/PostgREST wildcards so a typed "%" or "*" searches for that
+      // character instead of silently matching every contributor.
+      const term = sanitizeFilterTerm(search).replace(/[%_*\\]/g, "");
+      if (term) query = query.ilike("contributor_name", `%${term}%`);
     }
     if (status && status !== "all") {
-      query = query.eq("status", status as "pending" | "verified" | "rejected");
+      // Previously cast straight into `.eq("status", ...)`; an unknown value
+      // came back to the admin as a raw Postgres "invalid input value for enum
+      // contribution_status" error instead of a validation failure.
+      const parsedStatus = contributionStatusSchema.safeParse(status);
+      if (!parsedStatus.success) {
+        throw new Error(
+          `حالة مساهمة غير معروفة: "${status}". Unknown contribution status "${status}".`,
+        );
+      }
+      query = query.eq("status", parsedStatus.data);
     }
 
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
-    
-    const { data: contributions, count, error } = await query.order("created_at", { ascending: false }).range(from, to);
+
+    const {
+      data: contributions,
+      count,
+      error,
+    } = await query.order("created_at", { ascending: false }).range(from, to);
     if (error) throw new Error(error.message);
-    
+
     return { data: contributions ?? [], count: count ?? 0, page, pageSize };
   });
 
@@ -1146,7 +1477,7 @@ export const reviewTreasuryContribution = createServerFn({ method: "POST" })
       .update({
         status: data.status,
         review_note: data.review_note,
-        reviewed_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+        reviewed_by: context.userId || session?.user?.id || (context.claims?.sub as string),
         reviewed_at: new Date().toISOString(),
       })
       .eq("id", data.id)
@@ -1156,7 +1487,7 @@ export const reviewTreasuryContribution = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "update",
       entity_type: "contributions",
       entity_id: data.id,
@@ -1176,7 +1507,10 @@ export const getInitiativesManagementData = createServerFn({ method: "GET" })
     const { supabase } = context;
     const [initiativesRes, registrationsRes] = await Promise.all([
       supabase.from("initiatives").select("*").order("sort_order", { ascending: true }),
-      supabase.from("initiative_registrations").select("*").order("created_at", { ascending: false }),
+      supabase
+        .from("initiative_registrations")
+        .select("*")
+        .order("created_at", { ascending: false }),
     ]);
 
     if (initiativesRes.error) throw new Error(initiativesRes.error.message);
@@ -1195,14 +1529,21 @@ export const upsertInitiative = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const payload: Record<string, any> = {
       ...data,
-      created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
-    const { data: init, error } = await supabase.from("initiatives").upsert(payload as never).select().single();
+    // Stamp the creator only on insert -- see upsertAnnouncement.
+    if (!data.id) {
+      payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
+    }
+    const { data: init, error } = await supabase
+      .from("initiatives")
+      .upsert(payload as never)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "initiatives",
       entity_id: init.id,
@@ -1217,11 +1558,16 @@ export const deleteInitiative = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { error } = await supabase.from("initiatives").delete().eq("id", data.id);
+    const { data: deleted, error } = await supabase
+      .from("initiatives")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "initiatives", data.id);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "delete",
       entity_type: "initiatives",
       entity_id: data.id,
@@ -1254,14 +1600,21 @@ export const upsertAchiever = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const payload: Record<string, any> = {
       ...data,
-      created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
-    const { data: ach, error } = await supabase.from("achievers").upsert(payload as never).select().single();
+    // Stamp the creator only on insert -- see upsertAnnouncement.
+    if (!data.id) {
+      payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
+    }
+    const { data: ach, error } = await supabase
+      .from("achievers")
+      .upsert(payload as never)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "achievers",
       entity_id: ach.id,
@@ -1276,11 +1629,16 @@ export const deleteAchiever = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { error } = await supabase.from("achievers").delete().eq("id", data.id);
+    const { data: deleted, error } = await supabase
+      .from("achievers")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "achievers", data.id);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "delete",
       entity_type: "achievers",
       entity_id: data.id,
@@ -1313,14 +1671,21 @@ export const upsertLibraryItem = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const payload: Record<string, any> = {
       ...data,
-      created_by: (context.userId || session?.user?.id || (context.claims?.sub as string)),
       updated_at: new Date().toISOString(),
     };
-    const { data: lib, error } = await supabase.from("library_items").upsert(payload as never).select().single();
+    // Stamp the creator only on insert -- see upsertAnnouncement.
+    if (!data.id) {
+      payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
+    }
+    const { data: lib, error } = await supabase
+      .from("library_items")
+      .upsert(payload as never)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "library_items",
       entity_id: lib.id,
@@ -1335,11 +1700,16 @@ export const deleteLibraryItem = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { error } = await supabase.from("library_items").delete().eq("id", data.id);
+    const { data: deleted, error } = await supabase
+      .from("library_items")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "library_items", data.id);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "delete",
       entity_type: "library_items",
       entity_id: data.id,
@@ -1361,8 +1731,8 @@ export const getNavigationManagementData = createServerFn({ method: "GET" })
       supabase.from("navigation_items").select("*").order("sort_order", { ascending: true }),
     ]);
     return {
-      menus: menusRes.data ?? [],
-      items: itemsRes.data ?? [],
+      menus: unwrapRows(menusRes, "القوائم / navigation menus"),
+      items: unwrapRows(itemsRes, "عناصر القوائم / navigation items"),
     };
   });
 
@@ -1379,7 +1749,7 @@ export const upsertNavigationMenu = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "navigation_menus",
       entity_id: menu.id,
@@ -1402,7 +1772,7 @@ export const upsertNavigationItem = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: data.id ? "update" : "create",
       entity_type: "navigation_items",
       entity_id: item.id,
@@ -1417,11 +1787,16 @@ export const deleteNavigationItem = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { error } = await supabase.from("navigation_items").delete().eq("id", data.id);
+    const { data: deleted, error } = await supabase
+      .from("navigation_items")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "navigation_items", data.id);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "delete",
       entity_type: "navigation_items",
       entity_id: data.id,
@@ -1448,7 +1823,7 @@ export const updateEventRegistrationStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "update_registration_status",
       entity_type: "event_registrations",
       entity_id: data.id,
@@ -1463,11 +1838,16 @@ export const deleteEventRegistration = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { error } = await supabase.from("event_registrations").delete().eq("id", data.id);
+    const { data: deleted, error } = await supabase
+      .from("event_registrations")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "event_registrations", data.id);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "delete_registration",
       entity_type: "event_registrations",
       entity_id: data.id,
@@ -1490,7 +1870,7 @@ export const updateInitiativeRegistrationStatus = createServerFn({ method: "POST
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "update_registration_status",
       entity_type: "initiative_registrations",
       entity_id: data.id,
@@ -1505,11 +1885,16 @@ export const deleteInitiativeRegistration = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const { error } = await supabase.from("initiative_registrations").delete().eq("id", data.id);
+    const { data: deleted, error } = await supabase
+      .from("initiative_registrations")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
     if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "initiative_registrations", data.id);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "delete_registration",
       entity_type: "initiative_registrations",
       entity_id: data.id,
@@ -1574,7 +1959,7 @@ export const bulkFamilyMembersAction = createServerFn({ method: "POST" })
     }
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: `bulk_${action}`,
       entity_type: "family_members",
       metadata: { target_count: ids.length, ids },
@@ -1605,7 +1990,7 @@ export const bulkArticlesAction = createServerFn({ method: "POST" })
     }
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: `bulk_article_${action}`,
       entity_type: "articles",
       metadata: { target_count: ids.length, ids },
@@ -1647,7 +2032,7 @@ export const broadcastNotification = createServerFn({ method: "POST" })
     }
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "broadcast_notification",
       entity_type: "notifications",
       metadata: { recipients_count: rows.length, title: data.title_ar },
@@ -1695,7 +2080,7 @@ export const saveDnaStudiesData = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
-      actor_user_id: (context.userId || session?.user?.id || (context.claims?.sub as string)),
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
       action: "update_dna_studies",
       entity_type: "site_settings",
       entity_id: setting.id,
@@ -1713,7 +2098,7 @@ export const getAdminNotificationsList = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase, session } = context;
-    const userId = (context.userId || session?.user?.id || (context.claims?.sub as string));
+    const userId = context.userId || session?.user?.id || (context.claims?.sub as string);
 
     const { data: notifs, error } = await supabase
       .from("notifications")
@@ -1738,7 +2123,7 @@ export const markNotificationRead = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const userId = (context.userId || session?.user?.id || (context.claims?.sub as string));
+    const userId = context.userId || session?.user?.id || (context.claims?.sub as string);
 
     const { error } = await supabase
       .from("notifications")
@@ -1754,7 +2139,7 @@ export const markAllNotificationsRead = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase, session } = context;
-    const userId = (context.userId || session?.user?.id || (context.claims?.sub as string));
+    const userId = context.userId || session?.user?.id || (context.claims?.sub as string);
 
     const { error } = await supabase
       .from("notifications")
@@ -1771,7 +2156,7 @@ export const deleteNotification = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
-    const userId = (context.userId || session?.user?.id || (context.claims?.sub as string));
+    const userId = context.userId || session?.user?.id || (context.claims?.sub as string);
 
     const { error } = await supabase
       .from("notifications")

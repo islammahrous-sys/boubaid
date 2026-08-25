@@ -18,7 +18,6 @@ const SUPABASE_STORAGE_BASE_URL =
   process.env?.VITE_SUPABASE_URL ||
   "https://ywsvittlswbbyqhahorh.supabase.co";
 
-
 /* ------------------------------------------------------------------ *
  * Row shapes returned to the client (published, public-safe columns). *
  * ------------------------------------------------------------------ */
@@ -42,7 +41,6 @@ export type NewsRow = {
   cover_url?: string | null;
 };
 
-
 export type InitiativeRow = {
   id: string;
   slug: string;
@@ -58,7 +56,6 @@ export type InitiativeRow = {
   sort_order: number;
   cover_url?: string | null;
 };
-
 
 export type AchieverRow = {
   id: string;
@@ -77,7 +74,6 @@ export type AchieverRow = {
   image_url?: string | null;
 };
 
-
 export type LibraryRow = {
   id: string;
   collection: string;
@@ -95,7 +91,6 @@ export type LibraryRow = {
   file_url?: string | null;
 };
 
-
 export type BranchRow = {
   id: string;
   slug: string;
@@ -110,7 +105,6 @@ export type BranchRow = {
   sort_order: number;
   image_url?: string | null;
 };
-
 
 const NEWS_COLS =
   "id, slug, section, title_ar, title_en, excerpt_ar, excerpt_en, body_ar, body_en, hijri_date, gregorian_date, cover_path, is_published, sort_order, created_at";
@@ -146,6 +140,26 @@ async function withMedia<T extends Record<string, unknown>>(
   });
 }
 
+/**
+ * Real Hijri year for a date, used to label `articles` rows (which have no
+ * `hijri_date` column of their own) in the merged news feed. Previously this
+ * was a hardcoded "1447" on every article, so an article published in any
+ * other year still displayed 1447 to readers. `Intl` ships the Umm al-Qura
+ * calendar in Node/modern browsers; if a runtime lacks it we return null and
+ * the consumer (`mapNewsRow` in content/cms-adapt.ts) falls back to "".
+ */
+function hijriYearOf(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  try {
+    const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
+      year: "numeric",
+    }).formatToParts(new Date(iso));
+    return parts.find((p) => p.type === "year")?.value ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** Published news — safe for public route loaders (anon SELECT policy). */
 export const getPublishedNews = createServerFn({ method: "GET" }).handler(
   async (): Promise<NewsRow[]> => {
@@ -153,25 +167,28 @@ export const getPublishedNews = createServerFn({ method: "GET" }).handler(
       const { createPublicServerClient } = await import("./supabase-public.server");
       const supabase = createPublicServerClient();
 
-      const [{ data: articlesData }, { data: newsPostsData, error: newsPostsError }] = await Promise.all([
-        supabase
-          .from("articles")
-          .select("id, slug, title_ar, title_en, excerpt_ar, excerpt_en, content_ar, content_en, featured_media_path, status, published_at, created_at")
-          .eq("status", "published")
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("news_posts")
-          .select(NEWS_COLS)
-          .order("sort_order", { ascending: false })
-          .order("created_at", { ascending: false })
-          .limit(200),
-      ]);
+      const [{ data: articlesData }, { data: newsPostsData, error: newsPostsError }] =
+        await Promise.all([
+          supabase
+            .from("articles")
+            .select(
+              "id, slug, title_ar, title_en, excerpt_ar, excerpt_en, content_ar, content_en, featured_media_path, status, published_at, created_at",
+            )
+            .eq("status", "published")
+            .order("created_at", { ascending: false }),
+          supabase
+            .from("news_posts")
+            .select(NEWS_COLS)
+            .order("sort_order", { ascending: false })
+            .order("created_at", { ascending: false })
+            .limit(200),
+        ]);
 
       if (newsPostsError) {
         console.error("[cms] news read failed", newsPostsError.code, newsPostsError.message);
       }
 
-      const mappedArticles: NewsRow[] = (articlesData ?? []).map((a: any, idx: number) => ({
+      const mappedArticles: NewsRow[] = (articlesData ?? []).map((a: any) => ({
         id: a.id,
         slug: a.slug,
         section: "fund",
@@ -181,18 +198,29 @@ export const getPublishedNews = createServerFn({ method: "GET" }).handler(
         excerpt_en: a.excerpt_en,
         body_ar: a.content_ar,
         body_en: a.content_en,
-        hijri_date: "1447",
-        gregorian_date: (a.published_at ?? a.created_at)
-          ? new Date(a.published_at ?? a.created_at).toISOString().split("T")[0]
-          : null,
+        hijri_date: hijriYearOf(a.published_at ?? a.created_at),
+        gregorian_date:
+          (a.published_at ?? a.created_at)
+            ? new Date(a.published_at ?? a.created_at).toISOString().split("T")[0]
+            : null,
         cover_path: a.featured_media_path,
         is_published: true,
-        sort_order: idx + 1,
+        // `articles` has no sort_order column; 0 keeps them in the unpinned
+        // (date-ordered) band below any news_post an editor pinned.
+        sort_order: 0,
         created_at: a.created_at,
       }));
 
+      // `news_posts.sort_order` is an editable field in the content console
+      // (routes/_authenticated/content.tsx) but the merged feed used to sort
+      // purely by created_at, so setting it had no visible effect anywhere.
+      // Treat it as a pin weight: higher sort_order floats to the top, and
+      // everything sharing a weight (including articles, weight 0) stays in
+      // newest-first order.
       const merged: NewsRow[] = [...mappedArticles, ...((newsPostsData ?? []) as NewsRow[])].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        (a, b) =>
+          (b.sort_order ?? 0) - (a.sort_order ?? 0) ||
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
 
       return withMedia(merged, [{ from: "cover_path", to: "cover_url" }]);
@@ -287,7 +315,6 @@ export const getPublishedBranches = createServerFn({ method: "GET" }).handler(
   },
 );
 
-
 /* ------------------------- secretariat console ------------------------- */
 
 export type CmsOverview = {
@@ -329,9 +356,10 @@ export const getCmsOverview = createServerFn({ method: "GET" })
 type MutationResult = { ok: true; id?: string } | { ok: false; error: string };
 
 const blankToNull = <T extends Record<string, unknown>>(values: T) =>
-  Object.fromEntries(
-    Object.entries(values).map(([k, v]) => [k, v === "" ? null : v]),
-  ) as Record<string, unknown>;
+  Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v === "" ? null : v])) as Record<
+    string,
+    unknown
+  >;
 
 /** Every content mutation leaves a trail; failures here never block the edit. */
 async function writeAudit(
@@ -364,8 +392,17 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
     // The table name is a validated union; the generated per-table row types
     // cannot be narrowed generically, so widen the query builder here.
     const table = supabase.from(data.table) as unknown as {
-      update: (v: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { code?: string; message: string } | null }> };
-      insert: (v: Record<string, unknown>) => { select: (c: string) => { maybeSingle: () => Promise<{ data: { id: string } | null; error: { code?: string; message: string } | null }> } };
+      update: (v: Record<string, unknown>) => {
+        eq: (c: string, v: string) => Promise<{ error: { code?: string; message: string } | null }>;
+      };
+      insert: (v: Record<string, unknown>) => {
+        select: (c: string) => {
+          maybeSingle: () => Promise<{
+            data: { id: string } | null;
+            error: { code?: string; message: string } | null;
+          }>;
+        };
+      };
     };
 
     if (id) {
@@ -391,7 +428,6 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
     return { ok: true, id: inserted?.id };
   });
 
-
 export const setCmsPublished = createServerFn({ method: "POST" })
   .middleware([requireEditorAuth])
   .validator((input: unknown) => cmsPublishSchema.parse(input))
@@ -401,7 +437,9 @@ export const setCmsPublished = createServerFn({ method: "POST" })
       patch["published_at"] = data.is_published ? new Date().toISOString() : null;
     }
     const table = context.supabase.from(data.table) as unknown as {
-      update: (v: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { code?: string; message: string } | null }> };
+      update: (v: Record<string, unknown>) => {
+        eq: (c: string, v: string) => Promise<{ error: { code?: string; message: string } | null }>;
+      };
     };
     const { error } = await table.update(patch).eq("id", data.id);
     if (error) {
@@ -416,7 +454,6 @@ export const setCmsPublished = createServerFn({ method: "POST" })
     );
     return { ok: true };
   });
-
 
 export const deleteCmsRow = createServerFn({ method: "POST" })
   .middleware([requireEditorAuth])
@@ -456,7 +493,10 @@ export const uploadContentMedia = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => contentMediaUploadSchema.parse(input))
   .handler(
-    async ({ data, context }): Promise<{ ok: true; path: string } | { ok: false; error: string }> => {
+    async ({
+      data,
+      context,
+    }): Promise<{ ok: true; path: string } | { ok: false; error: string }> => {
       const { supabase, userId } = context;
 
       const { data: roles } = await supabase
@@ -596,8 +636,18 @@ export const getPublicContentPageBySlug = createServerFn({ method: "GET" })
       const supabase = createPublicServerClient();
 
       const [{ data: bySlug }, { data: bySlugAr }] = await Promise.all([
-        supabase.from("content_pages").select("*").eq("slug", slug).eq("status", "published").maybeSingle(),
-        supabase.from("content_pages").select("*").eq("slug_ar", slug).eq("status", "published").maybeSingle(),
+        supabase
+          .from("content_pages")
+          .select("*")
+          .eq("slug", slug)
+          .eq("status", "published")
+          .maybeSingle(),
+        supabase
+          .from("content_pages")
+          .select("*")
+          .eq("slug_ar", slug)
+          .eq("status", "published")
+          .maybeSingle(),
       ]);
       const page = bySlug ?? bySlugAr;
 
@@ -627,14 +677,35 @@ export const getPublicAnnouncements = createServerFn({ method: "GET" }).handler(
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
 
+    // `start_at` / `end_at` are captured by the console's announcement form
+    // (console/announcements/AnnouncementsManager.tsx) but nothing enforced
+    // them: an announcement whose window had already closed stayed on the
+    // public ticker forever, and one scheduled to open next week showed
+    // immediately. Chained `.or(...)` calls are AND-ed by PostgREST, so this
+    // reads as: status is live AND (no start or start passed) AND (no end or
+    // end still ahead).
+    const nowIso = new Date().toISOString();
+
     const { data } = await supabase
       .from("announcements")
       .select("*")
       .or("status.eq.active,status.eq.published")
-      .order("priority", { ascending: false })
+      .or(`start_at.is.null,start_at.lte.${nowIso}`)
+      .or(`end_at.is.null,end_at.gte.${nowIso}`)
       .order("created_at", { ascending: false });
 
-    return data ?? [];
+    // `.order("priority")` sorted the *text* column alphabetically, so
+    // descending gave urgent > normal > low > high — burying "high" below
+    // "low". Rank explicitly instead; ties keep the newest-first order the
+    // query already applied.
+    const PRIORITY_RANK: Record<string, number> = { urgent: 3, high: 2, normal: 1, low: 0 };
+    return (data ?? [])
+      .slice()
+      .sort(
+        (a, b) =>
+          (PRIORITY_RANK[(b as { priority?: string }).priority ?? "normal"] ?? 1) -
+          (PRIORITY_RANK[(a as { priority?: string }).priority ?? "normal"] ?? 1),
+      );
   } catch (err) {
     console.error("[cms] getPublicAnnouncements error", err);
     return [];
@@ -710,44 +781,55 @@ export const getPublicGlobalSearch = createServerFn({ method: "GET" })
     // query text can only ever land inside the intended ilike value slots.
     const cleanQuery = query.trim().replace(/[,()]/g, "");
 
-    const [membersRes, articlesRes, initiativesRes, achieversRes, libraryRes, branchesRes] = await Promise.all([
-      supabase
-        .from("family_members")
-        .select("id, slug, first_name_ar, last_name_ar, first_name_en, last_name_en, occupation_ar, avatar_path")
-        .eq("visibility", "public")
-        .or(
-          `first_name_ar.ilike.%${cleanQuery}%,last_name_ar.ilike.%${cleanQuery}%,first_name_en.ilike.%${cleanQuery}%,last_name_en.ilike.%${cleanQuery}%,slug.ilike.%${cleanQuery}%`,
-        )
-        .limit(6),
-      supabase
-        .from("articles")
-        .select("id, slug, title_ar, excerpt_ar, title_en, excerpt_en, featured_media_path")
-        .eq("status", "published")
-        .or(`title_ar.ilike.%${cleanQuery}%,excerpt_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%,excerpt_en.ilike.%${cleanQuery}%`)
-        .limit(4),
-      supabase
-        .from("initiatives")
-        .select("id, slug, title_ar, summary_ar, title_en, summary_en, cover_path")
-        .or(`title_ar.ilike.%${cleanQuery}%,summary_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%,summary_en.ilike.%${cleanQuery}%`)
-        .limit(4),
-      supabase
-        .from("achievers")
-        .select("id, name_ar, field_ar, achievement_ar, name_en, field_en, image_path")
-        .eq("is_published", true)
-        .or(`name_ar.ilike.%${cleanQuery}%,field_ar.ilike.%${cleanQuery}%,name_en.ilike.%${cleanQuery}%,field_en.ilike.%${cleanQuery}%`)
-        .limit(4),
-      supabase
-        .from("library_items")
-        .select("id, title_ar, title_en, collection, kind, file_path")
-        .eq("is_published", true)
-        .or(`title_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%`)
-        .limit(4),
-      supabase
-        .from("branches")
-        .select("id, slug, name_ar, elder_ar, name_en, elder_en")
-        .or(`name_ar.ilike.%${cleanQuery}%,elder_ar.ilike.%${cleanQuery}%,name_en.ilike.%${cleanQuery}%,elder_en.ilike.%${cleanQuery}%`)
-        .limit(4),
-    ]);
+    const [membersRes, articlesRes, initiativesRes, achieversRes, libraryRes, branchesRes] =
+      await Promise.all([
+        supabase
+          .from("family_members")
+          .select(
+            "id, slug, first_name_ar, last_name_ar, first_name_en, last_name_en, occupation_ar, avatar_path",
+          )
+          .eq("visibility", "public")
+          .or(
+            `first_name_ar.ilike.%${cleanQuery}%,last_name_ar.ilike.%${cleanQuery}%,first_name_en.ilike.%${cleanQuery}%,last_name_en.ilike.%${cleanQuery}%,slug.ilike.%${cleanQuery}%`,
+          )
+          .limit(6),
+        supabase
+          .from("articles")
+          .select("id, slug, title_ar, excerpt_ar, title_en, excerpt_en, featured_media_path")
+          .eq("status", "published")
+          .or(
+            `title_ar.ilike.%${cleanQuery}%,excerpt_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%,excerpt_en.ilike.%${cleanQuery}%`,
+          )
+          .limit(4),
+        supabase
+          .from("initiatives")
+          .select("id, slug, title_ar, summary_ar, title_en, summary_en, cover_path")
+          .or(
+            `title_ar.ilike.%${cleanQuery}%,summary_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%,summary_en.ilike.%${cleanQuery}%`,
+          )
+          .limit(4),
+        supabase
+          .from("achievers")
+          .select("id, name_ar, field_ar, achievement_ar, name_en, field_en, image_path")
+          .eq("is_published", true)
+          .or(
+            `name_ar.ilike.%${cleanQuery}%,field_ar.ilike.%${cleanQuery}%,name_en.ilike.%${cleanQuery}%,field_en.ilike.%${cleanQuery}%`,
+          )
+          .limit(4),
+        supabase
+          .from("library_items")
+          .select("id, title_ar, title_en, collection, kind, file_path")
+          .eq("is_published", true)
+          .or(`title_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%`)
+          .limit(4),
+        supabase
+          .from("branches")
+          .select("id, slug, name_ar, elder_ar, name_en, elder_en")
+          .or(
+            `name_ar.ilike.%${cleanQuery}%,elder_ar.ilike.%${cleanQuery}%,name_en.ilike.%${cleanQuery}%,elder_en.ilike.%${cleanQuery}%`,
+          )
+          .limit(4),
+      ]);
 
     return {
       members: membersRes.data ?? [],
@@ -874,8 +956,15 @@ export type PublicGallery = {
  *  client-side `getPublicUrl` fallback (assets live in public buckets, keyed
  *  by their own `bucket` column, unlike the private `content` bucket used
  *  elsewhere in this file). */
-function mediaAssetUrl(asset: { bucket: string; storage_path: string; public_url: string | null }): string {
-  return asset.public_url || `${SUPABASE_STORAGE_BASE_URL}/storage/v1/object/public/${asset.bucket}/${asset.storage_path}`;
+function mediaAssetUrl(asset: {
+  bucket: string;
+  storage_path: string;
+  public_url: string | null;
+}): string {
+  return (
+    asset.public_url ||
+    `${SUPABASE_STORAGE_BASE_URL}/storage/v1/object/public/${asset.bucket}/${asset.storage_path}`
+  );
 }
 
 /** Public gallery block data — a published, public-visibility gallery and its ordered media. */
@@ -988,9 +1077,11 @@ export const getPublicMemberSpotlight = createServerFn({ method: "GET" })
 
       if (!data) return null;
 
-      const fullNameAr = data.display_name_ar || `${data.first_name_ar} ${data.last_name_ar}`.trim();
+      const fullNameAr =
+        data.display_name_ar || `${data.first_name_ar} ${data.last_name_ar}`.trim();
       const fullNameEn =
-        data.display_name_en || (data.first_name_en ? `${data.first_name_en} ${data.last_name_en ?? ""}`.trim() : null);
+        data.display_name_en ||
+        (data.first_name_en ? `${data.first_name_en} ${data.last_name_en ?? ""}`.trim() : null);
 
       return {
         id: data.id,
@@ -1045,25 +1136,33 @@ type SectionsRpcClient = {
   rpc: (
     fn: "replace_content_page_sections" | "restore_content_revision",
     args: Record<string, unknown>,
-  ) => Promise<{ data: ContentSectionRow[] | null; error: { code?: string; message: string } | null }>;
+  ) => Promise<{
+    data: ContentSectionRow[] | null;
+    error: { code?: string; message: string } | null;
+  }>;
 };
 
 /** Atomically replaces every content_sections row for a page. */
 export const saveContentPageSectionsAtomic = createServerFn({ method: "POST" })
   .middleware([requireEditorAuth])
   .validator((input: unknown) => saveContentPageSectionsSchema.parse(input))
-  .handler(async ({ data, context }): Promise<{ ok: true; sections: ContentSectionRow[] } | { ok: false; error: string }> => {
-    const rpcClient = context.supabase as unknown as SectionsRpcClient;
-    const { data: rows, error } = await rpcClient.rpc("replace_content_page_sections", {
-      p_page_id: data.page_id,
-      p_sections: data.sections,
-    });
-    if (error) {
-      console.error("[cms] saveContentPageSectionsAtomic failed", error.code, error.message);
-      return { ok: false, error: error.message };
-    }
-    return { ok: true, sections: rows ?? [] };
-  });
+  .handler(
+    async ({
+      data,
+      context,
+    }): Promise<{ ok: true; sections: ContentSectionRow[] } | { ok: false; error: string }> => {
+      const rpcClient = context.supabase as unknown as SectionsRpcClient;
+      const { data: rows, error } = await rpcClient.rpc("replace_content_page_sections", {
+        p_page_id: data.page_id,
+        p_sections: data.sections,
+      });
+      if (error) {
+        console.error("[cms] saveContentPageSectionsAtomic failed", error.code, error.message);
+        return { ok: false, error: error.message };
+      }
+      return { ok: true, sections: rows ?? [] };
+    },
+  );
 
 export type PageRevisionSummary = {
   id: string;
@@ -1096,17 +1195,19 @@ export const listPageRevisions = createServerFn({ method: "GET" })
 export const restorePageRevision = createServerFn({ method: "POST" })
   .middleware([requireEditorAuth])
   .validator((input: unknown) => restoreRevisionSchema.parse(input))
-  .handler(async ({ data, context }): Promise<{ ok: true; sections: ContentSectionRow[] } | { ok: false; error: string }> => {
-    const rpcClient = context.supabase as unknown as SectionsRpcClient;
-    const { data: rows, error } = await rpcClient.rpc("restore_content_revision", {
-      p_revision_id: data.revision_id,
-    });
-    if (error) {
-      console.error("[cms] restorePageRevision failed", error.code, error.message);
-      return { ok: false, error: error.message };
-    }
-    return { ok: true, sections: (rows ?? []) as ContentSectionRow[] };
-  });
-
-
-
+  .handler(
+    async ({
+      data,
+      context,
+    }): Promise<{ ok: true; sections: ContentSectionRow[] } | { ok: false; error: string }> => {
+      const rpcClient = context.supabase as unknown as SectionsRpcClient;
+      const { data: rows, error } = await rpcClient.rpc("restore_content_revision", {
+        p_revision_id: data.revision_id,
+      });
+      if (error) {
+        console.error("[cms] restorePageRevision failed", error.code, error.message);
+        return { ok: false, error: error.message };
+      }
+      return { ok: true, sections: (rows ?? []) as ContentSectionRow[] };
+    },
+  );

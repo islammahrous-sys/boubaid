@@ -1,11 +1,24 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Download, Upload, FileSpreadsheet, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import {
+  Download,
+  Upload,
+  FileSpreadsheet,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { FamilyMemberInput } from "@/lib/admin-hub.schemas";
@@ -83,7 +96,7 @@ export function FamilyImportExportDialog({
           m.generation || 1,
           `"${m.visibility || "public"}"`,
           `"${m.status || "published"}"`,
-        ].join(",")
+        ].join(","),
       );
 
       const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
@@ -91,7 +104,10 @@ export function FamilyImportExportDialog({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", `alaboubaid-family-members-${new Date().toISOString().slice(0, 10)}.csv`);
+      link.setAttribute(
+        "download",
+        `alaboubaid-family-members-${new Date().toISOString().slice(0, 10)}.csv`,
+      );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -122,7 +138,10 @@ export function FamilyImportExportDialog({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", `alaboubaid-family-members-${new Date().toISOString().slice(0, 10)}.json`);
+      link.setAttribute(
+        "download",
+        `alaboubaid-family-members-${new Date().toISOString().slice(0, 10)}.json`,
+      );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -139,9 +158,14 @@ export function FamilyImportExportDialog({
     setParsedMembers([]);
 
     try {
-      const lines = csvText.trim().split("\n").filter((l) => l.trim().length > 0);
+      const lines = csvText
+        .trim()
+        .split("\n")
+        .filter((l) => l.trim().length > 0);
       if (lines.length < 2) {
-        setParseError(isAr ? "الملف فارغ أو لا يحتوي على صفوف بيانات" : "CSV is empty or missing data rows");
+        setParseError(
+          isAr ? "الملف فارغ أو لا يحتوي على صفوف بيانات" : "CSV is empty or missing data rows",
+        );
         return;
       }
 
@@ -179,7 +203,9 @@ export function FamilyImportExportDialog({
       }
 
       setParsedMembers(items);
-      toast.success(isAr ? `تم التعرف على ${items.length} سجل بنجاح` : `Parsed ${items.length} records`);
+      toast.success(
+        isAr ? `تم التعرف على ${items.length} سجل بنجاح` : `Parsed ${items.length} records`,
+      );
     } catch (err: any) {
       setParseError(err.message || (isAr ? "فشل تحليل صيغة CSV" : "Failed to parse CSV"));
     }
@@ -190,7 +216,11 @@ export function FamilyImportExportDialog({
     try {
       setLoading(true);
       await onImportMembers(parsedMembers);
-      toast.success(isAr ? `تم استيراد ${parsedMembers.length} فرد بنجاح` : `Successfully imported ${parsedMembers.length} members`);
+      toast.success(
+        isAr
+          ? `تم استيراد ${parsedMembers.length} فرد بنجاح`
+          : `Successfully imported ${parsedMembers.length} members`,
+      );
       onOpenChange(false);
     } catch (err: any) {
       toast.error(err.message || (isAr ? "حدث خطأ أثناء الاستيراد" : "Import failed"));
@@ -237,21 +267,29 @@ export function FamilyImportExportDialog({
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Button 
-                onClick={handleExportCsv} 
+              <Button
+                onClick={handleExportCsv}
                 disabled={exporting}
                 className="gap-2 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                {exporting ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5" />
+                )}
                 {isAr ? "تحميل ملف CSV (Excel متوافق)" : "Download CSV (Excel format)"}
               </Button>
-              <Button 
-                onClick={handleExportJson} 
-                variant="outline" 
+              <Button
+                onClick={handleExportJson}
+                variant="outline"
                 disabled={exporting}
                 className="gap-2 text-xs"
               >
-                {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                {exporting ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5" />
+                )}
                 {isAr ? "تحميل ملف JSON" : "Download JSON"}
               </Button>
             </div>
@@ -261,7 +299,9 @@ export function FamilyImportExportDialog({
           <TabsContent value="import" className="space-y-4 pt-4">
             <div className="space-y-2">
               <Label className="text-xs font-semibold">
-                {isAr ? "الصق نص CSV هنا (مع عناوين الأعمدة)" : "Paste CSV text with column headers"}
+                {isAr
+                  ? "الصق نص CSV هنا (مع عناوين الأعمدة)"
+                  : "Paste CSV text with column headers"}
               </Label>
               <Textarea
                 rows={6}
@@ -273,7 +313,13 @@ export function FamilyImportExportDialog({
             </div>
 
             <div className="flex items-center gap-2">
-              <Button type="button" size="sm" variant="secondary" onClick={handleParseCsv} className="text-xs">
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={handleParseCsv}
+                className="text-xs"
+              >
                 {isAr ? "تحليل والتحقق من البيانات" : "Validate & Preview"}
               </Button>
             </div>
@@ -289,7 +335,11 @@ export function FamilyImportExportDialog({
               <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 space-y-2 text-xs">
                 <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{isAr ? `جاهز للاستيراد: تم التحقق من ${parsedMembers.length} فرد` : `Ready to import ${parsedMembers.length} valid records`}</span>
+                  <span>
+                    {isAr
+                      ? `جاهز للاستيراد: تم التحقق من ${parsedMembers.length} فرد`
+                      : `Ready to import ${parsedMembers.length} valid records`}
+                  </span>
                 </div>
                 <p className="text-muted-foreground text-[11px]">
                   {isAr
@@ -318,7 +368,9 @@ export function FamilyImportExportDialog({
               ) : (
                 <Upload className="w-3.5 h-3.5" />
               )}
-              {isAr ? `تأكيد استيراد (${parsedMembers.length})` : `Confirm Import (${parsedMembers.length})`}
+              {isAr
+                ? `تأكيد استيراد (${parsedMembers.length})`
+                : `Confirm Import (${parsedMembers.length})`}
             </Button>
           )}
         </DialogFooter>

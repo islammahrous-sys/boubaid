@@ -50,9 +50,7 @@ export function CopyButton({
       ) : (
         <Copy className="h-3.5 w-3.5" aria-hidden="true" />
       )}
-      <span aria-live="polite">
-        {copied ? t({ ar: "تم النسخ", en: "Copied" }) : copyLabel}
-      </span>
+      <span aria-live="polite">{copied ? t({ ar: "تم النسخ", en: "Copied" }) : copyLabel}</span>
     </button>
   );
 }

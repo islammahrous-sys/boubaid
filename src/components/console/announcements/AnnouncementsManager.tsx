@@ -1,16 +1,89 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { Plus, Edit2, Bell } from "lucide-react";
 import { toast } from "sonner";
 import type { AnnouncementInput } from "@/lib/admin-hub.schemas";
+
+/** The three values `announcementInputSchema` will accept back on save. */
+const EDITABLE_STATUSES = ["draft", "published", "archived"] as const;
+type EditableStatus = (typeof EDITABLE_STATUSES)[number];
+
+/**
+ * Live rows can carry `status = 'active'` (seeded that way, and the public
+ * read policy treats 'active' and 'published' identically). That value isn't
+ * in `announcementInputSchema`'s enum, so opening such a row for editing left
+ * the Status select blank and every save was rejected server-side — the
+ * announcement was effectively uneditable. Fold the legacy value onto its
+ * equivalent so the form round-trips.
+ */
+function toEditableStatus(status: string): EditableStatus {
+  if (status === "active") return "published";
+  return (EDITABLE_STATUSES as readonly string[]).includes(status)
+    ? (status as EditableStatus)
+    : "published";
+}
+
+/** Bilingual label for whatever status the row actually holds. */
+function statusLabel(status: string, isAr: boolean): string {
+  switch (status) {
+    case "draft":
+      return isAr ? "مسودة" : "Draft";
+    case "archived":
+      return isAr ? "مؤرشف" : "Archived";
+    case "active":
+    case "published":
+      return isAr ? "منشور" : "Published";
+    default:
+      return status;
+  }
+}
+
+/**
+ * `<input type="datetime-local">` speaks *local* wall-clock time, while the
+ * column is `timestamptz` and PostgREST hands back UTC. Slicing the ISO string
+ * put a UTC clock time into a local-time field, so every edit silently shifted
+ * start_at/end_at by the editor's UTC offset. Convert both ways explicitly.
+ */
+function toLocalInputValue(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function fromLocalInputValue(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
 
 export type AnnouncementRow = {
   id: string;
@@ -80,9 +153,9 @@ export function AnnouncementsManager({
       message_en: ann.message_en ?? "",
       type: ann.type,
       priority: ann.priority,
-      status: ann.status as any,
-      start_at: ann.start_at ? ann.start_at.slice(0, 16) : "",
-      end_at: ann.end_at ? ann.end_at.slice(0, 16) : "",
+      status: toEditableStatus(ann.status),
+      start_at: toLocalInputValue(ann.start_at),
+      end_at: toLocalInputValue(ann.end_at),
     });
     setFormOpen(true);
   };
@@ -186,7 +259,9 @@ export function AnnouncementsManager({
                 <TableRow key={ann.id} className="text-xs hover:bg-muted/30">
                   <TableCell>
                     <span className="font-semibold text-foreground block">{ann.title_ar}</span>
-                    <span className="text-[11px] text-muted-foreground line-clamp-1">{ann.message_ar}</span>
+                    <span className="text-[11px] text-muted-foreground line-clamp-1">
+                      {ann.message_ar}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-[10px] uppercase">
@@ -194,12 +269,21 @@ export function AnnouncementsManager({
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge variant={ann.priority === "urgent" || ann.priority === "high" ? "destructive" : "secondary"} className="text-[10px]">
+                    <Badge
+                      variant={
+                        ann.priority === "urgent" || ann.priority === "high"
+                          ? "destructive"
+                          : "secondary"
+                      }
+                      className="text-[10px]"
+                    >
                       {ann.priority}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge variant="secondary" className="text-[10px]">{ann.status}</Badge>
+                    <Badge variant="secondary" className="text-[10px]">
+                      {ann.status}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-end">
                     <Button
@@ -222,12 +306,20 @@ export function AnnouncementsManager({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">
-              {selectedAnn ? (isAr ? "تعديل إعلان" : "Edit Announcement") : isAr ? "إضافة إعلان جديد" : "New Announcement"}
+              {selectedAnn
+                ? isAr
+                  ? "تعديل إعلان"
+                  : "Edit Announcement"
+                : isAr
+                  ? "إضافة إعلان جديد"
+                  : "New Announcement"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
             <div className="space-y-1">
-              <Label className="text-xs">{isAr ? "عنوان الإعلان بالعربية *" : "Title (AR) *"}</Label>
+              <Label className="text-xs">
+                {isAr ? "عنوان الإعلان بالعربية *" : "Title (AR) *"}
+              </Label>
               <Input
                 required
                 value={form.title_ar}
@@ -238,13 +330,18 @@ export function AnnouncementsManager({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">{isAr ? "نوع الإعلان" : "Type"}</Label>
-                <Select value={form.type} onValueChange={(val: any) => setForm({ ...form, type: val })}>
+                <Select
+                  value={form.type}
+                  onValueChange={(val: any) => setForm({ ...form, type: val })}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="info">{isAr ? "معلوماتي (Info)" : "Info"}</SelectItem>
-                    <SelectItem value="important">{isAr ? "هام (Important)" : "Important"}</SelectItem>
+                    <SelectItem value="important">
+                      {isAr ? "هام (Important)" : "Important"}
+                    </SelectItem>
                     <SelectItem value="warning">{isAr ? "تنبيه (Warning)" : "Warning"}</SelectItem>
                     <SelectItem value="success">{isAr ? "تهنئة (Success)" : "Success"}</SelectItem>
                   </SelectContent>
@@ -252,7 +349,10 @@ export function AnnouncementsManager({
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">{isAr ? "الأولوية" : "Priority"}</Label>
-                <Select value={form.priority} onValueChange={(val: any) => setForm({ ...form, priority: val })}>
+                <Select
+                  value={form.priority}
+                  onValueChange={(val: any) => setForm({ ...form, priority: val })}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -278,7 +378,10 @@ export function AnnouncementsManager({
 
             <div className="space-y-1">
               <Label className="text-xs">{isAr ? "الحالة" : "Status"}</Label>
-              <Select value={form.status} onValueChange={(val: any) => setForm({ ...form, status: val })}>
+              <Select
+                value={form.status}
+                onValueChange={(val: any) => setForm({ ...form, status: val })}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -292,7 +395,9 @@ export function AnnouncementsManager({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "يبدأ في (اختياري)" : "Starts at (optional)"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "يبدأ في (اختياري)" : "Starts at (optional)"}
+                </Label>
                 <Input
                   type="datetime-local"
                   value={form.start_at ?? ""}
@@ -300,7 +405,9 @@ export function AnnouncementsManager({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "ينتهي في (اختياري)" : "Ends at (optional)"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "ينتهي في (اختياري)" : "Ends at (optional)"}
+                </Label>
                 <Input
                   type="datetime-local"
                   value={form.end_at ?? ""}
@@ -314,7 +421,13 @@ export function AnnouncementsManager({
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button type="submit" size="sm" disabled={loading}>
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "نشر الإعلان" : "Publish"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "نشر الإعلان"
+                    : "Publish"}
               </Button>
             </DialogFooter>
           </form>

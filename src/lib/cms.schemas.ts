@@ -138,10 +138,7 @@ export const contentMediaUploadSchema = z
     contentType: z
       .string()
       .trim()
-      .regex(
-        /^(image\/(jpeg|png|webp|gif|svg\+xml)|application\/pdf)$/,
-        "unsupported_type",
-      ),
+      .regex(/^(image\/(jpeg|png|webp|gif|svg\+xml)|application\/pdf)$/, "unsupported_type"),
     // Hard ceiling at the larger (document) ratio; the refine below applies
     // the tighter image ceiling so the error message matches the field type.
     dataBase64: z.string().min(16).max(MAX_DOCUMENT_BASE64_LENGTH),
@@ -162,7 +159,6 @@ export const contentMediaUploadSchema = z
     }
   });
 export type ContentMediaUpload = z.infer<typeof contentMediaUploadSchema>;
-
 
 export type NewsInput = z.infer<typeof newsInputSchema>;
 export type InitiativeInput = z.infer<typeof initiativeInputSchema>;

@@ -27,30 +27,68 @@ export function SiteSettingsManager({
   };
 
   // General & License
-  const [generalNameAr, setGeneralNameAr] = useState(getVal("site_general", "name_ar", "صندوق التنمية العائلية (آل بوعبيد)"));
-  const [generalNameEn, setGeneralNameEn] = useState(getVal("site_general", "name_en", "Al-Boabid Family Development Fund"));
-  const [taglineAr, setTaglineAr] = useState(getVal("site_general", "tagline_ar", "أسرة عريقة، جذور تميمية، وحضور مؤسسي معاصر."));
-  const [licenseNumber, setLicenseNumber] = useState(getVal("site_general", "license", "1200758400"));
-  const [unifiedNumber, setUnifiedNumber] = useState(getVal("site_general", "unified_number", "7051186638"));
-  const [nationalAddress, setNationalAddress] = useState(getVal("site_general", "national_address", "FMDF7959 — حي الحزام الذهبي، المبرز، الأحساء"));
+  const [generalNameAr, setGeneralNameAr] = useState(
+    getVal("site_general", "name_ar", "صندوق التنمية العائلية (آل بوعبيد)"),
+  );
+  const [generalNameEn, setGeneralNameEn] = useState(
+    getVal("site_general", "name_en", "Al-Boabid Family Development Fund"),
+  );
+  const [taglineAr, setTaglineAr] = useState(
+    getVal("site_general", "tagline_ar", "أسرة عريقة، جذور تميمية، وحضور مؤسسي معاصر."),
+  );
+  const [licenseNumber, setLicenseNumber] = useState(
+    getVal("site_general", "license", "1200758400"),
+  );
+  const [unifiedNumber, setUnifiedNumber] = useState(
+    getVal("site_general", "unified_number", "7051186638"),
+  );
+  const [nationalAddress, setNationalAddress] = useState(
+    getVal("site_general", "national_address", "FMDF7959 — حي الحزام الذهبي، المبرز، الأحساء"),
+  );
 
   // Contact & Social
-  const [contactEmail, setContactEmail] = useState(getVal("site_contact", "email", "contact@albouabidfamily.com"));
-  const [contactPhone, setContactPhone] = useState(getVal("site_contact", "phone", "+966 13 580 0000"));
-  const [whatsappUrl, setWhatsappUrl] = useState(getVal("site_contact", "whatsapp", "https://chat.whatsapp.com/albouabidfamily"));
-  const [telegramUrl, setTelegramUrl] = useState(getVal("site_contact", "telegram", "https://t.me/albouabidfamily"));
+  const [contactEmail, setContactEmail] = useState(
+    getVal("site_contact", "email", "contact@albouabidfamily.com"),
+  );
+  const [contactPhone, setContactPhone] = useState(
+    getVal("site_contact", "phone", "+966 13 580 0000"),
+  );
+  const [whatsappUrl, setWhatsappUrl] = useState(
+    getVal("site_contact", "whatsapp", "https://chat.whatsapp.com/albouabidfamily"),
+  );
+  const [telegramUrl, setTelegramUrl] = useState(
+    getVal("site_contact", "telegram", "https://t.me/albouabidfamily"),
+  );
   const [xUrl, setXUrl] = useState(getVal("site_contact", "x", "https://x.com/albouabidfamily"));
-  const [instagramUrl, setInstagramUrl] = useState(getVal("site_contact", "instagram", "https://instagram.com/albouabidfamily"));
-  const [sallaUrl, setSallaUrl] = useState(getVal("site_contact", "salla", "https://albouabidfamily.com/القسط-الشهري/c1360847582"));
+  const [instagramUrl, setInstagramUrl] = useState(
+    getVal("site_contact", "instagram", "https://instagram.com/albouabidfamily"),
+  );
+  const [sallaUrl, setSallaUrl] = useState(
+    getVal("site_contact", "salla", "https://albouabidfamily.com/القسط-الشهري/c1360847582"),
+  );
 
   // Governance & Board
-  const [deanName, setDeanName] = useState(getVal("site_governance", "dean_name", "الأستاذ سعد بن عبدالرحمن بن علي بوعبيد"));
-  const [chairmanName, setChairmanName] = useState(getVal("site_governance", "chairman_name", "د. خالد بن يوسف بن أحمد بوعبيد"));
-  const [viceChairmanName, setViceChairmanName] = useState(getVal("site_governance", "vice_chairman_name", "الأستاذ حسين بن عبدالله بن حسين بوعبيد"));
+  const [deanName, setDeanName] = useState(
+    getVal("site_governance", "dean_name", "الأستاذ سعد بن عبدالرحمن بن علي بوعبيد"),
+  );
+  const [chairmanName, setChairmanName] = useState(
+    getVal("site_governance", "chairman_name", "د. خالد بن يوسف بن أحمد بوعبيد"),
+  );
+  const [viceChairmanName, setViceChairmanName] = useState(
+    getVal("site_governance", "vice_chairman_name", "الأستاذ حسين بن عبدالله بن حسين بوعبيد"),
+  );
 
   // SEO
-  const [seoTitleAr, setSeoTitleAr] = useState(getVal("site_seo", "title_ar", "بوابة أسرة آل بوعبيد الرسمية — صندوق التنمية العائلية"));
-  const [seoDescAr, setSeoDescAr] = useState(getVal("site_seo", "desc_ar", "المنصة الرسمية المعتمدة لأسرة آل بوعبيد — شجرة الأنساب، التراث، المبادرات، وسجل الخزينة."));
+  const [seoTitleAr, setSeoTitleAr] = useState(
+    getVal("site_seo", "title_ar", "بوابة أسرة آل بوعبيد الرسمية — صندوق التنمية العائلية"),
+  );
+  const [seoDescAr, setSeoDescAr] = useState(
+    getVal(
+      "site_seo",
+      "desc_ar",
+      "المنصة الرسمية المعتمدة لأسرة آل بوعبيد — شجرة الأنساب، التراث، المبادرات، وسجل الخزينة.",
+    ),
+  );
 
   // `settings` loads asynchronously (a TanStack Query fetch) — this component
   // can easily mount before it resolves, and useState's initializer only ever
@@ -139,52 +177,46 @@ export function SiteSettingsManager({
           <TabsContent value="general" className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "اسم الكيان / الصندوق (بالعربية) *" : "Entity Name (AR) *"}</Label>
-                <Input
-                  value={generalNameAr}
-                  onChange={(e) => setGeneralNameAr(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "اسم الكيان / الصندوق (بالعربية) *" : "Entity Name (AR) *"}
+                </Label>
+                <Input value={generalNameAr} onChange={(e) => setGeneralNameAr(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "اسم الكيان (EN)" : "Entity Name (EN)"}</Label>
-                <Input
-                  value={generalNameEn}
-                  onChange={(e) => setGeneralNameEn(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "اسم الكيان (EN)" : "Entity Name (EN)"}
+                </Label>
+                <Input value={generalNameEn} onChange={(e) => setGeneralNameEn(e.target.value)} />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">{isAr ? "الشعار اللفظي الرسمي (Tagline)" : "Official Tagline"}</Label>
-              <Input
-                value={taglineAr}
-                onChange={(e) => setTaglineAr(e.target.value)}
-              />
+              <Label className="text-xs font-semibold">
+                {isAr ? "الشعار اللفظي الرسمي (Tagline)" : "Official Tagline"}
+              </Label>
+              <Input value={taglineAr} onChange={(e) => setTaglineAr(e.target.value)} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "رقم ترخيص المركز الوطني (NCNP)" : "NCNP License No."}</Label>
-                <Input
-                  value={licenseNumber}
-                  onChange={(e) => setLicenseNumber(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "رقم ترخيص المركز الوطني (NCNP)" : "NCNP License No."}
+                </Label>
+                <Input value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "الرقم الموحد للكيان (UNN)" : "Unified National Number (UNN)"}</Label>
-                <Input
-                  value={unifiedNumber}
-                  onChange={(e) => setUnifiedNumber(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "الرقم الموحد للكيان (UNN)" : "Unified National Number (UNN)"}
+                </Label>
+                <Input value={unifiedNumber} onChange={(e) => setUnifiedNumber(e.target.value)} />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">{isAr ? "العنوان الوطني المسجل" : "National Address"}</Label>
-              <Input
-                value={nationalAddress}
-                onChange={(e) => setNationalAddress(e.target.value)}
-              />
+              <Label className="text-xs font-semibold">
+                {isAr ? "العنوان الوطني المسجل" : "National Address"}
+              </Label>
+              <Input value={nationalAddress} onChange={(e) => setNationalAddress(e.target.value)} />
             </div>
 
             <div className="flex justify-end pt-3">
@@ -204,7 +236,13 @@ export function SiteSettingsManager({
                 }
               >
                 <Save className="w-3.5 h-3.5" />
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ بيانات الهوية والترخيص" : "Save Identity Settings"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ بيانات الهوية والترخيص"
+                    : "Save Identity Settings"}
               </Button>
             </div>
           </TabsContent>
@@ -213,7 +251,9 @@ export function SiteSettingsManager({
           <TabsContent value="contact" className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "البريد الإلكتروني الرسمي" : "Official Email"}</Label>
+                <Label className="text-xs font-semibold">
+                  {isAr ? "البريد الإلكتروني الرسمي" : "Official Email"}
+                </Label>
                 <Input
                   type="email"
                   value={contactEmail}
@@ -221,52 +261,46 @@ export function SiteSettingsManager({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "رقم الهاتف والواتساب" : "Phone"}</Label>
-                <Input
-                  value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "رقم الهاتف والواتساب" : "Phone"}
+                </Label>
+                <Input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "رابط مجتمع الواتساب العائلي" : "WhatsApp Group URL"}</Label>
-                <Input
-                  value={whatsappUrl}
-                  onChange={(e) => setWhatsappUrl(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "رابط مجتمع الواتساب العائلي" : "WhatsApp Group URL"}
+                </Label>
+                <Input value={whatsappUrl} onChange={(e) => setWhatsappUrl(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "قناة التليجرام الرسمية" : "Telegram Channel"}</Label>
-                <Input
-                  value={telegramUrl}
-                  onChange={(e) => setTelegramUrl(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "قناة التليجرام الرسمية" : "Telegram Channel"}
+                </Label>
+                <Input value={telegramUrl} onChange={(e) => setTelegramUrl(e.target.value)} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "حساب منصة X (تويتر)" : "X (Twitter)"}</Label>
-                <Input
-                  value={xUrl}
-                  onChange={(e) => setXUrl(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "حساب منصة X (تويتر)" : "X (Twitter)"}
+                </Label>
+                <Input value={xUrl} onChange={(e) => setXUrl(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "حساب إنستغرام" : "Instagram"}</Label>
-                <Input
-                  value={instagramUrl}
-                  onChange={(e) => setInstagramUrl(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "حساب إنستغرام" : "Instagram"}
+                </Label>
+                <Input value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "رابط متجر سلة للاشتراكات" : "Salla Store URL"}</Label>
-                <Input
-                  value={sallaUrl}
-                  onChange={(e) => setSallaUrl(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "رابط متجر سلة للاشتراكات" : "Salla Store URL"}
+                </Label>
+                <Input value={sallaUrl} onChange={(e) => setSallaUrl(e.target.value)} />
               </div>
             </div>
 
@@ -288,7 +322,13 @@ export function SiteSettingsManager({
                 }
               >
                 <Save className="w-3.5 h-3.5" />
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ قنوات التواصل" : "Save Channels"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ قنوات التواصل"
+                    : "Save Channels"}
               </Button>
             </div>
           </TabsContent>
@@ -296,23 +336,23 @@ export function SiteSettingsManager({
           {/* Governance & Board */}
           <TabsContent value="governance" className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">{isAr ? "عميد الأسرة (المنصب التقليدي)" : "Family Dean"}</Label>
-              <Input
-                value={deanName}
-                onChange={(e) => setDeanName(e.target.value)}
-              />
+              <Label className="text-xs font-semibold">
+                {isAr ? "عميد الأسرة (المنصب التقليدي)" : "Family Dean"}
+              </Label>
+              <Input value={deanName} onChange={(e) => setDeanName(e.target.value)} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "رئيس مجلس الأمناء" : "Chairman"}</Label>
-                <Input
-                  value={chairmanName}
-                  onChange={(e) => setChairmanName(e.target.value)}
-                />
+                <Label className="text-xs font-semibold">
+                  {isAr ? "رئيس مجلس الأمناء" : "Chairman"}
+                </Label>
+                <Input value={chairmanName} onChange={(e) => setChairmanName(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">{isAr ? "نائب رئيس مجلس الأمناء" : "Vice Chairman"}</Label>
+                <Label className="text-xs font-semibold">
+                  {isAr ? "نائب رئيس مجلس الأمناء" : "Vice Chairman"}
+                </Label>
                 <Input
                   value={viceChairmanName}
                   onChange={(e) => setViceChairmanName(e.target.value)}
@@ -334,7 +374,13 @@ export function SiteSettingsManager({
                 }
               >
                 <Save className="w-3.5 h-3.5" />
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ قيادات الأمانة والمجلس" : "Save Board"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ قيادات الأمانة والمجلس"
+                    : "Save Board"}
               </Button>
             </div>
           </TabsContent>
@@ -342,19 +388,16 @@ export function SiteSettingsManager({
           {/* SEO */}
           <TabsContent value="seo" className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">{isAr ? "العنوان الافتراضي لمحركات البحث" : "Default SEO Title"}</Label>
-              <Input
-                value={seoTitleAr}
-                onChange={(e) => setSeoTitleAr(e.target.value)}
-              />
+              <Label className="text-xs font-semibold">
+                {isAr ? "العنوان الافتراضي لمحركات البحث" : "Default SEO Title"}
+              </Label>
+              <Input value={seoTitleAr} onChange={(e) => setSeoTitleAr(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">{isAr ? "الوصف الافتراضي (Meta Description)" : "Default Meta Description"}</Label>
-              <Textarea
-                rows={3}
-                value={seoDescAr}
-                onChange={(e) => setSeoDescAr(e.target.value)}
-              />
+              <Label className="text-xs font-semibold">
+                {isAr ? "الوصف الافتراضي (Meta Description)" : "Default Meta Description"}
+              </Label>
+              <Textarea rows={3} value={seoDescAr} onChange={(e) => setSeoDescAr(e.target.value)} />
             </div>
 
             <div className="flex justify-end pt-3">
@@ -370,7 +413,13 @@ export function SiteSettingsManager({
                 }
               >
                 <Save className="w-3.5 h-3.5" />
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ إعدادات SEO" : "Save SEO Settings"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ إعدادات SEO"
+                    : "Save SEO Settings"}
               </Button>
             </div>
           </TabsContent>
@@ -378,7 +427,9 @@ export function SiteSettingsManager({
           {/* Security */}
           <TabsContent value="security" className="space-y-4">
             <div className="p-4 border border-border rounded-xl bg-muted/20 space-y-2">
-              <h4 className="text-xs font-semibold text-foreground">{isAr ? "أمان قاعدة البيانات و RLS وحاويات التخزين" : "Database Security & Storage"}</h4>
+              <h4 className="text-xs font-semibold text-foreground">
+                {isAr ? "أمان قاعدة البيانات و RLS وحاويات التخزين" : "Database Security & Storage"}
+              </h4>
               <p className="text-xs text-muted-foreground">
                 {isAr
                   ? "جميع الجداول (24+ جدول) والملفات في حاويات Supabase Storage محمية بسياسات الأمان على مستوى الصف (RLS). لا يمكن تعديل السجلات الحساسة إلا للمشرفين المصرح لهم مع تسجيل كامل لجميع العمليات في جدول التدقيق والرقابة."

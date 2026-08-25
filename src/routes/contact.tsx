@@ -21,9 +21,17 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "تواصل معنا | آل بوعبيد" },
-      { name: "description", content: "تواصل مع الأمانة العامة واللجان التنفيذية لصندوق التنمية العائلية (آل بوعبيد) بمدينة المبرز بالأحساء." },
+      {
+        name: "description",
+        content:
+          "تواصل مع الأمانة العامة واللجان التنفيذية لصندوق التنمية العائلية (آل بوعبيد) بمدينة المبرز بالأحساء.",
+      },
       { property: "og:title", content: "تواصل معنا — آل بوعبيد" },
-      { property: "og:description", content: "بيانات التواصل مع الأمانة العامة واللجان التنفيذية لصندوق التنمية العائلية (آل بوعبيد) في المبرز بالأحساء." },
+      {
+        property: "og:description",
+        content:
+          "بيانات التواصل مع الأمانة العامة واللجان التنفيذية لصندوق التنمية العائلية (آل بوعبيد) في المبرز بالأحساء.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/contact") },
     ],
@@ -58,8 +66,15 @@ const copy = {
     ar: "تعذّر إرسال الرسالة. يرجى المحاولة مرة أخرى.",
     en: "The message could not be sent. Please try again.",
   } as BiText,
+  rateLimited: {
+    ar: "تم استلام عدة رسائل من هذا الجهاز. يرجى المحاولة بعد قليل.",
+    en: "Several messages have arrived from this device. Please try again shortly.",
+  } as BiText,
+  verificationFailed: {
+    ar: "تعذّر التحقق من أنك لست آلياً. يرجى إعادة المحاولة.",
+    en: "We couldn't complete the anti-bot check. Please try again.",
+  } as BiText,
   required: { ar: "مطلوب", en: "required" } as BiText,
-
 
   subjects: [
     { ar: "استفسار عام", en: "General enquiry" },
@@ -114,7 +129,6 @@ function ContactPage() {
   const addressText = siteGeneral.national_address || t(siteMeta.nationalAddress.full);
   const hoursText = t(copy.hoursValue);
 
-
   const fieldClass =
     "w-full border border-input bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-bronze focus:ring-2 focus:ring-bronze/20 dark:focus:border-gold dark:focus:ring-gold/20";
 
@@ -147,7 +161,11 @@ function ContactPage() {
         setTurnstileToken("");
         turnstileRef.current?.reset();
       } else {
-        toast.error(t(copy.failed));
+        const messages: Record<string, BiText> = {
+          rate_limited: copy.rateLimited,
+          verification_failed: copy.verificationFailed,
+        };
+        toast.error(t(messages[res.error] ?? copy.failed));
       }
     } catch {
       toast.error(t(copy.failed));
@@ -155,7 +173,6 @@ function ContactPage() {
       setSubmitting(false);
     }
   };
-
 
   return (
     <>
@@ -287,9 +304,7 @@ function ContactPage() {
                   <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
                   {t(copy.labelAddress)}
                 </dt>
-                <dd className="leading-relaxed text-foreground">
-                  {addressText}
-                </dd>
+                <dd className="leading-relaxed text-foreground">{addressText}</dd>
                 <dd className="mt-1.5">
                   <a
                     href="https://maps.google.com/?q=Al+Mubarraz+Al+Ahsa+Saudi+Arabia"

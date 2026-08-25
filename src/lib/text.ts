@@ -104,7 +104,9 @@ const AUTH_ERROR_TRANSLATIONS: { match: RegExp; ar: string; en: string }[] = [
 
 export function translateAuthError(message: string | undefined, lang: "ar" | "en"): string {
   const fallback =
-    lang === "ar" ? "تعذر إكمال الطلب. حاول مرة أخرى." : "We couldn't complete that. Please try again.";
+    lang === "ar"
+      ? "تعذر إكمال الطلب. حاول مرة أخرى."
+      : "We couldn't complete that. Please try again.";
   if (!message) return fallback;
   const known = AUTH_ERROR_TRANSLATIONS.find((entry) => entry.match.test(message));
   if (known) return lang === "ar" ? known.ar : known.en;

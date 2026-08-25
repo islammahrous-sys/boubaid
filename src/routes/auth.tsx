@@ -1,16 +1,41 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouterState, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, ShieldCheck, UsersRound, Landmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { TurnstileWidget, isTurnstileConfigured } from "@/components/site/TurnstileWidget";
+import {
+  TurnstileWidget,
+  isTurnstileConfigured,
+  type TurnstileWidgetHandle,
+} from "@/components/site/TurnstileWidget";
 import { verifyTurnstile } from "@/lib/turnstile.functions";
 import { translateAuthError } from "@/lib/text";
 import heroManuscript from "@/assets/hero-manuscript.jpg";
 
+/** Where a member lands after signing in when no destination was requested. */
+const DEFAULT_DESTINATION = "/account";
+
+/**
+ * `/_authenticated` sends members here with `?redirect=<path>` so they resume
+ * whatever page they originally asked for. That value arrives from the URL, so
+ * it is attacker-controlled: only a same-origin absolute path is ever honoured.
+ * Anything else — an absolute `https://evil.example`, a protocol-relative
+ * `//evil.example`, or the `/\evil.example` variant browsers normalise to the
+ * same thing — is discarded so this form can never become an open redirect.
+ * `/auth` and `/reset-password` are rejected too, since sending a freshly
+ * signed-in member back to the sign-in screen just loops.
+ */
+export function safeDestination(value: unknown): string {
+  if (typeof value !== "string") return DEFAULT_DESTINATION;
+  const path = value.trim();
+  if (!path.startsWith("/")) return DEFAULT_DESTINATION;
+  if (path.startsWith("//") || path.startsWith("/\\")) return DEFAULT_DESTINATION;
+  if (/^\/(auth|reset-password)(\/|\?|#|$)/.test(path)) return DEFAULT_DESTINATION;
+  return path;
+}
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -45,18 +70,39 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const verifyTurnstileFn = useServerFn(verifyTurnstile);
+
+  // `/auth` has no `validateSearch`, so the router still exposes the parsed
+  // query here — `?redirect=/admin` etc. — which `safeDestination` narrows to
+  // a same-origin path before it is ever navigated to.
+  const rawRedirect = useRouterState({
+    select: (s) => (s.location.search as Record<string, unknown>).redirect,
+  });
+  const destination = safeDestination(rawRedirect);
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/account" });
+      if (data.session) void navigate({ href: destination });
     });
-  }, [navigate]);
+  }, [navigate, destination]);
 
   const label = (ar: string, en: string) => (lang === "ar" ? ar : en);
 
+  const switchMode = (next: "signin" | "signup" | "forgot") => {
+    setMode(next);
+    // Turnstile tokens are single-use and bound to the widget instance that
+    // issued them; leaving a stale one behind makes the next sign-up fail
+    // verification for no visible reason.
+    setTurnstileToken("");
+    turnstileRef.current?.reset();
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Guards the Enter-key path: a disabled button stops repeat clicks, but
+    // not a second implicit submit fired while the first is still in flight.
+    if (busy) return;
     setBusy(true);
     try {
       if (mode === "forgot") {
@@ -72,6 +118,16 @@ function AuthPage() {
           ),
         );
       } else if (mode === "signup") {
+        // The hint under the field promises eight characters and
+        // /reset-password enforces exactly that, so check it here too rather
+        // than letting Supabase's shorter project minimum quietly accept less.
+        if (password.length < 8) {
+          toast.error(
+            label("كلمة المرور يجب ألا تقل عن ٨ أحرف.", "Password must be at least 8 characters."),
+          );
+          setBusy(false);
+          return;
+        }
         if (isTurnstileConfigured) {
           const verification = await verifyTurnstileFn({ data: { token: turnstileToken } });
           if (!verification.ok) {
@@ -81,11 +137,15 @@ function AuthPage() {
                 "We couldn't verify you're not a robot. Please try again.",
               ),
             );
+            // The token was just spent; without a fresh challenge every retry
+            // would fail verification the same way.
+            setTurnstileToken("");
+            turnstileRef.current?.reset();
             setBusy(false);
             return;
           }
         }
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
           password,
           options: {
@@ -94,20 +154,29 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        // With email confirmation required (the current project setting)
+        // Supabase returns no session and the member has to click the link.
+        // If confirmation is ever switched off, sign-up returns a live session
+        // and telling them to check an inbox that will stay empty is wrong.
+        if (data.session) {
+          await navigate({ href: destination });
+          return;
+        }
         toast.success(
           label(
             "تم إنشاء الحساب. تحقق من بريدك لتأكيد العنوان.",
             "Account created. Check your inbox to confirm your address.",
           ),
         );
-        setMode("signin");
+        setPassword("");
+        switchMode("signin");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: email.trim().toLowerCase(),
           password,
         });
         if (error) throw error;
-        await navigate({ to: "/account" });
+        await navigate({ href: destination });
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : undefined;
@@ -159,15 +228,24 @@ function AuthPage() {
                   {[
                     {
                       icon: ShieldCheck,
-                      text: label("حساب موثّق ومعتمد من أمانة المجلس", "Account verified by the council secretariat"),
+                      text: label(
+                        "حساب موثّق ومعتمد من أمانة المجلس",
+                        "Account verified by the council secretariat",
+                      ),
                     },
                     {
                       icon: UsersRound,
-                      text: label("دليل الأعضاء والفروع والمشجرة الموثّقة", "Member directory, branches and the documented tree"),
+                      text: label(
+                        "دليل الأعضاء والفروع والمشجرة الموثّقة",
+                        "Member directory, branches and the documented tree",
+                      ),
                     },
                     {
                       icon: Landmark,
-                      text: label("متابعة الاشتراكات ومساهمات الصندوق", "Track subscriptions and fund contributions"),
+                      text: label(
+                        "متابعة الاشتراكات ومساهمات الصندوق",
+                        "Track subscriptions and fund contributions",
+                      ),
                     },
                   ].map(({ icon: Icon, text }) => (
                     <li key={text} className="flex items-start gap-3">
@@ -181,7 +259,7 @@ function AuthPage() {
           </aside>
 
           {/* Form panel */}
-          <div className="p-6 sm:p-10">
+          <div className="p-4 sm:p-8 md:p-10">
             <div className="mb-8">
               <p className="label-caps text-muted-foreground">
                 {label("الأمانة العامة — بوابة الأعضاء", "Secretariat — member portal")}
@@ -223,7 +301,7 @@ function AuthPage() {
                     role="tab"
                     aria-selected={mode === m}
                     type="button"
-                    onClick={() => setMode(m)}
+                    onClick={() => switchMode(m)}
                     className={`py-2 text-[13px] font-medium transition-all duration-300 ${
                       mode === m
                         ? "bg-ink text-ivory shadow-sm dark:bg-gold dark:text-ink"
@@ -249,7 +327,7 @@ function AuthPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setMode("signin");
+                    switchMode("signin");
                     setResetSent(false);
                   }}
                   className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
@@ -305,7 +383,11 @@ function AuthPage() {
                         }
                         className="text-muted-foreground transition-colors hover:text-foreground"
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </button>
                     }
                   />
@@ -315,7 +397,7 @@ function AuthPage() {
                   <div className="flex justify-end -mt-2">
                     <button
                       type="button"
-                      onClick={() => setMode("forgot")}
+                      onClick={() => switchMode("forgot")}
                       className="text-[12px] font-medium text-muted-foreground underline decoration-gold/60 underline-offset-4 hover:text-foreground hover:decoration-gold"
                     >
                       {label("نسيت كلمة المرور؟", "Forgot password?")}
@@ -323,7 +405,9 @@ function AuthPage() {
                   </div>
                 ) : null}
 
-                {mode === "signup" ? <TurnstileWidget onToken={setTurnstileToken} /> : null}
+                {mode === "signup" ? (
+                  <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
+                ) : null}
 
                 <button
                   type="submit"
@@ -348,7 +432,7 @@ function AuthPage() {
                   <p>
                     <button
                       type="button"
-                      onClick={() => setMode("signin")}
+                      onClick={() => switchMode("signin")}
                       className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
                     >
                       {label("العودة لتسجيل الدخول", "Back to sign in")}
@@ -362,7 +446,7 @@ function AuthPage() {
                     : label("لديك حساب بالفعل؟ ", "Already registered? ")}
                   <button
                     type="button"
-                    onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+                    onClick={() => switchMode(mode === "signin" ? "signup" : "signin")}
                     className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
                   >
                     {mode === "signin"
@@ -429,4 +513,3 @@ function Field({
     </div>
   );
 }
-

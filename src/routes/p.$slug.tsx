@@ -29,6 +29,7 @@ import {
 import { PageHeader } from "@/components/site/PageHeader";
 import { Rule } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 /**
  * Some block types (BlockRegistry.tsx) embed data from other public tables
@@ -43,39 +44,81 @@ async function hydrateSections(sections: any[]): Promise<any[]> {
   const tasks: Promise<void>[] = [];
 
   if (types.has("branches")) {
-    tasks.push(getPublishedBranches().then((rows) => { shared.branches = rows; }));
+    tasks.push(
+      getPublishedBranches().then((rows) => {
+        shared.branches = rows;
+      }),
+    );
   }
   if (types.has("events")) {
-    tasks.push(getPublishedEvents().then((rows) => { shared.events = rows; }));
+    tasks.push(
+      getPublishedEvents().then((rows) => {
+        shared.events = rows;
+      }),
+    );
   }
   if (types.has("articles")) {
-    tasks.push(getPublishedNews().then((rows) => { shared.articles = rows; }));
+    tasks.push(
+      getPublishedNews().then((rows) => {
+        shared.articles = rows;
+      }),
+    );
   }
   if (types.has("announcements")) {
-    tasks.push(getPublicAnnouncements().then((rows) => { shared.announcements = rows; }));
+    tasks.push(
+      getPublicAnnouncements().then((rows) => {
+        shared.announcements = rows;
+      }),
+    );
   }
   if (types.has("tree")) {
-    tasks.push(getPublicFamilyTreeData().then((d) => { shared.tree = d; }));
+    tasks.push(
+      getPublicFamilyTreeData().then((d) => {
+        shared.tree = d;
+      }),
+    );
   }
 
-  const galleryIds = [...new Set(
-    sections.filter((s) => s.type === "gallery" && s.data?.gallery_id).map((s) => s.data.gallery_id as string),
-  )];
-  const memberIds = [...new Set(
-    sections.filter((s) => s.type === "member_spotlight" && s.data?.member_id).map((s) => s.data.member_id as string),
-  )];
+  const galleryIds = [
+    ...new Set(
+      sections
+        .filter((s) => s.type === "gallery" && s.data?.gallery_id)
+        .map((s) => s.data.gallery_id as string),
+    ),
+  ];
+  const memberIds = [
+    ...new Set(
+      sections
+        .filter((s) => s.type === "member_spotlight" && s.data?.member_id)
+        .map((s) => s.data.member_id as string),
+    ),
+  ];
 
   const galleryMap: Record<string, unknown> = {};
   const memberMap: Record<string, unknown> = {};
 
-  tasks.push(...galleryIds.map((id) => getPublicGallery({ data: id }).then((g) => { galleryMap[id] = g; })));
-  tasks.push(...memberIds.map((id) => getPublicMemberSpotlight({ data: id }).then((m) => { memberMap[id] = m; })));
+  tasks.push(
+    ...galleryIds.map((id) =>
+      getPublicGallery({ data: id }).then((g) => {
+        galleryMap[id] = g;
+      }),
+    ),
+  );
+  tasks.push(
+    ...memberIds.map((id) =>
+      getPublicMemberSpotlight({ data: id }).then((m) => {
+        memberMap[id] = m;
+      }),
+    ),
+  );
 
   await Promise.all(tasks);
 
   return sections.map((s) => {
-    if (s.type === "gallery" && s.data?.gallery_id) return { ...s, resolved: galleryMap[s.data.gallery_id] ?? null };
-    if (s.type === "member_spotlight" && s.data?.member_id) return { ...s, resolved: memberMap[s.data.member_id] ?? null };
+    if (s.type === "gallery" && s.data?.gallery_id)
+      return { ...s, resolved: galleryMap[s.data.gallery_id] ?? null };
+    if (s.type === "member_spotlight" && s.data?.member_id)
+      return { ...s, resolved: memberMap[s.data.member_id] ?? null };
     if (shared[s.type] !== undefined) return { ...s, resolved: shared[s.type] };
     return s;
   });
@@ -115,14 +158,20 @@ function DynamicCmsPageComponent() {
   const { page, sections } = Route.useLoaderData();
   const { lang } = useLang();
   const isAr = lang === "ar";
-  const title = isAr ? page.title_ar : (page.title_en || page.title_ar);
+  const title = isAr ? page.title_ar : page.title_en || page.title_ar;
 
   return (
     <div className="min-h-screen pb-20">
       <PageHeader
         eyebrow={isAr ? "صفحة مخصصة" : "Special Page"}
         title={title}
-        subtitle={page.excerpt_ar ? (isAr ? page.excerpt_ar : page.excerpt_en || page.excerpt_ar) : undefined}
+        subtitle={
+          page.excerpt_ar
+            ? isAr
+              ? page.excerpt_ar
+              : page.excerpt_en || page.excerpt_ar
+            : undefined
+        }
       />
 
       {page.featured_media_path && (
@@ -144,7 +193,11 @@ function DynamicCmsPageComponent() {
           ))
         ) : (
           <div className="py-16 text-center text-muted-foreground">
-            <p>{isAr ? "لا توجد أقسام مٶافة لهذه الصفحة بعد." : "No sections added to this page yet."}</p>
+            <p>
+              {isAr
+                ? "لا توجد أقسام مٶافة لهذه الصفحة بعد."
+                : "No sections added to this page yet."}
+            </p>
           </div>
         )}
       </div>
@@ -156,7 +209,6 @@ function DynamicCmsPageComponent() {
   );
 }
 
-
 function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }) {
   const { type, data, resolved } = section;
   if (!data) return null;
@@ -166,14 +218,17 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
       return (
         <div className="rounded-3xl border border-border bg-card p-8 md:p-12 text-center relative overflow-hidden">
           {data.bg_image_url && (
-            <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{ backgroundImage: `url(${data.bg_image_url})` }} />
+            <div
+              className="absolute inset-0 opacity-10 bg-cover bg-center"
+              style={{ backgroundImage: `url(${data.bg_image_url})` }}
+            />
           )}
           <div className="relative z-10 max-w-3xl mx-auto space-y-4">
             <h2 className="text-2xl md:text-4xl font-bold font-brand text-foreground">
-              {isAr ? data.title_ar : (data.title_en || data.title_ar)}
+              {isAr ? data.title_ar : data.title_en || data.title_ar}
             </h2>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-              {isAr ? data.subtitle_ar : (data.subtitle_en || data.subtitle_ar)}
+              {isAr ? data.subtitle_ar : data.subtitle_en || data.subtitle_ar}
             </p>
             {data.button_text_ar && data.button_url && (
               <div className="pt-4">
@@ -181,7 +236,9 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
                   to={data.button_url}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-md hover:bg-primary/90 transition-all"
                 >
-                  <span>{isAr ? data.button_text_ar : (data.button_text_en || data.button_text_ar)}</span>
+                  <span>
+                    {isAr ? data.button_text_ar : data.button_text_en || data.button_text_ar}
+                  </span>
                   {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
                 </Link>
               </div>
@@ -190,16 +247,14 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
         </div>
       );
 
-
     case "rich_text":
       return (
         <div className="max-w-4xl mx-auto">
           <div className="prose prose-lg dark:prose-invert max-w-none text-foreground leading-relaxed whitespace-pre-wrap">
-            {isAr ? data.content_ar : (data.content_en || data.content_ar)}
+            {isAr ? data.content_ar : data.content_en || data.content_ar}
           </div>
         </div>
       );
-
 
     case "image":
       return (
@@ -209,55 +264,55 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
           </div>
           {(data.caption_ar || data.caption_en) && (
             <figcaption className="mt-3 text-center text-xs text-muted-foreground">
-              {isAr ? data.caption_ar : (data.caption_en || data.caption_ar)}
+              {isAr ? data.caption_ar : data.caption_en || data.caption_ar}
             </figcaption>
           )}
         </figure>
       );
-
 
     case "quote":
       return (
         <div className="max-w-3xl mx-auto p-8 rounded-2xl border-y border-border bg-secondary/30 text-center relative">
           <Quote className="w-8 h-8 text-primary/30 mx-auto mb-4" />
           <blockquote className="text-lg md:text-xl font-medium text-foreground leading-relaxed font-naskh">
-            &quot;{isAr ? data.quote_ar : (data.quote_en || data.quote_ar)}&quot;
+            &quot;{isAr ? data.quote_ar : data.quote_en || data.quote_ar}&quot;
           </blockquote>
           {data.author_ar && (
             <cite className="block mt-4 text-xs font-bold text-primary not-italic">
-              — {isAr ? data.author_ar : (data.author_en || data.author_ar)}
+              — {isAr ? data.author_ar : data.author_en || data.author_ar}
             </cite>
           )}
         </div>
       );
 
-
     case "statistics":
       return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
           {(data.items || []).map((item: any, i: number) => (
-            <div key={i} className="p-6 rounded-2xl border border-border bg-card text-center space-y-1">
+            <div
+              key={i}
+              className="p-6 rounded-2xl border border-border bg-card text-center space-y-1"
+            >
               <span className="font-mono text-3xl md:text-4xl font-bold text-primary block">
                 {item.number}
               </span>
               <span className="text-xs text-muted-foreground font-medium block">
-                {isAr ? item.label_ar : (item.label_en || item.label_ar)}
+                {isAr ? item.label_ar : item.label_en || item.label_ar}
               </span>
             </div>
           ))}
         </div>
       );
 
-
     case "cta":
       return (
         <div className="max-w-3xl mx-auto rounded-3xl border border-border bg-secondary/30 p-8 md:p-12 text-center space-y-4">
           <h2 className="text-xl md:text-2xl font-bold font-brand text-foreground">
-            {isAr ? data.title_ar : (data.title_en || data.title_ar)}
+            {isAr ? data.title_ar : data.title_en || data.title_ar}
           </h2>
           {(data.desc_ar || data.desc_en) && (
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              {isAr ? data.desc_ar : (data.desc_en || data.desc_ar)}
+              {isAr ? data.desc_ar : data.desc_en || data.desc_ar}
             </p>
           )}
           {data.button_text_ar && data.button_url && (
@@ -266,7 +321,9 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
                 to={data.button_url}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-md hover:bg-primary/90 transition-all"
               >
-                <span>{isAr ? data.button_text_ar : (data.button_text_en || data.button_text_ar)}</span>
+                <span>
+                  {isAr ? data.button_text_ar : data.button_text_en || data.button_text_ar}
+                </span>
                 {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
               </Link>
             </div>
@@ -283,7 +340,7 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
         <div className="max-w-4xl mx-auto space-y-3">
           {data.title_ar && (
             <h3 className="text-lg font-bold text-foreground text-center">
-              {isAr ? data.title_ar : (data.title_en || data.title_ar)}
+              {isAr ? data.title_ar : data.title_en || data.title_ar}
             </h3>
           )}
           <div className="aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-sm">
@@ -316,26 +373,41 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
     }
 
     case "gallery": {
-      const gallery = resolved as { media: { id: string; url: string; caption_ar: string | null; caption_en: string | null }[] } | null;
+      const gallery = resolved as {
+        media: { id: string; url: string; caption_ar: string | null; caption_en: string | null }[];
+      } | null;
       if (!gallery || gallery.media.length === 0) {
         return (
           <div className="p-4 rounded-xl border border-dashed border-border text-center text-xs text-muted-foreground">
-            {isAr ? "لم يتم اختيار معرض صور بعد لهذا القسم." : "No gallery selected for this section yet."}
+            {isAr
+              ? "لم يتم اختيار معرض صور بعد لهذا القسم."
+              : "No gallery selected for this section yet."}
           </div>
         );
       }
       const columns = Math.min(6, Math.max(1, Number(data.columns) || 3));
       return (
         <div
-          className="max-w-5xl mx-auto grid gap-3"
-          style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+          className={cn(
+            "max-w-5xl mx-auto grid gap-3 grid-cols-2 sm:grid-cols-3",
+            columns === 1 && "grid-cols-1 sm:grid-cols-1 md:grid-cols-1",
+            columns === 2 && "md:grid-cols-2",
+            columns === 3 && "md:grid-cols-3",
+            columns === 4 && "md:grid-cols-4",
+            columns === 5 && "md:grid-cols-5",
+            columns >= 6 && "md:grid-cols-6",
+          )}
         >
           {gallery.media.map((m) => (
             <figure key={m.id} className="overflow-hidden rounded-xl border border-border bg-card">
-              <img src={m.url} alt={(isAr ? m.caption_ar : m.caption_en) || ""} className="w-full aspect-square object-cover" />
+              <img
+                src={m.url}
+                alt={(isAr ? m.caption_ar : m.caption_en) || ""}
+                className="w-full aspect-square object-cover"
+              />
               {(m.caption_ar || m.caption_en) && (
                 <figcaption className="p-2 text-[11px] text-center text-muted-foreground">
-                  {isAr ? m.caption_ar : (m.caption_en || m.caption_ar)}
+                  {isAr ? m.caption_ar : m.caption_en || m.caption_ar}
                 </figcaption>
               )}
             </figure>
@@ -353,11 +425,11 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
               <div>
                 <span className="font-mono text-xs font-bold text-primary">{item.year}</span>
                 <h4 className="text-sm md:text-base font-bold text-foreground mt-0.5">
-                  {isAr ? item.title_ar : (item.title_en || item.title_ar)}
+                  {isAr ? item.title_ar : item.title_en || item.title_ar}
                 </h4>
                 {(item.description_ar || item.description_en) && (
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    {isAr ? item.description_ar : (item.description_en || item.description_ar)}
+                    {isAr ? item.description_ar : item.description_en || item.description_ar}
                   </p>
                 )}
               </div>
@@ -373,11 +445,11 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
             const content = (
               <>
                 <h4 className="text-sm font-bold text-foreground">
-                  {isAr ? card.title_ar : (card.title_en || card.title_ar)}
+                  {isAr ? card.title_ar : card.title_en || card.title_ar}
                 </h4>
                 {(card.desc_ar || card.desc_en) && (
                   <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                    {isAr ? card.desc_ar : (card.desc_en || card.desc_ar)}
+                    {isAr ? card.desc_ar : card.desc_en || card.desc_ar}
                   </p>
                 )}
               </>
@@ -431,16 +503,16 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
             />
           )}
           <h3 className="text-xl font-bold text-foreground">
-            {isAr ? member.display_name_ar : (member.display_name_en || member.display_name_ar)}
+            {isAr ? member.display_name_ar : member.display_name_en || member.display_name_ar}
           </h3>
           {(member.occupation_ar || member.occupation_en) && (
             <p className="text-sm text-primary font-medium">
-              {isAr ? member.occupation_ar : (member.occupation_en || member.occupation_ar)}
+              {isAr ? member.occupation_ar : member.occupation_en || member.occupation_ar}
             </p>
           )}
           {(member.biography_ar || member.biography_en) && (
             <p className="text-xs text-muted-foreground leading-relaxed max-w-lg mx-auto">
-              {isAr ? member.biography_ar : (member.biography_en || member.biography_ar)}
+              {isAr ? member.biography_ar : member.biography_en || member.biography_ar}
             </p>
           )}
         </div>
@@ -458,13 +530,17 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
               to="/branches"
               className="p-5 rounded-2xl border border-border bg-card hover:border-primary hover:shadow-sm transition-all block"
             >
-              <h4 className="text-sm font-bold text-foreground">{isAr ? b.name_ar : (b.name_en || b.name_ar)}</h4>
+              <h4 className="text-sm font-bold text-foreground">
+                {isAr ? b.name_ar : b.name_en || b.name_ar}
+              </h4>
               {data.show_elders !== false && (b.elder_ar || b.elder_en) && (
-                <p className="text-xs text-primary mt-1">{isAr ? b.elder_ar : (b.elder_en || b.elder_ar)}</p>
+                <p className="text-xs text-primary mt-1">
+                  {isAr ? b.elder_ar : b.elder_en || b.elder_ar}
+                </p>
               )}
               {(b.description_ar || b.description_en) && (
                 <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">
-                  {isAr ? b.description_ar : (b.description_en || b.description_ar)}
+                  {isAr ? b.description_ar : b.description_en || b.description_ar}
                 </p>
               )}
             </Link>
@@ -499,16 +575,26 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
                     key={m.id}
                     className="text-xs px-3 py-1.5 rounded-full border border-border bg-card text-foreground"
                   >
-                    {isAr ? m.display_name_ar || `${m.first_name_ar} ${m.last_name_ar}` : (m.display_name_en || `${m.first_name_en || m.first_name_ar} ${m.last_name_en || m.last_name_ar}`)}
+                    {isAr
+                      ? m.display_name_ar || `${m.first_name_ar} ${m.last_name_ar}`
+                      : m.display_name_en ||
+                        `${m.first_name_en || m.first_name_ar} ${m.last_name_en || m.last_name_ar}`}
                   </span>
                 ))}
               </div>
             </div>
           ))}
           <div className="text-center pt-2">
-            <Link to="/family-tree" className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
+            <Link
+              to="/family-tree"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
+            >
               {isAr ? "استعراض الشجرة الكاملة" : "View the full family tree"}
-              {isAr ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+              {isAr ? (
+                <ArrowLeft className="w-3.5 h-3.5" />
+              ) : (
+                <ArrowRight className="w-3.5 h-3.5" />
+              )}
             </Link>
           </div>
         </div>
@@ -530,13 +616,19 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
             <div key={ev.id} className="p-5 rounded-2xl border border-border bg-card space-y-2">
               <div className="flex items-center gap-1.5 text-[11px] text-primary font-bold">
                 <Calendar className="w-3.5 h-3.5" />
-                {new Date(ev.start_at).toLocaleDateString(isAr ? "ar" : "en", { year: "numeric", month: "long", day: "numeric" })}
+                {new Date(ev.start_at).toLocaleDateString(isAr ? "ar" : "en", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </div>
-              <h4 className="text-sm font-bold text-foreground">{isAr ? ev.title_ar : (ev.title_en || ev.title_ar)}</h4>
+              <h4 className="text-sm font-bold text-foreground">
+                {isAr ? ev.title_ar : ev.title_en || ev.title_ar}
+              </h4>
               {ev.place && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <MapPin className="w-3.5 h-3.5" />
-                  {isAr ? ev.place.name_ar : (ev.place.name_en || ev.place.name_ar)}
+                  {isAr ? ev.place.name_ar : ev.place.name_en || ev.place.name_ar}
                 </div>
               )}
             </div>
@@ -561,10 +653,12 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
                 <Newspaper className="w-3.5 h-3.5" />
                 {a.gregorian_date}
               </div>
-              <h4 className="text-sm font-bold text-foreground">{isAr ? a.title_ar : (a.title_en || a.title_ar)}</h4>
+              <h4 className="text-sm font-bold text-foreground">
+                {isAr ? a.title_ar : a.title_en || a.title_ar}
+              </h4>
               {(a.excerpt_ar || a.excerpt_en) && (
                 <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">
-                  {isAr ? a.excerpt_ar : (a.excerpt_en || a.excerpt_ar)}
+                  {isAr ? a.excerpt_ar : a.excerpt_en || a.excerpt_ar}
                 </p>
               )}
             </Link>
@@ -586,10 +680,12 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
             >
               <Bell className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm font-bold text-foreground">{isAr ? a.title_ar : (a.title_en || a.title_ar)}</h4>
+                <h4 className="text-sm font-bold text-foreground">
+                  {isAr ? a.title_ar : a.title_en || a.title_ar}
+                </h4>
                 {(a.body_ar || a.body_en || a.message_ar) && (
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    {isAr ? (a.body_ar || a.message_ar) : (a.body_en || a.body_ar || a.message_ar)}
+                    {isAr ? a.body_ar || a.message_ar : a.body_en || a.body_ar || a.message_ar}
                   </p>
                 )}
               </div>
@@ -600,17 +696,26 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
     }
 
     case "map": {
-      const src = data.embed_url || (data.address ? `https://www.google.com/maps?q=${encodeURIComponent(data.address)}&output=embed` : null);
+      const src =
+        data.embed_url ||
+        (data.address
+          ? `https://www.google.com/maps?q=${encodeURIComponent(data.address)}&output=embed`
+          : null);
       if (!src) return null;
       return (
         <div className="max-w-4xl mx-auto space-y-3">
           {data.title_ar && (
             <h3 className="text-lg font-bold text-foreground text-center">
-              {isAr ? data.title_ar : (data.title_en || data.title_ar)}
+              {isAr ? data.title_ar : data.title_en || data.title_ar}
             </h3>
           )}
           <div className="aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border">
-            <iframe src={src} title={data.title_ar || "map"} className="h-full w-full border-0" loading="lazy" />
+            <iframe
+              src={src}
+              title={data.title_ar || "map"}
+              className="h-full w-full border-0"
+              loading="lazy"
+            />
           </div>
           {data.address && (
             <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
@@ -622,7 +727,12 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
     }
 
     case "contact":
-      return <ContactFormBlock title={isAr ? data.title_ar : (data.title_en || data.title_ar)} isAr={isAr} />;
+      return (
+        <ContactFormBlock
+          title={isAr ? data.title_ar : data.title_en || data.title_ar}
+          isAr={isAr}
+        />
+      );
 
     case "divider":
       return <Rule variant="hair" />;
@@ -709,10 +819,18 @@ function ContactFormBlock({ title, isAr }: { title?: string; isAr: boolean }) {
         setTurnstileToken("");
         turnstileRef.current?.reset();
       } else {
-        toast.error(isAr ? "تعذّر إرسال الرسالة. حاول مجدداً." : "Could not send the message. Please try again.");
+        toast.error(
+          isAr
+            ? "تعذّر إرسال الرسالة. حاول مجدداً."
+            : "Could not send the message. Please try again.",
+        );
       }
     } catch {
-      toast.error(isAr ? "تعذّر إرسال الرسالة. حاول مجدداً." : "Could not send the message. Please try again.");
+      toast.error(
+        isAr
+          ? "تعذّر إرسال الرسالة. حاول مجدداً."
+          : "Could not send the message. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -727,14 +845,46 @@ function ContactFormBlock({ title, isAr }: { title?: string; isAr: boolean }) {
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="sr-only" aria-hidden="true">
           <label htmlFor="website_url_check">Leave empty</label>
-          <input type="text" id="website_url_check" name="website_url_check" tabIndex={-1} autoComplete="off" />
+          <input
+            type="text"
+            id="website_url_check"
+            name="website_url_check"
+            tabIndex={-1}
+            autoComplete="off"
+          />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input name="name" required maxLength={100} placeholder={isAr ? "الاسم الكامل" : "Full name"} className={fieldClass} />
-          <input name="email" type="email" required maxLength={255} dir="ltr" placeholder={isAr ? "البريد الإلكتروني" : "Email"} className={fieldClass} />
+          <input
+            name="name"
+            required
+            maxLength={100}
+            placeholder={isAr ? "الاسم الكامل" : "Full name"}
+            className={fieldClass}
+          />
+          <input
+            name="email"
+            type="email"
+            required
+            maxLength={255}
+            dir="ltr"
+            placeholder={isAr ? "البريد الإلكتروني" : "Email"}
+            className={fieldClass}
+          />
         </div>
-        <input name="subject" maxLength={160} placeholder={isAr ? "الموضوع (اختياري)" : "Subject (optional)"} className={fieldClass} />
-        <textarea name="message" required rows={4} maxLength={1000} placeholder={isAr ? "نص الرسالة" : "Message"} className={`${fieldClass} resize-y`} />
+        <input
+          name="subject"
+          maxLength={160}
+          placeholder={isAr ? "الموضوع (اختياري)" : "Subject (optional)"}
+          className={fieldClass}
+        />
+        <textarea
+          name="message"
+          required
+          rows={4}
+          maxLength={1000}
+          placeholder={isAr ? "نص الرسالة" : "Message"}
+          className={`${fieldClass} resize-y`}
+        />
         <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
         <button
           type="submit"

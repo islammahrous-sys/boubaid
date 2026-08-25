@@ -21,9 +21,17 @@ export const Route = createFileRoute("/dna")({
   head: () => ({
     meta: [
       { title: "الدراسة الجينية J-Z20777 | آل بوعبيد" },
-      { name: "description", content: "نتائج فحوصات سلالة الكروموسوم الذكري (Y-DNA) لأسرة آل بوعبيد ضمن شجرة التحور J-Z20777 وتحورها الطرفي J-BY37877." },
+      {
+        name: "description",
+        content:
+          "نتائج فحوصات سلالة الكروموسوم الذكري (Y-DNA) لأسرة آل بوعبيد ضمن شجرة التحور J-Z20777 وتحورها الطرفي J-BY37877.",
+      },
       { property: "og:title", content: "الدراسة الجينية — آل بوعبيد" },
-      { property: "og:description", content: "نتائج فحوصات الحمض النووي (Y-DNA) لأسرة آل بوعبيد ضمن شجرة التحور J-Z20777 والتحور الطرفي J-BY37877." },
+      {
+        property: "og:description",
+        content:
+          "نتائج فحوصات الحمض النووي (Y-DNA) لأسرة آل بوعبيد ضمن شجرة التحور J-Z20777 والتحور الطرفي J-BY37877.",
+      },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/dna") },
     ],
@@ -133,40 +141,52 @@ function DnaPage() {
   const activeRoot = dynamicDna?.root_haplogroup || "J1-M267";
   const activeTerminal = dynamicDna?.terminal_mutation || "J-BY37877";
 
-  const clades = (dynamicDna?.hierarchy && dynamicDna.hierarchy.length > 0)
-    ? dynamicDna.hierarchy.map((c) => c.mutation)
-    : dnaInfo.parentClade.split(">").map((c) => c.trim());
+  const clades =
+    dynamicDna?.hierarchy && dynamicDna.hierarchy.length > 0
+      ? dynamicDna.hierarchy.map((c) => c.mutation)
+      : dnaInfo.parentClade.split(">").map((c) => c.trim());
 
-  const timelineEntries = (dynamicDna?.chronology && dynamicDna.chronology.length > 0)
-    ? dynamicDna.chronology.map((entry) => ({
-        snp: entry.mutation,
-        year: entry.tmrca || entry.approx_date,
-        note: { ar: entry.note_ar, en: entry.note_en || entry.note_ar } as BiText,
-      }))
-    : dnaInfo.haplogroupTimeline;
+  const timelineEntries =
+    dynamicDna?.chronology && dynamicDna.chronology.length > 0
+      ? dynamicDna.chronology.map((entry) => ({
+          snp: entry.mutation,
+          year: entry.tmrca || entry.approx_date,
+          note: { ar: entry.note_ar, en: entry.note_en || entry.note_ar } as BiText,
+        }))
+      : dnaInfo.haplogroupTimeline;
 
-  const siblingFamilyNames = (dynamicDna?.sibling_families && dynamicDna.sibling_families.length > 0)
-    ? dynamicDna.sibling_families.map((f) => (lang === "ar" ? f.name_ar : (f.name_en || f.name_ar)))
-    : dnaInfo.siblingFamilies.names;
+  const siblingFamilyNames =
+    dynamicDna?.sibling_families && dynamicDna.sibling_families.length > 0
+      ? dynamicDna.sibling_families.map((f) => (lang === "ar" ? f.name_ar : f.name_en || f.name_ar))
+      : dnaInfo.siblingFamilies.names;
 
-  const distributionData = (dynamicDna?.distribution && dynamicDna.distribution.length > 0)
-    ? dynamicDna.distribution.map((d) => {
-        const maxSamples = Math.max(...dynamicDna.distribution.map((x) => x.samples_count || 1), 1);
-        const pct = Math.round((d.samples_count / maxSamples) * 100);
-        const match = dnaInfo.geographicDistribution.find(
-          (g) => g.country.ar === d.country_ar || g.country.en.toLowerCase() === (d.country_en || "").toLowerCase(),
-        );
-        return {
-          country: { ar: d.country_ar, en: d.country_en || d.country_ar } as BiText,
-          flagCode: match?.flagCode || "sa",
-          regions: { ar: d.regions_ar, en: d.regions_ar } as BiText,
-          families: { ar: d.note_ar || "", en: d.note_ar || "" } as BiText,
-          sampleLabel: { ar: `${d.samples_count} عينة`, en: `${d.samples_count} samples` } as BiText,
-          barWidth: `${pct}%`,
-          note: { ar: "", en: "" } as BiText,
-        };
-      })
-    : dnaInfo.geographicDistribution;
+  const distributionData =
+    dynamicDna?.distribution && dynamicDna.distribution.length > 0
+      ? dynamicDna.distribution.map((d) => {
+          const maxSamples = Math.max(
+            ...dynamicDna.distribution.map((x) => x.samples_count || 1),
+            1,
+          );
+          const pct = Math.round((d.samples_count / maxSamples) * 100);
+          const match = dnaInfo.geographicDistribution.find(
+            (g) =>
+              g.country.ar === d.country_ar ||
+              g.country.en.toLowerCase() === (d.country_en || "").toLowerCase(),
+          );
+          return {
+            country: { ar: d.country_ar, en: d.country_en || d.country_ar } as BiText,
+            flagCode: match?.flagCode || "sa",
+            regions: { ar: d.regions_ar, en: d.regions_ar } as BiText,
+            families: { ar: d.note_ar || "", en: d.note_ar || "" } as BiText,
+            sampleLabel: {
+              ar: `${d.samples_count} عينة`,
+              en: `${d.samples_count} samples`,
+            } as BiText,
+            barWidth: `${pct}%`,
+            note: { ar: "", en: "" } as BiText,
+          };
+        })
+      : dnaInfo.geographicDistribution;
 
   return (
     <>
@@ -194,7 +214,10 @@ function DnaPage() {
         </aside>
 
         {/* ── Summary ────────────────────────────────────────── */}
-        <section id="overview" className="scroll-mt-28 reveal-on-scroll mt-14 grid gap-10 lg:grid-cols-[minmax(0,18rem)_1fr] lg:gap-16">
+        <section
+          id="overview"
+          className="scroll-mt-28 reveal-on-scroll mt-14 grid gap-10 lg:grid-cols-[minmax(0,18rem)_1fr] lg:gap-16"
+        >
           <div>
             <Eyebrow>{t(copy.overviewEyebrow)}</Eyebrow>
             <p className="nums mt-4 font-mono text-4xl text-foreground">{activeHaplogroup}</p>
@@ -226,7 +249,10 @@ function DnaPage() {
         </section>
 
         {/* ── Clade ladder — this page's signature device ─────── */}
-        <section id="clade" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section
+          id="clade"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10"
+        >
           <Eyebrow>{t(copy.cladeEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.cladeTitle)}</h2>
           <p className="mt-2 text-[13px] text-muted-foreground">{t(copy.cladeNote)}</p>
@@ -275,7 +301,10 @@ function DnaPage() {
         </section>
 
         {/* ── SNP chronology ─────────────────────────────────── */}
-        <section id="timeline" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section
+          id="timeline"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10"
+        >
           <Eyebrow>{t(copy.timelineEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.timelineTitle)}</h2>
           <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -404,7 +433,10 @@ function DnaPage() {
         </section>
 
         {/* ── Distribution table ─────────────────────────────── */}
-        <section id="distribution" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section
+          id="distribution"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10"
+        >
           <Eyebrow>{t(copy.distEyebrow)}</Eyebrow>
           <h2 className="mt-3 text-xl text-foreground md:text-2xl">{t(copy.distTitle)}</h2>
           <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -509,7 +541,10 @@ function DnaPage() {
         </section>
 
         {/* ── Genetic Documents Showcase ───────────────────────── */}
-        <section id="method" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section
+          id="method"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10"
+        >
           <Eyebrow>
             {t({ ar: "الوثائق والأرشيف الجيني", en: "Genomic & Lineage Archives" })}
           </Eyebrow>
@@ -527,7 +562,10 @@ function DnaPage() {
         </section>
 
         {/* ── Databases ──────────────────────────────────────── */}
-        <section id="dna-sources" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10">
+        <section
+          id="dna-sources"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10"
+        >
           <Eyebrow>{t(copy.sourcesEyebrow)}</Eyebrow>
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.sourcesNote)}

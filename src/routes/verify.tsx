@@ -56,7 +56,9 @@ function VerifyPage() {
 
   const member = data?.member;
   const isVerified = data?.verified && !!member;
-  const branchName = member?.branch_slug ? (branches.find((b) => b.id === member.branch_slug)?.name ?? null) : null;
+  const branchName = member?.branch_slug
+    ? (branches.find((b) => b.id === member.branch_slug)?.name ?? null)
+    : null;
 
   const handlePrint = () => {
     if (typeof window !== "undefined") {
@@ -109,9 +111,7 @@ function VerifyPage() {
                 </div>
               </div>
 
-              <Badge className="bg-emerald-600 text-white font-bold text-xs">
-                {member.role}
-              </Badge>
+              <Badge className="bg-emerald-600 text-white font-bold text-xs">{member.role}</Badge>
             </div>
 
             {/* Member Profile Showcase */}
@@ -135,7 +135,9 @@ function VerifyPage() {
 
                 <div className="grid grid-cols-2 gap-3 pt-2 text-xs">
                   <div className="p-2.5 rounded-xl bg-secondary/40 border border-border">
-                    <span className="text-[10px] text-muted-foreground block mb-0.5">{isAr ? "الفرع العائلي" : "Family Branch"}</span>
+                    <span className="text-[10px] text-muted-foreground block mb-0.5">
+                      {isAr ? "الفرع العائلي" : "Family Branch"}
+                    </span>
                     <span className="font-bold text-gold flex items-center gap-1 justify-center sm:justify-start">
                       <GitBranch className="w-3.5 h-3.5" />
                       {branchName ? t(branchName) : member.branch_slug}
@@ -143,8 +145,12 @@ function VerifyPage() {
                   </div>
 
                   <div className="p-2.5 rounded-xl bg-secondary/40 border border-border">
-                    <span className="text-[10px] text-muted-foreground block mb-0.5">{isAr ? "رقم العضوية" : "Member Code"}</span>
-                    <span className="font-mono font-bold text-foreground">{member.member_code}</span>
+                    <span className="text-[10px] text-muted-foreground block mb-0.5">
+                      {isAr ? "رقم العضوية" : "Member Code"}
+                    </span>
+                    <span className="font-mono font-bold text-foreground">
+                      {member.member_code}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -154,7 +160,9 @@ function VerifyPage() {
             <div className="p-4 rounded-2xl bg-secondary/30 border border-border space-y-2 text-xs">
               <div className="flex items-center justify-between text-muted-foreground">
                 <span>{isAr ? "الجهة المصدرة:" : "Issuing Authority:"}</span>
-                <span className="font-bold text-foreground">{isAr ? "أمانة مجلس أسرة آل بوعبيد" : "General Secretariat"}</span>
+                <span className="font-bold text-foreground">
+                  {isAr ? "أمانة مجلس أسرة آل بوعبيد" : "General Secretariat"}
+                </span>
               </div>
               <div className="flex items-center justify-between text-muted-foreground">
                 <span>{isAr ? "الترخيص الحكومي:" : "Gov. License:"}</span>
@@ -221,4 +229,3 @@ function VerifyPage() {
     </div>
   );
 }
-

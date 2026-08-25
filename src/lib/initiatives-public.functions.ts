@@ -23,8 +23,10 @@ const initiativeJoinSchema = z.object({
   phone: z.string().trim().max(30).optional().or(z.literal("")),
   notes: z.string().trim().max(500).optional().or(z.literal("")),
   locale: z.enum(["ar", "en"]).default("ar"),
-  // Anti-bot honeypot — real visitors never fill this in.
-  website_url_check: z.string().max(0).optional(),
+  // Anti-bot honeypot — real visitors never fill this in. Accepted (not capped
+  // at length 0) so the handler can silently drop the submission instead of
+  // failing validation; see forms.schemas.ts for the same reasoning.
+  website_url_check: z.string().max(200).optional(),
   turnstile_token: z.string().max(2048).optional(),
 });
 
@@ -34,7 +36,12 @@ export type InitiativeJoinResult =
   | { ok: true }
   | {
       ok: false;
-      error: "verification_failed" | "initiative_not_found" | "already_registered" | "insert_failed";
+      error:
+        | "verification_failed"
+        | "rate_limited"
+        | "initiative_not_found"
+        | "already_registered"
+        | "insert_failed";
     };
 
 export const joinInitiative = createServerFn({ method: "POST" })
@@ -45,8 +52,17 @@ export const joinInitiative = createServerFn({ method: "POST" })
       return { ok: true };
     }
 
+    // This handler writes with the service-role client, so RLS is not a second
+    // line of defence here — throttle before doing anything else.
+    const { isPublicSubmissionRateLimited, getRequestIp } =
+      await import("./public-forms-rate-limit.server");
+    if (isPublicSubmissionRateLimited("initiative_join", { max: 6 })) {
+      console.warn("[initiatives-public] rate limited");
+      return { ok: false, error: "rate_limited" };
+    }
+
     const { verifyTurnstileToken } = await import("./turnstile.server");
-    const verification = await verifyTurnstileToken(data.turnstile_token);
+    const verification = await verifyTurnstileToken(data.turnstile_token, getRequestIp());
     if (!verification.ok) {
       console.error("[initiatives-public] turnstile verification failed", verification.error);
       return { ok: false, error: "verification_failed" };
@@ -61,7 +77,11 @@ export const joinInitiative = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (initiativeError) {
-      console.error("[initiatives-public] initiative lookup failed", initiativeError.code, initiativeError.message);
+      console.error(
+        "[initiatives-public] initiative lookup failed",
+        initiativeError.code,
+        initiativeError.message,
+      );
       return { ok: false, error: "initiative_not_found" };
     }
     if (!initiative || !initiative.is_published) {

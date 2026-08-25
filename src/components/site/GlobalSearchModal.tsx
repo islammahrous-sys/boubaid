@@ -223,7 +223,9 @@ export function GlobalSearchModal({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-foreground text-xs truncate">{doc.title_ar}</p>
-                  <span className="text-[9px] uppercase font-mono text-muted-foreground">{doc.kind || "DOC"}</span>
+                  <span className="text-[9px] uppercase font-mono text-muted-foreground">
+                    {doc.kind || "DOC"}
+                  </span>
                 </div>
               </CommandItem>
             ))}

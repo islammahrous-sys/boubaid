@@ -74,12 +74,16 @@ export function Footer() {
         setEmail("");
       } else {
         toast.error(
-          lang === "ar" ? "تعذّر تسجيل الاشتراك. حاول مرة أخرى." : "Subscription failed. Please try again.",
+          lang === "ar"
+            ? "تعذّر تسجيل الاشتراك. حاول مرة أخرى."
+            : "Subscription failed. Please try again.",
         );
       }
     } catch {
       toast.error(
-        lang === "ar" ? "تعذّر تسجيل الاشتراك. حاول مرة أخرى." : "Subscription failed. Please try again.",
+        lang === "ar"
+          ? "تعذّر تسجيل الاشتراك. حاول مرة أخرى."
+          : "Subscription failed. Please try again.",
       );
     } finally {
       setSubscribing(false);
@@ -246,7 +250,6 @@ export function Footer() {
                 >
                   {lang === "ar" ? "اشتراك" : "Subscribe"}
                 </button>
-
               </div>
             </form>
 

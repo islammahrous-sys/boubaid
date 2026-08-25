@@ -20,23 +20,51 @@ import {
   Calendar,
   Landmark,
   Building2,
-  Settings,
-  Shield,
   Plus,
   ArrowRight,
   Globe,
-  ImageIcon,
   Rocket,
-  Award,
   Sparkles,
 } from "lucide-react";
 import { ADMIN_DOMAINS } from "./AdminNavigation";
+
+/** `globalAdminSearch` labels its rows with a loose "category" that is not
+ *  always an actual console domain id (profiles come back as "directory",
+ *  treasury rows as tab "contributions"). Navigating with those raw values
+ *  landed on a domain/tab pair that no branch in the admin route renders --
+ *  i.e. a blank page. Resolve every hit against the real navigation tree
+ *  instead, so a search result always opens a tab that exists. */
+const SEARCH_TAB_ALIASES: Record<string, string> = {
+  contributions: "treasury_ledger",
+};
+
+function resolveSearchTarget(category: string, tab: string): { domainId: string; tabId: string } {
+  const tabId = SEARCH_TAB_ALIASES[tab] ?? tab;
+
+  const owningDomain = ADMIN_DOMAINS.find((d) => d.tabs.some((t) => t.id === tabId));
+  if (owningDomain) return { domainId: owningDomain.id, tabId };
+
+  const domainByCategory = ADMIN_DOMAINS.find((d) => d.id === category);
+  if (domainByCategory && domainByCategory.tabs[0]) {
+    return { domainId: domainByCategory.id, tabId: domainByCategory.tabs[0].id };
+  }
+
+  return { domainId: "dashboard", tabId: "overview" };
+}
 
 export type SearchableItem = {
   id: string;
   title: string;
   subtitle?: string;
-  category: "family" | "content" | "articles" | "events" | "directory" | "treasury" | "initiatives" | "media";
+  category:
+    | "family"
+    | "content"
+    | "articles"
+    | "events"
+    | "directory"
+    | "treasury"
+    | "initiatives"
+    | "media";
   onSelect: () => void;
 };
 
@@ -58,14 +86,13 @@ export function AdminCommandPalette({
 
   const [searchQuery, setSearchQuery] = useState("");
   const fetchGlobalSearch = useServerFn(globalAdminSearch);
-  
+
   const { data: searchResults, isLoading: searchLoading } = useQuery({
     queryKey: ["admin-global-search", searchQuery],
     queryFn: () => fetchGlobalSearch({ data: { query: searchQuery } }),
     enabled: searchQuery.length >= 2,
     staleTime: 1000 * 60,
   });
-
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -107,10 +134,11 @@ export function AdminCommandPalette({
             ? "ابحث في السجلات، الأعضاء، المقالات، أو اكتب أمراً..."
             : "Search records, members, articles, or type a command..."
         }
-       value={searchQuery} onValueChange={setSearchQuery} />
+        value={searchQuery}
+        onValueChange={setSearchQuery}
+      />
       <CommandList className="max-h-[380px]">
         <CommandEmpty>{isAr ? "لا توجد نتائج مطابقة." : "No results found."}</CommandEmpty>
-
 
         {/* Dynamic Database Search Results */}
         {searchQuery.length >= 2 && (
@@ -124,17 +152,24 @@ export function AdminCommandPalette({
                 <CommandItem
                   key={`${item.category}-${item.id}`}
                   onSelect={() => {
-                    onSelectTab(item.category, item.tab);
-                    // Also dispatch an event or logic to open the specific drawer
-                    // A quick hack is to dispatch a custom event
-                    window.dispatchEvent(new CustomEvent("open-admin-drawer", { detail: { type: item.tab, id: item.id } }));
+                    const target = resolveSearchTarget(item.category, item.tab);
+                    onSelectTab(target.domainId, target.tabId);
+                    // Managers that support deep-linking to a single record listen
+                    // for this; the tab itself already opened via onSelectTab above.
+                    window.dispatchEvent(
+                      new CustomEvent("open-admin-drawer", {
+                        detail: { type: target.tabId, id: item.id },
+                      }),
+                    );
                     onOpenChange(false);
                   }}
                 >
                   {getCategoryIcon(item.category)}
                   <div className="flex flex-col ms-2">
                     <span className="font-semibold">{item.title}</span>
-                    {item.subtitle && <span className="text-xs text-muted-foreground">{item.subtitle}</span>}
+                    {item.subtitle && (
+                      <span className="text-xs text-muted-foreground">{item.subtitle}</span>
+                    )}
                   </div>
                 </CommandItem>
               ))
@@ -187,7 +222,11 @@ export function AdminCommandPalette({
             }}
           >
             <Globe className="w-4 h-4 me-2 text-blue-500" />
-            <span>{isAr ? "التبديل إلى اللغة الإنجليزية (Switch to English)" : "التبديل إلى العربية (Switch to Arabic)"}</span>
+            <span>
+              {isAr
+                ? "التبديل إلى اللغة الإنجليزية (Switch to English)"
+                : "التبديل إلى العربية (Switch to Arabic)"}
+            </span>
           </CommandItem>
         </CommandGroup>
 
@@ -198,10 +237,7 @@ export function AdminCommandPalette({
         {ADMIN_DOMAINS.map((domain) => {
           const DomainIcon = domain.icon;
           return (
-            <CommandGroup
-              key={domain.id}
-              heading={isAr ? domain.label_ar : domain.label_en}
-            >
+            <CommandGroup key={domain.id} heading={isAr ? domain.label_ar : domain.label_en}>
               {domain.tabs.map((tab) => {
                 const TabIcon = tab.icon;
                 const isOnlyTab = domain.tabs.length === 1;
@@ -248,7 +284,9 @@ export function AdminCommandPalette({
                   <div className="flex flex-col">
                     <span className="font-semibold text-foreground">{item.title}</span>
                     {item.subtitle && (
-                      <span className="text-[11px] text-muted-foreground font-mono">{item.subtitle}</span>
+                      <span className="text-[11px] text-muted-foreground font-mono">
+                        {item.subtitle}
+                      </span>
                     )}
                   </div>
                   <ArrowRight className="w-3.5 h-3.5 ms-auto text-muted-foreground rtl:rotate-180" />

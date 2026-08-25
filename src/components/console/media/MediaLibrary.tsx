@@ -1,11 +1,28 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useLang } from "@/i18n/LanguageProvider";
 import { supabase } from "@/integrations/supabase/client";
-import { Image as ImageIcon, Upload, Search, Copy, Check, Filter, FileText, HardDrive, ExternalLink, Loader2 } from "lucide-react";
+import {
+  Image as ImageIcon,
+  Upload,
+  Search,
+  Copy,
+  Check,
+  Filter,
+  FileText,
+  HardDrive,
+  ExternalLink,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { MediaAssetInput } from "@/lib/admin-hub.schemas";
 
@@ -45,12 +62,16 @@ export function MediaLibrary({
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const privateAssets = mediaAssets.filter((a) => a.bucket === "documents-private" && !a.public_url);
+    const privateAssets = mediaAssets.filter(
+      (a) => a.bucket === "documents-private" && !a.public_url,
+    );
     if (privateAssets.length === 0) return;
     let active = true;
     void Promise.all(
       privateAssets.map(async (a) => {
-        const { data } = await supabase.storage.from(a.bucket).createSignedUrl(a.storage_path, 60 * 60);
+        const { data } = await supabase.storage
+          .from(a.bucket)
+          .createSignedUrl(a.storage_path, 60 * 60);
         return [a.id, data?.signedUrl ?? null] as const;
       }),
     ).then((entries) => {
@@ -126,9 +147,7 @@ export function MediaLibrary({
       );
     }
     if (failed > 0) {
-      toast.error(
-        isAr ? `فشل رفع ${failed} ملف` : `Failed to upload ${failed} file(s)`,
-      );
+      toast.error(isAr ? `فشل رفع ${failed} ملف` : `Failed to upload ${failed} file(s)`);
     }
   };
 
@@ -200,8 +219,18 @@ export function MediaLibrary({
               uploading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
             }`}
           >
-            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-            {uploading ? (isAr ? "جاري الرفع..." : "Uploading...") : isAr ? "رفع وسائط وملفات PDF" : "Upload Media / PDF"}
+            {uploading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Upload className="w-4 h-4" />
+            )}
+            {uploading
+              ? isAr
+                ? "جاري الرفع..."
+                : "Uploading..."
+              : isAr
+                ? "رفع وسائط وملفات PDF"
+                : "Upload Media / PDF"}
             <input
               type="file"
               multiple
@@ -222,7 +251,9 @@ export function MediaLibrary({
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {filteredAssets.map((asset) => {
-            const isPdf = asset.mime_type === "application/pdf" || asset.file_name.toLowerCase().endsWith(".pdf");
+            const isPdf =
+              asset.mime_type === "application/pdf" ||
+              asset.file_name.toLowerCase().endsWith(".pdf");
             const isImage = asset.mime_type.startsWith("image/");
             const url = getMediaUrl(asset);
 
@@ -240,7 +271,11 @@ export function MediaLibrary({
                       </Badge>
                     </div>
                   ) : isImage ? (
-                    <img src={url} alt={asset.file_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <img
+                      src={url}
+                      alt={asset.file_name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
                   ) : (
                     <FileText className="w-8 h-8 text-muted-foreground" />
                   )}
@@ -252,7 +287,11 @@ export function MediaLibrary({
                       onClick={() => handleCopyUrl(asset)}
                       title={isAr ? "نسخ الرابط المباشر" : "Copy URL"}
                     >
-                      {copiedId === asset.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedId === asset.id ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-500" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
                     </Button>
                     <Button
                       variant="secondary"

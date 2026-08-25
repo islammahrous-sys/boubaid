@@ -1,15 +1,43 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useConfirm } from "@/hooks/useConfirm";
-import { Plus, Edit2, Trash2, Library, FileText, Image as ImageIcon, Video, ExternalLink } from "lucide-react";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Library,
+  FileText,
+  Image as ImageIcon,
+  Video,
+  ExternalLink,
+} from "lucide-react";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { LibraryItemInput } from "@/lib/admin-hub.schemas";
@@ -156,8 +184,12 @@ export function LibraryItemsManager({
             <SelectContent>
               <SelectItem value="all">{isAr ? "جميع المجموعات" : "All Collections"}</SelectItem>
               <SelectItem value="documents">{isAr ? "الوثائق واللوائح" : "Documents"}</SelectItem>
-              <SelectItem value="photographs">{isAr ? "الصور التاريخية" : "Photographs"}</SelectItem>
-              <SelectItem value="recordings">{isAr ? "التسجيلات المرئية" : "Recordings"}</SelectItem>
+              <SelectItem value="photographs">
+                {isAr ? "الصور التاريخية" : "Photographs"}
+              </SelectItem>
+              <SelectItem value="recordings">
+                {isAr ? "التسجيلات المرئية" : "Recordings"}
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -192,7 +224,11 @@ export function LibraryItemsManager({
                 <TableRow key={item.id} className="text-xs hover:bg-muted/30">
                   <TableCell>
                     <div className="flex items-center gap-2.5">
-                      {item.file_path && (item.file_path.endsWith(".jpg") || item.file_path.endsWith(".jpeg") || item.file_path.endsWith(".png") || item.file_path.endsWith(".webp")) ? (
+                      {item.file_path &&
+                      (item.file_path.endsWith(".jpg") ||
+                        item.file_path.endsWith(".jpeg") ||
+                        item.file_path.endsWith(".png") ||
+                        item.file_path.endsWith(".webp")) ? (
                         <div className="w-8 h-8 rounded-lg border border-border overflow-hidden shrink-0 bg-muted/20">
                           <img src={item.file_path} alt="" className="w-full h-full object-cover" />
                         </div>
@@ -201,14 +237,22 @@ export function LibraryItemsManager({
                       )}
                       <div>
                         <span className="font-semibold text-foreground block">{item.title_ar}</span>
-                        {item.title_en && <span className="text-[10px] text-muted-foreground font-mono">{item.title_en}</span>}
+                        {item.title_en && (
+                          <span className="text-[10px] text-muted-foreground font-mono">
+                            {item.title_en}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="font-mono text-muted-foreground">{item.reference || "—"}</TableCell>
+                  <TableCell className="font-mono text-muted-foreground">
+                    {item.reference || "—"}
+                  </TableCell>
                   <TableCell className="text-center font-mono">{item.year || "—"}</TableCell>
                   <TableCell className="text-center">
-                    <Badge variant="outline" className="text-[10px] uppercase font-mono">{item.kind || "DOC"}</Badge>
+                    <Badge variant="outline" className="text-[10px] uppercase font-mono">
+                      {item.kind || "DOC"}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-center font-mono">{item.sort_order}</TableCell>
                   <TableCell className="text-end">
@@ -256,7 +300,13 @@ export function LibraryItemsManager({
         <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">
-              {selectedItem ? (isAr ? "تعديل مادة أرشيفية" : "Edit Archive Item") : isAr ? "إضافة مادة أرشيفية جديدة" : "Add Archive Item"}
+              {selectedItem
+                ? isAr
+                  ? "تعديل مادة أرشيفية"
+                  : "Edit Archive Item"
+                : isAr
+                  ? "إضافة مادة أرشيفية جديدة"
+                  : "Add Archive Item"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
@@ -271,9 +321,15 @@ export function LibraryItemsManager({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="documents">{isAr ? "الوثائق واللوائح (Documents)" : "Documents"}</SelectItem>
-                    <SelectItem value="photographs">{isAr ? "المجموعة المصورة (Photographs)" : "Photographs"}</SelectItem>
-                    <SelectItem value="recordings">{isAr ? "التسجيلات المرئية (Recordings)" : "Recordings"}</SelectItem>
+                    <SelectItem value="documents">
+                      {isAr ? "الوثائق واللوائح (Documents)" : "Documents"}
+                    </SelectItem>
+                    <SelectItem value="photographs">
+                      {isAr ? "المجموعة المصورة (Photographs)" : "Photographs"}
+                    </SelectItem>
+                    <SelectItem value="recordings">
+                      {isAr ? "التسجيلات المرئية (Recordings)" : "Recordings"}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -362,14 +418,26 @@ export function LibraryItemsManager({
 
             {/* Visual File / Image / PDF Upload */}
             <div className="space-y-1 pt-1 border-t border-border">
-              <Label className="text-xs font-semibold">{isAr ? "الملف / الصورة / الوثيقة المرفقة (PDF / صور)" : "Attached File / PDF Document / Photo"}</Label>
+              <Label className="text-xs font-semibold">
+                {isAr
+                  ? "الملف / الصورة / الوثيقة المرفقة (PDF / صور)"
+                  : "Attached File / PDF Document / Photo"}
+              </Label>
               <ImageUploadInput
                 bucket="site-media"
                 value={form.file_path}
                 allowPdf={true}
                 onChange={(url) => setForm({ ...form, file_path: url, external_url: url })}
-                placeholder={isAr ? "رابط الوثيقة أو ارفع ملف PDF / صورة..." : "Document URL or upload PDF/photo..."}
-                helperText={isAr ? "يدعم رفع ملفات PDF واللوائح والصور والوثائق حتى 25 ميغابايت" : "Supports PDF documents, bylaws, scans and photos up to 25MB"}
+                placeholder={
+                  isAr
+                    ? "رابط الوثيقة أو ارفع ملف PDF / صورة..."
+                    : "Document URL or upload PDF/photo..."
+                }
+                helperText={
+                  isAr
+                    ? "يدعم رفع ملفات PDF واللوائح والصور والوثائق حتى 25 ميغابايت"
+                    : "Supports PDF documents, bylaws, scans and photos up to 25MB"
+                }
               />
             </div>
 
@@ -387,7 +455,13 @@ export function LibraryItemsManager({
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button type="submit" size="sm" disabled={loading}>
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ المادة" : "Save Item"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ المادة"
+                    : "Save Item"}
               </Button>
             </DialogFooter>
           </form>

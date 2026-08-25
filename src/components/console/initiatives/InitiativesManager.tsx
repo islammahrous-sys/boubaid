@@ -1,17 +1,47 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useConfirm } from "@/hooks/useConfirm";
-import { Plus, Trash2, Rocket, ArrowLeft, ArrowRight, AlertCircle, BookOpen, TrendingUp, Loader2, HeartHandshake } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Rocket,
+  ArrowLeft,
+  ArrowRight,
+  AlertCircle,
+  BookOpen,
+  TrendingUp,
+  Loader2,
+  HeartHandshake,
+} from "lucide-react";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import { cn } from "@/lib/utils";
@@ -55,7 +85,10 @@ export function InitiativesManager({
   registrations?: InitiativeRegistrationRow[];
   onSaveInitiative: (data: InitiativeInput) => Promise<void>;
   onDeleteInitiative: (id: string) => Promise<void>;
-  onUpdateRegistrationStatus?: (id: string, status: "new" | "contacted" | "confirmed" | "declined") => Promise<void>;
+  onUpdateRegistrationStatus?: (
+    id: string,
+    status: "new" | "contacted" | "confirmed" | "declined",
+  ) => Promise<void>;
   onDeleteRegistration?: (id: string) => Promise<void>;
 }) {
   const { lang, dir } = useLang();
@@ -67,7 +100,8 @@ export function InitiativesManager({
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
   const [registrationsModalOpen, setRegistrationsModalOpen] = useState(false);
-  const [activeInitForRegistrations, setActiveInitForRegistrations] = useState<InitiativeItem | null>(null);
+  const [activeInitForRegistrations, setActiveInitForRegistrations] =
+    useState<InitiativeItem | null>(null);
 
   const [form, setForm] = useState<InitiativeInput>({
     id: undefined,
@@ -83,8 +117,8 @@ export function InitiativesManager({
     is_published: true,
   });
 
-  const publishedCount = initiatives.filter(i => i.is_published).length;
-  const draftCount = initiatives.filter(i => !i.is_published).length;
+  const publishedCount = initiatives.filter((i) => i.is_published).length;
+  const draftCount = initiatives.filter((i) => !i.is_published).length;
 
   const filteredInitiatives = initiatives.filter((i) => {
     if (statusFilter === "all") return true;
@@ -96,13 +130,32 @@ export function InitiativesManager({
   const getStatusDisplay = (st: string) => {
     switch (st) {
       case "completed":
-        return <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">{isAr ? "مكتملة" : "Completed"}</Badge>;
+        return (
+          <Badge
+            variant="secondary"
+            className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]"
+          >
+            {isAr ? "مكتملة" : "Completed"}
+          </Badge>
+        );
       case "ongoing":
-        return <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">{isAr ? "مستمرة" : "Ongoing"}</Badge>;
+        return (
+          <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
+            {isAr ? "مستمرة" : "Ongoing"}
+          </Badge>
+        );
       case "planned":
-        return <Badge variant="outline" className="text-muted-foreground text-[10px]">{isAr ? "مخطط لها" : "Planned"}</Badge>;
+        return (
+          <Badge variant="outline" className="text-muted-foreground text-[10px]">
+            {isAr ? "مخطط لها" : "Planned"}
+          </Badge>
+        );
       default:
-        return <Badge variant="outline" className="text-[10px]">{st}</Badge>;
+        return (
+          <Badge variant="outline" className="text-[10px]">
+            {st}
+          </Badge>
+        );
     }
   };
 
@@ -165,7 +218,8 @@ export function InitiativesManager({
         description: isAr ? "سيتم الحذف نهائياً ولن يمكن التراجع." : "Will be permanently deleted.",
         tone: "destructive",
       }))
-    ) return;
+    )
+      return;
     await onDeleteInitiative(item.id);
   };
 
@@ -201,7 +255,9 @@ export function InitiativesManager({
             {isAr ? "مبادرات وبرامج العائلة" : "Family Initiatives"}
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {isAr ? "إدارة المبادرات والمشاريع التنموية والخيرية" : "Manage development and charitable initiatives"}
+            {isAr
+              ? "إدارة المبادرات والمشاريع التنموية والخيرية"
+              : "Manage development and charitable initiatives"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -209,11 +265,16 @@ export function InitiativesManager({
             <div className="flex items-center gap-2 bg-amber-500/10 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-lg border border-amber-500/20 shadow-xs">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span className="text-sm font-bold">
-                {isAr ? `لديك ${draftCount} مبادرة غير منشورة` : `You have ${draftCount} unpublished initiatives`}
+                {isAr
+                  ? `لديك ${draftCount} مبادرة غير منشورة`
+                  : `You have ${draftCount} unpublished initiatives`}
               </span>
             </div>
           )}
-          <Button onClick={handleOpenAdd} className="h-10 px-5 gap-2 font-bold shadow-sm rounded-lg">
+          <Button
+            onClick={handleOpenAdd}
+            className="h-10 px-5 gap-2 font-bold shadow-sm rounded-lg"
+          >
             <Plus className="w-4 h-4" />
             {isAr ? "إضافة مبادرة جديدة" : "Add New Initiative"}
           </Button>
@@ -222,24 +283,43 @@ export function InitiativesManager({
 
       {/* 2. Needs Your Attention / Operational KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className={cn(
-          "p-5 rounded-2xl border bg-card relative overflow-hidden group transition-all",
-          draftCount > 0 ? "border-amber-500/30 shadow-sm" : "border-border"
-        )}>
-          {draftCount > 0 && <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />}
+        <div
+          className={cn(
+            "p-5 rounded-2xl border bg-card relative overflow-hidden group transition-all",
+            draftCount > 0 ? "border-amber-500/30 shadow-sm" : "border-border",
+          )}
+        >
+          {draftCount > 0 && (
+            <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+          )}
           <div className="flex flex-col h-full">
             <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-              <span className={cn("w-2 h-2 rounded-full", draftCount > 0 ? "bg-amber-500 animate-pulse" : "bg-muted-foreground")} />
+              <span
+                className={cn(
+                  "w-2 h-2 rounded-full",
+                  draftCount > 0 ? "bg-amber-500 animate-pulse" : "bg-muted-foreground",
+                )}
+              />
               {isAr ? "مسودات ومبادرات قيد التجهيز" : "Drafts & Prep Initiatives"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{draftCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "مبادرة" : "initiatives"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {draftCount}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "مبادرة" : "initiatives"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("draft")}
               className="text-xs font-bold text-primary flex items-center gap-1 hover:gap-2 transition-all w-fit"
             >
-              {isAr ? "مراجعة المسودات" : "Review Drafts"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "مراجعة المسودات" : "Review Drafts"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -252,13 +332,23 @@ export function InitiativesManager({
               {isAr ? "المبادرات المنشورة للعامة" : "Published Initiatives"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{publishedCount} <span className="text-sm font-normal text-muted-foreground">{isAr ? "مبادرة" : "initiatives"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {publishedCount}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "مبادرة" : "initiatives"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("published")}
               className="text-xs font-bold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors w-fit"
             >
-              {isAr ? "عرض المنشورات" : "View Published"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "عرض المنشورات" : "View Published"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -271,13 +361,23 @@ export function InitiativesManager({
               {isAr ? "إجمالي برامج العائلة" : "Total Programs"}
             </h3>
             <div className="mb-6 flex-1">
-              <span className="text-3xl font-black font-mono text-foreground block">{initiatives.length} <span className="text-sm font-normal text-muted-foreground">{isAr ? "برنامج" : "programs"}</span></span>
+              <span className="text-3xl font-black font-mono text-foreground block">
+                {initiatives.length}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {isAr ? "برنامج" : "programs"}
+                </span>
+              </span>
             </div>
-            <button 
+            <button
               onClick={() => setStatusFilter("all")}
               className="text-xs font-bold text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors w-fit"
             >
-              {isAr ? "عرض الكل" : "View All"} {dir === "rtl" ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+              {isAr ? "عرض الكل" : "View All"}{" "}
+              {dir === "rtl" ? (
+                <ArrowLeft className="w-3 h-3" />
+              ) : (
+                <ArrowRight className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>
@@ -287,26 +387,50 @@ export function InitiativesManager({
       <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
         <div className="border-b border-border p-2 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/20">
           <div className="flex items-center gap-4 text-sm font-medium overflow-x-auto no-scrollbar">
-            <button 
+            <button
               onClick={() => setStatusFilter("all")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "all" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "all"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "الكل" : "All"} <span className="text-[10px] font-mono opacity-60 ml-1">({initiatives.length})</span>
-              {statusFilter === "all" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "الكل" : "All"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({initiatives.length})</span>
+              {statusFilter === "all" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setStatusFilter("published")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "published" ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "published"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "منشور" : "Published"} <span className="text-[10px] font-mono opacity-60 ml-1">({publishedCount})</span>
-              {statusFilter === "published" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "منشور" : "Published"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({publishedCount})</span>
+              {statusFilter === "published" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setStatusFilter("draft")}
-              className={cn("py-2.5 px-1 relative whitespace-nowrap transition-colors", statusFilter === "draft" ? "text-primary font-bold" : "text-muted-foreground hover:text-foreground")}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "draft"
+                  ? "text-primary font-bold"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {isAr ? "مسودات" : "Drafts"} <span className="text-[10px] font-mono opacity-60 ml-1">({draftCount})</span>
-              {statusFilter === "draft" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+              {isAr ? "مسودات" : "Drafts"}{" "}
+              <span className="text-[10px] font-mono opacity-60 ml-1">({draftCount})</span>
+              {statusFilter === "draft" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+              )}
             </button>
           </div>
         </div>
@@ -318,8 +442,12 @@ export function InitiativesManager({
               <TableHead className="font-semibold">{isAr ? "المبادرة" : "Initiative"}</TableHead>
               <TableHead className="font-semibold">{isAr ? "الملخص" : "Summary"}</TableHead>
               <TableHead className="font-semibold">{isAr ? "الحالة" : "Status"}</TableHead>
-              <TableHead className="font-semibold text-center">{isAr ? "الراغبون بالمشاركة" : "Interested"}</TableHead>
-              <TableHead className="font-semibold text-end">{isAr ? "الإجراء" : "Action"}</TableHead>
+              <TableHead className="font-semibold text-center">
+                {isAr ? "الراغبون بالمشاركة" : "Interested"}
+              </TableHead>
+              <TableHead className="font-semibold text-end">
+                {isAr ? "الإجراء" : "Action"}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -328,30 +456,39 @@ export function InitiativesManager({
                 <TableCell colSpan={5} className="h-48 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
                     <Rocket className="w-8 h-8 mb-3 opacity-20" />
-                    <p className="text-sm font-medium">{isAr ? "لا توجد مبادرات في هذه القائمة" : "No initiatives found"}</p>
+                    <p className="text-sm font-medium">
+                      {isAr ? "لا توجد مبادرات في هذه القائمة" : "No initiatives found"}
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
             ) : (
               filteredInitiatives.map((item) => (
-                <TableRow key={item.id} className="group cursor-pointer hover:bg-muted/30" onClick={() => handleOpenEdit(item)}>
+                <TableRow
+                  key={item.id}
+                  className="group cursor-pointer hover:bg-muted/30"
+                  onClick={() => handleOpenEdit(item)}
+                >
                   <TableCell className="max-w-[200px]">
                     <div className="font-bold text-foreground flex items-center gap-2 truncate">
                       {item.title_ar}
                       {!item.is_published && (
-                        <Badge variant="outline" className="shrink-0 text-[9px] bg-amber-500/10 text-amber-600 border-amber-500/20 px-1 py-0 h-4">
+                        <Badge
+                          variant="outline"
+                          className="shrink-0 text-[9px] bg-amber-500/10 text-amber-600 border-amber-500/20 px-1 py-0 h-4"
+                        >
                           {isAr ? "مسودة" : "Draft"}
                         </Badge>
                       )}
                     </div>
-                    <div className="text-[10px] text-muted-foreground mt-1 font-mono truncate">/{item.slug}</div>
+                    <div className="text-[10px] text-muted-foreground mt-1 font-mono truncate">
+                      /{item.slug}
+                    </div>
                   </TableCell>
                   <TableCell className="max-w-[300px]">
                     <div className="text-xs text-muted-foreground truncate">{item.summary_ar}</div>
                   </TableCell>
-                  <TableCell>
-                    {getStatusDisplay(item.status)}
-                  </TableCell>
+                  <TableCell>{getStatusDisplay(item.status)}</TableCell>
                   <TableCell className="text-center">
                     <Button
                       variant="ghost"
@@ -395,29 +532,43 @@ export function InitiativesManager({
 
       {/* 5. Contextual Side Drawer for Add/Edit */}
       <Sheet open={formOpen} onOpenChange={setFormOpen}>
-        <SheetContent side={isAr ? "left" : "right"} className="w-full sm:max-w-md p-0 flex flex-col border-border gap-0 bg-background overflow-hidden">
+        <SheetContent
+          side={isAr ? "left" : "right"}
+          className="w-full sm:max-w-md p-0 flex flex-col border-border gap-0 bg-background overflow-hidden"
+        >
           <div className="px-6 py-5 border-b border-border bg-muted/10 flex items-center justify-between z-10">
             <div>
               <SheetTitle className="text-lg font-bold">
-                {selectedInit ? (isAr ? "تعديل مبادرة" : "Edit Initiative") : isAr ? "إضافة مبادرة جديدة" : "Add Initiative"}
+                {selectedInit
+                  ? isAr
+                    ? "تعديل مبادرة"
+                    : "Edit Initiative"
+                  : isAr
+                    ? "إضافة مبادرة جديدة"
+                    : "Add Initiative"}
               </SheetTitle>
               <SheetDescription className="text-xs font-mono mt-1">
-                {selectedInit ? `ID: ${selectedInit.id.split("-")[0]}` : (isAr ? "سجل جديد" : "New Record")}
+                {selectedInit
+                  ? `ID: ${selectedInit.id.split("-")[0]}`
+                  : isAr
+                    ? "سجل جديد"
+                    : "New Record"}
               </SheetDescription>
             </div>
-            
+
             <div className="flex items-center gap-2">
-              <Label className="text-xs font-bold text-muted-foreground">{isAr ? "منشور ومتاح للعامة" : "Published"}</Label>
-              <Switch 
+              <Label className="text-xs font-bold text-muted-foreground">
+                {isAr ? "منشور ومتاح للعامة" : "Published"}
+              </Label>
+              <Switch
                 checked={form.is_published}
                 onCheckedChange={(c) => setForm({ ...form, is_published: c })}
               />
             </div>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
             <form id="initiative-form" onSubmit={handleSubmit} className="space-y-6">
-              
               <ImageUploadInput
                 label={isAr ? "صورة الغلاف" : "Cover Image"}
                 value={form.cover_path}
@@ -427,20 +578,31 @@ export function InitiativesManager({
               />
 
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">{isAr ? "المعلومات الأساسية" : "Basic Info"}</h4>
+                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">
+                  {isAr ? "المعلومات الأساسية" : "Basic Info"}
+                </h4>
                 <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "رابط المبادرة (Slug) *" : "URL Slug *"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "رابط المبادرة (Slug) *" : "URL Slug *"}
+                    </Label>
                     <Input
                       required
                       value={form.slug}
-                      onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          slug: e.target.value.toLowerCase().replace(/\s+/g, "-"),
+                        })
+                      }
                       placeholder="e.g. medical-fund"
                       className="bg-background font-mono text-xs"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "عنوان المبادرة (AR) *" : "Title (AR) *"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "عنوان المبادرة (AR) *" : "Title (AR) *"}
+                    </Label>
                     <Input
                       required
                       value={form.title_ar}
@@ -449,7 +611,9 @@ export function InitiativesManager({
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "عنوان المبادرة (EN)" : "Title (EN)"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "عنوان المبادرة (EN)" : "Title (EN)"}
+                    </Label>
                     <Input
                       value={form.title_en ?? ""}
                       onChange={(e) => setForm({ ...form, title_en: e.target.value })}
@@ -460,10 +624,14 @@ export function InitiativesManager({
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">{isAr ? "ملخص وتفاصيل المبادرة" : "Summary & Details"}</h4>
+                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">
+                  {isAr ? "ملخص وتفاصيل المبادرة" : "Summary & Details"}
+                </h4>
                 <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "ملخص قصير (AR)" : "Summary (AR)"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "ملخص قصير (AR)" : "Summary (AR)"}
+                    </Label>
                     <Textarea
                       rows={2}
                       value={form.summary_ar ?? ""}
@@ -471,9 +639,11 @@ export function InitiativesManager({
                       className="bg-background text-xs resize-none"
                     />
                   </div>
-                  
+
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "تفاصيل إضافية (AR)" : "Full Description (AR)"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "تفاصيل إضافية (AR)" : "Full Description (AR)"}
+                    </Label>
                     <Textarea
                       rows={4}
                       value={form.body_ar ?? ""}
@@ -485,11 +655,18 @@ export function InitiativesManager({
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">{isAr ? "الحالة والترتيب" : "Status & Ordering"}</h4>
+                <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">
+                  {isAr ? "الحالة والترتيب" : "Status & Ordering"}
+                </h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "حالة التنفيذ *" : "Status *"}</Label>
-                    <Select value={form.status} onValueChange={(value) => setForm({ ...form, status: value as any })}>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "حالة التنفيذ *" : "Status *"}
+                    </Label>
+                    <Select
+                      value={form.status}
+                      onValueChange={(value) => setForm({ ...form, status: value as any })}
+                    >
                       <SelectTrigger className="h-10 text-xs bg-background">
                         <SelectValue />
                       </SelectTrigger>
@@ -501,11 +678,15 @@ export function InitiativesManager({
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-bold">{isAr ? "ترتيب الظهور" : "Sort Order"}</Label>
+                    <Label className="text-xs font-bold">
+                      {isAr ? "ترتيب الظهور" : "Sort Order"}
+                    </Label>
                     <Input
                       type="number"
                       value={form.sort_order}
-                      onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
+                      onChange={(e) =>
+                        setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })
+                      }
                       className="bg-background font-mono"
                     />
                   </div>
@@ -515,12 +696,28 @@ export function InitiativesManager({
           </div>
 
           <div className="px-6 py-4 border-t border-border bg-muted/10 flex items-center justify-between gap-3">
-            <Button type="button" variant="outline" className="w-1/3 h-11 rounded-xl font-bold" onClick={() => setFormOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-1/3 h-11 rounded-xl font-bold"
+              onClick={() => setFormOpen(false)}
+            >
               {isAr ? "إلغاء" : "Cancel"}
             </Button>
-            <Button type="submit" form="initiative-form" disabled={loading} className="w-2/3 h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md">
+            <Button
+              type="submit"
+              form="initiative-form"
+              disabled={loading}
+              className="w-2/3 h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md"
+            >
               {loading ? <Loader2 className="w-4 h-4 animate-spin me-2" /> : null}
-              {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ المبادرة" : "Save Initiative"}
+              {loading
+                ? isAr
+                  ? "جاري الحفظ..."
+                  : "Saving..."
+                : isAr
+                  ? "حفظ المبادرة"
+                  : "Save Initiative"}
             </Button>
           </div>
         </SheetContent>
@@ -553,8 +750,13 @@ export function InitiativesManager({
                 <TableBody>
                   {initRegistrations.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center text-muted-foreground text-xs">
-                        {isAr ? "لم يبدِ أحد رغبته بالمشاركة بعد" : "No one has expressed interest yet"}
+                      <TableCell
+                        colSpan={5}
+                        className="h-24 text-center text-muted-foreground text-xs"
+                      >
+                        {isAr
+                          ? "لم يبدِ أحد رغبته بالمشاركة بعد"
+                          : "No one has expressed interest yet"}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -583,9 +785,15 @@ export function InitiativesManager({
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="new">{isAr ? "جديد" : "New"}</SelectItem>
-                              <SelectItem value="contacted">{isAr ? "تم التواصل" : "Contacted"}</SelectItem>
-                              <SelectItem value="confirmed">{isAr ? "منضم" : "Confirmed"}</SelectItem>
-                              <SelectItem value="declined">{isAr ? "اعتذر" : "Declined"}</SelectItem>
+                              <SelectItem value="contacted">
+                                {isAr ? "تم التواصل" : "Contacted"}
+                              </SelectItem>
+                              <SelectItem value="confirmed">
+                                {isAr ? "منضم" : "Confirmed"}
+                              </SelectItem>
+                              <SelectItem value="declined">
+                                {isAr ? "اعتذر" : "Declined"}
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
@@ -597,7 +805,9 @@ export function InitiativesManager({
                             onClick={async () => {
                               if (
                                 !(await confirm({
-                                  title: isAr ? `حذف تسجيل "${r.name}"؟` : `Delete ${r.name}'s registration?`,
+                                  title: isAr
+                                    ? `حذف تسجيل "${r.name}"؟`
+                                    : `Delete ${r.name}'s registration?`,
                                   description: isAr
                                     ? "سيتم حذف هذا التسجيل نهائيًا ولا يمكن التراجع عن هذا الإجراء."
                                     : "This registration will be permanently removed. This can't be undone.",
@@ -622,7 +832,12 @@ export function InitiativesManager({
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" size="sm" onClick={() => setRegistrationsModalOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setRegistrationsModalOpen(false)}
+              >
                 {isAr ? "إغلاق" : "Close"}
               </Button>
             </DialogFooter>

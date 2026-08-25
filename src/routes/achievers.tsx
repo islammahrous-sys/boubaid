@@ -54,16 +54,24 @@ export const Route = createFileRoute("/achievers")({
   head: () => ({
     meta: [
       { title: "سجل المتميزين | آل بوعبيد" },
-      { name: "description", content: "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة." },
+      {
+        name: "description",
+        content:
+          "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة.",
+      },
       { property: "og:title", content: "سجل المتميزين — آل بوعبيد" },
-      { property: "og:description", content: "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة." },
+      {
+        property: "og:description",
+        content:
+          "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة.",
+      },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/achievers") },
     ],
     links: [{ rel: "canonical", href: getCanonicalUrl("/achievers") }],
   }),
   component: AchieversPage,
-  });
+});
 
 const copy = {
   eyebrow: { ar: "سجل التميز", en: "Roll of honour" } as BiText,
@@ -79,8 +87,14 @@ const copy = {
   metaUpdatedValue: { ar: "١٤٤٧ هـ", en: "1447 AH" } as BiText,
 
   filterLabel: { ar: "تصفية حسب المجال", en: "Filter by field" } as BiText,
-  searchPlaceholder: { ar: "ابحث بالاسم، المجال، أو الفرع…", en: "Search by name, field, or branch…" } as BiText,
-  empty: { ar: "لا توجد قيود مطابقة لبحثك في هذا المجال.", en: "No matching entries found for your search." } as BiText,
+  searchPlaceholder: {
+    ar: "ابحث بالاسم، المجال، أو الفرع…",
+    en: "Search by name, field, or branch…",
+  } as BiText,
+  empty: {
+    ar: "لا توجد قيود مطابقة لبحثك في هذا المجال.",
+    en: "No matching entries found for your search.",
+  } as BiText,
 
   colName: { ar: "الاسم", en: "Name" } as BiText,
   colField: { ar: "المجال", en: "Field" } as BiText,
@@ -165,7 +179,13 @@ function AchieversPage() {
 
   const handleNominationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.nominee_name || !formData.field || !formData.achievement_summary || !formData.nominator_name || !formData.nominator_phone) {
+    if (
+      !formData.nominee_name ||
+      !formData.field ||
+      !formData.achievement_summary ||
+      !formData.nominator_name ||
+      !formData.nominator_phone
+    ) {
       toast.error(rtl ? "يرجى تعبئة الحقول المطلوبة" : "Please fill in required fields");
       return;
     }
@@ -175,9 +195,13 @@ function AchieversPage() {
       const res = await sendNomination({ data: formData });
       if (res.ok) {
         setSubmittedSuccess(true);
-        toast.success(rtl ? "تم إرسال الترشيح بنجاح إلى أمانة المجلس" : "Nomination submitted successfully");
+        toast.success(
+          rtl ? "تم إرسال الترشيح بنجاح إلى أمانة المجلس" : "Nomination submitted successfully",
+        );
       } else {
-        toast.error(rtl ? "تعذر إرسال الترشيح، يرجى المحاولة لاحقاً" : "Failed to submit nomination");
+        toast.error(
+          rtl ? "تعذر إرسال الترشيح، يرجى المحاولة لاحقاً" : "Failed to submit nomination",
+        );
       }
     } catch {
       toast.error(rtl ? "حدث خطأ أثناء الإرسال" : "An error occurred");
@@ -512,7 +536,9 @@ function AchieversPage() {
                     required
                     value={formData.nominee_name}
                     onChange={(e) => setFormData({ ...formData, nominee_name: e.target.value })}
-                    placeholder={rtl ? "د. محمد بن أحمد آل بوعبيد" : "e.g. Dr. Mohammed Al Bu Obaid"}
+                    placeholder={
+                      rtl ? "د. محمد بن أحمد آل بوعبيد" : "e.g. Dr. Mohammed Al Bu Obaid"
+                    }
                     className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                   />
                 </div>
@@ -526,7 +552,9 @@ function AchieversPage() {
                     onChange={(e) => setFormData({ ...formData, branch_slug: e.target.value })}
                     className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                   >
-                    <option value="">{rtl ? "-- اختر الفرع (اختياري) --" : "-- Select Branch (Optional) --"}</option>
+                    <option value="">
+                      {rtl ? "-- اختر الفرع (اختياري) --" : "-- Select Branch (Optional) --"}
+                    </option>
                     {branches.map((b) => (
                       <option key={b.id} value={b.id}>
                         {t(b.name)}
@@ -553,8 +581,12 @@ function AchieversPage() {
                   >
                     <option value="academic">{rtl ? "أكاديمي وتعليمي" : "Academic"}</option>
                     <option value="medical">{rtl ? "طب وصحة" : "Medical & Health"}</option>
-                    <option value="military">{rtl ? "خدمة عسكرية ووطنية" : "Military & Defense"}</option>
-                    <option value="business">{rtl ? "أعمال وابتكار وتقنية" : "Business & Tech"}</option>
+                    <option value="military">
+                      {rtl ? "خدمة عسكرية ووطنية" : "Military & Defense"}
+                    </option>
+                    <option value="business">
+                      {rtl ? "أعمال وابتكار وتقنية" : "Business & Tech"}
+                    </option>
                     <option value="sports">{rtl ? "رياضة وبطولات" : "Sports"}</option>
                     <option value="other">{rtl ? "مجال آخر" : "Other Field"}</option>
                   </select>
@@ -569,7 +601,9 @@ function AchieversPage() {
                     required
                     value={formData.field}
                     onChange={(e) => setFormData({ ...formData, field: e.target.value })}
-                    placeholder={rtl ? "استشاري جراحة قلب / بروفيسور" : "e.g. Consultant Surgeon / Professor"}
+                    placeholder={
+                      rtl ? "استشاري جراحة قلب / بروفيسور" : "e.g. Consultant Surgeon / Professor"
+                    }
                     className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                   />
                 </div>
@@ -583,15 +617,23 @@ function AchieversPage() {
                   rows={3}
                   required
                   value={formData.achievement_summary}
-                  onChange={(e) => setFormData({ ...formData, achievement_summary: e.target.value })}
-                  placeholder={rtl ? "اذكر تفاصيل الإنجاز، الشهادات، براءات الاختراع، أو التكريمات الرسمية…" : "Provide details of the achievement, degree, award or distinction…"}
+                  onChange={(e) =>
+                    setFormData({ ...formData, achievement_summary: e.target.value })
+                  }
+                  placeholder={
+                    rtl
+                      ? "اذكر تفاصيل الإنجاز، الشهادات، براءات الاختراع، أو التكريمات الرسمية…"
+                      : "Provide details of the achievement, degree, award or distinction…"
+                  }
                   className="w-full rounded-md border border-border bg-background p-3 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground">
-                  {rtl ? "رابط إثبات أو سيرة ذاتية (اختياري)" : "Evidence Link / Portfolio (Optional)"}
+                  {rtl
+                    ? "رابط إثبات أو سيرة ذاتية (اختياري)"
+                    : "Evidence Link / Portfolio (Optional)"}
                 </label>
                 <input
                   type="url"
@@ -642,15 +684,15 @@ function AchieversPage() {
                 >
                   {rtl ? "إلغاء" : "Cancel"}
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="text-xs font-bold gap-1.5"
-                >
+                <Button type="submit" disabled={isSubmitting} className="text-xs font-bold gap-1.5">
                   <Send className="w-3.5 h-3.5" />
                   {isSubmitting
-                    ? (rtl ? "جاري الإرسال…" : "Submitting…")
-                    : (rtl ? "إرسال الترشيح" : "Submit Nomination")}
+                    ? rtl
+                      ? "جاري الإرسال…"
+                      : "Submitting…"
+                    : rtl
+                      ? "إرسال الترشيح"
+                      : "Submit Nomination"}
                 </Button>
               </div>
             </form>
@@ -680,4 +722,3 @@ function AchieversPage() {
     </>
   );
 }
-

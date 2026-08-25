@@ -1,10 +1,23 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { Plus, Edit2, MapPin } from "lucide-react";
 import type { PlaceInput } from "@/lib/admin-hub.schemas";
@@ -131,7 +144,9 @@ export function PlacesManager({
               places.map((p) => (
                 <TableRow key={p.id} className="text-xs hover:bg-muted/30">
                   <TableCell className="font-semibold text-foreground">{p.name_ar}</TableCell>
-                  <TableCell>{p.city ? `${p.city} - ${p.region || ""}` : p.region || "—"}</TableCell>
+                  <TableCell>
+                    {p.city ? `${p.city} - ${p.region || ""}` : p.region || "—"}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">{p.address || "—"}</TableCell>
                   <TableCell className="text-end">
                     <Button
@@ -154,12 +169,20 @@ export function PlacesManager({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold">
-              {selectedPlace ? (isAr ? "تعديل موقع" : "Edit Place") : isAr ? "إضافة موقع جديد" : "Add Place"}
+              {selectedPlace
+                ? isAr
+                  ? "تعديل موقع"
+                  : "Edit Place"
+                : isAr
+                  ? "إضافة موقع جديد"
+                  : "Add Place"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
             <div className="space-y-1">
-              <Label className="text-xs">{isAr ? "اسم المكان بالعربية *" : "Place Name (AR) *"}</Label>
+              <Label className="text-xs">
+                {isAr ? "اسم المكان بالعربية *" : "Place Name (AR) *"}
+              </Label>
               <Input
                 required
                 value={form.name_ar}

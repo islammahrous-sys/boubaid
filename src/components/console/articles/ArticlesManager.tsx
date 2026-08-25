@@ -1,15 +1,34 @@
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
 import {
@@ -38,6 +57,31 @@ import type { ArticleInput, BulkArticlesActionInput } from "@/lib/admin-hub.sche
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import { useConfirm } from "@/hooks/useConfirm";
+
+/**
+ * `articles.slug` is validated server-side against /^[a-z0-9-]+$/i
+ * (articleInputSchema in admin-hub.schemas.ts) and is the public URL segment.
+ * The previous auto-slug kept Arabic letters (`[^\wء-ي\s-]`), so an
+ * Arabic title produced a slug the server rejected outright — "type an Arabic
+ * title, press Save" failed every time with a raw Zod message. Keep only
+ * URL-safe ASCII; an all-Arabic title yields "" and the editor is asked for a
+ * slug explicitly instead of being handed an invalid one.
+ */
+export function toArticleSlug(input: string): string {
+  return toArticleSlugDraft(input).replace(/^-+|-+$/g, "");
+}
+
+/**
+ * While-typing variant: same character filtering, but leading/trailing dashes
+ * are kept so an editor can actually type "annual-" on the way to
+ * "annual-gala". `toArticleSlug` does the final trim on submit.
+ */
+export function toArticleSlugDraft(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .slice(0, 120);
+}
 
 export type ArticleRow = {
   id: string;
@@ -87,6 +131,7 @@ export function ArticlesManager({
   const [bulkLoading, setBulkLoading] = useState(false);
 
   // Dialogs
+  const [editorTab, setEditorTab] = useState("arabic");
   const [formOpen, setFormOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<ArticleRow | null>(null);
   const [previewArticle, setPreviewArticle] = useState<ArticleRow | null>(null);
@@ -192,16 +237,56 @@ export function ArticlesManager({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title_ar.trim() || !form.slug.trim()) return;
+
+    // The Slug/Status fields live on the "publishing" tab, which Radix
+    // unmounts while another tab is active — so the browser's `required`
+    // validation never fires for them and the old `return` here failed
+    // silently. Validate explicitly and send the editor to the offending tab.
+    if (!form.title_ar.trim()) {
+      setEditorTab("arabic");
+      toast.error(isAr ? "عنوان المقال بالعربية مطلوب" : "The Arabic title is required");
+      return;
+    }
+    const slug = toArticleSlug(form.slug);
+    if (!slug) {
+      setEditorTab("publishing");
+      toast.error(
+        isAr
+          ? "أدخل معرّفاً للرابط (Slug) بأحرف إنجليزية صغيرة وأرقام وشرطات فقط."
+          : "Enter a URL slug using lowercase Latin letters, numbers and dashes only.",
+      );
+      return;
+    }
+
     try {
       setLoading(true);
-      await onSaveArticle(form);
+      await onSaveArticle({ ...form, slug });
       setFormOpen(false);
       toast.success(isAr ? "تم حفظ المقال بنجاح" : "Article saved successfully");
     } catch (err: any) {
       toast.error(err.message || (isAr ? "فشل حفظ المقال" : "Failed to save"));
     } finally {
       setLoading(false);
+    }
+  };
+
+  /**
+   * The three bulk buttons previously used `try { … } finally { … }` with no
+   * `catch`: a rejected bulk call skipped the success toast and surfaced as an
+   * unhandled promise rejection, so a failed bulk publish/delete looked
+   * identical to one that silently did nothing.
+   */
+  const runBulk = async (action: BulkArticlesActionInput["action"], successMessage: string) => {
+    if (!onBulkAction) return;
+    setBulkLoading(true);
+    try {
+      await onBulkAction({ ids: selectedIds, action });
+      setSelectedIds([]);
+      toast.success(successMessage);
+    } catch (err: any) {
+      toast.error(err?.message || (isAr ? "فشل تنفيذ الإجراء الجماعي" : "Bulk action failed"));
+    } finally {
+      setBulkLoading(false);
     }
   };
 
@@ -235,7 +320,9 @@ export function ArticlesManager({
           <span className="text-[11px] text-muted-foreground block font-medium">
             {isAr ? "إجمالي المقالات" : "Total Articles"}
           </span>
-          <span className="text-xl font-bold font-mono text-foreground mt-0.5 block">{stats.total}</span>
+          <span className="text-xl font-bold font-mono text-foreground mt-0.5 block">
+            {stats.total}
+          </span>
         </div>
         <div className="p-3.5 rounded-2xl border border-emerald-500/20 bg-emerald-500/5">
           <span className="text-[11px] text-emerald-600 dark:text-emerald-400 block font-medium">
@@ -269,11 +356,37 @@ export function ArticlesManager({
         <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/40">
           {[
             { id: "all", label_ar: "جميع المقالات", label_en: "All", count: stats.total },
-            { id: "published", label_ar: "المنشورة والمتاحة", label_en: "Published", count: stats.published },
-            { id: "draft", label_ar: "المسودات", label_en: "Drafts", count: stats.drafts, isAlert: true },
-            { id: "in_review", label_ar: "قيد المراجعة", label_en: "In Review", count: articles.filter((a) => a.status === "in_review").length },
-            { id: "scheduled", label_ar: "مجدولة للنشر", label_en: "Scheduled", count: articles.filter((a) => a.status === "scheduled").length },
-            { id: "archived", label_ar: "المؤرشفة", label_en: "Archived", count: articles.filter((a) => a.status === "archived").length },
+            {
+              id: "published",
+              label_ar: "المنشورة والمتاحة",
+              label_en: "Published",
+              count: stats.published,
+            },
+            {
+              id: "draft",
+              label_ar: "المسودات",
+              label_en: "Drafts",
+              count: stats.drafts,
+              isAlert: true,
+            },
+            {
+              id: "in_review",
+              label_ar: "قيد المراجعة",
+              label_en: "In Review",
+              count: articles.filter((a) => a.status === "in_review").length,
+            },
+            {
+              id: "scheduled",
+              label_ar: "مجدولة للنشر",
+              label_en: "Scheduled",
+              count: articles.filter((a) => a.status === "scheduled").length,
+            },
+            {
+              id: "archived",
+              label_ar: "المؤرشفة",
+              label_en: "Archived",
+              count: articles.filter((a) => a.status === "archived").length,
+            },
           ].map((tab) => (
             <Button
               key={tab.id}
@@ -281,7 +394,10 @@ export function ArticlesManager({
               size="sm"
               className={cn(
                 "h-8 text-xs gap-1.5 rounded-lg font-medium",
-                statusFilter !== tab.id && tab.isAlert && tab.count > 0 && "border-amber-500/40 text-amber-600 bg-amber-500/5 hover:bg-amber-500/10"
+                statusFilter !== tab.id &&
+                  tab.isAlert &&
+                  tab.count > 0 &&
+                  "border-amber-500/40 text-amber-600 bg-amber-500/5 hover:bg-amber-500/10",
               )}
               onClick={() => {
                 setStatusFilter(tab.id);
@@ -291,7 +407,10 @@ export function ArticlesManager({
               <span>{isAr ? tab.label_ar : tab.label_en}</span>
               <Badge
                 variant={statusFilter === tab.id ? "secondary" : "outline"}
-                className={cn("h-4 px-1.5 text-[9px] font-mono", tab.isAlert && tab.count > 0 && "bg-amber-500 text-white font-bold")}
+                className={cn(
+                  "h-4 px-1.5 text-[9px] font-mono",
+                  tab.isAlert && tab.count > 0 && "bg-amber-500 text-white font-bold",
+                )}
               >
                 {tab.count}
               </Badge>
@@ -308,19 +427,24 @@ export function ArticlesManager({
                 setSearch(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder={isAr ? "بحث في عناوين المقالات، المقتطفات، والمعرف..." : "Search articles..."}
+              placeholder={
+                isAr ? "بحث في عناوين المقالات، المقتطفات، والمعرف..." : "Search articles..."
+              }
               className="ps-9 h-9 text-xs rounded-xl"
             />
           </div>
 
-          <Button size="sm" onClick={handleOpenAdd} className="h-9 text-xs gap-1.5 font-bold rounded-xl bg-primary text-primary-foreground">
+          <Button
+            size="sm"
+            onClick={handleOpenAdd}
+            className="h-9 text-xs gap-1.5 font-bold rounded-xl bg-primary text-primary-foreground"
+          >
             <Plus className="w-4 h-4" />
             <span>{isAr ? "كتابة مقال جديد" : "New Article"}</span>
           </Button>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/40">
-
           <Select
             value={categoryFilter}
             onValueChange={(val) => {
@@ -358,7 +482,10 @@ export function ArticlesManager({
             </SelectContent>
           </Select>
 
-          {(search || statusFilter !== "all" || categoryFilter !== "all" || featuredFilter !== "all") && (
+          {(search ||
+            statusFilter !== "all" ||
+            categoryFilter !== "all" ||
+            featuredFilter !== "all") && (
             <Button
               variant="ghost"
               size="sm"
@@ -377,7 +504,9 @@ export function ArticlesManager({
           )}
 
           <div className="ms-auto text-xs text-muted-foreground font-mono">
-            {isAr ? `النتائج: ${filteredArticles.length} من أصل ${articles.length}` : `${filteredArticles.length} of ${articles.length}`}
+            {isAr
+              ? `النتائج: ${filteredArticles.length} من أصل ${articles.length}`
+              : `${filteredArticles.length} of ${articles.length}`}
           </div>
         </div>
       </div>
@@ -388,7 +517,9 @@ export function ArticlesManager({
           <div className="flex items-center gap-2">
             <CheckSquare className="w-4 h-4 text-primary" />
             <span className="text-xs font-bold text-foreground">
-              {isAr ? `تم تحديد ${selectedIds.length} مقال` : `${selectedIds.length} articles selected`}
+              {isAr
+                ? `تم تحديد ${selectedIds.length} مقال`
+                : `${selectedIds.length} articles selected`}
             </span>
           </div>
 
@@ -398,16 +529,9 @@ export function ArticlesManager({
               variant="outline"
               className="h-8 text-xs rounded-lg"
               disabled={bulkLoading}
-              onClick={async () => {
-                setBulkLoading(true);
-                try {
-                  await onBulkAction({ ids: selectedIds, action: "published" });
-                  setSelectedIds([]);
-                  toast.success(isAr ? "تم نشر المقالات المحددة" : "Articles published");
-                } finally {
-                  setBulkLoading(false);
-                }
-              }}
+              onClick={() =>
+                runBulk("published", isAr ? "تم نشر المقالات المحددة" : "Articles published")
+              }
             >
               {bulkLoading && <Loader2 className="w-3.5 h-3.5 me-1 animate-spin" />}
               {isAr ? "نشر المحدد" : "Publish Selected"}
@@ -418,16 +542,9 @@ export function ArticlesManager({
               variant="outline"
               className="h-8 text-xs rounded-lg"
               disabled={bulkLoading}
-              onClick={async () => {
-                setBulkLoading(true);
-                try {
-                  await onBulkAction({ ids: selectedIds, action: "draft" });
-                  setSelectedIds([]);
-                  toast.success(isAr ? "تم تحويل المحدد إلى مسودات" : "Articles set to draft");
-                } finally {
-                  setBulkLoading(false);
-                }
-              }}
+              onClick={() =>
+                runBulk("draft", isAr ? "تم تحويل المحدد إلى مسودات" : "Articles set to draft")
+              }
             >
               {bulkLoading && <Loader2 className="w-3.5 h-3.5 me-1 animate-spin" />}
               {isAr ? "تحويل لمسودة" : "Draft Selected"}
@@ -444,20 +561,17 @@ export function ArticlesManager({
                   title: isAr
                     ? `حذف ${count} ${count === 1 ? "مقال" : "مقالات"}؟`
                     : `Delete ${count} article${count === 1 ? "" : "s"}?`,
+                  // bulkArticlesAction("delete") sets `deleted_at` rather than
+                  // dropping the row, so the old "permanently deleted" copy
+                  // overstated it: the article leaves this console and the
+                  // public site, but the record survives in the database.
                   description: isAr
-                    ? "سيتم حذف المقالات المحددة نهائياً ولن يكون بالإمكان استرجاعها."
-                    : "The selected articles will be permanently deleted. This can't be undone.",
+                    ? "سيتم سحب المقالات المحددة من الموقع ومن هذه القائمة. يبقى السجل محفوظاً في قاعدة البيانات ويمكن للأمانة استرجاعه."
+                    : "The selected articles will be removed from the site and from this list. The records stay in the database and the secretariat can restore them.",
                   tone: "destructive",
                 });
                 if (!ok) return;
-                setBulkLoading(true);
-                try {
-                  await onBulkAction({ ids: selectedIds, action: "delete" });
-                  setSelectedIds([]);
-                  toast.success(isAr ? "تم حذف المقالات" : "Articles deleted");
-                } finally {
-                  setBulkLoading(false);
-                }
+                await runBulk("delete", isAr ? "تم حذف المقالات" : "Articles deleted");
               }}
             >
               {bulkLoading ? (
@@ -494,7 +608,9 @@ export function ArticlesManager({
                   }
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      const newIds = Array.from(new Set([...selectedIds, ...paginatedArticles.map((a) => a.id)]));
+                      const newIds = Array.from(
+                        new Set([...selectedIds, ...paginatedArticles.map((a) => a.id)]),
+                      );
                       setSelectedIds(newIds);
                     } else {
                       const pageIds = paginatedArticles.map((a) => a.id);
@@ -541,7 +657,9 @@ export function ArticlesManager({
                       className="text-muted-foreground/50 hover:text-amber-500 transition-colors p-1"
                       title={isAr ? "تبديل التمييز" : "Toggle Featured"}
                     >
-                      <Star className={`w-4 h-4 ${a.is_featured ? "text-amber-500 fill-amber-500" : ""}`} />
+                      <Star
+                        className={`w-4 h-4 ${a.is_featured ? "text-amber-500 fill-amber-500" : ""}`}
+                      />
                     </button>
                   </TableCell>
 
@@ -549,7 +667,11 @@ export function ArticlesManager({
                     <div className="flex items-center gap-3">
                       {a.featured_media_path ? (
                         <div className="w-10 h-10 rounded-lg border border-border overflow-hidden shrink-0 bg-muted/30">
-                          <img src={a.featured_media_path} alt="" className="w-full h-full object-cover" />
+                          <img
+                            src={a.featured_media_path}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       ) : (
                         <div className="w-10 h-10 rounded-lg border border-dashed border-border flex items-center justify-center shrink-0 bg-muted/20 text-muted-foreground/50">
@@ -558,14 +680,19 @@ export function ArticlesManager({
                       )}
                       <div className="flex flex-col min-w-0">
                         <span className="font-bold truncate">{a.title_ar}</span>
-                        {a.title_en && <span className="text-[11px] text-muted-foreground truncate">{a.title_en}</span>}
+                        {a.title_en && (
+                          <span className="text-[11px] text-muted-foreground truncate">
+                            {a.title_en}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </TableCell>
 
                   <TableCell>
                     <Badge variant="outline" className="text-[10px] font-normal">
-                      {categories.find((c) => c.id === a.category_id)?.name_ar || (isAr ? "عام" : "General")}
+                      {categories.find((c) => c.id === a.category_id)?.name_ar ||
+                        (isAr ? "عام" : "General")}
                     </Badge>
                   </TableCell>
 
@@ -579,16 +706,17 @@ export function ArticlesManager({
                         a.status === "published"
                           ? "default"
                           : a.status === "draft"
-                          ? "secondary"
-                          : a.status === "in_review"
-                          ? "outline"
-                          : a.status === "scheduled"
-                          ? "outline"
-                          : "destructive"
+                            ? "secondary"
+                            : a.status === "in_review"
+                              ? "outline"
+                              : a.status === "scheduled"
+                                ? "outline"
+                                : "destructive"
                       }
                       className={cn(
                         "text-[10px]",
-                        a.status === "scheduled" && "border-sky-500/40 text-sky-600 bg-sky-500/10 dark:text-sky-400"
+                        a.status === "scheduled" &&
+                          "border-sky-500/40 text-sky-600 bg-sky-500/10 dark:text-sky-400",
                       )}
                     >
                       {a.status}
@@ -620,9 +748,15 @@ export function ArticlesManager({
                                 status: "published",
                                 is_featured: a.is_featured,
                               });
-                              toast.success(isAr ? "تم نشر المقال بنجاح وإتاحته للعموم" : "Article published successfully");
+                              toast.success(
+                                isAr
+                                  ? "تم نشر المقال بنجاح وإتاحته للعموم"
+                                  : "Article published successfully",
+                              );
                             } catch (err: any) {
-                              toast.error(err.message || (isAr ? "فشل النشر" : "Failed to publish"));
+                              toast.error(
+                                err.message || (isAr ? "فشل النشر" : "Failed to publish"),
+                              );
                             } finally {
                               setPublishingId(null);
                             }
@@ -745,27 +879,47 @@ export function ArticlesManager({
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center justify-between">
-              <span>{selectedArticle ? (isAr ? "تعديل مقال" : "Edit Article") : isAr ? "كتابة مقال جديد" : "Write Article"}</span>
+              <span>
+                {selectedArticle
+                  ? isAr
+                    ? "تعديل مقال"
+                    : "Edit Article"
+                  : isAr
+                    ? "كتابة مقال جديد"
+                    : "Write Article"}
+              </span>
               <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
                 <Clock className="w-3.5 h-3.5" />
-                <span>{readingStats.minutes} {isAr ? "دقيقة قراءة" : "min read"}</span>
-                <span>({readingStats.words} {isAr ? "كلمة" : "words"})</span>
+                <span>
+                  {readingStats.minutes} {isAr ? "دقيقة قراءة" : "min read"}
+                </span>
+                <span>
+                  ({readingStats.words} {isAr ? "كلمة" : "words"})
+                </span>
               </div>
             </DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-            <Tabs defaultValue="arabic" className="w-full">
+            <Tabs value={editorTab} onValueChange={setEditorTab} className="w-full">
               <TabsList className="grid grid-cols-3 w-full mb-4">
-                <TabsTrigger value="arabic" className="text-xs">{isAr ? "المحتوى بالعربية" : "Arabic Content"}</TabsTrigger>
-                <TabsTrigger value="english" className="text-xs">{isAr ? "English Content" : "English Content"}</TabsTrigger>
-                <TabsTrigger value="publishing" className="text-xs">{isAr ? "الوسائط والنشر والـ SEO" : "Media & SEO"}</TabsTrigger>
+                <TabsTrigger value="arabic" className="text-xs">
+                  {isAr ? "المحتوى بالعربية" : "Arabic Content"}
+                </TabsTrigger>
+                <TabsTrigger value="english" className="text-xs">
+                  {isAr ? "English Content" : "English Content"}
+                </TabsTrigger>
+                <TabsTrigger value="publishing" className="text-xs">
+                  {isAr ? "الوسائط والنشر والـ SEO" : "Media & SEO"}
+                </TabsTrigger>
               </TabsList>
 
               {/* Arabic Content */}
               <TabsContent value="arabic" className="space-y-3.5">
                 <div className="space-y-1">
-                  <Label className="text-xs">{isAr ? "عنوان المقال بالعربية *" : "Title (AR) *"}</Label>
+                  <Label className="text-xs">
+                    {isAr ? "عنوان المقال بالعربية *" : "Title (AR) *"}
+                  </Label>
                   <Input
                     required
                     value={form.title_ar}
@@ -774,7 +928,10 @@ export function ArticlesManager({
                       setForm((prev) => ({
                         ...prev,
                         title_ar: title,
-                        slug: prev.slug || title.toLowerCase().replace(/[^\w\u0621-\u064A\s-]/g, "").replace(/\s+/g, "-"),
+                        // Only auto-fills while the slug is still empty; an
+                        // Arabic-only title yields "" so the editor is asked
+                        // for a real URL slug rather than handed an invalid one.
+                        slug: prev.slug || toArticleSlug(title),
                       }));
                     }}
                     placeholder="مثال: اختتام فعاليات الملتقى السنوي لأسرة آل بوعبيد"
@@ -782,7 +939,9 @@ export function ArticlesManager({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">{isAr ? "المقتطف التمهيدي (AR)" : "Excerpt (AR)"}</Label>
+                  <Label className="text-xs">
+                    {isAr ? "المقتطف التمهيدي (AR)" : "Excerpt (AR)"}
+                  </Label>
                   <Textarea
                     rows={2}
                     value={form.excerpt_ar ?? ""}
@@ -792,7 +951,9 @@ export function ArticlesManager({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">{isAr ? "المحتوى الكامل للمقال (AR) *" : "Full Article Content (AR) *"}</Label>
+                  <Label className="text-xs">
+                    {isAr ? "المحتوى الكامل للمقال (AR) *" : "Full Article Content (AR) *"}
+                  </Label>
                   <Textarea
                     required
                     rows={8}
@@ -809,7 +970,17 @@ export function ArticlesManager({
                   <Label className="text-xs">{isAr ? "العنوان بالإنجليزية" : "Title (EN)"}</Label>
                   <Input
                     value={form.title_en ?? ""}
-                    onChange={(e) => setForm({ ...form, title_en: e.target.value })}
+                    onChange={(e) => {
+                      const titleEn = e.target.value;
+                      // An Arabic-only AR title can't produce a URL slug, so
+                      // the English title is the next-best source while the
+                      // slug is still empty.
+                      setForm((prev) => ({
+                        ...prev,
+                        title_en: titleEn,
+                        slug: prev.slug || toArticleSlug(titleEn),
+                      }));
+                    }}
                     placeholder="e.g. Annual Family Council Gathering 2026 Concludes"
                   />
                 </div>
@@ -825,7 +996,9 @@ export function ArticlesManager({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">{isAr ? "المحتوى الكامل (EN)" : "Full Content (EN)"}</Label>
+                  <Label className="text-xs">
+                    {isAr ? "المحتوى الكامل (EN)" : "Full Content (EN)"}
+                  </Label>
                   <Textarea
                     rows={8}
                     value={form.content_en ?? ""}
@@ -839,19 +1012,33 @@ export function ArticlesManager({
               <TabsContent value="publishing" className="space-y-3.5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">{isAr ? "المعرف الفريد للرابط (Slug) *" : "Slug *"}</Label>
+                    <Label className="text-xs">
+                      {isAr ? "المعرف الفريد للرابط (Slug) *" : "Slug *"}
+                    </Label>
                     <Input
                       required
+                      dir="ltr"
                       value={form.slug}
-                      onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, slug: toArticleSlugDraft(e.target.value) })
+                      }
+                      placeholder="annual-honours-gala-1447"
+                      className="font-mono"
                     />
+                    <p className="text-[11px] text-muted-foreground">
+                      {isAr
+                        ? "يظهر في رابط المقال: /news/… — أحرف إنجليزية صغيرة وأرقام وشرطات فقط."
+                        : "Used in the article URL (/news/…) — lowercase Latin letters, numbers and dashes only."}
+                    </p>
                   </div>
 
                   <div className="space-y-1">
                     <Label className="text-xs">{isAr ? "التصنيف" : "Category"}</Label>
                     <Select
                       value={form.category_id ?? "none"}
-                      onValueChange={(val) => setForm({ ...form, category_id: val === "none" ? null : val })}
+                      onValueChange={(val) =>
+                        setForm({ ...form, category_id: val === "none" ? null : val })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder={isAr ? "اختر التصنيف" : "Select category"} />
@@ -871,36 +1058,66 @@ export function ArticlesManager({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">{isAr ? "حالة النشر" : "Status"}</Label>
-                    <Select value={form.status} onValueChange={(val: any) => setForm({ ...form, status: val })}>
+                    <Select
+                      value={form.status}
+                      onValueChange={(val: any) => setForm({ ...form, status: val })}
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="published">{isAr ? "منشور (Published)" : "Published"}</SelectItem>
+                        <SelectItem value="published">
+                          {isAr ? "منشور (Published)" : "Published"}
+                        </SelectItem>
                         <SelectItem value="draft">{isAr ? "مسودة (Draft)" : "Draft"}</SelectItem>
-                        <SelectItem value="in_review">{isAr ? "قيد المراجعة" : "In Review"}</SelectItem>
-                        <SelectItem value="scheduled">{isAr ? "مجدول للنشر" : "Scheduled"}</SelectItem>
+                        <SelectItem value="in_review">
+                          {isAr ? "قيد المراجعة" : "In Review"}
+                        </SelectItem>
+                        <SelectItem value="scheduled">
+                          {isAr ? "مجدول للنشر" : "Scheduled"}
+                        </SelectItem>
                         <SelectItem value="archived">{isAr ? "مؤرشف" : "Archived"}</SelectItem>
                       </SelectContent>
                     </Select>
+                    {form.status === "scheduled" && (
+                      <p className="text-[11px] text-amber-600 dark:text-amber-400 leading-relaxed">
+                        {isAr
+                          ? "تنبيه: لا يوجد نشر تلقائي في الوقت الحالي — المقال المجدول يبقى مخفياً عن الزوار حتى يُنشر يدوياً من زر «نشر»."
+                          : "Note: automatic publishing isn't wired up yet — a scheduled article stays hidden from visitors until someone publishes it manually with the Publish button."}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1 sm:col-span-2">
-                    <Label className="text-xs font-semibold">{isAr ? "الصورة البارزة للمقال" : "Featured Article Cover Image"}</Label>
+                    <Label className="text-xs font-semibold">
+                      {isAr ? "الصورة البارزة للمقال" : "Featured Article Cover Image"}
+                    </Label>
                     <ImageUploadInput
                       bucket="site-media"
                       value={form.featured_media_path}
                       onChange={(url) => setForm({ ...form, featured_media_path: url })}
-                      placeholder={isAr ? "رابط الصورة أو ارفع صورة المقال..." : "Image URL or upload..."}
-                      helperText={isAr ? "الصورة التي ستظهر أعلى المقال وفي بطاقة الخبر على الموقع" : "Cover image shown in news cards and article header"}
+                      placeholder={
+                        isAr ? "رابط الصورة أو ارفع صورة المقال..." : "Image URL or upload..."
+                      }
+                      helperText={
+                        isAr
+                          ? "الصورة التي ستظهر أعلى المقال وفي بطاقة الخبر على الموقع"
+                          : "Cover image shown in news cards and article header"
+                      }
                     />
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between p-3 border border-border rounded-xl bg-muted/20">
                   <div>
-                    <p className="font-semibold text-foreground">{isAr ? "مقال مميز (Featured)" : "Featured Article"}</p>
-                    <p className="text-[11px] text-muted-foreground">{isAr ? "يظهر في الواجهة الرئيسية للأخبار" : "Showcase in homepage media rail"}</p>
+                    <p className="font-semibold text-foreground">
+                      {isAr ? "مقال مميز (Featured)" : "Featured Article"}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {isAr
+                        ? "يظهر في الواجهة الرئيسية للأخبار"
+                        : "Showcase in homepage media rail"}
+                    </p>
                   </div>
                   <Switch
                     checked={form.is_featured}
@@ -915,7 +1132,13 @@ export function ArticlesManager({
                 {isAr ? "إلغاء" : "Cancel"}
               </Button>
               <Button type="submit" size="sm" disabled={loading}>
-                {loading ? (isAr ? "جاري الحفظ..." : "Saving...") : isAr ? "حفظ المقال" : "Save Article"}
+                {loading
+                  ? isAr
+                    ? "جاري الحفظ..."
+                    : "Saving..."
+                  : isAr
+                    ? "حفظ المقال"
+                    : "Save Article"}
               </Button>
             </DialogFooter>
           </form>
@@ -927,9 +1150,7 @@ export function ArticlesManager({
         <Dialog open={!!previewArticle} onOpenChange={() => setPreviewArticle(null)}>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-base font-bold">
-                {previewArticle.title_ar}
-              </DialogTitle>
+              <DialogTitle className="text-base font-bold">{previewArticle.title_ar}</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4 text-xs pt-2">
@@ -939,11 +1160,12 @@ export function ArticlesManager({
                     previewArticle.status === "published"
                       ? "default"
                       : previewArticle.status === "scheduled"
-                      ? "outline"
-                      : "secondary"
+                        ? "outline"
+                        : "secondary"
                   }
                   className={cn(
-                    previewArticle.status === "scheduled" && "border-sky-500/40 text-sky-600 bg-sky-500/10 dark:text-sky-400"
+                    previewArticle.status === "scheduled" &&
+                      "border-sky-500/40 text-sky-600 bg-sky-500/10 dark:text-sky-400",
                   )}
                 >
                   {previewArticle.status}
