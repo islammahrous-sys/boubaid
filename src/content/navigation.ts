@@ -78,7 +78,7 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
       },
       {
         to: "/library",
-        label: { ar: "الأرشيف", en: "Archive" },
+        label: { ar: "الأرشيف والمكتبة الرقمية", en: "Archive & Digital Library" },
         short: { ar: "الأرشيف", en: "Archive" },
       },
       { to: "/news", label: { ar: "الأخبار والبيانات", en: "News & Notices" } },

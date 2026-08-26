@@ -36,6 +36,8 @@ import {
   broadcastNotificationSchema,
   dnaStudiesDataSchema,
   contributionStatusSchema,
+  galleryMediaInputSchema,
+  sortOrderUpdateSchema,
 } from "./admin-hub.schemas";
 import { z } from "zod";
 
@@ -926,6 +928,140 @@ export const upsertDocument = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
     return { ok: true, document: doc };
+  });
+
+export const deleteGallery = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, session } = context;
+    // gallery_media rows cascade with the gallery (ON DELETE CASCADE), but
+    // their media_assets rows and storage objects don't -- clean those up
+    // first so deleting a collection doesn't leave orphaned files/library
+    // entries behind. Each museum-archive upload creates a dedicated
+    // media_assets row for its one gallery_media link, so it's always safe
+    // to remove here.
+    const { data: links } = await supabase
+      .from("gallery_media")
+      .select("media_asset_id, media_assets(bucket, storage_path)")
+      .eq("gallery_id", data.id);
+
+    const { data: deleted, error } = await supabase
+      .from("galleries")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
+    if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "galleries", data.id);
+
+    const assetIds = (links ?? []).map((l: any) => l.media_asset_id).filter(Boolean);
+    if (assetIds.length > 0) {
+      const byBucket = new Map<string, string[]>();
+      for (const l of links ?? []) {
+        const asset = (l as any).media_assets;
+        if (!asset?.bucket || !asset?.storage_path) continue;
+        const arr = byBucket.get(asset.bucket) ?? [];
+        arr.push(asset.storage_path);
+        byBucket.set(asset.bucket, arr);
+      }
+      for (const [bucket, paths] of byBucket) {
+        await supabase.storage.from(bucket).remove(paths);
+      }
+      await supabase.from("media_assets").delete().in("id", assetIds);
+    }
+
+    await supabase.from("audit_logs").insert({
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
+      action: "delete",
+      entity_type: "galleries",
+      entity_id: data.id,
+    });
+
+    return { ok: true };
+  });
+
+export const upsertGalleryMedia = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => galleryMediaInputSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { data: link, error } = await supabase
+      .from("gallery_media")
+      .upsert(data as never)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return { ok: true, galleryMedia: link };
+  });
+
+export const deleteGalleryMedia = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, session } = context;
+    const { data: link } = await supabase
+      .from("gallery_media")
+      .select("gallery_id, media_asset_id, media_assets(bucket, storage_path)")
+      .eq("id", data.id)
+      .single();
+
+    const { data: deleted, error } = await supabase
+      .from("gallery_media")
+      .delete()
+      .eq("id", data.id)
+      .select("id");
+    if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, "gallery_media", data.id);
+
+    // If the gallery had this image set as its cover, clear it rather than
+    // leaving cover_media_path pointing at a deleted file.
+    if (link?.gallery_id) {
+      const asset = (link as any).media_assets;
+      if (asset?.storage_path) {
+        const { data: gallery } = await supabase
+          .from("galleries")
+          .select("id, cover_media_path")
+          .eq("id", link.gallery_id)
+          .single();
+        if (gallery?.cover_media_path?.includes(asset.storage_path)) {
+          await supabase.from("galleries").update({ cover_media_path: null }).eq("id", gallery.id);
+        }
+      }
+    }
+
+    // Same one-image-one-asset assumption as deleteGallery: safe to remove
+    // the underlying media_assets row and storage object with it.
+    if (link?.media_asset_id) {
+      const asset = (link as any).media_assets;
+      if (asset?.bucket && asset?.storage_path) {
+        await supabase.storage.from(asset.bucket).remove([asset.storage_path]);
+      }
+      await supabase.from("media_assets").delete().eq("id", link.media_asset_id);
+    }
+
+    await supabase.from("audit_logs").insert({
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
+      action: "delete",
+      entity_type: "gallery_media",
+      entity_id: data.id,
+    });
+
+    return { ok: true };
+  });
+
+export const updateSortOrder = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => sortOrderUpdateSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    // RLS re-checks private.can_edit per statement, so this is no more
+    // privileged than the equivalent one-row-at-a-time edits already allow.
+    await Promise.all(
+      data.items.map((item) =>
+        supabase.from(data.table).update({ sort_order: item.sort_order }).eq("id", item.id),
+      ),
+    );
+    return { ok: true };
   });
 
 /* =========================================================================

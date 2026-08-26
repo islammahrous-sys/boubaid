@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Download,
@@ -20,6 +20,8 @@ import {
   BookOpen,
   Landmark,
   Compass,
+  ImageOff,
+  Images,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -27,7 +29,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { EditorialButton, EditorialLink } from "@/components/site/Editorial";
 import { libraryItems as staticLibraryItems, siteMeta } from "@/content/site";
-import { getPublishedLibrary } from "@/lib/cms.functions";
+import { getPublishedLibrary, getPublishedGalleries } from "@/lib/cms.functions";
 import {
   mergeLibrary,
   type LibraryDocument,
@@ -102,9 +104,17 @@ function isPdfUrl(url: string): boolean {
 }
 
 export const Route = createFileRoute("/library")({
+  // Lets a museum collection's "back to library" link return the visitor to
+  // the museum tab specifically, instead of always landing back on Documents.
+  validateSearch: (search: Record<string, unknown>): { tab?: TabKey } => {
+    const tab = search.tab;
+    return tab === "documents" || tab === "photographs" || tab === "recordings" || tab === "museum"
+      ? { tab }
+      : {};
+  },
   loader: async () => {
-    const rows = await getPublishedLibrary();
-    return { libraryItems: mergeLibrary(rows, staticLibraryItems) };
+    const [rows, collections] = await Promise.all([getPublishedLibrary(), getPublishedGalleries()]);
+    return { libraryItems: mergeLibrary(rows, staticLibraryItems), collections };
   },
   head: () => ({
     meta: [
@@ -124,10 +134,24 @@ export const Route = createFileRoute("/library")({
     ],
     links: [{ rel: "canonical", href: getCanonicalUrl("/library") }],
   }),
-  component: LibraryPage,
+  component: LibraryRouteLayout,
 });
 
-type TabKey = "documents" | "photographs" | "recordings";
+/** `library.museum.$slug.tsx` nests under this route (file-based routing
+ *  treats "library" as a shared path prefix), so without this check
+ *  LibraryPage -- which renders unconditionally and has no <Outlet /> --
+ *  would keep showing on top of the collection detail route: the loader
+ *  and head() both run correctly, but the child's component never
+ *  actually gets composed into the tree. Mirrors InitiativesLayout in
+ *  routes/initiatives.tsx. */
+function LibraryRouteLayout() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isDetail = pathname !== "/library" && pathname !== "/library/";
+  if (isDetail) return <Outlet />;
+  return <LibraryPage />;
+}
+
+type TabKey = "documents" | "photographs" | "recordings" | "museum";
 type ViewMode = "table" | "grid";
 type SortOrder = "newest" | "oldest" | "title";
 
@@ -153,7 +177,22 @@ const copy = {
     documents: { ar: "الوثائق والمخطوطات", en: "Documents & Manuscripts" } as BiText,
     photographs: { ar: "الصور واللوحات التاريخية", en: "Photographs & Heritage Plates" } as BiText,
     recordings: { ar: "المرئيات والتسجيلات", en: "Recordings & Videos" } as BiText,
+    museum: { ar: "مجموعات المتحف المصورة", en: "Museum Photo Collections" } as BiText,
   },
+  museumEmpty: {
+    ar: "لا توجد مجموعات منشورة حاليًا. يرجى العودة لاحقًا.",
+    en: "No collections are published yet. Please check back soon.",
+  } as BiText,
+  museumNoResults: {
+    ar: "لا توجد مجموعات مطابقة لبحثك.",
+    en: "No collections match your search.",
+  } as BiText,
+  museumImageCount: { ar: "صورة", en: "images" } as BiText,
+  museumSearchPlaceholder: { ar: "ابحث عن مجموعة...", en: "Search collections..." } as BiText,
+  museumNote: {
+    ar: "أرشيف مصور من تاريخ متحف آل بوعبيد — الافتتاح، الزيارات، المقتنيات، والمناسبات، موثّقة ضمن مجموعات مستقلة.",
+    en: "A photographic record of the Al Boabid Museum's history — its opening, visits, artifacts, and occasions, organized into standalone collections.",
+  } as BiText,
 
   stats: {
     totalDocs: { ar: "وثيقة ومخطوطة تاريخية", en: "Historical Documents" } as BiText,
@@ -255,8 +294,10 @@ function DownloadControl({
 
 function LibraryPage() {
   const { t, lang } = useLang();
-  const { libraryItems } = Route.useLoaderData();
-  const [tab, setTab] = useState<TabKey>("documents");
+  const { libraryItems, collections } = Route.useLoaderData();
+  const searchParams = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const [tab, setTab] = useState<TabKey>(searchParams.tab ?? "documents");
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
   const [searchQuery, setSearchQuery] = useState("");
@@ -288,7 +329,21 @@ function LibraryPage() {
     setTab(newTab);
     setSelectedCategory(null);
     setSearchQuery("");
+    // Keeps the active tab reflected in the URL (?tab=museum) so that
+    // pressing a collection's link, then the browser Back button, lands
+    // back on this same tab instead of always resetting to Documents --
+    // `replace` so switching tabs doesn't spam separate history entries.
+    void navigate({ search: (prev) => ({ ...prev, tab: newTab }), replace: true });
   };
+
+  // Browser Back/Forward updates `searchParams.tab` without remounting this
+  // component (TanStack Router reuses it across a same-route navigation), so
+  // the useState initializer above only fires once and misses it -- without
+  // this, the URL flips back to ?tab=museum but the visible tab stays
+  // whatever it last was.
+  useEffect(() => {
+    if (searchParams.tab && searchParams.tab !== tab) setTab(searchParams.tab);
+  }, [searchParams.tab, tab]);
 
   useEffect(() => {
     setPage(1);
@@ -317,6 +372,12 @@ function LibraryPage() {
       label: copy.tabs.recordings,
       count: libraryItems.videos.length,
       icon: Video,
+    },
+    {
+      key: "museum",
+      label: copy.tabs.museum,
+      count: collections.length,
+      icon: Landmark,
     },
   ];
 
@@ -407,6 +468,17 @@ function LibraryPage() {
     return list;
   }, [libraryItems.videos, searchQuery, selectedCategory, sortOrder, t]);
 
+  const filteredCollections = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return collections;
+    return collections.filter(
+      (c) =>
+        c.title_ar.toLowerCase().includes(q) ||
+        (c.title_en && c.title_en.toLowerCase().includes(q)) ||
+        (c.description_ar && c.description_ar.toLowerCase().includes(q)),
+    );
+  }, [collections, searchQuery]);
+
   const pagedDocuments = useMemo(
     () => paginate(filteredDocuments, page, PAGE_SIZE),
     [filteredDocuments, page],
@@ -425,7 +497,9 @@ function LibraryPage() {
       ? filteredDocuments.length
       : tab === "photographs"
         ? filteredPhotos.length
-        : filteredVideos.length;
+        : tab === "museum"
+          ? filteredCollections.length
+          : filteredVideos.length;
   const totalPages = Math.max(1, Math.ceil(activeTotal / PAGE_SIZE));
 
   const handleCopyLink = (text?: string) => {
@@ -658,7 +732,10 @@ function LibraryPage() {
             })}
           </div>
 
-          {/* Search & Utility Bar */}
+          {/* Search & Utility Bar -- the search box works for every tab
+              (including Museum, filtering collections by title); sort and
+              view-mode don't apply to the Museum grid, so those stay hidden
+              there. */}
           <div className="flex flex-wrap items-center gap-3">
             {/* Search Input */}
             <div className="relative w-full sm:w-72">
@@ -670,7 +747,9 @@ function LibraryPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t(copy.searchPlaceholder)}
+                placeholder={
+                  tab === "museum" ? t(copy.museumSearchPlaceholder) : t(copy.searchPlaceholder)
+                }
                 className="w-full rounded border border-border bg-card py-2 text-xs font-sans text-foreground placeholder:text-muted-foreground outline-none transition-colors ps-9 pe-8 focus:border-bronze focus:ring-1 focus:ring-bronze dark:focus:border-gold"
               />
               {searchQuery && (
@@ -686,18 +765,20 @@ function LibraryPage() {
             </div>
 
             {/* Sort Dropdown */}
-            <div className="flex items-center gap-1.5 border border-border bg-card px-2.5 py-1.5 rounded text-xs text-muted-foreground">
-              <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value as SortOrder)}
-                className="bg-transparent text-xs font-medium text-foreground outline-none cursor-pointer"
-              >
-                <option value="newest">{t(copy.sortNewest)}</option>
-                <option value="oldest">{t(copy.sortOldest)}</option>
-                <option value="title">{t(copy.sortTitle)}</option>
-              </select>
-            </div>
+            {tab !== "museum" && (
+              <div className="flex items-center gap-1.5 border border-border bg-card px-2.5 py-1.5 rounded text-xs text-muted-foreground">
+                <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+                  className="bg-transparent text-xs font-medium text-foreground outline-none cursor-pointer"
+                >
+                  <option value="newest">{t(copy.sortNewest)}</option>
+                  <option value="oldest">{t(copy.sortOldest)}</option>
+                  <option value="title">{t(copy.sortTitle)}</option>
+                </select>
+              </div>
+            )}
 
             {/* View Switcher for Documents */}
             {tab === "documents" && (
@@ -734,7 +815,7 @@ function LibraryPage() {
         </div>
 
         {/* ── Category Filter Pills ────────────────────────────── */}
-        {currentCategories.length > 0 && (
+        {tab !== "museum" && currentCategories.length > 0 && (
           <div className="mb-6 flex flex-wrap items-center gap-2">
             <button
               type="button"
@@ -778,7 +859,9 @@ function LibraryPage() {
                   ? pagedDocuments.length
                   : tab === "photographs"
                     ? pagedPhotos.length
-                    : pagedVideos.length,
+                    : tab === "museum"
+                      ? filteredCollections.length
+                      : pagedVideos.length,
                 activeTotal,
               )}
             </p>
@@ -795,6 +878,67 @@ function LibraryPage() {
               </span>
             )}
           </div>
+        )}
+
+        {/* ── Tab Content: Museum Collections ─────────────────── */}
+        {tab === "museum" && (
+          <section className="reveal-on-scroll">
+            <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
+              {t(copy.museumNote)}
+            </p>
+
+            {collections.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 py-24 text-center text-muted-foreground">
+                <Images className="h-8 w-8 opacity-50" />
+                <p className="text-sm">{t(copy.museumEmpty)}</p>
+              </div>
+            ) : filteredCollections.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 py-24 text-center text-muted-foreground">
+                <Search className="h-8 w-8 opacity-50" />
+                <p className="text-sm">{t(copy.museumNoResults)}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredCollections.map((c) => (
+                  <Link
+                    key={c.id}
+                    to="/library/museum/$slug"
+                    params={{ slug: c.slug }}
+                    className="group flex flex-col overflow-hidden rounded border border-border bg-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-bronze/50 hover:shadow-md dark:hover:border-gold/50"
+                  >
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/40">
+                      {c.cover_media_path ? (
+                        <img
+                          src={c.cover_media_path}
+                          alt=""
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <ImageOff className="h-8 w-8 text-muted-foreground/40" />
+                        </div>
+                      )}
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                      <span className="absolute bottom-2 end-2 rounded bg-black/60 px-2 py-0.5 text-[11px] font-mono text-white">
+                        {c.image_count} {t(copy.museumImageCount)}
+                      </span>
+                    </div>
+                    <div className="flex flex-1 flex-col gap-1.5 p-4">
+                      <h3 className="text-base font-bold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
+                        {c.title_ar}
+                      </h3>
+                      {c.description_ar && (
+                        <p className="line-clamp-2 text-sm text-muted-foreground">
+                          {c.description_ar}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
         )}
 
         {/* ── Tab Content: Documents ──────────────────────────── */}

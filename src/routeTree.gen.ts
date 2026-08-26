@@ -34,6 +34,7 @@ import { Route as AuthenticatedTreasuryRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedContentRouteImport } from './routes/_authenticated/content'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as LibraryMuseumSlugRouteImport } from './routes/library.museum.$slug'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -159,6 +160,11 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const LibraryMuseumSlugRoute = LibraryMuseumSlugRouteImport.update({
+  id: '/museum/$slug',
+  path: '/museum/$slug',
+  getParentRoute: () => LibraryRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -174,7 +180,7 @@ export interface FileRoutesByFullPath {
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
-  '/library': typeof LibraryRoute
+  '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -200,7 +207,7 @@ export interface FileRoutesByTo {
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
-  '/library': typeof LibraryRoute
+  '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -228,7 +236,7 @@ export interface FileRoutesById {
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
   '/initiatives': typeof InitiativesRouteWithChildren
-  '/library': typeof LibraryRoute
+  '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/library/museum/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/library/museum/$slug'
   id:
     | '__root__'
     | '/'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/library/museum/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -337,7 +349,7 @@ export interface RootRouteChildren {
   FamilyTreeRoute: typeof FamilyTreeRoute
   FoundationRoute: typeof FoundationRoute
   InitiativesRoute: typeof InitiativesRouteWithChildren
-  LibraryRoute: typeof LibraryRoute
+  LibraryRoute: typeof LibraryRouteWithChildren
   NewsRoute: typeof NewsRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyRoute: typeof VerifyRoute
@@ -521,6 +533,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/library/museum/$slug': {
+      id: '/library/museum/$slug'
+      path: '/museum/$slug'
+      fullPath: '/library/museum/$slug'
+      preLoaderRoute: typeof LibraryMuseumSlugRouteImport
+      parentRoute: typeof LibraryRoute
+    }
   }
 }
 
@@ -553,6 +572,17 @@ const InitiativesRouteWithChildren = InitiativesRoute._addFileChildren(
   InitiativesRouteChildren,
 )
 
+interface LibraryRouteChildren {
+  LibraryMuseumSlugRoute: typeof LibraryMuseumSlugRoute
+}
+
+const LibraryRouteChildren: LibraryRouteChildren = {
+  LibraryMuseumSlugRoute: LibraryMuseumSlugRoute,
+}
+
+const LibraryRouteWithChildren =
+  LibraryRoute._addFileChildren(LibraryRouteChildren)
+
 interface NewsRouteChildren {
   NewsSlugRoute: typeof NewsSlugRoute
 }
@@ -578,7 +608,7 @@ const rootRouteChildren: RootRouteChildren = {
   FamilyTreeRoute: FamilyTreeRoute,
   FoundationRoute: FoundationRoute,
   InitiativesRoute: InitiativesRouteWithChildren,
-  LibraryRoute: LibraryRoute,
+  LibraryRoute: LibraryRouteWithChildren,
   NewsRoute: NewsRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyRoute: VerifyRoute,

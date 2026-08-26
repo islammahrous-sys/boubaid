@@ -246,7 +246,10 @@ export const mediaAssetInputSchema = z.object({
     .number()
     .int()
     .min(0)
-    .max(10 * 1024 * 1024, "الحد الأقصى 10 ميغابايت"),
+    // Matches the 25MB ceiling ImageUploadInput.tsx already enforces
+    // client-side elsewhere in the app (e.g. LibraryItemsManager)  --
+    // museum archive scans routinely exceed the old 10MB cap.
+    .max(25 * 1024 * 1024, "الحد الأقصى 25 ميغابايت"),
   width: z.number().int().optional().nullable(),
   height: z.number().int().optional().nullable(),
   alt_text_ar: z.string().optional().nullable(),
@@ -538,3 +541,29 @@ export const dnaStudiesDataSchema = z.object({
     .default([]),
 });
 export type DnaStudiesDataInput = z.infer<typeof dnaStudiesDataSchema>;
+
+// 26. Museum Archive Gallery Image Link Schema
+// Links an already-registered media_assets row (see mediaAssetInputSchema)
+// into a gallery as one of its images -- the Museum Archive's "collection ->
+// image" relationship rides on the existing galleries / gallery_media /
+// media_assets tables rather than a parallel schema.
+export const galleryMediaInputSchema = z.object({
+  id: z.string().uuid().optional(),
+  gallery_id: z.string().uuid("اختر المجموعة الأرشيفية"),
+  media_asset_id: z.string().uuid(),
+  caption_ar: z.string().optional().nullable(),
+  caption_en: z.string().optional().nullable(),
+  sort_order: z.number().int().default(0),
+  is_published: z.boolean().default(true),
+});
+export type GalleryMediaInput = z.infer<typeof galleryMediaInputSchema>;
+
+// 27. Generic Sort Order Reorder Schema
+export const sortOrderUpdateSchema = z.object({
+  table: z.enum(["galleries", "gallery_media"]),
+  items: z
+    .array(z.object({ id: z.string().uuid(), sort_order: z.number().int() }))
+    .min(1)
+    .max(1000),
+});
+export type SortOrderUpdateInput = z.infer<typeof sortOrderUpdateSchema>;

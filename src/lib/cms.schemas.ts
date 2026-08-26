@@ -193,4 +193,10 @@ export const restoreRevisionSchema = z.object({
 });
 
 export const publicGalleryIdSchema = z.string().uuid();
+export const publicGallerySlugSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(200)
+  .regex(/^[a-z0-9-]+$/i);
 export const publicMemberSpotlightIdSchema = z.string().trim().min(1).max(200);

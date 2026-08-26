@@ -50,6 +50,7 @@ import {
   Sun,
   Moon,
   LogOut,
+  Loader2,
   Sparkles,
   ShieldCheck,
   User,
@@ -201,6 +202,13 @@ export function AdminConsoleLayout({
   const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
   const [submittingBroadcast, setSubmittingBroadcast] = useState(false);
   const [notifPopoverOpen, setNotifPopoverOpen] = useState(false);
+  // Sign-out has nothing to show for itself otherwise: the click closes the
+  // dropdown, then the console keeps rendering exactly as-is (fully signed
+  // in) until the async signOut() network call resolves and the auth
+  // listener elsewhere eventually redirects -- a silent pause that reads as
+  // the app having frozen. This drives an immediate full-screen overlay
+  // instead, so the sign-out click gets feedback the instant it happens.
+  const [signingOut, setSigningOut] = useState(false);
   const [notifActiveTab, setNotifActiveTab] = useState<"alerts" | "tasks">("alerts");
   const [broadcastForm, setBroadcastForm] = useState({
     title_ar: "",
@@ -645,8 +653,31 @@ export function AdminConsoleLayout({
     );
   };
 
+  const handleSignOut = () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    void signOut();
+    // No `finally` resetting this: a successful sign-out unmounts this
+    // component via the auth-state redirect (see routes/_authenticated/route.tsx),
+    // and a failed one already falls back to a local session clear inside
+    // signOut() itself, which redirects the same way -- there's no path
+    // back to an authenticated view left to un-block.
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
+      {signingOut && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background/90 backdrop-blur-sm"
+        >
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <p className="text-xs font-medium text-muted-foreground">
+            {isAr ? "جاري تسجيل الخروج..." : "Signing out..."}
+          </p>
+        </div>
+      )}
       {/* =========================================================================
        * 1. DESKTOP SIDEBAR
        * ========================================================================= */}
@@ -909,7 +940,8 @@ export function AdminConsoleLayout({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => signOut()}
+                onClick={handleSignOut}
+                disabled={signingOut}
                 className="text-xs text-destructive focus:text-destructive cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5 me-2" />

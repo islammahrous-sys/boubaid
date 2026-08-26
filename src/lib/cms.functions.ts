@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
 import { requireSupabaseAuth, requireEditorAuth } from "@/integrations/supabase/auth-middleware";
 import {
@@ -10,6 +12,7 @@ import {
   pageRevisionsQuerySchema,
   restoreRevisionSchema,
   publicGalleryIdSchema,
+  publicGallerySlugSchema,
   publicMemberSpotlightIdSchema,
 } from "./cms.schemas";
 
@@ -940,6 +943,8 @@ export type PublicGalleryMediaItem = {
   url: string;
   caption_ar: string | null;
   caption_en: string | null;
+  alt_text_ar: string | null;
+  alt_text_en: string | null;
   width: number | null;
   height: number | null;
 };
@@ -949,7 +954,21 @@ export type PublicGallery = {
   slug: string;
   title_ar: string;
   title_en: string | null;
+  description_ar: string | null;
+  description_en: string | null;
+  cover_media_path: string | null;
   media: PublicGalleryMediaItem[];
+};
+
+export type PublicGalleryListItem = {
+  id: string;
+  slug: string;
+  title_ar: string;
+  title_en: string | null;
+  description_ar: string | null;
+  description_en: string | null;
+  cover_media_path: string | null;
+  image_count: number;
 };
 
 /** Resolves a media_assets row to a loadable URL — mirrors MediaLibrary.tsx's
@@ -967,60 +986,127 @@ function mediaAssetUrl(asset: {
   );
 }
 
+/** Shared by id- and slug-keyed lookups below -- a published, public-visibility
+ *  gallery and its published, ordered media. Used by both the Page Builder
+ *  gallery block (by id) and the public Museum Archive pages (by slug). */
+async function fetchPublicGallery(
+  supabase: SupabaseClient<Database>,
+  matcher: { id: string } | { slug: string },
+): Promise<PublicGallery | null> {
+  let query = supabase
+    .from("galleries")
+    .select("id, slug, title_ar, title_en, description_ar, description_en, cover_media_path")
+    .eq("status", "published")
+    .eq("visibility", "public");
+  query = "id" in matcher ? query.eq("id", matcher.id) : query.eq("slug", matcher.slug);
+  const { data: gallery } = await query.maybeSingle();
+  if (!gallery) return null;
+
+  const { data: links } = await supabase
+    .from("gallery_media")
+    .select("media_asset_id, caption_ar, caption_en, sort_order")
+    .eq("gallery_id", gallery.id)
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true });
+
+  const assetIds = [...new Set((links ?? []).map((l) => l.media_asset_id))];
+  if (assetIds.length === 0) return { ...gallery, media: [] };
+
+  const { data: assets } = await supabase
+    .from("media_assets")
+    .select(
+      "id, bucket, storage_path, public_url, width, height, caption_ar, caption_en, alt_text_ar, alt_text_en",
+    )
+    .in("id", assetIds);
+
+  const assetsById = new Map((assets ?? []).map((a) => [a.id, a]));
+
+  const media = (links ?? [])
+    .map((l): PublicGalleryMediaItem | null => {
+      const asset = assetsById.get(l.media_asset_id);
+      if (!asset) return null;
+      return {
+        id: asset.id,
+        url: mediaAssetUrl(asset),
+        caption_ar: l.caption_ar ?? asset.caption_ar,
+        caption_en: l.caption_en ?? asset.caption_en,
+        alt_text_ar: asset.alt_text_ar,
+        alt_text_en: asset.alt_text_en,
+        width: asset.width,
+        height: asset.height,
+      };
+    })
+    .filter((m): m is PublicGalleryMediaItem => m !== null);
+
+  return { ...gallery, media };
+}
+
 /** Public gallery block data — a published, public-visibility gallery and its ordered media. */
 export const getPublicGallery = createServerFn({ method: "GET" })
   .validator((galleryId: string) => publicGalleryIdSchema.parse(galleryId))
   .handler(async ({ data: galleryId }): Promise<PublicGallery | null> => {
     try {
       const { createPublicServerClient } = await import("./supabase-public.server");
-      const supabase = createPublicServerClient();
-
-      const { data: gallery } = await supabase
-        .from("galleries")
-        .select("id, slug, title_ar, title_en")
-        .eq("id", galleryId)
-        .eq("status", "published")
-        .eq("visibility", "public")
-        .maybeSingle();
-      if (!gallery) return null;
-
-      const { data: links } = await supabase
-        .from("gallery_media")
-        .select("media_asset_id, caption_ar, caption_en, sort_order")
-        .eq("gallery_id", galleryId)
-        .order("sort_order", { ascending: true });
-
-      const assetIds = [...new Set((links ?? []).map((l) => l.media_asset_id))];
-      if (assetIds.length === 0) return { ...gallery, media: [] };
-
-      const { data: assets } = await supabase
-        .from("media_assets")
-        .select("id, bucket, storage_path, public_url, width, height, caption_ar, caption_en")
-        .in("id", assetIds);
-
-      const assetsById = new Map((assets ?? []).map((a) => [a.id, a]));
-
-      const media = (links ?? [])
-        .map((l): PublicGalleryMediaItem | null => {
-          const asset = assetsById.get(l.media_asset_id);
-          if (!asset) return null;
-          return {
-            id: asset.id,
-            url: mediaAssetUrl(asset),
-            caption_ar: l.caption_ar ?? asset.caption_ar,
-            caption_en: l.caption_en ?? asset.caption_en,
-            width: asset.width,
-            height: asset.height,
-          };
-        })
-        .filter((m): m is PublicGalleryMediaItem => m !== null);
-
-      return { ...gallery, media };
+      return await fetchPublicGallery(createPublicServerClient(), { id: galleryId });
     } catch (err) {
       console.error("[cms] getPublicGallery error", err);
       return null;
     }
   });
+
+/** Museum Archive collection detail page — a published gallery and its images, by slug. */
+export const getPublicGalleryBySlug = createServerFn({ method: "GET" })
+  .validator((slug: string) => publicGallerySlugSchema.parse(slug))
+  .handler(async ({ data: slug }): Promise<PublicGallery | null> => {
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      return await fetchPublicGallery(createPublicServerClient(), { slug });
+    } catch (err) {
+      console.error("[cms] getPublicGalleryBySlug error", err);
+      return null;
+    }
+  });
+
+/** Museum Archive index page — every published collection, with its cover and image count. */
+export const getPublishedGalleries = createServerFn({ method: "GET" }).handler(
+  async (): Promise<PublicGalleryListItem[]> => {
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const supabase = createPublicServerClient();
+
+      const { data: galleries, error } = await supabase
+        .from("galleries")
+        .select("id, slug, title_ar, title_en, description_ar, description_en, cover_media_path")
+        .eq("status", "published")
+        .eq("visibility", "public")
+        .order("sort_order", { ascending: true })
+        .limit(200);
+      if (error) {
+        console.error("[cms] getPublishedGalleries read failed", error.code, error.message);
+        return [];
+      }
+      if (!galleries || galleries.length === 0) return [];
+
+      const { data: counts } = await supabase
+        .from("gallery_media")
+        .select("gallery_id")
+        .eq("is_published", true)
+        .in(
+          "gallery_id",
+          galleries.map((g) => g.id),
+        );
+      const countByGallery = new Map<string, number>();
+      for (const row of counts ?? []) {
+        countByGallery.set(row.gallery_id, (countByGallery.get(row.gallery_id) ?? 0) + 1);
+      }
+
+      return galleries.map((g) => ({ ...g, image_count: countByGallery.get(g.id) ?? 0 }));
+    } catch (err) {
+      console.error("[cms] getPublishedGalleries caught error", err);
+      return [];
+    }
+  },
+);
 
 /** Editor-only picker list for the gallery block (id + title, no media payload). */
 export const listGalleriesForEditor = createServerFn({ method: "GET" })

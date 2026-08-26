@@ -1217,6 +1217,7 @@ export type Database = {
           id: string;
           slug: string;
           sort_order: number;
+          source_drive_folder_id: string | null;
           status: string;
           title_ar: string;
           title_en: string | null;
@@ -1232,6 +1233,7 @@ export type Database = {
           id?: string;
           slug: string;
           sort_order?: number;
+          source_drive_folder_id?: string | null;
           status?: string;
           title_ar: string;
           title_en?: string | null;
@@ -1247,6 +1249,7 @@ export type Database = {
           id?: string;
           slug?: string;
           sort_order?: number;
+          source_drive_folder_id?: string | null;
           status?: string;
           title_ar?: string;
           title_en?: string | null;
@@ -1262,6 +1265,7 @@ export type Database = {
           created_at: string;
           gallery_id: string;
           id: string;
+          is_published: boolean;
           media_asset_id: string;
           sort_order: number;
         };
@@ -1271,6 +1275,7 @@ export type Database = {
           created_at?: string;
           gallery_id: string;
           id?: string;
+          is_published?: boolean;
           media_asset_id: string;
           sort_order?: number;
         };
@@ -1280,6 +1285,7 @@ export type Database = {
           created_at?: string;
           gallery_id?: string;
           id?: string;
+          is_published?: boolean;
           media_asset_id?: string;
           sort_order?: number;
         };
@@ -1546,6 +1552,7 @@ export type Database = {
           mime_type: string;
           original_file_name: string | null;
           public_url: string | null;
+          source_drive_file_id: string | null;
           storage_path: string;
           updated_at: string;
           uploaded_by: string | null;
@@ -1567,6 +1574,7 @@ export type Database = {
           mime_type: string;
           original_file_name?: string | null;
           public_url?: string | null;
+          source_drive_file_id?: string | null;
           storage_path: string;
           updated_at?: string;
           uploaded_by?: string | null;
@@ -1588,6 +1596,7 @@ export type Database = {
           mime_type?: string;
           original_file_name?: string | null;
           public_url?: string | null;
+          source_drive_file_id?: string | null;
           storage_path?: string;
           updated_at?: string;
           uploaded_by?: string | null;
