@@ -921,7 +921,7 @@ function LibraryPage() {
 
         {/* ── Tab Content: Museum Collections ─────────────────── */}
         {tab === "museum" && (
-          <section className="reveal-on-scroll">
+          <section>
             <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.museumNote)}
             </p>
@@ -982,7 +982,7 @@ function LibraryPage() {
 
         {/* ── Tab Content: Documents ──────────────────────────── */}
         {tab === "documents" && (
-          <section className="reveal-on-scroll">
+          <section>
             <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.docsNote)}
             </p>
@@ -1241,7 +1241,7 @@ function LibraryPage() {
 
         {/* ── Tab Content: Photographs ────────────────────────── */}
         {tab === "photographs" && (
-          <section className="reveal-on-scroll">
+          <section>
             <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.photosNote)}
             </p>
@@ -1342,7 +1342,7 @@ function LibraryPage() {
 
         {/* ── Tab Content: Recordings ─────────────────────────── */}
         {tab === "recordings" && (
-          <section className="reveal-on-scroll">
+          <section>
             <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.videosNote)}
             </p>

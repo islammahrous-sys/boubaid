@@ -80,7 +80,7 @@ export function ScrollReveal() {
           io.unobserve(el);
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+      { rootMargin: "50px 0px 50px 0px", threshold: 0.01 },
     );
 
     const scan = () => {
