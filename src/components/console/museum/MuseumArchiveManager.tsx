@@ -788,7 +788,7 @@ function SortableGalleryRow({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-3 border border-border rounded-xl bg-card p-2.5 hover:border-primary/40 transition-colors ${
+      className={`flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 border border-border rounded-xl bg-card p-2.5 hover:border-primary/40 transition-colors ${
         isDragging ? "opacity-60 shadow-lg" : ""
       }`}
     >
@@ -805,7 +805,7 @@ function SortableGalleryRow({
       <button
         type="button"
         onClick={onOpen}
-        className="w-14 h-14 rounded-lg overflow-hidden bg-muted/40 border border-border shrink-0 flex items-center justify-center"
+        className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-muted/40 border border-border shrink-0 flex items-center justify-center cursor-pointer"
       >
         {gallery.cover_media_path ? (
           <img
@@ -821,19 +821,19 @@ function SortableGalleryRow({
         )}
       </button>
 
-      <button type="button" onClick={onOpen} className="flex-1 min-w-0 text-start">
+      <button type="button" onClick={onOpen} className="flex-1 min-w-[130px] text-start cursor-pointer">
         <p className="text-xs font-semibold text-foreground truncate">{gallery.title_ar}</p>
-        <div className="flex items-center gap-2 mt-0.5">
+        <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 flex-wrap">
           <Badge variant="outline" className="text-[9px] px-1.5 h-4 font-mono">
             {imageCount} {isAr ? "صورة" : "images"}
           </Badge>
-          <span className="text-[10px] text-muted-foreground font-mono truncate" dir="ltr">
+          <span className="text-[10px] text-muted-foreground font-mono truncate max-w-[120px] sm:max-w-none" dir="ltr">
             /{gallery.slug}
           </span>
         </div>
       </button>
 
-      <div className="flex items-center gap-1.5 shrink-0">
+      <div className="flex items-center gap-1.5 shrink-0 ms-auto">
         <Switch checked={isPublished} onCheckedChange={onTogglePublish} />
         <Button variant="ghost" size="icon" className="w-7 h-7" onClick={onEdit}>
           <Edit2 className="w-3.5 h-3.5" />
@@ -909,33 +909,34 @@ function SortableImageCard({
           type="button"
           {...attributes}
           {...listeners}
-          className="absolute top-1.5 start-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute top-1.5 start-1.5 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center cursor-grab active:cursor-grabbing opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10"
           title={isAr ? "اسحب لإعادة الترتيب" : "Drag to reorder"}
         >
           <GripVertical className="w-3.5 h-3.5" />
         </button>
 
         {isCover && (
-          <Badge className="absolute top-1.5 end-1.5 h-5 px-1.5 text-[9px] gap-1 bg-amber-500 text-white border-0">
+          <Badge className="absolute top-1.5 end-1.5 h-5 px-1.5 text-[9px] gap-1 bg-amber-500 text-white border-0 z-10">
             <Star className="w-2.5 h-2.5 fill-current" />
             {isAr ? "الغلاف" : "Cover"}
           </Badge>
         )}
 
-        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+        {/* Touch-accessible action strip on mobile, full overlay on hover on desktop */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/60 to-transparent p-1.5 sm:inset-0 sm:bg-black/50 sm:opacity-0 sm:group-hover:opacity-100 sm:p-0 transition-all flex items-center justify-center gap-1 sm:gap-1.5 z-10">
           <Button
             variant="secondary"
             size="icon"
-            className="w-7 h-7 rounded-full"
+            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 text-foreground hover:bg-white shadow-xs"
             onClick={onSetCover}
             title={isAr ? "تعيين كصورة غلاف" : "Set as cover"}
           >
-            <Star className="w-3.5 h-3.5" />
+            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600" />
           </Button>
           <Button
             variant="secondary"
             size="icon"
-            className="w-7 h-7 rounded-full"
+            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 text-foreground hover:bg-white shadow-xs"
             onClick={onTogglePublish}
             title={
               gm.is_published
@@ -947,12 +948,12 @@ function SortableImageCard({
                   : "Publish"
             }
           >
-            {gm.is_published ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+            {gm.is_published ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground" />}
           </Button>
           <Popover open={editOpen} onOpenChange={setEditOpen}>
             <PopoverTrigger asChild>
-              <Button variant="secondary" size="icon" className="w-7 h-7 rounded-full">
-                <Edit2 className="w-3.5 h-3.5" />
+              <Button variant="secondary" size="icon" className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 text-foreground hover:bg-white shadow-xs">
+                <Edit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-72 space-y-2.5 text-xs" align="center">
@@ -990,10 +991,10 @@ function SortableImageCard({
           <Button
             variant="secondary"
             size="icon"
-            className="w-7 h-7 rounded-full text-destructive hover:text-destructive"
+            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 text-destructive hover:bg-destructive hover:text-white shadow-xs"
             onClick={onDelete}
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </Button>
         </div>
       </div>

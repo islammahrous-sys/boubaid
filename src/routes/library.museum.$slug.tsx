@@ -81,13 +81,13 @@ function MuseumCollectionPage() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {visible.map((item, i) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setLightboxIndex(i)}
-                  className="group relative aspect-square overflow-hidden rounded border border-border bg-secondary/40"
+                  className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary/40 cursor-pointer transition-all active:scale-[0.98] shadow-2xs hover:border-bronze/50 dark:hover:border-gold/50"
                 >
                   <img
                     src={item.url}
@@ -104,7 +104,7 @@ function MuseumCollectionPage() {
                 <button
                   type="button"
                   onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                  className="rounded border border-border bg-card px-5 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-secondary/40"
+                  className="rounded-lg border border-border bg-card px-5 py-2.5 text-xs sm:text-sm font-medium text-foreground shadow-xs transition-colors hover:bg-secondary/60 cursor-pointer active:scale-95"
                 >
                   {t(copy.loadMore)}
                 </button>
@@ -115,7 +115,7 @@ function MuseumCollectionPage() {
       </section>
 
       <ArchiveLightbox
-        items={visible.map((item) => ({
+        items={gallery.media.map((item) => ({
           id: item.id,
           url: item.url,
           alt: (rtl ? item.alt_text_ar : item.alt_text_en) || gallery.title_ar,

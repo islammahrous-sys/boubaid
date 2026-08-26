@@ -81,6 +81,11 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         label: { ar: "الأرشيف والمكتبة الرقمية", en: "Archive & Digital Library" },
         short: { ar: "الأرشيف", en: "Archive" },
       },
+      {
+        to: "/library?tab=museum",
+        label: { ar: "مجموعات المتحف المصورة", en: "Museum Photo Collections" },
+        short: { ar: "المتحف", en: "Museum" },
+      },
       { to: "/news", label: { ar: "الأخبار والبيانات", en: "News & Notices" } },
       { to: "/events", label: { ar: "الفعاليات واللقاءات", en: "Events & Gatherings" } },
     ],

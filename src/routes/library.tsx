@@ -198,6 +198,7 @@ const copy = {
     totalDocs: { ar: "وثيقة ومخطوطة تاريخية", en: "Historical Documents" } as BiText,
     totalPhotos: { ar: "صورة ولوحة تراثية", en: "Heritage Photographs" } as BiText,
     totalVideos: { ar: "تسجيلاً ومادة مرئية", en: "Video Recordings" } as BiText,
+    totalMuseum: { ar: "مجموعة متحف مصورة", en: "Museum Collections" } as BiText,
     heritageIndex: { ar: "أرشيف رقمي مفتوح", en: "Public Heritage Archive" } as BiText,
   },
 
@@ -638,54 +639,90 @@ function LibraryPage() {
       {/* ── Archival Statistics Masthead ─────────────────────── */}
       <section className="border-b border-border bg-secondary/30">
         <div className="container-page py-6">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6">
-            <div className="flex items-center gap-3.5 border border-border/80 bg-card/60 p-3.5 shadow-sm rounded">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:gap-6">
+            <button
+              type="button"
+              onClick={() => handleTabChange("documents")}
+              className={cn(
+                "flex items-center gap-3.5 border bg-card/60 p-3.5 shadow-sm rounded text-start transition-all cursor-pointer",
+                tab === "documents"
+                  ? "border-bronze bg-card ring-1 ring-bronze/40 dark:border-gold dark:ring-gold/40"
+                  : "border-border/80 hover:border-border hover:bg-card/90",
+              )}
+            >
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-bronze/10 text-bronze dark:text-gold">
                 <FileText className="h-5 w-5" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="nums font-mono text-lg font-bold text-foreground">
                   {libraryItems.documents.length}
                 </p>
-                <p className="text-xs text-muted-foreground">{t(copy.stats.totalDocs)}</p>
+                <p className="text-xs text-muted-foreground truncate">{t(copy.stats.totalDocs)}</p>
               </div>
-            </div>
+            </button>
 
-            <div className="flex items-center gap-3.5 border border-border/80 bg-card/60 p-3.5 shadow-sm rounded">
+            <button
+              type="button"
+              onClick={() => handleTabChange("photographs")}
+              className={cn(
+                "flex items-center gap-3.5 border bg-card/60 p-3.5 shadow-sm rounded text-start transition-all cursor-pointer",
+                tab === "photographs"
+                  ? "border-bronze bg-card ring-1 ring-bronze/40 dark:border-gold dark:ring-gold/40"
+                  : "border-border/80 hover:border-border hover:bg-card/90",
+              )}
+            >
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-bronze/10 text-bronze dark:text-gold">
                 <ImageIcon className="h-5 w-5" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="nums font-mono text-lg font-bold text-foreground">
                   {libraryItems.photos.length}
                 </p>
-                <p className="text-xs text-muted-foreground">{t(copy.stats.totalPhotos)}</p>
+                <p className="text-xs text-muted-foreground truncate">{t(copy.stats.totalPhotos)}</p>
               </div>
-            </div>
+            </button>
 
-            <div className="flex items-center gap-3.5 border border-border/80 bg-card/60 p-3.5 shadow-sm rounded">
+            <button
+              type="button"
+              onClick={() => handleTabChange("recordings")}
+              className={cn(
+                "flex items-center gap-3.5 border bg-card/60 p-3.5 shadow-sm rounded text-start transition-all cursor-pointer",
+                tab === "recordings"
+                  ? "border-bronze bg-card ring-1 ring-bronze/40 dark:border-gold dark:ring-gold/40"
+                  : "border-border/80 hover:border-border hover:bg-card/90",
+              )}
+            >
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-bronze/10 text-bronze dark:text-gold">
                 <Video className="h-5 w-5" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="nums font-mono text-lg font-bold text-foreground">
                   {libraryItems.videos.length}
                 </p>
-                <p className="text-xs text-muted-foreground">{t(copy.stats.totalVideos)}</p>
+                <p className="text-xs text-muted-foreground truncate">{t(copy.stats.totalVideos)}</p>
               </div>
-            </div>
+            </button>
 
-            <div className="flex items-center gap-3.5 border border-border/80 bg-card/60 p-3.5 shadow-sm rounded">
+            <button
+              type="button"
+              onClick={() => handleTabChange("museum")}
+              className={cn(
+                "flex items-center gap-3.5 border bg-card/60 p-3.5 shadow-sm rounded text-start transition-all cursor-pointer",
+                tab === "museum"
+                  ? "border-amber-500 bg-card ring-1 ring-amber-500/40 dark:border-amber-400 dark:ring-amber-400/40"
+                  : "border-border/80 hover:border-border hover:bg-card/90",
+              )}
+            >
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
                 <Landmark className="h-5 w-5" />
               </div>
-              <div>
-                <p className="font-sans text-xs font-bold text-foreground">
-                  {rtl ? "توثيق شامل موثوق" : "Heritage Archive"}
+              <div className="min-w-0">
+                <p className="nums font-mono text-lg font-bold text-foreground">
+                  {collections.length}
                 </p>
-                <p className="text-xs text-muted-foreground">{t(copy.stats.heritageIndex)}</p>
+                <p className="text-xs text-muted-foreground truncate">{t(copy.stats.totalMuseum)}</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </section>
@@ -693,43 +730,45 @@ function LibraryPage() {
       <div className="container-page py-10 pb-20">
         {/* ── Main Tab Navigation Bar ──────────────────────────── */}
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between border-b border-border pb-6">
-          <div
-            role="tablist"
-            aria-label={t(copy.eyebrow)}
-            className="inline-flex gap-1 overflow-x-auto no-scrollbar border border-border bg-card p-1.5 rounded"
-          >
-            {tabDefs.map((d) => {
-              const isSelected = tab === d.key;
-              const Icon = d.icon;
-              return (
-                <button
-                  key={d.key}
-                  role="tab"
-                  type="button"
-                  aria-selected={isSelected}
-                  onClick={() => handleTabChange(d.key)}
-                  className={cn(
-                    "flex shrink-0 items-center gap-2.5 px-4 py-2 text-xs font-semibold rounded transition-all duration-150 cursor-pointer",
-                    isSelected
-                      ? "bg-bronze text-white dark:bg-gold dark:text-ink shadow-sm"
-                      : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
-                  )}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span>{t(d.label)}</span>
-                  <span
+          <div className="relative w-full lg:w-auto overflow-hidden">
+            <div
+              role="tablist"
+              aria-label={t(copy.eyebrow)}
+              className="flex w-full overflow-x-auto gap-1 border border-border bg-card p-1.5 rounded scroll-smooth touch-pan-x"
+            >
+              {tabDefs.map((d) => {
+                const isSelected = tab === d.key;
+                const Icon = d.icon;
+                return (
+                  <button
+                    key={d.key}
+                    role="tab"
+                    type="button"
+                    aria-selected={isSelected}
+                    onClick={() => handleTabChange(d.key)}
                     className={cn(
-                      "nums text-[11px] px-1.5 py-0.5 rounded font-mono font-bold",
+                      "flex shrink-0 items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded transition-all duration-150 cursor-pointer whitespace-nowrap",
                       isSelected
-                        ? "bg-white/20 text-white dark:bg-ink/20 dark:text-ink"
-                        : "bg-muted text-muted-foreground",
+                        ? "bg-bronze text-white dark:bg-gold dark:text-ink shadow-sm"
+                        : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
                     )}
                   >
-                    {d.count}
-                  </span>
-                </button>
-              );
-            })}
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span>{t(d.label)}</span>
+                    <span
+                      className={cn(
+                        "nums text-[11px] px-1.5 py-0.5 rounded font-mono font-bold",
+                        isSelected
+                          ? "bg-white/20 text-white dark:bg-ink/20 dark:text-ink"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      {d.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Search & Utility Bar -- the search box works for every tab
