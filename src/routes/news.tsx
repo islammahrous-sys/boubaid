@@ -121,7 +121,7 @@ function NewsPage() {
 
       {/* Section filter */}
       <div className="border-b border-border">
-        <div className="container-page flex flex-wrap items-center gap-x-7 gap-y-2 py-3.5">
+        <div className="container-page flex items-center gap-2 overflow-x-auto py-3 scrollbar-none touch-pan-x -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:gap-x-7 sm:py-3.5">
           {filters.map((f) => {
             const count =
               f.key === "all" ? news.length : news.filter((n) => n.section === f.key).length;
@@ -133,14 +133,14 @@ function NewsPage() {
                 onClick={() => setTab(f.key)}
                 aria-pressed={active}
                 className={cn(
-                  "inline-flex items-baseline gap-1.5 text-sm transition-colors",
+                  "shrink-0 inline-flex items-baseline gap-1.5 rounded-full sm:rounded-none px-3.5 sm:px-0 py-1 sm:py-0 border sm:border-0 text-xs sm:text-sm transition-all duration-150 active:scale-95 cursor-pointer",
                   active
-                    ? "font-semibold text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "border-bronze bg-bronze/10 text-bronze dark:border-gold dark:bg-gold/10 dark:text-gold font-bold sm:bg-transparent sm:text-foreground"
+                    : "border-border bg-card text-muted-foreground hover:text-foreground sm:border-transparent sm:bg-transparent",
                 )}
               >
-                {t(f.label)}
-                <span className="nums text-xs text-muted-foreground">{count}</span>
+                <span>{t(f.label)}</span>
+                <span className="nums text-[10px] sm:text-xs opacity-75">({count})</span>
               </button>
             );
           })}

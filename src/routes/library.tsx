@@ -789,16 +789,16 @@ function LibraryPage() {
                 placeholder={
                   tab === "museum" ? t(copy.museumSearchPlaceholder) : t(copy.searchPlaceholder)
                 }
-                className="w-full rounded border border-border bg-card py-2 text-xs font-sans text-foreground placeholder:text-muted-foreground outline-none transition-colors ps-9 pe-8 focus:border-bronze focus:ring-1 focus:ring-bronze dark:focus:border-gold"
+                className="w-full rounded border border-border bg-card py-2 text-sm sm:text-xs font-sans text-foreground placeholder:text-muted-foreground outline-none transition-colors ps-9 pe-9 focus:border-bronze focus:ring-1 focus:ring-bronze dark:focus:border-gold"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
                   aria-label={t(copy.clearSearch)}
-                  className="absolute top-1/2 -translate-y-1/2 end-2 p-1 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+                  className="absolute top-1/2 -translate-y-1/2 end-1 grid h-7 w-7 place-items-center rounded-full text-muted-foreground transition-colors hover:text-foreground cursor-pointer active:scale-95"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-4 w-4" />
                 </button>
               )}
             </div>
@@ -853,16 +853,16 @@ function LibraryPage() {
           </div>
         </div>
 
-        {/* ── Category Filter Pills ────────────────────────────── */}
+        {/* ── Category Filter Pills (Horizontal Touch Carousel on Mobile) ── */}
         {tab !== "museum" && currentCategories.length > 0 && (
-          <div className="mb-6 flex flex-wrap items-center gap-2">
+          <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none touch-pan-x -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
             <button
               type="button"
               onClick={() => setSelectedCategory(null)}
               className={cn(
-                "rounded border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer",
+                "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer",
                 selectedCategory === null
-                  ? "border-bronze bg-bronze text-white dark:border-gold dark:bg-gold dark:text-ink"
+                  ? "border-bronze bg-bronze text-white dark:border-gold dark:bg-gold dark:text-ink shadow-xs"
                   : "border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground",
               )}
             >
@@ -876,9 +876,9 @@ function LibraryPage() {
                   type="button"
                   onClick={() => setSelectedCategory(isSelected ? null : cat)}
                   className={cn(
-                    "rounded border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer",
+                    "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer",
                     isSelected
-                      ? "border-bronze bg-bronze text-white dark:border-gold dark:bg-gold dark:text-ink"
+                      ? "border-bronze bg-bronze text-white dark:border-gold dark:bg-gold dark:text-ink shadow-xs"
                       : "border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground",
                   )}
                 >

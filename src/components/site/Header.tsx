@@ -500,7 +500,7 @@ export function Header() {
             {lang === "ar" ? "الاشتراك" : "Subscribe"}
           </Link>
 
-          {/* Mobile & Tablet Hamburger Menu Button */}
+          {/* Tablet Hamburger Menu Button (Mobile phones use bottom bar) */}
           <button
             type="button"
             aria-label={
@@ -513,7 +513,7 @@ export function Header() {
                   : "Open menu"
             }
             aria-expanded={open}
-            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary lg:hidden cursor-pointer shrink-0"
+            className="hidden md:grid lg:hidden h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary cursor-pointer shrink-0"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

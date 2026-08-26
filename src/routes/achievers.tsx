@@ -252,7 +252,7 @@ function AchieversPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none touch-pan-x -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:gap-x-6 sm:gap-y-2">
             {categories.map((c) => {
               const count =
                 c.key === "all"
@@ -266,14 +266,14 @@ function AchieversPage() {
                   onClick={() => setSelectedCategory(c.key)}
                   aria-pressed={active}
                   className={cn(
-                    "inline-flex items-baseline gap-1.5 border-b pb-0.5 text-sm transition-colors cursor-pointer",
+                    "shrink-0 inline-flex items-baseline gap-1.5 rounded-full sm:rounded-none px-3 sm:px-0 py-1 sm:py-0 border sm:border-0 sm:border-b text-xs sm:text-sm transition-all duration-150 active:scale-95 cursor-pointer",
                     active
-                      ? "border-bronze font-semibold text-foreground dark:border-gold"
-                      : "border-transparent text-muted-foreground hover:text-foreground",
+                      ? "border-bronze bg-bronze/10 text-bronze dark:border-gold dark:bg-gold/10 dark:text-gold font-semibold sm:bg-transparent sm:text-foreground"
+                      : "border-border bg-card text-muted-foreground hover:text-foreground sm:border-transparent sm:bg-transparent",
                   )}
                 >
-                  {t(c.label)}
-                  <span className="nums text-xs text-muted-foreground">{count}</span>
+                  <span>{t(c.label)}</span>
+                  <span className="nums text-[10px] sm:text-xs opacity-75">({count})</span>
                 </button>
               );
             })}

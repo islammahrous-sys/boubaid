@@ -371,7 +371,7 @@ function FamilyTreePage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t(copy.searchPlaceholder)}
-                className="w-full border border-border bg-background py-2 text-xs font-serif text-foreground outline-none transition-colors ps-9 pe-3 focus:border-foreground focus:ring-1 focus:ring-ring"
+                className="w-full border border-border bg-background py-2 text-sm sm:text-xs font-serif text-foreground outline-none transition-colors ps-9 pe-3 focus:border-foreground focus:ring-1 focus:ring-ring"
               />
             </div>
           </div>
@@ -384,7 +384,7 @@ function FamilyTreePage() {
               id="tree-branch"
               value={branchId}
               onChange={(e) => setBranchId(e.target.value)}
-              className="w-full border border-border bg-background px-3 py-2 text-xs font-serif text-foreground outline-none transition-colors focus:border-foreground focus:ring-1 focus:ring-ring md:w-52"
+              className="w-full border border-border bg-background px-3 py-2 text-sm sm:text-xs font-serif text-foreground outline-none transition-colors focus:border-foreground focus:ring-1 focus:ring-ring md:w-52 cursor-pointer"
             >
               <option value="all">{t(copy.all)}</option>
               {branches.map((b) => (
@@ -405,7 +405,7 @@ function FamilyTreePage() {
               onChange={(e) =>
                 setGeneration(e.target.value === "all" ? "all" : Number(e.target.value))
               }
-              className="w-full border border-border bg-background px-3 py-2 text-xs font-serif text-foreground outline-none transition-colors focus:border-foreground focus:ring-1 focus:ring-ring md:w-40"
+              className="w-full border border-border bg-background px-3 py-2 text-sm sm:text-xs font-serif text-foreground outline-none transition-colors focus:border-foreground focus:ring-1 focus:ring-ring md:w-40 cursor-pointer"
             >
               <option value="all">{t(copy.all)}</option>
               {[1, 2, 3, 4].map((g) => (
@@ -417,11 +417,45 @@ function FamilyTreePage() {
           </div>
         </div>
 
+        {/* Branch Quick Filter Chips (Mobile & Desktop) */}
+        <div className="mt-3 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none touch-pan-x -mx-4 px-4 sm:mx-0 sm:px-0">
+          <button
+            type="button"
+            onClick={() => setBranchId("all")}
+            className={cn(
+              "shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer",
+              branchId === "all"
+                ? "border-bronze bg-bronze text-white dark:border-gold dark:bg-gold dark:text-ink shadow-xs"
+                : "border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground",
+            )}
+          >
+            {t(copy.all)}
+          </button>
+          {branches.map((b) => {
+            const isSelected = branchId === b.id;
+            return (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => setBranchId(isSelected ? "all" : b.id)}
+                className={cn(
+                  "shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer",
+                  isSelected
+                    ? "border-bronze bg-bronze text-white dark:border-gold dark:bg-gold dark:text-ink shadow-xs"
+                    : "border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground",
+                )}
+              >
+                {t(b.name)}
+              </button>
+            );
+          })}
+        </div>
+
         {isFiltered ? (
           <button
             type="button"
             onClick={reset}
-            className="mt-3 label-caps inline-flex items-center gap-1.5 border border-border bg-card px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+            className="mt-3 label-caps inline-flex items-center gap-1.5 border border-border bg-card px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-foreground hover:text-foreground cursor-pointer active:scale-95"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
             {t(copy.clear)}
@@ -436,20 +470,20 @@ function FamilyTreePage() {
           </div>
         ) : (
           grouped.map(([gen, members]) => (
-            <section key={gen} className="reveal-on-scroll mt-10">
+            <section key={gen} className="mt-10">
               <p className="label-caps border-b border-border pb-2 text-bronze dark:text-gold">
                 {t(generationLabels[gen])}
                 <span className="nums ms-2 text-muted-foreground">({members.length})</span>
               </p>
 
-              <ol className="reveal-stagger grid gap-4 md:grid-cols-2 mt-4">
+              <ol className="grid gap-4 md:grid-cols-2 mt-4">
                 {members.map((m) => (
                   <li key={m.id} id={`member-card-${m.id}`} className="list-none scroll-mt-24">
                     <button
                       type="button"
                       onClick={() => setSelected(m)}
                       className={cn(
-                        "group block w-full border border-border bg-card p-5 text-start transition-all duration-500 hover:border-foreground rounded-lg",
+                        "group block w-full border border-border bg-card p-4 sm:p-5 text-start transition-all duration-200 hover:border-foreground rounded-lg active:scale-[0.98] cursor-pointer",
                         highlightId === m.id &&
                           "border-bronze ring-2 ring-bronze ring-offset-2 ring-offset-background bg-bronze/10 dark:border-gold dark:ring-gold dark:bg-gold/10",
                       )}
