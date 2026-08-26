@@ -20,6 +20,7 @@ import { Footer } from "@/components/site/Footer";
 import { MobileNav } from "@/components/site/MobileNav";
 import { ScrollReveal } from "@/components/site/ScrollReveal";
 import { PageTransition } from "@/components/site/PageTransition";
+import { TopProgressBar } from "@/components/site/TopProgressBar";
 
 import { Toaster } from "@/components/ui/sonner";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -224,6 +225,7 @@ function RootComponent() {
             <div
               className={`flex min-h-screen w-full flex-col overflow-x-clip ${isConsole ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"}`}
             >
+              <TopProgressBar />
               <a href="#main" className="skip-link">
                 تخطَّ إلى المحتوى — Skip to content
               </a>
