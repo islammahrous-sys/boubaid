@@ -278,12 +278,17 @@
                 if (d._children) { d.children = d._children; d._children = null; }
             }
 
-            /** Open the documented trunk plus the seven branches, hide the rest. */
+            /** Open the documented trunk, hide the crowded layers underneath. */
             function initialCollapse() {
                 root.descendants().forEach(expand);
                 const branches = root.descendants().filter(d => d.data.isBranch);
                 branches.forEach(collapse);
             }
+            /** Captured while everything is still expanded so search can reach collapsed names. */
+            const ALL_NODES = (() => {
+                root.descendants().forEach(expand);
+                return root.descendants();
+            })();
             initialCollapse();
 
             const NODE_W = 158, NODE_H = 44;
