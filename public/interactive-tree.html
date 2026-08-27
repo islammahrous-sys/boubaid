@@ -537,7 +537,7 @@
                 g.selectAll('.node-group').classed('node--highlighted', false);
                 if (term.length < 2) { searchCount.textContent = ''; return; }
 
-                const matches = root.descendants().filter(d => d.data.name.includes(term));
+                const matches = ALL_NODES.filter(d => d.data.name.includes(term));
                 searchCount.textContent = matches.length ? `${matches.length}` : '٠';
                 if (!matches.length) return;
 
