@@ -282,7 +282,7 @@
             function initialCollapse() {
                 root.descendants().forEach(expand);
                 const branches = root.descendants().filter(d => d.data.isBranch);
-                branches.forEach(b => (b.children || []).forEach(collapse));
+                branches.forEach(collapse);
             }
             initialCollapse();
 
