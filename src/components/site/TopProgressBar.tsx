@@ -13,6 +13,11 @@ export function TopProgressBar() {
   const isNavigating = useRouterState({ select: (s) => s.status === "pending" || s.isLoading });
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
+  // Render nothing until after hydration: the router can be "pending" during
+  // SSR while it is not on the client, which mismatched the server HTML.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
 
   useEffect(() => {
     let timer1: number | undefined;
@@ -45,7 +50,7 @@ export function TopProgressBar() {
     };
   }, [isNavigating, visible]);
 
-  if (!visible && !isNavigating) return null;
+  if (!mounted || (!visible && !isNavigating)) return null;
 
   return (
     <div
