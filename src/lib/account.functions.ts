@@ -193,7 +193,10 @@ export const getMemberVerification = createServerFn({ method: "GET" })
         id: z
           .string()
           .trim()
-          .regex(/^(ABO-)?[0-9a-f]{6,}$/i, "invalid_code"),
+          // `ABO-` + a 6+ hex-digit prefix of the member's uuid. Hyphens are
+          // allowed so a full canonical uuid also validates; they're stripped
+          // before the lookup.
+          .regex(/^(ABO-)?[0-9a-f-]{6,40}$/i, "invalid_code"),
       })
       .parse(input),
   )
@@ -205,15 +208,31 @@ export const getMemberVerification = createServerFn({ method: "GET" })
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const rawId = data.id.replace(/^ABO-/i, "").trim().toLowerCase();
+    const rawId = data.id.replace(/^ABO-/i, "").trim().toLowerCase().replace(/-/g, "");
 
-    // A single `.ilike` prefix match — not a hand-built `.or()` filter string —
-    // so nothing in `rawId` (already regex-validated to hex above) can change
-    // the shape of the query.
+    // `profiles.id` is a `uuid` column, and Postgres has no `ILIKE` for uuid
+    // (`operator does not exist: uuid ~~* unknown`) — the previous `.ilike("id",
+    // …)` errored on every call, so `error` was always set and this endpoint
+    // reported *every* member card as unverified. Match the hex prefix as an
+    // inclusive uuid range instead: pad it out to the lowest and highest uuid
+    // that share it. `rawId` is regex-validated to hex above, so both bounds are
+    // always well-formed uuids.
+    // After stripping `ABO-`/hyphens there must still be a usable prefix; a
+    // too-short one would range-match most of the table.
+    if (rawId.length < 6) {
+      return { ok: false, verified: false, member: null };
+    }
+
+    const asUuid = (hex: string) =>
+      `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+    const lowerBound = asUuid((rawId + "0".repeat(32)).slice(0, 32));
+    const upperBound = asUuid((rawId + "f".repeat(32)).slice(0, 32));
+
     const { data: profiles, error } = await supabaseAdmin
       .from("profiles")
       .select("id, full_name_ar, full_name_en, branch_slug, avatar_path, created_at")
-      .ilike("id", `${rawId}%`)
+      .gte("id", lowerBound)
+      .lte("id", upperBound)
       .order("id")
       .limit(5);
 
