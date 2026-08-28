@@ -1,5 +1,4 @@
 import { createFileRoute, useNavigate, useRouterState, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, ShieldCheck, UsersRound, Landmark } from "lucide-react";
@@ -71,7 +70,6 @@ function AuthPage() {
   const [resetSent, setResetSent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
-  const verifyTurnstileFn = useServerFn(verifyTurnstile);
 
   // `/auth` has no `validateSearch`, so the router still exposes the parsed
   // query here — `?redirect=/admin` etc. — which `safeDestination` narrows to
@@ -83,7 +81,7 @@ function AuthPage() {
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ href: destination });
+      if (data.session) void navigate({ to: destination as any });
     });
   }, [navigate, destination]);
 
@@ -129,7 +127,7 @@ function AuthPage() {
           return;
         }
         if (isTurnstileConfigured) {
-          const verification = await verifyTurnstileFn({ data: { token: turnstileToken } });
+          const verification = await verifyTurnstile({ data: { token: turnstileToken } });
           if (!verification.ok) {
             toast.error(
               label(

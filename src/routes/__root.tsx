@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -24,6 +25,7 @@ import { TopProgressBar } from "@/components/site/TopProgressBar";
 
 import { Toaster } from "@/components/ui/sonner";
 import { getCanonicalUrl } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 function NotFoundComponent() {
   return (
@@ -210,8 +212,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const router = useRouter();
-  const pathname = router.state.location.pathname;
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isConsole =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/treasury") ||
@@ -229,16 +230,20 @@ function RootComponent() {
               <a href="#main" className="skip-link">
                 تخطَّ إلى المحتوى — Skip to content
               </a>
-              {!isConsole && <AnnouncementTicker />}
-              {!isConsole && <Header />}
+              <div className={cn(isConsole && "hidden")}>
+                <AnnouncementTicker />
+                <Header />
+              </div>
               <main id="main" className="flex-1">
                 <PageTransition>
                   <Outlet />
                 </PageTransition>
               </main>
 
-              {!isConsole && <Footer />}
-              {!isConsole && <MobileNav />}
+              <div className={cn(isConsole && "hidden")}>
+                <Footer />
+                <MobileNav />
+              </div>
               <ScrollReveal />
             </div>
             <Toaster richColors position="top-center" />

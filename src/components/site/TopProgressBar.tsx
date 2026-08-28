@@ -11,10 +11,16 @@ import { cn } from "@/lib/utils";
  */
 export function TopProgressBar() {
   const isNavigating = useRouterState({ select: (s) => s.status === "pending" || s.isLoading });
+  const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     let timer1: number | undefined;
     let timer2: number | undefined;
     let exitTimer: number | undefined;
@@ -43,13 +49,16 @@ export function TopProgressBar() {
       window.clearTimeout(timer2);
       window.clearTimeout(exitTimer);
     };
-  }, [isNavigating, visible]);
+  }, [isNavigating, visible, mounted]);
 
-  if (!visible && !isNavigating) return null;
+  const show = mounted && (visible || isNavigating);
 
   return (
     <div
-      className="fixed inset-x-0 top-0 z-[100] h-[2.5px] pointer-events-none bg-transparent overflow-hidden"
+      className={cn(
+        "fixed inset-x-0 top-0 z-[100] h-[2.5px] pointer-events-none bg-transparent overflow-hidden transition-opacity duration-200",
+        show ? "opacity-100" : "opacity-0",
+      )}
       role="progressbar"
       aria-label="Navigation progress"
     >

@@ -22,6 +22,8 @@ function toSignIn(href: string): never {
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {
+    if (typeof window === "undefined") return { user: null };
+
     const { data, error } = await supabase.auth.getUser();
     if (data?.user) return { user: data.user };
 

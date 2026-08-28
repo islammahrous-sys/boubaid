@@ -17,10 +17,8 @@ export const getRouter = () => {
     // the preload was firing but never actually being used.
     defaultPreload: "intent",
     defaultPreloadStaleTime: 10_000,
-    // Only for the rare case a navigation doesn't resolve almost instantly
-    // (cold cache, slow connection) — most clicks never show this.
-    defaultPendingMs: 300,
-    defaultPendingMinMs: 300,
+    defaultPendingMs: 1000,
+    defaultPendingMinMs: 500,
     defaultPendingComponent: RoutePending,
   });
 

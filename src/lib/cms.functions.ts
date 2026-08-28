@@ -220,13 +220,24 @@ export const getPublishedNews = createServerFn({ method: "GET" }).handler(
       // Treat it as a pin weight: higher sort_order floats to the top, and
       // everything sharing a weight (including articles, weight 0) stays in
       // newest-first order.
-      const merged: NewsRow[] = [...mappedArticles, ...((newsPostsData ?? []) as NewsRow[])].sort(
+      const merged: NewsRow[] = [...((newsPostsData ?? []) as NewsRow[]), ...mappedArticles].sort(
         (a, b) =>
           (b.sort_order ?? 0) - (a.sort_order ?? 0) ||
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
 
-      return withMedia(merged, [{ from: "cover_path", to: "cover_url" }]);
+      const seenIds = new Set<string>();
+      const seenSlugs = new Set<string>();
+      const deduplicated: NewsRow[] = [];
+      for (const item of merged) {
+        if (item.id && seenIds.has(item.id)) continue;
+        if (item.slug && seenSlugs.has(item.slug)) continue;
+        if (item.id) seenIds.add(item.id);
+        if (item.slug) seenSlugs.add(item.slug);
+        deduplicated.push(item);
+      }
+
+      return withMedia(deduplicated, [{ from: "cover_path", to: "cover_url" }]);
     } catch (err) {
       console.error("[cms] getPublishedNews caught error", err);
       return [];
