@@ -278,12 +278,17 @@
                 if (d._children) { d.children = d._children; d._children = null; }
             }
 
-            /** Open the documented trunk plus the seven branches, hide the rest. */
+            /** Open the documented trunk, hide the crowded layers underneath. */
             function initialCollapse() {
                 root.descendants().forEach(expand);
                 const branches = root.descendants().filter(d => d.data.isBranch);
-                branches.forEach(b => (b.children || []).forEach(collapse));
+                branches.forEach(collapse);
             }
+            /** Captured while everything is still expanded so search can reach collapsed names. */
+            const ALL_NODES = (() => {
+                root.descendants().forEach(expand);
+                return root.descendants();
+            })();
             initialCollapse();
 
             const NODE_W = 158, NODE_H = 44;
@@ -395,7 +400,8 @@
                     (height - padding * 2 - 70) / bounds.height,
                     1.1
                 );
-                const scale = Math.max(0.12, k);
+                /** Never shrink past legibility — panning beats unreadable text. */
+                const scale = Math.min(Math.max(vertical ? 0.62 : 0.5, k), 1.1);
                 const cx = bounds.x + bounds.width / 2;
                 const cy = bounds.y + bounds.height / 2;
                 svg.transition().duration(600).call(
@@ -531,7 +537,7 @@
                 g.selectAll('.node-group').classed('node--highlighted', false);
                 if (term.length < 2) { searchCount.textContent = ''; return; }
 
-                const matches = root.descendants().filter(d => d.data.name.includes(term));
+                const matches = ALL_NODES.filter(d => d.data.name.includes(term));
                 searchCount.textContent = matches.length ? `${matches.length}` : '٠';
                 if (!matches.length) return;
 
