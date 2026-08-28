@@ -10,7 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Plus, Edit2, Layers, Globe, Eye } from "lucide-react";
+import { Plus, Edit2, Trash2, Layers, Globe, Eye } from "lucide-react";
+import { useConfirm } from "@/hooks/useConfirm";
 import { PageBuilderDialog } from "./PageBuilderDialog";
 import type { ContentPageInput, ContentSectionInput } from "@/lib/admin-hub.schemas";
 
@@ -48,6 +49,7 @@ export function PagesManager({
   sections,
   revisions,
   onSavePage,
+  onDeletePage,
 }: {
   pages: PageRow[];
   sections: {
@@ -61,9 +63,11 @@ export function PagesManager({
   }[];
   revisions: RevisionRow[];
   onSavePage: (data: ContentPageInput) => Promise<void>;
+  onDeletePage: (id: string) => Promise<void>;
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [builderOpen, setBuilderOpen] = useState(false);
   const [selectedPage, setSelectedPage] = useState<ContentPageInput | null>(null);
@@ -179,15 +183,40 @@ export function PagesManager({
                     </TableCell>
                     <TableCell className="text-center">{getStatusBadge(page.status)}</TableCell>
                     <TableCell className="text-end">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="w-7 h-7 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleEdit(page)}
-                        title={isAr ? "تعديل الصفحة وبناء الكتل" : "Edit Page & Blocks"}
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="w-7 h-7 text-muted-foreground hover:text-foreground"
+                          onClick={() => handleEdit(page)}
+                          title={isAr ? "تعديل الصفحة وبناء الكتل" : "Edit Page & Blocks"}
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="w-7 h-7 text-muted-foreground hover:text-destructive"
+                          title={isAr ? "حذف الصفحة" : "Delete page"}
+                          onClick={async () => {
+                            if (
+                              !(await confirm({
+                                title: isAr
+                                  ? `حذف صفحة "${page.title_ar}"؟`
+                                  : `Delete "${page.title_ar}"?`,
+                                description: isAr
+                                  ? "ستُزال الصفحة من لوحة التحكم ومن الموقع العام فوراً. يبقى سجل الإصدارات محفوظاً، لكن لا يمكن التراجع عن الحذف من داخل اللوحة."
+                                  : "The page is removed from the console and the public site immediately. Its revision history is kept, but the deletion can't be undone from the console.",
+                                tone: "destructive",
+                              }))
+                            )
+                              return;
+                            await onDeletePage(page.id);
+                          }}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

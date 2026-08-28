@@ -27,9 +27,25 @@ import { Toaster } from "@/components/ui/sonner";
 import { getCanonicalUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
+const NOT_FOUND_TITLE = "الصفحة غير موجودة — Page not found | آل بوعبيد";
+
 function NotFoundComponent() {
+  // React 19 hoists the <meta> below to <head> so a missing page is never
+  // indexed. TanStack keeps ownership of <title> (its route `head` doesn't
+  // run for the not-found component), so correct the tab title imperatively
+  // once mounted rather than leaving the homepage title on a 404.
+  useEffect(() => {
+    const previous = document.title;
+    document.title = NOT_FOUND_TITLE;
+    return () => {
+      document.title = previous;
+    };
+  }, []);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <title>{NOT_FOUND_TITLE}</title>
+      <meta name="robots" content="noindex, follow" />
       <div className="max-w-md">
         <p className="nums font-mono text-sm text-bronze">404</p>
         <h1 className="mt-3 text-2xl text-foreground">الصفحة غير موجودة — Page not found</h1>
@@ -60,6 +76,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <title>تعذر تحميل الصفحة — Something went wrong | آل بوعبيد</title>
+      <meta name="robots" content="noindex, follow" />
       <div className="max-w-md">
         <h1 className="text-2xl text-foreground">تعذر تحميل الصفحة — This page didn't load</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

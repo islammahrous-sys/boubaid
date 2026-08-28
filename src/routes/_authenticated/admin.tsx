@@ -24,6 +24,7 @@ import {
   upsertFamilyHistory,
   getCmsPagesData,
   upsertCmsPage,
+  deleteCmsPage,
   getArticlesData,
   upsertArticle,
   getEventsData,
@@ -292,6 +293,7 @@ function MasterAdminPage() {
   const savePlaceMut = useServerFn(upsertPlace);
   const saveHistMut = useServerFn(upsertFamilyHistory);
   const savePageMut = useServerFn(upsertCmsPage);
+  const delPageMut = useServerFn(deleteCmsPage);
   const saveArtMut = useServerFn(upsertArticle);
   const bulkArtMut = useServerFn(bulkArticlesAction);
   const saveEventMut = useServerFn(upsertEvent);
@@ -1084,6 +1086,9 @@ function MasterAdminPage() {
                   sections={(pagesData?.sections ?? []) as any}
                   revisions={(pagesData?.revisions ?? []) as any}
                   onSavePage={(data) => runMutation(() => savePageMut({ data }), refreshPages)}
+                  onDeletePage={(id) =>
+                    runMutation(() => delPageMut({ data: { id } }), refreshPages)
+                  }
                 />
               ))}
 

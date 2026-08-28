@@ -667,6 +667,39 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
     return { ok: true, page };
   });
 
+export const deleteCmsPage = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, session } = context;
+
+    // Soft-delete, same shape as deleteFamilyMember: `getCmsPagesData` and the
+    // public `getPublicContentPageBySlug` loader both filter on
+    // `deleted_at IS NULL`, so stamping it removes the page from the console
+    // list and the public site at once without destroying its revision history.
+    // There was previously no delete path for content_pages at all —
+    // `cms.functions.ts::deleteCmsRow` only covers the flat content tables —
+    // so abandoned pages could never be cleared.
+    const { data: archived, error } = await supabase
+      .from("content_pages")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .is("deleted_at", null)
+      .select("id");
+
+    if (error) throw new Error(error.message);
+    assertRowsAffected(archived, "content_pages", data.id);
+
+    await supabase.from("audit_logs").insert({
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
+      action: "archive",
+      entity_type: "content_pages",
+      entity_id: data.id,
+    });
+
+    return { ok: true };
+  });
+
 /* =========================================================================
  * 4. Articles, Categories & Tags
  * ========================================================================= */
