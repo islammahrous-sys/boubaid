@@ -667,6 +667,39 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
     return { ok: true, page };
   });
 
+export const deleteCmsPage = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, session } = context;
+
+    // Soft-delete, same shape as deleteFamilyMember: `getCmsPagesData` and the
+    // public `getPublicContentPageBySlug` loader both filter on
+    // `deleted_at IS NULL`, so stamping it removes the page from the console
+    // list and the public site at once without destroying its revision history.
+    // There was previously no delete path for content_pages at all —
+    // `cms.functions.ts::deleteCmsRow` only covers the flat content tables —
+    // so abandoned pages could never be cleared.
+    const { data: archived, error } = await supabase
+      .from("content_pages")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .is("deleted_at", null)
+      .select("id");
+
+    if (error) throw new Error(error.message);
+    assertRowsAffected(archived, "content_pages", data.id);
+
+    await supabase.from("audit_logs").insert({
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
+      action: "archive",
+      entity_type: "content_pages",
+      entity_id: data.id,
+    });
+
+    return { ok: true };
+  });
+
 /* =========================================================================
  * 4. Articles, Categories & Tags
  * ========================================================================= */
@@ -1228,6 +1261,47 @@ export const addInquiryNote = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
     return { ok: true, note };
+  });
+
+/** Permanently remove a message from the merged Inbox. `contact_messages` has
+ *  no DELETE policy for `authenticated` and `inquiries` none either, so the
+ *  RLS-bypassing client is used — `requireAdminAuth` above is the boundary. */
+export const deleteInquiry = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        source_table: z.enum(["inquiries", "contact_messages"]),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const actorId = context.userId || (context.claims?.sub as string);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    if (data.source_table === "inquiries") {
+      // inquiry_notes has a FK to inquiries; clear it first in case the
+      // constraint isn't ON DELETE CASCADE.
+      await supabaseAdmin.from("inquiry_notes").delete().eq("inquiry_id", data.id);
+    }
+
+    const { data: deleted, error } = await supabaseAdmin
+      .from(data.source_table)
+      .delete()
+      .eq("id", data.id)
+      .select("id");
+    if (error) throw new Error(error.message);
+    assertRowsAffected(deleted, data.source_table, data.id);
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_user_id: actorId,
+      action: "delete",
+      entity_type: data.source_table,
+      entity_id: data.id,
+    });
+
+    return { ok: true };
   });
 
 export const getUsersAndRolesData = createServerFn({ method: "GET" })

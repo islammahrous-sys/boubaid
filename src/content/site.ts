@@ -64,15 +64,10 @@ export const siteMeta = {
     instagram: "https://instagram.com/albouabidfamily",
     youtube: "https://youtube.com/@albouabidfamily",
   },
-  bankAccount: {
-    bankName: { ar: "مصرف الإنماء", en: "Alinma Bank" } as BiText,
-    beneficiaryName: {
-      ar: "صندوق التنمية العائلية (آل بوعبيد)",
-      en: "Al-Boabid Family Development Fund",
-    } as BiText,
-    iban: "SA0305000099887766554433",
-    accountNumber: "99887766554433",
-  },
+  // The fund's bank account is NOT kept here — anything in this file ships to
+  // every anonymous visitor in the client bundle. It is served member-gated by
+  // `getMemberBankAccount` (src/lib/contributions.functions.ts) from `SITE_BANK_*`
+  // server env.
 };
 
 export const stats = [

@@ -99,27 +99,23 @@ function BranchesPage() {
     };
   });
 
-  // A branch created in the console that doesn't match one of the seven
-  // static entries used to vanish entirely from this page. Render it too —
-  // with the fields only the static register carries (settlement, headcount,
-  // sub-lineages, notable figures, tree plate) left blank rather than
-  // fabricated, since the console has no equivalent inputs for them.
-  const newBranches = branchRows
-    .filter((r) => !knownIds.has(r.slug))
-    .map((r) => ({
-      id: r.slug,
-      name: { ar: r.name_ar, en: r.name_en ?? r.name_ar },
-      ancestor: { ar: r.elder_ar ?? "", en: r.elder_en ?? r.elder_ar ?? "" },
-      settlement: { ar: "", en: "" },
-      description: { ar: r.description_ar ?? "", en: r.description_en ?? r.description_ar ?? "" },
-      count: 0,
-      subBranches: { ar: "", en: "" },
-      keyFigures: undefined as BiText[] | undefined,
-      treePoster: undefined as string | undefined,
-      image: r.image_url ?? "",
-    }));
+  // This page is the family's fixed editorial register of the *seven* documented
+  // branches (its heading and lineage prose both say so). `content_pages`-style
+  // console rows only *override* the seven static entries by matching slug — a
+  // console row whose slug matches none of them is a data-entry mismatch, not an
+  // eighth branch, and appending it here produced a register showing ten
+  // "branches" (three static + a slug-drifted duplicate set from the DB). Any
+  // genuine change to the seven is an editorial change to this file; the console
+  // is only for text/photo overrides.
+  const unmatchedConsoleBranches = branchRows.filter((r) => !knownIds.has(r.slug));
+  if (import.meta.env.DEV && unmatchedConsoleBranches.length > 0) {
+    console.warn(
+      "[branches] console branch rows with no matching static slug (not rendered):",
+      unmatchedConsoleBranches.map((r) => `${r.slug} — ${r.name_ar}`),
+    );
+  }
 
-  const fullBranchList = [...branchList, ...newBranches];
+  const fullBranchList = branchList;
 
   return (
     <>
@@ -283,24 +279,26 @@ function BranchesPage() {
                   {t(b.description)}
                 </p>
 
-                <div className="mt-7 border-t border-border pt-5">
-                  <p className="label-caps mb-3 text-muted-foreground">{t(copy.subLabel)}</p>
-                  <ul className="divide-y divide-border/70">
-                    {parseLineageList(t(b.subBranches)).map((sub, si) => (
-                      <li
-                        key={si}
-                        className="grid gap-x-6 gap-y-0.5 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,10rem)_1fr]"
-                      >
-                        <span className="text-sm font-semibold text-foreground">{sub.head}</span>
-                        {sub.names ? (
-                          <span className="text-sm leading-relaxed text-muted-foreground">
-                            {sub.names}
-                          </span>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {parseLineageList(t(b.subBranches)).length ? (
+                  <div className="mt-7 border-t border-border pt-5">
+                    <p className="label-caps mb-3 text-muted-foreground">{t(copy.subLabel)}</p>
+                    <ul className="divide-y divide-border/70">
+                      {parseLineageList(t(b.subBranches)).map((sub, si) => (
+                        <li
+                          key={si}
+                          className="grid gap-x-6 gap-y-0.5 py-2.5 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,10rem)_1fr]"
+                        >
+                          <span className="text-sm font-semibold text-foreground">{sub.head}</span>
+                          {sub.names ? (
+                            <span className="text-sm leading-relaxed text-muted-foreground">
+                              {sub.names}
+                            </span>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
 
                 {b.keyFigures?.length ? (
                   <div className="mt-6 border-t border-border pt-5">

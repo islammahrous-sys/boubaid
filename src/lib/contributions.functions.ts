@@ -79,6 +79,46 @@ export const submitContribution = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+export type MemberBankAccount = {
+  bankName: string;
+  beneficiaryName: string;
+  accountNumber: string;
+  iban: string;
+} | null;
+
+/**
+ * The fund's bank account — for signed-in, approved members only.
+ *
+ * Kept off the client entirely: the real IBAN/account number used to sit in
+ * `@/content/site.ts`, which ships to every anonymous visitor in the JS bundle,
+ * so the "members only" modal on /contribute was cosmetic. It now lives in
+ * server env (`SITE_BANK_*`), is returned only after the role check below, and
+ * the placeholder fallback stays inside this handler so it is never bundled.
+ */
+export const getMemberBankAccount = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<MemberBankAccount> => {
+    const { supabase, userId } = context;
+
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+    const roleList = (roles ?? []).map((r) => r.role as string);
+    const allowed = ["member", "admin", "super_admin", "editor", "treasurer", "content_manager"];
+    if (!roleList.some((r) => allowed.includes(r))) return null;
+
+    const env = (key: string, fallback: string) =>
+      (typeof process !== "undefined" && process.env?.[key]) || fallback;
+
+    return {
+      bankName: env("SITE_BANK_NAME", "مصرف الإنماء | Alinma Bank"),
+      beneficiaryName: env(
+        "SITE_BANK_BENEFICIARY",
+        "صندوق التنمية العائلية (آل بوعبيد) | Al-Boabid Family Development Fund",
+      ),
+      accountNumber: env("SITE_BANK_ACCOUNT_NUMBER", "99887766554433"),
+      iban: env("SITE_BANK_IBAN", "SA0305000099887766554433"),
+    };
+  });
+
 export const getMyContributions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<ContributionRow[]> => {

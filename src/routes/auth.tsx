@@ -157,7 +157,11 @@ function AuthPage() {
         // If confirmation is ever switched off, sign-up returns a live session
         // and telling them to check an inbox that will stay empty is wrong.
         if (data.session) {
-          await navigate({ href: destination });
+          try {
+            await navigate({ href: destination });
+          } catch {
+            window.location.href = destination;
+          }
           return;
         }
         toast.success(
@@ -174,7 +178,11 @@ function AuthPage() {
           password,
         });
         if (error) throw error;
-        await navigate({ href: destination });
+        try {
+          await navigate({ href: destination });
+        } catch {
+          window.location.href = destination;
+        }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : undefined;
@@ -334,7 +342,7 @@ function AuthPage() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={onSubmit} className="space-y-5">
+              <form method="post" action="#" onSubmit={(e) => { e.preventDefault(); void onSubmit(e); }} className="space-y-5">
                 {mode === "signup" ? (
                   <Field
                     id="full-name"

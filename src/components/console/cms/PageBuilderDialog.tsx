@@ -1363,6 +1363,11 @@ export function PageBuilderDialog({
                 </div>
               ) : (
                 <div className="space-y-2">
+                  <p className="text-[11px] leading-relaxed text-muted-foreground border border-border rounded-lg bg-muted/40 p-2.5">
+                    {isAr
+                      ? "الاستعادة تُرجع كتل المحتوى فقط إلى ما كانت عليه في ذلك الإصدار. عنوان الصفحة وحالتها (منشورة/مسودة) وإعدادات SEO لا تتأثر، وتُحفظ الاستعادة كإصدار جديد."
+                      : "Restore reverts the content blocks only. The page title, status (published/draft) and SEO settings are left unchanged, and the restore is saved as a new revision."}
+                  </p>
                   {revisions.map((rev, i) => (
                     <div
                       key={rev.id}

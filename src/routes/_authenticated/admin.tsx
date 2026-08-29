@@ -24,6 +24,7 @@ import {
   upsertFamilyHistory,
   getCmsPagesData,
   upsertCmsPage,
+  deleteCmsPage,
   getArticlesData,
   upsertArticle,
   getEventsData,
@@ -39,6 +40,7 @@ import {
   updateSortOrder,
   getInquiriesData,
   updateInquiryStatus,
+  deleteInquiry,
   updateContactMessageStatus,
   addInquiryNote,
   getUsersAndRolesData,
@@ -292,6 +294,7 @@ function MasterAdminPage() {
   const savePlaceMut = useServerFn(upsertPlace);
   const saveHistMut = useServerFn(upsertFamilyHistory);
   const savePageMut = useServerFn(upsertCmsPage);
+  const delPageMut = useServerFn(deleteCmsPage);
   const saveArtMut = useServerFn(upsertArticle);
   const bulkArtMut = useServerFn(bulkArticlesAction);
   const saveEventMut = useServerFn(upsertEvent);
@@ -309,6 +312,7 @@ function MasterAdminPage() {
   const delGalleryMediaMut = useServerFn(deleteGalleryMedia);
   const reorderMut = useServerFn(updateSortOrder);
   const updateInqStatusMut = useServerFn(updateInquiryStatus);
+  const delInquiryMut = useServerFn(deleteInquiry);
   const updateContactStatusMut = useServerFn(updateContactMessageStatus);
   const addNoteMut = useServerFn(addInquiryNote);
   const assignRoleMut = useServerFn(assignUserRole);
@@ -1084,6 +1088,9 @@ function MasterAdminPage() {
                   sections={(pagesData?.sections ?? []) as any}
                   revisions={(pagesData?.revisions ?? []) as any}
                   onSavePage={(data) => runMutation(() => savePageMut({ data }), refreshPages)}
+                  onDeletePage={(id) =>
+                    runMutation(() => delPageMut({ data: { id } }), refreshPages)
+                  }
                 />
               ))}
 
@@ -1253,6 +1260,12 @@ function MasterAdminPage() {
                   }
                   onAddNote={(inquiry_id, note) =>
                     runMutation(() => addNoteMut({ data: { inquiry_id, note } }), refreshInquiries)
+                  }
+                  onDelete={(id, sourceTable) =>
+                    runMutation(
+                      () => delInquiryMut({ data: { id, source_table: sourceTable } }),
+                      refreshInquiries,
+                    )
                   }
                 />
               ))}
