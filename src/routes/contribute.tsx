@@ -35,6 +35,7 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   submitContribution,
   getMyContributions,
+  getMemberBankAccount,
   type ContributionRow,
 } from "@/lib/contributions.functions";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -245,11 +246,18 @@ function ContributePage() {
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
   const label = (ar: string, en: string) => (lang === "ar" ? ar : en);
-  const { user } = useAuth();
+  const { user, roles, canAccessConsole } = useAuth();
+  // The official bank account is member-only per the modal's own copy. "Signed
+  // in" is not enough — a brand-new account is not yet a vetted family member.
+  // Approved members carry the `member` role; council staff (editor, treasurer,
+  // …) qualify through canAccessConsole. Matches the rule in account.tsx and
+  // getMemberVerification.
+  const isVerifiedMember = canAccessConsole || roles.includes("member");
   const queryClient = useQueryClient();
 
   const submit = useServerFn(submitContribution);
   const fetchMine = useServerFn(getMyContributions);
+  const fetchBankAccount = useServerFn(getMemberBankAccount);
 
   const { data: mine, isLoading: mineLoading } = useQuery({
     queryKey: ["my-contributions"],
@@ -273,9 +281,19 @@ function ContributePage() {
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
 
+  // Member-gated; only fetched once the modal is opened by a verified member,
+  // so the account number / IBAN are never in the anonymous page payload.
+  const { data: bankAccount, isLoading: bankLoading } = useQuery({
+    queryKey: ["member-bank-account"],
+    queryFn: () => fetchBankAccount(),
+    enabled: isVerifiedMember && bankModalOpen,
+    staleTime: 1000 * 60 * 10,
+  });
+
   const handleCopyIban = async () => {
+    if (!bankAccount?.iban) return;
     try {
-      await navigator.clipboard.writeText(siteMeta.bankAccount.iban);
+      await navigator.clipboard.writeText(bankAccount.iban);
       setCopiedIban(true);
       toast.success(lang === "ar" ? "تم نسخ الآيبان (IBAN) بنجاح" : "IBAN copied to clipboard");
       setTimeout(() => setCopiedIban(false), 2500);
@@ -517,74 +535,95 @@ function ContributePage() {
                 </DialogDescription>
               </DialogHeader>
 
-              {user ? (
-                <div className="mt-4 space-y-4 rounded-lg border border-border bg-muted/40 p-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground block mb-1">
-                      {lang === "ar" ? "اسم المستفيد / الجهة" : "Beneficiary Name"}
-                    </span>
-                    <span className="text-sm font-medium text-foreground">
-                      {t(siteMeta.bankAccount.beneficiaryName)}
-                    </span>
+              {isVerifiedMember ? (
+                bankLoading || !bankAccount ? (
+                  <div className="mt-4 rounded-lg border border-border bg-muted/40 p-6 text-center text-sm text-muted-foreground">
+                    {lang === "ar" ? "جارٍ تحميل بيانات الحساب…" : "Loading account details…"}
                   </div>
+                ) : (
+                  <div className="mt-4 space-y-4 rounded-lg border border-border bg-muted/40 p-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground block mb-1">
+                        {lang === "ar" ? "اسم المستفيد / الجهة" : "Beneficiary Name"}
+                      </span>
+                      <span className="text-sm font-medium text-foreground">
+                        {bankAccount.beneficiaryName}
+                      </span>
+                    </div>
 
-                  <div>
-                    <span className="text-xs text-muted-foreground block mb-1">
-                      {lang === "ar" ? "البنك" : "Bank"}
-                    </span>
-                    <span className="text-sm font-medium text-foreground">
-                      {t(siteMeta.bankAccount.bankName)}
-                    </span>
-                  </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground block mb-1">
+                        {lang === "ar" ? "البنك" : "Bank"}
+                      </span>
+                      <span className="text-sm font-medium text-foreground">
+                        {bankAccount.bankName}
+                      </span>
+                    </div>
 
-                  <div>
-                    <span className="text-xs text-muted-foreground block mb-1">
-                      {lang === "ar" ? "رقم الحساب" : "Account Number"}
-                    </span>
-                    <code className="text-sm font-mono text-foreground font-semibold">
-                      {siteMeta.bankAccount.accountNumber}
-                    </code>
-                  </div>
-
-                  <div className="border-t border-border pt-3">
-                    <span className="text-xs text-muted-foreground block mb-1">
-                      {lang === "ar"
-                        ? "رقم الآيبان الدولي (IBAN)"
-                        : "International Bank Account Number (IBAN)"}
-                    </span>
-                    <div className="mt-1 flex items-center justify-between gap-2 rounded border border-border bg-background p-2.5">
-                      <code
-                        className="text-xs sm:text-sm font-mono font-bold tracking-wider text-foreground select-all"
-                        dir="ltr"
-                      >
-                        {siteMeta.bankAccount.iban}
+                    <div>
+                      <span className="text-xs text-muted-foreground block mb-1">
+                        {lang === "ar" ? "رقم الحساب" : "Account Number"}
+                      </span>
+                      <code className="text-sm font-mono text-foreground font-semibold">
+                        {bankAccount.accountNumber}
                       </code>
-                      <button
-                        type="button"
-                        onClick={handleCopyIban}
-                        className="inline-flex items-center gap-1.5 rounded bg-bronze/10 px-2.5 py-1.5 text-xs font-medium text-bronze transition-colors hover:bg-bronze hover:text-white dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
-                      >
-                        {copiedIban ? (
-                          <>
-                            <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                            <span>{lang === "ar" ? "تم النسخ" : "Copied"}</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="h-3.5 w-3.5" />
-                            <span>{lang === "ar" ? "نسخ" : "Copy"}</span>
-                          </>
-                        )}
-                      </button>
+                    </div>
+
+                    <div className="border-t border-border pt-3">
+                      <span className="text-xs text-muted-foreground block mb-1">
+                        {lang === "ar"
+                          ? "رقم الآيبان الدولي (IBAN)"
+                          : "International Bank Account Number (IBAN)"}
+                      </span>
+                      <div className="mt-1 flex items-center justify-between gap-2 rounded border border-border bg-background p-2.5">
+                        <code
+                          className="text-xs sm:text-sm font-mono font-bold tracking-wider text-foreground select-all"
+                          dir="ltr"
+                        >
+                          {bankAccount.iban}
+                        </code>
+                        <button
+                          type="button"
+                          onClick={handleCopyIban}
+                          className="inline-flex items-center gap-1.5 rounded bg-bronze/10 px-2.5 py-1.5 text-xs font-medium text-bronze transition-colors hover:bg-bronze hover:text-white dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
+                        >
+                          {copiedIban ? (
+                            <>
+                              <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                              <span>{lang === "ar" ? "تم النسخ" : "Copied"}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3.5 w-3.5" />
+                              <span>{lang === "ar" ? "نسخ" : "Copy"}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
+                )
+              ) : user ? (
+                <div className="mt-4 space-y-3 rounded-lg border border-border bg-muted/40 p-4">
+                  <p className="text-sm leading-relaxed text-foreground">
+                    {lang === "ar"
+                      ? "بيانات الحساب البنكي متاحة لأعضاء الأسرة المعتمدين. حسابك قيد المراجعة من قِبل الأمانة، وستظهر البيانات هنا بعد اعتماد العضوية."
+                      : "Bank account details are available to approved family members. Your account is still under review by the secretariat — the details will appear here once your membership is approved."}
+                  </p>
+                  <Link
+                    to="/account"
+                    className="inline-flex items-center gap-2 border border-ink bg-ink px-4 py-2 text-xs font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+                  >
+                    {lang === "ar" ? "متابعة حالة العضوية" : "Check membership status"}
+                    <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
                 </div>
               ) : (
                 <div className="mt-4 space-y-3 rounded-lg border border-border bg-muted/40 p-4">
                   <p className="text-sm leading-relaxed text-foreground">
                     {lang === "ar"
-                      ? "بيانات الحساب البنكي متاحة لأعضاء الأسرة المسجَّلين فقط. يرجى تسجيل الدخول لعرضها."
-                      : "Bank account details are available to registered family members only. Please sign in to view them."}
+                      ? "بيانات الحساب البنكي متاحة لأعضاء الأسرة المعتمدين فقط. يرجى تسجيل الدخول لعرضها."
+                      : "Bank account details are available to approved family members only. Please sign in to view them."}
                   </p>
                   <Link
                     to="/auth"

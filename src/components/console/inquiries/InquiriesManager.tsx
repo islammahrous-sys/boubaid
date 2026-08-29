@@ -19,6 +19,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useLang } from "@/i18n/LanguageProvider";
+import { useConfirm } from "@/hooks/useConfirm";
 import {
   MessageSquare,
   Mail,
@@ -31,6 +32,7 @@ import {
   AlertCircle,
   Activity,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -68,6 +70,7 @@ export function InquiriesManager({
   totalCount,
   onUpdateStatus,
   onAddNote,
+  onDelete,
 }: {
   notes: InquiryNoteRow[];
   newCount: number;
@@ -80,9 +83,11 @@ export function InquiriesManager({
     sourceTable: "inquiries" | "contact_messages",
   ) => Promise<void>;
   onAddNote: (inquiryId: string, note: string) => Promise<void>;
+  onDelete: (id: string, sourceTable: "inquiries" | "contact_messages") => Promise<void>;
 }) {
   const { lang, dir } = useLang();
   const isAr = lang === "ar";
+  const confirm = useConfirm();
 
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryRow | null>(null);
@@ -634,6 +639,34 @@ export function InquiriesManager({
                     </div>
                   </div>
                 )}
+
+                <div className="pt-6 mt-2 border-t border-border">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-muted-foreground hover:text-destructive gap-1.5"
+                    onClick={async () => {
+                      if (
+                        !(await confirm({
+                          title: isAr
+                            ? "حذف هذه الرسالة نهائيًا؟"
+                            : "Delete this message permanently?",
+                          description: isAr
+                            ? "سيتم حذف الرسالة وأي ملاحظات داخلية مرتبطة بها ولا يمكن التراجع. للاحتفاظ بها بعيدًا عن الوارد استخدم حالة «مؤرشف» بدلًا من ذلك."
+                            : "The message and any internal notes are removed for good. To keep it out of the inbox without deleting, set its status to “archived” instead.",
+                          tone: "destructive",
+                        }))
+                      )
+                        return;
+                      const target = selectedInquiry;
+                      setSelectedInquiry(null);
+                      await onDelete(target.id, target.source_table);
+                    }}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    {isAr ? "حذف الرسالة نهائيًا" : "Delete message permanently"}
+                  </Button>
+                </div>
               </div>
             </>
           )}

@@ -58,26 +58,26 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
     const request = getRequest();
 
     if (!request?.headers) {
-      throw new Error("Unauthorized: No request headers available");
+      throw new Response("Unauthorized: No request headers available", { status: 401 });
     }
 
     const authHeader = request.headers.get("authorization");
 
     if (!authHeader) {
-      throw new Error("Unauthorized: No authorization header provided");
+      throw new Response("Unauthorized: No authorization header provided", { status: 401 });
     }
 
     if (!authHeader.startsWith("Bearer ")) {
-      throw new Error("Unauthorized: Only Bearer tokens are supported");
+      throw new Response("Unauthorized: Only Bearer tokens are supported", { status: 401 });
     }
 
     const token = authHeader.replace("Bearer ", "");
     if (!token) {
-      throw new Error("Unauthorized: No token provided");
+      throw new Response("Unauthorized: No token provided", { status: 401 });
     }
 
     if (token.split(".").length !== 3) {
-      throw new Error("Unauthorized: Invalid token");
+      throw new Response("Unauthorized: Invalid token", { status: 401 });
     }
 
     const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_PUBLISHABLE_KEY!, {
@@ -120,7 +120,7 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
     }
 
     if (!userId) {
-      throw new Error("Unauthorized: Invalid or unverified token");
+      throw new Response("Unauthorized: Invalid or unverified token", { status: 401 });
     }
 
     const userObj = {
@@ -156,12 +156,12 @@ export const requireAdminAuth = createMiddleware({ type: "function" })
       .eq("user_id", userId);
 
     if (error || !roles) {
-      throw new Error("Forbidden: Could not verify user permissions");
+      throw new Response("Forbidden: Could not verify user permissions", { status: 403 });
     }
 
     const roleList = roles.map((r: { role: string }) => r.role);
     if (!roleList.includes("admin") && !roleList.includes("super_admin")) {
-      throw new Error("Forbidden: Administrative privileges required");
+      throw new Response("Forbidden: Administrative privileges required", { status: 403 });
     }
 
     return next();
@@ -178,7 +178,7 @@ export const requireEditorAuth = createMiddleware({ type: "function" })
       .eq("user_id", userId);
 
     if (error || !roles) {
-      throw new Error("Forbidden: Could not verify user permissions");
+      throw new Response("Forbidden: Could not verify user permissions", { status: 403 });
     }
 
     const roleList = roles.map((r: { role: string }) => r.role);
@@ -188,7 +188,7 @@ export const requireEditorAuth = createMiddleware({ type: "function" })
       !roleList.includes("editor") &&
       !roleList.includes("content_manager")
     ) {
-      throw new Error("Forbidden: Editor privileges required");
+      throw new Response("Forbidden: Editor privileges required", { status: 403 });
     }
 
     return next();
@@ -208,7 +208,7 @@ export const requireFamilyManagementAuth = createMiddleware({ type: "function" }
       .eq("user_id", userId);
 
     if (error || !roles) {
-      throw new Error("Forbidden: Could not verify user permissions");
+      throw new Response("Forbidden: Could not verify user permissions", { status: 403 });
     }
 
     const roleList = roles.map((r: { role: string }) => r.role);
@@ -217,7 +217,7 @@ export const requireFamilyManagementAuth = createMiddleware({ type: "function" }
       !roleList.includes("super_admin") &&
       !roleList.includes("family_manager")
     ) {
-      throw new Error("Forbidden: Family management privileges required");
+      throw new Response("Forbidden: Family management privileges required", { status: 403 });
     }
 
     return next();
@@ -234,7 +234,7 @@ export const requireTreasuryAuth = createMiddleware({ type: "function" })
       .eq("user_id", userId);
 
     if (error || !roles) {
-      throw new Error("Forbidden: Could not verify user permissions");
+      throw new Response("Forbidden: Could not verify user permissions", { status: 403 });
     }
 
     const roleList = roles.map((r: { role: string }) => r.role);
@@ -243,7 +243,7 @@ export const requireTreasuryAuth = createMiddleware({ type: "function" })
       !roleList.includes("super_admin") &&
       !roleList.includes("treasurer")
     ) {
-      throw new Error("Forbidden: Treasury privileges required");
+      throw new Response("Forbidden: Treasury privileges required", { status: 403 });
     }
 
     return next();

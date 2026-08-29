@@ -40,6 +40,7 @@ import {
   updateSortOrder,
   getInquiriesData,
   updateInquiryStatus,
+  deleteInquiry,
   updateContactMessageStatus,
   addInquiryNote,
   getUsersAndRolesData,
@@ -311,6 +312,7 @@ function MasterAdminPage() {
   const delGalleryMediaMut = useServerFn(deleteGalleryMedia);
   const reorderMut = useServerFn(updateSortOrder);
   const updateInqStatusMut = useServerFn(updateInquiryStatus);
+  const delInquiryMut = useServerFn(deleteInquiry);
   const updateContactStatusMut = useServerFn(updateContactMessageStatus);
   const addNoteMut = useServerFn(addInquiryNote);
   const assignRoleMut = useServerFn(assignUserRole);
@@ -1258,6 +1260,12 @@ function MasterAdminPage() {
                   }
                   onAddNote={(inquiry_id, note) =>
                     runMutation(() => addNoteMut({ data: { inquiry_id, note } }), refreshInquiries)
+                  }
+                  onDelete={(id, sourceTable) =>
+                    runMutation(
+                      () => delInquiryMut({ data: { id, source_table: sourceTable } }),
+                      refreshInquiries,
+                    )
                   }
                 />
               ))}
