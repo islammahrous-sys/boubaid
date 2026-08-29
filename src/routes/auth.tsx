@@ -342,7 +342,15 @@ function AuthPage() {
                 </button>
               </div>
             ) : (
-              <form method="post" action="#" onSubmit={(e) => { e.preventDefault(); void onSubmit(e); }} className="space-y-5">
+              <form
+                method="post"
+                action="#"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void onSubmit(e);
+                }}
+                className="space-y-5"
+              >
                 {mode === "signup" ? (
                   <Field
                     id="full-name"
