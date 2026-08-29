@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, ShieldCheck, UsersRound, Landmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageProvider";
-import { PageHeader } from "@/components/site/PageHeader";
 import {
   TurnstileWidget,
   isTurnstileConfigured,
@@ -12,7 +11,7 @@ import {
 } from "@/components/site/TurnstileWidget";
 import { verifyTurnstile } from "@/lib/turnstile.functions";
 import { translateAuthError } from "@/lib/text";
-import heroManuscript from "@/assets/hero-manuscript.jpg";
+import authManuscript from "@/assets/auth-manuscript.jpg";
 
 /** Where a member lands after signing in when no destination was requested. */
 const DEFAULT_DESTINATION = "/account";
@@ -192,288 +191,329 @@ function AuthPage() {
     }
   };
 
-  return (
-    <div className="pb-20">
-      <PageHeader
-        eyebrow={label("بوابة الأعضاء", "Member portal")}
-        title={label("دخول الأعضاء", "Member sign-in")}
-        subtitle={label(
-          "الدخول مخصص لأفراد الأسرة. بعد إنشاء الحساب يُقدَّم طلب العضوية ويُعتمد من أمانة المجلس.",
-          "Access is for family members. After creating an account you submit a membership request for the council secretariat to approve.",
-        )}
-      />
+  const rise = (delay: number): React.CSSProperties => ({
+    animationDelay: `${delay}ms`,
+  });
 
-      <section className="container-page mt-12 reveal-fade">
-        <div className="mx-auto grid max-w-5xl overflow-hidden border border-border bg-card lg:grid-cols-[1.05fr_1fr]">
-          {/* Brand panel */}
-          <aside className="relative hidden min-h-[560px] lg:block">
+  return (
+    <div className="flex min-h-[calc(100vh-8rem)] items-center py-10 sm:py-14">
+      <section className="container-page w-full">
+        <div className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-2xl border border-ink/10 bg-card shadow-[0_24px_80px_-24px_color-mix(in_oklab,var(--ink)_25%,transparent)] lg:min-h-[680px] lg:grid-cols-[5fr_7fr]">
+          {/* ── Heritage panel ─────────────────────────────────────── */}
+          <aside className="relative hidden overflow-hidden bg-ink lg:flex lg:flex-col lg:justify-between">
             <img
-              src={heroManuscript}
-              alt={label(
-                "مخطوطة تاريخية من أرشيف أسرة آل بوعبيد",
-                "A historic manuscript from the Al Bu Obaid family archive",
-              )}
-              className="absolute inset-0 h-full w-full object-cover"
+              src={authManuscript}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover opacity-40"
               loading="lazy"
+              width={1024}
+              height={1280}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/80 to-ink/50" />
-            <div className="relative flex h-full flex-col justify-between p-10 text-ivory">
-              <img
-                src="/logo-mark-cream.svg"
-                alt={label("شعار مجلس أسرة آل بوعبيد", "Al Bu Obaid Family Council emblem")}
-                className="h-14 w-auto opacity-95"
-              />
-              <div className="space-y-6">
-                <h2 className="font-naskh text-2xl leading-relaxed text-ivory/95">
-                  {label(
-                    "سجلٌ عائلي واحد، وأمانةٌ واحدة، تُحفظ بها الصلة بين الفروع.",
-                    "One family register, one trust — keeping every branch connected.",
-                  )}
-                </h2>
-                <ul className="space-y-4 text-[13px] text-ivory/80">
-                  {[
-                    {
-                      icon: ShieldCheck,
-                      text: label(
-                        "حساب موثّق ومعتمد من أمانة المجلس",
-                        "Account verified by the council secretariat",
-                      ),
-                    },
-                    {
-                      icon: UsersRound,
-                      text: label(
-                        "دليل الأعضاء والفروع والمشجرة الموثّقة",
-                        "Member directory, branches and the documented tree",
-                      ),
-                    },
-                    {
-                      icon: Landmark,
-                      text: label(
-                        "متابعة الاشتراكات ومساهمات الصندوق",
-                        "Track subscriptions and fund contributions",
-                      ),
-                    },
-                  ].map(({ icon: Icon, text }) => (
-                    <li key={text} className="flex items-start gap-3">
-                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-gold" aria-hidden />
-                      <span className="leading-relaxed">{text}</span>
-                    </li>
-                  ))}
-                </ul>
+            <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40" />
+            {/* Decorative gold ring */}
+            <div
+              aria-hidden
+              className="absolute -bottom-24 -end-24 h-80 w-80 rounded-full border-[36px] border-gold/10"
+            />
+
+            <div className="relative z-10 p-10 xl:p-14">
+              <div className="animate-fade-up opacity-0" style={rise(0)}>
+                <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-2xl border border-ivory/20 bg-ivory/10 backdrop-blur-md transition-transform duration-500 hover:scale-105">
+                  <img
+                    src="/logo-mark-cream.svg"
+                    alt={label("شعار مجلس أسرة آل بوعبيد", "Al Bu Obaid Family Council emblem")}
+                    className="h-12 w-auto"
+                  />
+                </div>
+                <h1 className="font-brand text-3xl font-bold leading-relaxed text-ivory">
+                  {label("مجلس أسرة", "The Council of")}
+                  <br />
+                  <span className="text-gold">{label("آل بوعبيد", "Al Bu Obaid")}</span>
+                </h1>
+                <div aria-hidden className="mt-5 h-px w-14 bg-gold/70" />
               </div>
+
+              <ul className="mt-14 space-y-8">
+                {[
+                  {
+                    icon: ShieldCheck,
+                    title: label("حساب موثّق ومعتمد", "A verified account"),
+                    desc: label(
+                      "تُعتمد العضوية من أمانة المجلس قبل تفعيل الوصول.",
+                      "Membership is approved by the council secretariat before access.",
+                    ),
+                  },
+                  {
+                    icon: UsersRound,
+                    title: label("حفظ الموروث العائلي", "Preserving the heritage"),
+                    desc: label(
+                      "دليل الأعضاء والفروع والمشجرة الموثّقة في مكان واحد.",
+                      "The member directory, branches, and documented tree in one place.",
+                    ),
+                  },
+                  {
+                    icon: Landmark,
+                    title: label("أمانة الصندوق", "Stewardship of the fund"),
+                    desc: label(
+                      "متابعة الاشتراكات ومساهمات صندوق التنمية بشفافية.",
+                      "Track subscriptions and development-fund contributions transparently.",
+                    ),
+                  },
+                ].map(({ icon: Icon, title, desc }, i) => (
+                  <li
+                    key={title}
+                    className="flex items-start gap-4 animate-fade-up opacity-0"
+                    style={rise(120 + i * 90)}
+                  >
+                    <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold/15">
+                      <Icon className="h-3.5 w-3.5 text-gold" aria-hidden />
+                    </span>
+                    <span>
+                      <span className="block text-[15px] font-semibold text-ivory">{title}</span>
+                      <span className="mt-1 block text-[13px] leading-relaxed text-ivory/60">
+                        {desc}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
+
+            <p className="relative z-10 p-10 pt-0 text-[11px] tracking-wide text-ivory/40 xl:px-14">
+              {label(
+                "سجلٌ عائلي واحد، وأمانةٌ واحدة، تُحفظ بها الصلة بين الفروع.",
+                "One family register, one trust — keeping every branch connected.",
+              )}
+            </p>
           </aside>
 
-          {/* Form panel */}
-          <div className="p-4 sm:p-8 md:p-10">
-            <div className="mb-8">
-              <p className="label-caps text-muted-foreground">
-                {label("الأمانة العامة — بوابة الأعضاء", "Secretariat — member portal")}
-              </p>
-              <h1 className="mt-2 font-naskh text-2xl text-foreground">
-                {mode === "signin"
-                  ? label("مرحباً بعودتك", "Welcome back")
-                  : mode === "signup"
-                    ? label("إنشاء حساب عضو", "Create a member account")
-                    : label("استعادة كلمة المرور", "Reset your password")}
-              </h1>
-              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                {mode === "signin"
-                  ? label(
-                      "أدخل بيانات حسابك للوصول إلى خدمات الأسرة.",
-                      "Enter your credentials to reach the family services.",
-                    )
-                  : mode === "signup"
-                    ? label(
-                        "سجّل بياناتك، ثم قدّم طلب العضوية لاعتماده من الأمانة.",
-                        "Register your details, then submit a membership request for approval.",
-                      )
-                    : label(
-                        "أدخل بريدك الإلكتروني وسنرسل لك رابطاً آمناً لتعيين كلمة مرور جديدة.",
-                        "Enter your email and we'll send you a secure link to set a new password.",
-                      )}
-              </p>
-            </div>
+          {/* ── Form panel ─────────────────────────────────────────── */}
+          <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-14">
+            <div className="mx-auto w-full max-w-md">
+              {mode !== "forgot" ? (
+                <div
+                  role="tablist"
+                  aria-label={label("نوع الدخول", "Access mode")}
+                  className="mb-10 grid grid-cols-2 gap-1 rounded-full border border-border bg-secondary/60 p-1.5 animate-fade-up opacity-0"
+                  style={rise(0)}
+                >
+                  {(["signin", "signup"] as const).map((m) => (
+                    <button
+                      key={m}
+                      role="tab"
+                      aria-selected={mode === m}
+                      type="button"
+                      onClick={() => switchMode(m)}
+                      className={`rounded-full py-2.5 text-[13px] font-semibold transition-all duration-300 ${
+                        mode === m
+                          ? "bg-card text-ink shadow-sm dark:text-gold"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {m === "signin"
+                        ? label("تسجيل الدخول", "Sign in")
+                        : label("عضوية جديدة", "New membership")}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
 
-            {mode !== "forgot" ? (
-              <div
-                role="tablist"
-                aria-label={label("نوع الدخول", "Access mode")}
-                className="mb-7 grid grid-cols-2 border border-border p-1"
-              >
-                {(["signin", "signup"] as const).map((m) => (
-                  <button
-                    key={m}
-                    role="tab"
-                    aria-selected={mode === m}
-                    type="button"
-                    onClick={() => switchMode(m)}
-                    className={`py-2 text-[13px] font-medium transition-all duration-300 ${
-                      mode === m
-                        ? "bg-ink text-ivory shadow-sm dark:bg-gold dark:text-ink"
-                        : "text-muted-foreground hover:bg-secondary"
-                    }`}
-                  >
-                    {m === "signin"
-                      ? label("تسجيل الدخول", "Sign in")
-                      : label("حساب جديد", "Create account")}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            {mode === "forgot" && resetSent ? (
-              <div className="space-y-5">
-                <p className="border border-border bg-secondary/40 p-4 text-[13px] leading-relaxed text-foreground">
-                  {label(
-                    "إذا كان البريد مسجلاً لدينا، فستصلك رسالة تحتوي رابط إعادة تعيين كلمة المرور خلال دقائق.",
-                    "If that email is registered, a password reset link should arrive within a few minutes.",
-                  )}
+              <div className="mb-9 animate-fade-up opacity-0" style={rise(70)}>
+                <p className="label-caps text-muted-foreground">
+                  {label("الأمانة العامة — بوابة الأعضاء", "Secretariat — member portal")}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    switchMode("signin");
-                    setResetSent(false);
-                  }}
-                  className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
-                >
-                  {label("العودة لتسجيل الدخول", "Back to sign in")}
-                </button>
-              </div>
-            ) : (
-              <form
-                method="post"
-                action="#"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void onSubmit(e);
-                }}
-                className="space-y-5"
-              >
-                {mode === "signup" ? (
-                  <Field
-                    id="full-name"
-                    label={label("الاسم الكامل (بالعربية)", "Full name (Arabic)")}
-                    value={fullName}
-                    onChange={setFullName}
-                    autoComplete="name"
-                    required
-                  />
-                ) : null}
-                <Field
-                  id="email"
-                  type="email"
-                  label={label("البريد الإلكتروني", "Email")}
-                  value={email}
-                  onChange={setEmail}
-                  autoComplete="email"
-                  dir="ltr"
-                  required
-                />
-                {mode !== "forgot" ? (
-                  <Field
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    label={label("كلمة المرور", "Password")}
-                    value={password}
-                    onChange={setPassword}
-                    autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                    dir="ltr"
-                    required
-                    hint={
-                      mode === "signup"
-                        ? label("٨ أحرف على الأقل.", "At least 8 characters.")
-                        : undefined
-                    }
-                    trailing={
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((v) => !v)}
-                        aria-label={
-                          showPassword
-                            ? label("إخفاء كلمة المرور", "Hide password")
-                            : label("إظهار كلمة المرور", "Show password")
-                        }
-                        className="text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    }
-                  />
-                ) : null}
-
-                {mode === "signin" ? (
-                  <div className="flex justify-end -mt-2">
-                    <button
-                      type="button"
-                      onClick={() => switchMode("forgot")}
-                      className="text-[12px] font-medium text-muted-foreground underline decoration-gold/60 underline-offset-4 hover:text-foreground hover:decoration-gold"
-                    >
-                      {label("نسيت كلمة المرور؟", "Forgot password?")}
-                    </button>
-                  </div>
-                ) : null}
-
-                {mode === "signup" ? (
-                  <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
-                ) : null}
-
-                <button
-                  type="submit"
-                  disabled={busy}
-                  className="flex w-full items-center justify-center gap-2 border border-gold bg-gold px-4 py-3 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
-                >
-                  {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-                  {busy
-                    ? label("جارٍ المعالجة…", "Working…")
-                    : mode === "signin"
-                      ? label("دخول", "Sign in")
-                      : mode === "signup"
-                        ? label("إنشاء الحساب", "Create account")
-                        : label("إرسال رابط الاستعادة", "Send reset link")}
-                </button>
-              </form>
-            )}
-
-            <div className="mt-7 border-t border-border pt-5 text-center text-[12px] leading-relaxed text-muted-foreground">
-              {mode === "forgot" ? (
-                !resetSent ? (
-                  <p>
-                    <button
-                      type="button"
-                      onClick={() => switchMode("signin")}
-                      className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
-                    >
-                      {label("العودة لتسجيل الدخول", "Back to sign in")}
-                    </button>
-                  </p>
-                ) : null
-              ) : (
-                <p>
+                <h2 className="mt-3 font-naskh text-3xl font-bold text-ink dark:text-foreground">
                   {mode === "signin"
-                    ? label("ليس لديك حساب؟ ", "No account yet? ")
-                    : label("لديك حساب بالفعل؟ ", "Already registered? ")}
+                    ? label("أهلاً بكم في داركم", "Welcome back")
+                    : mode === "signup"
+                      ? label("إنشاء حساب عضو", "Create a member account")
+                      : label("استعادة كلمة المرور", "Reset your password")}
+                </h2>
+                <p className="mt-2.5 text-[13px] leading-relaxed text-muted-foreground">
+                  {mode === "signin"
+                    ? label(
+                        "أدخل بيانات الدخول للوصول إلى بوابة العائلة.",
+                        "Enter your credentials to reach the family portal.",
+                      )
+                    : mode === "signup"
+                      ? label(
+                          "سجّل بياناتك، ثم قدّم طلب العضوية لاعتماده من الأمانة.",
+                          "Register your details, then submit a membership request for approval.",
+                        )
+                      : label(
+                          "أدخل بريدك الإلكتروني وسنرسل لك رابطاً آمناً لتعيين كلمة مرور جديدة.",
+                          "Enter your email and we'll send you a secure link to set a new password.",
+                        )}
+                </p>
+              </div>
+
+              {mode === "forgot" && resetSent ? (
+                <div className="space-y-5 animate-fade-up opacity-0" style={rise(140)}>
+                  <p className="rounded-xl border border-border bg-secondary/40 p-4 text-[13px] leading-relaxed text-foreground">
+                    {label(
+                      "إذا كان البريد مسجلاً لدينا، فستصلك رسالة تحتوي رابط إعادة تعيين كلمة المرور خلال دقائق.",
+                      "If that email is registered, a password reset link should arrive within a few minutes.",
+                    )}
+                  </p>
                   <button
                     type="button"
-                    onClick={() => switchMode(mode === "signin" ? "signup" : "signin")}
+                    onClick={() => {
+                      switchMode("signin");
+                      setResetSent(false);
+                    }}
                     className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
                   >
-                    {mode === "signin"
-                      ? label("أنشئ حساباً جديداً", "Create one")
-                      : label("سجّل الدخول", "Sign in")}
+                    {label("العودة لتسجيل الدخول", "Back to sign in")}
                   </button>
-                </p>
+                </div>
+              ) : (
+                <form
+                  method="post"
+                  action="#"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void onSubmit(e);
+                  }}
+                  className="space-y-5"
+                >
+                  <div className="space-y-5 animate-fade-up opacity-0" style={rise(140)}>
+                    {mode === "signup" ? (
+                      <Field
+                        id="full-name"
+                        label={label("الاسم الكامل (بالعربية)", "Full name (Arabic)")}
+                        value={fullName}
+                        onChange={setFullName}
+                        autoComplete="name"
+                        required
+                      />
+                    ) : null}
+                    <Field
+                      id="email"
+                      type="email"
+                      label={label("البريد الإلكتروني", "Email")}
+                      value={email}
+                      onChange={setEmail}
+                      autoComplete="email"
+                      dir="ltr"
+                      placeholder="name@example.com"
+                      required
+                    />
+                    {mode !== "forgot" ? (
+                      <Field
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        label={label("كلمة المرور", "Password")}
+                        value={password}
+                        onChange={setPassword}
+                        autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                        dir="ltr"
+                        required
+                        hint={
+                          mode === "signup"
+                            ? label("٨ أحرف على الأقل.", "At least 8 characters.")
+                            : undefined
+                        }
+                        labelTrailing={
+                          mode === "signin" ? (
+                            <button
+                              type="button"
+                              onClick={() => switchMode("forgot")}
+                              className="text-[12px] font-medium text-bronze underline decoration-gold/50 underline-offset-4 transition-colors hover:text-ink hover:decoration-gold dark:hover:text-gold"
+                            >
+                              {label("نسيت كلمة المرور؟", "Forgot password?")}
+                            </button>
+                          ) : undefined
+                        }
+                        trailing={
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((v) => !v)}
+                            aria-label={
+                              showPassword
+                                ? label("إخفاء كلمة المرور", "Hide password")
+                                : label("إظهار كلمة المرور", "Show password")
+                            }
+                            className="text-muted-foreground transition-colors hover:text-foreground"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        }
+                      />
+                    ) : null}
+                  </div>
+
+                  {mode === "signup" ? (
+                    <div className="animate-fade-up opacity-0" style={rise(210)}>
+                      <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
+                    </div>
+                  ) : null}
+
+                  <div className="animate-fade-up opacity-0" style={rise(280)}>
+                    <button
+                      type="submit"
+                      disabled={busy}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gold px-4 py-3.5 text-[14px] font-bold text-ink shadow-[0_12px_24px_-10px_color-mix(in_oklab,var(--gold)_60%,transparent)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.99] disabled:opacity-60 disabled:hover:translate-y-0"
+                    >
+                      {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+                      {busy
+                        ? label("جارٍ المعالجة…", "Working…")
+                        : mode === "signin"
+                          ? label("دخول البوابة", "Enter the portal")
+                          : mode === "signup"
+                            ? label("إنشاء الحساب", "Create account")
+                            : label("إرسال رابط الاستعادة", "Send reset link")}
+                    </button>
+                  </div>
+                </form>
               )}
-              <p className="mt-3">
-                <Link to="/contact" className="underline hover:text-foreground">
-                  {label("تحتاج مساعدة؟ اتصل بالأمانة", "Need help? Contact the secretariat")}
-                </Link>
-              </p>
+
+              <div
+                className="mt-10 border-t border-border pt-6 text-center text-[12px] leading-relaxed text-muted-foreground animate-fade-up opacity-0"
+                style={rise(350)}
+              >
+                {mode === "forgot" ? (
+                  !resetSent ? (
+                    <p>
+                      <button
+                        type="button"
+                        onClick={() => switchMode("signin")}
+                        className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
+                      >
+                        {label("العودة لتسجيل الدخول", "Back to sign in")}
+                      </button>
+                    </p>
+                  ) : null
+                ) : (
+                  <p>
+                    {mode === "signin"
+                      ? label("ليس لديك حساب؟ ", "No account yet? ")
+                      : label("لديك حساب بالفعل؟ ", "Already registered? ")}
+                    <button
+                      type="button"
+                      onClick={() => switchMode(mode === "signin" ? "signup" : "signin")}
+                      className="font-semibold text-ink underline decoration-gold/60 underline-offset-4 hover:decoration-gold dark:text-gold"
+                    >
+                      {mode === "signin"
+                        ? label("أنشئ حساباً جديداً", "Create one")
+                        : label("سجّل الدخول", "Sign in")}
+                    </button>
+                  </p>
+                )}
+                <p className="mt-3">
+                  {label("تواجه مشكلة في الدخول؟ ", "Trouble signing in? ")}
+                  <Link
+                    to="/contact"
+                    className="font-medium text-foreground underline decoration-gold/60 underline-offset-4 hover:decoration-gold"
+                  >
+                    {label("تواصل مع الأمانة", "Contact the secretariat")}
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -492,7 +532,9 @@ function Field({
   autoComplete,
   dir,
   hint,
+  placeholder,
   trailing,
+  labelTrailing,
 }: {
   id: string;
   label: string;
@@ -503,14 +545,19 @@ function Field({
   autoComplete?: string;
   dir?: "ltr" | "rtl";
   hint?: string;
+  placeholder?: string;
   trailing?: React.ReactNode;
+  labelTrailing?: React.ReactNode;
 }) {
   return (
     <div>
-      <label htmlFor={id} className="label-caps mb-1.5 block text-muted-foreground">
-        {label}
-      </label>
-      <div className="flex items-center gap-2 border border-border bg-background px-3 transition-colors focus-within:border-gold">
+      <div className="mb-2 flex items-baseline justify-between gap-3">
+        <label htmlFor={id} className="text-[13px] font-semibold text-foreground">
+          {label}
+        </label>
+        {labelTrailing}
+      </div>
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-4 transition-all duration-200 focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/25">
         <input
           id={id}
           type={type}
@@ -518,8 +565,9 @@ function Field({
           required={required}
           autoComplete={autoComplete}
           value={value}
+          placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-transparent py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+          className="w-full bg-transparent py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground/60"
         />
         {trailing}
       </div>
