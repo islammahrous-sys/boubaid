@@ -87,7 +87,6 @@ function urlEntry(loc, lastmod, changefreq, priority) {
 
 async function main() {
   const supabase = getSupabase();
-  const today = new Date().toISOString().split("T")[0];
 
   const [
     { data: newsPosts, error: newsPostsErr },
@@ -128,51 +127,63 @@ async function main() {
   const newsEntries = [
     ...(newsPosts ?? []).map((r) => ({
       loc: `${SITE_URL}/news/${r.slug}`,
-      lastmod: latest(r.updated_at, r.created_at) ?? today,
+      lastmod: latest(r.updated_at, r.created_at) ?? undefined,
     })),
     ...(articles ?? []).map((r) => ({
       loc: `${SITE_URL}/news/${r.slug}`,
-      lastmod: latest(r.updated_at, r.published_at, r.created_at) ?? today,
+      lastmod: latest(r.updated_at, r.published_at, r.created_at) ?? undefined,
     })),
   ];
 
   const initiativeEntries = (initiatives ?? []).map((r) => ({
     loc: `${SITE_URL}/initiatives/${r.slug}`,
-    lastmod: latest(r.updated_at, r.created_at) ?? today,
+    lastmod: latest(r.updated_at, r.created_at) ?? undefined,
   }));
 
   const contentPageEntries = (contentPages ?? [])
     .filter((r) => !r.no_index)
     .map((r) => ({
       loc: `${SITE_URL}/p/${r.slug}`,
-      lastmod: latest(r.updated_at, r.published_at) ?? today,
+      lastmod: latest(r.updated_at, r.published_at) ?? undefined,
     }));
 
   // Listing pages get the most recent lastmod among the records they list,
   // so the crawl hint reflects real content changes rather than a fixed date.
-  const newsListLastmod = latest(...newsEntries.map((e) => e.lastmod)) ?? today;
-  const initiativesListLastmod = latest(...initiativeEntries.map((e) => e.lastmod)) ?? today;
+  const newsListLastmod = latest(...newsEntries.map((e) => e.lastmod)) ?? undefined;
+  const initiativesListLastmod = latest(...initiativeEntries.map((e) => e.lastmod)) ?? undefined;
 
+  // Static pages have no page-specific timestamp, so <lastmod> is omitted
+  // rather than filled with the build date (a meaningless crawl hint).
   const staticEntries = [
-    { loc: `${SITE_URL}/`, lastmod: today, changefreq: "daily", priority: "1.0" },
-    { loc: `${SITE_URL}/about`, lastmod: today, changefreq: "monthly", priority: "0.9" },
-    { loc: `${SITE_URL}/foundation`, lastmod: today, changefreq: "monthly", priority: "0.9" },
-    { loc: `${SITE_URL}/branches`, lastmod: today, changefreq: "monthly", priority: "0.9" },
-    { loc: `${SITE_URL}/family-tree`, lastmod: today, changefreq: "weekly", priority: "0.9" },
-    { loc: `${SITE_URL}/dna`, lastmod: today, changefreq: "monthly", priority: "0.8" },
-    { loc: `${SITE_URL}/achievers`, lastmod: today, changefreq: "weekly", priority: "0.8" },
+    { loc: `${SITE_URL}/`, changefreq: "daily", priority: "1.0" },
+    { loc: `${SITE_URL}/about`, changefreq: "monthly", priority: "0.9" },
+    { loc: `${SITE_URL}/foundation`, changefreq: "monthly", priority: "0.9" },
+    { loc: `${SITE_URL}/branches`, changefreq: "monthly", priority: "0.9" },
+    { loc: `${SITE_URL}/family-tree`, changefreq: "weekly", priority: "0.9" },
+    { loc: `${SITE_URL}/dna`, changefreq: "monthly", priority: "0.8" },
+    { loc: `${SITE_URL}/achievers`, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/initiatives`, lastmod: initiativesListLastmod, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/news`, lastmod: newsListLastmod, changefreq: "daily", priority: "0.8" },
-    { loc: `${SITE_URL}/library`, lastmod: today, changefreq: "monthly", priority: "0.7" },
-    { loc: `${SITE_URL}/directory`, lastmod: today, changefreq: "weekly", priority: "0.7" },
-    { loc: `${SITE_URL}/contribute`, lastmod: today, changefreq: "monthly", priority: "0.7" },
-    { loc: `${SITE_URL}/contact`, lastmod: today, changefreq: "monthly", priority: "0.6" },
+    { loc: `${SITE_URL}/library`, changefreq: "monthly", priority: "0.7" },
+    { loc: `${SITE_URL}/directory`, changefreq: "weekly", priority: "0.7" },
+    { loc: `${SITE_URL}/contribute`, changefreq: "monthly", priority: "0.7" },
+    { loc: `${SITE_URL}/contact`, changefreq: "monthly", priority: "0.6" },
   ];
 
+  // news_posts and articles can share a slug on /news/$slug — one URL, one entry.
+  const dedupe = (entries) => {
+    const byLoc = new Map();
+    for (const e of entries) {
+      const prev = byLoc.get(e.loc);
+      byLoc.set(e.loc, prev ? { ...e, lastmod: latest(prev.lastmod, e.lastmod) ?? undefined } : e);
+    }
+    return [...byLoc.values()];
+  };
+
   const dynamicUrls = [
-    ...newsEntries.map((e) => urlEntry(e.loc, e.lastmod, "monthly", "0.6")),
-    ...initiativeEntries.map((e) => urlEntry(e.loc, e.lastmod, "monthly", "0.6")),
-    ...contentPageEntries.map((e) => urlEntry(e.loc, e.lastmod, "monthly", "0.5")),
+    ...dedupe(newsEntries).map((e) => urlEntry(e.loc, e.lastmod, "monthly", "0.6")),
+    ...dedupe(initiativeEntries).map((e) => urlEntry(e.loc, e.lastmod, "monthly", "0.6")),
+    ...dedupe(contentPageEntries).map((e) => urlEntry(e.loc, e.lastmod, "monthly", "0.5")),
   ];
 
   const staticUrls = staticEntries.map((e) => urlEntry(e.loc, e.lastmod, e.changefreq, e.priority));
