@@ -21,7 +21,8 @@ Render each of the 12 A0 pages at high resolution, read every node and connector
 - Rebuild `branches` from the chart titles exactly (slug, `name_ar`, `elder_ar`, description, sort order), with the sub-charts recorded as nested branches of their parent.
 - All of this ships as SQL migrations with literal `INSERT` statements plus the required `GRANT`s, so the data exists on a fresh deploy.
 
-### 3. Serve the public tree from the database
+### 3. Serve the public tree from the database, from one source
+Collapse the three sources into one: `getPublicFamilyTreeData()` becomes the only source for both the chart and the list, and the hardcoded `src/content/family-tree.ts` seed is retired (kept only for bilingual English names/bios that the charts don't carry, folded into the seeded rows).
 - Extend the public tree server function so the interactive tree is built from `family_members` + `family_relationships` instead of the hand-written static file.
 - `public/family-tree-data.js` becomes a generated artefact (build/script output from the database) so it can never drift again; the invented grouping nodes are removed.
 - Keep the current interactive-tree UX intact: mobile vertical layout, pinch-zoom, search into collapsed branches, lineage bottom sheet.
