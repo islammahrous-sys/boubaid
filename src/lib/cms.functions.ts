@@ -633,7 +633,7 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
     return {
       members: redacted,
       branches: branchesRes.data ?? [],
-      relationships: relationshipsRes.data ?? [],
+      relationships,
     };
   } catch (err) {
     console.error("[cms] getPublicFamilyTreeData error", err);
