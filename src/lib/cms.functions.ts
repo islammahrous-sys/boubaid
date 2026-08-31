@@ -846,14 +846,21 @@ export const getPublicGlobalSearch = createServerFn({ method: "GET" })
     // query text can only ever land inside the intended ilike value slots.
     const cleanQuery = query.trim().replace(/[,()]/g, "");
 
+    // Member rows are read server-side (anon has no read access to
+    // family_members) and only non-sensitive name/occupation fields are
+    // returned for search results.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     const [membersRes, articlesRes, initiativesRes, achieversRes, libraryRes, branchesRes] =
       await Promise.all([
-        supabase
+        supabaseAdmin
           .from("family_members")
           .select(
             "id, slug, first_name_ar, last_name_ar, first_name_en, last_name_en, occupation_ar, avatar_path",
           )
           .eq("visibility", "public")
+          .eq("status", "published")
+          .is("deleted_at", null)
           .or(
             `first_name_ar.ilike.%${cleanQuery}%,last_name_ar.ilike.%${cleanQuery}%,first_name_en.ilike.%${cleanQuery}%,last_name_en.ilike.%${cleanQuery}%,slug.ilike.%${cleanQuery}%`,
           )
