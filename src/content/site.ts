@@ -1238,85 +1238,13 @@ export const achievers = [
   },
 ];
 
-export const businesses = [
-  {
-    id: "biz-1",
-    name: {
-      ar: "مجموعة بوعبيد للتطوير العقاري والاستثمار",
-      en: "Bu Obaid Real Estate Development Group",
-    } as BiText,
-    category: { ar: "العقارات والمقاولات", en: "Real Estate & Construction" } as BiText,
-    description: {
-      ar: "تطوير المجمعات السكنية والتجارية وإدارة الأملاك في الأحساء والخبر والرياض.",
-      en: "Developing residential & commercial complexes in Al-Ahsa, Khobar, and Riyadh.",
-    } as BiText,
-    city: { ar: "المبرز / الخبر", en: "Al-Mubarraz / Khobar" } as BiText,
-    contact: "+966 13 580 1111",
-    website: "https://albouabidrealestate.com",
-    ownerBranch: { ar: "فرع آل سعد", en: "Al Saad Branch" } as BiText,
-  },
-  {
-    id: "biz-2",
-    name: {
-      ar: "شركة بوعبيد للخدمات الهندسية والاستشارات",
-      en: "Bu Obaid Engineering & Consulting Co.",
-    } as BiText,
-    category: { ar: "الهندسة والاستشارات", en: "Engineering & Consulting" } as BiText,
-    description: {
-      ar: "تصميم المخططات الهندسية الإنشائية، الإشراف على المشاريع، والاستشارات البيئية.",
-      en: "Structural design, project supervision, and environmental consulting.",
-    } as BiText,
-    city: { ar: "الهفوف / الدمام", en: "Hofuf / Dammam" } as BiText,
-    contact: "+966 13 830 2222",
-    website: "https://albouabid-eng.sa",
-    ownerBranch: { ar: "فرع آل عبدالعزيز", en: "Al Abdulaziz Branch" } as BiText,
-  },
-  {
-    id: "biz-3",
-    name: {
-      ar: "مجمع بوعبيد الطبي التخصصي",
-      en: "Bu Obaid Specialized Medical Polyclinic",
-    } as BiText,
-    category: { ar: "الخدمات الطبية والرعاية", en: "Medical & Healthcare Services" } as BiText,
-    description: {
-      ar: "عيادات تخصصية في طب الأسنان، الجلدية، والأطفال بإشراف كفاءات طبية من أبناء الأسرة.",
-      en: "Specialized polyclinics in dentistry, dermatology, and pediatrics.",
-    } as BiText,
-    city: { ar: "المبرز، الأحساء", en: "Al-Mubarraz, Al-Ahsa" } as BiText,
-    contact: "+966 13 588 3333",
-    website: "https://albouabid-clinic.sa",
-    ownerBranch: { ar: "فرع آل عبدالرحمن", en: "Al Abdulrahman Branch" } as BiText,
-  },
-  {
-    id: "biz-4",
-    name: { ar: "مؤسسة بوعبيد للحلول الرقمية والتقنية", en: "Bu Obaid Tech Solutions" } as BiText,
-    category: { ar: "التكنولوجيا والبرمجيات", en: "Technology & Software" } as BiText,
-    description: {
-      ar: "تطوير تطبيقات الويب والهواتف الذكية، الأمن السيبراني، والحلول السحابية للمؤسسات.",
-      en: "Web and mobile app development, cybersecurity, and enterprise cloud solutions.",
-    } as BiText,
-    city: { ar: "الرياض / الأحساء", en: "Riyadh / Al-Ahsa" } as BiText,
-    contact: "+966 11 450 4444",
-    website: "https://albouabid.tech",
-    ownerBranch: { ar: "فرع آل يوسف", en: "Al Yousef Branch" } as BiText,
-  },
-  {
-    id: "biz-5",
-    name: {
-      ar: "مخابز ومطاعم بوعبيد التراثية",
-      en: "Bu Obaid Heritage Bakeries & Restaurants",
-    } as BiText,
-    category: { ar: "الأغذية والضيافة", en: "Food & Hospitality" } as BiText,
-    description: {
-      ar: "إنتاج الخبز الحساوي الأحمر بالتمر، والوجبات الشعبية الأصيلة بأسلوب حديث.",
-      en: "Authentic Al-Ahsa red bread with dates and traditional Saudi hospitality.",
-    } as BiText,
-    city: { ar: "المبرز، الأحساء", en: "Al-Mubarraz, Al-Ahsa" } as BiText,
-    contact: "+966 13 599 5555",
-    website: "https://albouabid-bakery.com",
-    ownerBranch: { ar: "فرع آل عبدالله صالح", en: "Al Abdullah Salih Branch" } as BiText,
-  },
-];
+/**
+ * The family business directory is fully database-driven: real entries are
+ * submitted by members and approved in the admin console (`businesses` table).
+ * The former sample records were removed so no invented company names, phone
+ * numbers, or websites are ever presented as official family businesses.
+ */
+export const businesses: never[] = [];
 
 export const libraryItems = {
   documents: [
