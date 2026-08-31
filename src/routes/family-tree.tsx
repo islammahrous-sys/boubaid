@@ -597,6 +597,51 @@ function FamilyTreePage() {
         )}
       </section>
 
+      {/* ── The 12 official verified branch charts ──────────────────────────── */}
+      <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
+        <Eyebrow>{t({ ar: "المشجرات الرسمية المعتمدة", en: "Official verified charts" })}</Eyebrow>
+        <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
+          {t({
+            ar: "المشجرات الاثنتا عشرة المعتمدة من لجنة التوثيق، وهي المرجع الذي بُنيت عليه بيانات المشجرة التفاعلية والسجل أعلاه. تُنشر للمراجعة والتوثيق ولا تُعد صيغة نهائية.",
+            en: "The twelve committee-verified charts that the interactive tree and the register above are built from. Published for review and documentation; not a final edition.",
+          })}
+        </p>
+
+        <a
+          href={officialChartsPdf}
+          download
+          className="label-caps mt-5 inline-flex items-center gap-2 border border-border bg-card px-4 py-2 text-xs text-foreground transition-colors hover:border-foreground"
+        >
+          {t({ ar: "تنزيل الملف الكامل (PDF)", en: "Download full file (PDF)" })}
+        </a>
+
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {officialCharts.map((c) => (
+            <li key={c.chart} className="border border-border bg-card">
+              <a href={c.image} target="_blank" rel="noreferrer" className="block">
+                <img
+                  src={c.image}
+                  alt={c.titleAr}
+                  loading="lazy"
+                  className="aspect-4/3 w-full bg-white object-contain"
+                />
+                <div className="border-t border-border p-3">
+                  <p className="label-caps text-bronze dark:text-gold">
+                    <span className="nums">
+                      {t({ ar: `مشجرة ${c.chart}`, en: `Chart ${c.chart}` })}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-foreground">{c.titleAr}</p>
+                  <p className="nums mt-1 text-xs text-muted-foreground">
+                    {t({ ar: `${c.people} اسمًا موثقًا`, en: `${c.people} documented names` })}
+                  </p>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* ── Official Tree Artwork & Lineage Documents ───────────────────────── */}
       <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
         <Eyebrow>
