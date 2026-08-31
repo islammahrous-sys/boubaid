@@ -97,23 +97,24 @@ function resolveFather(ref: string, chart: number, local: Map<string, Node[]>, k
   let candidates = local.get(head) ?? [];
   if (candidates.length === 0) throw new Error(`chart ${chart}: unknown father "${ref}"`);
 
-  for (const anc of ancestors) {
-    candidates = candidates.filter((c) => {
-      // ancestor chain must contain `anc` above the candidate, in order
-      let cur = c.parent;
-      while (cur) {
-        if (cur.name === anc) return true;
-        cur = cur.parent;
-      }
-      return false;
-    });
-  }
+  // "X بن Y بن Z" = X's father is Y, Y's father is Z (consecutive ancestry).
+  candidates = candidates.filter((c) => {
+    let cur = c.parent;
+    for (const anc of ancestors) {
+      if (!cur || cur.name !== anc) return false;
+      cur = cur.parent;
+    }
+    return true;
+  });
   if (candidates.length === 1) return candidates[0];
   if (candidates.length === 0) throw new Error(`chart ${chart}: father "${ref}" not resolvable`);
-  // Ambiguous: prefer the shallowest, and record a warning.
-  candidates.sort((a, b) => a.generation - b.generation);
-  warnings.push(`المشجرة ${chart}: مرجع الأب «${ref}» متكرر (${candidates.length}) — تم اختيار الأقرب للجذع.`);
-  return candidates[0];
+  // Ambiguous: the charts are transcribed top-down, so the most recently
+  // introduced matching person is the intended one.
+  const chosen = candidates.reduce((a, b) => (b.seq > a.seq ? b : a));
+  warnings.push(
+    `المشجرة ${chart}: مرجع الأب «${ref}» ينطبق على ${candidates.length} أشخاص — تم اختيار «${chosen.path.slice().reverse().join(" بن ")}».`,
+  );
+  return chosen;
 }
 
 const charts: Chart[] = readdirSync(CHART_DIR)
