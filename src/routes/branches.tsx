@@ -20,7 +20,7 @@ export const Route = createFileRoute("/branches")({
       {
         name: "description",
         content:
-          "سجل الفروع السبعة الموثقة لأسرة آل بوعبيد: الجد الجامع لكل فرع، أفرعه الداخلية، مناطق استقراره، وأعلامه.",
+          "سجل الفروع السبعة الموثقة لأسرة آل بوعبيد وفق المشجرات المعتمدة: الجد الجامع لكل فرع، أفرعه الداخلية، مناطق استقراره، وأعلامه.",
       },
       { property: "og:title", content: "الفروع السبعة — آل بوعبيد" },
       {
@@ -40,8 +40,8 @@ const copy = {
   eyebrow: { ar: "البنية العائلية", en: "Family structure" } as BiText,
   title: { ar: "سجل الفروع السبعة", en: "Register of the Seven Branches" } as BiText,
   subtitle: {
-    ar: "تنتظم الأسرة في سبعة فروع رئيسية تنحدر من أبناء الجد أحمد بن صالح. ولكل فرع أفرعه الداخلية ومناطق استقراره وتمثيله في مجلس الأسرة واللجان.",
-    en: "The family is organised into seven principal branches descending from the sons of the patriarch Ahmed bin Salih. Each has its own sub-lineages, areas of settlement, and representation on the family council and its committees.",
+    ar: "تنتظم الأسرة في سبعة فروع رئيسية تنحدر من أبناء الجد أحمد بن عبدالله وأخيه صالح بن عبدالله، وهي موثقة في اثنتي عشرة مشجرة معتمدة تضم ٥٥٠ اسماً. ولكل فرع أفرعه الداخلية ومناطق استقراره وتمثيله في مجلس الأسرة واللجان.",
+    en: "The family is organised into seven principal branches descending from the sons of the patriarch Ahmed bin Abdullah and his brother Salih bin Abdullah, documented across twelve verified charts holding 550 names. Each has its own sub-lineages, areas of settlement, and representation on the family council and its committees.",
   } as BiText,
 
   metaBranches: { ar: "عدد الفروع", en: "Branches" } as BiText,
@@ -66,8 +66,8 @@ const copy = {
 
   treeCta: { ar: "المشجرة التفاعلية الكاملة", en: "The full interactive tree" } as BiText,
   treeBody: {
-    ar: "يعرض هذا السجل رؤوس الفروع فقط. أما التفريع الكامل للأجيال فمتاح في المشجرة التفاعلية.",
-    en: "This register lists the heads of the branches only. The complete generational tree is available in the interactive view.",
+    ar: "يعرض هذا السجل رؤوس الفروع فقط. أما التفريع الكامل لعشرة أجيال و٥٥٠ اسماً موثقاً فمتاح في المشجرة التفاعلية.",
+    en: "This register lists the heads of the branches only. The full ten-generation tree of 550 documented names is available in the interactive view.",
   } as BiText,
 };
 

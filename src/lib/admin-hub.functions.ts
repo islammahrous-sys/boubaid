@@ -332,24 +332,45 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase } = context;
 
-    const [membersRes, branchesRes, relationshipsRes, placesRes, historyRes] = await Promise.all([
+    // The official dataset is 550 members and 1,098 relationship rows, which is
+    // past PostgREST's default 1,000-row ceiling -- an unpaged select silently
+    // dropped ~100 kinship links and the console's tree lost whole sub-branches.
+    const PAGE = 1000;
+    const memberPage = (from: number) =>
       supabase
         .from("family_members")
         .select(
           "id, first_name_ar, middle_name_ar, last_name_ar, first_name_en, middle_name_en, last_name_en, slug, branch_id, generation, gender, is_living, sort_order, status, visibility, updated_at",
         )
         .is("deleted_at", null)
-        .order("sort_order", { ascending: true }),
+        .order("generation", { ascending: true })
+        .order("sort_order", { ascending: true })
+        .range(from, from + PAGE - 1);
+    const relationshipPage = (from: number) =>
+      supabase.from("family_relationships").select("*").range(from, from + PAGE - 1);
+
+    const [firstMembers, branchesRes, firstRelationships, placesRes, historyRes] = await Promise.all([
+      memberPage(0),
       supabase.from("branches").select("*").order("sort_order", { ascending: true }),
-      supabase.from("family_relationships").select("*"),
+      relationshipPage(0),
       supabase.from("places").select("*").order("name_ar", { ascending: true }),
       supabase.from("family_history_entries").select("*").order("sort_order", { ascending: true }),
     ]);
 
+    const members = unwrapRows(firstMembers, "أفراد العائلة / family members");
+    for (let from = PAGE; members.length === from; from += PAGE) {
+      members.push(...unwrapRows(await memberPage(from), "أفراد العائلة / family members"));
+    }
+
+    const relationships = unwrapRows(firstRelationships, "صلات القرابة / relationships");
+    for (let from = PAGE; relationships.length === from; from += PAGE) {
+      relationships.push(...unwrapRows(await relationshipPage(from), "صلات القرابة / relationships"));
+    }
+
     return {
-      members: unwrapRows(membersRes, "أفراد العائلة / family members"),
+      members,
       branches: unwrapRows(branchesRes, "الفروع / branches"),
-      relationships: unwrapRows(relationshipsRes, "صلات القرابة / relationships"),
+      relationships,
       places: unwrapRows(placesRes, "الأماكن / places"),
       history: unwrapRows(historyRes, "تاريخ العائلة / family history"),
     };
