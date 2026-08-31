@@ -179,7 +179,8 @@ const canonical = {
     chart: Number(chart),
     title_ar: charts.find((c) => c.chart === Number(chart))!.title_ar,
   })),
-  flags: charts.flatMap((c) => c.flags.map((f) => `المشجرة ${c.chart}: ${f}`)).concat(warnings),
+  flags: charts.flatMap((c) => c.flags.map((f) => `المشجرة ${c.chart}: ${f}`)).slice(),
+  resolution_notes: [...new Set(warnings)],
 };
 writeFileSync(join(process.cwd(), "src/content/tree/canonical.json"), JSON.stringify(canonical, null, 2) + "\n");
 
