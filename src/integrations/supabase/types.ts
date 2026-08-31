@@ -2097,51 +2097,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_public_family_members: {
-        Args: never
-        Returns: {
-          avatar_path: string
-          biography_ar: string
-          biography_en: string
-          birth_place_id: string
-          branch_id: string
-          cover_path: string
-          created_at: string
-          current_place_id: string
-          date_of_birth: string
-          date_of_death: string
-          display_name_ar: string
-          display_name_en: string
-          education_ar: string
-          education_en: string
-          first_name_ar: string
-          first_name_en: string
-          gender: Database["public"]["Enums"]["gender"]
-          generation: number
-          id: string
-          is_living: boolean
-          last_name_ar: string
-          last_name_en: string
-          middle_name_ar: string
-          middle_name_en: string
-          occupation_ar: string
-          occupation_en: string
-          slug: string
-          sort_order: number
-          status: Database["public"]["Enums"]["record_status"]
-          updated_at: string
-          visibility: Database["public"]["Enums"]["visibility_level"]
-        }[]
-      }
-      get_public_family_relationships: {
-        Args: never
-        Returns: {
-          id: string
-          person_id: string
-          related_person_id: string
-          relationship_type: Database["public"]["Enums"]["relationship_type"]
-        }[]
-      }
       replace_content_page_sections: {
         Args: { p_page_id: string; p_sections: Json }
         Returns: {
