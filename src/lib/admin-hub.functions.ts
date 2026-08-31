@@ -332,16 +332,40 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase } = context;
 
-    const [membersRes, branchesRes, relationshipsRes, placesRes, historyRes] = await Promise.all([
-      supabase
-        .from("family_members")
-        .select(
-          "id, first_name_ar, middle_name_ar, last_name_ar, first_name_en, middle_name_en, last_name_en, slug, branch_id, generation, gender, is_living, sort_order, status, visibility, updated_at",
-        )
-        .is("deleted_at", null)
-        .order("sort_order", { ascending: true }),
+    // The official dataset is 550 members and 1,098 relationship rows, which is
+    // past PostgREST's default 1,000-row ceiling -- an unpaged select silently
+    // dropped ~100 kinship links and the console's tree lost whole sub-branches.
+    const fetchAll = async (build: (from: number, to: number) => any, label: string) => {
+      const page = 1000;
+      const rows: any[] = [];
+      for (let from = 0; ; from += page) {
+        const res = await build(from, from + page - 1);
+        const batch = unwrapRows(res, label);
+        rows.push(...batch);
+        if (batch.length < page) break;
+      }
+      return rows;
+    };
+
+    const [members, branchesRes, relationships, placesRes, historyRes] = await Promise.all([
+      fetchAll(
+        (from, to) =>
+          supabase
+            .from("family_members")
+            .select(
+              "id, first_name_ar, middle_name_ar, last_name_ar, first_name_en, middle_name_en, last_name_en, slug, branch_id, generation, gender, is_living, sort_order, status, visibility, updated_at",
+            )
+            .is("deleted_at", null)
+            .order("generation", { ascending: true })
+            .order("sort_order", { ascending: true })
+            .range(from, to),
+        "أفراد العائلة / family members",
+      ),
       supabase.from("branches").select("*").order("sort_order", { ascending: true }),
-      supabase.from("family_relationships").select("*"),
+      fetchAll(
+        (from, to) => supabase.from("family_relationships").select("*").range(from, to),
+        "صلات القرابة / relationships",
+      ),
       supabase.from("places").select("*").order("name_ar", { ascending: true }),
       supabase.from("family_history_entries").select("*").order("sort_order", { ascending: true }),
     ]);
