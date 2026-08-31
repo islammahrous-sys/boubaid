@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useLang, type BiText } from "@/i18n/LanguageProvider";
 import { siteMeta } from "@/content/site";
 import type { FamilyMemberNode } from "@/content/family-tree";
+import { officialCharts, officialChartsPdf } from "@/content/tree/charts";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
