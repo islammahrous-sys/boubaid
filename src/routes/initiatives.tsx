@@ -117,6 +117,13 @@ function InitiativesPage() {
   const activeCount = initiatives.filter((i) => i.status === "ongoing").length;
   const plannedCount = initiatives.filter((i) => i.status === "upcoming").length;
 
+  const liveHq = initiatives.find(
+    (i) => i.slug === "hq" || i.slug === "permanent-hq" || i.slug.includes("hq"),
+  );
+  const hqTitle = liveHq?.title ?? hqProject.title;
+  const hqFunding = liveHq?.summary ?? hqProject.fundingModel;
+  const hqImage = liveHq?.image || pageImages.initiatives.flagship.src;
+
   const totalPages = Math.max(1, Math.ceil(initiatives.length / PAGE_SIZE));
   const pagedInitiatives = useMemo(
     () => initiatives.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
@@ -141,14 +148,14 @@ function InitiativesPage() {
         <div className="container-page py-14 md:py-16">
           <Eyebrow>{t(copy.flagshipEyebrow)}</Eyebrow>
           <h2 className="mt-3 max-w-3xl text-2xl leading-tight text-foreground md:text-3xl">
-            {t(hqProject.title)}
+            {t(hqTitle)}
           </h2>
 
           <div className="mt-8 grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
             <figure>
               <img
-                src={pageImages.initiatives.flagship.src}
-                alt={t(hqProject.title)}
+                src={hqImage}
+                alt={t(hqTitle)}
                 className="photo-plate aspect-[4/3] w-full object-cover"
                 loading="lazy"
               />
@@ -221,8 +228,18 @@ function InitiativesPage() {
               <div className="mt-6 border-t border-border pt-5">
                 <p className="label-caps mb-2 text-muted-foreground">{t(copy.specFunding)}</p>
                 <Prose className="text-[13px]">
-                  <p>{t(hqProject.fundingModel)}</p>
+                  <p>{t(hqFunding)}</p>
                 </Prose>
+                <div className="mt-5">
+                  <Link
+                    to="/contribute"
+                    search={{ initiative: liveHq?.slug || "hq", purpose: t(hqTitle) }}
+                    className="inline-flex items-center gap-2 border border-bronze bg-bronze/10 px-4 py-2 text-xs font-semibold text-bronze hover:bg-bronze hover:text-ivory dark:border-gold dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink transition-colors"
+                  >
+                    <span>{rtl ? "المساهمة في دعم هذا المشروع" : "Contribute to this Project"}</span>
+                    <Arrow className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

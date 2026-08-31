@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
@@ -310,6 +310,14 @@ function ContributePage() {
     purpose: search.purpose || (search.initiative ? `مبادرة: ${search.initiative}` : fundPurposes[0]?.name_ar || ""),
     reference: "",
   });
+
+  useEffect(() => {
+    if (search.purpose) {
+      setForm((prev) => ({ ...prev, purpose: search.purpose! }));
+    } else if (search.initiative) {
+      setForm((prev) => ({ ...prev, purpose: `مبادرة: ${search.initiative}` }));
+    }
+  }, [search.purpose, search.initiative]);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [bankModalOpen, setBankModalOpen] = useState(false);

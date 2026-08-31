@@ -615,14 +615,21 @@ function HomePage() {
           </section>
         );
 
-      case "initiatives_hq":
+      case "initiatives_hq": {
+        const liveHq = initiatives.find(
+          (i) => i.slug === "hq" || i.slug === "permanent-hq" || i.slug.includes("hq"),
+        );
+        const hqTitle = liveHq?.title ?? hqProject.title;
+        const hqSummary = liveHq?.summary ?? hqProject.fundingModel;
+        const hqImage = sec.image_path || liveHq?.image || pageImages.home.project.src;
+
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
               <figure>
                 <img
-                  src={sec.image_path || pageImages.home.project.src}
-                  alt={t(hqProject.title)}
+                  src={hqImage}
+                  alt={t(hqTitle)}
                   className="photo-plate w-full object-cover"
                   loading="lazy"
                 />
@@ -645,14 +652,14 @@ function HomePage() {
                     ? sec.title_ar
                     : sec.title_en && !rtl
                       ? sec.title_en
-                      : t(hqProject.title)}
+                      : t(hqTitle)}
                 </h2>
                 <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
                   {sec.subtitle_ar && rtl
                     ? sec.subtitle_ar
                     : sec.subtitle_en && !rtl
                       ? sec.subtitle_en
-                      : t(hqProject.fundingModel)}
+                      : t(hqSummary)}
                 </p>
 
                 {/* Progress */}
@@ -724,6 +731,7 @@ function HomePage() {
             </div>
           </section>
         );
+      }
 
       case "latest_news":
       case "news":

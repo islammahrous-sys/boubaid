@@ -177,10 +177,58 @@ function FoundationPage() {
 
   // Live overrides are saved by the admin console under the "site_governance"
   // category (see SiteSettingsManager.tsx / upsertSiteSetting) — currently
-  // limited to the names of the three senior board offices. Fall back to the
-  // static bilingual copy in `boardOfTrustees` for any office left unset.
   const dynamicSettings = (Route.useLoaderData() || {}) as Record<string, any>;
   const siteGovernance = dynamicSettings.site_governance || {};
+  const financialReport = dynamicSettings.financial_report || {};
+  const treasuryConfig = dynamicSettings.treasury_config || {};
+
+  const totalRevenue =
+    typeof financialReport.total_revenue === "number"
+      ? financialReport.total_revenue
+      : typeof financialReport.totalRevenue === "number"
+        ? financialReport.totalRevenue
+        : hqProject.financials.totalRevenue;
+
+  const totalExpenses =
+    typeof financialReport.total_expenses === "number"
+      ? financialReport.total_expenses
+      : typeof financialReport.totalExpenses === "number"
+        ? financialReport.totalExpenses
+        : hqProject.financials.totalExpenses;
+
+  const deficit =
+    typeof financialReport.deficit === "number"
+      ? financialReport.deficit
+      : hqProject.financials.deficit;
+
+  const reportNote =
+    financialReport.note_ar && financialReport.note_en
+      ? { ar: financialReport.note_ar, en: financialReport.note_en }
+      : hqProject.financials.note;
+
+  const budgetBreakdown =
+    Array.isArray(financialReport.budget_breakdown) && financialReport.budget_breakdown.length > 0
+      ? financialReport.budget_breakdown
+      : hqProject.budgetBreakdown;
+
+  const shareholderLoans =
+    Array.isArray(financialReport.shareholder_loans) && financialReport.shareholder_loans.length > 0
+      ? financialReport.shareholder_loans
+      : hqProject.shareholderLoans;
+
+  const shareholderLoansNote =
+    financialReport.shareholder_loans_note_ar && financialReport.shareholder_loans_note_en
+      ? {
+          ar: financialReport.shareholder_loans_note_ar,
+          en: financialReport.shareholder_loans_note_en,
+        }
+      : copy.shareholderLoansNote;
+
+  const eidDeficitByYear =
+    Array.isArray(financialReport.eid_deficit_by_year) && financialReport.eid_deficit_by_year.length > 0
+      ? financialReport.eid_deficit_by_year
+      : hqProject.eidDeficitByYear;
+
   const boardNameOverrides: Record<number, string | undefined> = {
     0: siteGovernance.dean_name,
     1: siteGovernance.chairman_name,
@@ -471,40 +519,40 @@ function FoundationPage() {
                 <div>
                   <dt className="label-caps text-muted-foreground">{t(copy.totalRevenueLabel)}</dt>
                   <dd className="nums mt-1.5 font-mono text-2xl text-foreground">
-                    {hqProject.financials.totalRevenue.toLocaleString("en-US")}
+                    {totalRevenue.toLocaleString("en-US")}
                     <span className="ms-1.5 text-xs text-muted-foreground">SAR</span>
                   </dd>
                 </div>
                 <div>
                   <dt className="label-caps text-muted-foreground">{t(copy.totalExpensesLabel)}</dt>
                   <dd className="nums mt-1.5 font-mono text-2xl text-foreground">
-                    {hqProject.financials.totalExpenses.toLocaleString("en-US")}
+                    {totalExpenses.toLocaleString("en-US")}
                     <span className="ms-1.5 text-xs text-muted-foreground">SAR</span>
                   </dd>
                 </div>
                 <div>
                   <dt className="label-caps text-bronze dark:text-gold">{t(copy.deficitLabel)}</dt>
                   <dd className="nums mt-1.5 font-mono text-2xl text-bronze dark:text-gold">
-                    ({hqProject.financials.deficit.toLocaleString("en-US")})
+                    ({deficit.toLocaleString("en-US")})
                     <span className="ms-1.5 text-xs text-muted-foreground">SAR</span>
                   </dd>
                 </div>
               </dl>
 
               <p className="measure mt-5 text-[13px] leading-relaxed text-muted-foreground">
-                {t(hqProject.financials.note)}
+                {t(reportNote)}
               </p>
 
               <p className="label-caps mt-8 mb-3 text-muted-foreground">{t(copy.budgetTitle)}</p>
               <ol>
-                {hqProject.budgetBreakdown.map((b, i) => (
+                {budgetBreakdown.map((b: any, i: number) => (
                   <li
                     key={i}
                     className="flex items-baseline justify-between gap-4 border-b border-border py-3 first:border-t"
                   >
-                    <span className="text-sm text-foreground">{t(b.item)}</span>
+                    <span className="text-sm text-foreground">{t(b.item ?? b.name ?? b)}</span>
                     <span className="nums shrink-0 font-mono text-sm text-bronze dark:text-gold">
-                      {b.amount.toLocaleString("en-US")}
+                      {Number(b.amount ?? 0).toLocaleString("en-US")}
                     </span>
                   </li>
                 ))}
@@ -516,39 +564,58 @@ function FoundationPage() {
                     {t(copy.shareholderLoansTitle)}
                   </p>
                   <ol>
-                    {hqProject.shareholderLoans.map((s, i) => (
+                    {shareholderLoans.map((s: any, i: number) => (
                       <li
                         key={i}
                         className="flex items-baseline justify-between gap-4 border-b border-border py-2 text-[13px] first:border-t"
                       >
-                        <span className="text-foreground">{t(s.label)}</span>
+                        <span className="text-foreground">{t(s.label ?? s.name ?? s)}</span>
                         <span className="nums font-mono text-muted-foreground">
-                          {s.repaid.toLocaleString("en-US")} / {s.amount.toLocaleString("en-US")}
+                          {Number(s.repaid ?? 0).toLocaleString("en-US")} / {Number(s.amount ?? 0).toLocaleString("en-US")}
                         </span>
                       </li>
                     ))}
                   </ol>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    {t(copy.shareholderLoansNote)}
+                    {t(shareholderLoansNote)}
                   </p>
                 </div>
 
                 <div>
                   <p className="label-caps mb-3 text-muted-foreground">{t(copy.eidDeficitTitle)}</p>
                   <ol>
-                    {hqProject.eidDeficitByYear.map((e, i) => (
+                    {eidDeficitByYear.map((e: any, i: number) => (
                       <li
                         key={i}
                         className="flex items-baseline justify-between gap-4 border-b border-border py-2 text-[13px] first:border-t"
                       >
                         <span className="text-foreground">{e.year}</span>
                         <span className="nums font-mono text-muted-foreground">
-                          {e.amount.toLocaleString("en-US")}
+                          {Number(e.amount ?? 0).toLocaleString("en-US")}
                         </span>
                       </li>
                     ))}
                   </ol>
                 </div>
+              </div>
+
+              {/* Direct Link to dynamic Contribute & Subscriptions */}
+              <div className="mt-8 p-4 border border-border bg-secondary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="text-xs text-muted-foreground">
+                  <span className="font-semibold text-foreground block mb-0.5">
+                    {rtl ? "المساهمة في ميزانية وبرامج الصندوق" : "Contribute to Fund Budgets & Programmes"}
+                  </span>
+                  {rtl
+                    ? "تُدار الاشتراكات والتبرعات عبر القنوات البنكية المعتمدة والخاضعة للإشراف المالي."
+                    : "Subscriptions and contributions are administered via approved, supervised banking channels."}
+                </div>
+                <Link
+                  to="/contribute"
+                  className="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold text-bronze dark:text-gold hover:underline"
+                >
+                  <span>{rtl ? "الانتقال لصفحة المساهمة" : "Go to Contribution Page"}</span>
+                  <Arrow className="w-3.5 h-3.5" />
+                </Link>
               </div>
 
               <p className="label-caps mt-8 text-muted-foreground">
