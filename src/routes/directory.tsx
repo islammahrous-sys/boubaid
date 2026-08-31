@@ -63,7 +63,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
-import { businesses as staticBusinesses } from "@/content/site";
+
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
