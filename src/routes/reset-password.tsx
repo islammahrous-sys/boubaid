@@ -39,6 +39,10 @@ function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  // Supabase reports a dead link as `#error_code=otp_expired&error_description=…`
+  // in the fragment. Read it once so the "invalid link" screen can say *why*,
+  // then strip it from the address bar.
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const redirectTimer = useRef<number | null>(null);
 
   // The success screen redirects on a timer. Without this, a member who
@@ -52,6 +56,19 @@ function ResetPasswordPage() {
 
   useEffect(() => {
     let active = true;
+
+    const hashParams = new URLSearchParams(
+      typeof window !== "undefined" ? window.location.hash.slice(1) : "",
+    );
+    const err = hashParams.get("error_code") || (hashParams.get("error") ? "access_denied" : null);
+    if (err) {
+      setErrorCode(err);
+      setChecking(false);
+      // Drop the noisy error payload from the URL bar.
+      if (typeof window !== "undefined") {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+    }
 
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (!active) return;
@@ -127,10 +144,15 @@ function ResetPasswordPage() {
           ) : !ready ? (
             <div className="space-y-5 text-center">
               <p className="text-[13px] leading-relaxed text-muted-foreground">
-                {label(
-                  "رابط إعادة التعيين غير صالح أو منتهي الصلاحية. يمكنك طلب رابط جديد من صفحة الدخول.",
-                  "This reset link is invalid or has expired. You can request a new one from the sign-in page.",
-                )}
+                {errorCode === "otp_expired"
+                  ? label(
+                      "انتهت صلاحية رابط إعادة التعيين. الروابط صالحة لمدة محدودة وتُستخدم مرة واحدة فقط — اطلب رابطاً جديداً من صفحة الدخول عبر «نسيت كلمة المرور؟».",
+                      "This reset link has expired. Links are valid for a limited time and can only be used once — request a fresh one from the sign-in page via “Forgot password?”.",
+                    )
+                  : label(
+                      "رابط إعادة التعيين غير صالح. يمكنك طلب رابط جديد من صفحة الدخول.",
+                      "This reset link is invalid. You can request a new one from the sign-in page.",
+                    )}
               </p>
               <Link
                 to="/auth"

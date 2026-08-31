@@ -99,7 +99,11 @@ export function InquiriesManager({
 
   const fetchInquiriesPage = useServerFn(getInquiriesPaginated);
 
-  const { data: queryData, isLoading } = useQuery({
+  const {
+    data: queryData,
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ["inquiries-paginated", currentPage, pageSize, statusFilter],
     queryFn: () =>
       fetchInquiriesPage({
@@ -109,7 +113,8 @@ export function InquiriesManager({
           status: statusFilter === "all" ? undefined : statusFilter,
         },
       }),
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 3,
+    placeholderData: (previousData) => previousData,
   });
 
   const filteredInquiries = (queryData?.data ?? []) as InquiryRow[];

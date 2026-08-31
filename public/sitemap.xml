@@ -43,7 +43,7 @@
   </url>
   <url>
     <loc>https://albouabidfamily.com/news</loc>
-    <lastmod>2026-08-28</lastmod>
+    <lastmod>2026-08-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
@@ -82,6 +82,12 @@
   <url>
     <loc>https://albouabidfamily.com/news/ncnp-license-issuance</loc>
     <lastmod>2026-08-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://albouabidfamily.com/news/bank-update4</loc>
+    <lastmod>2026-08-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

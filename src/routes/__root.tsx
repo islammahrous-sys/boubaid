@@ -228,9 +228,36 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Supabase appends the recovery/confirmation payload to the URL *fragment*
+ * (`#access_token=…&type=recovery` on success, `#error_code=otp_expired` on a
+ * dead link). It targets whatever `redirect_to` resolved to — and if the exact
+ * URL isn't in the project's Redirect URLs allow-list, Supabase silently drops
+ * the path and sends the user to the bare Site URL instead. That lands a
+ * password-reset on the home page, which has no handler, so the member is
+ * quietly signed in (or just stranded on an error hash) and never sees the
+ * form. Forward any such landing to `/reset-password`, hash intact, so the flow
+ * still completes regardless of the allow-list configuration.
+ */
+function useRecoveryHashRedirect(pathname: string) {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (pathname === "/reset-password") return;
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    const p = new URLSearchParams(hash);
+    const isRecovery = p.get("type") === "recovery";
+    const isAuthError = p.has("error_code") || p.has("error");
+    if (isRecovery || isAuthError) {
+      window.location.replace(`/reset-password${window.location.hash}`);
+    }
+  }, [pathname]);
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useRecoveryHashRedirect(pathname);
   const isConsole =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/treasury") ||

@@ -4,7 +4,24 @@ import { routeTree } from "./routeTree.gen";
 import { RoutePending } from "@/components/site/RoutePending";
 
 export const getRouter = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 3, // 3 minutes
+        gcTime: 1000 * 60 * 30, // 30 minutes
+        refetchOnWindowFocus: false, // Prevent distracting reload flashes on window focus
+        refetchOnReconnect: true,
+        retry: (failureCount, error: any) => {
+          // Do not retry 401/403/404 errors, retry transient network/500 errors up to 2 times
+          if (error?.status === 401 || error?.status === 403 || error?.status === 404) return false;
+          return failureCount < 2;
+        },
+      },
+      mutations: {
+        retry: 0,
+      },
+    },
+  });
 
   const router = createRouter({
     routeTree,

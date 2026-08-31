@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { globalAdminSearch } from "@/lib/admin-hub.functions";
+import { useDebounce } from "@/hooks/useDebounce";
 import { Loader2 } from "lucide-react";
 import {
   CommandDialog,
@@ -85,13 +86,19 @@ export function AdminCommandPalette({
   const isAr = lang === "ar";
 
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 250);
   const fetchGlobalSearch = useServerFn(globalAdminSearch);
 
-  const { data: searchResults, isLoading: searchLoading } = useQuery({
-    queryKey: ["admin-global-search", searchQuery],
-    queryFn: () => fetchGlobalSearch({ data: { query: searchQuery } }),
-    enabled: searchQuery.length >= 2,
-    staleTime: 1000 * 60,
+  const {
+    data: searchResults,
+    isLoading: searchLoading,
+    isFetching: searchFetching,
+  } = useQuery({
+    queryKey: ["admin-global-search", debouncedSearch],
+    queryFn: () => fetchGlobalSearch({ data: { query: debouncedSearch } }),
+    enabled: debouncedSearch.length >= 2,
+    staleTime: 1000 * 60 * 3,
+    placeholderData: (previousData) => previousData,
   });
 
   useEffect(() => {

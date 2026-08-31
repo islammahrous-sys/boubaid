@@ -82,6 +82,7 @@ import {
   markAllNotificationsRead,
   deleteNotification,
 } from "@/lib/admin-hub.functions";
+import { saveTreasuryConfig, createManualContribution } from "@/lib/contributions.functions";
 // Every manager below is only ever shown for one admin tab at a time, so
 // loading all ~26 of them eagerly bloated /admin's own JS bundle to ~935KB —
 // dwarfing every other route's chunk and dominating the "admin feels laggy"
@@ -322,6 +323,8 @@ function MasterAdminPage() {
   const delBizMut = useServerFn(deleteBusiness);
   const reviewReqMut = useServerFn(reviewMembershipRequest);
   const reviewTreasuryMut = useServerFn(reviewTreasuryContribution);
+  const saveTreasuryConfigMut = useServerFn(saveTreasuryConfig);
+  const createManualContributionMut = useServerFn(createManualContribution);
   const saveInitMut = useServerFn(upsertInitiative);
   const delInitMut = useServerFn(deleteInitiative);
   const updateInitRegMut = useServerFn(updateInitiativeRegistrationStatus);
@@ -335,10 +338,11 @@ function MasterAdminPage() {
   const delNavItemMut = useServerFn(deleteNavigationItem);
   const saveDnaMut = useServerFn(saveDnaStudiesData);
 
-  // Gated, high-performance cached queries (5 min staleTime, 15 min cache)
+  // Gated, high-performance cached queries (5 min staleTime, 30 min cache)
   const queryConfig = {
     staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 15,
+    gcTime: 1000 * 60 * 30,
+    placeholderData: (previousData: any) => previousData,
   };
 
   const {
@@ -754,6 +758,86 @@ function MasterAdminPage() {
     auditError,
   ]);
 
+  /**
+   * Tracks whether the currently active tab has cached data to display.
+   * If a background query fails, we distinguish between a tab that has NO data
+   * (render dedicated Error/Retry Card) versus a tab with stale cached data
+   * (render existing UI with a top warning banner).
+   */
+  const activeTabHasData = useMemo(() => {
+    switch (`${activeDomainId}:${activeTabId}`) {
+      case "dashboard:overview":
+        return Boolean(overviewData);
+      case "family:members":
+      case "family:tree":
+      case "family:branches":
+      case "family:relationships":
+      case "family:history":
+      case "family:places":
+      case "family:privacy":
+        return Boolean(familyData);
+      case "content:homepage":
+        return Boolean(settingsData);
+      case "content:pages":
+        return Boolean(pagesData);
+      case "content:articles":
+        return Boolean(articlesData);
+      case "content:announcements":
+        return Boolean(announcementsData);
+      case "content:events":
+        return Boolean(eventsData);
+      case "content:navigation":
+        return Boolean(navigationData);
+      case "content:dna":
+        return Boolean(dnaData);
+      case "content:media_library":
+        return Boolean(mediaData);
+      case "content:library_items":
+        return Boolean(libraryData);
+      case "community:inquiries":
+        return Boolean(inquiriesData);
+      case "community:directory":
+      case "community:verification":
+        return Boolean(directoryData);
+      case "treasury:treasury_ledger":
+        return Boolean(treasuryData);
+      case "treasury:initiatives":
+        return Boolean(initiativesData);
+      case "treasury:achievers":
+        return Boolean(achieversData);
+      case "system:users":
+      case "system:roles_matrix":
+        return Boolean(usersData);
+      case "system:audit_logs":
+        return Boolean(auditData);
+      case "system:site_settings":
+        return Boolean(settingsData);
+      default:
+        return true;
+    }
+  }, [
+    activeDomainId,
+    activeTabId,
+    overviewData,
+    familyData,
+    settingsData,
+    pagesData,
+    articlesData,
+    announcementsData,
+    eventsData,
+    navigationData,
+    dnaData,
+    mediaData,
+    libraryData,
+    inquiriesData,
+    directoryData,
+    treasuryData,
+    initiativesData,
+    achieversData,
+    usersData,
+    auditData,
+  ]);
+
   // Search items index
   const searchItems = useMemo(() => {
     const list: any[] = [];
@@ -874,7 +958,38 @@ function MasterAdminPage() {
       >
         <Suspense fallback={<AdminTabSkeleton type="table" cardCount={3} />}>
           <div className="transition-opacity duration-200">
-            {activeTabError && (
+            {activeTabError && !activeTabHasData ? (
+              <div className="flex flex-col items-center justify-center p-12 text-center border border-destructive/30 bg-destructive/5 rounded-3xl my-6">
+                <div className="w-14 h-14 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mb-4 shadow-xs">
+                  <AlertTriangle className="w-7 h-7" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground mb-2">
+                  {isAr ? "تعذّر تحميل بيانات هذا القسم" : "Failed to load section data"}
+                </h2>
+                <p className="text-sm text-muted-foreground max-w-md mb-6 leading-relaxed">
+                  {activeTabError.message ||
+                    (isAr
+                      ? "حدث خطأ غير متوقع أثناء الاتصال بالخادم. اضغط على زر إعادة المحاولة للتحديث دون الحاجة لإعادة تحميل الصفحة بالكامل."
+                      : "An unexpected error occurred while contacting the server. Click retry to reload without refreshing the page.")}
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button
+                    onClick={() => void queryClient.invalidateQueries()}
+                    className="gap-2 font-bold px-6"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    {isAr ? "إعادة تحميل البيانات" : "Retry Now"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleSelectTab("dashboard", "overview")}
+                    className="gap-2"
+                  >
+                    {isAr ? "العودة للوحة القيادة" : "Back to Overview"}
+                  </Button>
+                </div>
+              </div>
+            ) : activeTabError && activeTabHasData ? (
               <div
                 role="alert"
                 className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-destructive/30 bg-destructive/5"
@@ -884,8 +999,8 @@ function MasterAdminPage() {
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-foreground">
                       {isAr
-                        ? "تعذّر تحميل بيانات هذا القسم"
-                        : "This section's data could not be loaded"}
+                        ? "تعذّر تحديث أحدث البيانات لهذا القسم"
+                        : "Could not fetch the latest data for this section"}
                     </p>
                     <p className="text-[11px] text-muted-foreground break-words">
                       {activeTabError.message ||
@@ -895,8 +1010,8 @@ function MasterAdminPage() {
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-1">
                       {isAr
-                        ? "ما يظهر بالأسفل قد يكون فارغًا أو قديمًا — لا تعتمد عليه حتى ينجح التحميل."
-                        : "Anything shown below may be empty or stale — don't rely on it until the load succeeds."}
+                        ? "البيانات المعروضة حاليًا من الذاكرة المؤقتة (قديمة)."
+                        : "Currently displaying cached data."}
                     </p>
                   </div>
                 </div>
@@ -910,7 +1025,7 @@ function MasterAdminPage() {
                   {isAr ? "إعادة المحاولة" : "Retry"}
                 </Button>
               </div>
-            )}
+            ) : null}
 
             {/* 1. DOMAIN: DASHBOARD (Command Center) */}
             {activeDomainId === "dashboard" &&
@@ -1320,6 +1435,7 @@ function MasterAdminPage() {
                 <TreasuryManager
                   verifiedTotal={treasuryData?.verifiedTotal ?? 0}
                   pendingTotal={treasuryData?.pendingTotal ?? 0}
+                  rejectedTotal={treasuryData?.rejectedTotal ?? 0}
                   pendingCount={
                     (treasuryData?.contributions ?? []).filter((c) => c.status === "pending").length
                   }
@@ -1331,9 +1447,17 @@ function MasterAdminPage() {
                     (treasuryData?.contributions ?? []).filter((c) => c.status === "rejected")
                       .length
                   }
-                  totalCount={(treasuryData?.contributions ?? []).length}
+                  totalCount={treasuryData?.totalCount ?? (treasuryData?.contributions ?? []).length}
+                  byPurpose={treasuryData?.byPurpose}
+                  initialConfig={treasuryData?.treasuryConfig}
                   onReviewContribution={(data) =>
                     runMutation(() => reviewTreasuryMut({ data }), refreshTreasury)
+                  }
+                  onSaveTreasuryConfig={(config) =>
+                    runMutation(() => saveTreasuryConfigMut({ data: config }), refreshTreasury)
+                  }
+                  onCreateManualContribution={(data) =>
+                    runMutation(() => createManualContributionMut({ data }), refreshTreasury)
                   }
                 />
               ))}

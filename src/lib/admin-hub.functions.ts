@@ -1643,10 +1643,13 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const { data: list, error } = await supabase.from("contributions").select("amount, status"); // Lightweight fetch for totals only
+    const [contribsRes, configRes] = await Promise.all([
+      supabase.from("contributions").select("id, amount, status, purpose, method, created_at"),
+      supabase.from("site_settings").select("value").eq("key", "treasury_config").maybeSingle(),
+    ]);
 
-    if (error) throw new Error(error.message);
-    const contributions = list ?? [];
+    if (contribsRes.error) throw new Error(contribsRes.error.message);
+    const contributions = contribsRes.data ?? [];
 
     const verifiedTotal = contributions
       .filter((c) => c.status === "verified")
@@ -1656,10 +1659,29 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
       .filter((c) => c.status === "pending")
       .reduce((sum, c) => sum + Number(c.amount || 0), 0);
 
+    const rejectedTotal = contributions
+      .filter((c) => c.status === "rejected")
+      .reduce((sum, c) => sum + Number(c.amount || 0), 0);
+
+    // Purpose / Fund breakdown for verified contributions
+    const byPurpose: Record<string, { count: number; total: number }> = {};
+    for (const c of contributions) {
+      if (c.status === "verified") {
+        const p = c.purpose?.trim() || "غير محدد / عام";
+        if (!byPurpose[p]) byPurpose[p] = { count: 0, total: 0 };
+        byPurpose[p].count += 1;
+        byPurpose[p].total += Number(c.amount || 0);
+      }
+    }
+
     return {
       contributions,
       verifiedTotal,
       pendingTotal,
+      rejectedTotal,
+      totalCount: contributions.length,
+      byPurpose,
+      treasuryConfig: configRes.data?.value || null,
     };
   });
 

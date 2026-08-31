@@ -83,6 +83,7 @@ import {
 } from "lucide-react";
 import {
   ADMIN_DOMAINS,
+  preloadAdminManager,
   type AdminDomainGroup,
   type AdminSubTab,
   type AdminRole,
@@ -489,6 +490,12 @@ export function AdminConsoleLayout({
                       onClick={() => {
                         onSelectTab(domain.id, domain.tabs[0]?.id || "");
                       }}
+                      onMouseEnter={() => {
+                        domain.tabs.forEach((t) => preloadAdminManager(t.id));
+                      }}
+                      onFocus={() => {
+                        domain.tabs.forEach((t) => preloadAdminManager(t.id));
+                      }}
                       className={cn(
                         "w-10 h-10 mx-auto rounded-xl flex items-center justify-center transition-all relative group",
                         isDomainActive
@@ -544,6 +551,12 @@ export function AdminConsoleLayout({
                     } else {
                       toggleDomainExpand(domain.id);
                     }
+                  }}
+                  onMouseEnter={() => {
+                    domain.tabs.forEach((t) => preloadAdminManager(t.id));
+                  }}
+                  onFocus={() => {
+                    domain.tabs.forEach((t) => preloadAdminManager(t.id));
                   }}
                   className={cn(
                     "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all text-start group cursor-pointer",
@@ -611,6 +624,8 @@ export function AdminConsoleLayout({
                             onSelectTab(domain.id, tab.id);
                             if (isMobile) setMobileDrawerOpen(false);
                           }}
+                          onMouseEnter={() => preloadAdminManager(tab.id)}
+                          onFocus={() => preloadAdminManager(tab.id)}
                           className={cn(
                             "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all text-start relative group cursor-pointer",
                             isTabActive

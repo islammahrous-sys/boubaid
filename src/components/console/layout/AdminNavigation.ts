@@ -346,3 +346,92 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     ],
   },
 ];
+
+/**
+ * Preloads the chunk for an admin tab's manager component so that when the
+ * user clicks or touches a sidebar button, the chunk is already cached and
+ * React Suspense never displays a fallback skeleton.
+ */
+export const preloadAdminManager = (tabId: string) => {
+  if (typeof window === "undefined") return;
+  switch (tabId) {
+    case "overview":
+      void import("@/components/console/dashboard/AdminDashboardOverview");
+      break;
+    case "members":
+    case "privacy":
+      void import("@/components/console/family/FamilyMembersTable");
+      break;
+    case "tree":
+      void import("@/components/console/family/FamilyTreeViewer");
+      break;
+    case "branches":
+      void import("@/components/console/family/FamilyBranchesManager");
+      break;
+    case "relationships":
+      void import("@/components/console/family/FamilyRelationshipsManager");
+      break;
+    case "history":
+      void import("@/components/console/family/FamilyHistoryManager");
+      break;
+    case "places":
+      void import("@/components/console/places/PlacesManager");
+      break;
+    case "articles":
+      void import("@/components/console/articles/ArticlesManager");
+      break;
+    case "pages":
+      void import("@/components/console/cms/PagesManager");
+      break;
+    case "events":
+      void import("@/components/console/events/EventsManager");
+      break;
+    case "announcements":
+      void import("@/components/console/announcements/AnnouncementsManager");
+      break;
+    case "media_library":
+      void import("@/components/console/media/MediaLibrary");
+      break;
+    case "library_items":
+      void import("@/components/console/library/LibraryItemsManager");
+      void import("@/components/console/museum/MuseumArchiveManager");
+      break;
+    case "homepage":
+      void import("@/components/console/cms/HomepageManager");
+      break;
+    case "navigation":
+      void import("@/components/console/navigation/NavigationManager");
+      break;
+    case "dna":
+      void import("@/components/console/dna/DnaStudiesManager");
+      break;
+    case "inquiries":
+      void import("@/components/console/inquiries/InquiriesManager");
+      break;
+    case "directory":
+    case "verification":
+      void import("@/components/console/directory/DirectoryManager");
+      break;
+    case "treasury_ledger":
+      void import("@/components/console/treasury/TreasuryManager");
+      break;
+    case "initiatives":
+      void import("@/components/console/initiatives/InitiativesManager");
+      break;
+    case "achievers":
+      void import("@/components/console/achievers/AchieversManager");
+      break;
+    case "users":
+      void import("@/components/console/users/UsersManager");
+      break;
+    case "roles_matrix":
+      void import("@/components/console/users/RolesPermissionMatrix");
+      break;
+    case "audit_logs":
+      void import("@/components/console/activity/AuditLogsViewer");
+      break;
+    case "site_settings":
+      void import("@/components/console/settings/SiteSettingsManager");
+      break;
+  }
+};

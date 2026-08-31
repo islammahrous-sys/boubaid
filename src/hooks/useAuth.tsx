@@ -65,7 +65,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       if (loadedFor === userId) return;
-      loadedFor = userId;
       try {
         const [rolesRes, profileRes] = await Promise.all([
           supabase.from("user_roles").select("role").eq("user_id", userId),
@@ -77,28 +76,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ]);
         if (!active) return;
         if (rolesRes.error) throw rolesRes.error;
+        loadedFor = userId;
         setRoles(((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role));
         setProfile((profileRes.data as AuthProfile | null) ?? null);
       } catch (err) {
-        if (loadedFor === userId) loadedFor = null;
         console.error("Failed to load user roles:", err);
       }
     };
 
     /**
-     * `loading` has to stay true until the roles for the *current* user are
-     * in hand, not merely until the session is known. Consumers gate on it —
-     * the admin console renders "this area is for council administrators"
-     * whenever `canAccessConsole` is false — so flipping it to false with
-     * `roles` still empty flashes an access-denied screen at an admin who
-     * has just signed in.
+     * `loading` stays true on initial startup until roles for the current user
+     * are loaded. During background token refreshes (TOKEN_REFRESHED), existing
+     * roles and session are preserved without flickering the loading state.
      */
     const syncSession = async (next: Session | null) => {
       if (!active) return;
       setSession(next);
       const userId = next?.user?.id;
-      if (userId && loadedFor !== userId) setLoading(true);
-      await loadRoles(userId);
+      if (!userId) {
+        setRoles([]);
+        setProfile(null);
+        if (active) setLoading(false);
+        return;
+      }
+      if (loadedFor !== userId) {
+        await loadRoles(userId);
+      }
       if (active) setLoading(false);
     };
 

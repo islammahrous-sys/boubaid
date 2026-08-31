@@ -36,6 +36,7 @@ import {
   submitContribution,
   getMyContributions,
   getMemberBankAccount,
+  getPublicTreasuryConfig,
   type ContributionRow,
 } from "@/lib/contributions.functions";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -48,6 +49,10 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/contribute")({
   validateSearch: (search: z.input<typeof searchSchema>) => searchSchema.parse(search),
+  loader: async () => {
+    const treasuryConfig = await getPublicTreasuryConfig();
+    return { treasuryConfig };
+  },
   head: () => ({
     meta: [
       { title: "الاشتراك والمساهمة | آل بوعبيد" },
@@ -247,6 +252,37 @@ function ContributePage() {
   const Arrow = rtl ? ArrowLeft : ArrowRight;
   const label = (ar: string, en: string) => (lang === "ar" ? ar : en);
   const { user, roles, canAccessConsole } = useAuth();
+
+  const loaderData = Route.useLoaderData();
+  const treasuryConfig = loaderData?.treasuryConfig;
+
+  const dynamicTiers =
+    treasuryConfig?.tiers && treasuryConfig.tiers.length > 0
+      ? treasuryConfig.tiers.map((tier) => ({
+          category: { ar: tier.category_ar, en: tier.category_en },
+          amount: { ar: tier.amount_ar, en: tier.amount_en },
+          purpose: { ar: tier.purpose_ar, en: tier.purpose_en },
+          frequency: tier.frequency,
+        }))
+      : tiers;
+
+  const quickAmounts =
+    treasuryConfig?.quickAmounts && treasuryConfig.quickAmounts.length > 0
+      ? treasuryConfig.quickAmounts
+      : [100, 250, 500, 1000, 2500];
+
+  const sallaUrl = treasuryConfig?.sallaStoreUrl || siteMeta.sallaStoreUrl;
+  const fundPurposes =
+    treasuryConfig?.fundPurposes && treasuryConfig.fundPurposes.length > 0
+      ? treasuryConfig.fundPurposes
+      : [
+          { id: "ops", name_ar: "التشغيل وبرامج التكافل", name_en: "Operations & Solidarity", is_active: true },
+          { id: "assembly", name_ar: "الملتقى السنوي والأنشطة", name_en: "Annual Assembly & Activities", is_active: true },
+          { id: "hq", name_ar: "مشروع المقر الدائم (حي الحزام الذهبي)", name_en: "Permanent HQ Project", is_active: true },
+          { id: "zakat", name_ar: "حساب الزكاة والصدقات", name_en: "Zakat & Charity Fund", is_active: true },
+          { id: "academic", name_ar: "جائزة التفوق العلمي والمهني", name_en: "Academic Excellence Award", is_active: true },
+        ];
+
   // The official bank account is member-only per the modal's own copy. "Signed
   // in" is not enough — a brand-new account is not yet a vetted family member.
   // Approved members carry the `member` role; council staff (editor, treasurer,
@@ -271,7 +307,7 @@ function ContributePage() {
     contributor_name: "",
     amount: "",
     method: "bank_transfer" as "bank_transfer" | "in_person" | "other",
-    purpose: search.purpose || (search.initiative ? `مبادرة: ${search.initiative}` : ""),
+    purpose: search.purpose || (search.initiative ? `مبادرة: ${search.initiative}` : fundPurposes[0]?.name_ar || ""),
     reference: "",
   });
   const [file, setFile] = useState<File | null>(null);
@@ -430,14 +466,14 @@ function ContributePage() {
                 </tr>
               </thead>
               <tbody>
-                {tiers.map((tier, i) => (
+                {dynamicTiers.map((tier, i) => (
                   <tr key={i} className="border-b border-border align-baseline">
                     <td className="py-4 pe-6 text-sm font-medium text-foreground">
                       {t(tier.category)}
                     </td>
                     <td className="nums py-4 pe-6 text-sm whitespace-nowrap text-bronze dark:text-gold">
                       {t(tier.amount)}
-                      {i < 2 ? (
+                      {"frequency" in tier && tier.frequency === "monthly" ? (
                         <span className="ms-1.5 text-xs text-muted-foreground">
                           {t(copy.monthly)}
                         </span>
@@ -453,11 +489,11 @@ function ContributePage() {
           </div>
 
           <div className="mt-7 border-t border-ink/25 md:hidden dark:border-ivory/20">
-            {tiers.map((tier, i) => (
+            {dynamicTiers.map((tier, i) => (
               <Record key={i} title={t(tier.category)}>
                 <RecordField label={t(copy.colAmount)} mono>
                   {t(tier.amount)}
-                  {i < 2 ? (
+                  {"frequency" in tier && tier.frequency === "monthly" ? (
                     <span className="ms-1.5 text-xs text-muted-foreground">{t(copy.monthly)}</span>
                   ) : null}
                 </RecordField>
@@ -483,7 +519,7 @@ function ContributePage() {
                 {t(copy.sallaBody)}
               </p>
               <a
-                href={siteMeta.sallaStoreUrl}
+                href={sallaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-5 inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
@@ -740,7 +776,7 @@ function ContributePage() {
                 />
                 {/* Quick amount chips */}
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  {[100, 250, 500, 1000, 2500].map((val) => (
+                  {quickAmounts.map((val) => (
                     <button
                       key={val}
                       type="button"
@@ -780,17 +816,45 @@ function ContributePage() {
                 <label htmlFor="purpose" className="label-caps mb-1.5 block text-muted-foreground">
                   {t(contribCopy.purpose)}
                 </label>
-                <input
-                  id="purpose"
-                  value={form.purpose}
-                  onChange={(e) => setForm((f) => ({ ...f, purpose: e.target.value }))}
-                  placeholder={
-                    lang === "ar"
-                      ? "مثال: مشروع المقر الدائم / كفالة تعليمية"
-                      : "e.g. Headquarters / Educational Fund"
+                <select
+                  value={
+                    fundPurposes.some((f) => f.name_ar === form.purpose || f.name_en === form.purpose)
+                      ? form.purpose
+                      : "custom"
                   }
+                  onChange={(e) => {
+                    if (e.target.value !== "custom") {
+                      setForm((f) => ({ ...f, purpose: e.target.value }));
+                    }
+                  }}
                   className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold rounded-sm"
-                />
+                >
+                  {fundPurposes.map((fund) => (
+                    <option
+                      key={fund.id}
+                      value={lang === "ar" ? fund.name_ar : fund.name_en}
+                    >
+                      {lang === "ar" ? fund.name_ar : fund.name_en}
+                    </option>
+                  ))}
+                  <option value="custom">
+                    {lang === "ar" ? "غرض أو مبادرة أخرى…" : "Other purpose / initiative…"}
+                  </option>
+                </select>
+                {(!fundPurposes.some((f) => f.name_ar === form.purpose || f.name_en === form.purpose) ||
+                  form.purpose.startsWith("مبادرة:")) && (
+                  <input
+                    id="purpose"
+                    value={form.purpose}
+                    onChange={(e) => setForm((f) => ({ ...f, purpose: e.target.value }))}
+                    placeholder={
+                      lang === "ar"
+                        ? "اكتب وجه الصرف أو اسم المبادرة..."
+                        : "Enter purpose or initiative name..."
+                    }
+                    className="w-full mt-2 border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold rounded-sm"
+                  />
+                )}
               </div>
 
               <div>
@@ -956,8 +1020,20 @@ function ContributePage() {
               </figure>
 
               <Prose>
-                <p>{t(copy.useP1)}</p>
-                <p>{t(copy.useP2)}</p>
+                <p>
+                  {treasuryConfig?.applicationOfFunds
+                    ? lang === "ar"
+                      ? treasuryConfig.applicationOfFunds.p1_ar
+                      : treasuryConfig.applicationOfFunds.p1_en
+                    : t(copy.useP1)}
+                </p>
+                <p>
+                  {treasuryConfig?.applicationOfFunds
+                    ? lang === "ar"
+                      ? treasuryConfig.applicationOfFunds.p2_ar
+                      : treasuryConfig.applicationOfFunds.p2_en
+                    : t(copy.useP2)}
+                </p>
               </Prose>
 
               <Link

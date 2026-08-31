@@ -58,6 +58,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getFamilyMembersPaginated } from "@/lib/admin-hub.functions";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   FamilyMemberFormDialog,
   type BranchOption,
@@ -152,14 +153,18 @@ export function FamilyMembersTable({
   const [quickViewMember, setQuickViewMember] = useState<MemberRow | null>(null);
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
 
-  const fetchMembersPage = useServerFn(getFamilyMembersPaginated);
+  const debouncedSearch = useDebounce(search, 300);
 
-  const { data: queryData, isLoading } = useQuery({
+  const {
+    data: queryData,
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: [
       "family-members-paginated",
       currentPage,
       pageSize,
-      search,
+      debouncedSearch,
       branchFilter,
       livingFilter,
     ],
@@ -168,12 +173,13 @@ export function FamilyMembersTable({
         data: {
           page: currentPage,
           pageSize,
-          search: search.trim() || undefined,
+          search: debouncedSearch.trim() || undefined,
           branchId: branchFilter === "all" ? undefined : branchFilter,
           status: livingFilter === "all" ? undefined : livingFilter,
         },
       }),
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 3,
+    placeholderData: (previousData) => previousData,
   });
 
   const paginatedMembers = queryData?.data ?? [];
@@ -801,15 +807,21 @@ export function FamilyMembersTable({
             </TableRow>
           </TableHeader>
 
-          <TableBody>
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={8} className="h-48 text-center text-muted-foreground">
-                  جاري تحميل البيانات...
-                </TableCell>
-              </TableRow>
-            )}
-            {!isLoading && paginatedMembers.length === 0 ? (
+          <TableBody className={cn("transition-opacity duration-150", isFetching && "opacity-70")}>
+            {isLoading && !queryData ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <TableRow key={`skeleton-${idx}`}>
+                  <TableCell className="text-center"><div className="w-4 h-4 bg-muted animate-pulse rounded mx-auto" /></TableCell>
+                  <TableCell className="text-center"><div className="w-8 h-8 rounded-full bg-muted animate-pulse mx-auto" /></TableCell>
+                  <TableCell><div className="h-4 w-32 bg-muted animate-pulse rounded mb-1" /><div className="h-3 w-20 bg-muted/60 animate-pulse rounded" /></TableCell>
+                  <TableCell><div className="h-4 w-20 bg-muted animate-pulse rounded" /></TableCell>
+                  <TableCell className="text-center"><div className="h-4 w-8 bg-muted animate-pulse rounded mx-auto" /></TableCell>
+                  <TableCell className="text-center"><div className="h-4 w-12 bg-muted animate-pulse rounded mx-auto" /></TableCell>
+                  <TableCell className="text-center"><div className="h-4 w-14 bg-muted animate-pulse rounded mx-auto" /></TableCell>
+                  <TableCell className="text-end"><div className="h-7 w-20 bg-muted animate-pulse rounded ms-auto" /></TableCell>
+                </TableRow>
+              ))
+            ) : paginatedMembers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-36 text-center text-muted-foreground text-xs">
                   {isAr

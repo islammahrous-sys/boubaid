@@ -18,6 +18,7 @@ import {
   markMyNotificationRead,
   markAllMyNotificationsRead,
 } from "@/lib/account.functions";
+import { getMemberBankAccount, getMyContributions } from "@/lib/contributions.functions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,9 @@ import {
   Sparkles,
   GitBranch,
   FileCheck,
+  Wallet,
+  History,
+  XCircle,
   Eye,
   EyeOff,
   LayoutDashboard,
@@ -151,6 +155,25 @@ function AccountPage() {
     mutationFn: () => markAllNotifsReadFn(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-notifications"] }),
     onError: notifErrorToast,
+  });
+
+  const fetchBankAccount = useServerFn(getMemberBankAccount);
+  const fetchMyContributions = useServerFn(getMyContributions);
+
+  const isApprovedMember = data?.membership_status === "approved" || isAdmin;
+
+  const { data: bankAccount, isLoading: bankLoading } = useQuery({
+    queryKey: ["member-bank-account"],
+    queryFn: () => fetchBankAccount(),
+    enabled: isApprovedMember,
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const { data: myContributions, isLoading: contribsLoading } = useQuery({
+    queryKey: ["my-contributions"],
+    queryFn: () => fetchMyContributions(),
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2,
   });
 
   /**
@@ -1292,112 +1315,286 @@ function AccountPage() {
 
           {/* ──────────────── TAB 3: Treasury & Dues ────────────────── */}
           <TabsContent value="treasury" className="space-y-6">
+            {/* Top Cards: Bank Account Details + Contribution Summary */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Bank Card */}
               <Card className="border-border bg-card rounded-2xl">
                 <CardHeader>
                   <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-gold" />
-                    {isAr ? "صندوق التنمية والمساهمة العائلية" : "Family Development Fund"}
+                    {isAr ? "الحساب البنكي الرسمي المعتمد" : "Official Bank Particulars"}
                   </CardTitle>
                   <CardDescription className="text-xs">
                     {isAr
-                      ? "الحساب البنكي الرسمي المعتمد لأسرة آل بوعبيد تحت إشراف المركز الوطني لتنمية القطاع غير الربحي."
-                      : "Official registered endowment and social contribution bank account."}
+                      ? "الحساب البنكي الرسمي لصندوق التنمية العائلية (آل بوعبيد) الخاضع للإشراف المالي والترخيص."
+                      : "Official licensed bank account of Al-Boabid Family Development Fund."}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 text-xs">
-                  <div className="p-4 rounded-xl border border-border bg-secondary/30 space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        {isAr ? "اسم الحساب:" : "Account Name:"}
-                      </span>
-                      <span className="font-bold text-foreground">
-                        {isAr ? "صندوق أسرة آل بوعبيد" : "Al Bu Obaid Family Fund"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{isAr ? "البنك:" : "Bank:"}</span>
-                      <span className="font-semibold text-foreground">
-                        {isAr ? "مصرف الإنماء (Alinma Bank)" : "Alinma Bank"}
-                      </span>
-                    </div>
-                    <div className="pt-2 border-t border-border/50">
-                      <span className="text-muted-foreground block text-[11px] mb-1">
-                        {isAr ? "رقم الآيبان (IBAN):" : "IBAN:"}
-                      </span>
-                      <div className="flex items-center justify-between bg-background p-2 rounded-lg border border-border font-mono text-xs">
-                        <span>SA03 0500 0000 1200 7584 0001</span>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="w-6 h-6"
-                          onClick={() => {
-                            navigator.clipboard.writeText("SA0305000000120075840001");
-                            setCopiedIban(true);
-                            toast.success(isAr ? "تم نسخ الآيبان" : "IBAN copied");
-                            setTimeout(() => setCopiedIban(false), 2000);
-                          }}
-                        >
-                          {copiedIban ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-500" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                        </Button>
+                  {isApprovedMember ? (
+                    bankLoading ? (
+                      <div className="p-8 flex items-center justify-center">
+                        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
                       </div>
+                    ) : bankAccount ? (
+                      <div className="p-4 rounded-xl border border-border bg-secondary/30 space-y-2.5">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">
+                            {isAr ? "اسم الحساب:" : "Account Name:"}
+                          </span>
+                          <span className="font-bold text-foreground">
+                            {isAr
+                              ? bankAccount.beneficiary_name_ar || "صندوق التنمية العائلية (آل بوعبيد)"
+                              : bankAccount.beneficiary_name_en || "Al-Boabid Family Fund"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">{isAr ? "البنك:" : "Bank:"}</span>
+                          <span className="font-semibold text-foreground">
+                            {isAr
+                              ? bankAccount.bank_name_ar || "مصرف الإنماء"
+                              : bankAccount.bank_name_en || "Alinma Bank"}
+                          </span>
+                        </div>
+                        {bankAccount.account_number && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground">
+                              {isAr ? "رقم الحساب:" : "Account Number:"}
+                            </span>
+                            <span className="font-mono font-medium text-foreground">
+                              {bankAccount.account_number}
+                            </span>
+                          </div>
+                        )}
+                        <div className="pt-2 border-t border-border/50">
+                          <span className="text-muted-foreground block text-[11px] mb-1">
+                            {isAr ? "رقم الآيبان الدولي (IBAN):" : "IBAN:"}
+                          </span>
+                          <div className="flex items-center justify-between bg-background p-2.5 rounded-lg border border-border font-mono text-xs">
+                            <span className="font-bold text-foreground tracking-wide">
+                              {bankAccount.iban.match(/.{1,4}/g)?.join(" ") || bankAccount.iban}
+                            </span>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="w-7 h-7 hover:bg-muted"
+                              onClick={() => {
+                                navigator.clipboard.writeText(bankAccount.iban);
+                                setCopiedIban(true);
+                                toast.success(isAr ? "تم نسخ الآيبان بنجاح" : "IBAN copied");
+                                setTimeout(() => setCopiedIban(false), 2500);
+                              }}
+                            >
+                              {copiedIban ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-500" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                        {bankAccount.notes_ar && (
+                          <p className="text-[10px] text-muted-foreground pt-1 leading-relaxed">
+                            {isAr ? bankAccount.notes_ar : bankAccount.notes_en}
+                          </p>
+                        )}
+                      </div>
+                    ) : null
+                  ) : (
+                    <div className="p-4 rounded-xl border border-border bg-amber-500/10 text-amber-800 dark:text-amber-300 space-y-2">
+                      <p className="font-medium text-xs leading-relaxed">
+                        {isAr
+                          ? "بيانات الحساب البنكي تظهر تلقائياً بعد اعتماد العضوية الرسمية في الأسرة."
+                          : "Official bank particulars will appear once membership is verified."}
+                      </p>
                     </div>
-                  </div>
+                  )}
 
-                  <Button asChild className="w-full h-9 text-xs font-bold gap-1.5">
+                  <Button asChild className="w-full h-9 text-xs font-bold gap-1.5 rounded-xl">
                     <Link to="/contribute">
                       <FileCheck className="w-4 h-4" />
-                      {isAr ? "رفع إشعار تحويل مساهمة" : "Submit Transfer Receipt"}
+                      {isAr ? "تسجيل اشتراك أو مساهمة جديدة" : "Record New Contribution"}
                     </Link>
                   </Button>
                 </CardContent>
               </Card>
 
+              {/* Personal Contributions Stats */}
               <Card className="border-border bg-card rounded-2xl">
                 <CardHeader>
                   <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-                    <Building className="w-4 h-4 text-primary" />
-                    {isAr ? "أوجه الصرف والبرامج" : "Programs & Initiatives"}
+                    <Wallet className="w-4 h-4 text-primary" />
+                    {isAr ? "ملخص مساهماتي واشتراكاتي" : "My Contributions Summary"}
                   </CardTitle>
+                  <CardDescription className="text-xs">
+                    {isAr
+                      ? "إجمالي المبالغ والاشتراكات المعتمدة في سجل الخزينة."
+                      : "Total verified payments and registered dues."}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3 text-xs text-muted-foreground">
-                  <div className="p-3 rounded-xl bg-secondary/20 border border-border">
-                    <h5 className="font-bold text-foreground mb-1">
-                      {isAr ? "مشروع المقر الدائم" : "Permanent Headquarters"}
-                    </h5>
-                    <p className="text-[11px]">
-                      {isAr
-                        ? "مقر اجتماعات الأسرة والديوانية العامة ومكتبة الوثائق التاريخية."
-                        : "Family majlis, assembly hall, and archive center."}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-secondary/20 border border-border">
-                    <h5 className="font-bold text-foreground mb-1">
-                      {isAr ? "جائزة التفوق العلمي والمهني" : "Academic Excellence Award"}
-                    </h5>
-                    <p className="text-[11px]">
-                      {isAr
-                        ? "تكريم الخريجين وأصحاب الابتكارات والشهادات العليا سنوياً."
-                        : "Annual honouring of top graduates and innovators."}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-secondary/20 border border-border">
-                    <h5 className="font-bold text-foreground mb-1">
-                      {isAr ? "صندوق التكافل الاجتماعي" : "Social Solidarity Fund"}
-                    </h5>
-                    <p className="text-[11px]">
-                      {isAr
-                        ? "مساعدة ودعم أسر وأفراد العائلة في الظروف الاجتماعية."
-                        : "Assisting family members in special community needs."}
-                    </p>
-                  </div>
+                <CardContent className="space-y-4">
+                  {contribsLoading ? (
+                    <div className="p-8 flex items-center justify-center">
+                      <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3.5 rounded-xl border border-border bg-emerald-500/5 dark:bg-emerald-500/10">
+                          <span className="text-[11px] text-muted-foreground block mb-1">
+                            {isAr ? "إجمالي المساهمات المعتمدة" : "Total Verified"}
+                          </span>
+                          <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                            {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US", {
+                              style: "currency",
+                              currency: "SAR",
+                              maximumFractionDigits: 0,
+                            }).format(
+                              (myContributions ?? [])
+                                .filter((c) => c.status === "verified")
+                                .reduce((acc, curr) => acc + (curr.amount || 0), 0),
+                            )}
+                          </span>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl border border-border bg-secondary/30">
+                          <span className="text-[11px] text-muted-foreground block mb-1">
+                            {isAr ? "عدد المعاملات" : "Transactions"}
+                          </span>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xl font-bold font-mono text-foreground">
+                              {(myContributions ?? []).length}
+                            </span>
+                            {(myContributions ?? []).some((c) => c.status === "pending") && (
+                              <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-500/30">
+                                {(myContributions ?? []).filter((c) => c.status === "pending").length}{" "}
+                                {isAr ? "قيد المراجعة" : "pending"}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-secondary/20 border border-border text-xs text-muted-foreground space-y-1">
+                        <p className="font-bold text-foreground">
+                          {isAr ? "حوكمة وتوثيق الصندوق" : "Fund Governance"}
+                        </p>
+                        <p className="text-[11px] leading-relaxed">
+                          {isAr
+                            ? "تخضع جميع المساهمات والاشتراكات للتدقيق الدوري والتوثيق من مجلس أمناء الصندوق والجمعية العمومية."
+                            : "All contributions are audited and verified under the board of trustees oversight."}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
+
+            {/* Bottom Card: Personal Contribution History Table */}
+            <Card className="border-border bg-card rounded-2xl">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
+                    <History className="w-4 h-4 text-gold" />
+                    {isAr ? "سجل مساهماتي السابقة" : "Contribution History"}
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    {isAr
+                      ? "جميع التحويلات والاشتراكات المسجلة باسمك مع حالة الاعتماد من الخزينة."
+                      : "Detailed list of your submitted payments and their verification status."}
+                  </CardDescription>
+                </div>
+                <Button asChild size="sm" variant="outline" className="text-xs font-bold gap-1 rounded-xl">
+                  <Link to="/contribute">
+                    <FileCheck className="w-3.5 h-3.5" />
+                    {isAr ? "تسجيل مساهمة" : "New Contribution"}
+                  </Link>
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {contribsLoading ? (
+                  <div className="p-8 flex items-center justify-center">
+                    <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (myContributions ?? []).length === 0 ? (
+                  <div className="text-center py-10 border border-dashed border-border rounded-xl">
+                    <Wallet className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+                    <p className="text-xs text-muted-foreground">
+                      {isAr ? "لم تقم بتسجيل أي مساهمات سابقة حتى الآن." : "No contribution records found."}
+                    </p>
+                    <Button asChild size="sm" className="mt-3 text-xs font-bold rounded-xl">
+                      <Link to="/contribute">
+                        {isAr ? "تسجيل أول مساهمة" : "Record First Contribution"}
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-border border border-border rounded-xl overflow-hidden">
+                    {(myContributions ?? []).map((c) => (
+                      <div key={c.id} className="p-4 bg-card hover:bg-muted/10 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm font-mono text-foreground">
+                              {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US", {
+                                style: "currency",
+                                currency: "SAR",
+                                maximumFractionDigits: 0,
+                              }).format(c.amount)}
+                            </span>
+                            <span className="text-muted-foreground font-medium">·</span>
+                            <span className="font-medium text-foreground">
+                              {c.purpose || (isAr ? "اشتراك عام" : "General contribution")}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                            <span>
+                              {new Date(c.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </span>
+                            {c.reference && (
+                              <span>
+                                {isAr ? "مرجع:" : "Ref:"} <span className="font-mono">{c.reference}</span>
+                              </span>
+                            )}
+                          </div>
+                          {c.review_note && (
+                            <p className="text-[11px] text-muted-foreground bg-muted/40 p-2 rounded-lg mt-1.5">
+                              <span className="font-bold text-foreground">
+                                {isAr ? "ملاحظة الخزينة:" : "Treasury Note:"}
+                              </span>{" "}
+                              {c.review_note}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2 self-start sm:self-center">
+                          {c.status === "verified" ? (
+                            <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 gap-1 text-[11px]">
+                              <CheckCircle2 className="w-3 h-3" />
+                              {isAr ? "معتمدة" : "Verified"}
+                            </Badge>
+                          ) : c.status === "pending" ? (
+                            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 gap-1 text-[11px]">
+                              <Clock className="w-3 h-3 animate-pulse" />
+                              {isAr ? "قيد المراجعة" : "Pending Review"}
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive" className="gap-1 text-[11px]">
+                              <XCircle className="w-3 h-3" />
+                              {isAr ? "مرفوضة" : "Rejected"}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* ──────────────── TAB: Notifications ─────────── */}
