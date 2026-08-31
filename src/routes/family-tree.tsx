@@ -3,8 +3,9 @@ import { useMemo, useState, useEffect } from "react";
 import { Search, Maximize2, Lock, X } from "lucide-react";
 import { z } from "zod";
 import { useLang, type BiText } from "@/i18n/LanguageProvider";
-import { branches, siteMeta } from "@/content/site";
-import { familyMembersData, type FamilyMemberNode } from "@/content/family-tree";
+import { siteMeta } from "@/content/site";
+import type { FamilyMemberNode } from "@/content/family-tree";
+import { officialCharts, officialChartsPdf } from "@/content/tree/charts";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
@@ -109,12 +110,42 @@ const copy = {
   close: { ar: "إغلاق", en: "Close" } as BiText,
 };
 
-const generationLabels: Record<number, BiText> = {
-  1: { ar: "الجيل الأول", en: "First generation" },
-  2: { ar: "الجيل الثاني", en: "Second generation" },
-  3: { ar: "الجيل الثالث", en: "Third generation" },
-  4: { ar: "الجيل الرابع", en: "Fourth generation" },
-};
+const arabicOrdinals = [
+  "",
+  "الأول",
+  "الثاني",
+  "الثالث",
+  "الرابع",
+  "الخامس",
+  "السادس",
+  "السابع",
+  "الثامن",
+  "التاسع",
+  "العاشر",
+  "الحادي عشر",
+  "الثاني عشر",
+];
+const englishOrdinals = [
+  "",
+  "First",
+  "Second",
+  "Third",
+  "Fourth",
+  "Fifth",
+  "Sixth",
+  "Seventh",
+  "Eighth",
+  "Ninth",
+  "Tenth",
+  "Eleventh",
+  "Twelfth",
+];
+function generationLabel(n: number): BiText {
+  return {
+    ar: `الجيل ${arabicOrdinals[n] ?? n}`,
+    en: `${englishOrdinals[n] ?? n} generation`,
+  };
+}
 
 function FamilyTreePage() {
   const { t, lang } = useLang();
@@ -128,68 +159,102 @@ function FamilyTreePage() {
   const [selected, setSelected] = useState<FamilyMemberNode | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
 
+  /** Branch filter options come from the database, not a hardcoded list. */
+  const branchOptions = useMemo(
+    () =>
+      (treeData?.branches ?? []).map((b: any) => ({
+        id: b.slug as string,
+        name: { ar: b.name_ar, en: b.name_en || b.name_ar } as BiText,
+        elder: { ar: b.elder_ar || "", en: b.elder_en || b.elder_ar || "" } as BiText,
+      })),
+    [treeData],
+  );
+
+  /**
+   * The single source of truth: `family_members` + `family_relationships`,
+   * seeded from the 12 official charts. Fatherhood and children come from the
+   * real relationship rows — nothing is inferred or invented here.
+   */
   const allMembers = useMemo(() => {
-    const list: FamilyMemberNode[] = [...familyMembersData];
-    const existingIds = new Set(list.map((m) => m.id));
+    const members: any[] = treeData?.members ?? [];
+    const rels: any[] = treeData?.relationships ?? [];
+    const byId = new Map(members.map((m) => [m.id, m]));
+    const branchById = new Map((treeData?.branches ?? []).map((b: any) => [b.id, b]));
 
-    (treeData?.members ?? []).forEach((row: any) => {
-      if (!existingIds.has(row.id)) {
-        const branchRow = (treeData?.branches ?? []).find((b: any) => b.id === row.branch_id);
-        const genNum = Math.min(Math.max(row.generation || 1, 1), 4) as 1 | 2 | 3 | 4;
-        list.push({
-          id: row.id,
-          // `family_members` has no `father_name_ar` / `lineage_notes` / `bio_ar`
-          // columns (verified against the live schema) — those were always
-          // `undefined`, so every DB-sourced member silently fell back to the
-          // placeholder lineage/bio text below regardless of what was actually
-          // entered. The real columns are `middle_name_ar` (used for the
-          // father's/grandfather's name per the admin form's own label) and
-          // `biography_ar`/`biography_en`.
-          name: {
-            ar: `${row.first_name_ar} ${row.middle_name_ar || ""} ${row.last_name_ar}`.trim(),
-            en: row.first_name_en
-              ? `${row.first_name_en} ${row.last_name_en || ""}`.trim()
-              : `${row.first_name_ar} ${row.last_name_ar}`,
-          },
-          lineage: {
-            ar: `${row.first_name_ar} بن ${row.middle_name_ar || "أحمد"} آل بوعبيد`,
-            en: `${row.first_name_en || row.first_name_ar} Al Bu Obaid`,
-          },
-          generation: genNum,
-          generationTitle: generationLabels[genNum],
-          branchId: branchRow?.slug || "all",
-          branchName: {
-            ar: branchRow?.name_ar || "فرع معتمد",
-            en: branchRow?.name_en || "Documented Branch",
-          },
-          ancestorName: {
-            ar: branchRow?.elder_ar || "الجد الجامع",
-            en: branchRow?.elder_en || "Branch Ancestor",
-          },
-          settlement: {
-            ar: row.residence_ar || "المبرز، الأحساء",
-            en: row.residence_en || "Al-Mubarraz, Al-Ahsa",
-          },
-          title: row.occupation_ar
-            ? { ar: row.occupation_ar, en: row.occupation_en || row.occupation_ar }
-            : undefined,
-          bio: {
-            ar: row.biography_ar || "فرد موثق بسجلات أمانة مجلس الأسرة.",
-            en: row.biography_en || "Documented family member in council records.",
-          },
-          relations: {
-            father: row.middle_name_ar
-              ? { ar: row.middle_name_ar, en: row.middle_name_en || row.middle_name_ar }
-              : undefined,
-            lineageChain: [],
-          },
-          isPatriarch: row.generation === 1,
-          isBranchFounder: row.generation === 2,
-        });
+    const fatherOf = new Map<string, string>();
+    const childrenOf = new Map<string, string[]>();
+    for (const r of rels) {
+      if (r.relationship_type === "parent") {
+        fatherOf.set(r.related_person_id, r.person_id);
+        childrenOf.set(r.person_id, [...(childrenOf.get(r.person_id) ?? []), r.related_person_id]);
       }
-    });
+    }
 
-    return list;
+    const nameOf = (id?: string | null) => {
+      const row = id ? byId.get(id) : null;
+      return row ? `${row.first_name_ar}` : null;
+    };
+
+    const chainOf = (id: string) => {
+      const chain: string[] = [];
+      let cur = fatherOf.get(id);
+      let guard = 0;
+      while (cur && guard++ < 20) {
+        const nm = nameOf(cur);
+        if (nm) chain.push(nm);
+        cur = fatherOf.get(cur);
+      }
+      return chain;
+    };
+
+    return members.map((row): FamilyMemberNode => {
+      const branchRow: any = row.branch_id ? branchById.get(row.branch_id) : null;
+      const father = nameOf(fatherOf.get(row.id));
+      const children = childrenOf.get(row.id) ?? [];
+      const gen = Math.max(1, row.generation || 1);
+      const displayAr =
+        row.display_name_ar || `${row.first_name_ar} ${row.last_name_ar || ""}`.trim();
+
+      return {
+        id: row.id,
+        name: {
+          ar: row.first_name_ar,
+          en: row.first_name_en || row.first_name_ar,
+        },
+        lineage: { ar: displayAr, en: row.display_name_en || displayAr },
+        generation: gen,
+        generationTitle: generationLabel(gen),
+        branchId: branchRow?.slug || "root",
+        branchName: {
+          ar: branchRow?.name_ar || "الجذع",
+          en: branchRow?.name_en || branchRow?.name_ar || "Trunk",
+        },
+        ancestorName: {
+          ar: branchRow?.elder_ar || "عبدالله — الجد الجامع",
+          en: branchRow?.elder_en || branchRow?.elder_ar || "Abdullah — root ancestor",
+        },
+        settlement: {
+          ar: "المبرز، الأحساء",
+          en: "Al-Mubarraz, Al-Ahsa",
+        },
+        title: row.occupation_ar
+          ? { ar: row.occupation_ar, en: row.occupation_en || row.occupation_ar }
+          : undefined,
+        bio: {
+          ar: row.biography_ar || `اسم موثق في المشجرات الرسمية المعتمدة — ${displayAr}.`,
+          en:
+            row.biography_en ||
+            `Documented in the official verified charts — ${row.display_name_en || displayAr}.`,
+        },
+        relations: {
+          father: father ? { ar: father, en: father } : undefined,
+          childrenCount: children.length,
+          lineageChain: chainOf(row.id).map((n) => ({ ar: n, en: n })),
+        },
+        isPatriarch: gen === 1,
+        isBranchFounder: gen === 3 && children.length > 0,
+      };
+    });
   }, [treeData]);
 
   const filtered = useMemo(() => {
@@ -237,6 +302,11 @@ function FamilyTreePage() {
       if (clearTimer) clearTimeout(clearTimer);
     };
   }, [search.focus, allMembers]);
+
+  const availableGenerations = useMemo(
+    () => [...new Set(allMembers.map((m) => m.generation))].sort((a, b) => a - b),
+    [allMembers],
+  );
 
   const isFiltered = branchId !== "all" || generation !== "all" || query !== "";
 
@@ -387,7 +457,7 @@ function FamilyTreePage() {
               className="w-full border border-border bg-background px-3 py-2 text-sm sm:text-xs font-serif text-foreground outline-none transition-colors focus:border-foreground focus:ring-1 focus:ring-ring md:w-52 cursor-pointer"
             >
               <option value="all">{t(copy.all)}</option>
-              {branches.map((b) => (
+              {branchOptions.map((b) => (
                 <option key={b.id} value={b.id}>
                   {t(b.name)}
                 </option>
@@ -408,9 +478,9 @@ function FamilyTreePage() {
               className="w-full border border-border bg-background px-3 py-2 text-sm sm:text-xs font-serif text-foreground outline-none transition-colors focus:border-foreground focus:ring-1 focus:ring-ring md:w-40 cursor-pointer"
             >
               <option value="all">{t(copy.all)}</option>
-              {[1, 2, 3, 4].map((g) => (
+              {availableGenerations.map((g) => (
                 <option key={g} value={g}>
-                  {t(generationLabels[g])}
+                  {t(generationLabel(g))}
                 </option>
               ))}
             </select>
@@ -431,7 +501,7 @@ function FamilyTreePage() {
           >
             {t(copy.all)}
           </button>
-          {branches.map((b) => {
+          {branchOptions.map((b) => {
             const isSelected = branchId === b.id;
             return (
               <button
@@ -472,7 +542,7 @@ function FamilyTreePage() {
           grouped.map(([gen, members]) => (
             <section key={gen} className="mt-10">
               <p className="label-caps border-b border-border pb-2 text-bronze dark:text-gold">
-                {t(generationLabels[gen])}
+                {t(generationLabel(gen))}
                 <span className="nums ms-2 text-muted-foreground">({members.length})</span>
               </p>
 
@@ -526,6 +596,51 @@ function FamilyTreePage() {
             </section>
           ))
         )}
+      </section>
+
+      {/* ── The 12 official verified branch charts ──────────────────────────── */}
+      <section className="reveal-on-scroll mt-16 border-t border-border pt-10">
+        <Eyebrow>{t({ ar: "المشجرات الرسمية المعتمدة", en: "Official verified charts" })}</Eyebrow>
+        <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
+          {t({
+            ar: "المشجرات الاثنتا عشرة المعتمدة من لجنة التوثيق، وهي المرجع الذي بُنيت عليه بيانات المشجرة التفاعلية والسجل أعلاه. تُنشر للمراجعة والتوثيق ولا تُعد صيغة نهائية.",
+            en: "The twelve committee-verified charts that the interactive tree and the register above are built from. Published for review and documentation; not a final edition.",
+          })}
+        </p>
+
+        <a
+          href={officialChartsPdf}
+          download
+          className="label-caps mt-5 inline-flex items-center gap-2 border border-border bg-card px-4 py-2 text-xs text-foreground transition-colors hover:border-foreground"
+        >
+          {t({ ar: "تنزيل الملف الكامل (PDF)", en: "Download full file (PDF)" })}
+        </a>
+
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {officialCharts.map((c) => (
+            <li key={c.chart} className="border border-border bg-card">
+              <a href={c.image} target="_blank" rel="noreferrer" className="block">
+                <img
+                  src={c.image}
+                  alt={c.titleAr}
+                  loading="lazy"
+                  className="aspect-4/3 w-full bg-white object-contain"
+                />
+                <div className="border-t border-border p-3">
+                  <p className="label-caps text-bronze dark:text-gold">
+                    <span className="nums">
+                      {t({ ar: `مشجرة ${c.chart}`, en: `Chart ${c.chart}` })}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-foreground">{c.titleAr}</p>
+                  <p className="nums mt-1 text-xs text-muted-foreground">
+                    {t({ ar: `${c.people} اسمًا موثقًا`, en: `${c.people} documented names` })}
+                  </p>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* ── Official Tree Artwork & Lineage Documents ───────────────────────── */}
