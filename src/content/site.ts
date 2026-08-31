@@ -1308,7 +1308,7 @@ export const businesses = [
     } as BiText,
     category: { ar: "الأغذية والضيافة", en: "Food & Hospitality" } as BiText,
     description: {
-      ar: "إنتاج الخبز الحساوي الخبز الاحمر التمر، والوجبات الشعبية الأصيلة بأسلوب حديث.",
+      ar: "إنتاج الخبز الحساوي الأحمر بالتمر، والوجبات الشعبية الأصيلة بأسلوب حديث.",
       en: "Authentic Al-Ahsa red bread with dates and traditional Saudi hospitality.",
     } as BiText,
     city: { ar: "المبرز، الأحساء", en: "Al-Mubarraz, Al-Ahsa" } as BiText,
