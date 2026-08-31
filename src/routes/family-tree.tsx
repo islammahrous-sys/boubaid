@@ -3,8 +3,8 @@ import { useMemo, useState, useEffect } from "react";
 import { Search, Maximize2, Lock, X } from "lucide-react";
 import { z } from "zod";
 import { useLang, type BiText } from "@/i18n/LanguageProvider";
-import { branches, siteMeta } from "@/content/site";
-import { familyMembersData, type FamilyMemberNode } from "@/content/family-tree";
+import { siteMeta } from "@/content/site";
+import type { FamilyMemberNode } from "@/content/family-tree";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
@@ -302,6 +302,11 @@ function FamilyTreePage() {
     };
   }, [search.focus, allMembers]);
 
+  const availableGenerations = useMemo(
+    () => [...new Set(allMembers.map((m) => m.generation))].sort((a, b) => a - b),
+    [allMembers],
+  );
+
   const isFiltered = branchId !== "all" || generation !== "all" || query !== "";
 
   const reset = () => {
@@ -451,7 +456,7 @@ function FamilyTreePage() {
               className="w-full border border-border bg-background px-3 py-2 text-sm sm:text-xs font-serif text-foreground outline-none transition-colors focus:border-foreground focus:ring-1 focus:ring-ring md:w-52 cursor-pointer"
             >
               <option value="all">{t(copy.all)}</option>
-              {branches.map((b) => (
+              {branchOptions.map((b) => (
                 <option key={b.id} value={b.id}>
                   {t(b.name)}
                 </option>
@@ -472,9 +477,9 @@ function FamilyTreePage() {
               className="w-full border border-border bg-background px-3 py-2 text-sm sm:text-xs font-serif text-foreground outline-none transition-colors focus:border-foreground focus:ring-1 focus:ring-ring md:w-40 cursor-pointer"
             >
               <option value="all">{t(copy.all)}</option>
-              {[1, 2, 3, 4].map((g) => (
+              {availableGenerations.map((g) => (
                 <option key={g} value={g}>
-                  {t(generationLabels[g])}
+                  {t(generationLabel(g))}
                 </option>
               ))}
             </select>
@@ -495,7 +500,7 @@ function FamilyTreePage() {
           >
             {t(copy.all)}
           </button>
-          {branches.map((b) => {
+          {branchOptions.map((b) => {
             const isSelected = branchId === b.id;
             return (
               <button
@@ -536,7 +541,7 @@ function FamilyTreePage() {
           grouped.map(([gen, members]) => (
             <section key={gen} className="mt-10">
               <p className="label-caps border-b border-border pb-2 text-bronze dark:text-gold">
-                {t(generationLabels[gen])}
+                {t(generationLabel(gen))}
                 <span className="nums ms-2 text-muted-foreground">({members.length})</span>
               </p>
 
