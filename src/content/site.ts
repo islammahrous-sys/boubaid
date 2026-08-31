@@ -1292,7 +1292,7 @@ export const businesses = [
     name: { ar: "مؤسسة بوعبيد للحلول الرقمية والتقنية", en: "Bu Obaid Tech Solutions" } as BiText,
     category: { ar: "التكنولوجيا والبرمجيات", en: "Technology & Software" } as BiText,
     description: {
-      ar: "تطوير تطبيقات الويب والهواتف الذكية، الأمن السيبراني، والحول السحابية للمؤسسات.",
+      ar: "تطوير تطبيقات الويب والهواتف الذكية، الأمن السيبراني، والحلول السحابية للمؤسسات.",
       en: "Web and mobile app development, cybersecurity, and enterprise cloud solutions.",
     } as BiText,
     city: { ar: "الرياض / الأحساء", en: "Riyadh / Al-Ahsa" } as BiText,
