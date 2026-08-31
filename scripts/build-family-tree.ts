@@ -48,9 +48,11 @@ type Node = {
   charts: number[];
   uncertain: boolean;
   branchSlug: string | null;
+  seq: number;
 };
 
 const root: Node[] = [];
+let SEQ = 0;
 const warnings: string[] = [];
 
 function pathKey(p: string[]) {
@@ -81,6 +83,7 @@ function ensureNode(parent: Node | null, name: string, chart: number, uncertain:
     charts: [chart],
     uncertain,
     branchSlug: null,
+    seq: SEQ++,
   };
   byPath.set(key, node);
   if (parent) parent.children.push(node);

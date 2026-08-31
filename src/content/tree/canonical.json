@@ -67,23 +67,12 @@
       ]
     },
     {
-      "id": "29295ad6-6438-420f-8d94-6b734c566c3f",
-      "name_ar": "عبدالرؤوف",
-      "display_name_ar": "عبدالرؤوف بن أحمد بن عبدالله",
-      "father_id": "7ab1611c-2ac7-4dd4-803f-8b86b343031c",
-      "generation": 3,
-      "branch_slug": null,
-      "charts": [
-        3
-      ]
-    },
-    {
       "id": "4c1a034f-d87d-4375-8086-0dee3fccce2c",
       "name_ar": "عبدالرحمن",
       "display_name_ar": "عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "7ab1611c-2ac7-4dd4-803f-8b86b343031c",
       "generation": 3,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3,
         4,
@@ -116,17 +105,6 @@
       ]
     },
     {
-      "id": "911ad24c-2d4d-4c3f-8a17-318c3175c206",
-      "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن أحمد بن عبدالله",
-      "father_id": "7ab1611c-2ac7-4dd4-803f-8b86b343031c",
-      "generation": 3,
-      "branch_slug": null,
-      "charts": [
-        3
-      ]
-    },
-    {
       "id": "039897d1-0e3f-4cc7-84d3-f40d3fae0249",
       "name_ar": "عبدالله",
       "display_name_ar": "عبدالله بن صالح بن عبدالله",
@@ -138,25 +116,13 @@
       ]
     },
     {
-      "id": "d8958d2f-61b7-46e0-8620-f824c8244b63",
-      "name_ar": "عبدالمنعم",
-      "display_name_ar": "عبدالمنعم بن أحمد بن عبدالله",
-      "father_id": "7ab1611c-2ac7-4dd4-803f-8b86b343031c",
-      "generation": 3,
-      "branch_slug": null,
-      "charts": [
-        3
-      ]
-    },
-    {
       "id": "d6de2e58-26bb-4279-8132-de2209d6a917",
       "name_ar": "محمد",
       "display_name_ar": "محمد بن أحمد بن عبدالله",
       "father_id": "7ab1611c-2ac7-4dd4-803f-8b86b343031c",
       "generation": 3,
-      "branch_slug": "al-abdullah-salih",
+      "branch_slug": "al-mohammed-ahmed",
       "charts": [
-        3,
         5
       ]
     },
@@ -180,39 +146,6 @@
       "branch_slug": "al-abdulaziz",
       "charts": [
         2
-      ]
-    },
-    {
-      "id": "5eac3746-b9c2-41df-82c3-77dc20047ed5",
-      "name_ar": "أحمد",
-      "display_name_ar": "أحمد بن محمد بن أحمد بن عبدالله",
-      "father_id": "d6de2e58-26bb-4279-8132-de2209d6a917",
-      "generation": 4,
-      "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
-    },
-    {
-      "id": "35aebfe7-9398-44f8-8dc5-fecee76ad9cb",
-      "name_ar": "أحمد",
-      "display_name_ar": "أحمد بن عبدالرؤوف بن أحمد بن عبدالله",
-      "father_id": "29295ad6-6438-420f-8d94-6b734c566c3f",
-      "generation": 4,
-      "branch_slug": null,
-      "charts": [
-        3
-      ]
-    },
-    {
-      "id": "f3467f8d-8148-437f-89bd-b6cc99a260a3",
-      "name_ar": "أحمد",
-      "display_name_ar": "أحمد بن عبدالمنعم بن أحمد بن عبدالله",
-      "father_id": "d8958d2f-61b7-46e0-8620-f824c8244b63",
-      "generation": 4,
-      "branch_slug": null,
-      "charts": [
-        3
       ]
     },
     {
@@ -260,17 +193,6 @@
       ]
     },
     {
-      "id": "5026f157-f1c0-4f8a-8031-0d6055b9d106",
-      "name_ar": "تركي",
-      "display_name_ar": "تركي بن محمد بن أحمد بن عبدالله",
-      "father_id": "d6de2e58-26bb-4279-8132-de2209d6a917",
-      "generation": 4,
-      "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
-    },
-    {
       "id": "0d0e8b38-26a7-481d-8861-1b60ab64bbce",
       "name_ar": "جاسم (قاسم)",
       "display_name_ar": "جاسم (قاسم) بن محمد بن أحمد بن عبدالله",
@@ -293,50 +215,17 @@
       ]
     },
     {
-      "id": "9055b208-1988-45b5-8ccf-bcebabd19482",
-      "name_ar": "خالد",
-      "display_name_ar": "خالد بن عبدالمنعم بن أحمد بن عبدالله",
-      "father_id": "d8958d2f-61b7-46e0-8620-f824c8244b63",
-      "generation": 4,
-      "branch_slug": null,
-      "charts": [
-        3
-      ]
-    },
-    {
       "id": "9c61deb0-cc0d-422e-8b98-56ed40009c9c",
       "name_ar": "صالح",
       "display_name_ar": "صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "4c1a034f-d87d-4375-8086-0dee3fccce2c",
       "generation": 4,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3,
         4,
         10,
         11
-      ]
-    },
-    {
-      "id": "243f724b-b9a2-48f7-8701-277bead13ff9",
-      "name_ar": "صالح",
-      "display_name_ar": "صالح بن محمد بن أحمد بن عبدالله",
-      "father_id": "d6de2e58-26bb-4279-8132-de2209d6a917",
-      "generation": 4,
-      "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
-    },
-    {
-      "id": "7a4d5949-9889-46bf-8246-1bd615f64f63",
-      "name_ar": "عبدالرحمن",
-      "display_name_ar": "عبدالرحمن بن عبدالرؤوف بن أحمد بن عبدالله",
-      "father_id": "29295ad6-6438-420f-8d94-6b734c566c3f",
-      "generation": 4,
-      "branch_slug": null,
-      "charts": [
-        3
       ]
     },
     {
@@ -348,28 +237,6 @@
       "branch_slug": "al-abdulaziz-abdulrahman",
       "charts": [
         9
-      ]
-    },
-    {
-      "id": "7dbbbcf0-003f-4cbf-894e-17fb56afe0d8",
-      "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن عبدالرؤوف بن أحمد بن عبدالله",
-      "father_id": "29295ad6-6438-420f-8d94-6b734c566c3f",
-      "generation": 4,
-      "branch_slug": null,
-      "charts": [
-        3
-      ]
-    },
-    {
-      "id": "1a7111a4-f48e-4d36-86e6-96db9e7f633f",
-      "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "11a583ce-a76b-4a4f-8302-f4f95d8e1985",
-      "generation": 4,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
       ]
     },
     {
@@ -461,32 +328,10 @@
       ]
     },
     {
-      "id": "84e1cdfa-1331-4b2e-8e27-3aff3ad27463",
-      "name_ar": "إبراهيم",
-      "display_name_ar": "إبراهيم بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "61d25b39-17b8-476b-88cb-1b3c984147b5",
-      "generation": 5,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
       "id": "bde2875e-db06-4399-8e04-55253750f1eb",
       "name_ar": "إبراهيم",
       "display_name_ar": "إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
       "father_id": "fe3df648-a6cc-4679-8507-832cb679b667",
-      "generation": 5,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
-      "id": "1b857484-dde0-4acc-86f8-373fd6339627",
-      "name_ar": "إبراهيم",
-      "display_name_ar": "إبراهيم بن عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "1a7111a4-f48e-4d36-86e6-96db9e7f633f",
       "generation": 5,
       "branch_slug": "al-abdullatif",
       "charts": [
@@ -502,28 +347,6 @@
       "branch_slug": "al-ibrahim-salih",
       "charts": [
         11
-      ]
-    },
-    {
-      "id": "5c8fd066-f12f-4d17-871d-ddd66b161222",
-      "name_ar": "أحمد",
-      "display_name_ar": "أحمد بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "61d25b39-17b8-476b-88cb-1b3c984147b5",
-      "generation": 5,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
-      "id": "42eaff0f-7677-42d5-81a1-bfe66aceab87",
-      "name_ar": "أحمد",
-      "display_name_ar": "أحمد بن محمد بن سعد بن أحمد بن عبدالله",
-      "father_id": "085344a5-7671-4682-8350-214250bee79c",
-      "generation": 5,
-      "branch_slug": "al-saad",
-      "charts": [
-        6
       ]
     },
     {
@@ -571,17 +394,6 @@
       ]
     },
     {
-      "id": "f9c60bb2-ce07-43d1-8aa4-7847b72a60b4",
-      "name_ar": "خالد",
-      "display_name_ar": "خالد بن محمد بن سعد بن أحمد بن عبدالله",
-      "father_id": "085344a5-7671-4682-8350-214250bee79c",
-      "generation": 5,
-      "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
-    },
-    {
       "id": "7e4036b0-9a29-430c-8bc6-3e7f32b9782c",
       "name_ar": "راشد",
       "display_name_ar": "راشد بن محمد بن عبدالعزيز بن أحمد بن عبدالله",
@@ -590,17 +402,6 @@
       "branch_slug": "al-abdulaziz",
       "charts": [
         2
-      ]
-    },
-    {
-      "id": "cc153819-b4a4-4398-80c9-27990ff88350",
-      "name_ar": "راشد",
-      "display_name_ar": "راشد بن محمد بن سعد بن أحمد بن عبدالله",
-      "father_id": "085344a5-7671-4682-8350-214250bee79c",
-      "generation": 5,
-      "branch_slug": "al-saad",
-      "charts": [
-        6
       ]
     },
     {
@@ -626,17 +427,6 @@
       ]
     },
     {
-      "id": "e35dc2bc-8835-45b0-8d45-0ed29ec2688e",
-      "name_ar": "سعد",
-      "display_name_ar": "سعد بن محمد بن سعد بن أحمد بن عبدالله",
-      "father_id": "085344a5-7671-4682-8350-214250bee79c",
-      "generation": 5,
-      "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
-    },
-    {
       "id": "807dd60a-40bf-4d13-8a1b-31780327e9a5",
       "name_ar": "شهاب",
       "display_name_ar": "شهاب بن أحمد بن عبدالعزيز بن أحمد بن عبدالله",
@@ -645,17 +435,6 @@
       "branch_slug": "al-abdulaziz",
       "charts": [
         2
-      ]
-    },
-    {
-      "id": "d6b5f235-44dd-4364-8e5f-f2153db9782d",
-      "name_ar": "صالح",
-      "display_name_ar": "صالح بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "61d25b39-17b8-476b-88cb-1b3c984147b5",
-      "generation": 5,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
       ]
     },
     {
@@ -714,17 +493,6 @@
       ]
     },
     {
-      "id": "a9487adc-3716-4a2a-8f7a-3e34920ab85f",
-      "name_ar": "عبدالعزيز",
-      "display_name_ar": "عبدالعزيز بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "61d25b39-17b8-476b-88cb-1b3c984147b5",
-      "generation": 5,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
       "id": "7827b4a6-ed69-4951-8e5a-cc14092007b8",
       "name_ar": "عبدالعزيز",
       "display_name_ar": "عبدالعزيز بن أحمد بن عبدالعزيز بن أحمد بن عبدالله",
@@ -733,17 +501,6 @@
       "branch_slug": "al-abdulaziz",
       "charts": [
         2
-      ]
-    },
-    {
-      "id": "7f5dfefc-24b3-4eaa-883f-de67ad5b31c4",
-      "name_ar": "عبدالعزيز",
-      "display_name_ar": "عبدالعزيز بن عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "1a7111a4-f48e-4d36-86e6-96db9e7f633f",
-      "generation": 5,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
       ]
     },
     {
@@ -769,34 +526,12 @@
       ]
     },
     {
-      "id": "06be1afd-3d2f-4e75-8cf7-e9cd3bac0b13",
-      "name_ar": "عبداللطيف",
-      "display_name_ar": "عبداللطيف بن عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "1a7111a4-f48e-4d36-86e6-96db9e7f633f",
-      "generation": 5,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
-      "id": "540a0513-0359-407b-8717-88ae3c539bd5",
-      "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "61d25b39-17b8-476b-88cb-1b3c984147b5",
-      "generation": 5,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
       "id": "397853ac-2a29-43bd-81d0-f86cc2e748ff",
       "name_ar": "عبدالله",
       "display_name_ar": "عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "9c61deb0-cc0d-422e-8b98-56ed40009c9c",
       "generation": 5,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -806,17 +541,6 @@
       "name_ar": "عبدالله",
       "display_name_ar": "عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
       "father_id": "c629f90a-59ec-4da9-89d0-0032f32f9a12",
-      "generation": 5,
-      "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
-    },
-    {
-      "id": "e1453675-5306-4926-8929-1e088631a090",
-      "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن محمد بن سعد بن أحمد بن عبدالله",
-      "father_id": "085344a5-7671-4682-8350-214250bee79c",
       "generation": 5,
       "branch_slug": "al-saad",
       "charts": [
@@ -846,17 +570,6 @@
       ]
     },
     {
-      "id": "af2dda4e-29af-47ee-8f57-9a744fad2116",
-      "name_ar": "عبدالمجيد",
-      "display_name_ar": "عبدالمجيد بن عيسى بن سعد بن أحمد بن عبدالله",
-      "father_id": "c629f90a-59ec-4da9-89d0-0032f32f9a12",
-      "generation": 5,
-      "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
-    },
-    {
       "id": "d31fd92b-4081-4c49-865a-c51b72c6f761",
       "name_ar": "علي",
       "display_name_ar": "علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
@@ -868,43 +581,10 @@
       ]
     },
     {
-      "id": "78877deb-fb4a-41f9-8c9d-a2678874cceb",
-      "name_ar": "عمار",
-      "display_name_ar": "عمار بن عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "1a7111a4-f48e-4d36-86e6-96db9e7f633f",
-      "generation": 5,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
       "id": "6a3a303c-e9a5-4cec-8bd3-a89e58d9b725",
       "name_ar": "عيسى",
       "display_name_ar": "عيسى بن محمد بن عبداللطيف بن أحمد بن عبدالله",
       "father_id": "a60a889a-67cc-470e-8ede-4ff1657a1fb1",
-      "generation": 5,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
-      "id": "ee33e357-89ab-4eb9-88f4-b1ea21ad78d7",
-      "name_ar": "عيسى",
-      "display_name_ar": "عيسى بن عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "1a7111a4-f48e-4d36-86e6-96db9e7f633f",
-      "generation": 5,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
-      "id": "e048ef3c-ff5f-44ba-8c8e-26199f6781a5",
-      "name_ar": "فيصل",
-      "display_name_ar": "فيصل بن عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "1a7111a4-f48e-4d36-86e6-96db9e7f633f",
       "generation": 5,
       "branch_slug": "al-abdullatif",
       "charts": [
@@ -945,17 +625,6 @@
       ]
     },
     {
-      "id": "8f58a24c-c1f0-4b82-8a4c-3ff93952ab0b",
-      "name_ar": "محمد",
-      "display_name_ar": "محمد بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "fe3df648-a6cc-4679-8507-832cb679b667",
-      "generation": 5,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
       "id": "88c88143-7327-4d01-8afd-0626bcd9e1fa",
       "name_ar": "محمد",
       "display_name_ar": "محمد بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
@@ -964,17 +633,6 @@
       "branch_slug": "al-mohammed-salih",
       "charts": [
         10
-      ]
-    },
-    {
-      "id": "a6f87f0c-3062-4c3a-8b8c-4745e64eb0b5",
-      "name_ar": "يوسف",
-      "display_name_ar": "يوسف بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "61d25b39-17b8-476b-88cb-1b3c984147b5",
-      "generation": 5,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
       ]
     },
     {
@@ -989,14 +647,14 @@
       ]
     },
     {
-      "id": "793e51bd-5c05-4f6f-8903-5aa2596c3215",
-      "name_ar": "يوسف",
-      "display_name_ar": "يوسف بن عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "1a7111a4-f48e-4d36-86e6-96db9e7f633f",
-      "generation": 5,
-      "branch_slug": "al-abdullatif",
+      "id": "f1b7f1ca-bc88-47a8-87b7-b8aa5cd2d4a2",
+      "name_ar": "إبراهيم",
+      "display_name_ar": "إبراهيم بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "4ef95d46-6759-41d7-87e7-e6334a875cc2",
+      "generation": 6,
+      "branch_slug": "al-yousef",
       "charts": [
-        7
+        1
       ]
     },
     {
@@ -1022,6 +680,17 @@
       ]
     },
     {
+      "id": "418bd087-e220-4216-84a0-5463dcc2a3bc",
+      "name_ar": "أحمد",
+      "display_name_ar": "أحمد بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "4ef95d46-6759-41d7-87e7-e6334a875cc2",
+      "generation": 6,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "4de6cd10-2d5f-4876-8742-5271155ac479",
       "name_ar": "أحمد",
       "display_name_ar": "أحمد بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
@@ -1038,7 +707,7 @@
       "display_name_ar": "أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "397853ac-2a29-43bd-81d0-f86cc2e748ff",
       "generation": 6,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -1066,21 +735,10 @@
       ]
     },
     {
-      "id": "9aea24bf-90d6-46eb-86bf-4953079cb276",
+      "id": "e9401cdb-132f-4ec7-8dca-573a044689a2",
       "name_ar": "أحمد",
-      "display_name_ar": "أحمد بن عبداللطيف بن محمد بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "d7e470c9-f252-4e50-8683-a44defa3c0fb",
-      "generation": 6,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
-      "id": "b4e091c1-50a9-4dcb-8070-893ee571991e",
-      "name_ar": "أحمد",
-      "display_name_ar": "أحمد بن إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "bde2875e-db06-4399-8e04-55253750f1eb",
+      "display_name_ar": "أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "61f0d42c-f17e-410e-8be5-53d255019665",
       "generation": 6,
       "branch_slug": "al-abdullatif",
       "charts": [
@@ -1121,17 +779,6 @@
       ]
     },
     {
-      "id": "7d8d68b9-9b6e-437a-816b-f776fc44456c",
-      "name_ar": "الليث",
-      "display_name_ar": "الليث بن عبدالله بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "540a0513-0359-407b-8717-88ae3c539bd5",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
       "id": "db5e6cbc-5840-463e-835b-fe7c8d4e1f61",
       "name_ar": "بدر",
       "display_name_ar": "بدر بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
@@ -1165,28 +812,6 @@
       ]
     },
     {
-      "id": "d05c96d3-91f2-4372-8110-aa360e419f4d",
-      "name_ar": "خالد",
-      "display_name_ar": "خالد بن عبدالعزيز بن عبدالله بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "7f5dfefc-24b3-4eaa-883f-de67ad5b31c4",
-      "generation": 6,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
-      "id": "a3c39320-e69a-424c-8073-60d9aad92fa8",
-      "name_ar": "خالد",
-      "display_name_ar": "خالد بن عبداللطيف بن محمد بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "d7e470c9-f252-4e50-8683-a44defa3c0fb",
-      "generation": 6,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
-    },
-    {
       "id": "1b0d95de-62d2-4e44-8a2a-d01d10cf21ef",
       "name_ar": "خالد",
       "display_name_ar": "خالد بن يوسف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
@@ -1206,17 +831,6 @@
       "branch_slug": "al-abdullah-salih-abdullah",
       "charts": [
         8
-      ]
-    },
-    {
-      "id": "a3166d7d-1de6-4ef4-8f6f-18ada623b1d3",
-      "name_ar": "راشد",
-      "display_name_ar": "راشد بن عبداللطيف بن محمد بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "d7e470c9-f252-4e50-8683-a44defa3c0fb",
-      "generation": 6,
-      "branch_slug": "al-abdullatif",
-      "charts": [
-        7
       ]
     },
     {
@@ -1275,6 +889,17 @@
       ]
     },
     {
+      "id": "049fbe42-eb51-4a8f-8094-d475d0875dd7",
+      "name_ar": "صالح",
+      "display_name_ar": "صالح بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "4ef95d46-6759-41d7-87e7-e6334a875cc2",
+      "generation": 6,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "46a4f074-a0d5-43e2-8965-878acf4eca78",
       "name_ar": "صالح",
       "display_name_ar": "صالح بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
@@ -1316,28 +941,6 @@
       "branch_slug": "al-ibrahim-salih",
       "charts": [
         11
-      ]
-    },
-    {
-      "id": "9b7d85bd-0640-4005-8c37-951391cf8bf8",
-      "name_ar": "عبدالإله",
-      "display_name_ar": "عبدالإله بن إبراهيم بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "84e1cdfa-1331-4b2e-8e27-3aff3ad27463",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
-      "id": "fe94313f-d085-4411-838a-d36a19d41354",
-      "name_ar": "عبدالرحمن",
-      "display_name_ar": "عبدالرحمن بن إبراهيم بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "84e1cdfa-1331-4b2e-8e27-3aff3ad27463",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
       ]
     },
     {
@@ -1407,12 +1010,23 @@
       ]
     },
     {
+      "id": "0a6767e4-f685-427b-8fe5-d151c53762f3",
+      "name_ar": "عبدالعزيز",
+      "display_name_ar": "عبدالعزيز بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "4ef95d46-6759-41d7-87e7-e6334a875cc2",
+      "generation": 6,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "60395da8-46c0-4111-8f2b-67bf7e8fb31a",
       "name_ar": "عبدالعزيز",
       "display_name_ar": "عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "397853ac-2a29-43bd-81d0-f86cc2e748ff",
       "generation": 6,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -1473,17 +1087,6 @@
       ]
     },
     {
-      "id": "8a273356-d1ca-4e0d-8d10-4c256a7c5e80",
-      "name_ar": "عبداللطيف",
-      "display_name_ar": "عبداللطيف بن عبدالله بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "540a0513-0359-407b-8717-88ae3c539bd5",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
       "id": "3018a528-cf63-4dd9-8c76-884dff2aeeee",
       "name_ar": "عبداللطيف",
       "display_name_ar": "عبداللطيف بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
@@ -1495,10 +1098,10 @@
       ]
     },
     {
-      "id": "b21d08bb-1d94-4801-8a53-ef30dcd94b96",
+      "id": "1d44a1a4-4e44-4a8b-893b-47251bab7322",
       "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن صالح بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "d6b5f235-44dd-4364-8e5f-f2153db9782d",
+      "display_name_ar": "عبدالله بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "4ef95d46-6759-41d7-87e7-e6334a875cc2",
       "generation": 6,
       "branch_slug": "al-yousef",
       "charts": [
@@ -1517,10 +1120,10 @@
       ]
     },
     {
-      "id": "ed8b91dc-5cbd-45f7-8702-58b093efee86",
+      "id": "9990d596-b470-465a-8dc1-21c101eb3016",
       "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن يوسف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "4e0c0752-c229-470e-8909-4275733db7a5",
+      "display_name_ar": "عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "61f0d42c-f17e-410e-8be5-53d255019665",
       "generation": 6,
       "branch_slug": "al-abdullatif",
       "charts": [
@@ -1528,10 +1131,10 @@
       ]
     },
     {
-      "id": "c8f5a895-6703-4d74-8918-80addadbebef",
+      "id": "ed8b91dc-5cbd-45f7-8702-58b093efee86",
       "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "bde2875e-db06-4399-8e04-55253750f1eb",
+      "display_name_ar": "عبدالله بن يوسف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "4e0c0752-c229-470e-8909-4275733db7a5",
       "generation": 6,
       "branch_slug": "al-abdullatif",
       "charts": [
@@ -1572,17 +1175,6 @@
       ]
     },
     {
-      "id": "84f2c154-29c4-4d90-85a2-db39cee05079",
-      "name_ar": "عبدالملك",
-      "display_name_ar": "عبدالملك بن إبراهيم بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "84e1cdfa-1331-4b2e-8e27-3aff3ad27463",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
       "id": "0dc9d820-0705-4ef5-86a1-da9ea48af883",
       "name_ar": "علي",
       "display_name_ar": "علي بن حسين بن محمد بن عبدالعزيز بن أحمد بن عبدالله",
@@ -1591,17 +1183,6 @@
       "branch_slug": "al-abdulaziz",
       "charts": [
         2
-      ]
-    },
-    {
-      "id": "ce010809-0e2e-4308-80a1-73012fef2b50",
-      "name_ar": "عمر",
-      "display_name_ar": "عمر بن أحمد بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "5c8fd066-f12f-4d17-871d-ddd66b161222",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
       ]
     },
     {
@@ -1649,65 +1230,10 @@
       ]
     },
     {
-      "id": "1b982772-82ab-4264-81a2-96d758696fbd",
-      "name_ar": "فارس",
-      "display_name_ar": "فارس بن صالح بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "d6b5f235-44dd-4364-8e5f-f2153db9782d",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
       "id": "33fdde32-9b69-4c83-8ad6-8ae4aecb1e2e",
       "name_ar": "فهد",
       "display_name_ar": "فهد بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
       "father_id": "60a4f855-22b3-4cad-83b7-967b74d94a87",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
-      "id": "cda08a15-cb71-47af-8c90-f526ac07e12e",
-      "name_ar": "محمد",
-      "display_name_ar": "محمد بن صالح بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "d6b5f235-44dd-4364-8e5f-f2153db9782d",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
-      "id": "d6063f6b-8a57-462c-8504-3c59b4170c1e",
-      "name_ar": "محمد",
-      "display_name_ar": "محمد بن إبراهيم بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "84e1cdfa-1331-4b2e-8e27-3aff3ad27463",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
-      "id": "75c07173-fac7-46ea-819b-120609edd430",
-      "name_ar": "محمد",
-      "display_name_ar": "محمد بن عبدالله بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "540a0513-0359-407b-8717-88ae3c539bd5",
-      "generation": 6,
-      "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
-    },
-    {
-      "id": "05ffb1d4-cc04-4697-87fd-bc6e88f16d3c",
-      "name_ar": "محمد",
-      "display_name_ar": "محمد بن يوسف بن محمد بن يوسف بن أحمد بن عبدالله",
-      "father_id": "a6f87f0c-3062-4c3a-8b8c-4745e64eb0b5",
       "generation": 6,
       "branch_slug": "al-yousef",
       "charts": [
@@ -1837,6 +1363,17 @@
       ]
     },
     {
+      "id": "8ea969c1-4655-4dd2-8767-9b9843958cdc",
+      "name_ar": "يوسف",
+      "display_name_ar": "يوسف بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "4ef95d46-6759-41d7-87e7-e6334a875cc2",
+      "generation": 6,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "6dc269dd-4655-4bcf-8928-6755f4d68a87",
       "name_ar": "يوسف",
       "display_name_ar": "يوسف بن أحمد بن أحمد بن عبدالرحمن بن أحمد بن عبدالله",
@@ -1870,10 +1407,21 @@
       ]
     },
     {
-      "id": "7ac03b04-59ad-4220-89a8-58ce98400d20",
+      "id": "4803bd6e-651e-4c78-8812-39c36ae07626",
       "name_ar": "إبراهيم",
-      "display_name_ar": "إبراهيم بن أحمد بن إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
-      "father_id": "b4e091c1-50a9-4dcb-8070-893ee571991e",
+      "display_name_ar": "إبراهيم بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "9990d596-b470-465a-8dc1-21c101eb3016",
+      "generation": 7,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
+      ]
+    },
+    {
+      "id": "15455b49-316b-47d8-8d25-79eef0750b81",
+      "name_ar": "إبراهيم",
+      "display_name_ar": "إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "e9401cdb-132f-4ec7-8dca-573a044689a2",
       "generation": 7,
       "branch_slug": "al-abdullatif",
       "charts": [
@@ -1922,6 +1470,17 @@
       "branch_slug": "al-ali-salih",
       "charts": [
         4
+      ]
+    },
+    {
+      "id": "561ddb28-363f-41ca-8d0d-97c80654e843",
+      "name_ar": "أحمد",
+      "display_name_ar": "أحمد بن محمد بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "de10c264-ce7e-44f4-8a26-91dd56fc9c7c",
+      "generation": 7,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
       ]
     },
     {
@@ -1995,6 +1554,17 @@
       "name_ar": "أسامة",
       "display_name_ar": "أسامة بن عبدالله بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
       "father_id": "7c37c0fb-1759-4c3d-8227-450b0690650a",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
+      "id": "55255d6d-ea9d-40dd-8dbc-24558c86e631",
+      "name_ar": "الليث",
+      "display_name_ar": "الليث بن عبدالله بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "1d44a1a4-4e44-4a8b-893b-47251bab7322",
       "generation": 7,
       "branch_slug": "al-yousef",
       "charts": [
@@ -2167,6 +1737,17 @@
       ]
     },
     {
+      "id": "a8bce0b5-8e13-4ce7-8579-642be11e57e0",
+      "name_ar": "خالد",
+      "display_name_ar": "خالد بن محمد بن سعد بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "e48b91a1-c305-47c6-85c3-6221f9758fce",
+      "generation": 7,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
+      ]
+    },
+    {
       "id": "0f8e385e-c9f2-418c-8fc3-6e686d452916",
       "name_ar": "خالد",
       "display_name_ar": "خالد بن عبدالله بن يوسف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
@@ -2233,6 +1814,17 @@
       ]
     },
     {
+      "id": "eb61e45c-9188-4fed-8c9a-c1a512b8bcfa",
+      "name_ar": "راشد",
+      "display_name_ar": "راشد بن محمد بن سعد بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "e48b91a1-c305-47c6-85c3-6221f9758fce",
+      "generation": 7,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
+      ]
+    },
+    {
       "id": "ea1adaf9-ad1d-4079-8f78-cbceb3d83a6a",
       "name_ar": "رياض",
       "display_name_ar": "رياض بن عبدالعزيز بن أحمد بن أحمد بن عبدالرحمن بن أحمد بن عبدالله",
@@ -2288,10 +1880,10 @@
       ]
     },
     {
-      "id": "c0ed263d-da6c-4d82-87bf-4e73cc8e6ee3",
+      "id": "f11f1d82-4ed8-4ded-868c-70229830180f",
       "name_ar": "سعد",
-      "display_name_ar": "سعد بن عيسى بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
-      "father_id": "face6a3f-bebc-4916-8106-241dc7a33537",
+      "display_name_ar": "سعد بن عيسى بن سعد بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "7a4709ac-d1d2-4949-8cd3-74a72e802fcf",
       "generation": 7,
       "branch_slug": "al-saad",
       "charts": [
@@ -2310,12 +1902,23 @@
       ]
     },
     {
+      "id": "cf9f103e-1d0d-428d-8a1b-1bc71790626a",
+      "name_ar": "سعد",
+      "display_name_ar": "سعد بن محمد بن سعد بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "e48b91a1-c305-47c6-85c3-6221f9758fce",
+      "generation": 7,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
+      ]
+    },
+    {
       "id": "4f33e240-a954-455e-8f3f-6a3a2ad74d74",
       "name_ar": "سعود",
       "display_name_ar": "سعود بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "60395da8-46c0-4111-8f2b-67bf7e8fb31a",
       "generation": 7,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -2359,7 +1962,7 @@
       "display_name_ar": "صالح بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "60395da8-46c0-4111-8f2b-67bf7e8fb31a",
       "generation": 7,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -2533,6 +2136,39 @@
       ]
     },
     {
+      "id": "aba506df-12d4-4510-88d8-1be0c5c7b0a7",
+      "name_ar": "عبدالإله",
+      "display_name_ar": "عبدالإله بن إبراهيم بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "f1b7f1ca-bc88-47a8-87b7-b8aa5cd2d4a2",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
+      "id": "3cc77a22-c9b3-4121-815d-db17a2cf0047",
+      "name_ar": "عبدالرؤوف",
+      "display_name_ar": "عبدالرؤوف بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "92b88faf-1a04-4f8b-8e18-2f4696ea08e7",
+      "generation": 7,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
+      "id": "37f45108-2424-45dd-87bb-1cd33fa162eb",
+      "name_ar": "عبدالرحمن",
+      "display_name_ar": "عبدالرحمن بن إبراهيم بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "f1b7f1ca-bc88-47a8-87b7-b8aa5cd2d4a2",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "92431fbf-ea57-44b6-84e6-c0b93c8f4ff4",
       "name_ar": "عبدالرحمن",
       "display_name_ar": "عبدالرحمن بن فهد بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
@@ -2593,7 +2229,7 @@
       "display_name_ar": "عبدالرحمن بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "60395da8-46c0-4111-8f2b-67bf7e8fb31a",
       "generation": 7,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -2753,14 +2389,25 @@
       ]
     },
     {
-      "id": "eec0a9a3-43b1-43d6-85d7-6065425fdef2",
+      "id": "11dfb522-78e7-4190-8708-47e6f86b776d",
       "name_ar": "عبدالعزيز",
-      "display_name_ar": "عبدالعزيز بن عيسى بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
-      "father_id": "face6a3f-bebc-4916-8106-241dc7a33537",
+      "display_name_ar": "عبدالعزيز بن عيسى بن سعد بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "7a4709ac-d1d2-4949-8cd3-74a72e802fcf",
       "generation": 7,
       "branch_slug": "al-saad",
       "charts": [
         6
+      ]
+    },
+    {
+      "id": "7e946a84-5dd6-4b0b-88c7-c28ccb0fa1ab",
+      "name_ar": "عبدالعزيز",
+      "display_name_ar": "عبدالعزيز بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "9990d596-b470-465a-8dc1-21c101eb3016",
+      "generation": 7,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
       ]
     },
     {
@@ -2830,12 +2477,23 @@
       ]
     },
     {
+      "id": "f06efade-9f67-4104-8347-2de2dba1dbeb",
+      "name_ar": "عبداللطيف",
+      "display_name_ar": "عبداللطيف بن عبدالله بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "1d44a1a4-4e44-4a8b-893b-47251bab7322",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "69817041-e8a5-47c7-8df2-0fc4a1d196aa",
       "name_ar": "عبداللطيف",
       "display_name_ar": "عبداللطيف بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "60395da8-46c0-4111-8f2b-67bf7e8fb31a",
       "generation": 7,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -2849,6 +2507,28 @@
       "branch_slug": "al-ali-salih",
       "charts": [
         4
+      ]
+    },
+    {
+      "id": "2472cefa-934c-403d-8acb-8ccbc70bdd60",
+      "name_ar": "عبداللطيف",
+      "display_name_ar": "عبداللطيف بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "9990d596-b470-465a-8dc1-21c101eb3016",
+      "generation": 7,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
+      ]
+    },
+    {
+      "id": "df27bc45-82b1-4b03-82eb-ca50b7dd7aeb",
+      "name_ar": "عبداللطيف",
+      "display_name_ar": "عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "e9401cdb-132f-4ec7-8dca-573a044689a2",
+      "generation": 7,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
       ]
     },
     {
@@ -2876,6 +2556,17 @@
       "uncertain": true
     },
     {
+      "id": "092aba09-c014-4374-80fb-6d91681cc01c",
+      "name_ar": "عبدالله",
+      "display_name_ar": "عبدالله بن صالح بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "049fbe42-eb51-4a8f-8094-d475d0875dd7",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "85ad699d-c132-40cf-8822-772fed743902",
       "name_ar": "عبدالله",
       "display_name_ar": "عبدالله بن فهد بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
@@ -2884,6 +2575,17 @@
       "branch_slug": "al-yousef",
       "charts": [
         1
+      ]
+    },
+    {
+      "id": "c8e36b68-eb2b-443f-858a-b37ed8a7981e",
+      "name_ar": "عبدالله",
+      "display_name_ar": "عبدالله بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "92b88faf-1a04-4f8b-8e18-2f4696ea08e7",
+      "generation": 7,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
       ]
     },
     {
@@ -2902,6 +2604,39 @@
       "name_ar": "عبدالله",
       "display_name_ar": "عبدالله بن إبراهيم بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
       "father_id": "0f8b4c3e-fc27-482d-8637-a26b4157e8cc",
+      "generation": 7,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
+      ]
+    },
+    {
+      "id": "3d2f276b-c8af-4352-8b18-a33f0e0913d2",
+      "name_ar": "عبدالله",
+      "display_name_ar": "عبدالله بن محمد بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "de10c264-ce7e-44f4-8a26-91dd56fc9c7c",
+      "generation": 7,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
+      ]
+    },
+    {
+      "id": "5f57b7d2-35e2-48b0-8268-e18509919ff0",
+      "name_ar": "عبدالله",
+      "display_name_ar": "عبدالله بن عيسى بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "face6a3f-bebc-4916-8106-241dc7a33537",
+      "generation": 7,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
+      ]
+    },
+    {
+      "id": "574e023b-9d36-4793-81c3-61ebc7c4373f",
+      "name_ar": "عبدالله",
+      "display_name_ar": "عبدالله بن محمد بن سعد بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "e48b91a1-c305-47c6-85c3-6221f9758fce",
       "generation": 7,
       "branch_slug": "al-saad",
       "charts": [
@@ -2997,6 +2732,39 @@
       ]
     },
     {
+      "id": "469b1574-f959-4a62-80dd-08e0d7be5ba7",
+      "name_ar": "عبدالمجيد",
+      "display_name_ar": "عبدالمجيد بن عيسى بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "face6a3f-bebc-4916-8106-241dc7a33537",
+      "generation": 7,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
+      ]
+    },
+    {
+      "id": "4802d3e9-b56e-4a6d-8aaa-a0e70ad3b494",
+      "name_ar": "عبدالملك",
+      "display_name_ar": "عبدالملك بن إبراهيم بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "f1b7f1ca-bc88-47a8-87b7-b8aa5cd2d4a2",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
+      "id": "4606dd99-a3f8-44c7-8211-407e855a0b73",
+      "name_ar": "عبدالمنعم",
+      "display_name_ar": "عبدالمنعم بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "92b88faf-1a04-4f8b-8e18-2f4696ea08e7",
+      "generation": 7,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
       "id": "32949efe-932c-406b-8125-69d0b0bee7b2",
       "name_ar": "عبدالمنعم",
       "display_name_ar": "عبدالمنعم بن صالح بن إبراهيم بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
@@ -3030,12 +2798,34 @@
       ]
     },
     {
+      "id": "7a055524-3ad1-4b8f-8730-26b0cf4999d7",
+      "name_ar": "عمار",
+      "display_name_ar": "عمار بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "9990d596-b470-465a-8dc1-21c101eb3016",
+      "generation": 7,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
+      ]
+    },
+    {
+      "id": "c4d82ba8-9e0c-4aef-894c-f35a76c70535",
+      "name_ar": "عمر",
+      "display_name_ar": "عمر بن أحمد بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "418bd087-e220-4216-84a0-5463dcc2a3bc",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "a1362794-cab5-426f-810e-911ee1f3419b",
       "name_ar": "عمر",
       "display_name_ar": "عمر بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "60395da8-46c0-4111-8f2b-67bf7e8fb31a",
       "generation": 7,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -3085,14 +2875,25 @@
       ]
     },
     {
-      "id": "3df11de3-abfd-4869-8fe9-4c0f97c12f0e",
-      "name_ar": "فهد",
-      "display_name_ar": "فهد بن عبدالرحمن بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
-      "father_id": "ab92140d-eaea-40d4-8bb9-de4bcf959027",
+      "id": "9458b7b0-9aa5-40fd-81ea-05c02f37b682",
+      "name_ar": "عيسى",
+      "display_name_ar": "عيسى بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "9990d596-b470-465a-8dc1-21c101eb3016",
       "generation": 7,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullatif",
       "charts": [
-        4
+        7
+      ]
+    },
+    {
+      "id": "ac3f4aa4-a0ec-48af-84c7-b6180c0cdf5e",
+      "name_ar": "فارس",
+      "display_name_ar": "فارس بن صالح بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "049fbe42-eb51-4a8f-8094-d475d0875dd7",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
       ]
     },
     {
@@ -3126,6 +2927,17 @@
       "branch_slug": "al-ali-salih",
       "charts": [
         4
+      ]
+    },
+    {
+      "id": "43a2123d-8843-4e53-8a0c-14e2bc1b5008",
+      "name_ar": "فيصل",
+      "display_name_ar": "فيصل بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "9990d596-b470-465a-8dc1-21c101eb3016",
+      "generation": 7,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
       ]
     },
     {
@@ -3173,6 +2985,50 @@
       ]
     },
     {
+      "id": "000f670f-761e-44af-8007-e1cad8261468",
+      "name_ar": "محمد",
+      "display_name_ar": "محمد بن صالح بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "049fbe42-eb51-4a8f-8094-d475d0875dd7",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
+      "id": "946f9132-5874-46ac-8c4e-f67927047dbe",
+      "name_ar": "محمد",
+      "display_name_ar": "محمد بن إبراهيم بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "f1b7f1ca-bc88-47a8-87b7-b8aa5cd2d4a2",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
+      "id": "0e60e3b1-41d0-458f-8def-cc308694d3e4",
+      "name_ar": "محمد",
+      "display_name_ar": "محمد بن عبدالله بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "1d44a1a4-4e44-4a8b-893b-47251bab7322",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
+      "id": "90d682d9-5a47-4a59-8f76-a9a01ade62e3",
+      "name_ar": "محمد",
+      "display_name_ar": "محمد بن يوسف بن محمد بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "8ea969c1-4655-4dd2-8767-9b9843958cdc",
+      "generation": 7,
+      "branch_slug": "al-yousef",
+      "charts": [
+        1
+      ]
+    },
+    {
       "id": "72dce46c-0751-45e9-80e9-a5eb457cad24",
       "name_ar": "محمد",
       "display_name_ar": "محمد بن عبدالله بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
@@ -3192,6 +3048,28 @@
       "branch_slug": "al-yousef",
       "charts": [
         1
+      ]
+    },
+    {
+      "id": "ab03f99d-0371-4824-8272-6e138e32fd38",
+      "name_ar": "محمد",
+      "display_name_ar": "محمد بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "92b88faf-1a04-4f8b-8e18-2f4696ea08e7",
+      "generation": 7,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
+      "id": "bfde9d4c-4e35-423e-85a1-d25b79c25d85",
+      "name_ar": "محمد",
+      "display_name_ar": "محمد بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "e9401cdb-132f-4ec7-8dca-573a044689a2",
+      "generation": 7,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
       ]
     },
     {
@@ -3459,10 +3337,10 @@
       ]
     },
     {
-      "id": "605d93c6-75b6-48dc-83c1-4a877b989105",
+      "id": "6c358f9e-ba99-4aa2-85be-7d3658c33bc4",
       "name_ar": "ياسر",
-      "display_name_ar": "ياسر بن عيسى بن عبدالله بن عيسى بن سعد بن أحمد بن عبدالله",
-      "father_id": "face6a3f-bebc-4916-8106-241dc7a33537",
+      "display_name_ar": "ياسر بن عيسى بن سعد بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "7a4709ac-d1d2-4949-8cd3-74a72e802fcf",
       "generation": 7,
       "branch_slug": "al-saad",
       "charts": [
@@ -3489,6 +3367,17 @@
       "branch_slug": "al-ali-salih",
       "charts": [
         4
+      ]
+    },
+    {
+      "id": "d59795bd-4e78-4cee-8c1f-517611899ebc",
+      "name_ar": "يوسف",
+      "display_name_ar": "يوسف بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "9990d596-b470-465a-8dc1-21c101eb3016",
+      "generation": 7,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
       ]
     },
     {
@@ -3552,7 +3441,7 @@
       "display_name_ar": "إبراهيم بن سعود بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "4f33e240-a954-455e-8f3f-6a3a2ad74d74",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -3613,12 +3502,45 @@
       ]
     },
     {
+      "id": "7e389d9c-2a15-4cb7-8d6d-95d11b023f71",
+      "name_ar": "أحمد",
+      "display_name_ar": "أحمد بن محمد بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "ab03f99d-0371-4824-8272-6e138e32fd38",
+      "generation": 8,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
+      "id": "8a50e36a-708b-421b-83f5-a4f4c8b7dcd7",
+      "name_ar": "أحمد",
+      "display_name_ar": "أحمد بن عبدالرؤوف بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "3cc77a22-c9b3-4121-815d-db17a2cf0047",
+      "generation": 8,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
+      "id": "97708b87-0db2-4c06-8005-f681dc0a4b81",
+      "name_ar": "أحمد",
+      "display_name_ar": "أحمد بن عبدالمنعم بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "4606dd99-a3f8-44c7-8211-407e855a0b73",
+      "generation": 8,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
       "id": "38136d6f-8b70-4425-83cd-41a5b4feac0b",
       "name_ar": "أحمد",
       "display_name_ar": "أحمد بن صالح بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "c49bbfc4-3d67-427e-8f87-8b334484d4d1",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -3629,9 +3551,31 @@
       "display_name_ar": "أحمد بن سعود بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "4f33e240-a954-455e-8f3f-6a3a2ad74d74",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
+      ]
+    },
+    {
+      "id": "94fe99cd-dd4b-4b2a-8267-c18c3812fb7f",
+      "name_ar": "أحمد",
+      "display_name_ar": "أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "df27bc45-82b1-4b03-82eb-ca50b7dd7aeb",
+      "generation": 8,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
+      ]
+    },
+    {
+      "id": "4667659e-035e-4129-8b15-a60939c81798",
+      "name_ar": "أحمد",
+      "display_name_ar": "أحمد بن إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "15455b49-316b-47d8-8d25-79eef0750b81",
+      "generation": 8,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
       ]
     },
     {
@@ -3767,6 +3711,17 @@
       ]
     },
     {
+      "id": "7acd88ef-6e55-447a-836e-3a2dbfaad6f5",
+      "name_ar": "تركي",
+      "display_name_ar": "تركي بن محمد بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "ab03f99d-0371-4824-8272-6e138e32fd38",
+      "generation": 8,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
       "id": "00a6ca6d-2a4f-40b8-89e3-70eefad1e00c",
       "name_ar": "تركي",
       "display_name_ar": "تركي بن خالد بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
@@ -3877,21 +3832,21 @@
       ]
     },
     {
+      "id": "cc02f0a6-e041-4bb3-82cd-ce2ef0b36fae",
+      "name_ar": "خالد",
+      "display_name_ar": "خالد بن عبدالمنعم بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "4606dd99-a3f8-44c7-8211-407e855a0b73",
+      "generation": 8,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
       "id": "40c62e12-0065-4142-8e73-b2f2ea17fb90",
       "name_ar": "خالد",
       "display_name_ar": "خالد بن وليد بن سعد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "215db983-6da7-47dd-8e5a-b9e4e6182450",
-      "generation": 8,
-      "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
-    },
-    {
-      "id": "9a5fefea-5742-4fc4-8c5b-58f223a3969d",
-      "name_ar": "خالد",
-      "display_name_ar": "خالد بن عبدالله بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
-      "father_id": "571943ef-e1d1-47f6-8e82-c640cdae93b4",
       "generation": 8,
       "branch_slug": "al-ali-salih",
       "charts": [
@@ -3910,6 +3865,28 @@
       ]
     },
     {
+      "id": "4685925e-b7a9-481f-8615-638ad127334c",
+      "name_ar": "خالد",
+      "display_name_ar": "خالد بن عبدالعزيز بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "7e946a84-5dd6-4b0b-88c7-c28ccb0fa1ab",
+      "generation": 8,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
+      ]
+    },
+    {
+      "id": "6a12a37c-f0df-4f0c-8a59-00cadbc5602e",
+      "name_ar": "خالد",
+      "display_name_ar": "خالد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "df27bc45-82b1-4b03-82eb-ca50b7dd7aeb",
+      "generation": 8,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
+      ]
+    },
+    {
       "id": "a4a18aa1-43fd-4c2b-8c03-093070e01e61",
       "name_ar": "خالد",
       "display_name_ar": "خالد بن وليد بن صالح بن إبراهيم بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
@@ -3918,6 +3895,17 @@
       "branch_slug": "al-ibrahim-salih",
       "charts": [
         11
+      ]
+    },
+    {
+      "id": "a9143278-8280-48a1-89f7-97b9de543643",
+      "name_ar": "راشد",
+      "display_name_ar": "راشد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "df27bc45-82b1-4b03-82eb-ca50b7dd7aeb",
+      "generation": 8,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
       ]
     },
     {
@@ -4054,10 +4042,10 @@
       ]
     },
     {
-      "id": "d705c500-0f86-4951-8f6d-1f3445416545",
+      "id": "b53bd961-b10a-41e7-8b6c-64f1401710df",
       "name_ar": "سعود",
-      "display_name_ar": "سعود بن عبدالرحمن بن فهد بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
-      "father_id": "92431fbf-ea57-44b6-84e6-c0b93c8f4ff4",
+      "display_name_ar": "سعود بن عبدالرحمن بن عبدالله بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "d22ca099-7cb0-412e-80a0-6719e83be5dc",
       "generation": 8,
       "branch_slug": "al-yousef",
       "charts": [
@@ -4070,7 +4058,7 @@
       "display_name_ar": "سعود بن عبدالرحمن بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "76c0cec0-0753-4938-8e23-e0704d6c19ad",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4139,6 +4127,17 @@
       "branch_slug": "al-ali-salih",
       "charts": [
         4
+      ]
+    },
+    {
+      "id": "378f948e-603a-41e8-84c6-6ec52550311b",
+      "name_ar": "صالح",
+      "display_name_ar": "صالح بن محمد بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "ab03f99d-0371-4824-8272-6e138e32fd38",
+      "generation": 8,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
       ]
     },
     {
@@ -4296,12 +4295,23 @@
       ]
     },
     {
+      "id": "56e56ba3-52cd-4c7f-8ba5-853a2c991c0e",
+      "name_ar": "عبدالرحمن",
+      "display_name_ar": "عبدالرحمن بن عبدالرؤوف بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "3cc77a22-c9b3-4121-815d-db17a2cf0047",
+      "generation": 8,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
+      ]
+    },
+    {
       "id": "306db876-078c-4895-8e37-4d841561c574",
       "name_ar": "عبدالرحمن",
       "display_name_ar": "عبدالرحمن بن صالح بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "c49bbfc4-3d67-427e-8f87-8b334484d4d1",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4499,7 +4509,7 @@
       "display_name_ar": "عبدالعزيز بن عمر بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "a1362794-cab5-426f-810e-911ee1f3419b",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4510,7 +4520,7 @@
       "display_name_ar": "عبدالعزيز بن عبداللطيف بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "69817041-e8a5-47c7-8df2-0fc4a1d196aa",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4521,7 +4531,7 @@
       "display_name_ar": "عبدالعزيز بن صالح بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "c49bbfc4-3d67-427e-8f87-8b334484d4d1",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4532,7 +4542,7 @@
       "display_name_ar": "عبدالعزيز بن عبدالرحمن بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "76c0cec0-0753-4938-8e23-e0704d6c19ad",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4543,7 +4553,7 @@
       "display_name_ar": "عبدالعزيز بن سعود بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "4f33e240-a954-455e-8f3f-6a3a2ad74d74",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4693,14 +4703,25 @@
       ]
     },
     {
-      "id": "a9bd0b32-427b-4da0-8521-259c55fc9ed4",
+      "id": "5aa61c1e-96e9-4fdc-86d9-09ecfb171939",
       "name_ar": "عبدالله",
-      "display_name_ar": "عبدالله بن عبدالرحمن بن فهد بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
-      "father_id": "92431fbf-ea57-44b6-84e6-c0b93c8f4ff4",
+      "display_name_ar": "عبدالله بن عبدالرحمن بن عبدالله بن عبدالرحمن بن يوسف بن يوسف بن أحمد بن عبدالله",
+      "father_id": "d22ca099-7cb0-412e-80a0-6719e83be5dc",
       "generation": 8,
       "branch_slug": "al-yousef",
       "charts": [
         1
+      ]
+    },
+    {
+      "id": "b8ad0e51-6f0f-44a6-86c3-8900ff4c51f3",
+      "name_ar": "عبدالله",
+      "display_name_ar": "عبدالله بن عبدالرؤوف بن أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "3cc77a22-c9b3-4121-815d-db17a2cf0047",
+      "generation": 8,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
       ]
     },
     {
@@ -4709,7 +4730,7 @@
       "display_name_ar": "عبدالله بن عبداللطيف بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "69817041-e8a5-47c7-8df2-0fc4a1d196aa",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4720,7 +4741,7 @@
       "display_name_ar": "عبدالله بن صالح بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "c49bbfc4-3d67-427e-8f87-8b334484d4d1",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4731,7 +4752,7 @@
       "display_name_ar": "عبدالله بن سعود بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "4f33e240-a954-455e-8f3f-6a3a2ad74d74",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -4756,6 +4777,28 @@
       "branch_slug": "al-ali-salih",
       "charts": [
         4
+      ]
+    },
+    {
+      "id": "6efed16f-ee83-41fb-85c4-f9fee09d0006",
+      "name_ar": "عبدالله",
+      "display_name_ar": "عبدالله بن يوسف بن عبدالله بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "d59795bd-4e78-4cee-8c1f-517611899ebc",
+      "generation": 8,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
+      ]
+    },
+    {
+      "id": "864513c6-feee-459d-8143-6e53d9a03260",
+      "name_ar": "عبدالله",
+      "display_name_ar": "عبدالله بن إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "15455b49-316b-47d8-8d25-79eef0750b81",
+      "generation": 8,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
       ]
     },
     {
@@ -4957,6 +5000,17 @@
       ]
     },
     {
+      "id": "c092fc4d-a40c-4a1c-89cc-a8974dbe4a5e",
+      "name_ar": "عيسى",
+      "display_name_ar": "عيسى بن سعد بن عيسى بن سعد بن عيسى بن سعد بن أحمد بن عبدالله",
+      "father_id": "f11f1d82-4ed8-4ded-868c-70229830180f",
+      "generation": 8,
+      "branch_slug": "al-saad",
+      "charts": [
+        6
+      ]
+    },
+    {
       "id": "041680fc-4445-4c29-8384-51908879cb3e",
       "name_ar": "فارس",
       "display_name_ar": "فارس بن وليد بن صالح بن إبراهيم بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
@@ -5000,6 +5054,17 @@
         2
       ],
       "uncertain": true
+    },
+    {
+      "id": "aae652ed-cd3e-4007-85d5-21124a582bbf",
+      "name_ar": "فهد",
+      "display_name_ar": "فهد بن عبدالرحمن بن صالح بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "48895c05-7043-4270-8962-1eabaf68ca31",
+      "generation": 8,
+      "branch_slug": "al-ali-salih",
+      "charts": [
+        4
+      ]
     },
     {
       "id": "29477dfa-bc68-441c-868c-81521f13d130",
@@ -5062,7 +5127,7 @@
       "display_name_ar": "محمد بن عمر بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "a1362794-cab5-426f-810e-911ee1f3419b",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -5073,7 +5138,7 @@
       "display_name_ar": "محمد بن عبدالرحمن بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "76c0cec0-0753-4938-8e23-e0704d6c19ad",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -5094,17 +5159,6 @@
       "name_ar": "محمد",
       "display_name_ar": "محمد بن خالد بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "906bfa43-4588-4960-8c2e-de15fe968078",
-      "generation": 8,
-      "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
-    },
-    {
-      "id": "cf3eaea6-b6b8-4026-85c3-4c75e926767e",
-      "name_ar": "محمد",
-      "display_name_ar": "محمد بن عبدالله بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
-      "father_id": "571943ef-e1d1-47f6-8e82-c640cdae93b4",
       "generation": 8,
       "branch_slug": "al-ali-salih",
       "charts": [
@@ -5178,10 +5232,10 @@
       ]
     },
     {
-      "id": "f6fed3e4-f0f3-4cba-8e48-19dfa55aff99",
+      "id": "3b422424-6fd2-4039-8e54-d46781571cd7",
       "name_ar": "محمد",
-      "display_name_ar": "محمد بن خالد بن سعد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
-      "father_id": "92c147cd-23d5-490e-8aa5-594a067bb2fd",
+      "display_name_ar": "محمد بن خالد بن صالح بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "205f6498-819e-44c7-82ff-0d768e76a0d4",
       "generation": 8,
       "branch_slug": "al-ali-salih",
       "charts": [
@@ -5315,16 +5369,16 @@
       "display_name_ar": "مشاري بن عبدالرحمن بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "76c0cec0-0753-4938-8e23-e0704d6c19ad",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
     },
     {
-      "id": "071ac959-c691-42a6-87de-ba5c6eab2e19",
+      "id": "3bf1fe2b-4598-4c17-841a-5206c99b2c93",
       "name_ar": "مشاري",
-      "display_name_ar": "مشاري بن خالد بن سعد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
-      "father_id": "92c147cd-23d5-490e-8aa5-594a067bb2fd",
+      "display_name_ar": "مشاري بن خالد بن صالح بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "205f6498-819e-44c7-82ff-0d768e76a0d4",
       "generation": 8,
       "branch_slug": "al-ali-salih",
       "charts": [
@@ -5546,7 +5600,7 @@
       "display_name_ar": "يوسف بن صالح بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "c49bbfc4-3d67-427e-8f87-8b334484d4d1",
       "generation": 8,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -5607,10 +5661,21 @@
       ]
     },
     {
-      "id": "3be87e26-5627-4942-810d-b968f037d02d",
+      "id": "70c6b507-0c1f-43d8-8b0f-2504467f9e5d",
+      "name_ar": "إبراهيم",
+      "display_name_ar": "إبراهيم بن أحمد بن إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله",
+      "father_id": "4667659e-035e-4129-8b15-a60939c81798",
+      "generation": 9,
+      "branch_slug": "al-abdullatif",
+      "charts": [
+        7
+      ]
+    },
+    {
+      "id": "d118959a-4089-439c-8a10-04a509773946",
       "name_ar": "أحمد",
-      "display_name_ar": "أحمد بن محمد بن خالد بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
-      "father_id": "504beaa0-cf37-4762-8d0b-8e9e8200f125",
+      "display_name_ar": "أحمد بن محمد بن أحمد بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "8ab6c8ad-651e-4deb-8acb-034276444188",
       "generation": 9,
       "branch_slug": "al-ali-salih",
       "charts": [
@@ -5623,7 +5688,7 @@
       "display_name_ar": "تركي بن عبدالله بن سعود بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "c7e065ae-f3d3-4243-8b32-7c09b087cabe",
       "generation": 9,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -5700,7 +5765,7 @@
       "display_name_ar": "راكان بن عبدالله بن سعود بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "c7e065ae-f3d3-4243-8b32-7c09b087cabe",
       "generation": 9,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -5722,7 +5787,7 @@
       "display_name_ar": "سعود بن عبدالله بن سعود بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
       "father_id": "c7e065ae-f3d3-4243-8b32-7c09b087cabe",
       "generation": 9,
-      "branch_slug": "al-ali-salih",
+      "branch_slug": "al-abdullah-salih",
       "charts": [
         3
       ]
@@ -5736,6 +5801,17 @@
       "branch_slug": "al-mohammed-salih",
       "charts": [
         10
+      ]
+    },
+    {
+      "id": "df50b071-de15-481d-88d6-7565fac0fbe1",
+      "name_ar": "عبدالرحمن",
+      "display_name_ar": "عبدالرحمن بن عبدالعزيز بن عبدالرحمن بن عبدالعزيز بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "3827ad7d-ba7a-4862-85f8-80302210cb69",
+      "generation": 9,
+      "branch_slug": "al-abdullah-salih",
+      "charts": [
+        3
       ]
     },
     {
@@ -5990,6 +6066,28 @@
       "charts": [
         11
       ]
+    },
+    {
+      "id": "e530f2c4-f325-4221-84c6-c4aa7bb4ab70",
+      "name_ar": "خالد",
+      "display_name_ar": "خالد بن عبدالله بن محمد بن خالد بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "90bdbe9c-2a84-48d8-8dde-0822328a09aa",
+      "generation": 10,
+      "branch_slug": "al-ali-salih",
+      "charts": [
+        4
+      ]
+    },
+    {
+      "id": "de34032b-fae5-4cfa-8536-c557150ce4f5",
+      "name_ar": "محمد",
+      "display_name_ar": "محمد بن عبدالله بن محمد بن خالد بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله",
+      "father_id": "90bdbe9c-2a84-48d8-8dde-0822328a09aa",
+      "generation": 10,
+      "branch_slug": "al-ali-salih",
+      "charts": [
+        4
+      ]
     }
   ],
   "branches": [
@@ -6080,38 +6178,15 @@
     "المشجرة 12: «رياف» بن أحمد اسم غير معتاد وقد يكون «رئاف/رافي» — يحتاج تأكيد اللجنة."
   ],
   "resolution_notes": [
-    "المشجرة 1: مرجع الأب «يوسف بن أحمد» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 1: مرجع الأب «محمد بن يوسف بن يوسف» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 1: مرجع الأب «عبدالله بن محمد» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 1: مرجع الأب «عبدالرحمن بن يوسف بن يوسف» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 1: مرجع الأب «عبدالله بن عبدالرحمن» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 1: مرجع الأب «عبدالرحمن بن عبدالله بن عبدالرحمن» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 3: مرجع الأب «أحمد بن عبدالله» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 3: مرجع الأب «عبدالرحمن بن عبدالعزيز» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 3: مرجع الأب «عبدالعزيز بن عبدالرحمن» متكرر (5) — تم اختيار الأقرب للجذع.",
-    "المشجرة 3: مرجع الأب «سعود بن عبدالعزيز» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «خالد بن سعد» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «محمد بن علي» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «عبدالله بن محمد» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «محمد بن أحمد بن محمد» متكرر (7) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «صالح بن علي» متكرر (3) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «يوسف بن صالح» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «عبدالرحمن بن صالح» متكرر (4) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «خالد بن صالح» متكرر (8) — تم اختيار الأقرب للجذع.",
-    "المشجرة 4: مرجع الأب «عبدالعزيز بن صالح» متكرر (3) — تم اختيار الأقرب للجذع.",
-    "المشجرة 6: مرجع الأب «محمد بن عبدالله» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 6: مرجع الأب «عيسى بن عبدالله» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 6: مرجع الأب «عيسى بن عبدالرحمن» متكرر (3) — تم اختيار الأقرب للجذع.",
-    "المشجرة 6: مرجع الأب «عيسى بن سعد بن عيسى» متكرر (5) — تم اختيار الأقرب للجذع.",
-    "المشجرة 6: مرجع الأب «سعد بن عيسى بن سعد» متكرر (3) — تم اختيار الأقرب للجذع.",
-    "المشجرة 6: مرجع الأب «محمد بن سعد» متكرر (4) — تم اختيار الأقرب للجذع.",
-    "المشجرة 7: مرجع الأب «عبداللطيف بن أحمد» متكرر (3) — تم اختيار الأقرب للجذع.",
-    "المشجرة 7: مرجع الأب «يوسف بن عبدالله» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 7: مرجع الأب «أحمد بن عبداللطيف بن أحمد» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 7: مرجع الأب «عبداللطيف بن أحمد بن عبداللطيف» متكرر (4) — تم اختيار الأقرب للجذع.",
-    "المشجرة 7: مرجع الأب «إبراهيم بن أحمد بن عبداللطيف» متكرر (3) — تم اختيار الأقرب للجذع.",
-    "المشجرة 7: مرجع الأب «إبراهيم بن أحمد» متكرر (3) — تم اختيار الأقرب للجذع.",
-    "المشجرة 7: مرجع الأب «يوسف بن أحمد» متكرر (2) — تم اختيار الأقرب للجذع.",
-    "المشجرة 7: مرجع الأب «عبدالله بن يوسف» متكرر (3) — تم اختيار الأقرب للجذع."
+    "المشجرة 3: مرجع الأب «أحمد بن عبدالله» ينطبق على 2 أشخاص — تم اختيار «أحمد بن عبدالله بن صالح بن عبدالرحمن بن أحمد بن عبدالله».",
+    "المشجرة 4: مرجع الأب «عبدالله بن محمد» ينطبق على 2 أشخاص — تم اختيار «عبدالله بن محمد بن خالد بن محمد بن علي بن صالح بن عبدالرحمن بن أحمد بن عبدالله».",
+    "المشجرة 6: مرجع الأب «سعد بن عيسى بن سعد» ينطبق على 2 أشخاص — تم اختيار «سعد بن عيسى بن سعد بن عيسى بن سعد بن أحمد بن عبدالله».",
+    "المشجرة 6: مرجع الأب «محمد بن سعد» ينطبق على 2 أشخاص — تم اختيار «محمد بن سعد بن عيسى بن سعد بن أحمد بن عبدالله».",
+    "المشجرة 7: مرجع الأب «عبداللطيف بن أحمد» ينطبق على 2 أشخاص — تم اختيار «عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله».",
+    "المشجرة 7: مرجع الأب «أحمد بن عبداللطيف بن أحمد» ينطبق على 2 أشخاص — تم اختيار «أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله».",
+    "المشجرة 7: مرجع الأب «عبداللطيف بن أحمد بن عبداللطيف» ينطبق على 2 أشخاص — تم اختيار «عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله».",
+    "المشجرة 7: مرجع الأب «إبراهيم بن أحمد بن عبداللطيف» ينطبق على 2 أشخاص — تم اختيار «إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله».",
+    "المشجرة 7: مرجع الأب «إبراهيم بن أحمد» ينطبق على 2 أشخاص — تم اختيار «إبراهيم بن أحمد بن عبداللطيف بن أحمد بن عبداللطيف بن أحمد بن عبدالله».",
+    "المشجرة 7: مرجع الأب «عبدالله بن يوسف» ينطبق على 2 أشخاص — تم اختيار «عبدالله بن يوسف بن أحمد بن عبداللطيف بن أحمد بن عبدالله»."
   ]
 }
