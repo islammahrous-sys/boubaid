@@ -202,8 +202,8 @@ const copy = {
   branchesEyebrow: { ar: "البنية العائلية", en: "Family structure" } as BiText,
   branchesTitle: { ar: "الفروع السبعة", en: "The Seven Branches" } as BiText,
   branchesSub: {
-    ar: "تنتظم الأسرة في سبعة فروع رئيسية تنحدر من أبناء الجد أحمد بن صالح، ولكل فرع أفرعه الداخلية وممثلوه في مجلس الأسرة.",
-    en: "The family is organised into seven principal branches descending from the sons of the patriarch Ahmed bin Salih, each with its own sub-lineages and representation on the family council.",
+    ar: "تنتظم الأسرة في سبعة فروع رئيسية تنحدر من أبناء الجد أحمد بن عبدالله وأخيه صالح، ولكل فرع أفرعه الداخلية وممثلوه في مجلس الأسرة.",
+    en: "The family is organised into seven principal branches descending from the sons of the patriarch Ahmed bin Abdullah and his brother Salih, each with its own sub-lineages and representation on the family council.",
   } as BiText,
   members: { ar: "فرداً موثقاً", en: "documented" } as BiText,
   allBranches: { ar: "استعراض الفروع بالتفصيل", en: "All branches in detail" } as BiText,
