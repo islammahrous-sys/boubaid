@@ -81,9 +81,9 @@ export const stats = [
   },
   {
     key: "members",
-    label: { ar: "أبناء الأسرة الموثقين", en: "Documented Members" } as BiText,
-    value: 400,
-    suffix: "+",
+    label: { ar: "أسماء موثقة في المشجرات", en: "Names in verified charts" } as BiText,
+    value: 550,
+    suffix: "",
   },
   {
     key: "branches",
