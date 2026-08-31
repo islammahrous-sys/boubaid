@@ -1213,13 +1213,14 @@ export const getPublicMemberSpotlight = createServerFn({ method: "GET" })
   .validator((memberIdOrSlug: string) => publicMemberSpotlightIdSchema.parse(memberIdOrSlug))
   .handler(async ({ data: memberIdOrSlug }): Promise<PublicMemberSpotlight | null> => {
     try {
-      const { createPublicServerClient } = await import("./supabase-public.server");
-      const supabase = createPublicServerClient();
+      // Read server-side (anon cannot read family_members) and honour the
+      // member's biography privacy switch before returning anything.
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
       const cols =
         "id, slug, display_name_ar, display_name_en, first_name_ar, last_name_ar, first_name_en, last_name_en, occupation_ar, occupation_en, biography_ar, biography_en, avatar_path";
 
-      const base = supabase
+      const base = supabaseAdmin
         .from("family_members")
         .select(cols)
         .eq("visibility", "public")
@@ -1231,6 +1232,13 @@ export const getPublicMemberSpotlight = createServerFn({ method: "GET" })
         : await base.eq("slug", memberIdOrSlug).maybeSingle();
 
       if (!data) return null;
+
+      const { data: privacy } = await supabaseAdmin
+        .from("family_member_privacy")
+        .select("show_biography")
+        .eq("member_id", data.id)
+        .maybeSingle();
+      const showBiography = privacy?.show_biography !== false;
 
       const fullNameAr =
         data.display_name_ar || `${data.first_name_ar} ${data.last_name_ar}`.trim();
