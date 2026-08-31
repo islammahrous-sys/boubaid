@@ -572,10 +572,32 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
   try {
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
-    const [membersRes, branchesRes, relationshipsRes] = await Promise.all([
-      supabase.from("family_members").select("*").order("generation", { ascending: true }),
+    // The official dataset holds 1,098 relationship rows -- above PostgREST's
+    // default 1,000-row cap -- so relationships are paged explicitly.
+    const fetchAllRelationships = async () => {
+      const page = 1000;
+      const rows: any[] = [];
+      for (let from = 0; ; from += page) {
+        const { data, error } = await supabase
+          .from("family_relationships")
+          .select("person_id, related_person_id, relationship_type")
+          .range(from, from + page - 1);
+        if (error || !data || data.length === 0) break;
+        rows.push(...data);
+        if (data.length < page) break;
+      }
+      return rows;
+    };
+
+    const [membersRes, branchesRes, relationships] = await Promise.all([
+      supabase
+        .from("family_members")
+        .select("*")
+        .order("generation", { ascending: true })
+        .order("sort_order", { ascending: true })
+        .limit(2000),
       supabase.from("branches").select("*").order("sort_order", { ascending: true }),
-      supabase.from("family_relationships").select("*"),
+      fetchAllRelationships(),
     ]);
 
     const members = membersRes.data ?? [];
