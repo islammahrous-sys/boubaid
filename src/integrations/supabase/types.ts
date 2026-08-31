@@ -1033,13 +1033,6 @@ export type Database = {
             referencedRelation: "family_members"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "family_member_privacy_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: true
-            referencedRelation: "family_members_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       family_members: {
@@ -1212,24 +1205,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "family_relationships_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "family_members_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "family_relationships_related_person_id_fkey"
             columns: ["related_person_id"]
             isOneToOne: false
             referencedRelation: "family_members"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "family_relationships_related_person_id_fkey"
-            columns: ["related_person_id"]
-            isOneToOne: false
-            referencedRelation: "family_members_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2115,107 +2094,54 @@ export type Database = {
       }
     }
     Views: {
-      family_members_public: {
-        Row: {
-          avatar_path: string | null
-          biography_ar: string | null
-          biography_en: string | null
-          birth_place_id: string | null
-          branch_id: string | null
-          cover_path: string | null
-          created_at: string | null
-          current_place_id: string | null
-          date_of_birth: string | null
-          date_of_death: string | null
-          display_name_ar: string | null
-          display_name_en: string | null
-          education_ar: string | null
-          education_en: string | null
-          first_name_ar: string | null
-          first_name_en: string | null
-          gender: Database["public"]["Enums"]["gender"] | null
-          generation: number | null
-          id: string | null
-          is_living: boolean | null
-          last_name_ar: string | null
-          last_name_en: string | null
-          middle_name_ar: string | null
-          middle_name_en: string | null
-          occupation_ar: string | null
-          occupation_en: string | null
-          slug: string | null
-          sort_order: number | null
-          status: Database["public"]["Enums"]["record_status"] | null
-          updated_at: string | null
-          visibility: Database["public"]["Enums"]["visibility_level"] | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "family_members_birth_place_id_fkey"
-            columns: ["birth_place_id"]
-            isOneToOne: false
-            referencedRelation: "places"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "family_members_branch_id_fkey"
-            columns: ["branch_id"]
-            isOneToOne: false
-            referencedRelation: "branches"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "family_members_current_place_id_fkey"
-            columns: ["current_place_id"]
-            isOneToOne: false
-            referencedRelation: "places"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      family_relationships_public: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          person_id: string | null
-          related_person_id: string | null
-          relationship_type:
-            | Database["public"]["Enums"]["relationship_type"]
-            | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "family_relationships_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "family_members"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "family_relationships_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "family_members_public"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "family_relationships_related_person_id_fkey"
-            columns: ["related_person_id"]
-            isOneToOne: false
-            referencedRelation: "family_members"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "family_relationships_related_person_id_fkey"
-            columns: ["related_person_id"]
-            isOneToOne: false
-            referencedRelation: "family_members_public"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_public_family_members: {
+        Args: never
+        Returns: {
+          avatar_path: string
+          biography_ar: string
+          biography_en: string
+          birth_place_id: string
+          branch_id: string
+          cover_path: string
+          created_at: string
+          current_place_id: string
+          date_of_birth: string
+          date_of_death: string
+          display_name_ar: string
+          display_name_en: string
+          education_ar: string
+          education_en: string
+          first_name_ar: string
+          first_name_en: string
+          gender: Database["public"]["Enums"]["gender"]
+          generation: number
+          id: string
+          is_living: boolean
+          last_name_ar: string
+          last_name_en: string
+          middle_name_ar: string
+          middle_name_en: string
+          occupation_ar: string
+          occupation_en: string
+          slug: string
+          sort_order: number
+          status: Database["public"]["Enums"]["record_status"]
+          updated_at: string
+          visibility: Database["public"]["Enums"]["visibility_level"]
+        }[]
+      }
+      get_public_family_relationships: {
+        Args: never
+        Returns: {
+          id: string
+          person_id: string
+          related_person_id: string
+          relationship_type: Database["public"]["Enums"]["relationship_type"]
+        }[]
+      }
       replace_content_page_sections: {
         Args: { p_page_id: string; p_sections: Json }
         Returns: {
