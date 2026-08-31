@@ -572,13 +572,19 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
   try {
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
+    // Family member and relationship rows are NOT readable with the anon key:
+    // per-field privacy opt-outs (family_member_privacy) cannot be expressed as
+    // row-level policies, so anonymous access to those tables is revoked and the
+    // published subset is read server-side and redacted here before it is sent.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     // The official dataset holds 1,098 relationship rows -- above PostgREST's
     // default 1,000-row cap -- so relationships are paged explicitly.
     const fetchAllRelationships = async () => {
       const page = 1000;
       const rows: any[] = [];
       for (let from = 0; ; from += page) {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .from("family_relationships")
           .select("person_id, related_person_id, relationship_type")
           .range(from, from + page - 1);
@@ -589,10 +595,13 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
       return rows;
     };
 
-    const [membersRes, branchesRes, relationships] = await Promise.all([
-      supabase
+    const [membersRes, branchesRes, allRelationships] = await Promise.all([
+      supabaseAdmin
         .from("family_members")
         .select("*")
+        .eq("visibility", "public")
+        .eq("status", "published")
+        .is("deleted_at", null)
         .order("generation", { ascending: true })
         .order("sort_order", { ascending: true })
         .limit(2000),
@@ -601,6 +610,7 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
     ]);
 
     const members = membersRes.data ?? [];
+    const publicIds = new Set(members.map((m) => m.id));
 
     // family_member_privacy holds real per-field opt-outs (show_biography,
     // show_dob, show_contact, show_relationships) that nothing in the app
@@ -611,24 +621,43 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
     // the service-role client purely to redact this response -- the raw
     // privacy table itself is never sent back.
     let redacted = members;
+    const hideRelationshipsFor = new Set<string>();
     if (members.length > 0) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: privacyRows } = await supabaseAdmin
         .from("family_member_privacy")
-        .select("member_id, show_biography")
+        .select("member_id, show_biography, show_dob, show_relationships")
         .in(
           "member_id",
           members.map((m) => m.id),
         );
+      const rows = privacyRows ?? [];
       const hideBioFor = new Set(
-        (privacyRows ?? []).filter((p) => p.show_biography === false).map((p) => p.member_id),
+        rows.filter((p) => p.show_biography === false).map((p) => p.member_id),
       );
-      if (hideBioFor.size > 0) {
-        redacted = members.map((m) =>
-          hideBioFor.has(m.id) ? { ...m, biography_ar: null, biography_en: null } : m,
-        );
+      const hideDobFor = new Set(rows.filter((p) => p.show_dob === false).map((p) => p.member_id));
+      rows
+        .filter((p) => p.show_relationships === false)
+        .forEach((p) => hideRelationshipsFor.add(p.member_id));
+
+      if (hideBioFor.size > 0 || hideDobFor.size > 0) {
+        redacted = members.map((m) => {
+          let next = m;
+          if (hideBioFor.has(m.id)) next = { ...next, biography_ar: null, biography_en: null };
+          if (hideDobFor.has(m.id)) next = { ...next, date_of_birth: null, date_of_death: null };
+          return next;
+        });
       }
     }
+
+    // Only links between two publicly published members are exposed, and
+    // members who opted out of showing relationships are dropped entirely.
+    const relationships = allRelationships.filter(
+      (r) =>
+        publicIds.has(r.person_id) &&
+        publicIds.has(r.related_person_id) &&
+        !hideRelationshipsFor.has(r.person_id) &&
+        !hideRelationshipsFor.has(r.related_person_id),
+    );
 
     return {
       members: redacted,
