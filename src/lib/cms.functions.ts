@@ -1253,8 +1253,8 @@ export const getPublicMemberSpotlight = createServerFn({ method: "GET" })
         display_name_en: fullNameEn,
         occupation_ar: data.occupation_ar,
         occupation_en: data.occupation_en,
-        biography_ar: data.biography_ar,
-        biography_en: data.biography_en,
+        biography_ar: showBiography ? data.biography_ar : null,
+        biography_en: showBiography ? data.biography_en : null,
         // avatar_path already stores a full public storage URL (see
         // FamilyMemberFormDialog's upload flow) — no signing needed here.
         avatar_url: data.avatar_path,
