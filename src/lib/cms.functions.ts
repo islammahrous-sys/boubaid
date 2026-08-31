@@ -572,13 +572,19 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
   try {
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
+    // Family member and relationship rows are NOT readable with the anon key:
+    // per-field privacy opt-outs (family_member_privacy) cannot be expressed as
+    // row-level policies, so anonymous access to those tables is revoked and the
+    // published subset is read server-side and redacted here before it is sent.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     // The official dataset holds 1,098 relationship rows -- above PostgREST's
     // default 1,000-row cap -- so relationships are paged explicitly.
     const fetchAllRelationships = async () => {
       const page = 1000;
       const rows: any[] = [];
       for (let from = 0; ; from += page) {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .from("family_relationships")
           .select("person_id, related_person_id, relationship_type")
           .range(from, from + page - 1);
@@ -589,10 +595,13 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
       return rows;
     };
 
-    const [membersRes, branchesRes, relationships] = await Promise.all([
-      supabase
+    const [membersRes, branchesRes, allRelationships] = await Promise.all([
+      supabaseAdmin
         .from("family_members")
         .select("*")
+        .eq("visibility", "public")
+        .eq("status", "published")
+        .is("deleted_at", null)
         .order("generation", { ascending: true })
         .order("sort_order", { ascending: true })
         .limit(2000),
@@ -601,6 +610,7 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
     ]);
 
     const members = membersRes.data ?? [];
+    const publicIds = new Set(members.map((m) => m.id));
 
     // family_member_privacy holds real per-field opt-outs (show_biography,
     // show_dob, show_contact, show_relationships) that nothing in the app
@@ -611,24 +621,43 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
     // the service-role client purely to redact this response -- the raw
     // privacy table itself is never sent back.
     let redacted = members;
+    const hideRelationshipsFor = new Set<string>();
     if (members.length > 0) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: privacyRows } = await supabaseAdmin
         .from("family_member_privacy")
-        .select("member_id, show_biography")
+        .select("member_id, show_biography, show_dob, show_relationships")
         .in(
           "member_id",
           members.map((m) => m.id),
         );
+      const rows = privacyRows ?? [];
       const hideBioFor = new Set(
-        (privacyRows ?? []).filter((p) => p.show_biography === false).map((p) => p.member_id),
+        rows.filter((p) => p.show_biography === false).map((p) => p.member_id),
       );
-      if (hideBioFor.size > 0) {
-        redacted = members.map((m) =>
-          hideBioFor.has(m.id) ? { ...m, biography_ar: null, biography_en: null } : m,
-        );
+      const hideDobFor = new Set(rows.filter((p) => p.show_dob === false).map((p) => p.member_id));
+      rows
+        .filter((p) => p.show_relationships === false)
+        .forEach((p) => hideRelationshipsFor.add(p.member_id));
+
+      if (hideBioFor.size > 0 || hideDobFor.size > 0) {
+        redacted = members.map((m) => {
+          let next = m;
+          if (hideBioFor.has(m.id)) next = { ...next, biography_ar: null, biography_en: null };
+          if (hideDobFor.has(m.id)) next = { ...next, date_of_birth: null, date_of_death: null };
+          return next;
+        });
       }
     }
+
+    // Only links between two publicly published members are exposed, and
+    // members who opted out of showing relationships are dropped entirely.
+    const relationships = allRelationships.filter(
+      (r) =>
+        publicIds.has(r.person_id) &&
+        publicIds.has(r.related_person_id) &&
+        !hideRelationshipsFor.has(r.person_id) &&
+        !hideRelationshipsFor.has(r.related_person_id),
+    );
 
     return {
       members: redacted,
@@ -817,14 +846,21 @@ export const getPublicGlobalSearch = createServerFn({ method: "GET" })
     // query text can only ever land inside the intended ilike value slots.
     const cleanQuery = query.trim().replace(/[,()]/g, "");
 
+    // Member rows are read server-side (anon has no read access to
+    // family_members) and only non-sensitive name/occupation fields are
+    // returned for search results.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     const [membersRes, articlesRes, initiativesRes, achieversRes, libraryRes, branchesRes] =
       await Promise.all([
-        supabase
+        supabaseAdmin
           .from("family_members")
           .select(
             "id, slug, first_name_ar, last_name_ar, first_name_en, last_name_en, occupation_ar, avatar_path",
           )
           .eq("visibility", "public")
+          .eq("status", "published")
+          .is("deleted_at", null)
           .or(
             `first_name_ar.ilike.%${cleanQuery}%,last_name_ar.ilike.%${cleanQuery}%,first_name_en.ilike.%${cleanQuery}%,last_name_en.ilike.%${cleanQuery}%,slug.ilike.%${cleanQuery}%`,
           )
@@ -1177,13 +1213,14 @@ export const getPublicMemberSpotlight = createServerFn({ method: "GET" })
   .validator((memberIdOrSlug: string) => publicMemberSpotlightIdSchema.parse(memberIdOrSlug))
   .handler(async ({ data: memberIdOrSlug }): Promise<PublicMemberSpotlight | null> => {
     try {
-      const { createPublicServerClient } = await import("./supabase-public.server");
-      const supabase = createPublicServerClient();
+      // Read server-side (anon cannot read family_members) and honour the
+      // member's biography privacy switch before returning anything.
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
       const cols =
         "id, slug, display_name_ar, display_name_en, first_name_ar, last_name_ar, first_name_en, last_name_en, occupation_ar, occupation_en, biography_ar, biography_en, avatar_path";
 
-      const base = supabase
+      const base = supabaseAdmin
         .from("family_members")
         .select(cols)
         .eq("visibility", "public")
@@ -1195,6 +1232,13 @@ export const getPublicMemberSpotlight = createServerFn({ method: "GET" })
         : await base.eq("slug", memberIdOrSlug).maybeSingle();
 
       if (!data) return null;
+
+      const { data: privacy } = await supabaseAdmin
+        .from("family_member_privacy")
+        .select("show_biography")
+        .eq("member_id", data.id)
+        .maybeSingle();
+      const showBiography = privacy?.show_biography !== false;
 
       const fullNameAr =
         data.display_name_ar || `${data.first_name_ar} ${data.last_name_ar}`.trim();
@@ -1209,8 +1253,8 @@ export const getPublicMemberSpotlight = createServerFn({ method: "GET" })
         display_name_en: fullNameEn,
         occupation_ar: data.occupation_ar,
         occupation_en: data.occupation_en,
-        biography_ar: data.biography_ar,
-        biography_en: data.biography_en,
+        biography_ar: showBiography ? data.biography_ar : null,
+        biography_en: showBiography ? data.biography_en : null,
         // avatar_path already stores a full public storage URL (see
         // FamilyMemberFormDialog's upload flow) — no signing needed here.
         avatar_url: data.avatar_path,
