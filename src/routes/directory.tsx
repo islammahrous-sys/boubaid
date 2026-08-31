@@ -63,7 +63,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
-import { businesses as staticBusinesses } from "@/content/site";
+
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
@@ -348,20 +348,20 @@ function DirectoryPage() {
   });
 
   const allBusinesses: BusinessItem[] = useMemo(() => {
-    if (liveBusinesses && liveBusinesses.length > 0) {
-      return liveBusinesses.map((b) => ({
-        id: b.id,
-        name: { ar: b.name_ar, en: b.name_en || b.name_ar },
-        category: { ar: b.category_ar, en: b.category_en || b.category_ar },
-        city: { ar: b.city_ar, en: b.city_en || b.city_ar },
-        description: { ar: b.description_ar || "", en: b.description_en || "" },
-        ownerBranch: { ar: b.owner_branch_ar || "", en: b.owner_branch_en || "" },
-        contact: b.contact,
-        website: b.website || "",
-      }));
-    }
-    return staticBusinesses;
+    // The directory shows only real, admin-approved businesses from the
+    // database. There is deliberately no static fallback list.
+    return (liveBusinesses ?? []).map((b) => ({
+      id: b.id,
+      name: { ar: b.name_ar, en: b.name_en || b.name_ar },
+      category: { ar: b.category_ar, en: b.category_en || b.category_ar },
+      city: { ar: b.city_ar, en: b.city_en || b.city_ar },
+      description: { ar: b.description_ar || "", en: b.description_en || "" },
+      ownerBranch: { ar: b.owner_branch_ar || "", en: b.owner_branch_en || "" },
+      contact: b.contact,
+      website: b.website || "",
+    }));
   }, [liveBusinesses]);
+
 
   const branchMap = useMemo(() => {
     const m = new Map<string, BiText>();
