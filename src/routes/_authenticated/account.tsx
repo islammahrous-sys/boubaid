@@ -175,7 +175,13 @@ function AccountPage() {
   const fetchBankAccount = useServerFn(getMemberBankAccount);
   const fetchMyContributions = useServerFn(getMyContributions);
 
-  const isApprovedMember = data?.membership_status === "approved" || isAdmin;
+  const isApprovedMember =
+    data?.membership_status === "approved" ||
+    data?.roles?.includes("member") ||
+    data?.roles?.includes("admin") ||
+    data?.roles?.includes("super_admin") ||
+    data?.roles?.includes("treasurer") ||
+    isAdmin;
 
   const { data: bankAccount, isLoading: bankLoading } = useQuery({
     queryKey: ["member-bank-account"],
@@ -463,22 +469,18 @@ function AccountPage() {
    * the application form it actually still needed. The rule below is the same
    * one the verification endpoint applies.
    */
-  const roles = data?.roles ?? [];
-  const hasMemberRole =
-    roles.includes("member") || roles.includes("admin") || roles.includes("super_admin");
+  const authRoles = data?.roles ?? [];
+  const isSuperAdmin = authRoles.includes("super_admin");
+  const isCouncilAdmin = authRoles.includes("admin") || isSuperAdmin;
+  const isTreasurer = authRoles.includes("treasurer") || isCouncilAdmin;
+  const isEditor = authRoles.includes("editor") || authRoles.includes("content_manager") || isCouncilAdmin;
+  const isFamilyManager = authRoles.includes("family_manager") || isCouncilAdmin;
+  const hasMemberRole = authRoles.includes("member") || isCouncilAdmin;
 
   const isApproved = request?.status === "approved" || hasMemberRole || isAdmin;
   const isPending = !isApproved && request?.status === "pending";
   const isRejected = !isApproved && !isPending && request?.status === "rejected";
-  /** No request on file and no membership role -- the true "new account" state. */
   const isUnsubmitted = !isApproved && !isPending && !isRejected;
-  /**
-   * Until the snapshot resolves, `request` is null and every derived flag
-   * collapses to "new account". Rendering that optimistically showed a
-   * pending or approved member a "New Account" badge and a live "Submit
-   * Verification" button for the first few hundred milliseconds -- long
-   * enough to click. Nothing status-dependent renders until this is true.
-   */
   const statusKnown = !isLoading && !accountFailed;
 
   const selectedBranchName = branches.find((b) => b.id === form.branch_slug)?.name;
@@ -498,7 +500,7 @@ function AccountPage() {
                   size="xl"
                   className="w-16 h-16 sm:w-20 sm:h-20"
                 />
-                {isAdmin && (
+                {isCouncilAdmin && (
                   <div
                     title={isAr ? "مسؤول معتمد" : "Administrator"}
                     className="absolute -bottom-1 -end-1 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow"
@@ -515,9 +517,30 @@ function AccountPage() {
                       user?.user_metadata?.full_name ||
                       (isAr ? "عضو أسرة آل بوعبيد" : "Family Member")}
                   </h1>
-                  {isAdmin ? (
+                  {isSuperAdmin ? (
+                    <Badge className="bg-gradient-to-r from-amber-500 to-gold text-ink font-bold text-xs border-0 shadow-sm">
+                      <Sparkles className="w-3 h-3 me-1" />
+                      {isAr ? "الأمين العام للمجلس" : "Super Admin"}
+                    </Badge>
+                  ) : isCouncilAdmin ? (
                     <Badge className="bg-gold text-ink font-semibold text-xs border-0">
+                      <ShieldCheck className="w-3 h-3 me-1" />
                       {isAr ? "أمانة المجلس" : "Admin"}
+                    </Badge>
+                  ) : isTreasurer ? (
+                    <Badge className="bg-emerald-600 text-white font-semibold text-xs border-0">
+                      <Building className="w-3 h-3 me-1" />
+                      {isAr ? "أمانة الخزينة والصندوق" : "Treasurer"}
+                    </Badge>
+                  ) : isEditor ? (
+                    <Badge className="bg-sky-600 text-white font-semibold text-xs border-0">
+                      <Sliders className="w-3 h-3 me-1" />
+                      {isAr ? "إدارة المحتوى والإعلام" : "Content Editor"}
+                    </Badge>
+                  ) : isFamilyManager ? (
+                    <Badge className="bg-purple-600 text-white font-semibold text-xs border-0">
+                      <GitBranch className="w-3 h-3 me-1" />
+                      {isAr ? "لجنة السجل والأنساب" : "Genealogy Committee"}
                     </Badge>
                   ) : accountFailed ? (
                     <Badge variant="outline" className="text-muted-foreground text-xs">
@@ -527,10 +550,12 @@ function AccountPage() {
                     <span className="inline-block h-5 w-24 rounded-full bg-muted animate-pulse" />
                   ) : isApproved ? (
                     <Badge className="bg-emerald-600/90 text-white font-medium text-xs">
-                      {isAr ? "عضو معتمد" : "Verified"}
+                      <CheckCircle2 className="w-3 h-3 me-1" />
+                      {isAr ? "عضو معتمد" : "Verified Member"}
                     </Badge>
                   ) : isPending ? (
                     <Badge variant="outline" className="text-amber-500 border-amber-500/40 text-xs">
+                      <Clock className="w-3 h-3 me-1" />
                       {isAr ? "قيد المراجعة" : "Pending Review"}
                     </Badge>
                   ) : isRejected ? (
@@ -542,6 +567,7 @@ function AccountPage() {
                     </Badge>
                   ) : (
                     <Badge variant="secondary" className="text-xs">
+                      <User className="w-3 h-3 me-1" />
                       {isAr ? "حساب جديد" : "New Account"}
                     </Badge>
                   )}
@@ -562,17 +588,46 @@ function AccountPage() {
               </div>
             </div>
 
-            {/* Quick Actions */}
+            {/* Quick Actions tailored to user roles */}
             <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
-              {isAdmin && (
+              {(isCouncilAdmin || isTreasurer || isEditor || isFamilyManager) && (
                 <Button
                   asChild
                   size="sm"
                   className="h-9 gap-1.5 bg-primary text-primary-foreground font-semibold shadow-sm"
                 >
-                  <Link to="/admin">
+                  <Link
+                    to="/admin"
+                    search={
+                      isTreasurer && !isCouncilAdmin
+                        ? { domain: "governance", tab: "treasury" }
+                        : isEditor && !isCouncilAdmin
+                          ? { domain: "content", tab: "articles" }
+                          : isFamilyManager && !isCouncilAdmin
+                            ? { domain: "family", tab: "members" }
+                            : undefined
+                    }
+                  >
                     <LayoutDashboard className="w-4 h-4" />
-                    {isAr ? "لوحة الإدارة والأمانة" : "Admin Console"}
+                    {isSuperAdmin
+                      ? isAr
+                        ? "لوحة الأمانة العامة"
+                        : "Executive Console"
+                      : isTreasurer && !isCouncilAdmin
+                        ? isAr
+                          ? "لوحة الخزينة"
+                          : "Treasury Hub"
+                        : isEditor && !isCouncilAdmin
+                          ? isAr
+                            ? "لوحة إدارة المحتوى"
+                            : "Content Studio"
+                          : isFamilyManager && !isCouncilAdmin
+                            ? isAr
+                              ? "لوحة شجرة الأنساب"
+                              : "Family Tree Admin"
+                            : isAr
+                              ? "لوحة الإدارة والأمانة"
+                              : "Admin Console"}
                   </Link>
                 </Button>
               )}
@@ -1164,20 +1219,36 @@ function AccountPage() {
                         <div className="h-10 rounded-lg bg-muted animate-pulse" />
                         <div className="h-16 rounded-lg bg-muted/60 animate-pulse" />
                       </div>
-                    ) : isAdmin || isApproved ? (
+                    ) : isApproved ? (
                       <div className="space-y-2.5">
                         <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
                           <span className="text-muted-foreground">
                             {isAr ? "صفة العضوية:" : "Membership Status:"}
                           </span>
                           <Badge className="bg-emerald-600 text-white text-xs font-semibold">
-                            {isAdmin
+                            {isSuperAdmin
                               ? isAr
-                                ? "أمانة المجلس (مسؤول معتمد)"
-                                : "Council Secretariat (Admin)"
-                              : isAr
-                                ? "عضو معتمد وموثق"
-                                : "Verified Member"}
+                                ? "الأمين العام للمجلس"
+                                : "Super Admin"
+                              : isCouncilAdmin
+                                ? isAr
+                                  ? "أمانة المجلس (مسؤول معتمد)"
+                                  : "Council Secretariat (Admin)"
+                                : isTreasurer
+                                  ? isAr
+                                    ? "أمين الخزينة والصندوق"
+                                    : "Treasurer"
+                                  : isEditor
+                                    ? isAr
+                                      ? "هيئة التحرير والمحتوى"
+                                      : "Content Editor"
+                                    : isFamilyManager
+                                      ? isAr
+                                        ? "لجنة السجل والأنساب"
+                                        : "Genealogy Committee"
+                                      : isAr
+                                        ? "عضو معتمد وموثق"
+                                        : "Verified Member"}
                           </Badge>
                         </div>
                         <div className="p-3 rounded-lg bg-secondary/40 border border-border text-[11px] text-muted-foreground space-y-1">
@@ -1185,13 +1256,25 @@ function AccountPage() {
                             {isAr ? "حالة السجل العائلي:" : "Family Register Status:"}
                           </span>
                           <p>
-                            {isAdmin
+                            {isSuperAdmin || isCouncilAdmin
                               ? isAr
-                                ? "حسابك معتمد وموثق بصلاحيات أمانة المجلس وإدارة المنصة، ولديك كامل الصلاحيات لإدارة السجلات والمحتوى والخزينة."
-                                : "Your account is fully verified with executive council privileges to manage records, content, and the family fund."
-                              : isAr
-                                ? "تم توثيق بياناتك بنجاح في السجل العائلي الرسمي وشجرة الأنساب."
-                                : "Your record has been officially verified in the family register."}
+                                ? "حسابك معتمد وموثق بصلاحيات الأمانة العامة وإدارة المنصة بالكامل."
+                                : "Your account is fully verified with executive council privileges."
+                              : isTreasurer
+                                ? isAr
+                                  ? "حسابك معتمد ومخول بالاطلاع على وإدارة الخزينة والتحويلات المالية وصندوق التنمية."
+                                  : "Your account is authorized to manage the family treasury and transactions."
+                                : isEditor
+                                  ? isAr
+                                    ? "حسابك معتمد بصلاحيات نشر وتحرير المحتوى والمقالات والمكتبة الرقمية."
+                                    : "Your account is authorized to edit and publish content."
+                                  : isFamilyManager
+                                    ? isAr
+                                      ? "حسابك معتمد بصلاحيات تحديث وإدارة فروع شجرة العائلة وسجلات الأنساب."
+                                      : "Your account is authorized to manage the family tree records."
+                                    : isAr
+                                      ? "تم توثيق بياناتك بنجاح في السجل العائلي الرسمي وشجرة الأنساب."
+                                      : "Your record has been officially verified in the family register."}
                           </p>
                         </div>
                       </div>
@@ -1424,39 +1507,57 @@ function AccountPage() {
                     </div>
                   </div>
 
-                  {/* Real Scannable QR Code */}
+                  {/* Scannable QR Code (Active only for approved members/admins) */}
                   <div className="flex flex-col items-center gap-1.5 shrink-0">
-                    <a
-                      href={`/verify?id=${memberCode}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative block p-2 rounded-2xl bg-white shadow-xl hover:scale-105 transition-all"
-                      title={
-                        isAr
-                          ? "انقر لعرض شهادة التوثيق الرسمية"
-                          : "Click to view official verification certificate"
-                      }
-                    >
-                      {qrCodeDataUrl ? (
-                        <img
-                          src={qrCodeDataUrl}
-                          alt="Official Scannable QR Verification Code"
-                          className="w-20 h-20 sm:w-22 sm:h-22 object-contain"
-                        />
-                      ) : (
-                        <div className="w-20 h-20 flex items-center justify-center">
-                          <QrCode className="w-10 h-10 text-stone-800" />
+                    {isApproved ? (
+                      <a
+                        href={`/verify?id=${memberCode}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group relative block p-2 rounded-2xl bg-white shadow-xl hover:scale-105 transition-all"
+                        title={
+                          isAr
+                            ? "انقر لعرض شهادة التوثيق الرسمية"
+                            : "Click to view official verification certificate"
+                        }
+                      >
+                        {qrCodeDataUrl ? (
+                          <img
+                            src={qrCodeDataUrl}
+                            alt="Official Scannable QR Verification Code"
+                            className="w-20 h-20 sm:w-22 sm:h-22 object-contain"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 flex items-center justify-center">
+                            <QrCode className="w-10 h-10 text-stone-800" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gold/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="bg-ink/90 text-gold text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                            {isAr ? "فحص" : "VERIFY"}
+                          </span>
                         </div>
-                      )}
-                      <div className="absolute inset-0 bg-gold/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="bg-ink/90 text-gold text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
-                          {isAr ? "فحص" : "VERIFY"}
+                      </a>
+                    ) : (
+                      <div className="w-20 h-20 sm:w-22 sm:h-22 p-2 rounded-2xl bg-stone-900 border border-gold/30 flex flex-col items-center justify-center text-center shadow-inner">
+                        <Lock className="w-6 h-6 text-gold/80 mb-1" />
+                        <span className="text-[9px] text-ivory/70 font-semibold leading-tight">
+                          {isPending ? (isAr ? "قيد المراجعة" : "Under Review") : isAr ? "غير مفعل" : "Locked"}
                         </span>
                       </div>
-                    </a>
+                    )}
                     <span className="text-[9px] font-mono text-ivory/60 flex items-center gap-1">
-                      <ExternalLink className="w-2.5 h-2.5 text-gold" />
-                      {isAr ? "باركود فحص حي" : "LIVE QR SEAL"}
+                      {isApproved ? (
+                        <>
+                          <ExternalLink className="w-2.5 h-2.5 text-gold" />
+                          {isAr ? "باركود فحص حي" : "LIVE QR SEAL"}
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-2.5 h-2.5 text-gold/70" />
+                          {isAr ? "بانتظار الاعتماد" : "LOCKED SEAL"}
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -1468,60 +1569,86 @@ function AccountPage() {
                 </div>
               </div>
 
-              {/* Digital Card Quick Actions Toolbar */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyVerificationLink}
-                  className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
-                >
-                  {copiedLink ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                  ) : (
-                    <Share2 className="w-3.5 h-3.5 text-gold" />
+              {/* Digital Card Quick Actions Toolbar (Full features for approved members) */}
+              {isApproved ? (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopyVerificationLink}
+                    className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
+                  >
+                    {copiedLink ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    ) : (
+                      <Share2 className="w-3.5 h-3.5 text-gold" />
+                    )}
+                    <span>{copiedLink ? (isAr ? "تم النسخ" : "Copied!") : isAr ? "مشاركة الرابط" : "Share Link"}</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopyMemberCode}
+                    className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
+                  >
+                    {copiedMemberCode ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5 text-primary" />
+                    )}
+                    <span>{copiedMemberCode ? (isAr ? "تم النسخ" : "Copied!") : isAr ? "نسخ المعرف" : "Copy ID"}</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setQrModalOpen(true)}
+                    className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>{isAr ? "تكبير الباركود" : "Expand QR"}</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePrintCard}
+                    className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
+                  >
+                    <Printer className="w-3.5 h-3.5 text-foreground" />
+                    <span>{isAr ? "طباعة البطاقة" : "Print Card"}</span>
+                  </Button>
+                </div>
+              ) : (
+                <div className="p-3.5 rounded-2xl bg-secondary/30 border border-border flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <Lock className="w-4 h-4 text-gold shrink-0" />
+                    <span className="text-muted-foreground text-[11px]">
+                      {isPending
+                        ? isAr
+                          ? "سيتم تفعيل أدوات البطاقة والرابط الرسمي فور اكتمال مراجعة طلبك."
+                          : "Card tools and verification link will activate once your request is approved."
+                        : isAr
+                          ? "أكمل بياناتك في السجل العائلي لتقديم طلب إصدار بطاقتك الرسمية."
+                          : "Complete your register details to request your official digital card."}
+                    </span>
+                  </div>
+                  {!isPending && (
+                    <Button
+                      size="sm"
+                      onClick={() => setActiveTab("profile")}
+                      className="h-7 text-xs font-bold px-3 rounded-lg shrink-0"
+                    >
+                      {isAr ? "استكمال البيانات" : "Complete Profile"}
+                    </Button>
                   )}
-                  <span>{copiedLink ? (isAr ? "تم النسخ" : "Copied!") : isAr ? "مشاركة الرابط" : "Share Link"}</span>
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyMemberCode}
-                  className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
-                >
-                  {copiedMemberCode ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                  ) : (
-                    <Copy className="w-3.5 h-3.5 text-primary" />
-                  )}
-                  <span>{copiedMemberCode ? (isAr ? "تم النسخ" : "Copied!") : isAr ? "نسخ المعرف" : "Copy ID"}</span>
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setQrModalOpen(true)}
-                  className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
-                >
-                  <Maximize2 className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>{isAr ? "تكبير الباركود" : "Expand QR"}</span>
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePrintCard}
-                  className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
-                >
-                  <Printer className="w-3.5 h-3.5 text-foreground" />
-                  <span>{isAr ? "طباعة البطاقة" : "Print Card"}</span>
-                </Button>
-              </div>
+                </div>
+              )}
 
               {/* QR Explanation Banner */}
               <div className="p-3.5 rounded-2xl bg-secondary/30 border border-border flex items-center gap-3 text-xs text-muted-foreground">
