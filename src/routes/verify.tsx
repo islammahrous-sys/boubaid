@@ -94,7 +94,7 @@ function VerifyPage() {
             </p>
           </Card>
         ) : isVerified ? (
-          <div className="relative overflow-hidden rounded-3xl border-2 border-gold/50 bg-gradient-to-b from-card via-card/95 to-background shadow-2xl p-6 sm:p-8 space-y-6">
+          <div className="print-certificate relative overflow-hidden rounded-3xl border-2 border-gold/50 bg-gradient-to-b from-card via-card/95 to-background shadow-2xl p-6 sm:p-8 space-y-6">
             {/* Top Seal & Status */}
             <div className="flex items-center justify-between border-b border-border/60 pb-5">
               <div className="flex items-center gap-2.5">
@@ -175,7 +175,7 @@ function VerifyPage() {
             </div>
 
             {/* Print Card Button */}
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-center pt-2 no-print">
               <Button
                 type="button"
                 variant="outline"
@@ -217,7 +217,7 @@ function VerifyPage() {
         )}
 
         {/* Action Button */}
-        <div className="text-center">
+        <div className="text-center no-print">
           <Button asChild variant="outline" className="text-xs gap-1.5 rounded-xl border-border">
             <Link to="/">
               <ArrowRight className="w-3.5 h-3.5" />

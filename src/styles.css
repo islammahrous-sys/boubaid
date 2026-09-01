@@ -1017,10 +1017,30 @@ blockquote {
     display: none !important;
   }
 
+  @page {
+    margin: 1.5cm;
+    size: auto;
+  }
+
   html,
   body {
     background: #fff !important;
     color: #000 !important;
+  }
+
+  /* Hide interactive overheads in print */
+  header,
+  footer,
+  nav,
+  .site-nav,
+  .site-footer,
+  .no-print,
+  button:not(.printable-button),
+  [role="tablist"],
+  [role="alert"],
+  .sonner-toast,
+  .network-status-banner {
+    display: none !important;
   }
 
   .paper-texture {
@@ -1029,11 +1049,23 @@ blockquote {
 
   main {
     padding: 0 !important;
+    margin: 0 !important;
   }
 
   .container-page {
     max-width: none;
     padding-inline: 0;
+  }
+
+  /* High fidelity print badge / certificate card */
+  .printable-card,
+  .print-certificate {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   h1,
@@ -1052,11 +1084,10 @@ blockquote {
     break-after: avoid;
   }
 
-  /* Printed links carry their destination, since a click cannot. */
-  a[href^="http"]::after {
-    content: " (" attr(href) ")";
-    font-size: 0.75em;
-    color: #555;
+  /* Clean print: don't expand href text on cards */
+  .printable-card a::after,
+  .print-certificate a::after {
+    content: none !important;
   }
 
   .reveal-on-scroll,

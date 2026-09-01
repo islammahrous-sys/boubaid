@@ -1398,7 +1398,7 @@ function AccountPage() {
           <TabsContent value="card" className="space-y-6">
             <div className="max-w-xl mx-auto space-y-6">
               {/* Gold & Emerald Digital Card */}
-              <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink p-4 sm:p-6 md:p-7 text-ivory shadow-2xl">
+              <div className="printable-card relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink p-4 sm:p-6 md:p-7 text-ivory shadow-2xl">
                 {/* Background Pattern Watermark */}
                 <div className="absolute inset-0 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 

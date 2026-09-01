@@ -1,0 +1,51 @@
+﻿{
+  "name": "بوابة أسرة آل بوعبيد | Al Bu Obaid Family Hub",
+  "short_name": "آل بوعبيد",
+  "description": "المنصة الرقمية المعتمدة لمجلس أسرة آل بوعبيد - صندوق التنمية العائلية",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0a0d0c",
+  "theme_color": "#121614",
+  "lang": "ar",
+  "dir": "rtl",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/logo-mark-gold.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["lifestyle", "social", "productivity"],
+  "shortcuts": [
+    {
+      "name": "شجرة العائلة",
+      "url": "/family-tree",
+      "description": "استكشاف مشجرة أنساب آل بوعبيد"
+    },
+    {
+      "name": "بطاقة العضوية",
+      "url": "/account?tab=card",
+      "description": "عرض بطاقة العضوية الرقمية"
+    },
+    {
+      "name": "صندوق الأسرة",
+      "url": "/contribute",
+      "description": "المساهمة في الخزينة العائلية"
+    }
+  ]
+}
