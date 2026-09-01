@@ -26,6 +26,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { getErrorMessage } from "@/lib/error-utils";
 import {
   Select,
   SelectContent,
@@ -68,6 +77,12 @@ import {
   Bell,
   RefreshCw,
   AlertTriangle,
+  Printer,
+  Share2,
+  TreePine,
+  ArrowUpRight,
+  Maximize2,
+  ChevronRight,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/account")({
@@ -197,6 +212,9 @@ function AccountPage() {
     return isAr ? `قبل ${diffDays} يوم` : `${diffDays}d ago`;
   };
   const [copiedIban, setCopiedIban] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedMemberCode, setCopiedMemberCode] = useState(false);
+  const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
 
   const [form, setForm] = useState({
@@ -224,6 +242,15 @@ function AccountPage() {
 
   const memberCode = "ABO-" + (user?.id || "0000").substring(0, 6).toUpperCase();
 
+  const profileCompletion = useMemo(() => {
+    let score = 0;
+    if (form.full_name_ar.trim()) score += 25;
+    if (form.branch_slug) score += 25;
+    if (form.phone.trim()) score += 25;
+    if (form.avatar_path || form.lineage_notes.trim()) score += 25;
+    return score;
+  }, [form]);
+
   useEffect(() => {
     if (typeof window === "undefined" || !user?.id) return;
     const verifyUrl = `${window.location.origin}/verify?id=${memberCode}`;
@@ -238,6 +265,35 @@ function AccountPage() {
       .then((url) => setQrCodeDataUrl(url))
       .catch((err) => console.error("QR Code Generation Error:", err));
   }, [user?.id, memberCode]);
+
+  const handleCopyVerificationLink = () => {
+    if (typeof window === "undefined") return;
+    const verifyUrl = `${window.location.origin}/verify?id=${memberCode}`;
+    navigator.clipboard.writeText(verifyUrl);
+    setCopiedLink(true);
+    toast.success(
+      isAr
+        ? "تم نسخ رابط التحقق الرسمي للبطاقة بنجاح"
+        : "Official verification link copied to clipboard",
+    );
+    setTimeout(() => setCopiedLink(false), 2500);
+  };
+
+  const handleCopyMemberCode = () => {
+    if (typeof window === "undefined") return;
+    navigator.clipboard.writeText(memberCode);
+    setCopiedMemberCode(true);
+    toast.success(
+      isAr ? `تم نسخ رقم العضوية: ${memberCode}` : `Member ID copied: ${memberCode}`,
+    );
+    setTimeout(() => setCopiedMemberCode(false), 2500);
+  };
+
+  const handlePrintCard = () => {
+    if (typeof window !== "undefined") {
+      window.print();
+    }
+  };
 
   const [avatarUploading, setAvatarUploading] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
@@ -296,9 +352,9 @@ function AccountPage() {
           ? "تم اختيار الصورة بنجاح. احفظ التغييرات لتثبيتها."
           : "Avatar updated. Save changes to persist.",
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Avatar upload failed:", err);
-      toast.error(err.message || (isAr ? "فشل رفع الصورة" : "Failed to upload avatar"));
+      toast.error(getErrorMessage(err, isAr ? "فشل رفع الصورة" : "Failed to upload avatar"));
     } finally {
       setAvatarUploading(false);
       if (avatarFileInputRef.current) avatarFileInputRef.current.value = "";
@@ -389,8 +445,8 @@ function AccountPage() {
           ? "تم إرسال رابط تعيين كلمة المرور إلى بريدك الإلكتروني."
           : "Password reset email sent.",
       );
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "تعذر إرسال الرابط." : "Failed to send reset email."));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "تعذر إرسال الرابط." : "Failed to send reset email."));
     }
   };
 
@@ -547,6 +603,138 @@ function AccountPage() {
 
       {/* ── Main Dashboard Tabs ─────────────────────────────────── */}
       <main className="container-page py-8">
+        {/* Onboarding & Next-Step Guidance Banner */}
+        <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-card via-card/95 to-secondary/30 border border-border shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-2 flex-1 w-full">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-gold" />
+                  {isAr ? "اكتمال السجل والتوثيق العائلي" : "Profile & Verification Progress"}
+                </span>
+                <Badge
+                  variant={profileCompletion === 100 ? "default" : "secondary"}
+                  className="text-[10px] font-mono font-bold"
+                >
+                  {profileCompletion}%
+                </Badge>
+              </div>
+              <span className="text-[11px] text-muted-foreground font-medium">
+                {isApproved
+                  ? isAr
+                    ? "عضوية رسمية معتمدة"
+                    : "Official Verified Member"
+                  : isPending
+                    ? isAr
+                      ? "طلبك قيد المراجعة"
+                      : "Request Under Review"
+                    : isAr
+                      ? "يرجى استكمال البيانات"
+                      : "Please complete details"}
+              </span>
+            </div>
+            <Progress value={profileCompletion} className="h-2 bg-secondary" />
+
+            {/* Step Checkpoints */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <CheckCircle2
+                  className={cn(
+                    "w-3.5 h-3.5 shrink-0",
+                    form.full_name_ar.trim() ? "text-emerald-500" : "text-muted-foreground/40",
+                  )}
+                />
+                <span className={cn(form.full_name_ar.trim() && "text-foreground font-medium")}>
+                  {isAr ? "الاسم الرباعي" : "Full Name"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <CheckCircle2
+                  className={cn(
+                    "w-3.5 h-3.5 shrink-0",
+                    form.branch_slug ? "text-emerald-500" : "text-muted-foreground/40",
+                  )}
+                />
+                <span className={cn(form.branch_slug && "text-foreground font-medium")}>
+                  {isAr ? "الفرع العائلي" : "Family Branch"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <CheckCircle2
+                  className={cn(
+                    "w-3.5 h-3.5 shrink-0",
+                    form.phone.trim() ? "text-emerald-500" : "text-muted-foreground/40",
+                  )}
+                />
+                <span className={cn(form.phone.trim() && "text-foreground font-medium")}>
+                  {isAr ? "رقم الجوال" : "Phone Number"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <CheckCircle2
+                  className={cn(
+                    "w-3.5 h-3.5 shrink-0",
+                    isApproved
+                      ? "text-emerald-500"
+                      : isPending
+                        ? "text-gold animate-pulse"
+                        : "text-muted-foreground/40",
+                  )}
+                />
+                <span className={cn(isApproved && "text-foreground font-medium")}>
+                  {isApproved
+                    ? isAr
+                      ? "الاعتماد منجز"
+                      : "Verified"
+                    : isPending
+                      ? isAr
+                        ? "قيد المراجعة"
+                        : "Reviewing"
+                      : isAr
+                        ? "طلب التوثيق"
+                        : "Verification"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Context Action Button */}
+          <div className="shrink-0 w-full md:w-auto flex items-center gap-2">
+            {isApproved ? (
+              <Button
+                size="sm"
+                onClick={() => setActiveTab("card")}
+                className="w-full md:w-auto h-9 text-xs font-bold gap-1.5 bg-gold/15 text-gold hover:bg-gold/25 border border-gold/30 rounded-xl"
+              >
+                <QrCode className="w-3.5 h-3.5" />
+                {isAr ? "عرض بطاقتي الرقمية" : "View My Digital ID"}
+              </Button>
+            ) : isPending ? (
+              <Badge variant="outline" className="text-amber-500 border-amber-500/40 text-xs py-2 px-3">
+                <Clock className="w-3.5 h-3.5 me-1.5 animate-pulse" />
+                {isAr ? "طلبك معروض على الأمانة" : "Pending Secretariat Approval"}
+              </Badge>
+            ) : (
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (profileCompletion < 75) {
+                    setActiveTab("profile");
+                    toast.info(isAr ? "أكمل بيانات الاسم والفرع أولاً ثم اضغط تقديم." : "Fill name & branch first.");
+                  } else {
+                    apply.mutate();
+                  }
+                }}
+                disabled={apply.isPending}
+                className="w-full md:w-auto h-9 text-xs font-bold gap-1.5 rounded-xl shadow"
+              >
+                <Send className="w-3.5 h-3.5" />
+                {isAr ? "تقديم طلب التوثيق" : "Submit for Verification"}
+              </Button>
+            )}
+          </div>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="bg-card border border-border p-1 rounded-xl h-auto flex overflow-x-auto no-scrollbar md:grid md:grid-cols-5 max-w-4xl gap-1">
             <TabsTrigger
@@ -593,6 +781,71 @@ function AccountPage() {
 
           {/* ──────────────── TAB 1: Profile & Lineage ──────────────── */}
           <TabsContent value="profile" className="space-y-6">
+            {/* Family Hub Quick Shortcuts */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Link
+                to="/family-tree"
+                search={{ branch: form.branch_slug || undefined }}
+                className="p-3.5 rounded-2xl border border-border bg-card hover:bg-secondary/30 transition-all flex items-center justify-between group shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <TreePine className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">
+                      {isAr ? "موقعك في المشجرة" : "Family Tree Lineage"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {selectedBranchName ? t(selectedBranchName) : isAr ? "استكشف الفروع" : "Explore branches"}
+                    </span>
+                  </div>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("treasury")}
+                className="p-3.5 rounded-2xl border border-border bg-card hover:bg-secondary/30 transition-all flex items-center justify-between group shadow-sm text-start"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gold/10 text-gold flex items-center justify-center">
+                    <Wallet className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">
+                      {isAr ? "صندوق الأسرة والخزينة" : "Family Fund & Dues"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {isAr ? "الاشتراكات والحساب البنكي" : "Dues & Bank Info"}
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-gold transition-colors" />
+              </button>
+
+              <Link
+                to="/directory"
+                className="p-3.5 rounded-2xl border border-border bg-card hover:bg-secondary/30 transition-all flex items-center justify-between group shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                    <Building className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">
+                      {isAr ? "دليل الأعمال والمهن" : "Business Directory"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {isAr ? "شبكة أفراد الأسرة" : "Family Network"}
+                    </span>
+                  </div>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
+              </Link>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Form Card */}
               <div className="lg:col-span-2 space-y-6">
@@ -1215,6 +1468,61 @@ function AccountPage() {
                 </div>
               </div>
 
+              {/* Digital Card Quick Actions Toolbar */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyVerificationLink}
+                  className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
+                >
+                  {copiedLink ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <Share2 className="w-3.5 h-3.5 text-gold" />
+                  )}
+                  <span>{copiedLink ? (isAr ? "تم النسخ" : "Copied!") : isAr ? "مشاركة الرابط" : "Share Link"}</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyMemberCode}
+                  className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
+                >
+                  {copiedMemberCode ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5 text-primary" />
+                  )}
+                  <span>{copiedMemberCode ? (isAr ? "تم النسخ" : "Copied!") : isAr ? "نسخ المعرف" : "Copy ID"}</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setQrModalOpen(true)}
+                  className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
+                >
+                  <Maximize2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>{isAr ? "تكبير الباركود" : "Expand QR"}</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrintCard}
+                  className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
+                >
+                  <Printer className="w-3.5 h-3.5 text-foreground" />
+                  <span>{isAr ? "طباعة البطاقة" : "Print Card"}</span>
+                </Button>
+              </div>
+
               {/* QR Explanation Banner */}
               <div className="p-3.5 rounded-2xl bg-secondary/30 border border-border flex items-center gap-3 text-xs text-muted-foreground">
                 <QrCode className="w-5 h-5 text-gold shrink-0" />
@@ -1807,6 +2115,36 @@ function AccountPage() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Fullscreen QR Inspection Dialog */}
+      <Dialog open={qrModalOpen} onOpenChange={setQrModalOpen}>
+        <DialogContent className="max-w-xs text-center p-6 rounded-3xl bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-bold text-foreground font-naskh">
+              {isAr ? "رمز التحقق المباشر من العضوية" : "Live QR Verification Seal"}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground font-mono mt-1">
+              {memberCode} · {form.full_name_ar || (isAr ? "عضو الأسرة" : "Member")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-4 bg-white rounded-2xl shadow-inner my-3 flex items-center justify-center">
+            {qrCodeDataUrl ? (
+              <img
+                src={qrCodeDataUrl}
+                alt="QR Code"
+                className="w-56 h-56 object-contain"
+              />
+            ) : (
+              <QrCode className="w-32 h-32 text-stone-800 animate-pulse" />
+            )}
+          </div>
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            {isAr
+              ? "وجّه كاميرا أي هاتف نحو الرمز للتحقق الفوري من شهادة الاعتماد الرسمية."
+              : "Point any mobile camera to scan and verify the official member certificate."}
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
