@@ -46,6 +46,7 @@ import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { BusinessInput, MembershipRequestReviewInput } from "@/lib/admin-hub.schemas";
 import { useConfirm } from "@/hooks/useConfirm";
+import { getErrorMessage } from "@/lib/error-utils";
 
 export type BusinessRow = {
   id: string;
@@ -206,8 +207,8 @@ export function DirectoryManager({
             ? "Business approved and published"
             : "Business moved to draft",
       );
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "فشل تحديث الحالة" : "Failed to update status"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل تحديث الحالة" : "Failed to update status"));
     } finally {
       setLoading(false);
     }
@@ -244,8 +245,8 @@ export function DirectoryManager({
       await onSaveBusiness(bizForm);
       setBizModalOpen(false);
       toast.success(isAr ? "تم حفظ المنشأة بنجاح" : "Business saved successfully");
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "فشل حفظ المنشأة" : "Failed to save"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل حفظ المنشأة" : "Failed to save"));
     } finally {
       setLoading(false);
     }
@@ -264,8 +265,8 @@ export function DirectoryManager({
       setLoading(true);
       await onDeleteBusiness(b.id);
       toast.success(isAr ? "تم حذف المنشأة بنجاح" : "Business deleted successfully");
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "فشل حذف المنشأة" : "Failed to delete business"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل حذف المنشأة" : "Failed to delete business"));
     } finally {
       setLoading(false);
     }
@@ -286,8 +287,8 @@ export function DirectoryManager({
           ? `تم تحديث الطلب إلى: ${status === "approved" ? "معتمد" : "مرفوض"}`
           : `Request updated to ${status}`,
       );
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "فشل تحديث الطلب" : "Failed to update"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل تحديث الطلب" : "Failed to update"));
     } finally {
       setLoading(false);
     }
@@ -612,9 +613,9 @@ export function DirectoryManager({
                                         ? `تم توثيق عضوية: ${req.full_name_ar}`
                                         : `Approved membership for ${req.full_name_ar}`,
                                     );
-                                  } catch (err: any) {
+                                  } catch (err: unknown) {
                                     toast.error(
-                                      err.message || (isAr ? "فشل الاعتماد" : "Failed to approve"),
+                                      getErrorMessage(err, isAr ? "فشل الاعتماد" : "Failed to approve"),
                                     );
                                   } finally {
                                     setLoading(false);

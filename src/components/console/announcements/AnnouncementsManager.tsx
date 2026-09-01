@@ -29,6 +29,7 @@ import {
 import { useLang } from "@/i18n/LanguageProvider";
 import { Plus, Edit2, Bell } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/error-utils";
 import type { AnnouncementInput } from "@/lib/admin-hub.schemas";
 
 /** The three values `announcementInputSchema` will accept back on save. */
@@ -171,8 +172,8 @@ export function AnnouncementsManager({
         end_at: form.end_at ? new Date(form.end_at).toISOString() : null,
       });
       setFormOpen(false);
-    } catch (err: any) {
-      toast.error(err?.message || (isAr ? "فشل حفظ الإعلان" : "Failed to save the announcement"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل حفظ الإعلان" : "Failed to save the announcement"));
     } finally {
       setLoading(false);
     }
@@ -332,7 +333,9 @@ export function AnnouncementsManager({
                 <Label className="text-xs">{isAr ? "نوع الإعلان" : "Type"}</Label>
                 <Select
                   value={form.type}
-                  onValueChange={(val: any) => setForm({ ...form, type: val })}
+                  onValueChange={(val: "info" | "important" | "warning" | "success") =>
+                    setForm({ ...form, type: val })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -351,7 +354,9 @@ export function AnnouncementsManager({
                 <Label className="text-xs">{isAr ? "الأولوية" : "Priority"}</Label>
                 <Select
                   value={form.priority}
-                  onValueChange={(val: any) => setForm({ ...form, priority: val })}
+                  onValueChange={(val: "low" | "normal" | "high" | "urgent") =>
+                    setForm({ ...form, priority: val })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -380,7 +385,7 @@ export function AnnouncementsManager({
               <Label className="text-xs">{isAr ? "الحالة" : "Status"}</Label>
               <Select
                 value={form.status}
-                onValueChange={(val: any) => setForm({ ...form, status: val })}
+                onValueChange={(val: EditableStatus) => setForm({ ...form, status: val })}
               >
                 <SelectTrigger>
                   <SelectValue />

@@ -57,6 +57,7 @@ import type { ArticleInput, BulkArticlesActionInput } from "@/lib/admin-hub.sche
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import { useConfirm } from "@/hooks/useConfirm";
+import { getErrorMessage } from "@/lib/error-utils";
 
 /**
  * `articles.slug` is validated server-side against /^[a-z0-9-]+$/i
@@ -263,8 +264,8 @@ export function ArticlesManager({
       await onSaveArticle({ ...form, slug });
       setFormOpen(false);
       toast.success(isAr ? "تم حفظ المقال بنجاح" : "Article saved successfully");
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "فشل حفظ المقال" : "Failed to save"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل حفظ المقال" : "Failed to save"));
     } finally {
       setLoading(false);
     }
@@ -283,8 +284,8 @@ export function ArticlesManager({
       await onBulkAction({ ids: selectedIds, action });
       setSelectedIds([]);
       toast.success(successMessage);
-    } catch (err: any) {
-      toast.error(err?.message || (isAr ? "فشل تنفيذ الإجراء الجماعي" : "Bulk action failed"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل تنفيذ الإجراء الجماعي" : "Bulk action failed"));
     } finally {
       setBulkLoading(false);
     }
@@ -307,8 +308,8 @@ export function ArticlesManager({
         is_featured: !art.is_featured,
       });
       toast.success(isAr ? "تم تحديث تمييز المقال" : "Featured status updated");
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "فشل التحديث" : "Failed to update"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل التحديث" : "Failed to update"));
     }
   };
 
@@ -753,9 +754,9 @@ export function ArticlesManager({
                                   ? "تم نشر المقال بنجاح وإتاحته للعموم"
                                   : "Article published successfully",
                               );
-                            } catch (err: any) {
+                            } catch (err: unknown) {
                               toast.error(
-                                err.message || (isAr ? "فشل النشر" : "Failed to publish"),
+                                getErrorMessage(err, isAr ? "فشل النشر" : "Failed to publish"),
                               );
                             } finally {
                               setPublishingId(null);

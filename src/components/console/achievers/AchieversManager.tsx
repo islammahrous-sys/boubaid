@@ -22,6 +22,7 @@ import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useConfirm } from "@/hooks/useConfirm";
+import { getErrorMessage } from "@/lib/error-utils";
 import {
   Plus,
   Edit2,
@@ -145,8 +146,8 @@ export function AchieversManager({
       await onSaveAchiever(form);
       setFormOpen(false);
       toast.success(isAr ? "تم حفظ السجل بنجاح" : "Achiever saved successfully");
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "حدث خطأ أثناء الحفظ" : "Failed to save"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "حدث خطأ أثناء الحفظ" : "Failed to save"));
     } finally {
       setLoading(false);
     }

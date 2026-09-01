@@ -43,6 +43,7 @@ import {
   HeartHandshake,
 } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/error-utils";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import { cn } from "@/lib/utils";
 import type { InitiativeInput } from "@/lib/admin-hub.schemas";
@@ -188,7 +189,7 @@ export function InitiativesManager({
       summary_en: item.summary_en ?? "",
       body_ar: item.body_ar ?? "",
       body_en: item.body_en ?? "",
-      status: item.status as any,
+      status: (item.status as "ongoing" | "upcoming" | "completed") || "ongoing",
       sort_order: item.sort_order,
       is_published: item.is_published,
       cover_path: item.cover_path ?? undefined,
@@ -203,8 +204,8 @@ export function InitiativesManager({
       await onSaveInitiative(form);
       setFormOpen(false);
       toast.success(isAr ? "تم الحفظ بنجاح" : "Saved successfully");
-    } catch (err: any) {
-      toast.error(err.message || (isAr ? "حدث خطأ" : "Failed to save"));
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "حدث خطأ" : "Failed to save"));
     } finally {
       setLoading(false);
     }

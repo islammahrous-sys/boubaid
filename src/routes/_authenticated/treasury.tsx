@@ -51,6 +51,7 @@ function formatDate(iso: string, lang: "ar" | "en") {
   // builds, differently between Node's SSR render and the browser.
   return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-GB", {
     calendar: "gregory",
+    timeZone: "Asia/Riyadh",
     year: "numeric",
     month: "short",
     day: "numeric",

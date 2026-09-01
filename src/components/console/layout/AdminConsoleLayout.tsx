@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminRealtime } from "@/hooks/useAdminRealtime";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -138,8 +139,11 @@ export function AdminConsoleLayout({
   const isAr = lang === "ar";
   const isRtl = dir === "rtl";
   const { theme, setTheme } = useTheme();
-  const { user, profile, roles, signOut, isAdmin, isSuperAdmin } = useAuth();
+  const { user, profile, roles, signOut, isAdmin, isSuperAdmin, canAccessConsole } = useAuth();
   const confirm = useConfirm();
+
+  // Multi-admin Realtime synchronization
+  useAdminRealtime(canAccessConsole);
 
   // 1. Sidebar Collapsed State (Persisted in localStorage)
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
