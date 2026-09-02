@@ -68,6 +68,7 @@ import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import type { FamilyMemberInput, BulkMembersActionInput } from "@/lib/admin-hub.schemas";
 import { toast } from "sonner";
 import { useConfirm } from "@/hooks/useConfirm";
+import { cn } from "@/lib/utils";
 
 export type MemberRow = {
   id: string;

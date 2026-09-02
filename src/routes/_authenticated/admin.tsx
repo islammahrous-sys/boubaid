@@ -1449,7 +1449,7 @@ function MasterAdminPage() {
                   }
                   totalCount={treasuryData?.totalCount ?? (treasuryData?.contributions ?? []).length}
                   byPurpose={treasuryData?.byPurpose}
-                  initialConfig={treasuryData?.treasuryConfig}
+                  initialConfig={treasuryData?.treasuryConfig as never}
                   onReviewContribution={(data) =>
                     runMutation(() => reviewTreasuryMut({ data }), refreshTreasury)
                   }

@@ -176,7 +176,7 @@ function AccountPage() {
   const fetchMyContributions = useServerFn(getMyContributions);
 
   const isApprovedMember =
-    data?.membership_status === "approved" ||
+    data?.request?.status === "approved" ||
     data?.roles?.includes("member") ||
     data?.roles?.includes("admin") ||
     data?.roles?.includes("super_admin") ||
@@ -1791,13 +1791,13 @@ function AccountPage() {
                               : bankAccount.bank_name_en || "Alinma Bank"}
                           </span>
                         </div>
-                        {bankAccount.account_number && (
+                        {bankAccount.accountNumber && (
                           <div className="flex justify-between items-center">
                             <span className="text-muted-foreground">
                               {isAr ? "رقم الحساب:" : "Account Number:"}
                             </span>
                             <span className="font-mono font-medium text-foreground">
-                              {bankAccount.account_number}
+                              {bankAccount.accountNumber}
                             </span>
                           </div>
                         )}
@@ -1828,9 +1828,9 @@ function AccountPage() {
                             </Button>
                           </div>
                         </div>
-                        {bankAccount.notes_ar && (
+                        {bankAccount.notes && (
                           <p className="text-[10px] text-muted-foreground pt-1 leading-relaxed">
-                            {isAr ? bankAccount.notes_ar : bankAccount.notes_en}
+                            {bankAccount.notes}
                           </p>
                         )}
                       </div>

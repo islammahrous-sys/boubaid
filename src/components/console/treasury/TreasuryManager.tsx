@@ -322,6 +322,7 @@ export function TreasuryManager({
   }, [initialConfig]);
 
   const debouncedSearch = useDebounce(searchTerm, 300);
+  const fetchTreasuryPage = useServerFn(getTreasuryContributionsPaginated);
 
   const {
     data: queryData,
