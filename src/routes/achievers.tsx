@@ -129,6 +129,7 @@ function AchieversPage() {
   const [nominationOpen, setNominationOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   const [formData, setFormData] = useState({
     nominee_name: "",
@@ -151,6 +152,44 @@ function AchieversPage() {
 
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
+
+  const ATTACH_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+  const ATTACH_MAX_BYTES = 10 * 1024 * 1024;
+  const ATTACH_MAX_COUNT = 6;
+
+  const addAttachments = (files: FileList | null) => {
+    if (!files) return;
+    const next = [...attachments];
+    for (const f of Array.from(files)) {
+      if (next.length >= ATTACH_MAX_COUNT) {
+        toast.error(
+          rtl ? `الحد الأقصى ${ATTACH_MAX_COUNT} ملفات` : `Maximum ${ATTACH_MAX_COUNT} files`,
+        );
+        break;
+      }
+      if (!ATTACH_TYPES.includes(f.type)) {
+        toast.error(rtl ? `صيغة غير مدعومة: ${f.name}` : `Unsupported file: ${f.name}`);
+        continue;
+      }
+      if (f.size > ATTACH_MAX_BYTES) {
+        toast.error(rtl ? `الملف كبير جداً: ${f.name}` : `File too large: ${f.name}`);
+        continue;
+      }
+      if (!next.some((x) => x.name === f.name && x.size === f.size)) next.push(f);
+    }
+    setAttachments(next);
+  };
+
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result);
+        resolve(result.slice(result.indexOf(",") + 1));
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
 
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -194,9 +233,17 @@ function AchieversPage() {
 
     setIsSubmitting(true);
     try {
-      const res = await sendNomination({ data: formData });
+      const encoded = await Promise.all(
+        attachments.map(async (f) => ({
+          name: f.name,
+          type: f.type as "application/pdf" | "image/jpeg" | "image/png" | "image/webp",
+          data: await fileToBase64(f),
+        })),
+      );
+      const res = await sendNomination({ data: { ...formData, attachments: encoded } });
       if (res.ok) {
         setSubmittedSuccess(true);
+        setAttachments([]);
         toast.success(
           rtl ? "تم إرسال الترشيح بنجاح إلى أمانة المجلس" : "Nomination submitted successfully",
         );
@@ -668,8 +715,51 @@ function AchieversPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground">
                   {rtl
-                    ? "رابط الشهادات أو السيرة الذاتية (اختياري)"
-                    : "Certificates / CV Link (Optional)"}
+                    ? "إرفاق الشهادات (خبرة / تقدير / تدريب / تخرج)"
+                    : "Attach Certificates (experience / recognition / training / graduation)"}
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+                  onChange={(e) => {
+                    addAttachments(e.target.files);
+                    e.target.value = "";
+                  }}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground file:me-3 file:rounded file:border-0 file:bg-secondary file:px-2 file:py-1 file:text-xs file:text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
+                />
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  {rtl
+                    ? "PDF أو صورة، حتى ٦ ملفات، وبحد أقصى ١٠ ميغابايت للملف."
+                    : "PDF or image, up to 6 files, 10 MB each."}
+                </p>
+                {attachments.length > 0 && (
+                  <ul className="space-y-1">
+                    {attachments.map((f, i) => (
+                      <li
+                        key={`${f.name}-${i}`}
+                        className="flex items-center justify-between gap-2 rounded border border-border bg-secondary/40 px-2 py-1 text-[11px]"
+                      >
+                        <span className="truncate">{f.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => setAttachments(attachments.filter((_, x) => x !== i))}
+                          className="shrink-0 text-muted-foreground hover:text-destructive"
+                          aria-label={rtl ? "إزالة" : "Remove"}
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  {rtl
+                    ? "أو رابط الشهادات / السيرة الذاتية (اختياري)"
+                    : "Or a Certificates / CV Link (Optional)"}
                 </label>
                 <input
                   type="url"
@@ -678,11 +768,6 @@ function AchieversPage() {
                   placeholder="https://..."
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                 />
-                <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  {rtl
-                    ? "أرفق رابطاً لمجلد يضم شهادات الخبرة أو التقدير أو التدريب أو التخرج (Google Drive أو ما شابه)."
-                    : "Attach a link to a folder holding experience, recognition, training or graduation certificates (Google Drive or similar)."}
-                </p>
               </div>
 
               <div className="border-t border-border pt-3 space-y-3">

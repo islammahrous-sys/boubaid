@@ -56,6 +56,23 @@ export const achieverNominationSchema = z.object({
   /** Why the nominee should be added to the register (optional free text). */
   nomination_reason: z.string().trim().max(1000).optional().or(z.literal("")),
   evidence_url: z.string().trim().url().optional().or(z.literal("")),
+  /**
+   * Certificate files (experience / recognition / training / graduation).
+   * `data` is a base64 payload without the data-URI prefix. Server-side the
+   * count, size and MIME type are re-checked before anything is stored.
+   */
+  attachments: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1).max(200),
+        type: z.enum(["application/pdf", "image/jpeg", "image/png", "image/webp"]),
+        // ~10 MB binary -> ~13.4 MB base64. Cap a little above that.
+        data: z.string().min(1).max(14_000_000),
+      }),
+    )
+    .max(6)
+    .optional()
+    .default([]),
   nominator_name: z.string().trim().min(2, "اسم مقدم الترشيح مطلوب").max(100),
   nominator_phone: z.string().trim().min(7, "رقم التواصل مطلوب").max(30),
   nominator_email: z

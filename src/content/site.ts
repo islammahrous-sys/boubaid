@@ -68,10 +68,6 @@ export const siteMeta = {
     instagram: "https://instagram.com/albouabidfamily",
     youtube: "https://youtube.com/@albouabidfamily",
     snapchat: "https://www.snapchat.com/add/alboubaidsa",
-    // Handles not yet supplied by the secretariat — left blank so the icon
-    // is not rendered until a real URL is in place.
-    facebook: "",
-    tiktok: "",
     /** Google Maps pin for the permanent headquarters plot. */
     mapUrl: "https://maps.app.goo.gl/75fDFmv9vnEboKr58",
   },

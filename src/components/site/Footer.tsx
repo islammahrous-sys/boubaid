@@ -9,7 +9,6 @@ import {
   Globe,
   Youtube,
   Instagram,
-  Facebook,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -37,14 +36,6 @@ function SnapchatIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
       <path d="M12.206 1c2.77.01 4.62 2.033 4.877 4.72.07.723.032 1.45.05 2.175.005.156.007.31.24.29.36-.03.71-.16 1.083-.15.5.014.86.32.87.77.01.44-.29.7-.66.87-.29.13-.6.22-.9.34-.62.24-.71.6-.4 1.19.7 1.35 1.78 2.31 3.2 2.83.26.1.53.16.79.28.27.12.32.32.2.58-.24.53-.7.78-1.24.92-.4.1-.81.14-1.21.24-.27.07-.4.27-.45.53-.04.2-.06.4-.12.6-.1.35-.33.5-.7.44-.4-.06-.8-.16-1.2-.2-.72-.09-1.4.02-2.01.44-.35.24-.68.5-1.04.72-1.36.85-2.75.79-4.08-.08-.32-.21-.63-.44-.96-.64-.62-.38-1.28-.46-1.98-.36-.4.06-.8.16-1.2.21-.36.05-.58-.1-.68-.44-.06-.2-.09-.41-.13-.62-.05-.25-.18-.44-.44-.5-.4-.11-.82-.15-1.22-.25-.53-.14-1-.39-1.24-.92-.12-.26-.06-.46.2-.58.26-.12.54-.18.8-.29 1.41-.52 2.5-1.48 3.19-2.83.31-.6.22-.95-.4-1.19-.3-.12-.62-.2-.91-.34-.36-.17-.66-.42-.65-.86.01-.44.36-.75.85-.77.37-.02.73.12 1.1.15.22.02.24-.13.24-.29.02-.72-.02-1.45.05-2.17C7.36 3.06 9.16 1.05 11.87 1h.34Z" />
-    </svg>
-  );
-}
-
-function TikTokIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M16.5 1h-3.02v13.86a2.51 2.51 0 1 1-2.5-2.51c.24 0 .47.03.69.1V9.4a5.7 5.7 0 0 0-.69-.04 5.53 5.53 0 1 0 5.53 5.53V8.42a7.62 7.62 0 0 0 4.44 1.42V6.82a4.55 4.55 0 0 1-3.17-1.3A4.55 4.55 0 0 1 16.5 2.3V1Z" />
     </svg>
   );
 }
@@ -150,18 +141,12 @@ export function Footer() {
       href: siteContact.snapchat || siteMeta.contact.snapchat,
       icon: SnapchatIcon,
     },
-    {
-      label: "Facebook",
-      href: siteContact.facebook || siteMeta.contact.facebook,
-      icon: Facebook,
-    },
     { label: "YouTube", href: siteContact.youtube || siteMeta.contact.youtube, icon: Youtube },
     {
       label: "Instagram",
       href: siteContact.instagram || siteMeta.contact.instagram,
       icon: Instagram,
     },
-    { label: "TikTok", href: siteContact.tiktok || siteMeta.contact.tiktok, icon: TikTokIcon },
   ].filter((s) => typeof s.href === "string" && s.href.length > 0);
 
   return (

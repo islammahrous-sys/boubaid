@@ -147,6 +147,43 @@ export const submitAchieverNomination = createServerFn({ method: "POST" })
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
 
+    // Store any attached certificates in the private `nomination-docs` bucket
+    // (server-side, service-role) and reference their paths in the message.
+    const MAX_BYTES = 10 * 1024 * 1024;
+    const EXT: Record<string, string> = {
+      "application/pdf": "pdf",
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+    };
+    const storedAttachments: string[] = [];
+    const attachments = data.attachments ?? [];
+    if (attachments.length > 0) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const folder = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      for (let i = 0; i < attachments.length; i++) {
+        const att = attachments[i];
+        let bytes: Buffer;
+        try {
+          bytes = Buffer.from(att.data, "base64");
+        } catch {
+          return { ok: false, error: "attachment_invalid" };
+        }
+        if (bytes.length === 0 || bytes.length > MAX_BYTES) {
+          return { ok: false, error: "attachment_too_large" };
+        }
+        const path = `${folder}/${i + 1}.${EXT[att.type] ?? "bin"}`;
+        const { error: upErr } = await supabaseAdmin.storage
+          .from("nomination-docs")
+          .upload(path, bytes, { contentType: att.type, upsert: false });
+        if (upErr) {
+          console.error("[nomination] attachment upload failed", upErr.message);
+          return { ok: false, error: "attachment_failed" };
+        }
+        storedAttachments.push(`nomination-docs/${path} — ${att.name}`);
+      }
+    }
+
     const formattedMessage = [
       `المرشح: ${data.nominee_name}`,
       `الفرع: ${data.branch_slug || "غير محدد"}`,
@@ -156,6 +193,9 @@ export const submitAchieverNomination = createServerFn({ method: "POST" })
       data.biography ? `نبذة مختصرة:\n${data.biography}` : null,
       data.nomination_reason ? `أسباب الترشيح:\n${data.nomination_reason}` : null,
       data.evidence_url ? `رابط الإثبات: ${data.evidence_url}` : null,
+      storedAttachments.length > 0
+        ? `المرفقات (${storedAttachments.length}):\n${storedAttachments.join("\n")}`
+        : null,
       data.notes ? `ملاحظات إضافية: ${data.notes}` : null,
       `---`,
       `مقدم الترشيح: ${data.nominator_name}`,
