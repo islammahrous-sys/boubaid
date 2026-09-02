@@ -51,6 +51,10 @@ export const achieverNominationSchema = z.object({
     .min(10, "نبذة عن الإنجاز مطلوبة (10 أحرف على الأقل)")
     .max(1000),
   year: z.string().trim().max(20).optional(),
+  /** Short biography of the nominee (optional free text). */
+  biography: z.string().trim().max(1500).optional().or(z.literal("")),
+  /** Why the nominee should be added to the register (optional free text). */
+  nomination_reason: z.string().trim().max(1000).optional().or(z.literal("")),
   evidence_url: z.string().trim().url().optional().or(z.literal("")),
   nominator_name: z.string().trim().min(2, "اسم مقدم الترشيح مطلوب").max(100),
   nominator_phone: z.string().trim().min(7, "رقم التواصل مطلوب").max(30),

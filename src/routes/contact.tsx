@@ -307,7 +307,7 @@ function ContactPage() {
                 <dd className="leading-relaxed text-foreground">{addressText}</dd>
                 <dd className="mt-1.5">
                   <a
-                    href="https://maps.google.com/?q=Al+Mubarraz+Al+Ahsa+Saudi+Arabia"
+                    href={siteMeta.contact.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-xs font-semibold text-bronze dark:text-gold hover:underline"
@@ -339,12 +339,19 @@ function ContactPage() {
                   <Mail className="h-3.5 w-3.5" aria-hidden="true" />
                   {t(copy.labelEmail)}
                 </dt>
-                <dd>
+                <dd className="space-y-1">
                   <a
                     href={`mailto:${contactEmail}`}
-                    className="text-foreground transition-colors hover:text-bronze dark:hover:text-gold"
+                    className="block text-foreground transition-colors hover:text-bronze dark:hover:text-gold"
                   >
                     {contactEmail}
+                  </a>
+                  <a
+                    href={`mailto:${siteMeta.contact.secretariatEmail}`}
+                    dir="ltr"
+                    className="block text-[13px] text-muted-foreground transition-colors hover:text-bronze dark:hover:text-gold"
+                  >
+                    {siteMeta.contact.secretariatEmail}
                   </a>
                 </dd>
               </div>

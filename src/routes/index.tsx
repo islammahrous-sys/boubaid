@@ -218,11 +218,14 @@ const copy = {
   hqFacilities: { ar: "المرافق المخططة", en: "Planned facilities" } as BiText,
 
   honoursEyebrow: { ar: "سجل التميز", en: "Roll of honour" } as BiText,
-  honoursTitle: { ar: "من كفاءات الأسرة", en: "Among the family's achievers" } as BiText,
+  honoursTitle: {
+    ar: "من كفاءات ومتميزين الأسرة",
+    en: "The family's achievers & distinguished members",
+  } as BiText,
   allHonours: { ar: "السجل كاملاً", en: "The full roll" } as BiText,
 
   newsEyebrow: { ar: "المستجدات", en: "Latest" } as BiText,
-  newsTitle: { ar: "الأخبار والبيانات الرسمية", en: "News & official notices" } as BiText,
+  newsTitle: { ar: "المركز الإعلامي", en: "Media Center" } as BiText,
   allNews: { ar: "كل الأخبار", en: "All news" } as BiText,
 
   dnaEyebrow: { ar: "دراسة علمية", en: "Scientific study" } as BiText,

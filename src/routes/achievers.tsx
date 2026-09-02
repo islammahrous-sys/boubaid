@@ -136,6 +136,8 @@ function AchieversPage() {
     category: "academic" as "medical" | "academic" | "military" | "business" | "sports" | "other",
     field: "",
     achievement_summary: "",
+    biography: "",
+    nomination_reason: "",
     year: "1447",
     evidence_url: "",
     nominator_name: "",
@@ -631,9 +633,43 @@ function AchieversPage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground">
+                  {rtl ? "نبذة مختصرة عن المرشح (اختياري)" : "Short Biography (Optional)"}
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.biography}
+                  onChange={(e) => setFormData({ ...formData, biography: e.target.value })}
+                  placeholder={
+                    rtl
+                      ? "المسيرة العلمية والمهنية، المناصب، أبرز المحطات…"
+                      : "Academic and professional path, positions, key milestones…"
+                  }
+                  className="w-full rounded-md border border-border bg-background p-3 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  {rtl ? "أسباب الترشيح (اختياري)" : "Reasons for the Nomination (Optional)"}
+                </label>
+                <textarea
+                  rows={2}
+                  value={formData.nomination_reason}
+                  onChange={(e) => setFormData({ ...formData, nomination_reason: e.target.value })}
+                  placeholder={
+                    rtl
+                      ? "لماذا يستحق المرشح الإدراج في سجل الكفاءات والمتميزين؟"
+                      : "Why should the nominee be added to the register of achievers?"
+                  }
+                  className="w-full rounded-md border border-border bg-background p-3 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
                   {rtl
-                    ? "رابط إثبات أو سيرة ذاتية (اختياري)"
-                    : "Evidence Link / Portfolio (Optional)"}
+                    ? "رابط الشهادات أو السيرة الذاتية (اختياري)"
+                    : "Certificates / CV Link (Optional)"}
                 </label>
                 <input
                   type="url"
@@ -642,6 +678,11 @@ function AchieversPage() {
                   placeholder="https://..."
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
                 />
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  {rtl
+                    ? "أرفق رابطاً لمجلد يضم شهادات الخبرة أو التقدير أو التدريب أو التخرج (Google Drive أو ما شابه)."
+                    : "Attach a link to a folder holding experience, recognition, training or graduation certificates (Google Drive or similar)."}
+                </p>
               </div>
 
               <div className="border-t border-border pt-3 space-y-3">

@@ -15,6 +15,7 @@ import {
   Receipt,
   CreditCard,
   FileCheck2,
+  Mail,
 } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -277,11 +278,36 @@ function ContributePage() {
     treasuryConfig?.fundPurposes && treasuryConfig.fundPurposes.length > 0
       ? treasuryConfig.fundPurposes
       : [
-          { id: "ops", name_ar: "التشغيل وبرامج التكافل", name_en: "Operations & Solidarity", is_active: true },
-          { id: "assembly", name_ar: "الملتقى السنوي والأنشطة", name_en: "Annual Assembly & Activities", is_active: true },
-          { id: "hq", name_ar: "مشروع المقر الدائم (حي الحزام الذهبي)", name_en: "Permanent HQ Project", is_active: true },
-          { id: "zakat", name_ar: "حساب الزكاة والصدقات", name_en: "Zakat & Charity Fund", is_active: true },
-          { id: "academic", name_ar: "جائزة التفوق العلمي والمهني", name_en: "Academic Excellence Award", is_active: true },
+          {
+            id: "ops",
+            name_ar: "التشغيل وبرامج التكافل",
+            name_en: "Operations & Solidarity",
+            is_active: true,
+          },
+          {
+            id: "assembly",
+            name_ar: "الملتقى السنوي والأنشطة",
+            name_en: "Annual Assembly & Activities",
+            is_active: true,
+          },
+          {
+            id: "hq",
+            name_ar: "مشروع المقر الدائم (حي الحزام الذهبي)",
+            name_en: "Permanent HQ Project",
+            is_active: true,
+          },
+          {
+            id: "zakat",
+            name_ar: "حساب الزكاة والصدقات",
+            name_en: "Zakat & Charity Fund",
+            is_active: true,
+          },
+          {
+            id: "academic",
+            name_ar: "جائزة التفوق العلمي والمهني",
+            name_en: "Academic Excellence Award",
+            is_active: true,
+          },
         ];
 
   // The official bank account is member-only per the modal's own copy. "Signed
@@ -308,7 +334,9 @@ function ContributePage() {
     contributor_name: "",
     amount: "",
     method: "bank_transfer" as "bank_transfer" | "in_person" | "other",
-    purpose: search.purpose || (search.initiative ? `مبادرة: ${search.initiative}` : fundPurposes[0]?.name_ar || ""),
+    purpose:
+      search.purpose ||
+      (search.initiative ? `مبادرة: ${search.initiative}` : fundPurposes[0]?.name_ar || ""),
     reference: "",
   });
 
@@ -562,6 +590,19 @@ function ContributePage() {
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
+              <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                <Mail className="h-4 w-4 shrink-0 text-bronze dark:text-gold" aria-hidden="true" />
+                <span>
+                  {lang === "ar" ? "البريد المعتمد للمساهمات: " : "Approved contributions email: "}
+                  <a
+                    href={`mailto:${siteMeta.contact.fundEmail}`}
+                    dir="ltr"
+                    className="font-medium text-foreground transition-colors hover:text-bronze dark:hover:text-gold"
+                  >
+                    {siteMeta.contact.fundEmail}
+                  </a>
+                </span>
+              </p>
             </div>
           </div>
 
@@ -827,7 +868,9 @@ function ContributePage() {
                 </label>
                 <select
                   value={
-                    fundPurposes.some((f) => f.name_ar === form.purpose || f.name_en === form.purpose)
+                    fundPurposes.some(
+                      (f) => f.name_ar === form.purpose || f.name_en === form.purpose,
+                    )
                       ? form.purpose
                       : "custom"
                   }
@@ -839,10 +882,7 @@ function ContributePage() {
                   className="w-full border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus-visible:border-gold rounded-sm"
                 >
                   {fundPurposes.map((fund) => (
-                    <option
-                      key={fund.id}
-                      value={lang === "ar" ? fund.name_ar : fund.name_en}
-                    >
+                    <option key={fund.id} value={lang === "ar" ? fund.name_ar : fund.name_en}>
                       {lang === "ar" ? fund.name_ar : fund.name_en}
                     </option>
                   ))}
@@ -850,7 +890,9 @@ function ContributePage() {
                     {lang === "ar" ? "غرض أو مبادرة أخرى…" : "Other purpose / initiative…"}
                   </option>
                 </select>
-                {(!fundPurposes.some((f) => f.name_ar === form.purpose || f.name_en === form.purpose) ||
+                {(!fundPurposes.some(
+                  (f) => f.name_ar === form.purpose || f.name_en === form.purpose,
+                ) ||
                   form.purpose.startsWith("مبادرة:")) && (
                   <input
                     id="purpose"

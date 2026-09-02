@@ -58,11 +58,22 @@ export const siteMeta = {
   contact: {
     phone: "+966 13 580 0000",
     email: "contact@albouabidfamily.com",
+    /** Secretariat / chairman correspondence address. */
+    secretariatEmail: "khalid@buobaidlc.sa.com",
+    /** Bank-registered address for the fund — used on the contribution page. */
+    fundEmail: "family.fund@boubaid.com",
     whatsapp: "https://chat.whatsapp.com/albouabidfamily",
     telegram: "https://t.me/albouabidfamily",
     x: "https://x.com/albouabidfamily",
     instagram: "https://instagram.com/albouabidfamily",
     youtube: "https://youtube.com/@albouabidfamily",
+    snapchat: "https://www.snapchat.com/add/alboubaidsa",
+    // Handles not yet supplied by the secretariat — left blank so the icon
+    // is not rendered until a real URL is in place.
+    facebook: "",
+    tiktok: "",
+    /** Google Maps pin for the permanent headquarters plot. */
+    mapUrl: "https://maps.app.goo.gl/75fDFmv9vnEboKr58",
   },
   // The fund's bank account is NOT kept here — anything in this file ships to
   // every anonymous visitor in the client bundle. It is served member-gated by
@@ -119,7 +130,10 @@ export const branches = [
     } as BiText,
     image: "/images/branch_yousef.png",
     treePoster: "/images/branch_tree_al_yousef.jpg",
-    settlement: { ar: "المبرز بالأحساء، الرياض، جدة", en: "Al-Mubarraz (Al-Ahsa), Riyadh, Jeddah" } as BiText,
+    settlement: {
+      ar: "المبرز بالأحساء، الرياض، جدة",
+      en: "Al-Mubarraz (Al-Ahsa), Riyadh, Jeddah",
+    } as BiText,
     subBranches: {
       ar: "الأفرع الداخلية الموثقة: ذرية محمد بن يوسف • ذرية يوسف بن يوسف — المشجرة المعتمدة رقم ١",
       en: "Documented sub-lineages: descendants of Mohammed bin Yousef and Yousef bin Yousef — official chart 1",
@@ -793,7 +807,7 @@ export const hqProject = {
       en: "Youth Training & Skill Development Center",
     } as BiText,
   ],
-  progress: 65,
+  progress: 10,
   fundingModel: {
     ar: "تم شراء أرض المقر بالكامل بتمويل استراتيجي بلغ 1,140,741 ريالاً، ومع تجاوز التكلفة الإجمالية للسيولة المتاحة، بادر ثمانية من ميسوري أبناء الأسرة بضخ قروض حسنة تراوحت مساهمة كل منهم بين 100 و120 ألف ريال (بسيولة إجمالية بلغت 820,000 ريال)، وسُدد جزء منها لاحقاً (350,000 ريال)، مع بقاء رصيد مستحق كالتزام آمن قدره 470,000 ريال بنهاية 2025.",
     en: "The headquarters land was purchased in full through a strategic outlay of SAR 1,140,741. As total costs exceeded available liquidity, eight of the family's more affluent members stepped in with interest-free loans of SAR 100,000–120,000 each (SAR 820,000 in total liquidity); part of this (SAR 350,000) has since been repaid, leaving an outstanding, secured commitment of SAR 470,000 at the end of 2025.",

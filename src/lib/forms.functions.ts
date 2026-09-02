@@ -153,6 +153,8 @@ export const submitAchieverNomination = createServerFn({ method: "POST" })
       `المجال: ${data.field} (${data.category})`,
       `السنة/التاريخ: ${data.year || "غير محدد"}`,
       `ملخص الإنجاز:\n${data.achievement_summary}`,
+      data.biography ? `نبذة مختصرة:\n${data.biography}` : null,
+      data.nomination_reason ? `أسباب الترشيح:\n${data.nomination_reason}` : null,
       data.evidence_url ? `رابط الإثبات: ${data.evidence_url}` : null,
       data.notes ? `ملاحظات إضافية: ${data.notes}` : null,
       `---`,
