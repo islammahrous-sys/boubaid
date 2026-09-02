@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { autoSlug, slugify } from "@/lib/slugify";
 
 /** Client-safe schemas for the secretariat content console. */
 
@@ -12,12 +13,25 @@ export const cmsTableSchema = z.enum([
 export type CmsTable = z.infer<typeof cmsTableSchema>;
 
 const text = (max: number) => z.string().trim().max(max).optional().or(z.literal(""));
-const slug = z
-  .string()
-  .trim()
-  .min(2)
-  .max(120)
-  .regex(/^[a-z0-9-]+$/, "lowercase letters, numbers and dashes only");
+/**
+ * Slugs are an implementation detail, never an editor task: the field accepts
+ * anything (including Arabic or nothing at all) and each schema's `withAutoSlug`
+ * transform below derives a clean, URL-safe slug from the Arabic title/name.
+ */
+const slug = z.string().trim().max(200).optional().nullable();
+
+/** Fill/normalise `slug` from the record's Arabic (then English) title. */
+function withAutoSlug<T extends { slug?: string | null }>(
+  values: T,
+  titles: Array<string | null | undefined>,
+  fallbackPrefix: string,
+): T & { slug: string } {
+  const typed = values.slug?.trim() ? slugify(values.slug) : "";
+  return {
+    ...values,
+    slug: typed.length >= 2 ? typed : autoSlug(titles, fallbackPrefix),
+  };
+}
 
 export const newsInputSchema = z.object({
   id: z.string().uuid().optional(),
@@ -34,7 +48,7 @@ export const newsInputSchema = z.object({
   cover_path: text(500),
   is_published: z.boolean().default(false),
   sort_order: z.number().int().min(0).max(9999).default(0),
-});
+}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "news"));
 
 export const initiativeInputSchema = z.object({
   id: z.string().uuid().optional(),
@@ -49,7 +63,7 @@ export const initiativeInputSchema = z.object({
   cover_path: text(500),
   is_published: z.boolean().default(false),
   sort_order: z.number().int().min(0).max(9999).default(0),
-});
+}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "initiative"));
 
 export const achieverInputSchema = z.object({
   id: z.string().uuid().optional(),
@@ -97,7 +111,7 @@ export const branchInputSchema = z.object({
   image_path: text(500),
   is_published: z.boolean().default(false),
   sort_order: z.number().int().min(0).max(9999).default(0),
-});
+}).transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "branch"));
 
 export const cmsUpsertSchema = z.discriminatedUnion("table", [
   z.object({ table: z.literal("news_posts"), values: newsInputSchema }),
