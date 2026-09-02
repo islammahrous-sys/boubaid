@@ -68,6 +68,7 @@ import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import type { FamilyMemberInput, BulkMembersActionInput } from "@/lib/admin-hub.schemas";
 import { toast } from "sonner";
 import { useConfirm } from "@/hooks/useConfirm";
+import { cn } from "@/lib/utils";
 
 export type MemberRow = {
   id: string;
@@ -154,6 +155,7 @@ export function FamilyMembersTable({
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
 
   const debouncedSearch = useDebounce(search, 300);
+  const fetchMembersPage = useServerFn(getFamilyMembersPaginated);
 
   const {
     data: queryData,

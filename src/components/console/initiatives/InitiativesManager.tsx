@@ -189,7 +189,7 @@ export function InitiativesManager({
       summary_en: item.summary_en ?? "",
       body_ar: item.body_ar ?? "",
       body_en: item.body_en ?? "",
-      status: (item.status as "ongoing" | "upcoming" | "completed") || "ongoing",
+      status: (item.status as "ongoing" | "planned" | "completed") || "ongoing",
       sort_order: item.sort_order,
       is_published: item.is_published,
       cover_path: item.cover_path ?? undefined,
