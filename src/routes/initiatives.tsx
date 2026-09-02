@@ -170,25 +170,7 @@ function InitiativesPage() {
                 {t(copy.specTitle)}
               </p>
 
-              <dl>
-                {[
-                  { term: copy.specLocation, value: t(hqProject.location) },
-                  { term: copy.specArea, value: hqProject.area, mono: true },
-                  { term: copy.specStage, value: t(hqProject.status) },
-                ].map((row, i) => (
-                  <div
-                    key={i}
-                    className="grid grid-cols-1 gap-1 border-b border-border py-3 sm:grid-cols-[8rem_1fr] sm:gap-5"
-                  >
-                    <dt className="label-caps pt-0.5 text-muted-foreground">{t(row.term)}</dt>
-                    <dd className={`text-sm text-foreground ${row.mono ? "nums font-mono" : ""}`}>
-                      {row.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-
-              <div className="mt-6">
+              <div className="mt-5">
                 <div className="flex items-baseline justify-between">
                   <span className="label-caps text-muted-foreground">{t(copy.specProgress)}</span>
                   <span className="nums font-mono text-2xl text-foreground">
@@ -210,33 +192,20 @@ function InitiativesPage() {
                 </div>
               </div>
 
-              <div className="mt-7 border-t border-border pt-5">
-                <p className="label-caps mb-2.5 text-muted-foreground">{t(copy.specFacilities)}</p>
-                <ul className="space-y-1.5">
-                  {hqProject.facilities.map((f, i) => (
-                    <li key={i} className="flex gap-2.5 text-sm text-foreground">
-                      <span
-                        className="mt-2 h-1 w-1 shrink-0 bg-bronze dark:bg-gold"
-                        aria-hidden="true"
-                      />
-                      {t(f)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
               <div className="mt-6 border-t border-border pt-5">
-                <p className="label-caps mb-2 text-muted-foreground">{t(copy.specFunding)}</p>
+                <p className="label-caps mb-2 text-muted-foreground">
+                  {rtl ? "تكلفة البناء والتمويل" : "Construction cost & funding"}
+                </p>
                 <Prose className="text-[13px]">
                   <p>{t(hqFunding)}</p>
                 </Prose>
                 <div className="mt-5">
                   <Link
                     to="/contribute"
-                    search={{ initiative: liveHq?.slug || "hq", purpose: t(hqTitle) }}
-                    className="inline-flex items-center gap-2 border border-bronze bg-bronze/10 px-4 py-2 text-xs font-semibold text-bronze hover:bg-bronze hover:text-ivory dark:border-gold dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink transition-colors"
+                    search={{ initiative: liveHq?.slug || "hq", purpose: "hq_project" }}
+                    className="inline-flex items-center gap-2 border border-ink bg-ink px-4 py-2.5 text-xs font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
                   >
-                    <span>{rtl ? "المساهمة في دعم هذا المشروع" : "Contribute to this Project"}</span>
+                    <span>{rtl ? "ننتظر دعمك" : "We await your support"}</span>
                     <Arrow className="w-3.5 h-3.5" />
                   </Link>
                 </div>

@@ -233,8 +233,14 @@ const copy = {
   parentClade: { ar: "السلسلة التحورية", en: "Parent clade" } as BiText,
 
   programmesEyebrow: { ar: "البرامج", en: "Programmes" } as BiText,
-  programmesTitle: { ar: "المبادرات الجارية", en: "Current initiatives" } as BiText,
+  programmesTitle: { ar: "المبادرات والبرامج", en: "Initiatives & programmes" } as BiText,
   allProgrammes: { ar: "كل المبادرات", en: "All initiatives" } as BiText,
+
+  hqSupportCta: { ar: "ننتظر دعمك", en: "We await your support" } as BiText,
+  hqLocationLink: {
+    ar: "موقع المقر على الخريطة",
+    en: "Headquarters location on the map",
+  } as BiText,
 
   joinTitle: {
     ar: "المشاركة في أعمال الصندوق",
@@ -278,11 +284,12 @@ const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "hero", enabled: true, order: 1 },
   { id: "about_dean", enabled: true, order: 2 },
   { id: "seven_branches", enabled: true, order: 3 },
-  { id: "initiatives_hq", enabled: true, order: 4 },
-  { id: "latest_news", enabled: true, order: 5 },
-  { id: "family_achievers", enabled: true, order: 6 },
-  { id: "initiatives_list", enabled: true, order: 7 },
-  { id: "dna_preview", enabled: true, order: 8 },
+  // The genetic-lineage study sits directly under the seven branches.
+  { id: "dna_preview", enabled: true, order: 4 },
+  { id: "initiatives_hq", enabled: true, order: 5 },
+  { id: "latest_news", enabled: true, order: 6 },
+  { id: "family_achievers", enabled: true, order: 7 },
+  { id: "initiatives_list", enabled: true, order: 8 },
   { id: "upcoming_events", enabled: true, order: 9 },
   { id: "heritage_gallery", enabled: true, order: 10 },
   { id: "contact_inquiry", enabled: true, order: 11 },
@@ -527,6 +534,12 @@ function HomePage() {
                   <p>{t(copy.openingP2)}</p>
                 </Prose>
 
+                <p className="mt-5 border-s-2 border-bronze/40 ps-3 text-sm leading-relaxed text-muted-foreground dark:border-gold/40">
+                  {rtl
+                    ? "— د. خالد بن يوسف بن أحمد بوعبيد · رئيس مجلس الأمناء"
+                    : "— Dr. Khaled bin Yousef bin Ahmed Bu Obaid · Chairman, Board of Trustees"}
+                </p>
+
                 <Link
                   to={sec.cta_url || "/about"}
                   className="mt-6 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
@@ -572,32 +585,39 @@ function HomePage() {
                 }
               />
 
-              <ol className="mt-10 border-t border-border">
+              <ol className="reveal-stagger mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {branches.map((b, i) => (
                   <li key={b.id}>
                     <Link
                       to="/branches"
                       hash={b.id}
-                      className="group grid grid-cols-[1.5rem_1fr_auto] items-baseline gap-x-2.5 sm:gap-x-6 border-b border-border py-3.5 sm:py-4 transition-[color,background-color,transform] duration-150 ease-out hover:bg-background/60 active:scale-[0.99] sm:grid-cols-[2.5rem_minmax(0,16rem)_1fr_auto]"
+                      className="group flex h-full items-center gap-4 border border-border bg-background/60 p-3 transition-[border-color,transform] duration-150 ease-out hover:border-bronze/50 active:scale-[0.99] dark:hover:border-gold/50"
                     >
-                      <span
-                        className="nums font-naskh text-lg text-bronze/60 dark:text-gold/50"
-                        aria-hidden="true"
-                      >
-                        {rtl ? ordinals[i] : i + 1}
-                      </span>
-
-                      <span className="text-[15px] font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
-                        {t(b.name)}
-                      </span>
-
-                      <span className="col-start-2 text-[13px] text-muted-foreground sm:col-start-3">
-                        {t(b.settlement)}
-                      </span>
-
-                      <span className="nums col-start-3 justify-self-end text-[13px] text-muted-foreground sm:col-start-4">
-                        {b.count} <span className="text-xs">{t(copy.members)}</span>
-                      </span>
+                      <img
+                        src={b.image}
+                        alt={t(b.name)}
+                        loading="lazy"
+                        className="h-16 w-16 shrink-0 rounded-sm object-cover"
+                      />
+                      <div className="min-w-0">
+                        <div className="flex items-baseline gap-2">
+                          <span
+                            className="nums font-naskh text-sm text-bronze/60 dark:text-gold/50"
+                            aria-hidden="true"
+                          >
+                            {rtl ? ordinals[i] : i + 1}
+                          </span>
+                          <span className="truncate text-[15px] font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
+                            {t(b.name)}
+                          </span>
+                        </div>
+                        <p className="mt-1 truncate text-[13px] text-muted-foreground">
+                          {t(b.settlement)}
+                        </p>
+                        <p className="nums mt-0.5 text-xs text-muted-foreground">
+                          {b.count} {t(copy.members)}
+                        </p>
+                      </div>
                     </Link>
                   </li>
                 ))}
@@ -688,48 +708,37 @@ function HomePage() {
                   </div>
                 </div>
 
-                <dl className="mt-6 divide-y divide-border border-y border-border">
-                  {[
-                    { term: copy.seat, value: t(hqProject.location) },
-                    { term: { ar: "المساحة", en: "Area" } as BiText, value: hqProject.area },
-                    { term: { ar: "المرحلة", en: "Stage" } as BiText, value: t(hqProject.status) },
-                  ].map((row, i) => (
-                    <div
-                      key={i}
-                      className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[9rem_1fr] sm:gap-5"
-                    >
-                      <dt className="label-caps pt-0.5 text-muted-foreground">{t(row.term)}</dt>
-                      <dd className="nums text-sm text-foreground">{row.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-
-                <div className="mt-6">
-                  <p className="label-caps mb-2.5 text-muted-foreground">{t(copy.hqFacilities)}</p>
-                  <ul className="space-y-1.5">
-                    {hqProject.facilities.map((f, i) => (
-                      <li key={i} className="flex gap-2.5 text-sm text-foreground">
-                        <span
-                          className="mt-2 h-1 w-1 shrink-0 bg-bronze dark:bg-gold"
-                          aria-hidden="true"
-                        />
-                        {t(f)}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <Link
+                    to="/contribute"
+                    search={{ purpose: "hq_project" }}
+                    className="inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-bold text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+                  >
+                    {t(copy.hqSupportCta)}
+                    <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
+                  <Link
+                    to={sec.cta_url || "/initiatives"}
+                    className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                  >
+                    {sec.cta_label_ar && rtl
+                      ? sec.cta_label_ar
+                      : sec.cta_label_en && !rtl
+                        ? sec.cta_label_en
+                        : t(copy.hqDetails)}
+                    <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
                 </div>
 
-                <Link
-                  to={sec.cta_url || "/initiatives"}
-                  className="mt-7 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                <a
+                  href={siteMeta.contact.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  {sec.cta_label_ar && rtl
-                    ? sec.cta_label_ar
-                    : sec.cta_label_en && !rtl
-                      ? sec.cta_label_en
-                      : t(copy.hqDetails)}
-                  <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                </Link>
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                  {t(copy.hqLocationLink)}
+                </a>
               </div>
             </div>
           </section>
