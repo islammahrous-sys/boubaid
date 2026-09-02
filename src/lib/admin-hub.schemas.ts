@@ -1,4 +1,26 @@
 import { z } from "zod";
+import { autoSlug, slugify } from "@/lib/slugify";
+
+/**
+ * The console is Arabic-first: editors never type a Latin slug. Slug inputs
+ * accept anything (or nothing) and each schema derives a clean, URL-safe slug
+ * from the Arabic title/name via `withAutoSlug` below. Uniqueness is resolved
+ * server-side in admin-hub.functions.ts before the row is written.
+ */
+const autoSlugField = z.string().trim().max(200).optional().nullable();
+
+function withAutoSlug<T extends { slug?: string | null }>(
+  values: T,
+  titles: Array<string | null | undefined>,
+  fallbackPrefix: string,
+  options: { allowSlashes?: boolean } = {},
+): T & { slug: string } {
+  const typed = values.slug?.trim() ? slugify(values.slug, options) : "";
+  return {
+    ...values,
+    slug: typed.length >= 2 ? typed : autoSlug(titles, fallbackPrefix, options),
+  };
+}
 
 export const genderSchema = z.enum(["male", "female"]);
 export const visibilityLevelSchema = z.enum(["public", "family_only", "admin_only", "private"]);
@@ -23,11 +45,7 @@ export const familyMemberInputSchema = z.object({
   middle_name_en: z.string().trim().optional().nullable(),
   last_name_en: z.string().trim().optional().nullable(),
   display_name_en: z.string().trim().optional().nullable(),
-  slug: z
-    .string()
-    .trim()
-    .min(2, "المعرف الفريد (Slug) مطلوب")
-    .regex(/^[a-z0-9-]+$/i, "أحرف وأرقام وشرطات فقط"),
+  slug: autoSlugField,
   gender: genderSchema.default("male"),
   date_of_birth: z.string().optional().nullable(),
   date_of_death: z.string().optional().nullable(),
@@ -47,17 +65,13 @@ export const familyMemberInputSchema = z.object({
   sort_order: z.number().int().default(0),
   visibility: visibilityLevelSchema.default("public"),
   status: recordStatusSchema.default("published"),
-});
+}).transform((v) => withAutoSlug(v, [[v.first_name_ar, v.middle_name_ar, v.last_name_ar].filter(Boolean).join(" "), v.display_name_ar, [v.first_name_en, v.last_name_en].filter(Boolean).join(" ")], "member"));
 export type FamilyMemberInput = z.infer<typeof familyMemberInputSchema>;
 
 // 2. Family Branch Schema
 export const familyBranchInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z
-    .string()
-    .trim()
-    .min(2, "Slug is required")
-    .regex(/^[a-z0-9-]+$/i),
+  slug: autoSlugField,
   name_ar: z.string().trim().min(2, "اسم الفرع بالعربية مطلوب"),
   name_en: z.string().trim().optional().nullable(),
   description_ar: z.string().optional().nullable(),
@@ -67,7 +81,7 @@ export const familyBranchInputSchema = z.object({
   image_path: z.string().optional().nullable(),
   sort_order: z.number().int().default(0),
   is_published: z.boolean().default(true),
-});
+}).transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "branch"));
 export type FamilyBranchInput = z.infer<typeof familyBranchInputSchema>;
 
 // 3. Family Relationship Schema
@@ -127,11 +141,7 @@ export type ContentSectionInput = z.infer<typeof contentSectionInputSchema>;
 // 7. Content Page Schema
 export const contentPageInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z
-    .string()
-    .trim()
-    .min(2, "Slug is required")
-    .regex(/^[a-z0-9-/]+$/i),
+  slug: autoSlugField,
   slug_ar: z.string().trim().optional().nullable(),
   title_ar: z.string().trim().min(2, "عنوان الصفحة بالعربية مطلوب"),
   title_en: z.string().trim().optional().nullable(),
@@ -148,7 +158,7 @@ export const contentPageInputSchema = z.object({
   canonical_url: z.string().optional().nullable(),
   no_index: z.boolean().default(false),
   sections: z.array(contentSectionInputSchema).optional(),
-});
+}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "page", { allowSlashes: true }));
 export type ContentPageInput = z.infer<typeof contentPageInputSchema>;
 
 // 8. Navigation Menu & Items Schema
@@ -170,11 +180,7 @@ export type NavigationItemInput = z.infer<typeof navigationItemInputSchema>;
 // 9. Articles Schema
 export const articleInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z
-    .string()
-    .trim()
-    .min(2, "Slug is required")
-    .regex(/^[a-z0-9-]+$/i),
+  slug: autoSlugField,
   slug_ar: z.string().trim().optional().nullable(),
   title_ar: z.string().trim().min(2, "عنوان المقال مطلوب"),
   title_en: z.string().trim().optional().nullable(),
@@ -192,17 +198,13 @@ export const articleInputSchema = z.object({
   seo_description_ar: z.string().optional().nullable(),
   seo_description_en: z.string().optional().nullable(),
   tag_ids: z.array(z.string().uuid()).optional(),
-});
+}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "article"));
 export type ArticleInput = z.infer<typeof articleInputSchema>;
 
 // 10. Events Schema
 export const eventInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z
-    .string()
-    .trim()
-    .min(2, "Slug is required")
-    .regex(/^[a-z0-9-]+$/i),
+  slug: autoSlugField,
   title_ar: z.string().trim().min(2, "عنوان الفعالية مطلوب"),
   title_en: z.string().trim().optional().nullable(),
   description_ar: z.string().optional().nullable(),
@@ -216,7 +218,7 @@ export const eventInputSchema = z.object({
   registration_deadline: z.string().optional().nullable(),
   max_attendees: z.number().int().optional().nullable(),
   status: z.enum(["draft", "published", "cancelled", "completed"]).default("published"),
-});
+}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "event"));
 export type EventInput = z.infer<typeof eventInputSchema>;
 
 // 11. Announcements Schema
@@ -263,11 +265,7 @@ export type MediaAssetInput = z.infer<typeof mediaAssetInputSchema>;
 // 13. Gallery Schema
 export const galleryInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z
-    .string()
-    .trim()
-    .min(2)
-    .regex(/^[a-z0-9-]+$/i),
+  slug: autoSlugField,
   title_ar: z.string().trim().min(2, "عنوان المعرض مطلوب"),
   title_en: z.string().trim().optional().nullable(),
   description_ar: z.string().optional().nullable(),
@@ -276,7 +274,7 @@ export const galleryInputSchema = z.object({
   status: z.string().default("published"),
   visibility: visibilityLevelSchema.default("public"),
   sort_order: z.number().int().default(0),
-});
+}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "gallery"));
 export type GalleryInput = z.infer<typeof galleryInputSchema>;
 
 // 14. Document Schema
@@ -320,11 +318,7 @@ export type SiteSettingInput = z.infer<typeof siteSettingInputSchema>;
 // 17. Business Directory Schema
 export const businessInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z
-    .string()
-    .trim()
-    .min(2)
-    .regex(/^[a-z0-9-]+$/i, "أحرف وأرقام وشرطات فقط"),
+  slug: autoSlugField,
   name_ar: z.string().trim().min(2, "اسم المنشأة بالعربية مطلوب"),
   name_en: z.string().trim().optional().nullable(),
   category_ar: z.string().trim().min(2, "القطاع بالعربية مطلوب"),
@@ -340,7 +334,7 @@ export const businessInputSchema = z.object({
   logo_path: z.string().optional().nullable(),
   is_published: z.boolean().default(true),
   sort_order: z.number().int().default(0),
-});
+}).transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "business"));
 export type BusinessInput = z.infer<typeof businessInputSchema>;
 
 // 18. Membership Request Review Schema
@@ -369,11 +363,7 @@ export type TreasuryContributionReviewInput = z.infer<typeof treasuryContributio
 // 20. Initiative Schema
 export const initiativeInputSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z
-    .string()
-    .trim()
-    .min(2)
-    .regex(/^[a-z0-9-]+$/i),
+  slug: autoSlugField,
   title_ar: z.string().trim().min(2, "عنوان المبادرة مطلوب"),
   title_en: z.string().trim().optional().nullable(),
   summary_ar: z.string().optional().nullable(),
@@ -384,7 +374,7 @@ export const initiativeInputSchema = z.object({
   cover_path: z.string().optional().nullable(),
   sort_order: z.number().int().default(0),
   is_published: z.boolean().default(true),
-});
+}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "initiative"));
 export type InitiativeInput = z.infer<typeof initiativeInputSchema>;
 
 // 21. Achiever (Roll of Honour) Schema
