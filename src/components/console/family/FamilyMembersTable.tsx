@@ -154,6 +154,7 @@ export function FamilyMembersTable({
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
 
   const debouncedSearch = useDebounce(search, 300);
+  const fetchMembersPage = useServerFn(getFamilyMembersPaginated);
 
   const {
     data: queryData,
