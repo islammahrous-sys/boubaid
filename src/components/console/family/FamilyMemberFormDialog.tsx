@@ -160,16 +160,20 @@ export function FamilyMemberFormDialog({
     }
   }, [initialData, open]);
 
-  // Generate slug if empty
+  // Arabic-first slug: derived live from the Arabic name, editable but never required.
   const handleFirstNameChange = (val: string) => {
     setForm((prev) => {
       const next = { ...prev, first_name_ar: val };
       if (!prev.slug && val) {
-        next.slug = "member-" + Date.now().toString(36);
+        next.slug = slugify([val, prev.middle_name_ar, prev.last_name_ar].filter(Boolean).join(" "));
       }
       return next;
     });
   };
+
+  const autoSlugPreview = slugify(
+    [form.first_name_ar, form.middle_name_ar, form.last_name_ar].filter(Boolean).join(" "),
+  );
 
   // Duplicate warning detection
   const isPossibleDuplicate =
@@ -204,11 +208,6 @@ export function FamilyMemberFormDialog({
       toast.error(isAr ? "يرجى كتابة الاسم الأول" : "First name is required");
       return;
     }
-    if (!form.slug.trim()) {
-      toast.error(isAr ? "يرجى تحديد المعرف الفريد (Slug)" : "Slug is required");
-      return;
-    }
-
     try {
       setLoading(true);
       await onSave(form);
@@ -372,13 +371,12 @@ export function FamilyMemberFormDialog({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold">
-                    {isAr ? "المعرف الفريد (Slug) *" : "Unique Slug *"}
+                    {isAr ? "المعرف الفريد (Slug) — يُنشأ تلقائياً" : "Slug (auto-generated)"}
                   </Label>
                   <Input
-                    required
                     value={form.slug}
                     onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                    placeholder="abdullah-mohammed"
+                    placeholder={autoSlugPreview || "يُنشأ تلقائياً من الاسم العربي"}
                   />
                 </div>
                 <div className="space-y-1.5">

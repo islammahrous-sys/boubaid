@@ -239,7 +239,7 @@ export function DirectoryManager({
 
   const handleSubmitBiz = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bizForm.name_ar.trim() || !bizForm.contact.trim() || !bizForm.slug.trim()) return;
+    if (!bizForm.name_ar.trim() || !bizForm.contact.trim()) return;
     try {
       setLoading(true);
       await onSaveBusiness(bizForm);
@@ -680,7 +680,7 @@ export function DirectoryManager({
                     setBizForm((prev) => ({
                       ...prev,
                       name_ar: val,
-                      slug: prev.slug || val.toLowerCase().replace(/\s+/g, "-"),
+                      slug: prev.slug || slugify(val),
                     }));
                   }}
                   placeholder="مثال: شركة رواسي الأحساء للمقاولات"
@@ -699,11 +699,11 @@ export function DirectoryManager({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "المعرف الفريد (Slug) *" : "Slug *"}</Label>
+                <Label className="text-xs">{isAr ? "المعرف الفريد (Slug) — يُنشأ تلقائياً" : "Slug (auto-generated)"}</Label>
                 <Input
-                  required
                   value={bizForm.slug}
                   onChange={(e) => setBizForm({ ...bizForm, slug: e.target.value })}
+                  placeholder={slugify(bizForm.name_ar) || "يُنشأ تلقائياً من الاسم العربي"}
                 />
               </div>
               <div className="space-y-1">
