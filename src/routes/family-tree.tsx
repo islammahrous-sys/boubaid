@@ -26,25 +26,26 @@ export const Route = createFileRoute("/family-tree")({
     const treeData = await getPublicFamilyTreeData();
     return { treeData };
   },
-  head: () => ({
-    meta: [
-      { title: "المشجرة التفاعلية | آل بوعبيد" },
-      {
-        name: "description",
-        content:
-          "المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم: ٥٥٠ اسماً موثقاً عبر عشرة أجيال، مستخرجة من المشجرات الاثنتي عشرة المعتمدة.",
-      },
-      { property: "og:title", content: "المشجرة التفاعلية — آل بوعبيد" },
-      {
-        property: "og:description",
-        content:
-          "المشجرة التفاعلية لأسرة آل بوعبيد: ٥٥٠ اسماً موثقاً عبر عشرة أجيال وفق المشجرات المعتمدة.",
-      },
-      { property: "og:type", content: "article" },
-      { property: "og:url", content: getCanonicalUrl("/family-tree") },
-    ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/family-tree") }],
-  }),
+  head: ({ loaderData }) => {
+    const n = (loaderData?.treeData?.members?.length ?? 550).toLocaleString("ar-EG");
+    return {
+      meta: [
+        { title: "المشجرة التفاعلية | آل بوعبيد" },
+        {
+          name: "description",
+          content: `المشجرة التفاعلية لأسرة آل بوعبيد من العبادل من بني تميم: ${n} اسماً موثقاً عبر عشرة أجيال، مستخرجة من المشجرات الاثنتي عشرة المعتمدة.`,
+        },
+        { property: "og:title", content: "المشجرة التفاعلية — آل بوعبيد" },
+        {
+          property: "og:description",
+          content: `المشجرة التفاعلية لأسرة آل بوعبيد: ${n} اسماً موثقاً عبر عشرة أجيال وفق المشجرات المعتمدة.`,
+        },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: getCanonicalUrl("/family-tree") },
+      ],
+      links: [{ rel: "canonical", href: getCanonicalUrl("/family-tree") }],
+    };
+  },
   component: FamilyTreePage,
 });
 

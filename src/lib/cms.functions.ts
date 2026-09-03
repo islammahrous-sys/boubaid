@@ -329,6 +329,62 @@ export const getPublishedBranches = createServerFn({ method: "GET" }).handler(
   },
 );
 
+export type PublicFamilyStats = {
+  /** Documented individuals in the genealogy (family_members, excluding soft-deleted). */
+  total: number;
+  /** Individuals not yet linked to any branch (the root ancestors above the branch split). */
+  unassigned: number;
+  /** Deepest generation number recorded. */
+  generations: number;
+  /** Documented kinship links. */
+  relationships: number;
+  /** Branch rows in the database (chart-level, not the 7 editorial branches). */
+  branchCount: number;
+  /** Live member count keyed by the database branch `slug`. */
+  byBranch: Record<string, number>;
+};
+
+/**
+ * Single source of truth for the "documented members" numbers shown on the
+ * public site — computed live from `family_members` via a SECURITY DEFINER
+ * RPC (anon has no direct read on that table). Returns `null` on failure so
+ * callers fall back to the editorial constants in `@/content/site`.
+ */
+export const getPublicFamilyStats = createServerFn({ method: "GET" }).handler(
+  async (): Promise<PublicFamilyStats | null> => {
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      // Added by migration family_public_stats_rpc — not yet in the generated
+      // Database type, so call through a narrow cast (see saveContentPageSectionsAtomic).
+      const rpcClient = createPublicServerClient() as unknown as {
+        rpc: (
+          fn: "family_public_stats",
+        ) => Promise<{
+          data: Record<string, any> | null;
+          error: { code?: string; message: string } | null;
+        }>;
+      };
+      const { data, error } = await rpcClient.rpc("family_public_stats");
+      if (error || !data) {
+        if (error) console.error("[cms] family_public_stats failed", error.code, error.message);
+        return null;
+      }
+      const d = data as Record<string, any>;
+      return {
+        total: Number(d.total ?? 0),
+        unassigned: Number(d.unassigned ?? 0),
+        generations: Number(d.generations ?? 0),
+        relationships: Number(d.relationships ?? 0),
+        branchCount: Number(d.branch_count ?? 0),
+        byBranch: (d.by_branch ?? {}) as Record<string, number>,
+      };
+    } catch (err) {
+      console.error("[cms] getPublicFamilyStats caught error", err);
+      return null;
+    }
+  },
+);
+
 /* ------------------------- secretariat console ------------------------- */
 
 export type CmsOverview = {

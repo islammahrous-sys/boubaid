@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, ZoomIn, Eye } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { branches } from "@/content/site";
-import { getPublishedBranches } from "@/lib/cms.functions";
+import { getPublishedBranches, getPublicFamilyStats } from "@/lib/cms.functions";
 import { branchPortraits } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Record, RecordField } from "@/components/site/Editorial";
@@ -13,7 +13,13 @@ import { getCanonicalUrl } from "@/lib/seo";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/branches")({
-  loader: async () => ({ branchRows: await getPublishedBranches() }),
+  loader: async () => {
+    const [branchRows, familyStats] = await Promise.all([
+      getPublishedBranches(),
+      getPublicFamilyStats(),
+    ]);
+    return { branchRows, familyStats };
+  },
   head: () => ({
     meta: [
       { title: "الفروع السبعة | أسرة آل بوعبيد" },
@@ -39,10 +45,10 @@ export const Route = createFileRoute("/branches")({
 const copy = {
   eyebrow: { ar: "البنية العائلية", en: "Family structure" } as BiText,
   title: { ar: "سجل الفروع السبعة", en: "Register of the Seven Branches" } as BiText,
-  subtitle: {
-    ar: "تنتظم الأسرة في سبعة فروع رئيسية تنحدر من أبناء الجد أحمد بن عبدالله وأخيه صالح بن عبدالله، وهي موثقة في اثنتي عشرة مشجرة معتمدة تضم ٥٥٠ اسماً. ولكل فرع أفرعه الداخلية ومناطق استقراره وتمثيله في مجلس الأسرة واللجان.",
-    en: "The family is organised into seven principal branches descending from the sons of the patriarch Ahmed bin Abdullah and his brother Salih bin Abdullah, documented across twelve verified charts holding 550 names. Each has its own sub-lineages, areas of settlement, and representation on the family council and its committees.",
-  } as BiText,
+  subtitle: (arCount: string, enCount: string): BiText => ({
+    ar: `تنتظم الأسرة في سبعة فروع رئيسية تنحدر من أبناء الجد أحمد بن عبدالله وأخيه صالح بن عبدالله، وهي موثقة في اثنتي عشرة مشجرة معتمدة تضم ${arCount} اسماً. ولكل فرع أفرعه الداخلية ومناطق استقراره وتمثيله في مجلس الأسرة واللجان.`,
+    en: `The family is organised into seven principal branches descending from the sons of the patriarch Ahmed bin Abdullah and his brother Salih bin Abdullah, documented across twelve verified charts holding ${enCount} names. Each has its own sub-lineages, areas of settlement, and representation on the family council and its committees.`,
+  }),
 
   metaBranches: { ar: "عدد الفروع", en: "Branches" } as BiText,
   metaMembers: { ar: "الأفراد الموثقون", en: "Documented members" } as BiText,
@@ -65,10 +71,10 @@ const copy = {
   posterOpen: { ar: "فتح اللوحة كاملة", en: "Open full plate" } as BiText,
 
   treeCta: { ar: "المشجرة التفاعلية الكاملة", en: "The full interactive tree" } as BiText,
-  treeBody: {
-    ar: "يعرض هذا السجل رؤوس الفروع فقط. أما التفريع الكامل لعشرة أجيال و٥٥٠ اسماً موثقاً فمتاح في المشجرة التفاعلية.",
-    en: "This register lists the heads of the branches only. The full ten-generation tree of 550 documented names is available in the interactive view.",
-  } as BiText,
+  treeBody: (arCount: string, enCount: string, arGen: string, enGen: string): BiText => ({
+    ar: `يعرض هذا السجل رؤوس الفروع فقط. أما التفريع الكامل لـ${arGen} أجيال و${arCount} اسماً موثقاً فمتاح في المشجرة التفاعلية.`,
+    en: `This register lists the heads of the branches only. The full ${enGen}-generation tree of ${enCount} documented names is available in the interactive view.`,
+  }),
 };
 
 const ordinals = ["١", "٢", "٣", "٤", "٥", "٦", "٧"];
@@ -77,20 +83,34 @@ function BranchesPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
-  const totalMembers = branches.reduce((sum, b) => sum + b.count, 0);
-  const { branchRows } = Route.useLoaderData();
+  const { branchRows, familyStats } = Route.useLoaderData();
   const [activePoster, setActivePoster] = useState<{ url: string; title: string } | null>(null);
 
-  // The register's structure (sub-lineages, counts, plates) stays editorial;
-  // the secretariat may override a branch's name, text, elder and portrait
-  // from the content console by matching the branch slug.
+  // Live member count for an editorial branch = the sum of its DB chart-level
+  // rows (`dbSlugs`). Falls back to the static `count` if the live stats
+  // endpoint is unavailable.
+  const liveCount = (b: (typeof branches)[number]) => {
+    if (!familyStats) return b.count;
+    const sum = b.dbSlugs.reduce((s, slug) => s + (familyStats.byBranch[slug] ?? 0), 0);
+    return sum > 0 ? sum : b.count;
+  };
+
+  const totalMembers = familyStats?.total ?? branches.reduce((sum, b) => sum + b.count, 0);
+  const generations = familyStats?.generations || 10;
+  const nf = (n: number, l: "ar" | "en") => n.toLocaleString(l === "ar" ? "ar-EG" : "en-US");
+
+  // The register's structure (sub-lineages, plates) stays editorial; the
+  // secretariat may override a branch's name, text, elder and portrait from
+  // the content console by matching the branch slug. Member counts are live.
   const overrides = new Map(branchRows.map((r) => [r.slug, r]));
   const knownIds = new Set(branches.map((b) => b.id));
   const branchList = branches.map((b) => {
+    const count = liveCount(b);
     const o = overrides.get(b.id);
-    if (!o) return b;
+    if (!o) return { ...b, count };
     return {
       ...b,
+      count,
       name: { ar: o.name_ar, en: o.name_en ?? o.name_ar },
       description: o.description_ar
         ? { ar: o.description_ar, en: o.description_en ?? o.description_ar }
@@ -116,16 +136,20 @@ function BranchesPage() {
   }
 
   const fullBranchList = branchList;
+  const branchSum = branchList.reduce((s, b) => s + b.count, 0);
+  // Members not under any branch = the root ancestors above the branch split
+  // (their sons head the seven branches). Keeps the table total honest.
+  const rootAncestors = familyStats ? Math.max(0, totalMembers - branchSum) : 0;
 
   return (
     <>
       <PageHeader
         eyebrow={t(copy.eyebrow)}
         title={t(copy.title)}
-        subtitle={t(copy.subtitle)}
+        subtitle={t(copy.subtitle(nf(totalMembers, "ar"), nf(totalMembers, "en")))}
         meta={[
           { label: t(copy.metaBranches), value: rtl ? "سبعة" : "Seven" },
-          { label: t(copy.metaMembers), value: totalMembers.toLocaleString(), mono: true },
+          { label: t(copy.metaMembers), value: nf(totalMembers, lang), mono: true },
           { label: t(copy.metaSeat), value: t(copy.metaSeatValue) },
         ]}
       />
@@ -188,12 +212,22 @@ function BranchesPage() {
                 ))}
               </tbody>
               <tfoot>
+                {rootAncestors > 0 && (
+                  <tr className="border-b border-border text-muted-foreground">
+                    <td colSpan={4} className="py-2 text-[13px]">
+                      {rtl
+                        ? `الجدود الجوامع فوق انقسام الفروع`
+                        : `Root ancestors above the branch split`}
+                    </td>
+                    <td className="nums py-2 text-end text-[13px]">{nf(rootAncestors, lang)}</td>
+                  </tr>
+                )}
                 <tr className="border-b border-ink/25 dark:border-ivory/20">
                   <td colSpan={4} className="label-caps py-2.5 text-muted-foreground">
                     {t(copy.metaMembers)}
                   </td>
                   <td className="nums py-2.5 text-end text-sm font-semibold text-foreground">
-                    {totalMembers.toLocaleString()}
+                    {nf(totalMembers, lang)}
                   </td>
                 </tr>
               </tfoot>
@@ -433,7 +467,14 @@ function BranchesPage() {
       <section className="reveal-on-scroll border-t border-border bg-secondary/40">
         <div className="container-page flex flex-wrap items-center justify-between gap-6 py-12">
           <p className="measure text-sm leading-relaxed text-muted-foreground">
-            {t(copy.treeBody)}
+            {t(
+              copy.treeBody(
+                nf(totalMembers, "ar"),
+                nf(totalMembers, "en"),
+                nf(generations, "ar"),
+                nf(generations, "en"),
+              ),
+            )}
           </p>
           <Link
             to="/family-tree"

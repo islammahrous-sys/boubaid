@@ -77,48 +77,21 @@ export const siteMeta = {
   // server env.
 };
 
-export const stats = [
-  {
-    key: "license",
-    label: { ar: "ترخيص رسمي NCNP", en: "NCNP License No." } as BiText,
-    value: 1200758400,
-    suffix: "",
-    isString: true,
-    displayVal: "1200758400",
-  },
-  {
-    key: "members",
-    label: { ar: "أسماء موثقة في المشجرات", en: "Names in verified charts" } as BiText,
-    value: 550,
-    suffix: "",
-  },
-  {
-    key: "branches",
-    label: { ar: "فروع الأسرة الرئيسية", en: "Main Family Branches" } as BiText,
-    value: 7,
-    suffix: "",
-  },
-  {
-    key: "initiatives",
-    label: { ar: "مبادرات وبرامج جارية", en: "Active Programs" } as BiText,
-    value: 12,
-    suffix: "+",
-  },
-];
-
 /**
  * The seven principal lines of the family, as drawn in the twelve
  * committee-verified charts (see `src/content/tree/charts.ts`).
  *
- * `count` and `subBranches` are derived from the canonical dataset
- * (`src/content/tree/canonical.json` — 550 documented names) and must be
- * regenerated, not guessed, whenever the charts are revised. `id` matches the
- * `branches.slug` used in Supabase so the content console can override a
- * branch's name, text and portrait.
+ * `count` is a fallback only — the live figure comes from
+ * `getPublicFamilyStats()` (a live count of `family_members`), summed over
+ * each branch's `dbSlugs`. `id` matches the `branches.slug` used in Supabase
+ * so the content console can override a branch's name, text and portrait;
+ * `dbSlugs` lists the chart-level DB branch rows that roll up into this
+ * editorial branch (the sixth branch aggregates six `عبدالرحمن` sub-lines).
  */
 export const branches = [
   {
     id: "al-yousef",
+    dbSlugs: ["al-yousef"],
     name: { ar: "فرع آل يوسف", en: "Al Yousef Branch" } as BiText,
     ancestor: {
       ar: "الجد يوسف بن أحمد بن عبدالله آل بوعبيد التميمي",
@@ -152,6 +125,7 @@ export const branches = [
   },
   {
     id: "al-abdulaziz",
+    dbSlugs: ["al-abdulaziz"],
     name: { ar: "فرع آل عبدالعزيز", en: "Al Abdulaziz Branch" } as BiText,
     ancestor: {
       ar: "الجد عبدالعزيز بن أحمد بن عبدالله آل بوعبيد التميمي",
@@ -182,6 +156,7 @@ export const branches = [
   },
   {
     id: "al-mohammed-ahmed",
+    dbSlugs: ["al-mohammed-ahmed"],
     name: { ar: "فرع آل محمد", en: "Al Mohammed Branch" } as BiText,
     ancestor: {
       ar: "الجد محمد بن أحمد بن عبدالله آل بوعبيد التميمي",
@@ -211,6 +186,7 @@ export const branches = [
   },
   {
     id: "al-saad",
+    dbSlugs: ["al-saad"],
     name: { ar: "فرع آل سعد", en: "Al Saad Branch" } as BiText,
     ancestor: {
       ar: "الجد سعد بن أحمد بن عبدالله آل بوعبيد التميمي",
@@ -241,6 +217,7 @@ export const branches = [
   },
   {
     id: "al-abdullatif",
+    dbSlugs: ["al-abdullatif"],
     name: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
     ancestor: {
       ar: "الجد عبداللطيف بن أحمد بن عبدالله آل بوعبيد التميمي",
@@ -275,6 +252,14 @@ export const branches = [
   },
   {
     id: "al-abdulrahman",
+    dbSlugs: [
+      "al-abdullah-salih",
+      "al-ali-salih",
+      "al-mohammed-salih",
+      "al-ibrahim-salih",
+      "al-ahmed-abdulrahman",
+      "al-abdulaziz-abdulrahman",
+    ],
     name: { ar: "فرع آل عبدالرحمن", en: "Al Abdulrahman Branch" } as BiText,
     ancestor: {
       ar: "الجد عبدالرحمن بن أحمد بن عبدالله آل بوعبيد التميمي",
@@ -305,6 +290,7 @@ export const branches = [
   },
   {
     id: "al-abdullah-salih-abdullah",
+    dbSlugs: ["al-abdullah-salih-abdullah"],
     name: { ar: "فرع آل عبدالله صالح", en: "Al Abdullah Salih Branch" } as BiText,
     ancestor: {
       ar: "الجد عبدالله بن صالح بن عبدالله آل بوعبيد التميمي",
@@ -324,7 +310,7 @@ export const branches = [
       ar: "يمثل ركيزة أساسية في الروابط العائلية، ويشتهر رجاله بالعطاء الاجتماعي والمبادرات الإنسانية والتواجد المؤثر في اللجان التنظيمية، وقيادة مشروع المقر الرئيسي للأسرة في حي الحزام الذهبي.",
       en: "A cornerstone of family cohesion, known for social philanthropy, civic initiative and leadership of the family's headquarters project in Al-Hizam Al-Dhahabi.",
     } as BiText,
-    count: 88,
+    count: 87,
     keyFigures: [
       {
         ar: "أ. عبدالله بن صالح بوعبيد (رئيس لجنة المقر)",

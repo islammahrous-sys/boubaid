@@ -29,6 +29,7 @@ import {
   getPublishedNews,
   getPublishedInitiatives,
   getPublicHomepageConfig,
+  getPublicFamilyStats,
 } from "@/lib/cms.functions";
 import { getPublishedEvents } from "@/lib/events-public.functions";
 import type { PublicEventRow } from "@/lib/events-public.functions";
@@ -136,13 +137,14 @@ const getHomepageGalleryPreview = createServerFn({ method: "GET" }).handler(
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const [newsRows, initiativeRows, homepageConfig, upcomingEvents, galleryPreview] =
+    const [newsRows, initiativeRows, homepageConfig, upcomingEvents, galleryPreview, familyStats] =
       await Promise.all([
         getPublishedNews(),
         getPublishedInitiatives(),
         getPublicHomepageConfig(),
         getPublishedEvents(),
         getHomepageGalleryPreview(),
+        getPublicFamilyStats(),
       ]);
     return {
       news: mergeNews(newsRows, staticNews),
@@ -150,6 +152,7 @@ export const Route = createFileRoute("/")({
       homepageConfig,
       upcomingEvents: upcomingEvents.slice(0, 3),
       galleryPreview,
+      familyStats,
     };
   },
   head: () => ({
@@ -324,9 +327,20 @@ function HomePage() {
     homepageConfig: rawHomepageConfig,
     upcomingEvents,
     galleryPreview,
+    familyStats,
   } = homeRoute.useLoaderData();
   const homepageConfig = rawHomepageConfig as { sections?: SectionConfig[] } | null;
   const [lead, ...rest] = news;
+
+  // Live documented-member count per editorial branch (sum of its DB chart
+  // rows), with the static `count` as fallback.
+  const branchCount = (b: (typeof branches)[number]) => {
+    if (!familyStats) return b.count;
+    const sum = b.dbSlugs.reduce((s, slug) => s + (familyStats.byBranch[slug] ?? 0), 0);
+    return sum > 0 ? sum : b.count;
+  };
+  const totalDocumentedMembers =
+    familyStats?.total ?? branches.reduce((sum, b) => sum + b.count, 0);
 
   // Compute active, ordered sections
   const activeSections = (() => {
@@ -615,7 +629,7 @@ function HomePage() {
                           {t(b.settlement)}
                         </p>
                         <p className="nums mt-0.5 text-xs text-muted-foreground">
-                          {b.count} {t(copy.members)}
+                          {branchCount(b)} {t(copy.members)}
                         </p>
                       </div>
                     </Link>
@@ -1057,10 +1071,12 @@ function HomePage() {
         );
 
       case "family_stats": {
-        const totalMembers = branches.reduce((sum, b) => sum + b.count, 0);
         const statItems: { value: string; label: BiText }[] = [
           { value: String(branches.length), label: { ar: "فروع عائلية", en: "Family Branches" } },
-          { value: String(totalMembers), label: { ar: "فرد موثق", en: "Documented Members" } },
+          {
+            value: totalDocumentedMembers.toLocaleString(lang === "ar" ? "ar-EG" : "en-US"),
+            label: { ar: "فرد موثق", en: "Documented Members" },
+          },
           { value: siteMeta.ncnpLicense, label: copy.licence },
           { value: `${siteMeta.foundedHijri} هـ`, label: copy.registered },
         ];
