@@ -47,6 +47,7 @@ import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { BusinessInput, MembershipRequestReviewInput } from "@/lib/admin-hub.schemas";
 import { useConfirm } from "@/hooks/useConfirm";
 import { getErrorMessage } from "@/lib/error-utils";
+import { slugify } from "@/lib/slugify";
 
 export type BusinessRow = {
   id: string;

@@ -34,6 +34,7 @@ import {
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { FamilyMemberInput } from "@/lib/admin-hub.schemas";
+import { slugify } from "@/lib/slugify";
 
 export type BranchOption = { id: string; name_ar: string; name_en?: string | null };
 export type PlaceOption = { id: string; name_ar: string; name_en?: string | null };
