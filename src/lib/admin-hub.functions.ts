@@ -40,10 +40,31 @@ import {
   sortOrderUpdateSchema,
 } from "./admin-hub.schemas";
 import { z } from "zod";
+import { resolveUniqueSlug } from "@/lib/slugify";
 
 /** JSON-serializable value — satisfies TanStack Start's serialization
  *  validator unlike `unknown` while avoiding `any`. */
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+/**
+ * Arabic-first slugs: schemas already derive a URL-safe slug from the Arabic
+ * title/name, so the only remaining job here is uniqueness — duplicate Arabic
+ * titles get `-2`, `-3`, ... instead of a 23505 error shown to the editor.
+ */
+async function ensureUniqueSlug(
+  client: { from: (t: string) => any },
+  table: string,
+  payload: Record<string, any>,
+  id?: string | null,
+): Promise<void> {
+  if (typeof payload["slug"] !== "string" || !payload["slug"]) return;
+  payload["slug"] = await resolveUniqueSlug({
+    client,
+    table,
+    base: payload["slug"],
+    excludeId: id ?? null,
+  });
+}
 
 export const paginationSchema = z.object({
   page: z.number().int().min(1).max(100000).default(1),
