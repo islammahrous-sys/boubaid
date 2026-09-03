@@ -41,6 +41,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { slugify } from "@/lib/slugify";
 import type { EventInput } from "@/lib/admin-hub.schemas";
 
 export type EventRow = {
@@ -178,7 +179,7 @@ export function EventsManager({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title_ar.trim() || !form.slug.trim()) return;
+    if (!form.title_ar.trim()) return;
     try {
       setLoading(true);
       await onSaveEvent({
@@ -357,7 +358,7 @@ export function EventsManager({
                   setForm((prev) => ({
                     ...prev,
                     title_ar: val,
-                    slug: prev.slug || val.toLowerCase().replace(/\s+/g, "-"),
+                    slug: prev.slug || slugify(val),
                   }));
                 }}
                 placeholder="مثال: اللقاء السنوي لأسرة آل بوعبيد"
@@ -366,11 +367,11 @@ export function EventsManager({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "المعرف الفريد (Slug) *" : "Slug *"}</Label>
+                <Label className="text-xs">{isAr ? "المعرف الفريد (Slug) — يُنشأ تلقائياً" : "Slug (auto-generated)"}</Label>
                 <Input
-                  required
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  placeholder={slugify(form.title_ar) || "يُنشأ تلقائياً من العنوان العربي"}
                 />
               </div>
               <div className="space-y-1">

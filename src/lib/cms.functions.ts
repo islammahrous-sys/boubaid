@@ -15,6 +15,7 @@ import {
   publicGallerySlugSchema,
   publicMemberSpotlightIdSchema,
 } from "./cms.schemas";
+import { resolveUniqueSlug } from "@/lib/slugify";
 
 const SUPABASE_STORAGE_BASE_URL =
   process.env?.SUPABASE_URL ||
@@ -458,6 +459,17 @@ export const upsertCmsRow = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { id, ...rest } = data.values as { id?: string } & Record<string, unknown>;
     const payload = blankToNull(rest);
+
+    // Arabic-first slugs: the schema already derived one from the Arabic
+    // title; make it unique so duplicate titles never surface an error.
+    if (typeof payload["slug"] === "string" && payload["slug"]) {
+      payload["slug"] = await resolveUniqueSlug({
+        client: supabase as unknown as { from: (t: string) => any },
+        table: data.table,
+        base: payload["slug"] as string,
+        excludeId: id ?? null,
+      });
+    }
 
     // The table name is a validated union; the generated per-table row types
     // cannot be narrowed generically, so widen the query builder here.

@@ -46,6 +46,7 @@ import {
   restorePageRevision,
   type PageRevisionSummary,
 } from "@/lib/cms.functions";
+import { slugify } from "@/lib/slugify";
 
 export function PageBuilderDialog({
   open,
@@ -293,7 +294,7 @@ export function PageBuilderDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title_ar.trim()) return;
-    if (!form.slug.trim()) return;
+    if (!form.title_ar.trim()) return;
     try {
       setLoading(true);
       await onSave(form);
@@ -1162,7 +1163,7 @@ export function PageBuilderDialog({
                       setForm((prev) => ({
                         ...prev,
                         title_ar: title,
-                        slug: prev.slug || title.toLowerCase().replace(/\s+/g, "-"),
+                        slug: prev.slug || slugify(title, { allowSlashes: true }),
                       }));
                     }}
                     placeholder="مثال: من نحن والتاريخ"
@@ -1183,13 +1184,14 @@ export function PageBuilderDialog({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold">
-                    {isAr ? "المعرف الفريد (Slug) *" : "Slug *"}
+                    {isAr ? "المعرف الفريد (Slug) — يُنشأ تلقائياً" : "Slug (auto-generated)"}
                   </Label>
                   <Input
-                    required
                     value={form.slug}
                     onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                    placeholder="about-us"
+                    placeholder={
+                      slugify(form.title_ar, { allowSlashes: true }) || "يُنشأ تلقائياً من العنوان العربي"
+                    }
                   />
                 </div>
                 <div className="space-y-1.5">

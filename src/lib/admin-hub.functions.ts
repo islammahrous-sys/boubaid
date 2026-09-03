@@ -40,10 +40,31 @@ import {
   sortOrderUpdateSchema,
 } from "./admin-hub.schemas";
 import { z } from "zod";
+import { resolveUniqueSlug } from "@/lib/slugify";
 
 /** JSON-serializable value — satisfies TanStack Start's serialization
  *  validator unlike `unknown` while avoiding `any`. */
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+/**
+ * Arabic-first slugs: schemas already derive a URL-safe slug from the Arabic
+ * title/name, so the only remaining job here is uniqueness — duplicate Arabic
+ * titles get `-2`, `-3`, ... instead of a 23505 error shown to the editor.
+ */
+async function ensureUniqueSlug(
+  client: { from: (t: string) => any },
+  table: string,
+  payload: Record<string, any>,
+  id?: string | null,
+): Promise<void> {
+  if (typeof payload["slug"] !== "string" || !payload["slug"]) return;
+  payload["slug"] = await resolveUniqueSlug({
+    client,
+    table,
+    base: payload["slug"],
+    excludeId: id ?? null,
+  });
+}
 
 export const paginationSchema = z.object({
   page: z.number().int().min(1).max(100000).default(1),
@@ -442,6 +463,8 @@ export const upsertFamilyMember = createServerFn({ method: "POST" })
       payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
     }
 
+    await ensureUniqueSlug(supabase as any, "family_members", payload, data.id);
+
     const { data: member, error } = await supabase
       .from("family_members")
       .upsert(payload as never)
@@ -494,7 +517,14 @@ export const upsertFamilyBranch = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
 
-    const { data: branch, error } = await supabase.from("branches").upsert(data).select().single();
+    const payload: Record<string, any> = { ...data };
+    await ensureUniqueSlug(supabase as any, "branches", payload, data.id);
+
+    const { data: branch, error } = await supabase
+      .from("branches")
+      .upsert(payload as never)
+      .select()
+      .single();
 
     if (error) throw new Error(error.message);
 
@@ -617,6 +647,8 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
     if (payload.status === "published" && !payload.published_at) {
       payload.published_at = new Date().toISOString();
     }
+
+    await ensureUniqueSlug(supabase as any, "content_pages", payload, data.id);
 
     const { data: page, error } = await supabase
       .from("content_pages")
@@ -768,6 +800,8 @@ export const upsertArticle = createServerFn({ method: "POST" })
       payload.published_at = new Date().toISOString();
     }
 
+    await ensureUniqueSlug(supabase as any, "articles", payload, data.id);
+
     const { data: article, error } = await supabase
       .from("articles")
       .upsert(payload as never)
@@ -836,6 +870,8 @@ export const upsertEvent = createServerFn({ method: "POST" })
     if (!payload.id) {
       payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
     }
+
+    await ensureUniqueSlug(supabase as any, "events", payload, data.id);
 
     const { data: event, error } = await supabase
       .from("events")
@@ -948,12 +984,13 @@ export const upsertGallery = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
     // Stamp the creator only on insert -- see upsertAnnouncement.
-    const payload = data.id
+    const payload: Record<string, any> = data.id
       ? { ...data }
       : {
           ...data,
           created_by: context.userId || session?.user?.id || (context.claims?.sub as string),
         };
+    await ensureUniqueSlug(supabase as any, "galleries", payload, data.id);
     const { data: gal, error } = await supabase
       .from("galleries")
       .upsert(payload as never)
@@ -1565,6 +1602,7 @@ export const upsertBusiness = createServerFn({ method: "POST" })
     if (!data.id) {
       payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
     }
+    await ensureUniqueSlug(supabase as any, "businesses", payload, data.id);
     const { data: biz, error } = await supabase
       .from("businesses")
       .upsert(payload as never)
@@ -1794,6 +1832,7 @@ export const upsertInitiative = createServerFn({ method: "POST" })
     if (!data.id) {
       payload.created_by = context.userId || session?.user?.id || (context.claims?.sub as string);
     }
+    await ensureUniqueSlug(supabase as any, "initiatives", payload, data.id);
     const { data: init, error } = await supabase
       .from("initiatives")
       .upsert(payload as never)
