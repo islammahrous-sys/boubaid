@@ -213,6 +213,7 @@ export const globalAdminSearch = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export type DashboardStats = {
+  /** Documented individuals in the genealogy (`family_members`). */
   totalMembers: number;
   livingMembers: number;
   deceasedMembers: number;
@@ -222,7 +223,10 @@ export type DashboardStats = {
   totalEvents: number;
   totalMedia: number;
   pendingInquiries: number;
+  /** Website accounts (`profiles`). */
   totalUsers: number;
+  /** Website accounts holding the `member` role (an approved membership). */
+  approvedMembers: number;
   // Enrichment for dashboard to prevent huge array fetches
   draftArticles: number;
   pendingReceipts: number;
@@ -267,6 +271,7 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       initiativesRes,
       achieversRes,
       activityRes,
+      approvedMembersRes,
     ] = await Promise.all([
       supabase
         .from("family_members")
@@ -313,6 +318,9 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
         .select("id, action, entity_type, created_at, metadata")
         .order("created_at", { ascending: false })
         .limit(10),
+      // Website accounts that hold the `member` role (an approved membership),
+      // as opposed to `family_members` (the documented genealogy).
+      supabase.from("user_roles").select("*", { count: "exact", head: true }).eq("role", "member"),
     ]);
 
     const totalMembers = membersTotalRes.count ?? 0;
@@ -334,6 +342,7 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       totalMedia: mediaRes.count ?? 0,
       pendingInquiries: (inquiriesRes.count ?? 0) + (contactRes.count ?? 0),
       totalUsers: usersRes.count ?? 0,
+      approvedMembers: approvedMembersRes.count ?? 0,
       pendingReceipts: receiptsRes.count ?? 0,
       pendingVerifications: verificationsRes.count ?? 0,
       totalBusinesses: businessesRes.count ?? 0,
@@ -368,15 +377,22 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
         .order("sort_order", { ascending: true })
         .range(from, from + PAGE - 1);
     const relationshipPage = (from: number) =>
-      supabase.from("family_relationships").select("*").range(from, from + PAGE - 1);
+      supabase
+        .from("family_relationships")
+        .select("*")
+        .range(from, from + PAGE - 1);
 
-    const [firstMembers, branchesRes, firstRelationships, placesRes, historyRes] = await Promise.all([
-      memberPage(0),
-      supabase.from("branches").select("*").order("sort_order", { ascending: true }),
-      relationshipPage(0),
-      supabase.from("places").select("*").order("name_ar", { ascending: true }),
-      supabase.from("family_history_entries").select("*").order("sort_order", { ascending: true }),
-    ]);
+    const [firstMembers, branchesRes, firstRelationships, placesRes, historyRes] =
+      await Promise.all([
+        memberPage(0),
+        supabase.from("branches").select("*").order("sort_order", { ascending: true }),
+        relationshipPage(0),
+        supabase.from("places").select("*").order("name_ar", { ascending: true }),
+        supabase
+          .from("family_history_entries")
+          .select("*")
+          .order("sort_order", { ascending: true }),
+      ]);
 
     const members = unwrapRows(firstMembers, "أفراد العائلة / family members");
     for (let from = PAGE; members.length === from; from += PAGE) {
@@ -385,7 +401,9 @@ export const getFamilyHubData = createServerFn({ method: "GET" })
 
     const relationships = unwrapRows(firstRelationships, "صلات القرابة / relationships");
     for (let from = PAGE; relationships.length === from; from += PAGE) {
-      relationships.push(...unwrapRows(await relationshipPage(from), "صلات القرابة / relationships"));
+      relationships.push(
+        ...unwrapRows(await relationshipPage(from), "صلات القرابة / relationships"),
+      );
     }
 
     return {

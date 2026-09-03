@@ -1038,6 +1038,8 @@ function MasterAdminPage() {
                     totalMembers: overviewData?.totalMembers ?? 0,
                     livingMembers: overviewData?.livingMembers ?? 0,
                     deceasedMembers: overviewData?.deceasedMembers ?? 0,
+                    totalUsers: overviewData?.totalUsers ?? 0,
+                    approvedMembers: overviewData?.approvedMembers ?? 0,
                     pendingInquiries: overviewData?.pendingInquiries ?? 0,
                     totalArticles: overviewData?.totalArticles ?? 0,
                     draftArticles: overviewData?.draftArticles ?? 0,
@@ -1447,7 +1449,9 @@ function MasterAdminPage() {
                     (treasuryData?.contributions ?? []).filter((c) => c.status === "rejected")
                       .length
                   }
-                  totalCount={treasuryData?.totalCount ?? (treasuryData?.contributions ?? []).length}
+                  totalCount={
+                    treasuryData?.totalCount ?? (treasuryData?.contributions ?? []).length
+                  }
                   byPurpose={treasuryData?.byPurpose}
                   initialConfig={treasuryData?.treasuryConfig as never}
                   onReviewContribution={(data) =>

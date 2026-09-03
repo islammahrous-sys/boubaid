@@ -27,9 +27,14 @@ import {
 
 export type DashboardOverviewProps = {
   overviewData: {
+    /** Documented individuals in the genealogy (`family_members`). */
     totalMembers: number;
     livingMembers: number;
     deceasedMembers: number;
+    /** Website accounts (`profiles`). */
+    totalUsers: number;
+    /** Website accounts with an approved membership (`member` role). */
+    approvedMembers: number;
     pendingInquiries: number;
     totalArticles: number;
     draftArticles: number;
@@ -392,18 +397,18 @@ export function AdminDashboardOverview({
         <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
           {isAr ? "نظرة عامة على المنصة" : "Platform Overview"}
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          {/* Family Members */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3.5">
+          {/* Documented family members (genealogy) */}
           <div
             {...tileActivation(
               () => onNavigateTab("family", "members"),
-              isAr ? "عرض أفراد الأسرة" : "View family members",
+              isAr ? "عرض أفراد الأسرة الموثقين" : "View documented family members",
             )}
             className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <div className="flex items-center justify-between text-muted-foreground mb-2">
               <span className="text-xs font-semibold">
-                {isAr ? "أفراد الأسرة" : "Family Members"}
+                {isAr ? "أفراد الأسرة الموثقون" : "Documented Members"}
               </span>
               <Users className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
             </div>
@@ -411,7 +416,29 @@ export function AdminDashboardOverview({
               {overviewData.totalMembers}
             </div>
             <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium mt-1">
-              {overviewData.livingMembers} {isAr ? "على قيد الحياة" : "living"}
+              {isAr ? "في المشجرة الرسمية" : "in the official tree"}
+            </div>
+          </div>
+
+          {/* Registered website accounts */}
+          <div
+            {...tileActivation(
+              () => onNavigateTab("system", "users"),
+              isAr ? "عرض المستخدمين والحسابات" : "View user accounts",
+            )}
+            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <span className="text-xs font-semibold">
+                {isAr ? "المستخدمون المسجلون" : "Registered Users"}
+              </span>
+              <UserCheck className="w-4 h-4 text-teal-500 group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="text-2xl font-bold text-foreground font-mono">
+              {overviewData.totalUsers}
+            </div>
+            <div className="text-[11px] text-teal-600 dark:text-teal-400 font-medium mt-1">
+              {overviewData.approvedMembers} {isAr ? "عضو معتمد" : "approved members"}
             </div>
           </div>
 
@@ -587,7 +614,7 @@ export function AdminDashboardOverview({
               <Users className="w-3.5 h-3.5 mx-auto text-emerald-500 mb-1" />
               <span className="font-bold font-mono text-sm block">{overviewData.totalMembers}</span>
               <span className="text-[10px] text-muted-foreground block truncate">
-                {isAr ? "الأعضاء" : "Members"}
+                {isAr ? "أفراد موثقون" : "Documented"}
               </span>
             </div>
             <div

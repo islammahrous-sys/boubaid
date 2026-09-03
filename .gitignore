@@ -23,6 +23,11 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Local debug / scratch (session tokens, magic links, etc.)
+.lnk.json
+.sess.json
+.sessinj.txt
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
