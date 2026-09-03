@@ -41,12 +41,12 @@ import { BLOCK_DEFINITIONS, type BlockType } from "./BlockRegistry";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { ContentPageInput, ContentSectionInput } from "@/lib/admin-hub.schemas";
 import {
-import { slugify } from "@/lib/slugify";
   listGalleriesForEditor,
   listPageRevisions,
   restorePageRevision,
   type PageRevisionSummary,
 } from "@/lib/cms.functions";
+import { slugify } from "@/lib/slugify";
 
 export function PageBuilderDialog({
   open,
