@@ -292,7 +292,7 @@ const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "initiatives_hq", enabled: true, order: 5 },
   { id: "latest_news", enabled: true, order: 6 },
   { id: "family_achievers", enabled: true, order: 7 },
-  { id: "initiatives_list", enabled: true, order: 8 },
+  { id: "poem_proposal", enabled: true, order: 8 },
   { id: "upcoming_events", enabled: true, order: 9 },
   { id: "heritage_gallery", enabled: true, order: 10 },
   { id: "contact_inquiry", enabled: true, order: 11 },
