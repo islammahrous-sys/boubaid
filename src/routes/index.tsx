@@ -915,8 +915,38 @@ function HomePage() {
           </section>
         );
 
+      case "poem_proposal":
+        return (
+          <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
+            <div className="mx-auto max-w-3xl border-y border-border py-12 text-center">
+              <Eyebrow>
+                {sec.badge_ar && rtl
+                  ? sec.badge_ar
+                  : sec.badge_en && !rtl
+                    ? sec.badge_en
+                    : t(copy.poemEyebrow)}
+              </Eyebrow>
+              <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
+                {sec.title_ar && rtl
+                  ? sec.title_ar
+                  : sec.title_en && !rtl
+                    ? sec.title_en
+                    : t(copy.poemTitle)}
+              </h2>
+              <p className="measure mx-auto mt-5 text-sm leading-loose text-muted-foreground">
+                {sec.subtitle_ar && rtl
+                  ? sec.subtitle_ar
+                  : sec.subtitle_en && !rtl
+                    ? sec.subtitle_en
+                    : t(copy.poemBody)}
+              </p>
+            </div>
+          </section>
+        );
+
       case "initiatives_list":
       case "programmes":
+
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
