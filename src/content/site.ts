@@ -755,8 +755,8 @@ export const committees = [
 
 export const hqProject = {
   title: {
-    ar: "مشروع المقر الدائم لأسرة آل بوعبيد",
-    en: "Permanent Headquarters Land Project",
+    ar: "مشروع مقر مجلس الأسرة",
+    en: "Family Council Headquarters Project",
   } as BiText,
   location: {
     ar: "حي الحزام الذهبي، مدينة المبرز، محافظة الأحساء",

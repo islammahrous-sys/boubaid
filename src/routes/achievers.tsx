@@ -57,13 +57,13 @@ export const Route = createFileRoute("/achievers")({
       {
         name: "description",
         content:
-          "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة.",
+          "كفاءات ومتميزو أسرة آل بوعبيد من أبنائها وبناتها في الطب والأكاديميا والهندسة والخدمة العامة.",
       },
       { property: "og:title", content: "سجل المتميزين — آل بوعبيد" },
       {
         property: "og:description",
         content:
-          "سجل الكفاءات والمتميزين من أبناء وبنات آل بوعبيد في الطب والأكاديميا والهندسة والخدمة العامة.",
+          "كفاءات ومتميزو أسرة آل بوعبيد من أبنائها وبناتها في الطب والأكاديميا والهندسة والخدمة العامة.",
       },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/achievers") },
@@ -75,7 +75,7 @@ export const Route = createFileRoute("/achievers")({
 
 const copy = {
   eyebrow: { ar: "سجل التميز", en: "Roll of honour" } as BiText,
-  title: { ar: "سجل الكفاءات والمتميزين", en: "Register of Achievers" } as BiText,
+  title: { ar: "من كفاءات ومتميزين الأسرة", en: "Among the Family's Achievers" } as BiText,
   subtitle: {
     ar: "يقيّد هذا السجل أصحاب التحصيل العلمي والمهني من أبناء وبنات الفروع السبعة. ويُحدَّث سنوياً عند حفل التكريم بالملتقى العام.",
     en: "This register records the academic and professional achievements of the sons and daughters of the seven branches. It is updated each year at the honours ceremony of the general assembly.",
@@ -705,7 +705,7 @@ function AchieversPage() {
                   onChange={(e) => setFormData({ ...formData, nomination_reason: e.target.value })}
                   placeholder={
                     rtl
-                      ? "لماذا يستحق المرشح الإدراج في سجل الكفاءات والمتميزين؟"
+                      ? "لماذا يستحق المرشح الإدراج في سجل كفاءات ومتميزي الأسرة؟"
                       : "Why should the nominee be added to the register of achievers?"
                   }
                   className="w-full rounded-md border border-border bg-background p-3 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"

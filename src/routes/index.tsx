@@ -239,6 +239,15 @@ const copy = {
   programmesTitle: { ar: "المبادرات والبرامج", en: "Initiatives & programmes" } as BiText,
   allProgrammes: { ar: "كل المبادرات", en: "All initiatives" } as BiText,
 
+  poemEyebrow: { ar: "من وجدان الأسرة", en: "Family verse" } as BiText,
+  poemTitle: { ar: "مقترح شاعر", en: "Poet's Proposal" } as BiText,
+  poemBody: {
+    ar: "مساحة مخصصة لقصيدة الأسرة المقترحة. يُدرج النص هنا عند اعتماده من مجلس الأسرة.",
+    en: "A reserved space for the proposed family poem. The text will appear here once approved by the family council.",
+  } as BiText,
+
+
+
   hqSupportCta: { ar: "ننتظر دعمك", en: "We await your support" } as BiText,
   hqLocationLink: {
     ar: "موقع المقر على الخريطة",
@@ -292,7 +301,7 @@ const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "initiatives_hq", enabled: true, order: 5 },
   { id: "latest_news", enabled: true, order: 6 },
   { id: "family_achievers", enabled: true, order: 7 },
-  { id: "initiatives_list", enabled: true, order: 8 },
+  { id: "poem_proposal", enabled: true, order: 8 },
   { id: "upcoming_events", enabled: true, order: 9 },
   { id: "heritage_gallery", enabled: true, order: 10 },
   { id: "contact_inquiry", enabled: true, order: 11 },
@@ -906,8 +915,38 @@ function HomePage() {
           </section>
         );
 
+      case "poem_proposal":
+        return (
+          <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
+            <div className="mx-auto max-w-3xl border-y border-border py-12 text-center">
+              <Eyebrow>
+                {sec.badge_ar && rtl
+                  ? sec.badge_ar
+                  : sec.badge_en && !rtl
+                    ? sec.badge_en
+                    : t(copy.poemEyebrow)}
+              </Eyebrow>
+              <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
+                {sec.title_ar && rtl
+                  ? sec.title_ar
+                  : sec.title_en && !rtl
+                    ? sec.title_en
+                    : t(copy.poemTitle)}
+              </h2>
+              <p className="measure mx-auto mt-5 text-sm leading-loose text-muted-foreground">
+                {sec.subtitle_ar && rtl
+                  ? sec.subtitle_ar
+                  : sec.subtitle_en && !rtl
+                    ? sec.subtitle_en
+                    : t(copy.poemBody)}
+              </p>
+            </div>
+          </section>
+        );
+
       case "initiatives_list":
       case "programmes":
+
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
