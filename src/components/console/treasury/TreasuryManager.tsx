@@ -105,8 +105,8 @@ const DEFAULT_CONFIG: TreasuryConfig = {
     bank_name_en: "Alinma Bank",
     beneficiary_name_ar: "صندوق التنمية العائلية (آل بوعبيد)",
     beneficiary_name_en: "Al-Boabid Family Development Fund",
-    account_number: "99887766554433",
-    iban: "SA0305000099887766554433",
+    account_number: "",
+    iban: "",
     notes_ar:
       "الحساب البنكي الرسمي المعتمد لصندوق التنمية العائلية (آل بوعبيد) الخاضع للترخيص والإشراف المالي من المركز الوطني لتنمية القطاع غير الربحي (NCNP).",
     notes_en:
@@ -948,7 +948,7 @@ export function TreasuryManager({
                     <div className="flex justify-between items-center text-xs">
                       <span className="text-muted-foreground">{isAr ? "رقم الحساب:" : "Account No:"}</span>
                       <span className="font-mono font-bold text-foreground">
-                        {config.bank_account.account_number}
+                        {config.bank_account.account_number || (isAr ? "قيد الإعداد والاعتماد" : "Pending setup")}
                       </span>
                     </div>
 
@@ -957,24 +957,28 @@ export function TreasuryManager({
                         {isAr ? "رقم الآيبان الدولي (IBAN):" : "IBAN:"}
                       </span>
                       <div className="flex items-center justify-between bg-background p-2 rounded-lg border border-border font-mono text-xs font-bold">
-                        <span>{config.bank_account.iban}</span>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="w-6 h-6"
-                          onClick={() => {
-                            navigator.clipboard.writeText(config.bank_account.iban.replace(/\s+/g, ""));
-                            setCopiedIban(true);
-                            toast.success(isAr ? "تم نسخ الآيبان" : "IBAN copied");
-                            setTimeout(() => setCopiedIban(false), 2000);
-                          }}
-                        >
-                          {copiedIban ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-500" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5" />
-                          )}
-                        </Button>
+                        <span className={cn(!config.bank_account.iban && "text-muted-foreground font-normal text-[11px]")}>
+                          {config.bank_account.iban || (isAr ? "قيد الاعتماد من أمانة الصندوق" : "Pending official setup")}
+                        </span>
+                        {config.bank_account.iban ? (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="w-6 h-6"
+                            onClick={() => {
+                              navigator.clipboard.writeText(config.bank_account.iban.replace(/\s+/g, ""));
+                              setCopiedIban(true);
+                              toast.success(isAr ? "تم نسخ الآيبان" : "IBAN copied");
+                              setTimeout(() => setCopiedIban(false), 2000);
+                            }}
+                          >
+                            {copiedIban ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-500" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </Button>
+                        ) : null}
                       </div>
                     </div>
                   </div>
@@ -1114,14 +1118,14 @@ export function TreasuryManager({
                             bank_account: { ...config.bank_account, account_number: e.target.value },
                           })
                         }
-                        placeholder="99887766554433"
+                        placeholder={isAr ? "أدخل رقم الحساب المعتمد" : "Enter account number"}
                         className="rounded-xl font-mono text-xs"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="font-bold text-foreground">
-                        {isAr ? "رقم الآيبان الدولي (IBAN) *" : "IBAN *"}
+                        {isAr ? "رقم الآيبان الدولي (IBAN)" : "IBAN"}
                       </label>
                       <Input
                         value={config.bank_account.iban}
@@ -1134,7 +1138,7 @@ export function TreasuryManager({
                             },
                           })
                         }
-                        placeholder="SA0305000099887766554433"
+                        placeholder="SA..."
                         className="rounded-xl font-mono text-xs uppercase"
                       />
                     </div>

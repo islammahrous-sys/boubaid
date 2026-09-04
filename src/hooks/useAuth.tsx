@@ -36,6 +36,7 @@ type AuthCtx = {
    *  Gates entry to the console; each tab's actual data access is still
    *  fully enforced server-side regardless of this flag. */
   canAccessConsole: boolean;
+  refreshProfile: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -75,12 +76,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .maybeSingle(),
         ]);
         if (!active) return;
-        if (rolesRes.error) throw rolesRes.error;
         loadedFor = userId;
-        setRoles(((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role));
-        setProfile((profileRes.data as AuthProfile | null) ?? null);
+        if (!rolesRes.error && rolesRes.data) {
+          setRoles(((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role));
+        }
+        if (!profileRes.error && profileRes.data) {
+          setProfile(profileRes.data as AuthProfile);
+        }
       } catch (err) {
-        console.error("Failed to load user roles:", err);
+        console.error("Failed to load user roles and profile:", err);
       }
     };
 
@@ -98,6 +102,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(null);
         if (active) setLoading(false);
         return;
+      }
+      // Eagerly seed initial profile from session user_metadata without erasing existing avatar
+      if (next?.user?.user_metadata) {
+        const meta = next.user.user_metadata as Record<string, unknown>;
+        const nameAr = (meta.full_name_ar as string) || (meta.full_name as string) || null;
+        const nameEn = (meta.full_name_en as string) || null;
+        const avatar = (meta.avatar_path as string) || (meta.avatar_url as string) || null;
+        setProfile((prev) => ({
+          full_name_ar: prev?.full_name_ar || nameAr,
+          full_name_en: prev?.full_name_en || nameEn,
+          avatar_path: prev?.avatar_path || avatar,
+        }));
       }
       if (loadedFor !== userId) {
         await loadRoles(userId);
@@ -123,6 +139,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const refreshProfile = async () => {
+    const uid = session?.user?.id;
+    if (!uid) return;
+    try {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name_ar, full_name_en, avatar_path")
+        .eq("id", uid)
+        .maybeSingle();
+      if (data) {
+        setProfile(data as AuthProfile);
+      }
+    } catch (err) {
+      console.error("Failed to refresh profile:", err);
+    }
+  };
+
   const value = useMemo<AuthCtx>(
     () => ({
       user: session?.user ?? null,
@@ -145,6 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           ] as AppRole[]
         ).includes(r),
       ),
+      refreshProfile,
       signOut: async () => {
         const { error } = await supabase.auth.signOut();
         if (!error) return;

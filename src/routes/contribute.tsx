@@ -666,25 +666,27 @@ function ContributePage() {
                           className="text-xs sm:text-sm font-mono font-bold tracking-wider text-foreground select-all"
                           dir="ltr"
                         >
-                          {bankAccount.iban}
+                          {bankAccount.iban || (lang === "ar" ? "قيد الاعتماد من أمانة الصندوق" : "Pending official setup")}
                         </code>
-                        <button
-                          type="button"
-                          onClick={handleCopyIban}
-                          className="inline-flex items-center gap-1.5 rounded bg-bronze/10 px-2.5 py-1.5 text-xs font-medium text-bronze transition-colors hover:bg-bronze hover:text-white dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
-                        >
-                          {copiedIban ? (
-                            <>
-                              <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                              <span>{lang === "ar" ? "تم النسخ" : "Copied"}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="h-3.5 w-3.5" />
-                              <span>{lang === "ar" ? "نسخ" : "Copy"}</span>
-                            </>
-                          )}
-                        </button>
+                        {bankAccount.iban ? (
+                          <button
+                            type="button"
+                            onClick={handleCopyIban}
+                            className="inline-flex items-center gap-1.5 rounded bg-bronze/10 px-2.5 py-1.5 text-xs font-medium text-bronze transition-colors hover:bg-bronze hover:text-white dark:bg-gold/10 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
+                          >
+                            {copiedIban ? (
+                              <>
+                                <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                <span>{lang === "ar" ? "تم النسخ" : "Copied"}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="h-3.5 w-3.5" />
+                                <span>{lang === "ar" ? "نسخ" : "Copy"}</span>
+                              </>
+                            )}
+                          </button>
+                        ) : null}
                       </div>
                     </div>
                   </div>

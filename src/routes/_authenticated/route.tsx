@@ -24,20 +24,29 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
     if (typeof window === "undefined") return { user: null };
 
+    // 1. Instant check against locally stored session (0ms in-memory/localStorage).
+    // When a member signs in, the session token is already valid and present locally;
+    // querying getUser() over the wire on every route transition blocks navigation
+    // for 400-800ms while waiting for the remote Supabase Auth server.
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData.session;
+
+    if (session?.user) {
+      const now = Math.floor(Date.now() / 1000);
+      const isExpired = session.expires_at ? session.expires_at <= now : false;
+      if (!isExpired) {
+        return { user: session.user };
+      }
+    }
+
+    // 2. Only if no active session exists or token has expired, verify with auth server.
     const { data, error } = await supabase.auth.getUser();
     if (data?.user) return { user: data.user };
 
-    // `getUser()` hits the Auth server, so it also fails when the network
-    // does. Bouncing a member to the sign-in form because their train went
-    // through a tunnel is wrong, and it is not what protects this area
-    // anyway: every server function re-verifies the bearer token and RLS
-    // re-checks it in the database. Only a genuine rejection (or having no
-    // stored session at all) means they are actually signed out.
-    const { data: sessionData } = await supabase.auth.getSession();
     const rejected = !error || error.status === 401 || error.status === 403;
-    if (!sessionData.session || rejected) toSignIn(location.href);
+    if (!session || rejected) toSignIn(location.href);
 
-    return { user: sessionData.session.user };
+    return { user: session?.user ?? null };
   },
   component: AuthenticatedLayout,
 });
@@ -59,9 +68,13 @@ function AuthenticatedLayout() {
   hrefRef.current = href;
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT" || (!session && event !== "PASSWORD_RECOVERY")) {
-        void navigate({ href: `/auth?redirect=${encodeURIComponent(hrefRef.current)}` });
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        void navigate({
+          to: "/auth" as any,
+          search: { redirect: hrefRef.current } as any,
+          replace: true,
+        });
       }
     });
     return () => sub.subscription.unsubscribe();

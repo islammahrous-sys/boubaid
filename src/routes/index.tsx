@@ -24,7 +24,7 @@ import {
 } from "@/components/site/Editorial";
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
-import { HeroVideo } from "@/components/site/HeroVideo";
+import { HeroImage } from "@/components/site/HeroImage";
 import {
   getPublishedNews,
   getPublishedInitiatives,
@@ -368,16 +368,8 @@ function HomePage() {
       case "hero":
         return (
           <div key={sec.id}>
-            <HeroVideo
-              poster={
-                sec.image_path?.endsWith(".mp4")
-                  ? "/images/ahsa_oasis.png"
-                  : sec.image_path || "/images/ahsa_oasis.png"
-              }
-              videoUrl={
-                sec.custom_payload?.video_url ||
-                (sec.image_path?.endsWith(".mp4") ? sec.image_path : null)
-              }
+            <HeroImage
+              slides={sec.custom_payload?.hero_slides}
             >
               <div className="container-page flex min-h-[75vh] sm:min-h-[86vh] md:min-h-[92vh] flex-col items-center justify-center py-14 sm:py-20 md:py-24 text-center">
                 {/* Emblem */}
@@ -517,7 +509,7 @@ function HomePage() {
                   })}
                 </dl>
               </div>
-            </HeroVideo>
+            </HeroImage>
             {/* Paper-grain divider */}
             <div className="h-5 w-full paper-texture opacity-25" aria-hidden="true" />
           </div>

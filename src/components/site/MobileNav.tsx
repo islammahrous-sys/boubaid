@@ -9,6 +9,7 @@ import { siteMeta } from "@/content/site";
 import { navGroups, isRouteActive } from "@/content/navigation";
 import { getPublicNavigation, getPublicSiteSettings } from "@/lib/cms.functions";
 import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
+import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import {
   Drawer,
   DrawerContent,
@@ -30,7 +31,7 @@ const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?:
 
 export function MobileNav() {
   const { t, lang } = useLang();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
 
@@ -104,7 +105,16 @@ export function MobileNav() {
                     to={user ? "/account" : "/auth"}
                     className="flex flex-col items-center justify-center gap-1.5 p-3 rounded border border-border bg-card text-center transition-all duration-200 active:scale-95 hover:border-bronze dark:hover:border-gold"
                   >
-                    <UserRound className="h-5 w-5 text-bronze dark:text-gold" />
+                    {user ? (
+                      <SaudiCulturalAvatar
+                        src={profile?.avatar_path}
+                        alt={profile?.full_name_ar || (user?.user_metadata?.full_name_ar as string) || ""}
+                        size="sm"
+                        className="w-6 h-6 rounded-full border border-gold/40 shadow-xs"
+                      />
+                    ) : (
+                      <UserRound className="h-5 w-5 text-bronze dark:text-gold" />
+                    )}
                     <span className="text-[11px] font-bold text-foreground line-clamp-1">
                       {user ? (lang === "ar" ? "حسابي" : "Account") : (lang === "ar" ? "دخول" : "Sign in")}
                     </span>

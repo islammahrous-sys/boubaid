@@ -102,8 +102,8 @@ const DEFAULT_TREASURY_CONFIG: TreasuryConfig = {
     bank_name_en: "Alinma Bank",
     beneficiary_name_ar: "صندوق التنمية العائلية (آل بوعبيد)",
     beneficiary_name_en: "Al-Boabid Family Development Fund",
-    account_number: "99887766554433",
-    iban: "SA0305000099887766554433",
+    account_number: "",
+    iban: "",
     notes_ar:
       "الحساب البنكي الرسمي المعتمد لصندوق التنمية العائلية (آل بوعبيد) الخاضع للترخيص والإشراف المالي من المركز الوطني لتنمية القطاع غير الربحي (NCNP).",
     notes_en:
@@ -272,8 +272,8 @@ export const getMemberBankAccount = createServerFn({ method: "GET" })
         "SITE_BANK_BENEFICIARY",
         "صندوق التنمية العائلية (آل بوعبيد) | Al-Boabid Family Development Fund",
       ),
-      accountNumber: env("SITE_BANK_ACCOUNT_NUMBER", "99887766554433"),
-      iban: env("SITE_BANK_IBAN", "SA0305000099887766554433"),
+      accountNumber: env("SITE_BANK_ACCOUNT_NUMBER", ""),
+      iban: env("SITE_BANK_IBAN", ""),
     };
   });
 

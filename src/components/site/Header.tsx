@@ -17,6 +17,7 @@ import { getPublicNavigation, getPublicSiteSettings } from "@/lib/cms.functions"
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { GlobalSearchModal } from "./GlobalSearchModal";
+import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import { cn } from "@/lib/utils";
 
 /** Top-bar links shown inline before the rest fold into "More". Kept to four so
@@ -26,7 +27,7 @@ const HEADER_PRIMARY_COUNT = 4;
 
 export function Header() {
   const { t, lang } = useLang();
-  const { user, roles } = useAuth();
+  const { user, roles, profile } = useAuth();
   const canReviewTreasury = roles.includes("admin") || roles.includes("treasurer");
 
   /** Dynamic site settings from Supabase (for Salla store URL override, etc.) */
@@ -487,9 +488,18 @@ export function Header() {
 
           <Link
             to={user ? "/account" : "/auth"}
-            className="hidden items-center gap-1.5 border border-border h-8 sm:h-9 px-2.5 2xl:px-3 text-[12px] 2xl:text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md xl:inline-flex whitespace-nowrap shrink-0"
+            className="hidden items-center gap-2 border border-border h-8 sm:h-9 px-2.5 2xl:px-3 text-[12px] 2xl:text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md xl:inline-flex whitespace-nowrap shrink-0"
           >
-            <UserRound className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            {user ? (
+              <SaudiCulturalAvatar
+                src={profile?.avatar_path}
+                alt={profile?.full_name_ar || (user?.user_metadata?.full_name_ar as string) || ""}
+                size="sm"
+                className="w-5 h-5 rounded-full border border-gold/40 shadow-xs"
+              />
+            ) : (
+              <UserRound className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            )}
             <span>
               {user
                 ? lang === "ar"

@@ -120,12 +120,73 @@ function ApplyBlockedHint({ isAr }: { isAr: boolean }) {
   );
 }
 
+/**
+ * Skeleton placeholder that preserves the exact vertical geometry and layout
+ * of the profile editor form, eliminating layout thrashing and jumpy heights
+ * while the initial snapshot is resolving.
+ */
+function FormSkeleton() {
+  return (
+    <div className="space-y-5 animate-pulse" aria-busy="true">
+      {/* Avatar Customization Skeleton */}
+      <div className="p-4 rounded-xl border border-border bg-secondary/15 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+        <div className="w-20 h-20 rounded-full bg-muted/70 shrink-0" />
+        <div className="flex-1 w-full space-y-2 text-center sm:text-start">
+          <div className="h-3.5 w-36 rounded bg-muted/70 mx-auto sm:mx-0" />
+          <div className="h-3 w-56 rounded bg-muted/50 mx-auto sm:mx-0 mt-1" />
+          <div className="h-8 w-28 rounded-lg bg-muted/60 mx-auto sm:mx-0 mt-2" />
+        </div>
+      </div>
+
+      {/* Inputs Skeleton Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <div className="h-3 w-32 rounded bg-muted/70" />
+          <div className="h-9 w-full rounded-md bg-muted/50" />
+        </div>
+        <div className="space-y-1.5">
+          <div className="h-3 w-28 rounded bg-muted/70" />
+          <div className="h-9 w-full rounded-md bg-muted/50" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <div className="h-3 w-24 rounded bg-muted/70" />
+          <div className="h-9 w-full rounded-md bg-muted/50" />
+        </div>
+        <div className="space-y-1.5">
+          <div className="h-3 w-28 rounded bg-muted/70" />
+          <div className="h-9 w-full rounded-md bg-muted/50" />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="h-3 w-36 rounded bg-muted/70" />
+        <div className="h-20 w-full rounded-md bg-muted/50" />
+      </div>
+
+      <div className="p-4 rounded-xl border border-border bg-secondary/30 flex items-start justify-between gap-4">
+        <div className="space-y-1.5 flex-1">
+          <div className="h-3.5 w-44 rounded bg-muted/70" />
+          <div className="h-3 w-72 rounded bg-muted/50" />
+        </div>
+        <div className="h-6 w-11 rounded-full bg-muted/70 shrink-0" />
+      </div>
+
+      <div className="flex justify-end pt-2">
+        <div className="h-9 w-28 rounded-md bg-muted/70" />
+      </div>
+    </div>
+  );
+}
+
 function AccountPage() {
   const { lang, t } = useLang();
   const isAr = lang === "ar";
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, profile: authProfile, roles: authContextRoles, refreshProfile } = useAuth();
 
   const fetchAccount = useServerFn(getMyAccount);
   const saveProfile = useServerFn(updateMyProfile);
@@ -143,6 +204,7 @@ function AccountPage() {
   } = useQuery({
     queryKey: ["account"],
     queryFn: () => fetchAccount(),
+    refetchOnMount: true,
   });
 
   const [activeTab, setActiveTab] = useState("profile");
@@ -156,7 +218,9 @@ function AccountPage() {
     queryKey: ["my-notifications"],
     queryFn: () => fetchNotifications(),
     refetchInterval: 60_000,
+    staleTime: 1000 * 30,
   });
+  const notifications = notifData?.notifications ?? [];
   const unreadCount = notifData?.unreadCount ?? 0;
 
   const notifErrorToast = () =>
@@ -178,11 +242,15 @@ function AccountPage() {
 
   const isApprovedMember =
     data?.request?.status === "approved" ||
-    data?.roles?.includes("member") ||
-    data?.roles?.includes("admin") ||
-    data?.roles?.includes("super_admin") ||
-    data?.roles?.includes("treasurer") ||
-    isAdmin;
+    Boolean(data?.roles?.includes("member")) ||
+    Boolean(data?.roles?.includes("admin")) ||
+    Boolean(data?.roles?.includes("super_admin")) ||
+    Boolean(data?.roles?.includes("treasurer")) ||
+    Boolean(authContextRoles?.includes("member")) ||
+    Boolean(authContextRoles?.includes("admin")) ||
+    Boolean(authContextRoles?.includes("super_admin")) ||
+    Boolean(authContextRoles?.includes("treasurer")) ||
+    Boolean(isAdmin);
 
   const { data: bankAccount, isLoading: bankLoading } = useQuery({
     queryKey: ["member-bank-account"],
@@ -225,15 +293,24 @@ function AccountPage() {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [requestModalOpen, setRequestModalOpen] = useState(false);
 
-  const [form, setForm] = useState({
-    full_name_ar: "",
-    full_name_en: "",
+  // Eagerly pre-populate form with known user profile from useAuth/metadata so the
+  // member name and avatar render immediately without placeholder flicker
+  const [form, setForm] = useState(() => ({
+    full_name_ar:
+      authProfile?.full_name_ar ??
+      (user?.user_metadata?.full_name_ar as string) ??
+      (user?.user_metadata?.full_name as string) ??
+      "",
+    full_name_en:
+      authProfile?.full_name_en ??
+      (user?.user_metadata?.full_name_en as string) ??
+      "",
     branch_slug: "",
     phone: "",
     lineage_notes: "",
-    avatar_path: "",
+    avatar_path: authProfile?.avatar_path ?? "",
     show_in_directory: false,
-  });
+  }));
 
   useEffect(() => {
     if (!data?.profile) return;
@@ -248,19 +325,41 @@ function AccountPage() {
     });
   }, [data?.profile]);
 
+  useEffect(() => {
+    if (!data?.profile && authProfile) {
+      setForm((prev) => ({
+        ...prev,
+        full_name_ar: prev.full_name_ar || authProfile.full_name_ar || "",
+        full_name_en: prev.full_name_en || authProfile.full_name_en || "",
+        avatar_path: prev.avatar_path || authProfile.avatar_path || "",
+      }));
+    }
+  }, [data?.profile, authProfile]);
+
   const memberCode = "ABO-" + (user?.id || "0000").substring(0, 6).toUpperCase();
+
+  const effectiveAvatar =
+    form.avatar_path !== ""
+      ? form.avatar_path
+      : isLoading || !data?.profile
+        ? data?.profile?.avatar_path || authProfile?.avatar_path || undefined
+        : undefined;
 
   const profileCompletion = useMemo(() => {
     let score = 0;
     if (form.full_name_ar.trim()) score += 25;
     if (form.branch_slug) score += 25;
     if (form.phone.trim()) score += 25;
-    if (form.avatar_path || form.lineage_notes.trim()) score += 25;
+    if (effectiveAvatar || form.lineage_notes.trim()) score += 25;
     return score;
-  }, [form]);
+  }, [form, effectiveAvatar]);
 
+  // Generate QR code only when visiting the card tab or opening the QR modal,
+  // preventing blocking synchronous canvas generation during initial mount
   useEffect(() => {
     if (typeof window === "undefined" || !user?.id) return;
+    if (activeTab !== "card" && !qrModalOpen) return;
+    if (qrCodeDataUrl) return;
     const verifyUrl = `${window.location.origin}/verify?id=${memberCode}`;
     QRCode.toDataURL(verifyUrl, {
       margin: 1,
@@ -272,7 +371,7 @@ function AccountPage() {
     })
       .then((url) => setQrCodeDataUrl(url))
       .catch((err) => console.error("QR Code Generation Error:", err));
-  }, [user?.id, memberCode]);
+  }, [user?.id, memberCode, activeTab, qrModalOpen, qrCodeDataUrl]);
 
   const handleCopyVerificationLink = () => {
     if (typeof window === "undefined") return;
@@ -377,6 +476,7 @@ function AccountPage() {
           isAr ? "تم حفظ بيانات السجل والصورة بنجاح." : "Profile & avatar updated successfully.",
         );
         void queryClient.invalidateQueries({ queryKey: ["account"] });
+        void refreshProfile();
       } else {
         toast.error(isAr ? "تعذر حفظ البيانات." : "Failed to save profile.");
       }
@@ -484,7 +584,12 @@ function AccountPage() {
    * the application form it actually still needed. The rule below is the same
    * one the verification endpoint applies.
    */
-  const authRoles = data?.roles ?? [];
+  const authRoles =
+    data?.roles && Array.isArray(data.roles) && data.roles.length > 0
+      ? data.roles
+      : Array.isArray(authContextRoles)
+        ? authContextRoles
+        : [];
   const isSuperAdmin = authRoles.includes("super_admin");
   const isCouncilAdmin = authRoles.includes("admin") || isSuperAdmin;
   const isTreasurer = authRoles.includes("treasurer") || isCouncilAdmin;
@@ -496,7 +601,7 @@ function AccountPage() {
   const isPending = !isApproved && request?.status === "pending";
   const isRejected = !isApproved && !isPending && request?.status === "rejected";
   const isUnsubmitted = !isApproved && !isPending && !isRejected;
-  const statusKnown = !isLoading && !accountFailed;
+  const statusKnown = (!isLoading && !accountFailed) || isApproved;
 
   const selectedBranchName = branches.find((b) => b.id === form.branch_slug)?.name;
 
@@ -510,8 +615,8 @@ function AccountPage() {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <SaudiCulturalAvatar
-                  src={form.avatar_path}
-                  alt={form.full_name_ar}
+                  src={effectiveAvatar}
+                  alt={form.full_name_ar || authProfile?.full_name_ar || (user?.user_metadata?.full_name_ar as string) || ""}
                   size="xl"
                   className="w-16 h-16 sm:w-20 sm:h-20"
                 />
@@ -529,7 +634,9 @@ function AccountPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground font-naskh">
                     {form.full_name_ar ||
-                      user?.user_metadata?.full_name ||
+                      authProfile?.full_name_ar ||
+                      (user?.user_metadata?.full_name_ar as string) ||
+                      (user?.user_metadata?.full_name as string) ||
                       (isAr ? "عضو أسرة آل بوعبيد" : "Family Member")}
                   </h1>
                   {isSuperAdmin ? (
@@ -682,28 +789,36 @@ function AccountPage() {
                   <Sparkles className="w-4 h-4 text-gold" />
                   {isAr ? "اكتمال السجل والتوثيق العائلي" : "Profile & Verification Progress"}
                 </span>
-                <Badge
-                  variant={profileCompletion === 100 ? "default" : "secondary"}
-                  className="text-[10px] font-mono font-bold"
-                >
-                  {profileCompletion}%
-                </Badge>
+                {isLoading && !data ? (
+                  <span className="inline-block h-4 w-9 rounded-md bg-secondary animate-pulse" />
+                ) : (
+                  <Badge
+                    variant={profileCompletion === 100 ? "default" : "secondary"}
+                    className="text-[10px] font-mono font-bold"
+                  >
+                    {profileCompletion}%
+                  </Badge>
+                )}
               </div>
               <span className="text-[11px] text-muted-foreground font-medium">
-                {isApproved
-                  ? isAr
-                    ? "عضوية رسمية معتمدة"
-                    : "Official Verified Member"
-                  : isPending
-                    ? isAr
-                      ? "طلبك قيد المراجعة"
-                      : "Request Under Review"
-                    : isAr
-                      ? "يرجى استكمال البيانات"
-                      : "Please complete details"}
+                {isLoading && !data ? (
+                  <span className="inline-block h-3.5 w-24 rounded bg-secondary animate-pulse" />
+                ) : isApproved ? (
+                  isAr ? "عضوية رسمية معتمدة" : "Official Verified Member"
+                ) : isPending ? (
+                  isAr ? "طلبك قيد المراجعة" : "Request Under Review"
+                ) : (
+                  isAr ? "يرجى استكمال البيانات" : "Please complete details"
+                )}
               </span>
             </div>
-            <Progress value={profileCompletion} className="h-2 bg-secondary" />
+            {isLoading && !data ? (
+              <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+                <div className="h-full w-2/5 rounded-full bg-muted/60 animate-pulse" />
+              </div>
+            ) : (
+              <Progress value={profileCompletion} className="h-2 bg-secondary" />
+            )}
 
             {/* Step Checkpoints */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
@@ -770,7 +885,9 @@ function AccountPage() {
 
           {/* Quick Context Action Button */}
           <div className="shrink-0 w-full md:w-auto flex items-center gap-2">
-            {isApproved ? (
+            {isLoading && !data ? (
+              <div className="w-32 h-9 rounded-xl bg-secondary/80 animate-pulse" />
+            ) : isApproved ? (
               <Button
                 size="sm"
                 onClick={() => setActiveTab("card")}
@@ -933,10 +1050,8 @@ function AccountPage() {
                   </CardHeader>
 
                   <CardContent className="pt-6">
-                    {isLoading ? (
-                      <div className="p-8 text-center text-xs text-muted-foreground animate-pulse">
-                        {isAr ? "جاري تحميل بيانات السجل..." : "Loading record..."}
-                      </div>
+                    {isLoading && !data ? (
+                      <FormSkeleton />
                     ) : accountFailed ? (
                       // Rendering an empty form on a failed load invites the
                       // member to "save" blanks over a record that did load
@@ -976,7 +1091,7 @@ function AccountPage() {
                         <div className="p-4 rounded-xl border border-border bg-secondary/15 flex flex-col sm:flex-row items-center sm:items-start gap-4">
                           <div className="relative group shrink-0">
                             <SaudiCulturalAvatar
-                              src={form.avatar_path}
+                              src={effectiveAvatar}
                               alt={form.full_name_ar}
                               size="xl"
                               className="w-20 h-20 shadow-md ring-2 ring-primary/20"
@@ -999,7 +1114,7 @@ function AccountPage() {
                                 {isAr ? "الصورة الشخصية للعضو" : "Member Profile Picture"}
                               </Label>
                               <p className="text-[11px] text-muted-foreground mt-0.5">
-                                {form.avatar_path
+                                {effectiveAvatar
                                   ? isAr
                                     ? "تم تعيين صورة شخصية خاصة بحسابك. يمكنك استبدالها أو استعادة الرمز التراثي."
                                     : "Custom photo is set. You can replace it or reset to the heritage avatar."
@@ -1031,7 +1146,7 @@ function AccountPage() {
                                 ) : (
                                   <Upload className="w-3.5 h-3.5 text-primary" />
                                 )}
-                                {form.avatar_path
+                                {effectiveAvatar
                                   ? isAr
                                     ? "استبدال الصورة"
                                     : "Replace Photo"
@@ -1040,7 +1155,7 @@ function AccountPage() {
                                     : "Upload Photo"}
                               </Button>
 
-                              {form.avatar_path && (
+                              {effectiveAvatar && (
                                 <Button
                                   type="button"
                                   variant="ghost"
@@ -1480,7 +1595,7 @@ function AccountPage() {
                 <div className="relative my-6 flex flex-col sm:flex-row items-center justify-between gap-6">
                   <div className="flex items-center gap-4 w-full sm:w-auto">
                     <SaudiCulturalAvatar
-                      src={form.avatar_path}
+                      src={effectiveAvatar}
                       alt={form.full_name_ar}
                       size="xl"
                       className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-gold/60 shrink-0 shadow-lg"
@@ -1821,26 +1936,32 @@ function AccountPage() {
                             {isAr ? "رقم الآيبان الدولي (IBAN):" : "IBAN:"}
                           </span>
                           <div className="flex items-center justify-between bg-background p-2.5 rounded-lg border border-border font-mono text-xs">
-                            <span className="font-bold text-foreground tracking-wide">
-                              {bankAccount.iban.match(/.{1,4}/g)?.join(" ") || bankAccount.iban}
+                            <span className={cn("tracking-wide", !bankAccount.iban && "text-muted-foreground font-normal text-[11px]")}>
+                              {bankAccount.iban
+                                ? bankAccount.iban.match(/.{1,4}/g)?.join(" ") || bankAccount.iban
+                                : isAr
+                                  ? "قيد الاعتماد من أمانة الصندوق"
+                                  : "Pending official verification"}
                             </span>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="w-7 h-7 hover:bg-muted"
-                              onClick={() => {
-                                navigator.clipboard.writeText(bankAccount.iban);
-                                setCopiedIban(true);
-                                toast.success(isAr ? "تم نسخ الآيبان بنجاح" : "IBAN copied");
-                                setTimeout(() => setCopiedIban(false), 2500);
-                              }}
-                            >
-                              {copiedIban ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-500" />
-                              ) : (
-                                <Copy className="w-3.5 h-3.5" />
-                              )}
-                            </Button>
+                            {bankAccount.iban ? (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="w-7 h-7 hover:bg-muted"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(bankAccount.iban);
+                                  setCopiedIban(true);
+                                  toast.success(isAr ? "تم نسخ الآيبان بنجاح" : "IBAN copied");
+                                  setTimeout(() => setCopiedIban(false), 2500);
+                                }}
+                              >
+                                {copiedIban ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </Button>
+                            ) : null}
                           </div>
                         </div>
                         {bankAccount.notes && (
@@ -2105,14 +2226,14 @@ function AccountPage() {
                       {isAr ? "إعادة المحاولة" : "Retry"}
                     </Button>
                   </div>
-                ) : !notifData?.notifications.length ? (
+                ) : !notifications.length ? (
                   <div className="py-10 text-center text-xs text-muted-foreground border border-dashed border-border rounded-lg">
                     <Bell className="w-6 h-6 mx-auto mb-2 opacity-40" />
                     {isAr ? "لا توجد إشعارات حتى الآن." : "No notifications yet."}
                   </div>
                 ) : (
                   <ul className="divide-y divide-border">
-                    {notifData.notifications.map((n) => {
+                    {notifications.map((n) => {
                       const content = (
                         <div className="flex items-start gap-3 py-3">
                           {!n.is_read && (

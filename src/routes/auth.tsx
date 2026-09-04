@@ -1,9 +1,12 @@
 import { createFileRoute, useNavigate, useRouterState, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, ShieldCheck, UsersRound, Landmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageProvider";
+import { getMyAccount } from "@/lib/account.functions";
 import {
   TurnstileWidget,
   isTurnstileConfigured,
@@ -26,7 +29,7 @@ const DEFAULT_DESTINATION = "/account";
  * `/auth` and `/reset-password` are rejected too, since sending a freshly
  * signed-in member back to the sign-in screen just loops.
  */
-export function safeDestination(value: unknown): string {
+function safeDestination(value: unknown): string {
   if (typeof value !== "string") return DEFAULT_DESTINATION;
   const path = value.trim();
   if (!path.startsWith("/")) return DEFAULT_DESTINATION;
@@ -36,6 +39,7 @@ export function safeDestination(value: unknown): string {
 }
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "دخول الأعضاء | آل بوعبيد" },
@@ -60,6 +64,8 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const { lang } = useLang();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const fetchAccount = useServerFn(getMyAccount);
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,6 +75,8 @@ function AuthPage() {
   const [resetSent, setResetSent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
+  const navigatingRef = useRef(false);
+  const checkedSessionRef = useRef(false);
 
   // `/auth` has no `validateSearch`, so the router still exposes the parsed
   // query here — `?redirect=/admin` etc. — which `safeDestination` narrows to
@@ -78,11 +86,20 @@ function AuthPage() {
   });
   const destination = safeDestination(rawRedirect);
 
+  // Check on initial mount if the visitor already has an active session.
+  // Guarded by checkedSessionRef and navigatingRef so it NEVER re-fires or
+  // collides with an active form submission.
   useEffect(() => {
+    if (checkedSessionRef.current) return;
+    checkedSessionRef.current = true;
+
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: destination as any });
+      if (data.session && !navigatingRef.current) {
+        navigatingRef.current = true;
+        void navigate({ to: destination as any, replace: true });
+      }
     });
-  }, [navigate, destination]);
+  }, [destination, navigate]);
 
   const label = (ar: string, en: string) => (lang === "ar" ? ar : en);
 
@@ -156,10 +173,11 @@ function AuthPage() {
         // If confirmation is ever switched off, sign-up returns a live session
         // and telling them to check an inbox that will stay empty is wrong.
         if (data.session) {
+          navigatingRef.current = true;
           try {
-            await navigate({ href: destination });
+            await navigate({ to: destination as any, replace: true });
           } catch {
-            window.location.href = destination;
+            window.location.replace(destination);
           }
           return;
         }
@@ -171,22 +189,25 @@ function AuthPage() {
         );
         setPassword("");
         switchMode("signin");
+        setBusy(false);
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: email.trim().toLowerCase(),
           password,
         });
         if (error) throw error;
+        navigatingRef.current = true;
         try {
-          await navigate({ href: destination });
+          await navigate({ to: destination as any, replace: true });
         } catch {
-          window.location.href = destination;
+          window.location.replace(destination);
         }
+        return;
       }
     } catch (error) {
+      navigatingRef.current = false;
       const message = error instanceof Error ? error.message : undefined;
       toast.error(translateAuthError(message, lang));
-    } finally {
       setBusy(false);
     }
   };
@@ -196,7 +217,7 @@ function AuthPage() {
   });
 
   return (
-    <div className="flex min-h-[calc(100vh-8rem)] items-center py-10 sm:py-14">
+    <div suppressHydrationWarning className="flex min-h-[calc(100vh-8rem)] items-center py-10 sm:py-14">
       <section className="container-page w-full">
         <div className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-2xl border border-ink/10 bg-card shadow-[0_24px_80px_-24px_color-mix(in_oklab,var(--ink)_25%,transparent)] lg:min-h-[680px] lg:grid-cols-[5fr_7fr]">
           {/* ── Heritage panel ─────────────────────────────────────── */}

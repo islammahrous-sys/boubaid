@@ -55,8 +55,8 @@ export const bankAccountConfigSchema = z.object({
   bank_name_en: z.string().trim().min(2).max(120),
   beneficiary_name_ar: z.string().trim().min(2).max(160),
   beneficiary_name_en: z.string().trim().min(2).max(160),
-  account_number: z.string().trim().min(4).max(60),
-  iban: z.string().trim().min(10).max(40),
+  account_number: z.string().trim().max(60).default(""),
+  iban: z.string().trim().max(40).default(""),
   notes_ar: z.string().trim().max(500).optional().or(z.literal("")),
   notes_en: z.string().trim().max(500).optional().or(z.literal("")),
 });

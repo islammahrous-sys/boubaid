@@ -34,8 +34,8 @@ export const getRouter = () => {
     // the preload was firing but never actually being used.
     defaultPreload: "intent",
     defaultPreloadStaleTime: 10_000,
-    defaultPendingMs: 1000,
-    defaultPendingMinMs: 500,
+    defaultPendingMs: 2000,
+    defaultPendingMinMs: 0,
     defaultPendingComponent: RoutePending,
   });
 
