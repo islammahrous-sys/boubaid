@@ -239,6 +239,15 @@ const copy = {
   programmesTitle: { ar: "المبادرات والبرامج", en: "Initiatives & programmes" } as BiText,
   allProgrammes: { ar: "كل المبادرات", en: "All initiatives" } as BiText,
 
+  poemEyebrow: { ar: "من وجدان الأسرة", en: "Family verse" } as BiText,
+  poemTitle: { ar: "مقترح شاعر", en: "Poet's Proposal" } as BiText,
+  poemBody: {
+    ar: "مساحة مخصصة لقصيدة الأسرة المقترحة. يُدرج النص هنا عند اعتماده من مجلس الأسرة.",
+    en: "A reserved space for the proposed family poem. The text will appear here once approved by the family council.",
+  } as BiText,
+
+
+
   hqSupportCta: { ar: "ننتظر دعمك", en: "We await your support" } as BiText,
   hqLocationLink: {
     ar: "موقع المقر على الخريطة",
