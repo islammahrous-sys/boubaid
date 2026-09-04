@@ -56,6 +56,7 @@ import {
 import type { ArticleInput, BulkArticlesActionInput } from "@/lib/admin-hub.schemas";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
+import { PublishReadinessChecklist, type ReadinessCheckItem } from "@/components/console/common/PublishReadinessChecklist";
 import { useConfirm } from "@/hooks/useConfirm";
 import { getErrorMessage } from "@/lib/error-utils";
 
@@ -266,6 +267,107 @@ export function ArticlesManager({
       toast.success(isAr ? "تم حفظ المقال بنجاح" : "Article saved successfully");
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, isAr ? "فشل حفظ المقال" : "Failed to save"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const readinessChecks = useMemo<ReadinessCheckItem[]>(() => {
+    const slugValid = Boolean(form.slug && /^[a-z0-9-]+$/i.test(form.slug));
+    const titleArValid = Boolean(form.title_ar?.trim());
+    const contentArValid = Boolean(form.content_ar && form.content_ar.trim().length >= 20);
+    const categoryValid = Boolean(form.category_id);
+    const coverImageValid = Boolean(form.featured_media_path);
+    const englishComplete = Boolean(form.title_en?.trim() && form.content_en?.trim());
+
+    return [
+      {
+        id: "title_ar",
+        label_ar: "عنوان المقال بالعربية",
+        label_en: "Arabic Article Title",
+        passed: titleArValid,
+        required: true,
+        hint_ar: "يجب تحديد عنوان واضح للمقال بالعربية",
+        hint_en: "Clear Arabic title is required",
+        onFix: () => setEditorTab("arabic"),
+      },
+      {
+        id: "slug",
+        label_ar: "معرف الرابط الدائم (Slug)",
+        label_en: "URL Slug (ASCII)",
+        passed: slugValid,
+        required: true,
+        hint_ar: "يجب أن يتكون من أحرف إنجليزية صغيرة وأرقام وشرطات فقط",
+        hint_en: "Must be lowercase Latin letters, numbers, and hyphens",
+        onFix: () => setEditorTab("publishing"),
+      },
+      {
+        id: "category",
+        label_ar: "تصنيف المقال",
+        label_en: "Article Category",
+        passed: categoryValid,
+        required: true,
+        hint_ar: "اختر تصنيفاً مناسباً للمقال",
+        hint_en: "Select a valid category for the article",
+        onFix: () => setEditorTab("publishing"),
+      },
+      {
+        id: "content_ar",
+        label_ar: "نص المقال الكامل (العربية)",
+        label_en: "Full Article Content (AR)",
+        passed: contentArValid,
+        required: true,
+        hint_ar: "يجب ألا يقل نص المقال عن 20 حرفاً",
+        hint_en: "Must contain at least 20 characters of body text",
+        onFix: () => setEditorTab("arabic"),
+      },
+      {
+        id: "cover_image",
+        label_ar: "الصورة البارزة للغلاف",
+        label_en: "Featured Cover Image",
+        passed: coverImageValid,
+        required: false,
+        hint_ar: "يُفضل إضافة صورة غلاف بارزة للمقال من المكتبة",
+        hint_en: "Recommended: Add a cover photo from Media Library",
+        onFix: () => setEditorTab("publishing"),
+      },
+      {
+        id: "english_content",
+        label_ar: "الترجمة الإنجليزية (اختياري)",
+        label_en: "English Translation (Optional)",
+        passed: englishComplete,
+        required: false,
+        hint_ar: "إضافة العنوان والمحتوى بالإنجليزية للموقع ثنائي اللغة",
+        hint_en: "Provide English title and body for bilingual coverage",
+        onFix: () => setEditorTab("english"),
+      },
+    ];
+  }, [form]);
+
+  const handleDirectPublish = async () => {
+    if (!form.title_ar.trim()) {
+      setEditorTab("arabic");
+      toast.error(isAr ? "عنوان المقال بالعربية مطلوب" : "Arabic title is required");
+      return;
+    }
+    const slug = toArticleSlug(form.slug);
+    if (!slug) {
+      setEditorTab("publishing");
+      toast.error(isAr ? "معرف الرابط غير صالح" : "Invalid slug");
+      return;
+    }
+    try {
+      setLoading(true);
+      await onSaveArticle({
+        ...form,
+        slug,
+        status: "published",
+        published_at: form.published_at || new Date().toISOString(),
+      });
+      setFormOpen(false);
+      toast.success(isAr ? "تم اعتماد ونشر المقال بنجاح" : "Article approved & published successfully");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, isAr ? "فشل نشر المقال" : "Failed to publish"));
     } finally {
       setLoading(false);
     }
@@ -733,6 +835,14 @@ export function ArticlesManager({
                           className="h-7 text-xs bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/30 px-2 font-medium"
                           disabled={publishingId === a.id}
                           onClick={async () => {
+                            if (!a.title_ar?.trim() || !a.slug) {
+                              toast.error(
+                                isAr
+                                  ? "المقال غير مكتمل المتطلبات للنشر. يرجى فتح المقال واستكمال الحقول الإلزامية."
+                                  : "Article is missing required fields. Please edit to complete them before publishing.",
+                              );
+                              return;
+                            }
                             setPublishingId(a.id);
                             try {
                               await onSaveArticle({
@@ -1125,6 +1235,13 @@ export function ArticlesManager({
                     onCheckedChange={(checked) => setForm({ ...form, is_featured: checked })}
                   />
                 </div>
+
+                {/* Pre-Publish Readiness Checklist */}
+                <PublishReadinessChecklist
+                  checks={readinessChecks}
+                  onPublish={handleDirectPublish}
+                  isPublishing={loading}
+                />
               </TabsContent>
             </Tabs>
 

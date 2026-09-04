@@ -433,6 +433,36 @@ function ContentPage() {
         }
       />
 
+      <div className="container-page mt-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border border-primary/20 bg-primary/5 gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <p className="font-bold text-sm text-foreground">
+                {label(
+                  "تم توحيد إدارة المحتوى والإعلام في لوحة الأمانة المركزية",
+                  "Content Management is now unified in Council Console",
+                )}
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {label(
+                "تتضمن المنصة الموحدة سير النشر المتقدم، مكتبة الوسائط المركزية، والتحقق التلقائي من جاهزية النشر.",
+                "The unified console includes advanced publishing lifecycles, centralized media library picker, and pre-publish validation.",
+              )}
+            </p>
+          </div>
+          <Link
+            to="/admin"
+            search={{ domain: "content", tab: "articles" }}
+            className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
+          >
+            {label("فتح مركز المحتوى الموحد", "Open Unified Content Hub")}
+            <span className={lang === "ar" ? "rotate-180" : ""}>→</span>
+          </Link>
+        </div>
+      </div>
+
       <section className="container-page mt-10">
         <div className="flex flex-wrap gap-2 border-b border-border pb-3">
           {TABS.map((tb) => (

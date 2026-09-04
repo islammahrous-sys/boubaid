@@ -44,11 +44,9 @@ export const primaryNav: NavItem[] = [
     label: { ar: "المشاريع", en: "Projects" },
     short: { ar: "المشاريع", en: "Projects" },
   },
-  {
-    to: "/library",
-    label: { ar: "الأرشيف", en: "Archive" },
-    short: { ar: "الأرشيف", en: "Archive" },
-  },
+  // "Archive" (/library) lives in the "More" menu below — four inline items is
+  // the most the header fits alongside the action cluster at the `xl` width in
+  // English. `secondaryNav` picks it up automatically from `navGroups`.
 ];
 
 /** Secondary routes, grouped for the header dropdown and the footer. */

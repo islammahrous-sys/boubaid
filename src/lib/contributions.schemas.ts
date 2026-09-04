@@ -93,6 +93,12 @@ export const treasuryConfigSchema = z.object({
   fund_purposes: z.array(fundPurposeSchema),
   quick_amounts: z.array(z.number().positive()).default([100, 250, 500, 1000, 2500]),
   salla_store_url: z.string().trim().url().max(300),
+  /**
+   * Optional annual fundraising target in SAR. 0 / unset hides the progress
+   * bar on the admin dashboard (a real snapshot of verified + pending is
+   * shown instead of a made-up goal).
+   */
+  annual_target: z.number().min(0).max(1_000_000_000).default(0),
   application_of_funds: z.object({
     p1_ar: z.string().trim().max(1000),
     p1_en: z.string().trim().max(1000),

@@ -409,7 +409,7 @@
 @utility container-header {
   margin-inline: auto;
   width: 100%;
-  max-width: 96rem;
+  max-width: 120rem;
   padding-inline: 1.25rem;
 }
 
@@ -424,6 +424,18 @@
   .container-page,
   .container-header {
     padding-inline: 2.5rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container-header {
+    padding-inline: 3rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container-header {
+    padding-inline: 4rem;
   }
 }
 

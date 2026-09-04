@@ -18,6 +18,7 @@ import {
   markMyNotificationRead,
   markAllMyNotificationsRead,
 } from "@/lib/account.functions";
+import { MembershipRequestModal } from "@/components/account/MembershipRequestModal";
 import { getMemberBankAccount, getMyContributions } from "@/lib/contributions.functions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -222,6 +223,7 @@ function AccountPage() {
   const [copiedMemberCode, setCopiedMemberCode] = useState(false);
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
 
   const [form, setForm] = useState({
     full_name_ar: "",
@@ -383,26 +385,38 @@ function AccountPage() {
   });
 
   const apply = useMutation({
-    mutationFn: () =>
+    mutationFn: (payload?: {
+      full_name_ar?: string;
+      full_name_en?: string;
+      phone?: string;
+      branch_slug?: string;
+      father_lineage?: string;
+      notes?: string;
+    }) =>
       requestMembership({
         data: {
           full_name_ar:
-            form.full_name_ar || (user?.user_metadata?.full_name as string) || "عضو الأسرة",
-          full_name_en: form.full_name_en || "",
-          phone: form.phone || "",
-          branch_slug: form.branch_slug || "",
-          father_lineage: form.lineage_notes || "",
-          notes: form.lineage_notes || "",
+            payload?.full_name_ar ||
+            form.full_name_ar ||
+            (user?.user_metadata?.full_name as string) ||
+            "عضو الأسرة",
+          full_name_en: payload?.full_name_en ?? form.full_name_en ?? "",
+          phone: payload?.phone ?? form.phone ?? "",
+          branch_slug: payload?.branch_slug ?? form.branch_slug ?? "",
+          father_lineage: payload?.father_lineage ?? form.lineage_notes ?? "",
+          notes: payload?.notes ? payload.notes.trim() : null,
         },
       }),
     onSuccess: (result) => {
       if (result.ok) {
+        setRequestModalOpen(false);
         toast.success(
-          isAr ? "تم رفع طلب العضوية للمراجعة بنجاح." : "Membership request submitted for review.",
+          isAr ? "تم رفع طلب العضوية ورسالتك للمراجعة بنجاح." : "Membership request submitted for review.",
         );
         void queryClient.invalidateQueries({ queryKey: ["account"] });
         void queryClient.invalidateQueries({ queryKey: ["my-notifications"] });
       } else if (result.error === "already_pending") {
+        setRequestModalOpen(false);
         toast.info(
           isAr ? "لديك طلب عضوية قيد المراجعة بالفعل." : "You already have a pending request.",
         );
@@ -411,6 +425,7 @@ function AccountPage() {
         // continuing to offer the button.
         void queryClient.invalidateQueries({ queryKey: ["account"] });
       } else if (result.error === "already_member") {
+        setRequestModalOpen(false);
         toast.info(
           isAr ? "عضويتك معتمدة بالفعل، لا حاجة لتقديم طلب." : "Your membership is already active.",
         );
@@ -777,7 +792,7 @@ function AccountPage() {
                     setActiveTab("profile");
                     toast.info(isAr ? "أكمل بيانات الاسم والفرع أولاً ثم اضغط تقديم." : "Fill name & branch first.");
                   } else {
-                    apply.mutate();
+                    setRequestModalOpen(true);
                   }
                 }}
                 disabled={apply.isPending}
@@ -1333,7 +1348,7 @@ function AccountPage() {
                         </p>
                         <Button
                           type="button"
-                          onClick={() => apply.mutate()}
+                          onClick={() => setRequestModalOpen(true)}
                           disabled={apply.isPending || !form.full_name_ar.trim()}
                           className="w-full h-8 text-xs font-semibold gap-1.5"
                         >
@@ -1352,12 +1367,12 @@ function AccountPage() {
                       <div className="space-y-3">
                         <p className="text-muted-foreground leading-relaxed">
                           {isAr
-                            ? "لم تقدم طلب اعتماد عضوية حتى الآن. بعد استكمال بياناتك أعلاه، انقر لرفع طلب التوثيق الرسمي."
+                            ? "لم تقدم طلب اعتماد عضوية حتى الآن. بعد استكمال بياناتك أعلاه، انقر لرفع طلب التوثيق الرسمي مع رسالتك للمجلس."
                             : "You haven't submitted a verification request yet."}
                         </p>
                         <Button
                           type="button"
-                          onClick={() => apply.mutate()}
+                          onClick={() => setRequestModalOpen(true)}
                           disabled={apply.isPending || !form.full_name_ar.trim()}
                           className="w-full h-8 text-xs font-semibold gap-1.5"
                         >
@@ -2272,6 +2287,33 @@ function AccountPage() {
           </p>
         </DialogContent>
       </Dialog>
+
+      {/* Official Membership Verification & Council Message Modal */}
+      <MembershipRequestModal
+        open={requestModalOpen}
+        onOpenChange={setRequestModalOpen}
+        initialData={{
+          full_name_ar: form.full_name_ar,
+          full_name_en: form.full_name_en,
+          branch_slug: form.branch_slug,
+          phone: form.phone,
+          father_lineage: form.lineage_notes,
+        }}
+        branches={branches}
+        onSubmit={async (data) => {
+          // Keep the local form synced with whatever edits the user made in the modal
+          setForm((prev) => ({
+            ...prev,
+            full_name_ar: data.full_name_ar,
+            full_name_en: data.full_name_en,
+            branch_slug: data.branch_slug,
+            phone: data.phone,
+            lineage_notes: data.father_lineage,
+          }));
+          await apply.mutateAsync(data);
+        }}
+        isSubmitting={apply.isPending}
+      />
     </div>
   );
 }

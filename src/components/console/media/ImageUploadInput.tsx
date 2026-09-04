@@ -13,8 +13,10 @@ import {
   Loader2,
   FileText,
   ExternalLink,
+  HardDrive,
 } from "lucide-react";
 import { toast } from "sonner";
+import { MediaPickerModal } from "./MediaPickerModal";
 
 export interface ImageUploadInputProps {
   label?: string;
@@ -48,6 +50,7 @@ export function ImageUploadInput({
 
   const [uploading, setUploading] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -166,20 +169,31 @@ export function ImageUploadInput({
       {label && (
         <div className="flex items-center justify-between">
           <Label className="text-xs font-semibold text-foreground">{label}</Label>
-          <button
-            type="button"
-            onClick={() => setShowUrlInput(!showUrlInput)}
-            className="text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-          >
-            <LinkIcon className="w-3 h-3" />
-            {showUrlInput
-              ? isAr
-                ? "إخفاء إدخال الرابط"
-                : "Hide URL input"
-              : isAr
-                ? "إدخال رابط مخصص"
-                : "Enter custom URL"}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMediaPickerOpen(true)}
+              className="text-[11px] text-primary hover:underline transition-colors flex items-center gap-1 font-semibold cursor-pointer"
+            >
+              <HardDrive className="w-3 h-3" />
+              {isAr ? "مكتبة الوسائط" : "Media Library"}
+            </button>
+            <span className="text-muted-foreground/40 text-[10px]">•</span>
+            <button
+              type="button"
+              onClick={() => setShowUrlInput(!showUrlInput)}
+              className="text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <LinkIcon className="w-3 h-3" />
+              {showUrlInput
+                ? isAr
+                  ? "إخفاء الرابط"
+                  : "Hide URL"
+                : isAr
+                  ? "رابط مخصص"
+                  : "Custom URL"}
+            </button>
+          </div>
         </div>
       )}
 
@@ -231,6 +245,17 @@ export function ImageUploadInput({
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-2 mt-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-[11px] px-2.5 gap-1 rounded-lg border-primary/30 text-primary hover:bg-primary/10"
+                  onClick={() => setMediaPickerOpen(true)}
+                >
+                  <HardDrive className="w-3 h-3" />
+                  {isAr ? "المكتبة" : "Library"}
+                </Button>
+
                 <Button
                   type="button"
                   size="sm"
@@ -345,6 +370,15 @@ export function ImageUploadInput({
       </div>
 
       {helperText && <p className="text-[11px] text-muted-foreground">{helperText}</p>}
+
+      <MediaPickerModal
+        open={mediaPickerOpen}
+        onOpenChange={setMediaPickerOpen}
+        onSelect={(url) => onChange(url)}
+        currentValue={value}
+        defaultBucket={bucket}
+        allowPdf={allowPdf}
+      />
     </div>
   );
 }

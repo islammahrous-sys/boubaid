@@ -19,9 +19,10 @@ import { ThemeToggle } from "./ThemeToggle";
 import { GlobalSearchModal } from "./GlobalSearchModal";
 import { cn } from "@/lib/utils";
 
-/** Top-bar links shown inline before the rest fold into "More" —
- *  mirrors the length of the static `primaryNav` fallback. */
-const HEADER_PRIMARY_COUNT = 5;
+/** Top-bar links shown inline before the rest fold into "More". Kept to four so
+ *  the English labels ("Lineage & History", "Services"…) plus the right-hand
+ *  action cluster still fit within the container at the `xl` breakpoint. */
+const HEADER_PRIMARY_COUNT = 4;
 
 export function Header() {
   const { t, lang } = useLang();
@@ -46,7 +47,9 @@ export function Header() {
   });
   const liveHeaderItems = liveNav?.header ?? [];
   const usingLiveNav = liveHeaderItems.length > 0;
-  const navPrimary = usingLiveNav ? liveHeaderItems.slice(0, HEADER_PRIMARY_COUNT) : primaryNav;
+  const navPrimary = usingLiveNav
+    ? liveHeaderItems.slice(0, HEADER_PRIMARY_COUNT)
+    : primaryNav.slice(0, HEADER_PRIMARY_COUNT);
   const navSecondaryFlat = usingLiveNav ? liveHeaderItems.slice(HEADER_PRIMARY_COUNT) : null;
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -178,7 +181,7 @@ export function Header() {
 
       <div
         className={cn(
-          "container-header flex items-center justify-between gap-2 sm:gap-4 md:gap-6 xl:gap-8 py-1.5 sm:py-2 transition-[height] duration-500 ease-out",
+          "container-header flex items-center justify-between gap-2 sm:gap-3 md:gap-4 xl:gap-5 2xl:gap-8 py-1.5 sm:py-2 transition-[height] duration-500 ease-out",
           condensed ? "h-14 sm:h-16 md:h-18" : "h-16 sm:h-20 md:h-24 lg:h-28",
         )}
       >
@@ -215,7 +218,7 @@ export function Header() {
                 "truncate font-brand font-bold text-foreground transition-[color,font-size] duration-500 group-hover:text-bronze dark:group-hover:text-gold",
                 condensed
                   ? "text-sm sm:text-base rtl:text-[15px] sm:rtl:text-lg md:text-xl"
-                  : "text-base sm:text-lg rtl:text-base sm:rtl:text-xl md:text-2xl",
+                  : "text-base sm:text-lg rtl:text-base sm:rtl:text-xl md:text-xl 2xl:text-2xl",
               )}
             >
               {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
@@ -233,7 +236,10 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="relative hidden items-center gap-1.5 lg:flex" aria-label="Primary">
+        <nav
+          className="relative hidden items-center justify-center gap-0.5 2xl:gap-1.5 xl:flex flex-1 mx-2 2xl:mx-4 min-w-0"
+          aria-label="Primary"
+        >
           {navPrimary.map((n) => {
             const hasChildren = Boolean(n.children && n.children.length > 0);
             const isItemActive = isNavItemActive(pathname, n);
@@ -256,7 +262,7 @@ export function Header() {
                     aria-haspopup="true"
                     data-nav-active={isItemActive ? "true" : undefined}
                     className={cn(
-                      "active-scale flex items-center gap-1 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
+                      "active-scale flex items-center gap-1 rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
                       isItemActive
                         ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -314,7 +320,7 @@ export function Header() {
                 data-nav-active={isItemActive ? "true" : undefined}
                 aria-current={isItemActive ? "page" : undefined}
                 className={cn(
-                  "nav-link active-scale rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
+                  "nav-link active-scale rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
                   isItemActive
                     ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -339,7 +345,7 @@ export function Header() {
               aria-haspopup="true"
               data-nav-active={isSecondaryActive ? "true" : undefined}
               className={cn(
-                "active-scale flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
+                "active-scale flex items-center gap-1 rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
                 isSecondaryActive
                   ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -422,19 +428,19 @@ export function Header() {
           </div>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-1 sm:gap-1.5 md:gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-1.5 2xl:gap-2">
           {/* Quick Search Button (Wide Desktop Only) */}
           <button
             type="button"
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
-            className="hidden xl:inline-flex items-center gap-1.5 border border-border/60 bg-secondary/40 px-2.5 py-1 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="hidden xl:inline-flex items-center gap-1.5 border border-border/60 bg-secondary/40 h-8 sm:h-9 px-2 2xl:px-2.5 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer rounded-md shrink-0"
             aria-label={lang === "ar" ? "بحث في المنظومة (Ctrl+K)" : "Search portal (Ctrl+K)"}
             title="Ctrl + K"
           >
-            <Search className="w-3.5 h-3.5 text-primary" />
-            <span>{lang === "ar" ? "بحث..." : "Search..."}</span>
-            <kbd className="ms-1 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
+            <Search className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="hidden 2xl:inline">{lang === "ar" ? "بحث..." : "Search..."}</span>
+            <kbd className="hidden 2xl:inline ms-1 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
               ⌘K
             </kbd>
           </button>
@@ -444,7 +450,7 @@ export function Header() {
             type="button"
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
-            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary xl:hidden cursor-pointer"
+            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary xl:hidden cursor-pointer rounded-md shrink-0"
             aria-label={lang === "ar" ? "بحث" : "Search"}
           >
             <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -455,7 +461,7 @@ export function Header() {
             href={storeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-gold/40 bg-gold/10 text-amber-900 transition-all duration-200 hover:scale-105 hover:bg-gold hover:text-ink dark:border-gold/30 dark:bg-gold/15 dark:text-gold dark:hover:bg-gold dark:hover:text-ink cursor-pointer"
+            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-gold/40 bg-gold/10 text-amber-900 transition-all duration-200 hover:scale-105 hover:bg-gold hover:text-ink dark:border-gold/30 dark:bg-gold/15 dark:text-gold dark:hover:bg-gold dark:hover:text-ink cursor-pointer rounded-md shrink-0"
             aria-label={lang === "ar" ? "المتجر الإلكتروني" : "E-Commerce Store"}
             title={lang === "ar" ? "المتجر الإلكتروني (سلة)" : "Online Store (Salla)"}
           >
@@ -465,7 +471,7 @@ export function Header() {
             </span>
           </a>
 
-          <div className="flex items-center gap-0.5 sm:gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
             <ThemeToggle tone="default" />
             <LanguageSwitcher tone="default" />
           </div>
@@ -473,7 +479,7 @@ export function Header() {
           {canReviewTreasury ? (
             <Link
               to="/treasury"
-              className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary 2xl:inline-flex"
+              className="hidden items-center gap-1.5 border border-border h-8 sm:h-9 px-2.5 2xl:px-3 text-[12px] 2xl:text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md 2xl:inline-flex whitespace-nowrap shrink-0"
             >
               {lang === "ar" ? "الخزينة" : "Treasury"}
             </Link>
@@ -481,21 +487,23 @@ export function Header() {
 
           <Link
             to={user ? "/account" : "/auth"}
-            className="hidden items-center gap-1.5 border border-border px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary xl:inline-flex"
+            className="hidden items-center gap-1.5 border border-border h-8 sm:h-9 px-2.5 2xl:px-3 text-[12px] 2xl:text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md xl:inline-flex whitespace-nowrap shrink-0"
           >
-            <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
-            {user
-              ? lang === "ar"
-                ? "حسابي"
-                : "My account"
-              : lang === "ar"
-                ? "دخول الأعضاء"
-                : "Member sign-in"}
+            <UserRound className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>
+              {user
+                ? lang === "ar"
+                  ? "حسابي"
+                  : "My account"
+                : lang === "ar"
+                  ? "دخول الأعضاء"
+                  : "Member sign-in"}
+            </span>
           </Link>
 
           <Link
             to="/contribute"
-            className="hidden items-center border border-gold bg-gold px-4 py-2 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold xl:inline-flex"
+            className="hidden items-center border border-gold bg-gold h-8 sm:h-9 px-3 2xl:px-4 text-[12px] 2xl:text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md xl:inline-flex whitespace-nowrap shrink-0"
           >
             {lang === "ar" ? "الاشتراك" : "Subscribe"}
           </Link>

@@ -144,6 +144,36 @@ function TreasuryPage() {
         )}
       />
 
+      <div className="container-page mt-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border border-primary/20 bg-primary/5 gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <p className="font-bold text-sm text-foreground">
+                {label(
+                  "تم دمج سجل الخزينة والمساهمات في لوحة الأمانة الموحدة",
+                  "Treasury & Ledger are now unified in Council Console",
+                )}
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {label(
+                "يمكنك إدارة المساهمات والمبادرات مع المؤشرات المالية والتحقق الإداري الفوري من مكان واحد.",
+                "Manage contributions, initiatives, and financial health indicators in one centralized hub.",
+              )}
+            </p>
+          </div>
+          <Link
+            to="/admin"
+            search={{ domain: "treasury", tab: "treasury_ledger" }}
+            className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
+          >
+            {label("الانتقال إلى سجل الخزينة الموحد", "Open Unified Treasury Ledger")}
+            <span className={lang === "ar" ? "rotate-180" : ""}>→</span>
+          </Link>
+        </div>
+      </div>
+
       <section className="container-page mt-10 grid gap-4 sm:grid-cols-3">
         <div className="border border-border bg-card p-5">
           <p className="label-caps text-muted-foreground">

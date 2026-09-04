@@ -40,10 +40,12 @@ import {
   ExternalLink,
   Check,
   X,
+  Shield,
   ShieldAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
+import { NextActionCard } from "@/components/console/common/NextActionCard";
 import type { BusinessInput, MembershipRequestReviewInput } from "@/lib/admin-hub.schemas";
 import { useConfirm } from "@/hooks/useConfirm";
 import { getErrorMessage } from "@/lib/error-utils";
@@ -92,6 +94,7 @@ export function DirectoryManager({
   onSaveBusiness,
   onDeleteBusiness,
   onReviewRequest,
+  onNavigateTab,
 }: {
   businesses: BusinessRow[];
   membershipRequests: MembershipRequestRow[];
@@ -99,6 +102,7 @@ export function DirectoryManager({
   onSaveBusiness: (data: BusinessInput) => Promise<void>;
   onDeleteBusiness: (id: string) => Promise<void>;
   onReviewRequest: (data: MembershipRequestReviewInput) => Promise<void>;
+  onNavigateTab?: (domainId: string, tabId: string) => void;
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
@@ -285,8 +289,16 @@ export function DirectoryManager({
       setReqModalOpen(false);
       toast.success(
         isAr
-          ? `تم تحديث الطلب إلى: ${status === "approved" ? "معتمد" : "مرفوض"}`
+          ? `تم تحديث الطلب إلى: ${status === "approved" ? "معتمد وموثق" : "مرفوض"}`
           : `Request updated to ${status}`,
+        status === "approved" && onNavigateTab
+          ? {
+              action: {
+                label: isAr ? "إسناد الأدوار" : "Assign Role",
+                onClick: () => onNavigateTab("system", "users"),
+              },
+            }
+          : undefined,
       );
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, isAr ? "فشل تحديث الطلب" : "Failed to update"));
@@ -512,6 +524,33 @@ export function DirectoryManager({
 
           {/* Tab 2: Membership Applications */}
           <TabsContent value="requests" className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl border border-primary/20 bg-primary/5 gap-3 text-xs">
+              <div className="flex items-start gap-2.5 text-primary">
+                <UserCheck className="w-4 h-4 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold text-foreground">
+                    {isAr ? "مسار انضمام وتوثيق أفراد الأسرة" : "Family Member Verification Workflow"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                    {isAr
+                      ? "تقديم الطلب ← مراجعة النسب والفرع ← اعتماد العضوية (يمنح صفة عضو موثق تلقائياً) ← إسناد الأدوار التشغيلية من إدارة المستخدمين."
+                      : "Submission → Lineage Review → Approval (Auto-grants Member role) → Assign Operational Roles via Users Manager."}
+                  </p>
+                </div>
+              </div>
+              {onNavigateTab && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs gap-1.5 shrink-0 bg-background/80 hover:bg-background"
+                  onClick={() => onNavigateTab("system", "users")}
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  {isAr ? "إدارة المستخدمين والأدوار" : "Manage Users & Roles"}
+                </Button>
+              )}
+            </div>
+
             <div className="border border-border rounded-xl bg-card overflow-hidden">
               <Table>
                 <TableHeader>
@@ -845,6 +884,27 @@ export function DirectoryManager({
                   placeholder={isAr ? "اكتب ملاحظة أو سبب الاعتماد/الرفض..." : "Review notes..."}
                 />
               </div>
+
+              {selectedReq.status === "approved" && onNavigateTab && (
+                <NextActionCard
+                  title={isAr ? "الخطوة التالية الموصى بها: إسناد الدور والصلاحيات" : "Next Step: Assign Role & Permissions"}
+                  description={
+                    isAr
+                      ? "تم توثيق عضوية هذا المستخدم بنجاح. يمكنك الآن الانتقال إلى إدارة المستخدمين لإسناد الأدوار التشغيلية للعضو."
+                      : "This user has been verified as a family member. You can now navigate to User Roles to assign necessary operational roles."
+                  }
+                  badgeText={isAr ? "عضوية موثقة" : "Verified Member"}
+                  tone="success"
+                  primaryAction={{
+                    label: isAr ? "إدارة صلاحيات المستخدمين" : "Manage User Roles",
+                    onClick: () => {
+                      setReqModalOpen(false);
+                      onNavigateTab("system", "users");
+                    },
+                    icon: <Shield className="w-3.5 h-3.5" />,
+                  }}
+                />
+              )}
             </div>
 
             <DialogFooter className="flex sm:justify-between gap-2">

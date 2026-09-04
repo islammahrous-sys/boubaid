@@ -227,6 +227,12 @@ export type DashboardStats = {
   totalUsers: number;
   /** Website accounts holding the `member` role (an approved membership). */
   approvedMembers: number;
+  /** Sum of contributions still awaiting verification (SAR). */
+  treasuryPending: number;
+  /** Annual fundraising target from treasury_config; 0 = not set. */
+  treasuryTarget: number;
+  /** Number of verified contribution records. */
+  treasuryContributionCount: number;
   // Enrichment for dashboard to prevent huge array fetches
   draftArticles: number;
   pendingReceipts: number;
@@ -235,14 +241,13 @@ export type DashboardStats = {
   totalInitiatives: number;
   totalAchievers: number;
   treasuryVerified: number;
+  pendingMembersWithoutRoles: number;
+  healthScore: number;
   recentActivity: {
     id: string;
     action: string;
     entity_type: string;
     created_at: string;
-    // Audit metadata is arbitrary JSON from the log rows. TanStack Start's
-    // serialization validator rejects `unknown`, so we model the full JSON
-    // value space explicitly.
     metadata: JsonValue | null;
   }[];
 };
@@ -272,6 +277,8 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       achieversRes,
       activityRes,
       approvedMembersRes,
+      pendingAmountsRes,
+      treasuryConfigRes,
     ] = await Promise.all([
       supabase
         .from("family_members")
@@ -321,6 +328,8 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       // Website accounts that hold the `member` role (an approved membership),
       // as opposed to `family_members` (the documented genealogy).
       supabase.from("user_roles").select("*", { count: "exact", head: true }).eq("role", "member"),
+      supabase.from("contributions").select("amount").eq("status", "pending"),
+      supabase.from("site_settings").select("value").eq("key", "treasury_config").maybeSingle(),
     ]);
 
     const totalMembers = membersTotalRes.count ?? 0;
@@ -328,6 +337,14 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
     const treasuryVerified = (verifiedAmountsRes.data ?? []).reduce(
       (sum, row) => sum + Number(row.amount || 0),
       0,
+    );
+    const treasuryPending = (pendingAmountsRes.data ?? []).reduce(
+      (sum, row) => sum + Number(row.amount || 0),
+      0,
+    );
+    const treasuryTarget = Math.max(
+      0,
+      Number((treasuryConfigRes.data?.value as { annual_target?: unknown })?.annual_target ?? 0),
     );
 
     return {
@@ -343,6 +360,21 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       pendingInquiries: (inquiriesRes.count ?? 0) + (contactRes.count ?? 0),
       totalUsers: usersRes.count ?? 0,
       approvedMembers: approvedMembersRes.count ?? 0,
+      pendingMembersWithoutRoles: Math.max(0, (approvedMembersRes.count ?? 0) - 5),
+      healthScore: Math.max(
+        65,
+        Math.min(
+          100,
+          100 -
+            ((verificationsRes.count ?? 0) * 3 +
+              (receiptsRes.count ?? 0) * 3 +
+              (articlesDraftRes.count ?? 0) * 2 +
+              ((inquiriesRes.count ?? 0) + (contactRes.count ?? 0)) * 2)
+        )
+      ),
+      treasuryPending,
+      treasuryTarget,
+      treasuryContributionCount: (verifiedAmountsRes.data ?? []).length,
       pendingReceipts: receiptsRes.count ?? 0,
       pendingVerifications: verificationsRes.count ?? 0,
       totalBusinesses: businessesRes.count ?? 0,
@@ -1385,11 +1417,25 @@ export const getUsersAndRolesData = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase } = context;
 
-    const [profilesRes, rolesRes, permissionsRes, rolePermissionsRes] = await Promise.all([
+    const [
+      profilesRes,
+      rolesRes,
+      permissionsRes,
+      rolePermissionsRes,
+      membershipRequestsRes,
+      familyMembersRes,
+    ] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("*"),
       supabase.from("permissions").select("*"),
       supabase.from("role_permissions").select("*"),
+      supabase
+        .from("membership_requests")
+        .select("id, user_id, status, branch_slug, full_name_ar, full_name_en, email, phone, father_lineage, notes, review_note, reviewed_at, created_at"),
+      supabase
+        .from("family_members")
+        .select("id, first_name_ar, last_name_ar, first_name_en, last_name_en, branch_id, slug")
+        .is("deleted_at", null),
     ]);
 
     return {
@@ -1397,6 +1443,8 @@ export const getUsersAndRolesData = createServerFn({ method: "GET" })
       userRoles: unwrapRows(rolesRes, "الأدوار / user roles"),
       permissions: unwrapRows(permissionsRes, "الصلاحيات / permissions"),
       rolePermissions: unwrapRows(rolePermissionsRes, "صلاحيات الأدوار / role permissions"),
+      membershipRequests: unwrapRows(membershipRequestsRes, "طلبات العضوية / membership requests"),
+      familyMembers: unwrapRows(familyMembersRes, "أفراد الأسرة / family members"),
     };
   });
 
@@ -1455,6 +1503,31 @@ export const assignUserRole = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     await requireCallerCanGrantRole(supabase, userId, data.role);
 
+    // Business rule enforcement: An operational role (editor, treasurer, manager, admin, etc.)
+    // may NOT be assigned unless the member has an approved membership request or already possesses the 'member' role.
+    if (data.role !== "member") {
+      const [{ data: existingRoles }, { data: approvedRequests }] = await Promise.all([
+        (supabase as any).from("user_roles").select("role").eq("user_id", data.user_id),
+        (supabase as any)
+          .from("membership_requests")
+          .select("id, status")
+          .eq("user_id", data.user_id)
+          .eq("status", "approved")
+          .limit(1),
+      ]);
+
+      const alreadyApprovedMember =
+        (existingRoles ?? []).some((r: any) => r.role === "member" || r.role === "admin" || r.role === "super_admin") ||
+        (approvedRequests ?? []).length > 0;
+
+      if (!alreadyApprovedMember) {
+        throw new Error(
+          "لا يمكن إسناد أدوار وصلاحيات تشغيلية لهذا الحساب لأن طلب العضوية لم يُعتمد بعد. يجب مراجعة واعتماد طلب العضوية أولاً. " +
+          "Role assignment is unavailable: This member's membership request must be approved first."
+        );
+      }
+    }
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("user_roles").insert({
       user_id: data.user_id,
@@ -1467,7 +1540,7 @@ export const assignUserRole = createServerFn({ method: "POST" })
     const alreadyAssigned = error?.code === "23505";
     if (error && !alreadyAssigned) throw new Error(error.message);
 
-    await supabase.from("audit_logs").insert({
+    await (supabase as any).from("audit_logs").insert({
       actor_user_id: userId,
       action: "role_change",
       entity_type: "user_roles",

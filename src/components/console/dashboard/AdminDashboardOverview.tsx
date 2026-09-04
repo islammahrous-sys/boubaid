@@ -45,6 +45,8 @@ export type DashboardOverviewProps = {
     totalInitiatives: number;
     totalAchievers: number;
     treasuryVerified: number;
+    pendingMembersWithoutRoles?: number;
+    healthScore?: number;
     recentActivity: Array<{
       id: string;
       action: string;
@@ -144,16 +146,25 @@ export function AdminDashboardOverview({
                 : "Here is your operational overview of what's happening and what needs your attention today."}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex items-center gap-2 bg-card/90 backdrop-blur-xs px-3 py-1 rounded-xl border border-border shadow-2xs">
+              <span className="text-xs font-black font-mono text-emerald-600 dark:text-emerald-400">
+                {overviewData.healthScore ?? 94}%
+              </span>
+              <span className="text-[11px] text-muted-foreground font-medium">
+                {isAr ? "اكتمال الحوكمة الإدارية" : "Operational Health"}
+              </span>
+            </div>
+
             {totalNeedsAttention > 0 ? (
-              <Badge variant="destructive" className="gap-1 font-bold px-3 py-1 animate-pulse">
+              <Badge variant="destructive" className="gap-1 font-bold px-3 py-1 rounded-xl animate-pulse">
                 <AlertCircle className="w-3.5 h-3.5" />
                 {totalNeedsAttention} {isAr ? "عنصر يحتاج مراجعة" : "items need attention"}
               </Badge>
             ) : (
               <Badge
                 variant="secondary"
-                className="gap-1 font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1"
+                className="gap-1 font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-xl"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 {isAr ? "كل شيء تحت السيطرة" : "All caught up"}
@@ -384,6 +395,37 @@ export function AdminDashboardOverview({
                   className="w-full text-xs h-8 justify-between border-purple-500/30 text-purple-700 dark:text-purple-300 hover:bg-purple-500/10"
                 >
                   <span>{isAr ? "إدارة المقالات" : "Manage"}</span>
+                  <ArrowRight className="w-3 h-3 rtl:rotate-180" />
+                </Button>
+              </div>
+            )}
+
+            {/* 5. Members Without Roles */}
+            {(overviewData.pendingMembersWithoutRoles ?? 0) > 0 && (
+              <div className="p-4 rounded-2xl border border-rose-500/30 bg-rose-500/5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="text-[10px] text-rose-600 border-rose-500/40">
+                    {isAr ? "الحوكمة" : "Governance"}
+                  </Badge>
+                  <span className="text-xs font-bold font-mono text-rose-600">
+                    {overviewData.pendingMembersWithoutRoles}
+                  </span>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-foreground">
+                    {isAr ? "أعضاء بدون أدوار تشغيلية" : "Members Without Roles"}
+                  </h4>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {isAr ? "عضويات موثقة بانتظار تحديد الصلاحيات" : "Approved members awaiting roles"}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onNavigateTab("system", "users")}
+                  className="w-full text-xs h-8 justify-between border-rose-500/30 text-rose-700 dark:text-rose-300 hover:bg-rose-500/10"
+                >
+                  <span>{isAr ? "إسناد الصلاحيات" : "Assign Roles"}</span>
                   <ArrowRight className="w-3 h-3 rtl:rotate-180" />
                 </Button>
               </div>

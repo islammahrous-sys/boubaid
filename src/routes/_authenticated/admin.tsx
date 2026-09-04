@@ -1402,8 +1402,13 @@ function MasterAdminPage() {
                     runMutation(() => delBizMut({ data: { id } }), refreshDirectory)
                   }
                   onReviewRequest={(data) =>
-                    runMutation(() => reviewReqMut({ data }), refreshDirectory)
+                    runMutation(() => reviewReqMut({ data }), () => {
+                      refreshDirectory();
+                      refreshUsers();
+                      refreshOverview();
+                    })
                   }
+                  onNavigateTab={(d, t) => handleSelectTab(d, t)}
                 />
               ))}
 
@@ -1423,8 +1428,13 @@ function MasterAdminPage() {
                     runMutation(() => delBizMut({ data: { id } }), refreshDirectory)
                   }
                   onReviewRequest={(data) =>
-                    runMutation(() => reviewReqMut({ data }), refreshDirectory)
+                    runMutation(() => reviewReqMut({ data }), () => {
+                      refreshDirectory();
+                      refreshUsers();
+                      refreshOverview();
+                    })
                   }
+                  onNavigateTab={(d, t) => handleSelectTab(d, t)}
                 />
               ))}
 
@@ -1517,12 +1527,31 @@ function MasterAdminPage() {
                 <UsersManager
                   profiles={(usersData?.profiles ?? []) as any}
                   userRoles={(usersData?.userRoles ?? []) as any}
+                  membershipRequests={(usersData?.membershipRequests ?? []) as any}
+                  familyMembers={(usersData?.familyMembers ?? []) as any}
                   onAssignRole={(user_id, role) =>
-                    runMutation(() => assignRoleMut({ data: { user_id, role } }), refreshUsers)
+                    runMutation(() => assignRoleMut({ data: { user_id, role } }), () => {
+                      refreshUsers();
+                      refreshOverview();
+                    })
                   }
                   onRemoveRole={(user_id, role) =>
-                    runMutation(() => removeRoleMut({ data: { user_id, role } }), refreshUsers)
+                    runMutation(() => removeRoleMut({ data: { user_id, role } }), () => {
+                      refreshUsers();
+                      refreshOverview();
+                    })
                   }
+                  onReviewRequest={async (id, status, review_note) => {
+                    await runMutation(
+                      () => reviewReqMut({ data: { id, status, review_note } }),
+                      () => {
+                        refreshUsers();
+                        refreshDirectory();
+                        refreshOverview();
+                      }
+                    );
+                  }}
+                  onNavigateTab={(d, t) => handleSelectTab(d, t)}
                 />
               ))}
 
