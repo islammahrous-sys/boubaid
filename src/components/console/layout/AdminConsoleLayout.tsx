@@ -1292,8 +1292,17 @@ export function AdminConsoleLayout({
                       notificationsData.notifications.map((item) => (
                         <div
                           key={item.id}
+                          onClick={() => {
+                            if (!item.is_read && onMarkNotificationRead) {
+                              void handleMarkNotificationRead(item.id);
+                            }
+                            if (item.link) {
+                              setNotifPopoverOpen(false);
+                              window.location.href = item.link;
+                            }
+                          }}
                           className={cn(
-                            "p-2.5 rounded-xl border text-xs flex items-start gap-2.5 transition-all",
+                            "p-2.5 rounded-xl border text-xs flex items-start gap-2.5 transition-all cursor-pointer hover:bg-muted/60",
                             item.is_read
                               ? "bg-card border-border/40 text-muted-foreground opacity-75"
                               : "bg-primary/5 border-primary/20 text-foreground font-medium",
@@ -1313,27 +1322,30 @@ export function AdminConsoleLayout({
                               {isAr ? item.message_ar : item.message_en || item.message_ar}
                             </p>
                           </div>
-                          <div className="flex items-center gap-1 shrink-0">
+                          <div
+                            className="flex items-center gap-1 shrink-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             {!item.is_read && onMarkNotificationRead && (
                               <button
                                 type="button"
                                 onClick={() => void handleMarkNotificationRead(item.id)}
-                                className="text-muted-foreground hover:text-primary p-1"
+                                className="text-muted-foreground hover:text-primary p-1 rounded hover:bg-primary/10"
                                 aria-label={isAr ? "تحديد كمقروء" : "Mark as read"}
                                 title={isAr ? "تحديد كمقروء" : "Mark as read"}
                               >
-                                <Check className="w-3 h-3" />
+                                <Check className="w-3.5 h-3.5" />
                               </button>
                             )}
                             {onDeleteNotification && (
                               <button
                                 type="button"
                                 onClick={() => void handleDeleteNotification(item.id)}
-                                className="text-muted-foreground hover:text-destructive p-1"
+                                className="text-muted-foreground hover:text-destructive p-1 rounded hover:bg-destructive/10"
                                 aria-label={isAr ? "حذف الإشعار" : "Delete notification"}
                                 title={isAr ? "حذف" : "Delete"}
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             )}
                           </div>
@@ -1379,7 +1391,7 @@ export function AdminConsoleLayout({
                     {(badgeCounts.pendingVerifications ?? 0) > 0 && (
                       <button
                         onClick={() => {
-                          onSelectTab("community", "verification");
+                          onSelectTab("system", "users");
                           setNotifPopoverOpen(false);
                         }}
                         className="w-full flex items-center justify-between p-2.5 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 text-xs text-start transition-all"
@@ -1703,8 +1715,8 @@ export function AdminConsoleLayout({
                   </span>
                   <span className="text-muted-foreground">
                     {isAr
-                      ? "صندوق الرسائل، دليل الأعمال، وتوثيق العضويات."
-                      : "Inquiries, directory, and verification."}
+                      ? "صندوق الرسائل واستفسارات التواصل، ودليل المنشآت والأعمال."
+                      : "Inquiries, messages, and business directory."}
                   </span>
                 </div>
                 <div className="p-2 rounded-lg bg-card border border-border/50">
@@ -1723,8 +1735,8 @@ export function AdminConsoleLayout({
                   </span>
                   <span className="text-muted-foreground">
                     {isAr
-                      ? "المستخدمون، الصلاحيات، وسجل الأمان والرقابة."
-                      : "Access control, audit trail, and settings."}
+                      ? "المستخدمون وتوثيق العضوية، مصفوفة الصلاحيات، وسجل الأمان والرقابة."
+                      : "User accounts, verification, access control, and audit logs."}
                   </span>
                 </div>
               </div>

@@ -81,6 +81,21 @@ export const submitContribution = createServerFn({ method: "POST" })
       console.error("[contributions] insert failed", error.code, error.message);
       return { ok: false as const, error: "insert_failed" };
     }
+
+    try {
+      const { notifyAdminsAndTreasurersOnContribution } =
+        await import("@/lib/notifications.server");
+      void notifyAdminsAndTreasurersOnContribution({
+        id: userId,
+        contributorName: data.contributor_name,
+        amount: data.amount,
+        currency: data.currency,
+        userId,
+      }).catch((err) => console.error("[contributions] notification dispatch failed:", err));
+    } catch (err) {
+      console.warn("[contributions] notification hook failed:", err);
+    }
+
     return { ok: true as const };
   });
 
@@ -207,6 +222,7 @@ const DEFAULT_TREASURY_CONFIG: TreasuryConfig = {
   ],
   quick_amounts: [100, 250, 500, 1000, 2500],
   salla_store_url: "https://albouabidfamily.com/القسط-الشهري/c1360847582",
+  annual_target: 0,
   application_of_funds: {
     p1_ar:
       "تُوزَّع الموارد على ثلاثة حسابات مستقلة: حساب الزكاة، وحساب التشغيل والبرامج، وحساب مشروع المقر الدائم. ولا يجوز النقل بين الحسابات إلا بقرار من مجلس الأمناء.",
@@ -305,11 +321,13 @@ export const getPublicTreasuryConfig = createServerFn({ method: "GET" }).handler
       const fundPurposes = Array.isArray(val.fund_purposes)
         ? val.fund_purposes.filter((f: any) => f.is_active !== false)
         : DEFAULT_TREASURY_CONFIG.fund_purposes;
-      const quickAmounts = Array.isArray(val.quick_amounts) && val.quick_amounts.length > 0
-        ? val.quick_amounts
-        : DEFAULT_TREASURY_CONFIG.quick_amounts;
+      const quickAmounts =
+        Array.isArray(val.quick_amounts) && val.quick_amounts.length > 0
+          ? val.quick_amounts
+          : DEFAULT_TREASURY_CONFIG.quick_amounts;
       const sallaStoreUrl = val.salla_store_url || DEFAULT_TREASURY_CONFIG.salla_store_url;
-      const applicationOfFunds = val.application_of_funds || DEFAULT_TREASURY_CONFIG.application_of_funds;
+      const applicationOfFunds =
+        val.application_of_funds || DEFAULT_TREASURY_CONFIG.application_of_funds;
 
       return {
         tiers,
@@ -418,7 +436,9 @@ export const createManualContribution = createServerFn({ method: "POST" })
         purpose: data.purpose || null,
         reference: data.reference || null,
         status: data.status,
-        review_note: data.review_note || (data.status === "verified" ? "تم التوثيق المباشر بواسطة أمين الصندوق" : null),
+        review_note:
+          data.review_note ||
+          (data.status === "verified" ? "تم التوثيق المباشر بواسطة أمين الصندوق" : null),
         reviewed_by: data.status === "verified" ? userId : null,
         reviewed_at: data.status === "verified" ? new Date().toISOString() : null,
         created_at: data.created_at || new Date().toISOString(),
@@ -439,6 +459,23 @@ export const createManualContribution = createServerFn({ method: "POST" })
       entity_id: inserted.id,
       after_data: inserted,
     });
+
+    if (inserted.user_id && (inserted.status === "verified" || inserted.status === "rejected")) {
+      try {
+        const { notifyMemberOnContributionDecision } = await import("@/lib/notifications.server");
+        void notifyMemberOnContributionDecision(
+          inserted.user_id,
+          inserted.status,
+          Number(inserted.amount),
+          inserted.currency || "SAR",
+          inserted.review_note,
+        ).catch((err) =>
+          console.error("[contributions] manual contribution notification failed:", err),
+        );
+      } catch (err) {
+        console.warn("[contributions] notification hook failed:", err);
+      }
+    }
 
     return { ok: true as const, contribution: inserted };
   });
@@ -511,7 +548,7 @@ export const reviewContribution = createServerFn({ method: "POST" })
         reviewed_at: new Date().toISOString(),
       })
       .eq("id", data.id)
-      .select("id");
+      .select("id, user_id, amount, currency");
 
     if (error) {
       console.error("[contributions] review failed", error.code, error.message);
@@ -530,6 +567,24 @@ export const reviewContribution = createServerFn({ method: "POST" })
       entity_type: "contributions",
       entity_id: data.id,
     });
+
+    const targetUserId = updated[0]?.user_id;
+    if (targetUserId && (data.status === "verified" || data.status === "rejected")) {
+      try {
+        const { notifyMemberOnContributionDecision } = await import("@/lib/notifications.server");
+        void notifyMemberOnContributionDecision(
+          targetUserId,
+          data.status,
+          Number(updated[0].amount),
+          updated[0].currency || "SAR",
+          data.review_note,
+        ).catch((err) =>
+          console.error("[contributions] review notification dispatch failed:", err),
+        );
+      } catch (err) {
+        console.warn("[contributions] notification hook failed:", err);
+      }
+    }
 
     return { ok: true as const };
   });

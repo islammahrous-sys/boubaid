@@ -206,7 +206,7 @@ export function AdminDashboardOverview({
           </Button>
 
           <Button
-            onClick={() => onNavigateTab("community", "verification")}
+            onClick={() => onNavigateTab("system", "users")}
             className="h-12 bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-0 shadow-none font-bold justify-start gap-3 rounded-xl transition-all"
           >
             <div className="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center shrink-0">
@@ -323,7 +323,7 @@ export function AdminDashboardOverview({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => onNavigateTab("community", "verification")}
+                  onClick={() => onNavigateTab("system", "users")}
                   className="w-full text-xs h-8 justify-between border-blue-500/30 text-blue-700 dark:text-blue-300 hover:bg-blue-500/10"
                 >
                   <span>{isAr ? "مراجعة الطلبات" : "Review"}</span>

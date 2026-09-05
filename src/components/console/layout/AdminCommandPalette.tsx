@@ -26,6 +26,7 @@ import {
   Globe,
   Rocket,
   Sparkles,
+  UserCheck,
 } from "lucide-react";
 import { ADMIN_DOMAINS } from "./AdminNavigation";
 
@@ -37,6 +38,7 @@ import { ADMIN_DOMAINS } from "./AdminNavigation";
  *  instead, so a search result always opens a tab that exists. */
 const SEARCH_TAB_ALIASES: Record<string, string> = {
   contributions: "treasury_ledger",
+  verification: "users",
 };
 
 function resolveSearchTarget(category: string, tab: string): { domainId: string; tabId: string } {
@@ -65,7 +67,8 @@ export type SearchableItem = {
     | "directory"
     | "treasury"
     | "initiatives"
-    | "media";
+    | "media"
+    | "users";
   onSelect: () => void;
 };
 
@@ -128,6 +131,8 @@ export function AdminCommandPalette({
         return <Landmark className="w-4 h-4 text-yellow-500" />;
       case "initiatives":
         return <Rocket className="w-4 h-4 text-rose-500" />;
+      case "users":
+        return <UserCheck className="w-4 h-4 text-cyan-500" />;
       default:
         return <Sparkles className="w-4 h-4 text-primary" />;
     }

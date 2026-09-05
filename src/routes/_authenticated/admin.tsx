@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo, lazy, Suspense } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { toast } from "sonner";
 import { AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -256,6 +256,17 @@ function MasterAdminPage() {
       ? "overview"
       : ADMIN_DOMAINS.find((d) => d.id === activeDomainId)?.tabs[0]?.id || "overview");
 
+  // Backward-compatibility: seamlessly redirect any legacy /community/verification link or bookmark
+  // to the unified /system/users management page.
+  useEffect(() => {
+    if (activeDomainId === "community" && activeTabId === "verification") {
+      void navigate({
+        search: { domain: "system", tab: "users" },
+        replace: true,
+      });
+    }
+  }, [activeDomainId, activeTabId, navigate]);
+
   const [importExportOpen, setImportExportOpen] = useState(false);
   // Sub-switcher inside the merged "library_items" tab -- library documents
   // and museum photo collections are different enough in shape (flat items
@@ -488,7 +499,7 @@ function MasterAdminPage() {
     enabled:
       canAccessConsole &&
       activeDomainId === "community" &&
-      (activeTabId === "directory" || activeTabId === "verification"),
+      activeTabId === "directory",
     ...queryConfig,
   });
 
@@ -570,6 +581,9 @@ function MasterAdminPage() {
   });
 
   // Query Refreshes
+  const refreshOverview = () => {
+    void queryClient.invalidateQueries({ queryKey: ["admin-overview"] });
+  };
   const refreshNotifs = () => {
     void queryClient.invalidateQueries({ queryKey: ["admin-notifications"] });
   };
@@ -664,9 +678,11 @@ function MasterAdminPage() {
       ? treasuryData.contributions.filter((c: any) => c.status === "pending").length
       : (overviewData?.pendingReceipts ?? 0);
 
-    const pendingVerifications = directoryData
-      ? directoryData.membershipRequests.filter((r: any) => r.status === "pending").length
-      : (overviewData?.pendingVerifications ?? 0);
+    const pendingVerifications = usersData?.membershipRequests
+      ? usersData.membershipRequests.filter((r: any) => r.status === "pending").length
+      : directoryData?.membershipRequests
+        ? directoryData.membershipRequests.filter((r: any) => r.status === "pending").length
+        : (overviewData?.pendingVerifications ?? 0);
 
     const draftArticles = articlesData
       ? articlesData.articles.filter((a: any) => a.status === "draft").length
@@ -678,7 +694,7 @@ function MasterAdminPage() {
       pendingVerifications,
       draftArticles,
     };
-  }, [overviewData, treasuryData, directoryData, articlesData, inquiriesData]);
+  }, [overviewData, treasuryData, directoryData, articlesData, inquiriesData, usersData]);
 
   // Inbox KPI cards / filter-tab counters. These used to be passed as literal
   // zeros, so the Inquiries panel permanently reported "0 in progress" and
@@ -797,7 +813,6 @@ function MasterAdminPage() {
       case "community:inquiries":
         return Boolean(inquiriesData);
       case "community:directory":
-      case "community:verification":
         return Boolean(directoryData);
       case "treasury:treasury_ledger":
         return Boolean(treasuryData);
@@ -886,8 +901,17 @@ function MasterAdminPage() {
         onSelect: () => handleSelectTab("content", "events"),
       });
     });
+    (usersData?.profiles ?? []).forEach((u: any) => {
+      list.push({
+        id: `user-${u.id}`,
+        title: u.full_name_ar || u.full_name_en || u.email || (isAr ? "مستخدم مسجل" : "Registered User"),
+        subtitle: u.email || "",
+        category: "users",
+        onSelect: () => handleSelectTab("system", "users"),
+      });
+    });
     return list;
-  }, [familyData, directoryData, pagesData, articlesData, eventsData]);
+  }, [familyData, directoryData, pagesData, articlesData, eventsData, usersData, isAr]);
 
   const handleSelectTab = (domainId: string, tabId: string) => {
     void navigate({
@@ -1414,26 +1438,36 @@ function MasterAdminPage() {
 
             {activeDomainId === "community" &&
               activeTabId === "verification" &&
-              (directoryLoading && !directoryData ? (
-                <AdminTabSkeleton type="table" cardCount={4} />
+              (usersLoading && !usersData ? (
+                <AdminTabSkeleton type="table" cardCount={3} />
               ) : (
-                <DirectoryManager
-                  businesses={(directoryData?.businesses ?? []) as any}
-                  membershipRequests={(directoryData?.membershipRequests ?? []) as any}
-                  defaultTab="requests"
-                  onSaveBusiness={(data) =>
-                    runMutation(() => saveBizMut({ data }), refreshDirectory)
-                  }
-                  onDeleteBusiness={(id) =>
-                    runMutation(() => delBizMut({ data: { id } }), refreshDirectory)
-                  }
-                  onReviewRequest={(data) =>
-                    runMutation(() => reviewReqMut({ data }), () => {
-                      refreshDirectory();
+                <UsersManager
+                  profiles={(usersData?.profiles ?? []) as any}
+                  userRoles={(usersData?.userRoles ?? []) as any}
+                  membershipRequests={(usersData?.membershipRequests ?? []) as any}
+                  familyMembers={(usersData?.familyMembers ?? []) as any}
+                  onAssignRole={(user_id, role) =>
+                    runMutation(() => assignRoleMut({ data: { user_id, role } }), () => {
                       refreshUsers();
                       refreshOverview();
                     })
                   }
+                  onRemoveRole={(user_id, role) =>
+                    runMutation(() => removeRoleMut({ data: { user_id, role } }), () => {
+                      refreshUsers();
+                      refreshOverview();
+                    })
+                  }
+                  onReviewRequest={async (id, status, review_note) => {
+                    await runMutation(
+                      () => reviewReqMut({ data: { id, status, review_note } }),
+                      () => {
+                        refreshUsers();
+                        refreshDirectory();
+                        refreshOverview();
+                      },
+                    );
+                  }}
                   onNavigateTab={(d, t) => handleSelectTab(d, t)}
                 />
               ))}

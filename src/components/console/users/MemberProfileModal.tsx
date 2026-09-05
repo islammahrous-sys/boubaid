@@ -203,35 +203,33 @@ export function MemberProfileModal({
       label_en: "Lineage Verified",
       description_ar: isMembershipApproved
         ? "تمت مراجعة النسب وتأكيد الانتساب"
-        : "بانتظار تدقيق الأمانة",
-      description_en: isMembershipApproved ? "Lineage confirmed" : "Awaiting review",
+        : isMembershipPending
+        ? "بانتظار تدقيق الأمانة"
+        : "متاح للاعتماد المباشر من الأمانة",
+      description_en: isMembershipApproved
+        ? "Lineage confirmed"
+        : isMembershipPending
+        ? "Awaiting review"
+        : "Available for direct council approval",
       status: isMembershipApproved
         ? "completed"
         : isMembershipPending
         ? "current"
         : isMembershipRejected
         ? "rejected"
-        : "blocked",
-      blockedReason_ar: "يتطلب تقديم ومراجعة طلب العضوية أولاً",
-      blockedReason_en: "Requires membership application first",
+        : "upcoming",
     },
     {
       id: "role",
       label_ar: "إسناد الأدوار والصلاحيات",
       label_en: "Role & Access",
-      description_ar: currentRoles.length > 1
+      description_ar: currentRoles.length > 0
         ? `${currentRoles.length} أدوار مسندة`
-        : isMembershipApproved
-        ? "جاهز لإسناد الأدوار الإدارية"
-        : "مقفل حتى اعتماد العضوية",
-      description_en: currentRoles.length > 1 ? `${currentRoles.length} roles` : "Ready for assignment",
-      status: !isMembershipApproved
-        ? "blocked"
-        : currentRoles.some((r) => r !== "member")
+        : "إسناد الأدوار متاح للمشرف",
+      description_en: currentRoles.length > 0 ? `${currentRoles.length} roles` : "Ready for assignment",
+      status: currentRoles.some((r) => r !== "member")
         ? "completed"
         : "current",
-      blockedReason_ar: "لا يمكن إسناد الأدوار قبل اعتماد طلب العضوية",
-      blockedReason_en: "Role assignment is blocked until membership is approved",
     },
     {
       id: "active",
@@ -241,9 +239,33 @@ export function MemberProfileModal({
         ? "الخدمات والبطاقة الرقمية مفعّلة"
         : "الحساب غير مفعّل للخدمات الخاصة",
       description_en: isMembershipApproved ? "Digital ID & services active" : "Inactive",
-      status: isMembershipApproved ? "completed" : "blocked",
+      status: isMembershipApproved ? "completed" : "upcoming",
     },
   ];
+
+  const handleDirectGrantMembership = async () => {
+    if (!profile) return;
+    const userName = profile.full_name_ar || profile.full_name_en || profile.email || (isAr ? "هذا المستخدم" : "this user");
+    const ok = await confirm({
+      title: isAr
+        ? `اعتماد وتوثيق عضوية "${userName}" مباشرة؟`
+        : `Grant verified membership to "${userName}"?`,
+      description: isAr
+        ? "سيحصل المستخدم فورًا على صفة عضو معتمد في أسرة آل بوعبيد والوصول إلى بوابة الأعضاء وبطاقة العضوية الرقمية دون اشتراط تقديم طلب مسبق."
+        : "The user will immediately receive verified membership, digital ID, and access to member portals without requiring a prior application.",
+    });
+    if (!ok) return;
+
+    try {
+      setAssigning(true);
+      await onAssignRole(profile.id, "member");
+      toast.success(isAr ? "تم توثيق ومنح العضوية بنجاح" : "Verified membership granted successfully");
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? "فشل منح العضوية" : "Failed to grant membership"));
+    } finally {
+      setAssigning(false);
+    }
+  };
 
   const handleQuickApprove = async () => {
     if (!membershipRequest || !onReviewRequest) return;
@@ -259,15 +281,6 @@ export function MemberProfileModal({
   };
 
   const handleAddRole = async () => {
-    if (!isMembershipApproved) {
-      toast.error(
-        isAr
-          ? "لا يمكن إسناد دور إداري لهذا الحساب قبل اعتماد طلب العضوية أولاً."
-          : "Cannot assign roles before membership is approved."
-      );
-      return;
-    }
-
     if (currentRoles.includes(roleToAssign)) {
       toast.info(isAr ? "المستخدم يملك هذا الدور بالفعل" : "User already has this role");
       return;
@@ -403,6 +416,27 @@ export function MemberProfileModal({
                 label_ar: "عرض تفاصيل الطلب",
                 label_en: "View Details",
                 onClick: () => setActiveTab("membership"),
+              }}
+            />
+          ) : !isMembershipApproved ? (
+            <NextActionCard
+              tone="primary"
+              title_ar="منح صفة عضو معتمد مباشرة"
+              title_en="Grant Direct Membership"
+              description_ar="هذا الحساب مسجل في المنظومة. يمكنك منحه صفة عضو معتمد في أسرة آل بوعبيد بضغطة زر دون الحاجة لتقديم طلب توثيق مسبق."
+              description_en="User is registered. You can grant verified family membership directly without requiring an application."
+              badge_ar="حساب مسجل"
+              badge_en="Registered Account"
+              primaryAction={{
+                label_ar: "منح العضوية المعتمدة الآن",
+                label_en: "Grant Verified Membership Now",
+                onClick: handleDirectGrantMembership,
+                loading: assigning,
+              }}
+              secondaryAction={{
+                label_ar: "إسناد دور إداري",
+                label_en: "Assign Role",
+                onClick: () => setActiveTab("roles"),
               }}
             />
           ) : isMembershipApproved && currentRoles.filter((r) => r !== "member").length === 0 ? (
@@ -667,16 +701,29 @@ export function MemberProfileModal({
                   )}
                 </div>
               ) : (
-                <div className="p-8 text-center border border-border rounded-2xl bg-card space-y-2">
+                <div className="p-8 text-center border border-border rounded-2xl bg-card space-y-3">
                   <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto" />
                   <p className="text-xs font-bold text-foreground">
                     {isAr ? "لم يقم هذا المستخدم بتقديم طلب عضوية بعد" : "No membership request on record"}
                   </p>
                   <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
                     {isAr
-                      ? "يمكن للعضو تقديم طلب التوثيق من حسابه الشخصي في المنصة."
-                      : "The user can submit their lineage verification from their account portal."}
+                      ? "يمكن للأمانة منحه صفة عضو معتمد وتفعيل بطاقته وخدماته مباشرة دون اشتراط تقديم طلب مسبق."
+                      : "The council can grant verified membership and activate digital services directly without requiring a prior application."}
                   </p>
+                  {!isMembershipApproved && (
+                    <div className="pt-2">
+                      <Button
+                        size="sm"
+                        disabled={assigning}
+                        onClick={handleDirectGrantMembership}
+                        className="h-8 text-xs font-bold gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>{isAr ? "منح صفة عضو معتمد مباشرة الآن" : "Grant Verified Membership Directly"}</span>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </TabsContent>
@@ -684,18 +731,24 @@ export function MemberProfileModal({
             {/* Tab 3: Roles & Permissions */}
             <TabsContent value="roles" className="space-y-4">
               {!isMembershipApproved && (
-                <div className="p-3.5 rounded-xl border border-amber-500/40 bg-amber-500/10 flex items-start gap-2.5 text-xs text-amber-800 dark:text-amber-300">
-                  <Lock className="w-4 h-4 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold block">
-                      {isAr ? "إسناد الأدوار مقفل حالياً" : "Role assignment is currently locked"}
-                    </span>
-                    <span className="text-[11px] opacity-90">
+                <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-emerald-800 dark:text-emerald-300">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>
                       {isAr
-                        ? "يجب اعتماد وتوثيق طلب العضوية أولاً قبل إسناد الأدوار الإدارية."
-                        : "Membership must be reviewed and approved before administrative roles can be granted."}
+                        ? "هذا الحساب لم يتم توثيق عضويته بعد. يمكنك إسناد دور 'عضو معتمد' أو أي دور إداري مباشرة."
+                        : "This account is unverified. You can assign 'Verified Member' or any administrative role directly."}
                     </span>
                   </div>
+                  <Button
+                    size="sm"
+                    disabled={assigning}
+                    onClick={handleDirectGrantMembership}
+                    className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 gap-1 font-medium rounded-lg"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>{isAr ? "منح العضوية" : "Make Member"}</span>
+                  </Button>
                 </div>
               )}
 
@@ -747,37 +800,35 @@ export function MemberProfileModal({
               </div>
 
               {/* Add Role Form */}
-              {isMembershipApproved && (
-                <div className="p-4 rounded-2xl border border-primary/20 bg-primary/5 space-y-3">
-                  <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                    <Plus className="w-4 h-4 text-primary" />
-                    <span>{isAr ? "إسناد دور وصلاحيات جديدة" : "Assign New Role"}</span>
-                  </h4>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                    <select
-                      value={roleToAssign}
-                      onChange={(e) => setRoleToAssign(e.target.value)}
-                      className="h-8.5 text-xs rounded-xl border border-border bg-background px-3 flex-1"
-                    >
-                      {ROLE_DEFINITIONS.filter((r) => r.role !== "member" && !currentRoles.includes(r.role)).map((r) => (
-                        <option key={r.role} value={r.role}>
-                          {isAr ? r.label_ar : r.label_en} ({r.role})
-                        </option>
-                      ))}
-                    </select>
+              <div className="p-4 rounded-2xl border border-primary/20 bg-primary/5 space-y-3">
+                <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Plus className="w-4 h-4 text-primary" />
+                  <span>{isAr ? "إسناد دور وصلاحيات جديدة" : "Assign New Role"}</span>
+                </h4>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <select
+                    value={roleToAssign}
+                    onChange={(e) => setRoleToAssign(e.target.value)}
+                    className="h-8.5 text-xs rounded-xl border border-border bg-background px-3 flex-1"
+                  >
+                    {ROLE_DEFINITIONS.filter((r) => !currentRoles.includes(r.role)).map((r) => (
+                      <option key={r.role} value={r.role}>
+                        {isAr ? r.label_ar : r.label_en} ({r.role})
+                      </option>
+                    ))}
+                  </select>
 
-                    <Button
-                      size="sm"
-                      disabled={assigning || !isMembershipApproved}
-                      onClick={handleAddRole}
-                      className="h-8.5 text-xs font-bold gap-1.5 rounded-xl bg-primary text-primary-foreground shrink-0"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>{isAr ? "إسناد الدور" : "Assign"}</span>
-                    </Button>
-                  </div>
+                  <Button
+                    size="sm"
+                    disabled={assigning}
+                    onClick={handleAddRole}
+                    className="h-8.5 text-xs font-bold gap-1.5 rounded-xl bg-primary text-primary-foreground shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>{isAr ? "إسناد الدور" : "Assign"}</span>
+                  </Button>
                 </div>
-              )}
+              </div>
             </TabsContent>
 
             {/* Tab 4: Genealogy Link */}

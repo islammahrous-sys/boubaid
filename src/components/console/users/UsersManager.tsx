@@ -159,17 +159,34 @@ export function UsersManager({
     return def ? (isAr ? def.label_ar : def.label_en) : role;
   };
 
+  const handleMakeMember = async (user: ProfileRow) => {
+    const userName = getUserDisplayName(user);
+    const ok = await confirm({
+      title: isAr
+        ? `اعتماد وتوثيق عضوية "${userName}" مباشرة؟`
+        : `Grant verified membership to "${userName}"?`,
+      description: isAr
+        ? "سيحصل المستخدم فورًا على صفة عضو معتمد في أسرة آل بوعبيد والوصول إلى بوابة الأعضاء وبطاقة العضوية الرقمية دون اشتراط تقديم طلب مسبق."
+        : "The user will immediately gain verified membership and access to the members portal and digital ID without requiring an application.",
+    });
+    if (!ok) return;
+    try {
+      setLoading(true);
+      await onAssignRole(user.id, "member");
+      toast.success(
+        isAr
+          ? "تم توثيق ومنح العضوية بنجاح"
+          : "Verified membership granted successfully"
+      );
+    } catch (err: any) {
+      toast.error(err.message || (isAr ? "فشل منح العضوية" : "Failed to grant membership"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddRole = async () => {
     if (!roleModalUser || !selectedRoleToAdd) return;
-
-    if (selectedRoleToAdd !== "member" && !isApprovedMember(roleModalUser.id)) {
-      toast.error(
-        isAr
-          ? "لا يمكن إسناد أدوار وصلاحيات لهذا العضو قبل اعتماد وتوثيق طلب العضوية أولاً."
-          : "Cannot assign roles: Membership request must be approved first."
-      );
-      return;
-    }
 
     const userName = getUserDisplayName(roleModalUser);
     const roleLabel = getRoleLabel(selectedRoleToAdd);
@@ -350,12 +367,12 @@ export function UsersManager({
           </div>
           <div>
             <h3 className="text-sm font-bold text-foreground">
-              {isAr ? "إدارة المستخدمين وسجل أعضاء الأسرة" : "User & Family Members Management"}
+              {isAr ? "إدارة المستخدمين وتوثيق العضوية" : "User Accounts & Verification Management"}
             </h3>
             <p className="text-[11px] text-muted-foreground">
               {isAr
-                ? "مراجعة طلبات التوثيق، إدارة بطاقات العضوية، وإسناد الصلاحيات الإدارية لمجلس الأسرة"
-                : "Review verification requests, manage digital IDs, and assign council operational roles"}
+                ? "مراجعة طلبات التوثيق والانضمام، وإدارة الحسابات المسجلة، وإسناد الصلاحيات الإدارية"
+                : "Review verification applications, manage registered accounts, and assign administrative roles"}
             </p>
           </div>
         </div>
@@ -440,8 +457,8 @@ export function UsersManager({
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {isAr
-                  ? "حسابات مسجلة عبر الموقع ولم ترفع طلب توثيق رسمي بعد. إسناد الصلاحيات مقفل نظامياً حتى تقديم وتوثيق طلب العضوية."
-                  : "Users who signed up but haven't submitted a lineage application. Roles remain locked until verified."}
+                  ? "حسابات مسجلة عبر الموقع ولم ترفع طلب توثيق بعد. يمكن للمشرف اعتمادهم كأعضاء موثقين أو إسناد الصلاحيات لهم مباشرة دون اشتراط تقديم طلب مسبق."
+                  : "Registered users who haven't submitted an application. Admins can grant them verified membership or assign roles directly without a prior request."}
               </p>
             </div>
           </div>
@@ -668,6 +685,23 @@ export function UsersManager({
                     <TableCell className="text-center">{getUserStatusBadge(user.status)}</TableCell>
                     <TableCell className="text-end">
                       <div className="flex items-center justify-end gap-1.5">
+                        {!approved && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs gap-1 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10 font-medium"
+                            onClick={() => handleMakeMember(user)}
+                            title={
+                              isAr
+                                ? "اعتماد وتوثيق العضوية مباشرة دون انتظار تقديم طلب"
+                                : "Grant verified membership directly without waiting for an application"
+                            }
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>{isAr ? "منح العضوية" : "Make Member"}</span>
+                          </Button>
+                        )}
+
                         {isPending ? (
                           <Button
                             size="sm"
@@ -679,7 +713,7 @@ export function UsersManager({
                             title={isAr ? "الاطلاع على بيانات العضو ورسالته واعتماده" : "Review application and message"}
                           >
                             <Eye className="w-3.5 h-3.5" />
-                            <span>{isAr ? "مراجعة الطلب والرسالة" : "Review Request"}</span>
+                            <span>{isAr ? "مراجعة الطلب" : "Review"}</span>
                           </Button>
                         ) : approved ? (
                           <Button
@@ -707,34 +741,19 @@ export function UsersManager({
                             title={isAr ? "عرض تفاصيل الحساب" : "Account details"}
                           >
                             <User className="w-3 h-3" />
-                            <span>{isAr ? "تفاصيل الحساب" : "Account"}</span>
+                            <span>{isAr ? "التفاصيل" : "Details"}</span>
                           </Button>
                         )}
 
                         <Button
-                          variant={approved ? "outline" : "ghost"}
+                          variant="outline"
                           size="sm"
-                          className={cn(
-                            "h-7 text-xs gap-1",
-                            !approved && "opacity-60 text-muted-foreground"
-                          )}
+                          className="h-7 text-xs gap-1 text-foreground hover:bg-muted"
                           onClick={() => setRoleModalUser(user)}
-                          title={
-                            !approved
-                              ? isAr
-                                ? "الصلاحيات مقفلة: يجب اعتماد طلب العضوية أولاً"
-                                : "Roles locked: Must approve membership first"
-                              : isAr
-                              ? "إدارة الصلاحيات"
-                              : "Manage Roles"
-                          }
+                          title={isAr ? "إدارة الصلاحيات والأدوار" : "Manage Roles"}
                         >
-                          {!approved ? (
-                            <Lock className="w-3 h-3 text-amber-600" />
-                          ) : (
-                            <Shield className="w-3 h-3" />
-                          )}
-                          <span>{approved ? (isAr ? "الصلاحيات" : "Roles") : (isAr ? "الصلاحيات (مقفل)" : "Roles (Locked)")}</span>
+                          <Shield className="w-3 h-3 text-primary" />
+                          <span>{isAr ? "الصلاحيات" : "Roles"}</span>
                         </Button>
                       </div>
                     </TableCell>
@@ -827,39 +846,27 @@ export function UsersManager({
               </div>
 
               {!isApprovedMember(roleModalUser.id) && (
-                <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 space-y-2">
-                  <div className="flex items-start gap-2 text-amber-700 dark:text-amber-300">
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-xs">
-                        {isAr ? "شرط أساسي: اعتماد طلب العضوية أولاً" : "Prerequisite: Membership Approval Required"}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                        {getMembershipRequest(roleModalUser.id)?.status === "pending"
-                          ? isAr
-                            ? "هذا العضو لديه طلب عضوية قيد المراجعة. تنص سياسة أمانة المجلس على مراجعة واعتماد طلب العضوية قبل منح أي أدوار تشغيلية أو إدارية."
-                            : "This user has a pending membership request. Policy requires approving their membership before assigning administrative or staff roles."
-                          : isAr
-                            ? "هذا المستخدم لم يتم اعتماد عضويته في أسرة آل بوعبيد بعد. يجب توثيق واعتماد طلبه أولاً لضمان سلامة الصلاحيات."
-                            : "This user is not an approved member yet. Approval is required before assigning operational roles."}
-                      </p>
-                    </div>
+                <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+                  <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>
+                      {isAr
+                        ? "يمكنك منح هذا المستخدم صفة عضو معتمد وتفعيل بطاقته مباشرة دون اشتراط تقديم طلب مسبق."
+                        : "You can grant verified membership directly without requiring a prior application."}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 pt-1">
-                    <Button
-                      size="sm"
-                      variant="default"
-                      className="h-7 text-xs gap-1.5 bg-amber-600 hover:bg-amber-700 text-white"
-                      onClick={() => {
-                        const target = roleModalUser;
-                        setRoleModalUser(null);
-                        setProfileModalUser(target);
-                      }}
-                    >
-                      <FileCheck className="w-3.5 h-3.5" />
-                      {isAr ? "الانتقال لملف العضو الشامل والمراجعة" : "Open 360° Profile & Review"}
-                    </Button>
-                  </div>
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 gap-1 font-medium rounded-lg"
+                    onClick={() => {
+                      const target = roleModalUser;
+                      setRoleModalUser(null);
+                      handleMakeMember(target);
+                    }}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>{isAr ? "منح العضوية الآن" : "Make Member Now"}</span>
+                  </Button>
                 </div>
               )}
 
@@ -871,7 +878,6 @@ export function UsersManager({
                   <Select
                     value={selectedRoleToAdd}
                     onValueChange={setSelectedRoleToAdd}
-                    disabled={!isApprovedMember(roleModalUser.id)}
                   >
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue />
@@ -895,15 +901,8 @@ export function UsersManager({
                   <Button
                     size="sm"
                     className="h-8 text-xs gap-1"
-                    disabled={loading || !isApprovedMember(roleModalUser.id)}
+                    disabled={loading}
                     onClick={handleAddRole}
-                    title={
-                      !isApprovedMember(roleModalUser.id)
-                        ? isAr
-                          ? "يجب اعتماد العضوية أولاً قبل إسناد الأدوار"
-                          : "Must approve membership first"
-                        : undefined
-                    }
                   >
                     <Plus className="w-3.5 h-3.5" />
                     {loading

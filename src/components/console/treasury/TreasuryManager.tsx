@@ -210,6 +210,7 @@ const DEFAULT_CONFIG: TreasuryConfig = {
   ],
   quick_amounts: [100, 250, 500, 1000, 2500],
   salla_store_url: "https://albouabidfamily.com/القسط-الشهري/c1360847582",
+  annual_target: 0,
   application_of_funds: {
     p1_ar:
       "تُوزَّع الموارد على ثلاثة حسابات مستقلة: حساب الزكاة، وحساب التشغيل والبرامج، وحساب مشروع المقر الدائم. ولا يجوز النقل بين الحسابات إلا بقرار من مجلس الأمناء.",
@@ -347,9 +348,10 @@ export function TreasuryManager({
   const contributionsList = (queryData?.data ?? []) as ContributionItem[];
 
   // Filter in-memory for purpose if selected
-  const filtered = purposeFilter === "all"
-    ? contributionsList
-    : contributionsList.filter((c) => (c.purpose || "").includes(purposeFilter));
+  const filtered =
+    purposeFilter === "all"
+      ? contributionsList
+      : contributionsList.filter((c) => (c.purpose || "").includes(purposeFilter));
 
   const getStatusDisplay = (st: ContributionItem["status"]) => {
     switch (st) {
@@ -538,7 +540,10 @@ export function TreasuryManager({
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `treasury-contributions-${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute(
+      "download",
+      `treasury-contributions-${new Date().toISOString().slice(0, 10)}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -687,7 +692,9 @@ export function TreasuryManager({
               <CardHeader className="py-3 px-4 pb-2">
                 <CardTitle className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
                   <Building className="w-3.5 h-3.5 text-gold" />
-                  {isAr ? "توزيع الإيرادات المعتمدة حسب الصناديق والأوجه" : "Verified Revenue by Purpose"}
+                  {isAr
+                    ? "توزيع الإيرادات المعتمدة حسب الصناديق والأوجه"
+                    : "Verified Revenue by Purpose"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-4 pb-3">
@@ -731,7 +738,9 @@ export function TreasuryManager({
                   <SelectValue placeholder={isAr ? "كل الأوجه" : "All Purposes"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{isAr ? "جميع الأوجه والصناديق" : "All Purposes"}</SelectItem>
+                  <SelectItem value="all">
+                    {isAr ? "جميع الأوجه والصناديق" : "All Purposes"}
+                  </SelectItem>
                   {config.fund_purposes.map((f) => (
                     <SelectItem key={f.id} value={f.name_ar}>
                       {isAr ? f.name_ar : f.name_en}
@@ -769,9 +778,24 @@ export function TreasuryManager({
               <div className="flex items-center gap-4 text-xs font-semibold overflow-x-auto no-scrollbar">
                 {[
                   { id: "all", label_ar: "الكل", label_en: "All", count: totalCount },
-                  { id: "pending", label_ar: "قيد المراجعة", label_en: "Pending", count: pendingCount },
-                  { id: "verified", label_ar: "معتمدة", label_en: "Verified", count: verifiedCount },
-                  { id: "rejected", label_ar: "مرفوضة", label_en: "Rejected", count: rejectedCount },
+                  {
+                    id: "pending",
+                    label_ar: "قيد المراجعة",
+                    label_en: "Pending",
+                    count: pendingCount,
+                  },
+                  {
+                    id: "verified",
+                    label_ar: "معتمدة",
+                    label_en: "Verified",
+                    count: verifiedCount,
+                  },
+                  {
+                    id: "rejected",
+                    label_ar: "مرفوضة",
+                    label_en: "Rejected",
+                    count: rejectedCount,
+                  },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -800,18 +824,25 @@ export function TreasuryManager({
               <TableHeader>
                 <TableRow className="hover:bg-transparent border-border text-xs">
                   <TableHead className="font-bold">{isAr ? "المساهم" : "Contributor"}</TableHead>
-                  <TableHead className="font-bold text-start">{isAr ? "المبلغ" : "Amount"}</TableHead>
+                  <TableHead className="font-bold text-start">
+                    {isAr ? "المبلغ" : "Amount"}
+                  </TableHead>
                   <TableHead className="font-bold">{isAr ? "القناة" : "Method"}</TableHead>
                   <TableHead className="font-bold">{isAr ? "الغرض" : "Purpose"}</TableHead>
                   <TableHead className="font-bold">{isAr ? "التاريخ" : "Date"}</TableHead>
                   <TableHead className="font-bold">{isAr ? "الحالة" : "Status"}</TableHead>
-                  <TableHead className="font-bold text-end">{isAr ? "الإجراء" : "Action"}</TableHead>
+                  <TableHead className="font-bold text-end">
+                    {isAr ? "الإجراء" : "Action"}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading && (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-48 text-center text-muted-foreground text-xs">
+                    <TableCell
+                      colSpan={7}
+                      className="h-48 text-center text-muted-foreground text-xs"
+                    >
                       <div className="flex flex-col items-center gap-2">
                         <Loader2 className="w-5 h-5 animate-spin text-primary" />
                         {isAr ? "جاري تحميل البيانات المالية..." : "Loading records..."}
@@ -856,7 +887,9 @@ export function TreasuryManager({
                       <TableCell className="font-mono font-bold text-foreground text-start">
                         {formatSar(c.amount)}
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{getMethodLabel(c.method)}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {getMethodLabel(c.method)}
+                      </TableCell>
                       <TableCell>
                         <span className="px-2 py-0.5 rounded-md bg-secondary/50 text-[11px] font-medium text-foreground">
                           {c.purpose || (isAr ? "اشتراك عام" : "General")}
@@ -930,7 +963,9 @@ export function TreasuryManager({
                 <CardContent className="space-y-4 text-xs">
                   <div className="p-4 rounded-xl border border-border bg-secondary/30 space-y-2.5">
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-muted-foreground">{isAr ? "اسم الحساب:" : "Account:"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "اسم الحساب:" : "Account:"}
+                      </span>
                       <span className="font-bold text-foreground text-end">
                         {isAr
                           ? config.bank_account.beneficiary_name_ar
@@ -946,9 +981,12 @@ export function TreasuryManager({
                     </div>
 
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-muted-foreground">{isAr ? "رقم الحساب:" : "Account No:"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "رقم الحساب:" : "Account No:"}
+                      </span>
                       <span className="font-mono font-bold text-foreground">
-                        {config.bank_account.account_number || (isAr ? "قيد الإعداد والاعتماد" : "Pending setup")}
+                        {config.bank_account.account_number ||
+                          (isAr ? "قيد الإعداد والاعتماد" : "Pending setup")}
                       </span>
                     </div>
 
@@ -957,8 +995,14 @@ export function TreasuryManager({
                         {isAr ? "رقم الآيبان الدولي (IBAN):" : "IBAN:"}
                       </span>
                       <div className="flex items-center justify-between bg-background p-2 rounded-lg border border-border font-mono text-xs font-bold">
-                        <span className={cn(!config.bank_account.iban && "text-muted-foreground font-normal text-[11px]")}>
-                          {config.bank_account.iban || (isAr ? "قيد الاعتماد من أمانة الصندوق" : "Pending official setup")}
+                        <span
+                          className={cn(
+                            !config.bank_account.iban &&
+                              "text-muted-foreground font-normal text-[11px]",
+                          )}
+                        >
+                          {config.bank_account.iban ||
+                            (isAr ? "قيد الاعتماد من أمانة الصندوق" : "Pending official setup")}
                         </span>
                         {config.bank_account.iban ? (
                           <Button
@@ -966,7 +1010,9 @@ export function TreasuryManager({
                             variant="ghost"
                             className="w-6 h-6"
                             onClick={() => {
-                              navigator.clipboard.writeText(config.bank_account.iban.replace(/\s+/g, ""));
+                              navigator.clipboard.writeText(
+                                config.bank_account.iban.replace(/\s+/g, ""),
+                              );
                               setCopiedIban(true);
                               toast.success(isAr ? "تم نسخ الآيبان" : "IBAN copied");
                               setTimeout(() => setCopiedIban(false), 2000);
@@ -1068,7 +1114,9 @@ export function TreasuryManager({
 
                     <div className="space-y-1.5 sm:col-span-2">
                       <label className="font-bold text-foreground">
-                        {isAr ? "اسم المستفيد / صاحب الحساب (بالعربية) *" : "Beneficiary Name (AR) *"}
+                        {isAr
+                          ? "اسم المستفيد / صاحب الحساب (بالعربية) *"
+                          : "Beneficiary Name (AR) *"}
                       </label>
                       <Input
                         value={config.bank_account.beneficiary_name_ar}
@@ -1115,7 +1163,10 @@ export function TreasuryManager({
                         onChange={(e) =>
                           setConfig({
                             ...config,
-                            bank_account: { ...config.bank_account, account_number: e.target.value },
+                            bank_account: {
+                              ...config.bank_account,
+                              account_number: e.target.value,
+                            },
                           })
                         }
                         placeholder={isAr ? "أدخل رقم الحساب المعتمد" : "Enter account number"}
@@ -1206,7 +1257,9 @@ export function TreasuryManager({
               <div>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
                   <Layers className="w-4 h-4 text-gold" />
-                  {isAr ? "فئات الاشتراكات الشهرية والمساهمات" : "Subscription Tiers & Contribution Plans"}
+                  {isAr
+                    ? "فئات الاشتراكات الشهرية والمساهمات"
+                    : "Subscription Tiers & Contribution Plans"}
                 </CardTitle>
                 <CardDescription className="text-xs">
                   {isAr
@@ -1312,7 +1365,9 @@ export function TreasuryManager({
                           onClick={async () => {
                             const ok = await confirm({
                               title: isAr ? `حذف فئة ${tier.category_ar}؟` : `Delete tier?`,
-                              description: isAr ? "لن يتم حذف المساهمات السابقة المرتبطة بها." : "Past records are kept.",
+                              description: isAr
+                                ? "لن يتم حذف المساهمات السابقة المرتبطة بها."
+                                : "Past records are kept.",
                               tone: "destructive",
                             });
                             if (ok) {
@@ -1420,7 +1475,9 @@ export function TreasuryManager({
                         onClick={async () => {
                           const ok = await confirm({
                             title: isAr ? `حذف ${fund.name_ar}؟` : `Delete fund purpose?`,
-                            description: isAr ? "سيتم إخفاؤه من خيارات المساهمة." : "Will be removed from form options.",
+                            description: isAr
+                              ? "سيتم إخفاؤه من خيارات المساهمة."
+                              : "Will be removed from form options.",
                             tone: "destructive",
                           });
                           if (ok) {
@@ -1449,7 +1506,9 @@ export function TreasuryManager({
                   {isAr ? "أزرار المبالغ السريعة في النموذج (ريال)" : "Quick Amount Preset Chips"}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  {isAr ? "مبالغ الاختيار السريع بنقرة واحدة" : "Amounts clickable on contribute form"}
+                  {isAr
+                    ? "مبالغ الاختيار السريع بنقرة واحدة"
+                    : "Amounts clickable on contribute form"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -1535,7 +1594,10 @@ export function TreasuryManager({
                   onChange={(e) =>
                     setConfig({
                       ...config,
-                      application_of_funds: { ...config.application_of_funds, p1_ar: e.target.value },
+                      application_of_funds: {
+                        ...config.application_of_funds,
+                        p1_ar: e.target.value,
+                      },
                     })
                   }
                   className="rounded-xl text-xs resize-none"
@@ -1547,7 +1609,10 @@ export function TreasuryManager({
                   onChange={(e) =>
                     setConfig({
                       ...config,
-                      application_of_funds: { ...config.application_of_funds, p2_ar: e.target.value },
+                      application_of_funds: {
+                        ...config.application_of_funds,
+                        p2_ar: e.target.value,
+                      },
                     })
                   }
                   className="rounded-xl text-xs resize-none"
@@ -1623,8 +1688,12 @@ export function TreasuryManager({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bank_transfer">{isAr ? "تحويل بنكي مباشر" : "Bank Transfer"}</SelectItem>
-                    <SelectItem value="cash">{isAr ? "نقداً في اللقاء / مجلس الأسرة" : "Cash / Majlis"}</SelectItem>
+                    <SelectItem value="bank_transfer">
+                      {isAr ? "تحويل بنكي مباشر" : "Bank Transfer"}
+                    </SelectItem>
+                    <SelectItem value="cash">
+                      {isAr ? "نقداً في اللقاء / مجلس الأسرة" : "Cash / Majlis"}
+                    </SelectItem>
                     <SelectItem value="pos">{isAr ? "شبكة POS / بطاقة" : "POS Card"}</SelectItem>
                     <SelectItem value="other">{isAr ? "وسيلة أخرى" : "Other"}</SelectItem>
                   </SelectContent>
@@ -1680,8 +1749,12 @@ export function TreasuryManager({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="verified">{isAr ? "معتمدة فوراً" : "Verified Immediately"}</SelectItem>
-                    <SelectItem value="pending">{isAr ? "قيد المراجعة" : "Pending Review"}</SelectItem>
+                    <SelectItem value="verified">
+                      {isAr ? "معتمدة فوراً" : "Verified Immediately"}
+                    </SelectItem>
+                    <SelectItem value="pending">
+                      {isAr ? "قيد المراجعة" : "Pending Review"}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1741,7 +1814,9 @@ export function TreasuryManager({
 
           <div className="space-y-3 py-2 text-xs">
             <div className="space-y-1">
-              <label className="font-bold">{isAr ? "اسم الفئة (عربي) *" : "Tier Title (AR) *"}</label>
+              <label className="font-bold">
+                {isAr ? "اسم الفئة (عربي) *" : "Tier Title (AR) *"}
+              </label>
               <Input
                 value={tierForm.category_ar}
                 onChange={(e) => setTierForm({ ...tierForm, category_ar: e.target.value })}
@@ -1751,7 +1826,9 @@ export function TreasuryManager({
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold">{isAr ? "اسم الفئة (إنجليزي) *" : "Tier Title (EN) *"}</label>
+              <label className="font-bold">
+                {isAr ? "اسم الفئة (إنجليزي) *" : "Tier Title (EN) *"}
+              </label>
               <Input
                 value={tierForm.category_en}
                 onChange={(e) => setTierForm({ ...tierForm, category_en: e.target.value })}
@@ -1762,7 +1839,9 @@ export function TreasuryManager({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-bold">{isAr ? "النص المعروض للمبلغ (عربي)" : "Display Amount (AR)"}</label>
+                <label className="font-bold">
+                  {isAr ? "النص المعروض للمبلغ (عربي)" : "Display Amount (AR)"}
+                </label>
                 <Input
                   value={tierForm.amount_ar}
                   onChange={(e) => setTierForm({ ...tierForm, amount_ar: e.target.value })}
@@ -1772,7 +1851,9 @@ export function TreasuryManager({
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold">{isAr ? "النص المعروض (إنجليزي)" : "Display Amount (EN)"}</label>
+                <label className="font-bold">
+                  {isAr ? "النص المعروض (إنجليزي)" : "Display Amount (EN)"}
+                </label>
                 <Input
                   value={tierForm.amount_en}
                   onChange={(e) => setTierForm({ ...tierForm, amount_en: e.target.value })}
@@ -1784,11 +1865,15 @@ export function TreasuryManager({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-bold">{isAr ? "المبلغ الرقمي (ريال)" : "Numeric Amount (SAR)"}</label>
+                <label className="font-bold">
+                  {isAr ? "المبلغ الرقمي (ريال)" : "Numeric Amount (SAR)"}
+                </label>
                 <Input
                   type="number"
                   value={tierForm.numeric_amount}
-                  onChange={(e) => setTierForm({ ...tierForm, numeric_amount: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setTierForm({ ...tierForm, numeric_amount: Number(e.target.value) })
+                  }
                   className="rounded-xl font-mono text-xs"
                 />
               </div>
@@ -1884,7 +1969,9 @@ export function TreasuryManager({
 
           <div className="space-y-3 py-2 text-xs">
             <div className="space-y-1">
-              <label className="font-bold">{isAr ? "اسم الصندوق / الغرض (عربي) *" : "Fund Name (AR) *"}</label>
+              <label className="font-bold">
+                {isAr ? "اسم الصندوق / الغرض (عربي) *" : "Fund Name (AR) *"}
+              </label>
               <Input
                 value={purposeForm.name_ar}
                 onChange={(e) => setPurposeForm({ ...purposeForm, name_ar: e.target.value })}
@@ -1894,7 +1981,9 @@ export function TreasuryManager({
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold">{isAr ? "اسم الصندوق (إنجليزي) *" : "Fund Name (EN) *"}</label>
+              <label className="font-bold">
+                {isAr ? "اسم الصندوق (إنجليزي) *" : "Fund Name (EN) *"}
+              </label>
               <Input
                 value={purposeForm.name_en}
                 onChange={(e) => setPurposeForm({ ...purposeForm, name_en: e.target.value })}
@@ -1904,7 +1993,9 @@ export function TreasuryManager({
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold">{isAr ? "الوصف ومجال الصرف (عربي)" : "Description (AR)"}</label>
+              <label className="font-bold">
+                {isAr ? "الوصف ومجال الصرف (عربي)" : "Description (AR)"}
+              </label>
               <Textarea
                 rows={2}
                 value={purposeForm.description_ar || ""}
@@ -2099,7 +2190,13 @@ export function TreasuryManager({
                       onClick={() => handleReviewSubmit("rejected")}
                       className="flex-1 h-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive border-transparent font-bold text-xs"
                     >
-                      {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : isAr ? "رفض" : "Reject"}
+                      {loading ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : isAr ? (
+                        "رفض"
+                      ) : (
+                        "Reject"
+                      )}
                     </Button>
                     <Button
                       type="button"
@@ -2134,4 +2231,3 @@ export function TreasuryManager({
     </div>
   );
 }
-

@@ -355,20 +355,24 @@ export const submitMembershipRequest = createServerFn({ method: "POST" })
       console.error("[account] request insert failed", error.code, error.message);
       return { ok: false as const, error: "insert_failed" };
     }
+
+    try {
+      const { notifyAdminsOnMembershipRequest } = await import("@/lib/notifications.server");
+      void notifyAdminsOnMembershipRequest({
+        id: userId,
+        fullName: data.full_name_ar,
+        branch: data.branch_slug,
+        userId,
+      }).catch((err) => console.error("[account] notifyAdminsOnMembershipRequest failed:", err));
+    } catch (err) {
+      console.warn("[account] notification trigger failed:", err);
+    }
+
     return { ok: true as const };
   });
 
 /* =========================================================================
- * Member-facing notifications.
- *
- * The DB already creates notification rows addressed to a regular member
- * (e.g. review_membership_request_as_admin() on approval/rejection), and
- * notifications_select_own/_update_own/_delete_own RLS already scopes
- * every row to auth.uid(). But the only fetch/mark-read/delete functions
- * in the codebase (getAdminNotificationsList etc. in admin-hub.functions.ts)
- * are gated by requireAdminAuth -- a plain member has no way to ever see
- * or clear their own notifications. These are the member-scoped
- * equivalents, gated by requireSupabaseAuth only.
+ * Member-facing notifications & preferences.
  * ========================================================================= */
 
 export type MyNotification = {
@@ -389,17 +393,13 @@ export const getMyNotifications = createServerFn({ method: "GET" })
     async ({ context }): Promise<{ notifications: MyNotification[]; unreadCount: number }> => {
       const { supabase, userId } = context;
 
-      // The unread badge has to count *all* unread rows, not only the unread
-      // ones that happen to fall inside the 30-row page -- otherwise a member
-      // with more than 30 notifications sees a badge that under-reports and
-      // never agrees with what "mark all read" (which is unbounded) clears.
       const [listRes, unreadRes] = await Promise.all([
         supabase
           .from("notifications")
           .select("id, type, title_ar, title_en, message_ar, message_en, link, is_read, created_at")
           .eq("user_id", userId)
           .order("created_at", { ascending: false })
-          .limit(30),
+          .limit(50),
         supabase
           .from("notifications")
           .select("id", { count: "exact", head: true })
@@ -442,4 +442,116 @@ export const markAllMyNotificationsRead = createServerFn({ method: "POST" })
       .eq("is_read", false);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+export const deleteMyNotification = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { error } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("id", data.id)
+      .eq("user_id", userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const notificationPreferencesSchema = z.object({
+  system_alerts: z.boolean().default(true),
+  family_events: z.boolean().default(true),
+  contributions: z.boolean().default(true),
+  lineage_updates: z.boolean().default(true),
+  articles_news: z.boolean().default(true),
+  email_notifications: z.boolean().default(true),
+  in_app_notifications: z.boolean().default(true),
+});
+
+export type NotificationPreferences = z.infer<typeof notificationPreferencesSchema>;
+
+export const getMyNotificationPreferences = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<NotificationPreferences> => {
+    const { supabase, userId } = context;
+
+    try {
+      const { data, error } = await supabase
+        .from("notification_preferences")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (!error && data) {
+        return {
+          system_alerts: data.system_alerts ?? true,
+          family_events: data.family_events ?? true,
+          contributions: data.contributions ?? true,
+          lineage_updates: data.lineage_updates ?? true,
+          articles_news: data.articles_news ?? true,
+          email_notifications: data.email_notifications ?? true,
+          in_app_notifications: data.in_app_notifications ?? true,
+        };
+      }
+    } catch {
+      // ignore
+    }
+
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: userRes } = await supabaseAdmin.auth.admin.getUserById(userId);
+      const meta = userRes?.user?.user_metadata?.notification_preferences;
+      if (meta && typeof meta === "object") {
+        return notificationPreferencesSchema.parse(meta);
+      }
+    } catch {
+      // ignore
+    }
+
+    return {
+      system_alerts: true,
+      family_events: true,
+      contributions: true,
+      lineage_updates: true,
+      articles_news: true,
+      email_notifications: true,
+      in_app_notifications: true,
+    };
+  });
+
+export const updateMyNotificationPreferences = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d: unknown) => notificationPreferencesSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+
+    try {
+      await supabase.from("notification_preferences").upsert(
+        {
+          user_id: userId,
+          system_alerts: data.system_alerts,
+          family_events: data.family_events,
+          contributions: data.contributions,
+          lineage_updates: data.lineage_updates,
+          articles_news: data.articles_news,
+          email_notifications: data.email_notifications,
+          in_app_notifications: data.in_app_notifications,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+    } catch (err) {
+      console.warn("[account] upsert notification_preferences fallback:", err);
+    }
+
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.auth.admin.updateUserById(userId, {
+        user_metadata: { notification_preferences: data },
+      });
+    } catch (err) {
+      console.warn("[account] update user_metadata preferences fallback:", err);
+    }
+
+    return { ok: true, preferences: data };
   });

@@ -309,15 +309,35 @@ export function DirectoryManager({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between bg-card p-4 rounded-xl border border-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-card p-4 rounded-xl border border-border gap-3">
         <div className="flex items-center gap-2.5">
-          <Building2 className="w-5 h-5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">
-            {isAr
-              ? "إدارة دليل المنشآت وطلبات توثيق الأعضاء"
-              : "Directory & Membership Verification"}
-          </h3>
+          <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <Building2 className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-foreground">
+              {isAr ? "دليل الأعمال والمنشآت التجارية" : "Family Business Directory"}
+            </h3>
+            <p className="text-[11px] text-muted-foreground">
+              {isAr
+                ? "إدارة منشآت ومشاريع أبناء وبنات الأسرة، واعتماد ظهورها في الدليل العام"
+                : "Manage and publish family member business listings and commercial ventures"}
+            </p>
+          </div>
         </div>
+
+        {onNavigateTab && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onNavigateTab("system", "users")}
+            className="h-8 text-xs gap-1.5 shrink-0 text-muted-foreground hover:text-foreground border-border"
+          >
+            <UserCheck className="w-3.5 h-3.5 text-primary" />
+            <span>{isAr ? "إدارة المستخدمين وتوثيق العضوية" : "User Accounts & Verification"}</span>
+          </Button>
+        )}
       </div>
 
       <div className="border border-border rounded-xl bg-card p-4">
@@ -326,23 +346,25 @@ export function DirectoryManager({
           onValueChange={(v) => setActiveTab(v as "businesses" | "requests")}
           className="w-full"
         >
-          <TabsList className="grid grid-cols-2 max-w-md mb-4">
-            <TabsTrigger value="businesses" className="text-xs gap-1.5">
-              <Building2 className="w-3.5 h-3.5" />
-              {isAr ? `دليل الأعمال (${businesses.length})` : `Businesses (${businesses.length})`}
-              {pendingCount > 0 && (
-                <span className="ms-1 px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-bold">
-                  {pendingCount}
-                </span>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="requests" className="text-xs gap-1.5">
-              <UserCheck className="w-3.5 h-3.5" />
-              {isAr
-                ? `طلبات العضوية (${membershipRequests.length})`
-                : `Applications (${membershipRequests.length})`}
-            </TabsTrigger>
-          </TabsList>
+          {defaultTab === "requests" && (
+            <TabsList className="grid grid-cols-2 max-w-md mb-4">
+              <TabsTrigger value="businesses" className="text-xs gap-1.5">
+                <Building2 className="w-3.5 h-3.5" />
+                {isAr ? `دليل الأعمال (${businesses.length})` : `Businesses (${businesses.length})`}
+                {pendingCount > 0 && (
+                  <span className="ms-1 px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-bold">
+                    {pendingCount}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="requests" className="text-xs gap-1.5">
+                <UserCheck className="w-3.5 h-3.5" />
+                {isAr
+                  ? `طلبات العضوية (${membershipRequests.length})`
+                  : `Applications (${membershipRequests.length})`}
+              </TabsTrigger>
+            </TabsList>
+          )}
 
           {/* Tab 1: Businesses */}
           <TabsContent value="businesses" className="space-y-4">
@@ -887,21 +909,21 @@ export function DirectoryManager({
 
               {selectedReq.status === "approved" && onNavigateTab && (
                 <NextActionCard
-                  title={isAr ? "الخطوة التالية الموصى بها: إسناد الدور والصلاحيات" : "Next Step: Assign Role & Permissions"}
-                  description={
-                    isAr
-                      ? "تم توثيق عضوية هذا المستخدم بنجاح. يمكنك الآن الانتقال إلى إدارة المستخدمين لإسناد الأدوار التشغيلية للعضو."
-                      : "This user has been verified as a family member. You can now navigate to User Roles to assign necessary operational roles."
-                  }
-                  badgeText={isAr ? "عضوية موثقة" : "Verified Member"}
+                  title_ar="الخطوة التالية الموصى بها: إسناد الدور والصلاحيات"
+                  title_en="Next Step: Assign Role & Permissions"
+                  description_ar="تم توثيق عضوية هذا المستخدم بنجاح. يمكنك الآن الانتقال إلى إدارة المستخدمين لإسناد الأدوار التشغيلية للعضو."
+                  description_en="This user has been verified as a family member. You can now navigate to User Roles to assign necessary operational roles."
+                  badge_ar="عضوية موثقة"
+                  badge_en="Verified Member"
                   tone="success"
                   primaryAction={{
-                    label: isAr ? "إدارة صلاحيات المستخدمين" : "Manage User Roles",
+                    label_ar: "إدارة صلاحيات المستخدمين",
+                    label_en: "Manage User Roles",
                     onClick: () => {
                       setReqModalOpen(false);
                       onNavigateTab("system", "users");
                     },
-                    icon: <Shield className="w-3.5 h-3.5" />,
+                    icon: Shield,
                   }}
                 />
               )}

@@ -17,7 +17,12 @@ import {
   getMyNotifications,
   markMyNotificationRead,
   markAllMyNotificationsRead,
+  deleteMyNotification,
+  getMyNotificationPreferences,
+  updateMyNotificationPreferences,
+  type NotificationPreferences,
 } from "@/lib/account.functions";
+import { getCategoryForType, type NotificationCategory } from "@/lib/notifications.types";
 import { MembershipRequestModal } from "@/components/account/MembershipRequestModal";
 import { getMemberBankAccount, getMyContributions } from "@/lib/contributions.functions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -76,6 +81,12 @@ import {
   X,
   Loader2,
   Bell,
+  BellRing,
+  CheckCheck,
+  Trash2,
+  Calendar,
+  Landmark,
+  BellOff,
   RefreshCw,
   AlertTriangle,
   Printer,
@@ -84,9 +95,17 @@ import {
   ArrowUpRight,
   Maximize2,
   ChevronRight,
+  Settings,
 } from "lucide-react";
 
+interface AccountSearch {
+  tab?: string;
+}
+
 export const Route = createFileRoute("/_authenticated/account")({
+  validateSearch: (search: Record<string, unknown>): AccountSearch => ({
+    tab: typeof search.tab === "string" ? search.tab : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "حسابي وبوابة الأعضاء | مجلس أسرة آل بوعبيد" },
@@ -182,11 +201,18 @@ function FormSkeleton() {
 }
 
 function AccountPage() {
+  const { tab: searchTab } = Route.useSearch();
   const { lang, t } = useLang();
   const isAr = lang === "ar";
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user, isAdmin, profile: authProfile, roles: authContextRoles, refreshProfile } = useAuth();
+  const {
+    user,
+    isAdmin,
+    profile: authProfile,
+    roles: authContextRoles,
+    refreshProfile,
+  } = useAuth();
 
   const fetchAccount = useServerFn(getMyAccount);
   const saveProfile = useServerFn(updateMyProfile);
@@ -194,6 +220,9 @@ function AccountPage() {
   const fetchNotifications = useServerFn(getMyNotifications);
   const markNotifReadFn = useServerFn(markMyNotificationRead);
   const markAllNotifsReadFn = useServerFn(markAllMyNotificationsRead);
+  const deleteNotifFn = useServerFn(deleteMyNotification);
+  const fetchPreferencesFn = useServerFn(getMyNotificationPreferences);
+  const updatePreferencesFn = useServerFn(updateMyNotificationPreferences);
 
   const {
     data,
@@ -207,7 +236,22 @@ function AccountPage() {
     refetchOnMount: true,
   });
 
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState(() =>
+    searchTab && ["profile", "card", "treasury", "notifications", "security"].includes(searchTab)
+      ? searchTab
+      : "profile",
+  );
+
+  useEffect(() => {
+    if (
+      searchTab &&
+      ["profile", "card", "treasury", "notifications", "security"].includes(searchTab)
+    ) {
+      setActiveTab(searchTab);
+    }
+  }, [searchTab]);
+
+  const [notifCategoryFilter, setNotifCategoryFilter] = useState<NotificationCategory>("all");
 
   const {
     data: notifData,
@@ -233,9 +277,96 @@ function AccountPage() {
   });
   const markAllNotifsRead = useMutation({
     mutationFn: () => markAllNotifsReadFn(),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-notifications"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-notifications"] });
+      toast.success(
+        isAr ? "تم تحديد كافة الإشعارات كمقروءة." : "All notifications marked as read.",
+      );
+    },
     onError: notifErrorToast,
   });
+
+  const deleteNotif = useMutation({
+    mutationFn: (id: string) => deleteNotifFn({ data: { id } }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["my-notifications"] });
+      toast.success(isAr ? "تم حذف الإشعار بنجاح." : "Notification deleted.");
+    },
+    onError: () => toast.error(isAr ? "تعذر حذف الإشعار." : "Could not delete notification."),
+  });
+
+  const { data: prefsData, isLoading: prefsLoading } = useQuery({
+    queryKey: ["my-notification-preferences"],
+    queryFn: () => fetchPreferencesFn(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const [prefsState, setPrefsState] = useState<NotificationPreferences>({
+    system_alerts: true,
+    family_events: true,
+    contributions: true,
+    lineage_updates: true,
+    articles_news: true,
+    in_app_notifications: true,
+    email_notifications: false,
+  });
+
+  useEffect(() => {
+    if (prefsData) {
+      setPrefsState(prefsData);
+    }
+  }, [prefsData]);
+
+  const updatePrefsMut = useMutation({
+    mutationFn: (newPrefs: NotificationPreferences) => updatePreferencesFn({ data: newPrefs }),
+    onSuccess: (res) => {
+      if (res.ok) {
+        toast.success(
+          isAr ? "تم حفظ تفضيلات وقنوات الإشعارات بنجاح." : "Notification preferences saved.",
+        );
+        void queryClient.invalidateQueries({ queryKey: ["my-notification-preferences"] });
+      } else {
+        toast.error(isAr ? "تعذر حفظ التفضيلات." : "Failed to save preferences.");
+      }
+    },
+    onError: () => toast.error(isAr ? "تعذر حفظ التفضيلات." : "Failed to save preferences."),
+  });
+
+  const categorizedNotifications = useMemo(() => {
+    const map: Record<NotificationCategory, typeof notifications> = {
+      all: notifications,
+      unread: notifications.filter((n) => !n.is_read),
+      system: notifications.filter((n) => getCategoryForType(n.type) === "system"),
+      events: notifications.filter((n) => getCategoryForType(n.type) === "events"),
+      contributions: notifications.filter((n) => getCategoryForType(n.type) === "contributions"),
+      heritage: notifications.filter((n) => getCategoryForType(n.type) === "heritage"),
+    };
+    return map;
+  }, [notifications]);
+
+  const filteredNotifications = categorizedNotifications[notifCategoryFilter] ?? [];
+
+  const getNotifIcon = (type: string) => {
+    const cat = getCategoryForType(type);
+    switch (cat) {
+      case "events":
+        return <Calendar className="w-4 h-4 text-amber-500" />;
+      case "contributions":
+        return <Landmark className="w-4 h-4 text-emerald-500" />;
+      case "heritage":
+        return type === "lineage" || type === "family_tree" ? (
+          <GitBranch className="w-4 h-4 text-bronze dark:text-gold" />
+        ) : (
+          <Sparkles className="w-4 h-4 text-primary" />
+        );
+      case "system":
+      default:
+        if (type === "membership" || type === "role_change") {
+          return <ShieldCheck className="w-4 h-4 text-blue-500" />;
+        }
+        return <Bell className="w-4 h-4 text-primary" />;
+    }
+  };
 
   const fetchBankAccount = useServerFn(getMemberBankAccount);
   const fetchMyContributions = useServerFn(getMyContributions);
@@ -301,10 +432,7 @@ function AccountPage() {
       (user?.user_metadata?.full_name_ar as string) ??
       (user?.user_metadata?.full_name as string) ??
       "",
-    full_name_en:
-      authProfile?.full_name_en ??
-      (user?.user_metadata?.full_name_en as string) ??
-      "",
+    full_name_en: authProfile?.full_name_en ?? (user?.user_metadata?.full_name_en as string) ?? "",
     branch_slug: "",
     phone: "",
     lineage_notes: "",
@@ -390,9 +518,7 @@ function AccountPage() {
     if (typeof window === "undefined") return;
     navigator.clipboard.writeText(memberCode);
     setCopiedMemberCode(true);
-    toast.success(
-      isAr ? `تم نسخ رقم العضوية: ${memberCode}` : `Member ID copied: ${memberCode}`,
-    );
+    toast.success(isAr ? `تم نسخ رقم العضوية: ${memberCode}` : `Member ID copied: ${memberCode}`);
     setTimeout(() => setCopiedMemberCode(false), 2500);
   };
 
@@ -511,7 +637,9 @@ function AccountPage() {
       if (result.ok) {
         setRequestModalOpen(false);
         toast.success(
-          isAr ? "تم رفع طلب العضوية ورسالتك للمراجعة بنجاح." : "Membership request submitted for review.",
+          isAr
+            ? "تم رفع طلب العضوية ورسالتك للمراجعة بنجاح."
+            : "Membership request submitted for review.",
         );
         void queryClient.invalidateQueries({ queryKey: ["account"] });
         void queryClient.invalidateQueries({ queryKey: ["my-notifications"] });
@@ -567,7 +695,9 @@ function AccountPage() {
           : "Password reset email sent.",
       );
     } catch (err: unknown) {
-      toast.error(getErrorMessage(err, isAr ? "تعذر إرسال الرابط." : "Failed to send reset email."));
+      toast.error(
+        getErrorMessage(err, isAr ? "تعذر إرسال الرابط." : "Failed to send reset email."),
+      );
     }
   };
 
@@ -593,7 +723,8 @@ function AccountPage() {
   const isSuperAdmin = authRoles.includes("super_admin");
   const isCouncilAdmin = authRoles.includes("admin") || isSuperAdmin;
   const isTreasurer = authRoles.includes("treasurer") || isCouncilAdmin;
-  const isEditor = authRoles.includes("editor") || authRoles.includes("content_manager") || isCouncilAdmin;
+  const isEditor =
+    authRoles.includes("editor") || authRoles.includes("content_manager") || isCouncilAdmin;
   const isFamilyManager = authRoles.includes("family_manager") || isCouncilAdmin;
   const hasMemberRole = authRoles.includes("member") || isCouncilAdmin;
 
@@ -616,7 +747,12 @@ function AccountPage() {
               <div className="relative">
                 <SaudiCulturalAvatar
                   src={effectiveAvatar}
-                  alt={form.full_name_ar || authProfile?.full_name_ar || (user?.user_metadata?.full_name_ar as string) || ""}
+                  alt={
+                    form.full_name_ar ||
+                    authProfile?.full_name_ar ||
+                    (user?.user_metadata?.full_name_ar as string) ||
+                    ""
+                  }
                   size="xl"
                   className="w-16 h-16 sm:w-20 sm:h-20"
                 />
@@ -804,11 +940,21 @@ function AccountPage() {
                 {isLoading && !data ? (
                   <span className="inline-block h-3.5 w-24 rounded bg-secondary animate-pulse" />
                 ) : isApproved ? (
-                  isAr ? "عضوية رسمية معتمدة" : "Official Verified Member"
+                  isAr ? (
+                    "عضوية رسمية معتمدة"
+                  ) : (
+                    "Official Verified Member"
+                  )
                 ) : isPending ? (
-                  isAr ? "طلبك قيد المراجعة" : "Request Under Review"
+                  isAr ? (
+                    "طلبك قيد المراجعة"
+                  ) : (
+                    "Request Under Review"
+                  )
+                ) : isAr ? (
+                  "يرجى استكمال البيانات"
                 ) : (
-                  isAr ? "يرجى استكمال البيانات" : "Please complete details"
+                  "Please complete details"
                 )}
               </span>
             </div>
@@ -897,7 +1043,10 @@ function AccountPage() {
                 {isAr ? "عرض بطاقتي الرقمية" : "View My Digital ID"}
               </Button>
             ) : isPending ? (
-              <Badge variant="outline" className="text-amber-500 border-amber-500/40 text-xs py-2 px-3">
+              <Badge
+                variant="outline"
+                className="text-amber-500 border-amber-500/40 text-xs py-2 px-3"
+              >
                 <Clock className="w-3.5 h-3.5 me-1.5 animate-pulse" />
                 {isAr ? "طلبك معروض على الأمانة" : "Pending Secretariat Approval"}
               </Badge>
@@ -907,7 +1056,11 @@ function AccountPage() {
                 onClick={() => {
                   if (profileCompletion < 75) {
                     setActiveTab("profile");
-                    toast.info(isAr ? "أكمل بيانات الاسم والفرع أولاً ثم اضغط تقديم." : "Fill name & branch first.");
+                    toast.info(
+                      isAr
+                        ? "أكمل بيانات الاسم والفرع أولاً ثم اضغط تقديم."
+                        : "Fill name & branch first.",
+                    );
                   } else {
                     setRequestModalOpen(true);
                   }
@@ -984,7 +1137,11 @@ function AccountPage() {
                       {isAr ? "موقعك في المشجرة" : "Family Tree Lineage"}
                     </span>
                     <span className="text-[10px] text-muted-foreground">
-                      {selectedBranchName ? t(selectedBranchName) : isAr ? "استكشف الفروع" : "Explore branches"}
+                      {selectedBranchName
+                        ? t(selectedBranchName)
+                        : isAr
+                          ? "استكشف الفروع"
+                          : "Explore branches"}
                     </span>
                   </div>
                 </div>
@@ -1672,7 +1829,13 @@ function AccountPage() {
                       <div className="w-20 h-20 sm:w-22 sm:h-22 p-2 rounded-2xl bg-stone-900 border border-gold/30 flex flex-col items-center justify-center text-center shadow-inner">
                         <Lock className="w-6 h-6 text-gold/80 mb-1" />
                         <span className="text-[9px] text-ivory/70 font-semibold leading-tight">
-                          {isPending ? (isAr ? "قيد المراجعة" : "Under Review") : isAr ? "غير مفعل" : "Locked"}
+                          {isPending
+                            ? isAr
+                              ? "قيد المراجعة"
+                              : "Under Review"
+                            : isAr
+                              ? "غير مفعل"
+                              : "Locked"}
                         </span>
                       </div>
                     )}
@@ -1714,7 +1877,15 @@ function AccountPage() {
                     ) : (
                       <Share2 className="w-3.5 h-3.5 text-gold" />
                     )}
-                    <span>{copiedLink ? (isAr ? "تم النسخ" : "Copied!") : isAr ? "مشاركة الرابط" : "Share Link"}</span>
+                    <span>
+                      {copiedLink
+                        ? isAr
+                          ? "تم النسخ"
+                          : "Copied!"
+                        : isAr
+                          ? "مشاركة الرابط"
+                          : "Share Link"}
+                    </span>
                   </Button>
 
                   <Button
@@ -1729,7 +1900,15 @@ function AccountPage() {
                     ) : (
                       <Copy className="w-3.5 h-3.5 text-primary" />
                     )}
-                    <span>{copiedMemberCode ? (isAr ? "تم النسخ" : "Copied!") : isAr ? "نسخ المعرف" : "Copy ID"}</span>
+                    <span>
+                      {copiedMemberCode
+                        ? isAr
+                          ? "تم النسخ"
+                          : "Copied!"
+                        : isAr
+                          ? "نسخ المعرف"
+                          : "Copy ID"}
+                    </span>
                   </Button>
 
                   <Button
@@ -1909,7 +2088,8 @@ function AccountPage() {
                           </span>
                           <span className="font-bold text-foreground">
                             {isAr
-                              ? bankAccount.beneficiary_name_ar || "صندوق التنمية العائلية (آل بوعبيد)"
+                              ? bankAccount.beneficiary_name_ar ||
+                                "صندوق التنمية العائلية (آل بوعبيد)"
                               : bankAccount.beneficiary_name_en || "Al-Boabid Family Fund"}
                           </span>
                         </div>
@@ -1936,7 +2116,13 @@ function AccountPage() {
                             {isAr ? "رقم الآيبان الدولي (IBAN):" : "IBAN:"}
                           </span>
                           <div className="flex items-center justify-between bg-background p-2.5 rounded-lg border border-border font-mono text-xs">
-                            <span className={cn("tracking-wide", !bankAccount.iban && "text-muted-foreground font-normal text-[11px]")}>
+                            <span
+                              className={cn(
+                                "tracking-wide",
+                                !bankAccount.iban &&
+                                  "text-muted-foreground font-normal text-[11px]",
+                              )}
+                            >
                               {bankAccount.iban
                                 ? bankAccount.iban.match(/.{1,4}/g)?.join(" ") || bankAccount.iban
                                 : isAr
@@ -2037,8 +2223,14 @@ function AccountPage() {
                               {(myContributions ?? []).length}
                             </span>
                             {(myContributions ?? []).some((c) => c.status === "pending") && (
-                              <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-500/30">
-                                {(myContributions ?? []).filter((c) => c.status === "pending").length}{" "}
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] text-amber-600 border-amber-500/30"
+                              >
+                                {
+                                  (myContributions ?? []).filter((c) => c.status === "pending")
+                                    .length
+                                }{" "}
                                 {isAr ? "قيد المراجعة" : "pending"}
                               </Badge>
                             )}
@@ -2076,7 +2268,12 @@ function AccountPage() {
                       : "Detailed list of your submitted payments and their verification status."}
                   </CardDescription>
                 </div>
-                <Button asChild size="sm" variant="outline" className="text-xs font-bold gap-1 rounded-xl">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="text-xs font-bold gap-1 rounded-xl"
+                >
                   <Link to="/contribute">
                     <FileCheck className="w-3.5 h-3.5" />
                     {isAr ? "تسجيل مساهمة" : "New Contribution"}
@@ -2092,7 +2289,9 @@ function AccountPage() {
                   <div className="text-center py-10 border border-dashed border-border rounded-xl">
                     <Wallet className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
                     <p className="text-xs text-muted-foreground">
-                      {isAr ? "لم تقم بتسجيل أي مساهمات سابقة حتى الآن." : "No contribution records found."}
+                      {isAr
+                        ? "لم تقم بتسجيل أي مساهمات سابقة حتى الآن."
+                        : "No contribution records found."}
                     </p>
                     <Button asChild size="sm" className="mt-3 text-xs font-bold rounded-xl">
                       <Link to="/contribute">
@@ -2103,7 +2302,10 @@ function AccountPage() {
                 ) : (
                   <div className="divide-y divide-border border border-border rounded-xl overflow-hidden">
                     {(myContributions ?? []).map((c) => (
-                      <div key={c.id} className="p-4 bg-card hover:bg-muted/10 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                      <div
+                        key={c.id}
+                        className="p-4 bg-card hover:bg-muted/10 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                      >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-sm font-mono text-foreground">
@@ -2128,7 +2330,8 @@ function AccountPage() {
                             </span>
                             {c.reference && (
                               <span>
-                                {isAr ? "مرجع:" : "Ref:"} <span className="font-mono">{c.reference}</span>
+                                {isAr ? "مرجع:" : "Ref:"}{" "}
+                                <span className="font-mono">{c.reference}</span>
                               </span>
                             )}
                           </div>
@@ -2149,7 +2352,10 @@ function AccountPage() {
                               {isAr ? "معتمدة" : "Verified"}
                             </Badge>
                           ) : c.status === "pending" ? (
-                            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 gap-1 text-[11px]">
+                            <Badge
+                              variant="outline"
+                              className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 gap-1 text-[11px]"
+                            >
                               <Clock className="w-3 h-3 animate-pulse" />
                               {isAr ? "قيد المراجعة" : "Pending Review"}
                             </Badge>
@@ -2168,53 +2374,156 @@ function AccountPage() {
             </Card>
           </TabsContent>
 
-          {/* ──────────────── TAB: Notifications ─────────── */}
-          <TabsContent value="notifications" className="space-y-6">
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <div>
-                  <CardTitle className="text-sm">{isAr ? "الإشعارات" : "Notifications"}</CardTitle>
-                  <CardDescription className="text-xs">
-                    {isAr
-                      ? "تحديثات طلب العضوية والمستجدات الموجهة لك."
-                      : "Membership updates and news addressed to you."}
-                  </CardDescription>
+          {/* ──────────────── TAB: Notifications & Preferences ─────────── */}
+          <TabsContent value="notifications" className="space-y-6 max-w-4xl mx-auto">
+            {/* Notification Center Card */}
+            <Card className="border-border bg-card rounded-2xl shadow-sm overflow-hidden">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/50 pb-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                      <Bell className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base font-bold text-foreground">
+                        {isAr ? "مركز الإشعارات والتنبيهات" : "Notification Center"}
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        {isAr
+                          ? "متابعة مستجدات العضوية، إعلانات الأسرة، اشتراكات الخزينة، وتحديثات الأنساب."
+                          : "Stay informed with membership, announcements, treasury, and lineage updates."}
+                      </CardDescription>
+                    </div>
+                  </div>
                 </div>
-                {unreadCount > 0 && (
+
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                  {unreadCount > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-8 gap-1.5 border-border hover:bg-secondary"
+                      disabled={markAllNotifsRead.isPending}
+                      onClick={() => markAllNotifsRead.mutate()}
+                    >
+                      {markAllNotifsRead.isPending ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <CheckCheck className="w-3.5 h-3.5 text-primary" />
+                      )}
+                      <span>{isAr ? "تمييز الكل كمقروء" : "Mark all as read"}</span>
+                    </Button>
+                  )}
                   <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-8"
-                    disabled={markAllNotifsRead.isPending}
-                    onClick={() => markAllNotifsRead.mutate()}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    title={isAr ? "تحديث الإشعارات" : "Refresh notifications"}
+                    onClick={() => void refetchNotifs()}
                   >
-                    {markAllNotifsRead.isPending ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : isAr ? (
-                      "تمييز الكل كمقروء"
-                    ) : (
-                      "Mark all read"
-                    )}
+                    <RefreshCw className={cn("w-3.5 h-3.5", notifsLoading && "animate-spin")} />
                   </Button>
-                )}
+                </div>
               </CardHeader>
-              <CardContent>
-                {/* Loading and failure both used to fall through to the empty
-                    state, so a member with unread approval news was told "no
-                    notifications yet" whenever the fetch was slow or failed. */}
+
+              {/* Category Filter Tabs */}
+              <div className="border-b border-border/50 bg-secondary/15 px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                {(
+                  [
+                    { key: "all", labelAr: "الكل", labelEn: "All", count: notifications.length },
+                    {
+                      key: "unread",
+                      labelAr: "غير المقروءة",
+                      labelEn: "Unread",
+                      count: unreadCount,
+                    },
+                    {
+                      key: "system",
+                      labelAr: "النظام والقرارات",
+                      labelEn: "System",
+                      count: categorizedNotifications.system.length,
+                    },
+                    {
+                      key: "events",
+                      labelAr: "المناسبات والفعاليات",
+                      labelEn: "Events",
+                      count: categorizedNotifications.events.length,
+                    },
+                    {
+                      key: "contributions",
+                      labelAr: "الخزينة والمساهمات",
+                      labelEn: "Treasury",
+                      count: categorizedNotifications.contributions.length,
+                    },
+                    {
+                      key: "heritage",
+                      labelAr: "الأنساب والتراث",
+                      labelEn: "Heritage",
+                      count: categorizedNotifications.heritage.length,
+                    },
+                  ] as const
+                ).map((tab) => {
+                  const isActive = notifCategoryFilter === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      onClick={() => setNotifCategoryFilter(tab.key)}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors",
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+                      )}
+                    >
+                      <span>{isAr ? tab.labelAr : tab.labelEn}</span>
+                      {tab.count > 0 && (
+                        <span
+                          className={cn(
+                            "inline-flex items-center justify-center px-1.5 py-0.2 rounded-full text-[10px] font-bold font-mono",
+                            isActive
+                              ? "bg-primary-foreground/20 text-primary-foreground"
+                              : tab.key === "unread"
+                                ? "bg-destructive/15 text-destructive font-semibold"
+                                : "bg-muted text-muted-foreground",
+                          )}
+                        >
+                          {tab.count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <CardContent className="p-0">
                 {notifsLoading ? (
-                  <div className="space-y-3 py-2" aria-busy="true">
-                    {[0, 1, 2].map((i) => (
-                      <div key={i} className="h-12 rounded-lg bg-muted animate-pulse" />
+                  <div className="p-6 space-y-3" aria-busy="true">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-border/50 bg-secondary/10 animate-pulse"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-muted/80 shrink-0" />
+                        <div className="flex-1 space-y-1.5">
+                          <div className="h-3.5 w-1/3 rounded bg-muted/80" />
+                          <div className="h-3 w-2/3 rounded bg-muted/60" />
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : notifsFailed ? (
-                  <div className="py-8 px-4 text-center text-xs text-muted-foreground border border-dashed border-destructive/40 rounded-lg space-y-3">
-                    <AlertTriangle className="w-6 h-6 mx-auto text-destructive/70" />
-                    <p className="leading-relaxed">
+                  <div className="py-12 px-4 text-center text-xs text-muted-foreground space-y-3">
+                    <AlertTriangle className="w-8 h-8 mx-auto text-destructive/70" />
+                    <p className="leading-relaxed text-sm font-medium text-foreground">
                       {isAr
-                        ? "تعذر تحميل الإشعارات. قد تكون هناك تحديثات لم تصلك بعد."
-                        : "Could not load your notifications. There may be updates you haven't seen."}
+                        ? "تعذر تحميل الإشعارات حالياً."
+                        : "Unable to load notifications right now."}
+                    </p>
+                    <p className="text-muted-foreground text-xs max-w-sm mx-auto">
+                      {isAr
+                        ? "قد تكون هناك تحديثات لم تصلك بعد، يرجى المحاولة مرة أخرى."
+                        : "There may be updates pending. Please check your connection and retry."}
                     </p>
                     <Button
                       variant="outline"
@@ -2226,87 +2535,377 @@ function AccountPage() {
                       {isAr ? "إعادة المحاولة" : "Retry"}
                     </Button>
                   </div>
-                ) : !notifications.length ? (
-                  <div className="py-10 text-center text-xs text-muted-foreground border border-dashed border-border rounded-lg">
-                    <Bell className="w-6 h-6 mx-auto mb-2 opacity-40" />
-                    {isAr ? "لا توجد إشعارات حتى الآن." : "No notifications yet."}
+                ) : filteredNotifications.length === 0 ? (
+                  <div className="py-16 px-4 text-center space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-muted/50 text-muted-foreground flex items-center justify-center mx-auto mb-3">
+                      {notifCategoryFilter === "unread" ? (
+                        <CheckCheck className="w-6 h-6 text-emerald-500" />
+                      ) : (
+                        <BellOff className="w-6 h-6 opacity-40" />
+                      )}
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {notifCategoryFilter === "unread"
+                        ? isAr
+                          ? "رائع! لقد اطلعت على جميع الإشعارات."
+                          : "You're all caught up!"
+                        : isAr
+                          ? "لا توجد إشعارات في هذا التصنيف حالياً."
+                          : "No notifications in this category."}
+                    </p>
+                    <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+                      {notifCategoryFilter === "unread"
+                        ? isAr
+                          ? "لا توجد إشعارات غير مقروءة في حسابك."
+                          : "You have no unread notifications right now."
+                        : isAr
+                          ? "سيتم إعلامك فور صدور أي مستجدات متعلقة."
+                          : "We'll notify you as soon as there are new updates."}
+                    </p>
                   </div>
                 ) : (
-                  <ul className="divide-y divide-border">
-                    {notifications.map((n) => {
-                      const content = (
-                        <div className="flex items-start gap-3 py-3">
-                          {!n.is_read && (
-                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                          )}
-                          <div className={cn("flex-1 min-w-0", n.is_read && "ps-[15px]")}>
-                            <p
-                              className={cn(
-                                "text-xs",
-                                n.is_read
-                                  ? "text-muted-foreground"
-                                  : "font-semibold text-foreground",
-                              )}
-                            >
-                              {isAr ? n.title_ar : n.title_en || n.title_ar}
-                            </p>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">
-                              {isAr ? n.message_ar : n.message_en || n.message_ar}
-                            </p>
-                            <p className="text-[10px] text-muted-foreground/70 mt-1 font-mono">
-                              {formatNotifTime(n.created_at)}
-                            </p>
-                          </div>
-                          {!n.is_read && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-[10px] h-6 px-2 shrink-0"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                markNotifRead.mutate(n.id);
-                              }}
-                            >
-                              {isAr ? "تمييز كمقروء" : "Mark read"}
-                            </Button>
-                          )}
-                        </div>
-                      );
+                  <ul className="divide-y divide-border/60">
+                    {filteredNotifications.map((n) => {
                       const href = safeNotifLink(n.link);
                       return (
-                        <li key={n.id}>
-                          {href ? (
-                            // n.link is an arbitrary DB-stored path, not a
-                            // route known at build time, so a plain <a> is
-                            // used here instead of the typed <Link>.
-                            <a
-                              href={href}
-                              className="block hover:bg-muted/40 -mx-1 px-1 rounded transition-colors"
-                              onClick={(e) => {
-                                if (n.is_read) return;
-                                // A full navigation tears down the in-flight
-                                // mark-read POST, so the notification stayed
-                                // unread every time it was opened via its link.
-                                // Navigate only once the write has settled.
-                                e.preventDefault();
-                                void markNotifRead
-                                  .mutateAsync(n.id)
-                                  .catch(() => undefined)
-                                  .finally(() => {
-                                    window.location.href = href;
-                                  });
-                              }}
-                            >
-                              {content}
-                            </a>
-                          ) : (
-                            content
+                        <li
+                          key={n.id}
+                          className={cn(
+                            "group p-4 transition-colors flex items-start justify-between gap-3 hover:bg-secondary/25",
+                            !n.is_read && "bg-primary/5 dark:bg-primary/10",
                           )}
+                        >
+                          <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                            {/* Icon badge */}
+                            <div
+                              className={cn(
+                                "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm border",
+                                n.is_read
+                                  ? "bg-secondary/60 border-border text-muted-foreground"
+                                  : "bg-background border-primary/30 text-primary shadow-xs",
+                              )}
+                            >
+                              {getNotifIcon(n.type)}
+                            </div>
+
+                            <div className="flex-1 min-w-0 space-y-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span
+                                  className={cn(
+                                    "text-xs leading-snug",
+                                    n.is_read
+                                      ? "font-medium text-foreground/80"
+                                      : "font-bold text-foreground",
+                                  )}
+                                >
+                                  {isAr ? n.title_ar : n.title_en || n.title_ar}
+                                </span>
+                                {!n.is_read && (
+                                  <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                                )}
+                              </div>
+
+                              <p className="text-xs text-muted-foreground leading-relaxed">
+                                {isAr ? n.message_ar : n.message_en || n.message_ar}
+                              </p>
+
+                              <div className="flex flex-wrap items-center gap-3 pt-0.5 text-[10px] text-muted-foreground/80 font-mono">
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3 text-muted-foreground/60" />
+                                  {formatNotifTime(n.created_at)}
+                                </span>
+
+                                {href && (
+                                  <a
+                                    href={href}
+                                    onClick={(e) => {
+                                      if (!n.is_read) {
+                                        e.preventDefault();
+                                        void markNotifRead
+                                          .mutateAsync(n.id)
+                                          .catch(() => undefined)
+                                          .finally(() => {
+                                            window.location.href = href;
+                                          });
+                                      }
+                                    }}
+                                    className="text-primary hover:underline flex items-center gap-0.5 font-sans font-medium"
+                                  >
+                                    <span>{isAr ? "عرض التفاصيل" : "View details"}</span>
+                                    <ArrowUpRight className="w-3 h-3" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Quick Actions */}
+                          <div className="flex items-center gap-1 shrink-0">
+                            {!n.is_read && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 text-[11px] px-2 text-muted-foreground hover:text-primary gap-1"
+                                disabled={markNotifRead.isPending}
+                                onClick={() => markNotifRead.mutate(n.id)}
+                                title={isAr ? "تمييز كمقروء" : "Mark read"}
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">{isAr ? "مقروء" : "Read"}</span>
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-lg"
+                              disabled={deleteNotif.isPending}
+                              onClick={() => deleteNotif.mutate(n.id)}
+                              title={isAr ? "حذف الإشعار" : "Delete notification"}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
                         </li>
                       );
                     })}
                   </ul>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Notification Preferences Card */}
+            <Card className="border-border bg-card rounded-2xl shadow-sm">
+              <CardHeader className="border-b border-border/50 pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gold/10 text-gold flex items-center justify-center">
+                      <Settings className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base font-bold text-foreground">
+                        {isAr
+                          ? "تفضيلات وقنوات وصول التنبيهات"
+                          : "Notification Preferences & Channels"}
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        {isAr
+                          ? "تخصيص أنواع التنبيهات التي تود استقبالها وتحديد قنوات وصولها إليك."
+                          : "Select the categories of updates you want to receive and choose your channels."}
+                      </CardDescription>
+                    </div>
+                  </div>
+
+                  {prefsLoading && (
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+              </CardHeader>
+
+              <CardContent className="pt-6 space-y-6">
+                {/* 1. Category Subscriptions */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <Sliders className="w-3.5 h-3.5 text-primary" />
+                    {isAr ? "مجالات وموضوعات الإشعارات" : "Notification Topics"}
+                  </h4>
+
+                  <div className="divide-y divide-border/60 border border-border/60 rounded-xl overflow-hidden bg-secondary/10">
+                    {/* System alerts */}
+                    <div className="p-3.5 flex items-center justify-between gap-4">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4 text-blue-500" />
+                          <Label className="text-xs font-semibold cursor-pointer">
+                            {isAr
+                              ? "تنبيهات النظام وقرارات الإدارة"
+                              : "System & Administrative Alerts"}
+                          </Label>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground ps-6">
+                          {isAr
+                            ? "مستجدات توثيق العضوية، تغييرات الأدوار، وتنبيهات الأمان والحساب."
+                            : "Membership verification results, role updates, and account security alerts."}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={prefsState.system_alerts}
+                        onCheckedChange={(checked) =>
+                          setPrefsState((prev) => ({ ...prev, system_alerts: checked }))
+                        }
+                      />
+                    </div>
+
+                    {/* Family Events */}
+                    <div className="p-3.5 flex items-center justify-between gap-4">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-amber-500" />
+                          <Label className="text-xs font-semibold cursor-pointer">
+                            {isAr ? "الفعاليات والمناسبات العائلية" : "Family Events & Gatherings"}
+                          </Label>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground ps-6">
+                          {isAr
+                            ? "دعوات الاجتماعات الدورية، مناسبات المجلس، والملتقيات السنوية للأسرة."
+                            : "Invitations to family meetings, council gatherings, and annual assemblies."}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={prefsState.family_events}
+                        onCheckedChange={(checked) =>
+                          setPrefsState((prev) => ({ ...prev, family_events: checked }))
+                        }
+                      />
+                    </div>
+
+                    {/* Treasury & Contributions */}
+                    <div className="p-3.5 flex items-center justify-between gap-4">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <Landmark className="w-4 h-4 text-emerald-500" />
+                          <Label className="text-xs font-semibold cursor-pointer">
+                            {isAr ? "صندوق الأسرة والمساهمات المالية" : "Treasury & Family Fund"}
+                          </Label>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground ps-6">
+                          {isAr
+                            ? "تأكيد اعتماد الاشتراكات، إيصالات التحويل، وحملات الدعم الأسري."
+                            : "Contribution verification confirmations, receipts, and fund campaigns."}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={prefsState.contributions}
+                        onCheckedChange={(checked) =>
+                          setPrefsState((prev) => ({ ...prev, contributions: checked }))
+                        }
+                      />
+                    </div>
+
+                    {/* Lineage & Family Tree */}
+                    <div className="p-3.5 flex items-center justify-between gap-4">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <GitBranch className="w-4 h-4 text-bronze dark:text-gold" />
+                          <Label className="text-xs font-semibold cursor-pointer">
+                            {isAr
+                              ? "تحديثات شجرة العائلة وسجل الأنساب"
+                              : "Family Tree & Lineage Updates"}
+                          </Label>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground ps-6">
+                          {isAr
+                            ? "إضافة مواليد جدد، توثيق فروع الأسرة، وتحديثات المخطط النسبي."
+                            : "New additions to the family tree, branch validations, and genealogy records."}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={prefsState.lineage_updates}
+                        onCheckedChange={(checked) =>
+                          setPrefsState((prev) => ({ ...prev, lineage_updates: checked }))
+                        }
+                      />
+                    </div>
+
+                    {/* Articles & News */}
+                    <div className="p-3.5 flex items-center justify-between gap-4">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-primary" />
+                          <Label className="text-xs font-semibold cursor-pointer">
+                            {isAr ? "المقالات والأخبار والتغطيات" : "Articles, News & Media"}
+                          </Label>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground ps-6">
+                          {isAr
+                            ? "المقالات التراثية، التغطيات المصورة، والأخبار الثقافية للمجلس."
+                            : "Heritage publications, media coverage, and cultural announcements."}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={prefsState.articles_news}
+                        onCheckedChange={(checked) =>
+                          setPrefsState((prev) => ({ ...prev, articles_news: checked }))
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Delivery Channels */}
+                <div className="space-y-3 pt-2">
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-primary" />
+                    {isAr ? "قنوات الاستلام" : "Delivery Channels"}
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-4 rounded-xl border border-border/60 bg-secondary/10 flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Bell className="w-4 h-4 text-primary" />
+                          <Label className="text-xs font-semibold cursor-pointer">
+                            {isAr ? "تنبيهات البوابة الإلكترونية" : "In-Portal Alerts"}
+                          </Label>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">
+                          {isAr
+                            ? "ظهور الإشعارات عبر جرس التنبيهات في شريط المنصة وحسابك."
+                            : "Real-time badge and dropdown in the portal header and account."}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={prefsState.in_app_notifications}
+                        onCheckedChange={(checked) =>
+                          setPrefsState((prev) => ({ ...prev, in_app_notifications: checked }))
+                        }
+                      />
+                    </div>
+
+                    <div className="p-4 rounded-xl border border-border/60 bg-secondary/10 flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-gold" />
+                          <Label className="text-xs font-semibold cursor-pointer">
+                            {isAr ? "رسائل البريد الإلكتروني" : "Email Notifications"}
+                          </Label>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">
+                          {isAr
+                            ? `إرسال ملخص بالقرارات الهامة إلى: ${user?.email || "بريدك"}`
+                            : `Dispatch major updates to: ${user?.email || "your email"}`}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={prefsState.email_notifications}
+                        onCheckedChange={(checked) =>
+                          setPrefsState((prev) => ({ ...prev, email_notifications: checked }))
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                  <p className="text-[11px] text-muted-foreground">
+                    {isAr
+                      ? "يتم تطبيق التفضيلات على كافة الأجهزة المرتبطة بحسابك فور الحفظ."
+                      : "Preferences apply across all devices signed into your account."}
+                  </p>
+                  <Button
+                    size="sm"
+                    className="h-9 px-4 text-xs font-bold gap-1.5 rounded-xl shadow"
+                    disabled={updatePrefsMut.isPending}
+                    onClick={() => updatePrefsMut.mutate(prefsState)}
+                  >
+                    {updatePrefsMut.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Check className="w-3.5 h-3.5" />
+                    )}
+                    <span>{isAr ? "حفظ التفضيلات" : "Save Preferences"}</span>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -2392,11 +2991,7 @@ function AccountPage() {
           </DialogHeader>
           <div className="p-4 bg-white rounded-2xl shadow-inner my-3 flex items-center justify-center">
             {qrCodeDataUrl ? (
-              <img
-                src={qrCodeDataUrl}
-                alt="QR Code"
-                className="w-56 h-56 object-contain"
-              />
+              <img src={qrCodeDataUrl} alt="QR Code" className="w-56 h-56 object-contain" />
             ) : (
               <QrCode className="w-32 h-32 text-stone-800 animate-pulse" />
             )}

@@ -18,6 +18,7 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { GlobalSearchModal } from "./GlobalSearchModal";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { cn } from "@/lib/utils";
 
 /** Top-bar links shown inline before the rest fold into "More". Kept to four so
@@ -475,6 +476,7 @@ export function Header() {
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
             <ThemeToggle tone="default" />
             <LanguageSwitcher tone="default" />
+            {user && <NotificationBell />}
           </div>
 
           {canReviewTreasury ? (

@@ -29,6 +29,8 @@ import {
   Sliders,
   Sparkles,
   AlertTriangle,
+  BookUser,
+  Building2,
 } from "lucide-react";
 import type { ComponentType } from "react";
 
@@ -87,11 +89,11 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     tabs: [
       {
         id: "members",
-        label_ar: "سجل أفراد الأسرة",
-        label_en: "Family Directory",
-        description_ar: "إدارة بيانات وسجلات أفراد الأسرة وتحديث معلوماتهم",
-        description_en: "Manage and update family member records",
-        icon: Users,
+        label_ar: "سجل أفراد الأسرة (الأنساب)",
+        label_en: "Genealogy Directory",
+        description_ar: "السجل المدني للمشجرة وقاعدة بيانات أفراد ونسب الأسرة",
+        description_en: "Genealogy database of family members and lineage",
+        icon: BookUser,
       },
       {
         id: "tree",
@@ -231,8 +233,8 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     id: "community",
     label_ar: "التواصل والمجتمع",
     label_en: "Community & Inquiries",
-    description_ar: "صندوق الرسائل، دليل الأعمال، وتوثيق العضويات",
-    description_en: "Inbox, business directory, and verification requests",
+    description_ar: "صندوق الرسائل واستفسارات التواصل، ودليل المنشآت والأعمال",
+    description_en: "Contact inquiries, messages, and family business directory",
     icon: MessageSquare,
     badgeKey: "pendingInquiries",
     roles: ["admin", "super_admin", "editor"],
@@ -252,16 +254,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         label_en: "Business Directory",
         description_ar: "منشآت وشركات أبناء الأسرة ومشاريعهم التجارية",
         description_en: "Family member businesses and ventures",
-        icon: ClipboardList,
-      },
-      {
-        id: "verification",
-        label_ar: "طلبات توثيق العضوية",
-        label_en: "Membership Verification",
-        description_ar: "مراجعة طلبات الانضمام وتأكيد الانتساب العائلي",
-        description_en: "Review membership requests and lineage verification",
-        icon: UserCheck,
-        badgeKey: "pendingVerifications",
+        icon: Building2,
       },
     ],
   },
@@ -306,18 +299,20 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     id: "system",
     label_ar: "الإدارة والنظام",
     label_en: "System & Governance",
-    description_ar: "إدارة الحسابات، الصلاحيات، وسجل العمليات",
-    description_en: "Users, access control, audit logs, and settings",
+    description_ar: "حسابات المستخدمين، مراجعة طلبات التوثيق، الصلاحيات، وسجل العمليات",
+    description_en: "User accounts, verification requests, access control, and audit logs",
     icon: Settings,
+    badgeKey: "pendingVerifications",
     roles: ["admin", "super_admin"],
     tabs: [
       {
         id: "users",
-        label_ar: "المستخدمون والحسابات",
-        label_en: "User Accounts",
-        description_ar: "إدارة حسابات المشرفين والأعضاء المسجلين",
-        description_en: "Manage administrator and member accounts",
-        icon: UserCog,
+        label_ar: "المستخدمون وتوثيق العضوية",
+        label_en: "User Accounts & Verification",
+        description_ar: "إدارة حسابات المستخدمين، مراجعة طلبات التوثيق، وإسناد الأدوار",
+        description_en: "Manage administrator and member accounts, verify lineage requests",
+        icon: UserCheck,
+        badgeKey: "pendingVerifications",
       },
       {
         id: "roles_matrix",
@@ -409,7 +404,6 @@ export const preloadAdminManager = (tabId: string) => {
       void import("@/components/console/inquiries/InquiriesManager");
       break;
     case "directory":
-    case "verification":
       void import("@/components/console/directory/DirectoryManager");
       break;
     case "treasury_ledger":
@@ -421,6 +415,7 @@ export const preloadAdminManager = (tabId: string) => {
     case "achievers":
       void import("@/components/console/achievers/AchieversManager");
       break;
+    case "verification":
     case "users":
       void import("@/components/console/users/UsersManager");
       break;

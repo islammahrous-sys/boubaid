@@ -369,8 +369,8 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
             ((verificationsRes.count ?? 0) * 3 +
               (receiptsRes.count ?? 0) * 3 +
               (articlesDraftRes.count ?? 0) * 2 +
-              ((inquiriesRes.count ?? 0) + (contactRes.count ?? 0)) * 2)
-        )
+              ((inquiriesRes.count ?? 0) + (contactRes.count ?? 0)) * 2),
+        ),
       ),
       treasuryPending,
       treasuryTarget,
@@ -532,6 +532,19 @@ export const upsertFamilyMember = createServerFn({ method: "POST" })
       after_data: member,
     });
 
+    try {
+      const { notifyFamilyManagersOnLineageUpdate } = await import("@/lib/notifications.server");
+      const fullName =
+        `${member.first_name_ar || ""} ${member.last_name_ar || ""}`.trim() || "فرد من الأسرة";
+      void notifyFamilyManagersOnLineageUpdate({
+        actorId: context.userId || session?.user?.id || "",
+        memberName: fullName,
+        actionDesc: data.id ? "تعديل في سجل النسب" : "إضافة فرد جديد في شجرة العائلة",
+      }).catch((err) => console.error("[admin-hub] lineage notification failed:", err));
+    } catch (err) {
+      console.warn("[admin-hub] notification hook failed:", err);
+    }
+
     return { ok: true, member };
   });
 
@@ -546,7 +559,7 @@ export const deleteFamilyMember = createServerFn({ method: "POST" })
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", data.id)
       .is("deleted_at", null)
-      .select("id");
+      .select("id, first_name_ar, last_name_ar");
 
     if (error) throw new Error(error.message);
     assertRowsAffected(archived, "family_members", data.id);
@@ -557,6 +570,20 @@ export const deleteFamilyMember = createServerFn({ method: "POST" })
       entity_type: "family_members",
       entity_id: data.id,
     });
+
+    try {
+      const { notifyFamilyManagersOnLineageUpdate } = await import("@/lib/notifications.server");
+      const name = archived[0]
+        ? `${archived[0].first_name_ar || ""} ${archived[0].last_name_ar || ""}`.trim()
+        : "فرد من الأسرة";
+      void notifyFamilyManagersOnLineageUpdate({
+        actorId: context.userId || session?.user?.id || "",
+        memberName: name,
+        actionDesc: "أرشفة سجل فرد من شجرة الأسرة",
+      }).catch((err) => console.error("[admin-hub] lineage archive notification failed:", err));
+    } catch (err) {
+      console.warn("[admin-hub] notification hook failed:", err);
+    }
 
     return { ok: true };
   });
@@ -882,6 +909,34 @@ export const upsertArticle = createServerFn({ method: "POST" })
       after_data: article,
     });
 
+    if (!data.id && article.status === "draft") {
+      try {
+        const { notifyContentStaffOnArticleDraft } = await import("@/lib/notifications.server");
+        void notifyContentStaffOnArticleDraft({
+          id: article.id,
+          title_ar: article.title_ar,
+          title_en: article.title_en,
+        }).catch((err) => console.error("[admin-hub] article draft notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    } else if (
+      article.status === "published" &&
+      (!data.id || (payload.status === "published" && !data.published_at))
+    ) {
+      try {
+        const { notifyMembersOnNewArticle } = await import("@/lib/notifications.server");
+        void notifyMembersOnNewArticle({
+          id: article.id,
+          title_ar: article.title_ar,
+          title_en: article.title_en,
+          slug: article.slug,
+        }).catch((err) => console.error("[admin-hub] article published notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
+
     return { ok: true, article };
   });
 
@@ -939,6 +994,19 @@ export const upsertEvent = createServerFn({ method: "POST" })
       after_data: event,
     });
 
+    if (!data.id && event.status === "published") {
+      try {
+        const { notifyMembersOnNewEvent } = await import("@/lib/notifications.server");
+        void notifyMembersOnNewEvent({
+          title_ar: event.title_ar,
+          title_en: event.title_en,
+          slug: event.slug,
+        }).catch((err) => console.error("[admin-hub] event notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
+
     return { ok: true, event };
   });
 
@@ -976,6 +1044,21 @@ export const upsertAnnouncement = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw new Error(error.message);
+
+    if (!data.id && ann.status === "published") {
+      try {
+        const { notifyMembersOnNewAnnouncement } = await import("@/lib/notifications.server");
+        void notifyMembersOnNewAnnouncement({
+          title_ar: ann.title_ar,
+          title_en: ann.title_en,
+          link: "/news",
+          type: "announcement",
+        }).catch((err) => console.error("[admin-hub] announcement notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
+
     return { ok: true, announcement: ann };
   });
 
@@ -1025,6 +1108,19 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
       after_data: asset,
     });
 
+    if (!payload.id) {
+      try {
+        const { notifyContentStaffOnMediaSubmission } = await import("@/lib/notifications.server");
+        void notifyContentStaffOnMediaSubmission({
+          id: asset.id,
+          title_ar: asset.caption_ar || asset.alt_text_ar || "ملف وسائط جديد",
+          title_en: asset.caption_en || asset.alt_text_en || "New media asset",
+        }).catch((err) => console.error("[admin-hub] media upload notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
+
     return { ok: true, asset };
   });
 
@@ -1068,6 +1164,20 @@ export const upsertDocument = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw new Error(error.message);
+
+    if (!data.id) {
+      try {
+        const { notifyContentStaffOnMediaSubmission } = await import("@/lib/notifications.server");
+        void notifyContentStaffOnMediaSubmission({
+          id: doc.id,
+          title_ar: doc.title_ar || "وثيقة جديدة",
+          title_en: doc.title_en,
+        }).catch((err) => console.error("[admin-hub] document upload notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
+
     return { ok: true, document: doc };
   });
 
@@ -1431,7 +1541,9 @@ export const getUsersAndRolesData = createServerFn({ method: "GET" })
       supabase.from("role_permissions").select("*"),
       supabase
         .from("membership_requests")
-        .select("id, user_id, status, branch_slug, full_name_ar, full_name_en, email, phone, father_lineage, notes, review_note, reviewed_at, created_at"),
+        .select(
+          "id, user_id, status, branch_slug, full_name_ar, full_name_en, email, phone, father_lineage, notes, review_note, reviewed_at, created_at",
+        ),
       supabase
         .from("family_members")
         .select("id, first_name_ar, last_name_ar, first_name_en, last_name_en, branch_id, slug")
@@ -1503,31 +1615,6 @@ export const assignUserRole = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     await requireCallerCanGrantRole(supabase, userId, data.role);
 
-    // Business rule enforcement: An operational role (editor, treasurer, manager, admin, etc.)
-    // may NOT be assigned unless the member has an approved membership request or already possesses the 'member' role.
-    if (data.role !== "member") {
-      const [{ data: existingRoles }, { data: approvedRequests }] = await Promise.all([
-        (supabase as any).from("user_roles").select("role").eq("user_id", data.user_id),
-        (supabase as any)
-          .from("membership_requests")
-          .select("id, status")
-          .eq("user_id", data.user_id)
-          .eq("status", "approved")
-          .limit(1),
-      ]);
-
-      const alreadyApprovedMember =
-        (existingRoles ?? []).some((r: any) => r.role === "member" || r.role === "admin" || r.role === "super_admin") ||
-        (approvedRequests ?? []).length > 0;
-
-      if (!alreadyApprovedMember) {
-        throw new Error(
-          "لا يمكن إسناد أدوار وصلاحيات تشغيلية لهذا الحساب لأن طلب العضوية لم يُعتمد بعد. يجب مراجعة واعتماد طلب العضوية أولاً. " +
-          "Role assignment is unavailable: This member's membership request must be approved first."
-        );
-      }
-    }
-
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("user_roles").insert({
       user_id: data.user_id,
@@ -1540,6 +1627,19 @@ export const assignUserRole = createServerFn({ method: "POST" })
     const alreadyAssigned = error?.code === "23505";
     if (error && !alreadyAssigned) throw new Error(error.message);
 
+    // If an admin assigned member, admin, or staff role, auto-approve any pending request
+    if (data.role === "member" || data.role === "admin" || data.role === "editor") {
+      await (supabaseAdmin as any)
+        .from("membership_requests")
+        .update({
+          status: "approved",
+          reviewed_at: new Date().toISOString(),
+          review_note: "تم اعتماد العضوية وتعيين الدور مباشرة من قبل الإدارة",
+        })
+        .eq("user_id", data.user_id)
+        .eq("status", "pending");
+    }
+
     await (supabase as any).from("audit_logs").insert({
       actor_user_id: userId,
       action: "role_change",
@@ -1547,6 +1647,17 @@ export const assignUserRole = createServerFn({ method: "POST" })
       entity_id: data.user_id,
       metadata: { role: data.role, already_assigned: alreadyAssigned },
     });
+
+    if (!alreadyAssigned) {
+      try {
+        const { notifyMemberOnRoleAssignment } = await import("@/lib/notifications.server");
+        void notifyMemberOnRoleAssignment(data.user_id, data.role, "granted").catch((err) =>
+          console.error("[admin-hub] role grant notification failed:", err),
+        );
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
 
     return { ok: true, alreadyAssigned };
   });
@@ -1609,6 +1720,15 @@ export const removeUserRole = createServerFn({ method: "POST" })
       entity_id: data.user_id,
       metadata: { removed_role: data.role },
     });
+
+    try {
+      const { notifyMemberOnRoleAssignment } = await import("@/lib/notifications.server");
+      void notifyMemberOnRoleAssignment(data.user_id, data.role, "revoked").catch((err) =>
+        console.error("[admin-hub] role revocation notification failed:", err),
+      );
+    } catch (err) {
+      console.warn("[admin-hub] notification hook failed:", err);
+    }
 
     return { ok: true };
   });
@@ -1761,6 +1881,20 @@ export const reviewMembershipRequest = createServerFn({ method: "POST" })
       after_data: req,
     });
 
+    const targetUserId = req?.user_id;
+    if (targetUserId) {
+      try {
+        const { notifyMemberOnMembershipDecision } = await import("@/lib/notifications.server");
+        void notifyMemberOnMembershipDecision(
+          targetUserId,
+          data.status as "approved" | "rejected",
+          data.review_note,
+        ).catch((err) => console.error("[admin-hub] membership review notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
+
     return { ok: true, request: req };
   });
 
@@ -1773,7 +1907,9 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase } = context;
     const [contribsRes, configRes] = await Promise.all([
-      supabase.from("contributions").select("id, amount, status, purpose, method, created_at"),
+      supabase
+        .from("contributions")
+        .select("id, amount, status, purpose, method, created_at, user_id, currency"),
       supabase.from("site_settings").select("value").eq("key", "treasury_config").maybeSingle(),
     ]);
 
@@ -1792,7 +1928,6 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
       .filter((c) => c.status === "rejected")
       .reduce((sum, c) => sum + Number(c.amount || 0), 0);
 
-    // Purpose / Fund breakdown for verified contributions
     const byPurpose: Record<string, { count: number; total: number }> = {};
     for (const c of contributions) {
       if (c.status === "verified") {
@@ -1809,6 +1944,11 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
       pendingTotal,
       rejectedTotal,
       totalCount: contributions.length,
+      totals: {
+        verified: verifiedTotal,
+        pending: pendingTotal,
+        count: contributions.length,
+      },
       byPurpose,
       treasuryConfig: configRes.data?.value || null,
     };
@@ -1882,6 +2022,22 @@ export const reviewTreasuryContribution = createServerFn({ method: "POST" })
       after_data: updated,
     });
 
+    const targetUserId = updated?.user_id;
+    if (targetUserId) {
+      try {
+        const { notifyMemberOnContributionDecision } = await import("@/lib/notifications.server");
+        void notifyMemberOnContributionDecision(
+          targetUserId,
+          data.status as "verified" | "rejected",
+          Number(updated.amount),
+          updated.currency || "SAR",
+          data.review_note,
+        ).catch((err) => console.error("[admin-hub] treasury review notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
+
     return { ok: true, contribution: updated };
   });
 
@@ -1901,12 +2057,9 @@ export const getInitiativesManagementData = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false }),
     ]);
 
-    if (initiativesRes.error) throw new Error(initiativesRes.error.message);
-    if (registrationsRes.error) throw new Error(registrationsRes.error.message);
-
     return {
-      initiatives: initiativesRes.data ?? [],
-      registrations: registrationsRes.data ?? [],
+      initiatives: unwrapRows(initiativesRes, "المبادرات / initiatives"),
+      registrations: unwrapRows(registrationsRes, "تسجيلات المبادرات / registrations"),
     };
   });
 
@@ -1938,6 +2091,20 @@ export const upsertInitiative = createServerFn({ method: "POST" })
       entity_id: init.id,
       after_data: init,
     });
+
+    if (!data.id && init.is_published !== false) {
+      try {
+        const { notifyMembersOnNewAnnouncement } = await import("@/lib/notifications.server");
+        void notifyMembersOnNewAnnouncement({
+          title_ar: init.title_ar,
+          title_en: init.title_en,
+          link: `/initiatives/${init.slug}`,
+          type: "initiative",
+        }).catch((err) => console.error("[admin-hub] initiative notification failed:", err));
+      } catch (err) {
+        console.warn("[admin-hub] notification hook failed:", err);
+      }
+    }
 
     return { ok: true, initiative: init };
   });
