@@ -1751,48 +1751,6 @@ export type Database = {
         }
         Relationships: []
       }
-      notification_preferences: {
-        Row: {
-          articles_news: boolean
-          contributions: boolean
-          created_at: string
-          email_notifications: boolean
-          family_events: boolean
-          id: string
-          in_app_notifications: boolean
-          lineage_updates: boolean
-          system_alerts: boolean
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          articles_news?: boolean
-          contributions?: boolean
-          created_at?: string
-          email_notifications?: boolean
-          family_events?: boolean
-          id?: string
-          in_app_notifications?: boolean
-          lineage_updates?: boolean
-          system_alerts?: boolean
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          articles_news?: boolean
-          contributions?: boolean
-          created_at?: string
-          email_notifications?: boolean
-          family_events?: boolean
-          id?: string
-          in_app_notifications?: boolean
-          lineage_updates?: boolean
-          system_alerts?: boolean
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       news_posts: {
         Row: {
           body_ar: string | null
