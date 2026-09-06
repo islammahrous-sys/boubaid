@@ -113,7 +113,8 @@ export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
     <div className={cn("relative overflow-hidden", className)}>
       <video
         ref={videoRef}
-        src={hqVideo.url}
+        src={HQ_VIDEO_SRC}
+        poster={HQ_VIDEO_POSTER}
         className="photo-plate h-full w-full object-cover"
         autoPlay
         loop
