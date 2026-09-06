@@ -14,6 +14,8 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as InitiativesRouteImport } from './routes/initiatives'
+import { Route as FundCertificatesRouteImport } from './routes/fund-certificates'
+import { Route as FundRouteImport } from './routes/fund'
 import { Route as FoundationRouteImport } from './routes/foundation'
 import { Route as FamilyTreeRouteImport } from './routes/family-tree'
 import { Route as EventsRouteImport } from './routes/events'
@@ -59,6 +61,16 @@ const LibraryRoute = LibraryRouteImport.update({
 const InitiativesRoute = InitiativesRouteImport.update({
   id: '/initiatives',
   path: '/initiatives',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundCertificatesRoute = FundCertificatesRouteImport.update({
+  id: '/fund-certificates',
+  path: '/fund-certificates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundRoute = FundRouteImport.update({
+  id: '/fund',
+  path: '/fund',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FoundationRoute = FoundationRouteImport.update({
@@ -179,6 +191,8 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
+  '/fund': typeof FundRoute
+  '/fund-certificates': typeof FundCertificatesRoute
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
@@ -206,6 +220,8 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
+  '/fund': typeof FundRoute
+  '/fund-certificates': typeof FundCertificatesRoute
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
@@ -235,6 +251,8 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/family-tree': typeof FamilyTreeRoute
   '/foundation': typeof FoundationRoute
+  '/fund': typeof FundRoute
+  '/fund-certificates': typeof FundCertificatesRoute
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
@@ -264,6 +282,8 @@ export interface FileRouteTypes {
     | '/events'
     | '/family-tree'
     | '/foundation'
+    | '/fund'
+    | '/fund-certificates'
     | '/initiatives'
     | '/library'
     | '/news'
@@ -291,6 +311,8 @@ export interface FileRouteTypes {
     | '/events'
     | '/family-tree'
     | '/foundation'
+    | '/fund'
+    | '/fund-certificates'
     | '/initiatives'
     | '/library'
     | '/news'
@@ -319,6 +341,8 @@ export interface FileRouteTypes {
     | '/events'
     | '/family-tree'
     | '/foundation'
+    | '/fund'
+    | '/fund-certificates'
     | '/initiatives'
     | '/library'
     | '/news'
@@ -348,6 +372,8 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   FamilyTreeRoute: typeof FamilyTreeRoute
   FoundationRoute: typeof FoundationRoute
+  FundRoute: typeof FundRoute
+  FundCertificatesRoute: typeof FundCertificatesRoute
   InitiativesRoute: typeof InitiativesRouteWithChildren
   LibraryRoute: typeof LibraryRouteWithChildren
   NewsRoute: typeof NewsRouteWithChildren
@@ -391,6 +417,20 @@ declare module '@tanstack/react-router' {
       path: '/initiatives'
       fullPath: '/initiatives'
       preLoaderRoute: typeof InitiativesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fund-certificates': {
+      id: '/fund-certificates'
+      path: '/fund-certificates'
+      fullPath: '/fund-certificates'
+      preLoaderRoute: typeof FundCertificatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fund': {
+      id: '/fund'
+      path: '/fund'
+      fullPath: '/fund'
+      preLoaderRoute: typeof FundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/foundation': {
@@ -607,6 +647,8 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   FamilyTreeRoute: FamilyTreeRoute,
   FoundationRoute: FoundationRoute,
+  FundRoute: FundRoute,
+  FundCertificatesRoute: FundCertificatesRoute,
   InitiativesRoute: InitiativesRouteWithChildren,
   LibraryRoute: LibraryRouteWithChildren,
   NewsRoute: NewsRouteWithChildren,
