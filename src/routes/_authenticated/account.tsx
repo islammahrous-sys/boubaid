@@ -1389,7 +1389,7 @@ function AccountPage() {
                             >
                               <SelectTrigger className="h-9 text-xs">
                                 <SelectValue
-                                  placeholder={isAr ? "اختر فرع العائلة..." : "Select branch..."}
+                                  placeholder={isAr ? "PLACEHOLDER-TEST" : "Select branch..."}
                                 />
                               </SelectTrigger>
                               <SelectContent>
