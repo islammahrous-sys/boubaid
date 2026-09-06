@@ -659,23 +659,18 @@ function HomePage() {
         );
         const hqTitle = liveHq?.title ?? hqProject.title;
         const hqSummary = liveHq?.summary ?? hqProject.fundingModel;
-        const hqImage = sec.image_path || liveHq?.image || pageImages.home.project.src;
 
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
               <figure>
-                <img
-                  src={hqImage}
-                  alt={t(hqTitle)}
-                  className="photo-plate w-full object-cover"
-                  loading="lazy"
-                />
+                <HqProjectVideo label={t(hqTitle)} className="aspect-[4/3] w-full" />
                 <figcaption className="mt-3 flex items-start gap-2.5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
                   <span className="mt-1.5 h-px w-5 shrink-0 bg-bronze" aria-hidden="true" />
                   <span>{t(pageImages.home.project.caption)}</span>
                 </figcaption>
               </figure>
+
 
               <div>
                 <Eyebrow>
