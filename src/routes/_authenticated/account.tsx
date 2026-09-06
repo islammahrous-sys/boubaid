@@ -426,7 +426,7 @@ function AccountPage() {
 
   // Eagerly pre-populate form with known user profile from useAuth/metadata so the
   // member name and avatar render immediately without placeholder flicker
-  const [form, setForm] = useState(() => ({
+  const [form, setFormRaw] = useState(() => ({
     full_name_ar:
       authProfile?.full_name_ar ??
       (user?.user_metadata?.full_name_ar as string) ??
@@ -439,6 +439,11 @@ function AccountPage() {
     avatar_path: authProfile?.avatar_path ?? "",
     show_in_directory: false,
   }));
+
+  const setForm = (v: any) => {
+    console.log("[dbg] setForm", new Error().stack?.split("\n").slice(1, 4).join(" | "));
+    setFormRaw(v);
+  };
 
   /** The stored `branch_slug` may predate the current `branches` ids (older rows
    *  hold a db slug or the Arabic branch name). The <Select> only recognises
