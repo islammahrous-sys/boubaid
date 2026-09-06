@@ -117,7 +117,7 @@ export function Header() {
       }
       if (
         primaryDropdownRef.current &&
-        !primaryDropdownRef.current.contains(event.target as Node)
+        !(event.target as HTMLElement)?.closest?.("[data-primary-dropdown]")
       ) {
         setOpenDropdown(null);
       }
@@ -243,6 +243,7 @@ export function Header() {
                   key={n.to}
                   className="relative"
                   ref={primaryDropdownRef}
+                  data-primary-dropdown="true"
                   onMouseEnter={() => handleDropdownEnter(n.to)}
                   onMouseLeave={handleDropdownLeave}
                 >
