@@ -116,7 +116,6 @@ export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
         loop
         muted
         playsInline
-        // @ts-expect-error legacy iOS attribute
         webkit-playsinline="true"
         preload="auto"
         aria-label={label}
