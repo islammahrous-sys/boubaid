@@ -5,6 +5,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 
 /** Web-optimised (fast-start) copy served from /public so playback begins immediately. */
 const HQ_VIDEO_SRC = "/media/hq-project.mp4";
+const HQ_VIDEO_SRC_WEBM = "/media/hq-project.webm";
 const HQ_VIDEO_POSTER = "/media/hq-project-poster.jpg";
 
 export interface HqProjectVideoProps {
