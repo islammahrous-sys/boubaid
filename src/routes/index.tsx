@@ -22,6 +22,8 @@ import {
   Eyebrow,
   Status,
 } from "@/components/site/Editorial";
+import { HqProjectVideo } from "@/components/site/HqProjectVideo";
+
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
 import { HeroImage } from "@/components/site/HeroImage";
