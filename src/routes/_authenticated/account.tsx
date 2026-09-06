@@ -426,7 +426,7 @@ function AccountPage() {
 
   // Eagerly pre-populate form with known user profile from useAuth/metadata so the
   // member name and avatar render immediately without placeholder flicker
-  const [form, setFormRaw] = useState(() => ({
+  const [form, setForm] = useState(() => ({
     full_name_ar:
       authProfile?.full_name_ar ??
       (user?.user_metadata?.full_name_ar as string) ??
@@ -439,11 +439,6 @@ function AccountPage() {
     avatar_path: authProfile?.avatar_path ?? "",
     show_in_directory: false,
   }));
-
-  const setForm = (v: any) => {
-    console.log("[dbg] setForm", new Error().stack?.split("\n").slice(1, 4).join(" | "));
-    setFormRaw(v);
-  };
 
   /** The stored `branch_slug` may predate the current `branches` ids (older rows
    *  hold a db slug or the Arabic branch name). The <Select> only recognises
@@ -466,14 +461,11 @@ function AccountPage() {
    *  refetch — background refetches (triggered by other fields, notifications,
    *  window focus) were overwriting an in-progress branch selection. */
   const hydratedProfileId = useRef<string | null>(null);
-  const instId = useRef(Math.random().toString(36).slice(2, 6));
 
   useEffect(() => {
-    console.log("[dbg] eff", instId.current, !!data?.profile, hydratedProfileId.current);
     if (!data?.profile) return;
     if (hydratedProfileId.current === data.profile.id) return;
     hydratedProfileId.current = data.profile.id;
-    console.log("[dbg] hydrate", data.profile.branch_slug, "->", resolveBranchId(data.profile.branch_slug));
     setForm({
       full_name_ar: data.profile.full_name_ar ?? "",
       full_name_en: data.profile.full_name_en ?? "",
@@ -1391,12 +1383,19 @@ function AccountPage() {
                               {isAr ? "فرع الأسرة *" : "Family Branch *"}
                             </Label>
                             <Select
-                              value={(console.log("[dbg] render", instId.current, form.branch_slug), form.branch_slug)}
-                              onValueChange={(val) => setForm({ ...form, branch_slug: val })}
+                              value={form.branch_slug || undefined}
+                              onValueChange={(val) => {
+                                // Radix emits an empty value from its hidden
+                                // native select while the item list is still
+                                // unmounted -- ignoring it keeps the stored
+                                // branch visible after a reload.
+                                if (!val) return;
+                                setForm({ ...form, branch_slug: val });
+                              }}
                             >
                               <SelectTrigger className="h-9 text-xs">
                                 <SelectValue
-                                  placeholder={isAr ? "PLACEHOLDER-TEST" : "Select branch..."}
+                                  placeholder={isAr ? "اختر فرع العائلة..." : "Select branch..."}
                                 />
                               </SelectTrigger>
                               <SelectContent>
