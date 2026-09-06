@@ -86,6 +86,24 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
   {
     title: { ar: "الصندوق والمشاريع", en: "Fund & Projects" },
     items: [
+      {
+        to: "/fund",
+        label: { ar: "صندوق التنمية العائلية", en: "Family Development Fund" },
+        short: { ar: "الصندوق", en: "Fund" },
+        children: [
+          {
+            to: "/fund-certificates",
+            label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
+          },
+          {
+            to: "/fund-financials",
+            label: {
+              ar: "القوائم المالية والموازنة والحسابات",
+              en: "Financial Statements, Budget & Accounts",
+            },
+          },
+        ],
+      },
       { to: "/foundation", label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Trustees" } },
       {
         to: "/initiatives",
