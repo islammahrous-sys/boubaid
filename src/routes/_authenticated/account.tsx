@@ -466,6 +466,7 @@ function AccountPage() {
     if (!data?.profile) return;
     if (hydratedProfileId.current === data.profile.id) return;
     hydratedProfileId.current = data.profile.id;
+    console.log("[dbg] hydrate", data.profile.branch_slug, "->", resolveBranchId(data.profile.branch_slug));
     setForm({
       full_name_ar: data.profile.full_name_ar ?? "",
       full_name_en: data.profile.full_name_en ?? "",
