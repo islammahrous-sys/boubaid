@@ -40,6 +40,24 @@ export const primaryNav: NavItem[] = [
     short: { ar: "الخدمات", en: "Services" },
   },
   {
+    to: "/fund",
+    label: { ar: "صندوق التنمية العائلية", en: "Family Development Fund" },
+    short: { ar: "الصندوق", en: "Fund" },
+    children: [
+      {
+        to: "/fund-certificates",
+        label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
+      },
+      {
+        to: "/fund-financials",
+        label: {
+          ar: "القوائم المالية والموازنة والحسابات",
+          en: "Financial Statements, Budget & Accounts",
+        },
+      },
+    ],
+  },
+  {
     to: "/initiatives",
     label: { ar: "المشاريع", en: "Projects" },
     short: { ar: "المشاريع", en: "Projects" },

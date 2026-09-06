@@ -14,6 +14,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as InitiativesRouteImport } from './routes/initiatives'
+import { Route as FundFinancialsRouteImport } from './routes/fund-financials'
 import { Route as FundCertificatesRouteImport } from './routes/fund-certificates'
 import { Route as FundRouteImport } from './routes/fund'
 import { Route as FoundationRouteImport } from './routes/foundation'
@@ -61,6 +62,11 @@ const LibraryRoute = LibraryRouteImport.update({
 const InitiativesRoute = InitiativesRouteImport.update({
   id: '/initiatives',
   path: '/initiatives',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundFinancialsRoute = FundFinancialsRouteImport.update({
+  id: '/fund-financials',
+  path: '/fund-financials',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FundCertificatesRoute = FundCertificatesRouteImport.update({
@@ -193,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/foundation': typeof FoundationRoute
   '/fund': typeof FundRoute
   '/fund-certificates': typeof FundCertificatesRoute
+  '/fund-financials': typeof FundFinancialsRoute
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
@@ -222,6 +229,7 @@ export interface FileRoutesByTo {
   '/foundation': typeof FoundationRoute
   '/fund': typeof FundRoute
   '/fund-certificates': typeof FundCertificatesRoute
+  '/fund-financials': typeof FundFinancialsRoute
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   '/foundation': typeof FoundationRoute
   '/fund': typeof FundRoute
   '/fund-certificates': typeof FundCertificatesRoute
+  '/fund-financials': typeof FundFinancialsRoute
   '/initiatives': typeof InitiativesRouteWithChildren
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/foundation'
     | '/fund'
     | '/fund-certificates'
+    | '/fund-financials'
     | '/initiatives'
     | '/library'
     | '/news'
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/foundation'
     | '/fund'
     | '/fund-certificates'
+    | '/fund-financials'
     | '/initiatives'
     | '/library'
     | '/news'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/foundation'
     | '/fund'
     | '/fund-certificates'
+    | '/fund-financials'
     | '/initiatives'
     | '/library'
     | '/news'
@@ -374,6 +386,7 @@ export interface RootRouteChildren {
   FoundationRoute: typeof FoundationRoute
   FundRoute: typeof FundRoute
   FundCertificatesRoute: typeof FundCertificatesRoute
+  FundFinancialsRoute: typeof FundFinancialsRoute
   InitiativesRoute: typeof InitiativesRouteWithChildren
   LibraryRoute: typeof LibraryRouteWithChildren
   NewsRoute: typeof NewsRouteWithChildren
@@ -417,6 +430,13 @@ declare module '@tanstack/react-router' {
       path: '/initiatives'
       fullPath: '/initiatives'
       preLoaderRoute: typeof InitiativesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fund-financials': {
+      id: '/fund-financials'
+      path: '/fund-financials'
+      fullPath: '/fund-financials'
+      preLoaderRoute: typeof FundFinancialsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fund-certificates': {
@@ -649,6 +669,7 @@ const rootRouteChildren: RootRouteChildren = {
   FoundationRoute: FoundationRoute,
   FundRoute: FundRoute,
   FundCertificatesRoute: FundCertificatesRoute,
+  FundFinancialsRoute: FundFinancialsRoute,
   InitiativesRoute: InitiativesRouteWithChildren,
   LibraryRoute: LibraryRouteWithChildren,
   NewsRoute: NewsRouteWithChildren,

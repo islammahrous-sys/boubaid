@@ -225,16 +225,6 @@ export function Header() {
             >
               {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
             </span>
-            <span
-              className={cn(
-                "label-caps truncate text-bronze transition-[max-height,opacity] duration-500 dark:text-gold-soft",
-                condensed
-                  ? "max-h-0 opacity-0"
-                  : "max-h-5 text-[10px] sm:text-xs opacity-100 md:text-sm",
-              )}
-            >
-              {lang === "ar" ? "صندوق التنمية العائلية" : "Family Development Org."}
-            </span>
           </span>
         </Link>
 
