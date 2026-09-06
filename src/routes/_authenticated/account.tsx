@@ -1383,8 +1383,15 @@ function AccountPage() {
                               {isAr ? "فرع الأسرة *" : "Family Branch *"}
                             </Label>
                             <Select
-                              value={form.branch_slug}
-                              onValueChange={(val) => setForm({ ...form, branch_slug: val })}
+                              value={form.branch_slug || undefined}
+                              onValueChange={(val) => {
+                                // Radix emits an empty value from its hidden
+                                // native select while the item list is still
+                                // unmounted -- ignoring it keeps the stored
+                                // branch visible after a reload.
+                                if (!val) return;
+                                setForm({ ...form, branch_slug: val });
+                              }}
                             >
                               <SelectTrigger className="h-9 text-xs">
                                 <SelectValue
