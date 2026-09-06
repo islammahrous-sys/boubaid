@@ -35,11 +35,6 @@ export const primaryNav: NavItem[] = [
     ],
   },
   {
-    to: "/directory",
-    label: { ar: "الخدمات", en: "Services" },
-    short: { ar: "الخدمات", en: "Services" },
-  },
-  {
     to: "/fund",
     label: { ar: "صندوق التنمية العائلية", en: "Family Development Fund" },
     short: { ar: "الصندوق", en: "Fund" },
@@ -56,6 +51,11 @@ export const primaryNav: NavItem[] = [
         },
       },
     ],
+  },
+  {
+    to: "/directory",
+    label: { ar: "الخدمات", en: "Services" },
+    short: { ar: "الخدمات", en: "Services" },
   },
   {
     to: "/initiatives",
