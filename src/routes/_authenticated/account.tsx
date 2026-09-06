@@ -1384,7 +1384,7 @@ function AccountPage() {
                               {isAr ? "فرع الأسرة *" : "Family Branch *"}
                             </Label>
                             <Select
-                              value={form.branch_slug}
+                              value={(console.log("[dbg] render branch", form.branch_slug), form.branch_slug)}
                               onValueChange={(val) => setForm({ ...form, branch_slug: val })}
                             >
                               <SelectTrigger className="h-9 text-xs">
