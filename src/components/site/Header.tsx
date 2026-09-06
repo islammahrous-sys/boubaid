@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 /** Top-bar links shown inline before the rest fold into "More". Kept to four so
  *  the English labels ("Lineage & History", "Services"…) plus the right-hand
  *  action cluster still fit within the container at the `xl` breakpoint. */
-const HEADER_PRIMARY_COUNT = 4;
+const HEADER_PRIMARY_COUNT = 5;
 
 export function Header() {
   const { t, lang } = useLang();
