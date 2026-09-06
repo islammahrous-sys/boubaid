@@ -461,8 +461,10 @@ function AccountPage() {
    *  refetch — background refetches (triggered by other fields, notifications,
    *  window focus) were overwriting an in-progress branch selection. */
   const hydratedProfileId = useRef<string | null>(null);
+  const instId = useRef(Math.random().toString(36).slice(2, 6));
 
   useEffect(() => {
+    console.log("[dbg] eff", instId.current, !!data?.profile, hydratedProfileId.current);
     if (!data?.profile) return;
     if (hydratedProfileId.current === data.profile.id) return;
     hydratedProfileId.current = data.profile.id;
@@ -1384,7 +1386,7 @@ function AccountPage() {
                               {isAr ? "فرع الأسرة *" : "Family Branch *"}
                             </Label>
                             <Select
-                              value={(console.log("[dbg] render branch", form.branch_slug), form.branch_slug)}
+                              value={(console.log("[dbg] render", instId.current, form.branch_slug), form.branch_slug)}
                               onValueChange={(val) => setForm({ ...form, branch_slug: val })}
                             >
                               <SelectTrigger className="h-9 text-xs">
