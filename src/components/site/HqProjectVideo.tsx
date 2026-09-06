@@ -12,9 +12,9 @@ export interface HqProjectVideoProps {
 
 /**
  * Looping architectural walkthrough for the Family Council Headquarters.
- * Plays continuously; ambient bird audio is enabled as early as the browser
- * allows (immediately, otherwise on the visitor's first interaction) and can
- * be muted at any time via the on-video control.
+ * Playback always starts muted (the only mode browsers allow without a
+ * gesture) and keeps retrying, then sound is switched on at the visitor's
+ * first real interaction unless they chose to keep it off.
  */
 export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
   const { lang } = useLang();
@@ -23,51 +23,82 @@ export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
   const mutedByVisitor = useRef(false);
   const [muted, setMuted] = useState(true);
 
-  const tryUnmute = useCallback(async () => {
+  // Keep muted playback alive: retry on every event that can signal readiness.
+  const ensurePlaying = useCallback(() => {
     const el = videoRef.current;
-    if (!el || mutedByVisitor.current) return;
-    el.muted = false;
-    el.volume = 1;
-    try {
-      await el.play();
-      setMuted(false);
-    } catch {
+    if (!el) return;
+    if (!el.paused && !el.ended) return;
+    el.play().catch(() => {
+      // Blocked: force muted playback, which browsers always allow.
       el.muted = true;
       setMuted(true);
-    }
+      el.play().catch(() => {});
+    });
   }, []);
 
-  // Start playback muted (always allowed), then attempt sound right away and
-  // again on the first visitor interaction if the browser blocked it.
+  const tryUnmute = useCallback(() => {
+    const el = videoRef.current;
+    if (!el || mutedByVisitor.current) return;
+    const wasMuted = el.muted;
+    el.muted = false;
+    el.volume = 1;
+    el.play()
+      .then(() => setMuted(false))
+      .catch(() => {
+        el.muted = wasMuted || true;
+        setMuted(true);
+        el.play().catch(() => {});
+      });
+  }, []);
+
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
 
     el.muted = true;
-    void el.play().catch(() => {});
-    void tryUnmute();
+    el.playsInline = true;
+    ensurePlaying();
 
-    const onInteract = () => {
-      void tryUnmute();
-    };
-    const events: (keyof DocumentEventMap)[] = [
-      "pointerdown",
-      "keydown",
-      "touchstart",
-      "scroll",
-      "wheel",
+    const readyEvents: (keyof HTMLMediaElementEventMap)[] = [
+      "loadeddata",
+      "canplay",
+      "pause",
+      "stalled",
+      "suspend",
     ];
-    events.forEach((e) => document.addEventListener(e, onInteract, { once: true, passive: true }));
-    return () =>
-      events.forEach((e) => document.removeEventListener(e, onInteract));
-  }, [tryUnmute]);
+    readyEvents.forEach((e) => el.addEventListener(e, ensurePlaying));
+
+    const onVisible = () => {
+      if (!document.hidden) ensurePlaying();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    // Real user gestures unlock audio; scroll/wheel do not on mobile.
+    const gestures: (keyof DocumentEventMap)[] = ["pointerup", "touchend", "click", "keydown"];
+    const onGesture = () => {
+      ensurePlaying();
+      tryUnmute();
+      if (!videoRef.current?.muted) detach();
+    };
+    const detach = () => gestures.forEach((e) => document.removeEventListener(e, onGesture));
+    gestures.forEach((e) => document.addEventListener(e, onGesture, { passive: true }));
+
+    // Try immediately too, in case this browser already allows sound.
+    tryUnmute();
+
+    return () => {
+      readyEvents.forEach((e) => el.removeEventListener(e, ensurePlaying));
+      document.removeEventListener("visibilitychange", onVisible);
+      detach();
+    };
+  }, [ensurePlaying, tryUnmute]);
 
   const toggleSound = () => {
     const el = videoRef.current;
     if (!el) return;
     if (el.muted) {
       mutedByVisitor.current = false;
-      void tryUnmute();
+      tryUnmute();
     } else {
       mutedByVisitor.current = true;
       el.muted = true;
@@ -85,6 +116,8 @@ export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
         loop
         muted
         playsInline
+        // @ts-expect-error legacy iOS attribute
+        webkit-playsinline="true"
         preload="auto"
         aria-label={label}
       />
