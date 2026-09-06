@@ -113,7 +113,6 @@ export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
     <div className={cn("relative overflow-hidden", className)}>
       <video
         ref={videoRef}
-        src={HQ_VIDEO_SRC}
         poster={HQ_VIDEO_POSTER}
         className="photo-plate h-full w-full object-cover"
         autoPlay
@@ -123,7 +122,10 @@ export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
         webkit-playsinline="true"
         preload="auto"
         aria-label={label}
-      />
+      >
+        <source src={HQ_VIDEO_SRC} type="video/mp4" />
+        <source src={HQ_VIDEO_SRC_WEBM} type="video/webm" />
+      </video>
       <button
         type="button"
         onClick={toggleSound}
