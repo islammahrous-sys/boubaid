@@ -64,8 +64,8 @@ export const siteMeta = {
     fundEmail: "family.fund@boubaid.com",
     whatsapp: "https://chat.whatsapp.com/albouabidfamily",
     telegram: "https://t.me/albouabidfamily",
-    x: "https://x.com/albouabidfamily",
-    instagram: "https://instagram.com/albouabidfamily",
+    x: "https://x.com/alboubaidsa?s=11&t=JjqjL-WTkQap2J3eRRQdSQ",
+    instagram: "https://www.instagram.com/alboubaidsa?igsi=b21oN2I4dXhlcGg3",
     youtube: "https://youtube.com/@albouabidfamily",
     snapchat: "https://www.snapchat.com/add/alboubaidsa",
     /** Google Maps pin for the permanent headquarters plot. */

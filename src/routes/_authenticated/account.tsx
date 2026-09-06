@@ -440,12 +440,36 @@ function AccountPage() {
     show_in_directory: false,
   }));
 
+  /** The stored `branch_slug` may predate the current `branches` ids (older rows
+   *  hold a db slug or the Arabic branch name). The <Select> only recognises
+   *  `branches[].id`, so anything else rendered as an empty field and looked like
+   *  the selection had been lost. Normalise on read so the saved branch shows up. */
+  const resolveBranchId = (raw: string | null | undefined) => {
+    const value = (raw ?? "").trim();
+    if (!value) return "";
+    const match = branches.find(
+      (b) =>
+        b.id === value ||
+        (b.dbSlugs as readonly string[] | undefined)?.includes(value) ||
+        b.name.ar === value ||
+        b.name.en === value,
+    );
+    return match?.id ?? "";
+  };
+
+  /** Hydrate the form from the server snapshot once per profile, not on every
+   *  refetch — background refetches (triggered by other fields, notifications,
+   *  window focus) were overwriting an in-progress branch selection. */
+  const hydratedProfileId = useRef<string | null>(null);
+
   useEffect(() => {
     if (!data?.profile) return;
+    if (hydratedProfileId.current === data.profile.id) return;
+    hydratedProfileId.current = data.profile.id;
     setForm({
       full_name_ar: data.profile.full_name_ar ?? "",
       full_name_en: data.profile.full_name_en ?? "",
-      branch_slug: data.profile.branch_slug ?? "",
+      branch_slug: resolveBranchId(data.profile.branch_slug),
       phone: data.profile.phone ?? "",
       lineage_notes: data.profile.lineage_notes ?? "",
       avatar_path: data.profile.avatar_path ?? "",

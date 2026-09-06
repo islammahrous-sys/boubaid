@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 /** Top-bar links shown inline before the rest fold into "More". Kept to four so
  *  the English labels ("Lineage & History", "Services"…) plus the right-hand
  *  action cluster still fit within the container at the `xl` breakpoint. */
-const HEADER_PRIMARY_COUNT = 4;
+const HEADER_PRIMARY_COUNT = 5;
 
 export function Header() {
   const { t, lang } = useLang();
@@ -117,7 +117,7 @@ export function Header() {
       }
       if (
         primaryDropdownRef.current &&
-        !primaryDropdownRef.current.contains(event.target as Node)
+        !(event.target as HTMLElement)?.closest?.("[data-primary-dropdown]")
       ) {
         setOpenDropdown(null);
       }
@@ -225,16 +225,6 @@ export function Header() {
             >
               {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
             </span>
-            <span
-              className={cn(
-                "label-caps truncate text-bronze transition-[max-height,opacity] duration-500 dark:text-gold-soft",
-                condensed
-                  ? "max-h-0 opacity-0"
-                  : "max-h-5 text-[10px] sm:text-xs opacity-100 md:text-sm",
-              )}
-            >
-              {lang === "ar" ? "صندوق التنمية العائلية" : "Family Development Org."}
-            </span>
           </span>
         </Link>
 
@@ -253,6 +243,7 @@ export function Header() {
                   key={n.to}
                   className="relative"
                   ref={primaryDropdownRef}
+                  data-primary-dropdown="true"
                   onMouseEnter={() => handleDropdownEnter(n.to)}
                   onMouseLeave={handleDropdownLeave}
                 >
