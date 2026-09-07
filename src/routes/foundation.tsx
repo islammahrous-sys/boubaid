@@ -68,8 +68,8 @@ const copy = {
   } as BiText,
   certificateLabel: { ar: "شهادة الترخيص الرسمية", en: "Official License Certificate" } as BiText,
   certificateCta: {
-    ar: "عرض شهادة ترخيص NCNP كاملة (صيغة PDF/JPG)",
-    en: "View the full NCNP license certificate",
+    ar: "استعراض الشهادات والإثباتات النظامية كاملة",
+    en: "Browse all statutory certificates & attestations",
   } as BiText,
   mandateP2: {
     ar: "وتلتزم الصندوق بمتطلبات الحوكمة والإفصاح المالي والامتثال الزكوي المقررة على القطاع غير الربحي، ويخضع حسابها لمراجعة سنوية مستقلة، بما يتسق مع مستهدفات رؤية المملكة ٢٠٣٠.",
@@ -151,10 +151,13 @@ const copy = {
 
   docsEyebrow: { ar: "الوثائق النظامية", en: "Constitutional documents" } as BiText,
   docsNote: {
-    ar: "النسخ الموقعة مودعة لدى الأمانة العامة، ونسخها الرقمية متاحة في الأرشيف.",
-    en: "Signed copies are deposited with the secretariat; digital copies are available in the archive.",
+    ar: "النسخ الموقعة مودعة لدى الأمانة العامة، وجميع نسخها الرقمية منشورة في صفحة الشهادات والإثباتات بصندوق التنمية العائلية.",
+    en: "Signed copies are deposited with the secretariat; all digital copies are published on the fund's Certificates & Attestations page.",
   } as BiText,
-  archiveCta: { ar: "الانتقال إلى الأرشيف", en: "Go to the archive" } as BiText,
+  archiveCta: {
+    ar: "الانتقال إلى الشهادات والإثباتات",
+    en: "Go to Certificates & Attestations",
+  } as BiText,
   pending: {
     ar: "الوثيقة متاحة في الأرشيف الرقمي.",
     en: "This document is available in the digital archive.",
