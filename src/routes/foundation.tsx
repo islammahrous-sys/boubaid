@@ -623,18 +623,19 @@ function FoundationPage() {
               </p>
 
               <DocumentShowcase
-                refs={["Engineering Spec", "Saudi Post"]}
+                refs={["Engineering Spec"]}
                 title={{
-                  ar: "المخططات والتراخيص الرسمية للمقر الدائم",
-                  en: "Permanent HQ Official Plans & Address Verification",
+                  ar: "المخططات الرسمية للمقر الدائم",
+                  en: "Permanent HQ Official Plans",
                 }}
                 description={{
-                  ar: "الوثائق الهندسية المعتمدة وإثبات العنوان الوطني الرسمي للمقر بحي الحزام الذهبي.",
-                  en: "Approved architectural masterplan and official national address verification for the HQ in Al-Hizam Al-Dhahabi.",
+                  ar: "الوثائق الهندسية المعتمدة للمقر بحي الحزام الذهبي. أما الشهادات والإثباتات النظامية فمكانها صفحة الشهادات والإثباتات في صندوق التنمية العائلية.",
+                  en: "Approved architectural documents for the HQ in Al-Hizam Al-Dhahabi. Statutory certificates and attestations are published on the fund's Certificates & Attestations page.",
                 }}
                 variant="grid"
                 className="mt-6"
               />
+
             </div>
           </div>
         </section>
