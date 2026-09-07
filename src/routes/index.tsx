@@ -298,17 +298,20 @@ type SectionConfig = {
 const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "hero", enabled: true, order: 1 },
   { id: "about_dean", enabled: true, order: 2 },
-  { id: "seven_branches", enabled: true, order: 3 },
+  // Vision, mission and core values sit directly under the council address.
+  { id: "vision_mission", enabled: true, order: 3 },
+  { id: "seven_branches", enabled: true, order: 4 },
   // The genetic-lineage study sits directly under the seven branches.
-  { id: "dna_preview", enabled: true, order: 4 },
-  { id: "initiatives_hq", enabled: true, order: 5 },
-  { id: "latest_news", enabled: true, order: 6 },
-  { id: "family_achievers", enabled: true, order: 7 },
-  { id: "poem_proposal", enabled: true, order: 8 },
-  { id: "upcoming_events", enabled: true, order: 9 },
-  { id: "heritage_gallery", enabled: true, order: 10 },
-  { id: "contact_inquiry", enabled: true, order: 11 },
+  { id: "dna_preview", enabled: true, order: 5 },
+  { id: "initiatives_hq", enabled: true, order: 6 },
+  { id: "latest_news", enabled: true, order: 7 },
+  { id: "family_achievers", enabled: true, order: 8 },
+  { id: "poem_proposal", enabled: true, order: 9 },
+  { id: "upcoming_events", enabled: true, order: 10 },
+  { id: "heritage_gallery", enabled: true, order: 11 },
+  { id: "contact_inquiry", enabled: true, order: 12 },
 ];
+
 
 /** Compact date for the homepage events preview cards (no weekday, unlike the full /events page). */
 function formatHomeEventDate(iso: string, lang: "ar" | "en", timezone: string) {
