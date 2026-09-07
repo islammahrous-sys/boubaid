@@ -24,14 +24,17 @@ export const primaryNav: NavItem[] = [
     to: "/about",
     label: { ar: "النسب والتاريخ", en: "Lineage & History" },
     children: [
-      { to: "/about", label: { ar: "تاريخ العائلة", en: "Family History" } },
+      { to: "/about", label: { ar: "تاريخ الأسرة", en: "Family History" } },
       {
         to: "/family-tree",
-        label: { ar: "نسب العائلة", en: "Family Lineage" },
+        label: { ar: "نسب الأسرة", en: "Family Lineage" },
         short: { ar: "النسب", en: "Lineage" },
       },
-      { to: "/dna", label: { ar: "الدراسة الجينية للعائلة", en: "Family Genetic Study" } },
-      { to: "/branches", label: { ar: "جذور العائلة", en: "Family Roots" } },
+      { to: "/dna", label: { ar: "الدراسة الجينية للأسرة", en: "Family Genetic Study" } },
+      { to: "/branches", label: { ar: "جذور الأسرة", en: "Family Roots" } },
+      { to: "/branches", label: { ar: "نقاط التقاء جذور الأسرة", en: "Roots Meeting Points" } },
+      { to: "/branches", label: { ar: "فروع الأسرة", en: "Family Branches" } },
+      { to: "/library", label: { ar: "كتاب بني تميم", en: "Banu Tamim Book" } },
     ],
   },
   {
