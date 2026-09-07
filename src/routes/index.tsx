@@ -580,25 +580,26 @@ function HomePage() {
                   ))}
                 </Prose>
 
-                <div className="mt-8 border-t border-border pt-5">
-                  <p className="text-sm text-muted-foreground">{t(councilAddress.signOff)}</p>
-                  <p className="mt-1 text-sm font-semibold text-foreground">
-                    {t(councilAddress.signerName)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{t(councilAddress.signerRole)}</p>
+                <div className="mt-8 grid gap-6 border-t border-border pt-5 sm:grid-cols-2">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t(councilAddress.signOff)}</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      {t(councilAddress.signerName)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t(councilAddress.signerRole)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      {t(councilAddress.secondSignOff)}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      {t(councilAddress.secondSignerName)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {t(councilAddress.secondSignerRole)}
+                    </p>
+                  </div>
                 </div>
-
-                <Link
-                  to={sec.cta_url || "/about"}
-                  className="mt-6 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                >
-                  {sec.cta_label_ar && rtl
-                    ? sec.cta_label_ar
-                    : sec.cta_label_en && !rtl
-                      ? sec.cta_label_en
-                      : t(copy.openingLink)}
-                  <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                </Link>
               </div>
             </div>
           </section>
