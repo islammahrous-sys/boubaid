@@ -26,6 +26,7 @@ import { HqProjectVideo } from "@/components/site/HqProjectVideo";
 
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
+import { councilAddress, visionMission } from "@/content/council-address";
 import { HeroImage } from "@/components/site/HeroImage";
 import {
   getPublishedNews,
