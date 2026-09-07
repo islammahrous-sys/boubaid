@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileCheck2, Clock } from "lucide-react";
+import { FileText, ExternalLink, Download } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
+import { fundDocuments, fundDocumentGroups } from "@/content/fund-documents";
 import { getCanonicalUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/fund-certificates")({
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/fund-certificates")({
       {
         name: "description",
         content:
-          "الشهادات والإثباتات النظامية لصندوق التنمية العائلية (آل بوعبيد): الترخيص الرسمي وجهة الإصدار وتاريخ الإشهار.",
+          "الشهادات والإثباتات النظامية لصندوق التنمية العائلية (آل بوعبيد): قرار التسجيل، شهادة الترخيص، اللائحة الأساسية، العنوان الوطني، وخطابات المجلس والتفويض البنكي.",
       },
       { property: "og:title", content: "الشهادات والإثباتات — صندوق التنمية العائلية" },
       {
@@ -39,8 +40,8 @@ function FundCertificatesPage() {
         title={isAr ? "الشهادات و الاثباتات" : "Certificates & Attestations"}
         subtitle={
           isAr
-            ? "التوثيق النظامي للصندوق. تُرفع نسخ الشهادات الرسمية هنا عند اعتمادها من مجلس الأسرة."
-            : "Statutory documentation of the fund. Scanned certificates are published here once approved by the Family Council."
+            ? "المرجع الرسمي الواحد لجميع شهادات الصندوق ووثائقه النظامية المعتمدة من مجلس الأسرة."
+            : "The single official reference for all the fund's certificates and statutory documents approved by the Family Council."
         }
         meta={[
           { label: isAr ? "رقم الترخيص" : "Licence no.", value: siteMeta.ncnpLicense, mono: true },
@@ -54,28 +55,74 @@ function FundCertificatesPage() {
       />
 
       <section className="container-page py-12">
-        <Eyebrow rule>{isAr ? "المستندات" : "Documents"}</Eyebrow>
-        <ul className="mt-6 divide-y divide-border border border-border bg-card">
-          {[
-            isAr ? "ترخيص الصندوق الرسمي" : "Official fund licence",
-            isAr ? "شهادة التسجيل والإشهار" : "Registration & publication certificate",
-            isAr ? "إثبات الحساب البنكي المعتمد" : "Approved bank account attestation",
-          ].map((label) => (
-            <li key={label} className="flex flex-wrap items-center gap-3 p-4">
-              <FileCheck2 className="h-4 w-4 shrink-0 text-bronze dark:text-gold" aria-hidden />
-              <span className="text-sm text-foreground">{label}</span>
-              <span className="ms-auto inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" aria-hidden />
-                {isAr ? "قيد الرفع" : "Pending upload"}
-              </span>
-            </li>
-          ))}
-        </ul>
+        {fundDocumentGroups.map((group) => {
+          const docs = fundDocuments.filter((d) => d.group === group.id);
+          if (docs.length === 0) return null;
 
-        <Prose className="mt-6 text-sm text-muted-foreground">
+          return (
+            <div key={group.id} className="mt-10 first:mt-0">
+              <Eyebrow rule>{t(group.title)}</Eyebrow>
+
+              <ul className="mt-5 grid gap-4 sm:grid-cols-2">
+                {docs.map((doc) => (
+                  <li
+                    key={doc.id}
+                    className="flex gap-4 border border-border bg-card p-4 transition-colors hover:border-bronze dark:hover:border-gold"
+                  >
+                    {doc.preview ? (
+                      <img
+                        src={doc.preview}
+                        alt=""
+                        loading="lazy"
+                        className="h-20 w-16 shrink-0 border border-border object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-20 w-16 shrink-0 items-center justify-center border border-border bg-secondary/50">
+                        <FileText
+                          className="h-5 w-5 text-bronze dark:text-gold"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    )}
+
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-sm font-semibold text-foreground">{t(doc.title)}</h3>
+                        {doc.isNew ? (
+                          <span className="label-caps border border-bronze/40 px-1.5 py-0.5 text-[10px] text-bronze dark:border-gold/40 dark:text-gold">
+                            {isAr ? "جديد" : "New"}
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
+                        {t(doc.note)}
+                      </p>
+                      <p className="nums label-caps mt-2 text-muted-foreground">
+                        {doc.year} هـ · {doc.kind}
+                      </p>
+
+                      <a
+                        href={doc.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
+                      >
+                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                        {isAr ? "عرض وتحميل" : "View & download"}
+                        <ExternalLink className="h-3 w-3 opacity-60" aria-hidden="true" />
+                      </a>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+
+        <Prose className="mt-10 text-sm text-muted-foreground">
           {isAr ? (
             <>
-              لطلب صورة رسمية من أي شهادة، يمكنكم{" "}
+              حُجبت أرقام الهوية في الخطابات الرسمية. ولطلب صورة مصدقة من أي وثيقة، يمكنكم{" "}
               <Link to="/contact" className="underline hover:text-bronze dark:hover:text-gold">
                 التواصل مع أمانة المجلس
               </Link>
@@ -83,7 +130,8 @@ function FundCertificatesPage() {
             </>
           ) : (
             <>
-              To request an official copy of any certificate, please{" "}
+              ID numbers are redacted in the official letters. To request a certified copy of any
+              document, please{" "}
               <Link to="/contact" className="underline hover:text-bronze dark:hover:text-gold">
                 contact the Council secretariat
               </Link>

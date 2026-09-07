@@ -68,8 +68,8 @@ const copy = {
   } as BiText,
   certificateLabel: { ar: "شهادة الترخيص الرسمية", en: "Official License Certificate" } as BiText,
   certificateCta: {
-    ar: "عرض شهادة ترخيص NCNP كاملة (صيغة PDF/JPG)",
-    en: "View the full NCNP license certificate",
+    ar: "استعراض الشهادات والإثباتات النظامية كاملة",
+    en: "Browse all statutory certificates & attestations",
   } as BiText,
   mandateP2: {
     ar: "وتلتزم الصندوق بمتطلبات الحوكمة والإفصاح المالي والامتثال الزكوي المقررة على القطاع غير الربحي، ويخضع حسابها لمراجعة سنوية مستقلة، بما يتسق مع مستهدفات رؤية المملكة ٢٠٣٠.",
@@ -151,10 +151,13 @@ const copy = {
 
   docsEyebrow: { ar: "الوثائق النظامية", en: "Constitutional documents" } as BiText,
   docsNote: {
-    ar: "النسخ الموقعة مودعة لدى الأمانة العامة، ونسخها الرقمية متاحة في الأرشيف.",
-    en: "Signed copies are deposited with the secretariat; digital copies are available in the archive.",
+    ar: "النسخ الموقعة مودعة لدى الأمانة العامة، وجميع نسخها الرقمية منشورة في صفحة الشهادات والإثباتات بصندوق التنمية العائلية.",
+    en: "Signed copies are deposited with the secretariat; all digital copies are published on the fund's Certificates & Attestations page.",
   } as BiText,
-  archiveCta: { ar: "الانتقال إلى الأرشيف", en: "Go to the archive" } as BiText,
+  archiveCta: {
+    ar: "الانتقال إلى الشهادات والإثباتات",
+    en: "Go to Certificates & Attestations",
+  } as BiText,
   pending: {
     ar: "الوثيقة متاحة في الأرشيف الرقمي.",
     en: "This document is available in the digital archive.",
@@ -281,10 +284,8 @@ function FoundationPage() {
             <p>{t(copy.mandateP1)}</p>
             <p>{t(copy.mandateP2)}</p>
 
-            <a
-              href="/images/ncnp_license_certificate.jpg"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/fund-certificates"
               className="not-prose group mt-6 flex max-w-sm items-center gap-4 border border-border p-3 transition-colors hover:border-bronze dark:hover:border-gold"
             >
               <img
@@ -299,7 +300,8 @@ function FoundationPage() {
                 </span>
                 {t(copy.certificateCta)}
               </span>
-            </a>
+            </Link>
+
           </Prose>
         </section>
 
@@ -623,18 +625,19 @@ function FoundationPage() {
               </p>
 
               <DocumentShowcase
-                refs={["Engineering Spec", "Saudi Post"]}
+                refs={["Engineering Spec"]}
                 title={{
-                  ar: "المخططات والتراخيص الرسمية للمقر الدائم",
-                  en: "Permanent HQ Official Plans & Address Verification",
+                  ar: "المخططات الرسمية للمقر الدائم",
+                  en: "Permanent HQ Official Plans",
                 }}
                 description={{
-                  ar: "الوثائق الهندسية المعتمدة وإثبات العنوان الوطني الرسمي للمقر بحي الحزام الذهبي.",
-                  en: "Approved architectural masterplan and official national address verification for the HQ in Al-Hizam Al-Dhahabi.",
+                  ar: "الوثائق الهندسية المعتمدة للمقر بحي الحزام الذهبي. أما الشهادات والإثباتات النظامية فمكانها صفحة الشهادات والإثباتات في صندوق التنمية العائلية.",
+                  en: "Approved architectural documents for the HQ in Al-Hizam Al-Dhahabi. Statutory certificates and attestations are published on the fund's Certificates & Attestations page.",
                 }}
                 variant="grid"
                 className="mt-6"
               />
+
             </div>
           </div>
         </section>
@@ -648,19 +651,15 @@ function FoundationPage() {
             {t(copy.docsNote)}
           </p>
 
-          <DocumentShowcase
-            refs={["Lic. 1200758400", "PTEB031650", "Audit Certificate", "No. 79"]}
-            className="mt-6 max-w-3xl"
-          />
-
           <Link
-            to="/library"
+            to="/fund-certificates"
             className="mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
             {t(copy.archiveCta)}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </section>
+
       </div>
     </>
   );

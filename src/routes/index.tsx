@@ -26,6 +26,7 @@ import { HqProjectVideo } from "@/components/site/HqProjectVideo";
 
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
+import { councilAddress, visionMission } from "@/content/council-address";
 import { HeroImage } from "@/components/site/HeroImage";
 import {
   getPublishedNews,
@@ -297,17 +298,20 @@ type SectionConfig = {
 const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "hero", enabled: true, order: 1 },
   { id: "about_dean", enabled: true, order: 2 },
-  { id: "seven_branches", enabled: true, order: 3 },
+  // Vision, mission and core values sit directly under the council address.
+  { id: "vision_mission", enabled: true, order: 3 },
+  { id: "seven_branches", enabled: true, order: 4 },
   // The genetic-lineage study sits directly under the seven branches.
-  { id: "dna_preview", enabled: true, order: 4 },
-  { id: "initiatives_hq", enabled: true, order: 5 },
-  { id: "latest_news", enabled: true, order: 6 },
-  { id: "family_achievers", enabled: true, order: 7 },
-  { id: "poem_proposal", enabled: true, order: 8 },
-  { id: "upcoming_events", enabled: true, order: 9 },
-  { id: "heritage_gallery", enabled: true, order: 10 },
-  { id: "contact_inquiry", enabled: true, order: 11 },
+  { id: "dna_preview", enabled: true, order: 5 },
+  { id: "initiatives_hq", enabled: true, order: 6 },
+  { id: "latest_news", enabled: true, order: 7 },
+  { id: "family_achievers", enabled: true, order: 8 },
+  { id: "poem_proposal", enabled: true, order: 9 },
+  { id: "upcoming_events", enabled: true, order: 10 },
+  { id: "heritage_gallery", enabled: true, order: 11 },
+  { id: "contact_inquiry", enabled: true, order: 12 },
 ];
+
 
 /** Compact date for the homepage events preview cards (no weekday, unlike the full /events page). */
 function formatHomeEventDate(iso: string, lang: "ar" | "en", timezone: string) {
@@ -360,9 +364,20 @@ function HomePage() {
         ? homepageConfig.sections
         : DEFAULT_SECTIONS;
 
-    return [...rawList]
+    const ordered = [...rawList]
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       .filter((s) => s.enabled !== false);
+
+    // Vision/mission is a required section: if a saved console configuration
+    // predates it, insert it right after the council address.
+    if (!ordered.some((s) => s.id === "vision_mission")) {
+      const anchor = ordered.findIndex((s) => s.id === "about_dean" || s.id === "opening");
+      const section: SectionConfig = { id: "vision_mission", enabled: true, order: 0 };
+      ordered.splice(anchor >= 0 ? anchor + 1 : ordered.length, 0, section);
+    }
+
+    return ordered;
+
   })();
 
   const renderSection = (sec: SectionConfig) => {
@@ -528,34 +543,49 @@ function HomePage() {
                     ? sec.badge_ar
                     : sec.badge_en && !rtl
                       ? sec.badge_en
-                      : t(copy.openingEyebrow)}
+                      : t(councilAddress.eyebrow)}
                 </Eyebrow>
                 <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
                   {sec.title_ar && rtl
                     ? sec.title_ar
                     : sec.title_en && !rtl
                       ? sec.title_en
-                      : t(copy.openingTitle)}
+                      : t(councilAddress.title)}
                 </h2>
+
+                <figure className="mt-8 border-s-2 border-bronze/40 ps-4 dark:border-gold/40">
+                  <blockquote className="text-[15px] leading-loose text-foreground">
+                    {t(councilAddress.verse)}
+                  </blockquote>
+                  <figcaption className="mt-2 text-xs text-muted-foreground">
+                    {t(councilAddress.verseSource)}
+                  </figcaption>
+                </figure>
+
+                <figure className="mt-6 border-s-2 border-bronze/25 ps-4 dark:border-gold/25">
+                  <blockquote className="text-[14px] leading-loose text-muted-foreground">
+                    {t(councilAddress.hadith)}
+                  </blockquote>
+                  <figcaption className="mt-2 text-xs text-muted-foreground">
+                    {t(councilAddress.hadithSource)}
+                  </figcaption>
+                </figure>
               </div>
 
               <div>
                 <Prose dropCap>
-                  <p>
-                    {sec.subtitle_ar && rtl
-                      ? sec.subtitle_ar
-                      : sec.subtitle_en && !rtl
-                        ? sec.subtitle_en
-                        : t(copy.openingP1)}
-                  </p>
-                  <p>{t(copy.openingP2)}</p>
+                  {councilAddress.paragraphs.map((p, i) => (
+                    <p key={i}>{t(p)}</p>
+                  ))}
                 </Prose>
 
-                <p className="mt-5 border-s-2 border-bronze/40 ps-3 text-sm leading-relaxed text-muted-foreground dark:border-gold/40">
-                  {rtl
-                    ? "— د. خالد بن يوسف بن أحمد بوعبيد · رئيس مجلس الأمناء"
-                    : "— Dr. Khaled bin Yousef bin Ahmed Bu Obaid · Chairman, Board of Trustees"}
-                </p>
+                <div className="mt-8 border-t border-border pt-5">
+                  <p className="text-sm text-muted-foreground">{t(councilAddress.signOff)}</p>
+                  <p className="mt-1 text-sm font-semibold text-foreground">
+                    {t(councilAddress.signerName)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{t(councilAddress.signerRole)}</p>
+                </div>
 
                 <Link
                   to={sec.cta_url || "/about"}
@@ -572,6 +602,60 @@ function HomePage() {
             </div>
           </section>
         );
+
+      case "vision_mission":
+        return (
+          <section
+            key={sec.id}
+            className="border-y border-border bg-secondary/40 reveal-on-scroll"
+          >
+            <div className="container-page py-16 md:py-20">
+              <SectionHeading
+                eyebrow={
+                  sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : t(visionMission.eyebrow)
+                }
+                title={
+                  sec.title_ar && rtl
+                    ? sec.title_ar
+                    : sec.title_en && !rtl
+                      ? sec.title_en
+                      : t(visionMission.title)
+                }
+              />
+
+              <div className="mt-10 grid gap-6 md:grid-cols-2">
+                {[visionMission.vision, visionMission.mission].map((block) => (
+                  <div
+                    key={block.label.en}
+                    className="border border-border bg-card p-6 md:p-7"
+                  >
+                    <h3 className="label-caps text-bronze dark:text-gold">{t(block.label)}</h3>
+                    <p className="mt-3 text-[15px] leading-loose text-foreground">
+                      {t(block.body)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <h3 className="mt-12 text-lg text-foreground">{t(visionMission.valuesLabel)}</h3>
+              <dl className="mt-5 grid gap-x-8 gap-y-6 sm:grid-cols-2">
+                {visionMission.values.map((v, i) => (
+                  <div key={i} className="border-t border-border pt-4">
+                    <dt className="text-sm font-semibold text-foreground">{t(v.name)}</dt>
+                    <dd className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
+                      {t(v.body)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </section>
+        );
+
 
       case "seven_branches":
       case "branches":
