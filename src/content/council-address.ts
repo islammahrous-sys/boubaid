@@ -63,6 +63,12 @@ export const councilAddress = {
     en: "Dr. Khaled bin Yousef bin Ahmed Bu Obaid",
   } as BiText,
   signerRole: { ar: "رئيس مجلس الأمناء", en: "Chairman, Board of Trustees" } as BiText,
+  secondSignOff: { ar: "محبكم،", en: "With affection," } as BiText,
+  secondSignerName: {
+    ar: "عميد مجلس الأسرة سعد بن عبد الرحمن بن علي بو عبيد",
+    en: "Dean of the Family Council Saad bin Abdulrahman bin Ali Bu Obaid",
+  } as BiText,
+  secondSignerRole: { ar: "عميد مجلس الأسرة", en: "Dean of the Family Council" } as BiText,
 };
 
 /** "الرؤية والرسالة والقيم المؤسسية" — as approved by the Board of Trustees. */
