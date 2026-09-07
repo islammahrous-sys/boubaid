@@ -364,9 +364,20 @@ function HomePage() {
         ? homepageConfig.sections
         : DEFAULT_SECTIONS;
 
-    return [...rawList]
+    const ordered = [...rawList]
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       .filter((s) => s.enabled !== false);
+
+    // Vision/mission is a required section: if a saved console configuration
+    // predates it, insert it right after the council address.
+    if (!ordered.some((s) => s.id === "vision_mission")) {
+      const anchor = ordered.findIndex((s) => s.id === "about_dean" || s.id === "opening");
+      const section: SectionConfig = { id: "vision_mission", enabled: true, order: 0 };
+      ordered.splice(anchor >= 0 ? anchor + 1 : ordered.length, 0, section);
+    }
+
+    return ordered;
+
   })();
 
   const renderSection = (sec: SectionConfig) => {
