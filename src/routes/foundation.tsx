@@ -648,19 +648,15 @@ function FoundationPage() {
             {t(copy.docsNote)}
           </p>
 
-          <DocumentShowcase
-            refs={["Lic. 1200758400", "PTEB031650", "Audit Certificate", "No. 79"]}
-            className="mt-6 max-w-3xl"
-          />
-
           <Link
-            to="/library"
+            to="/fund-certificates"
             className="mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
             {t(copy.archiveCta)}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </section>
+
       </div>
     </>
   );
