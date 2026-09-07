@@ -168,7 +168,7 @@ export function MobileNav() {
                                 {n.children!.map((child) => {
                                   const childActive = isRouteActive(pathname, child.to);
                                   return (
-                                    <li key={child.to}>
+                                    <li key={child.id ?? child.to}>
                                       <DrawerClose asChild>
                                         <Link
                                           to={child.to}
