@@ -571,13 +571,6 @@ function HomePage() {
                   </figcaption>
                 </figure>
 
-                <div className="mt-8 border-t border-border pt-5">
-                  <p className="text-sm text-muted-foreground">{t(councilAddress.secondSignOff)}</p>
-                  <p className="mt-1 text-sm font-semibold text-foreground">
-                    {t(councilAddress.secondSignerName)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{t(councilAddress.secondSignerRole)}</p>
-                </div>
               </div>
 
               <div>
