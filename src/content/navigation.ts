@@ -24,14 +24,14 @@ export const primaryNav: NavItem[] = [
     to: "/about",
     label: { ar: "النسب والتاريخ", en: "Lineage & History" },
     children: [
-      { to: "/branches", label: { ar: "الفروع", en: "Branches" } },
+      { to: "/about", label: { ar: "تاريخ العائلة", en: "Family History" } },
       {
         to: "/family-tree",
-        label: { ar: "المشجرة - دقيقة", en: "Family Tree (Detailed)" },
-        short: { ar: "المشجرة", en: "Tree" },
+        label: { ar: "نسب العائلة", en: "Family Lineage" },
+        short: { ar: "النسب", en: "Lineage" },
       },
-      { to: "/dna", label: { ar: "الدراسة الجينية", en: "Genetic Study" } },
-      { to: "/about", label: { ar: "عمود النسب والتاريخ", en: "Lineage Overview" } },
+      { to: "/dna", label: { ar: "الدراسة الجينية للعائلة", en: "Family Genetic Study" } },
+      { to: "/branches", label: { ar: "جذور العائلة", en: "Family Roots" } },
     ],
   },
   {

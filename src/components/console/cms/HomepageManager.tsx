@@ -79,9 +79,6 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
     title_en: "Dean & Board of Trustees Address",
     subtitle_ar: "رسالة العطاء والتكاتف وصلة الرحم الممتدة عبر الأجيال.",
     subtitle_en: "A message of unity, compassion, and shared heritage across generations.",
-    cta_label_ar: "قراءة الوثيقة الكاملة",
-    cta_label_en: "Read Full Charter",
-    cta_url: "/foundation",
   },
   {
     id: "seven_branches",
