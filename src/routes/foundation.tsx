@@ -281,10 +281,8 @@ function FoundationPage() {
             <p>{t(copy.mandateP1)}</p>
             <p>{t(copy.mandateP2)}</p>
 
-            <a
-              href="/images/ncnp_license_certificate.jpg"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/fund-certificates"
               className="not-prose group mt-6 flex max-w-sm items-center gap-4 border border-border p-3 transition-colors hover:border-bronze dark:hover:border-gold"
             >
               <img
@@ -299,7 +297,8 @@ function FoundationPage() {
                 </span>
                 {t(copy.certificateCta)}
               </span>
-            </a>
+            </Link>
+
           </Prose>
         </section>
 
