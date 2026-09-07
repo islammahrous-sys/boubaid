@@ -9,6 +9,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
  */
 
 export type NavItem = {
+  id?: string;
   to: string;
   label: BiText;
   /** Shown in the mobile tab bar only, where icons do navigational work. */

@@ -991,6 +991,7 @@ export const getPublicGlobalSearch = createServerFn({ method: "GET" })
  * configured" and fall back to the static defaults in `@/content/navigation`.
  */
 export type PublicNavItem = {
+  id?: string;
   to: string;
   label: { ar: string; en: string };
   children?: PublicNavItem[];
@@ -1044,11 +1045,13 @@ export const getPublicNavigation = createServerFn({ method: "GET" }).handler(asy
         const subItems = menuItems
           .filter((i) => i.parent_id === top.id)
           .map((sub) => ({
+            id: sub.id,
             to: sub.url,
             label: { ar: sub.label_ar, en: sub.label_en || sub.label_ar },
           }));
 
         structured.push({
+          id: top.id,
           to: top.url,
           label: { ar: top.label_ar, en: top.label_en || top.label_ar },
           ...(subItems.length > 0 ? { children: subItems } : {}),
