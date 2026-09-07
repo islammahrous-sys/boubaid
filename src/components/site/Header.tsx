@@ -282,7 +282,7 @@ export function Header() {
                           {n.children!.map((child) => {
                             const childActive = isRouteActive(pathname, child.to);
                             return (
-                              <li key={child.to}>
+                              <li key={child.id ?? child.to}>
                                 <Link
                                   to={child.to}
                                   onClick={() => setOpenDropdown(null)}
@@ -579,7 +579,7 @@ export function Header() {
                               {n.children!.map((child) => {
                                 const childActive = isRouteActive(pathname, child.to);
                                 return (
-                                  <li key={child.to}>
+                                  <li key={child.id ?? child.to}>
                                     <Link
                                       to={child.to}
                                       onClick={() => setOpen(false)}
@@ -649,7 +649,7 @@ export function Header() {
                                 {n.children!.map((child) => {
                                   const childActive = isRouteActive(pathname, child.to);
                                   return (
-                                    <li key={child.to}>
+                                    <li key={child.id ?? child.to}>
                                       <Link
                                         to={child.to}
                                         onClick={() => setOpen(false)}
