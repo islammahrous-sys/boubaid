@@ -159,7 +159,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         label: { ar: "الخدمات والدليل", en: "Services & Directory" },
         short: { ar: "الخدمات", en: "Services" },
       },
-      { to: "/contribute", label: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" } },
       { to: "/contact", label: { ar: "تواصل معنا", en: "Contact" } },
     ],
   },
