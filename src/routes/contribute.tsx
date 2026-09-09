@@ -549,22 +549,8 @@ function ContributePage() {
             {t(copy.channelsTitle)}
           </h2>
 
-          <div className="mt-8 grid gap-10 md:grid-cols-2 md:gap-14">
-            <div className="border-t-2 border-ink pt-5 dark:border-gold">
-              <h3 className="text-lg text-foreground">{t(copy.sallaTitle)}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {t(copy.sallaBody)}
-              </p>
-              <a
-                href={sallaUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
-              >
-                {t(copy.sallaCta)}
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-              </a>
-            </div>
+          <div className="mt-8 grid gap-10 md:gap-14">
+
 
             <div className="border-t border-border pt-5">
               <h3 className="text-lg text-foreground">{t(copy.transferTitle)}</h3>
