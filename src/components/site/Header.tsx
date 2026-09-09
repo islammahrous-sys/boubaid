@@ -452,19 +452,16 @@ export function Header() {
 
 
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
-            <Link
-              to="/cart"
+            <a
+              href={siteMeta.frameStoreUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="relative grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary rounded-md shrink-0"
-              aria-label={lang === "ar" ? `السلة (${itemCount})` : `Cart (${itemCount})`}
-              title={lang === "ar" ? "سلة المشتريات" : "Shopping cart"}
+              aria-label={lang === "ar" ? "متجر شجرة العائلة" : "Family tree store"}
+              title={lang === "ar" ? "متجر شجرة العائلة" : "Family tree store"}
             >
               <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
-              {itemCount > 0 && (
-                <span className="absolute -top-1.5 -end-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-bronze px-1 text-[9px] font-bold text-white dark:bg-gold dark:text-ink">
-                  {itemCount > 99 ? "99+" : itemCount}
-                </span>
-              )}
-            </Link>
+            </a>
             <ThemeToggle tone="default" />
             <LanguageSwitcher tone="default" />
             {user && <NotificationBell />}
