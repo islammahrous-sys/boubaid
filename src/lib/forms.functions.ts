@@ -4,7 +4,6 @@ import {
   newsletterSchema,
   achieverNominationSchema,
   businessSubmissionSchema,
-  frameOrderSchema,
 } from "./forms.schemas";
 
 /**
@@ -278,50 +277,3 @@ export const submitBusinessListing = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export const submitFrameOrderInquiry = createServerFn({ method: "POST" })
-  .validator((input: unknown) => frameOrderSchema.parse(input))
-  .handler(async ({ data }): Promise<FormResult> => {
-    const blocked = await guardPublicSubmission({
-      scope: "frame_order",
-      honeypot: data.website_url_check,
-      turnstile: { token: data.turnstile_token },
-      max: 5,
-    });
-    if (blocked) return blocked;
-
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const supabase = createPublicServerClient();
-
-    const localeSuffix = data.locale === "en" ? "(EN)" : "(AR)";
-    const message = [
-      `طلب شراء لوحة شجرة العائلة ${localeSuffix}`,
-      "",
-      "الطلبات:",
-      data.order_lines,
-      "",
-      `الإجمالي المبدئي: ${data.total > 0 ? `${data.total} ريال سعودي` : "يُحدَّد لاحقاً (فريم خاص)"}`,
-      "",
-      data.notes ? `ملاحظات العميل:\n${data.notes}` : null,
-      "---",
-      `الاسم: ${data.name}`,
-      `الجوال: ${data.phone}`,
-      `البريد: ${data.email}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    const { error } = await supabase.from("contact_messages").insert({
-      name: data.name,
-      email: data.email.toLowerCase(),
-      subject: `طلب لوحة شجرة العائلة ${localeSuffix}`,
-      message,
-      locale: data.locale,
-    });
-
-    if (error) {
-      console.error("[frame_order] insert failed", error.code, error.message);
-      return { ok: false, error: "insert_failed" };
-    }
-
-    return { ok: true };
-  });
