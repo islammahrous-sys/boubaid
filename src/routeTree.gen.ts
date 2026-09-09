@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RequestsRouteImport } from './routes/requests'
 import { Route as OfficialFamilyTreeRouteImport } from './routes/official-family-tree'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as LibraryRouteImport } from './routes/library'
@@ -51,6 +52,11 @@ const VerifyRoute = VerifyRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestsRoute = RequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OfficialFamilyTreeRoute = OfficialFamilyTreeRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/official-family-tree': typeof OfficialFamilyTreeRoute
+  '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
@@ -265,6 +272,7 @@ export interface FileRoutesByTo {
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/official-family-tree': typeof OfficialFamilyTreeRoute
+  '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
@@ -301,6 +309,7 @@ export interface FileRoutesById {
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/official-family-tree': typeof OfficialFamilyTreeRoute
+  '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify': typeof VerifyRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
@@ -337,6 +346,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/official-family-tree'
+    | '/requests'
     | '/reset-password'
     | '/verify'
     | '/account'
@@ -371,6 +381,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/official-family-tree'
+    | '/requests'
     | '/reset-password'
     | '/verify'
     | '/account'
@@ -406,6 +417,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/official-family-tree'
+    | '/requests'
     | '/reset-password'
     | '/verify'
     | '/_authenticated/account'
@@ -442,6 +454,7 @@ export interface RootRouteChildren {
   LibraryRoute: typeof LibraryRouteWithChildren
   NewsRoute: typeof NewsRouteWithChildren
   OfficialFamilyTreeRoute: typeof OfficialFamilyTreeRoute
+  RequestsRoute: typeof RequestsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyRoute: typeof VerifyRoute
   PSlugRoute: typeof PSlugRoute
@@ -461,6 +474,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/requests': {
+      id: '/requests'
+      path: '/requests'
+      fullPath: '/requests'
+      preLoaderRoute: typeof RequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/official-family-tree': {
@@ -757,6 +777,7 @@ const rootRouteChildren: RootRouteChildren = {
   LibraryRoute: LibraryRouteWithChildren,
   NewsRoute: NewsRouteWithChildren,
   OfficialFamilyTreeRoute: OfficialFamilyTreeRoute,
+  RequestsRoute: RequestsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyRoute: VerifyRoute,
   PSlugRoute: PSlugRoute,

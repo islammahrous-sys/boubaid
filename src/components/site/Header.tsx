@@ -296,7 +296,7 @@ export function Header() {
                                   {typeof child.label === "string" ? child.label : t(child.label)}
                                 </Link>
                                 {child.children && child.children.length > 0 ? (
-                                  <ul className="mt-1 ms-3 space-y-0.5 border-s border-border/70 ps-3">
+                                  <ul className="mt-1 ms-3 space-y-0.5 ps-3">
                                     {child.children.map((sub) => (
                                       <li key={sub.id ?? sub.to}>
                                         <Link
