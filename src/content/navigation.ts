@@ -191,7 +191,8 @@ export function navLinkProps(to: string): { to: string; hash?: string } {
   return hash ? { to: path || "/", hash } : { to: path || "/" };
 }
 
-export function isRouteActive(pathname: string, to: string): boolean {
+export function isRouteActive(pathname: string, rawTo: string): boolean {
+  const to = rawTo.split("#")[0] || "/";
   return to === "/" ? pathname === "/" : pathname === to || pathname.startsWith(`${to}/`);
 }
 
