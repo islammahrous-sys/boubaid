@@ -28,7 +28,6 @@ import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CommitteesRouteImport } from './routes/committees'
-import { Route as CartRouteImport } from './routes/cart'
 import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AchieversRouteImport } from './routes/achievers'
@@ -139,11 +138,6 @@ const CommitteesRoute = CommitteesRouteImport.update({
   path: '/committees',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CartRoute = CartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BranchesRoute = BranchesRouteImport.update({
   id: '/branches',
   path: '/branches',
@@ -220,7 +214,6 @@ export interface FileRoutesByFullPath {
   '/achievers': typeof AchieversRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
-  '/cart': typeof CartRoute
   '/committees': typeof CommitteesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
@@ -255,7 +248,6 @@ export interface FileRoutesByTo {
   '/achievers': typeof AchieversRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
-  '/cart': typeof CartRoute
   '/committees': typeof CommitteesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
@@ -292,7 +284,6 @@ export interface FileRoutesById {
   '/achievers': typeof AchieversRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
-  '/cart': typeof CartRoute
   '/committees': typeof CommitteesRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
@@ -329,7 +320,6 @@ export interface FileRouteTypes {
     | '/achievers'
     | '/auth'
     | '/branches'
-    | '/cart'
     | '/committees'
     | '/contact'
     | '/contribute'
@@ -364,7 +354,6 @@ export interface FileRouteTypes {
     | '/achievers'
     | '/auth'
     | '/branches'
-    | '/cart'
     | '/committees'
     | '/contact'
     | '/contribute'
@@ -400,7 +389,6 @@ export interface FileRouteTypes {
     | '/achievers'
     | '/auth'
     | '/branches'
-    | '/cart'
     | '/committees'
     | '/contact'
     | '/contribute'
@@ -437,7 +425,6 @@ export interface RootRouteChildren {
   AchieversRoute: typeof AchieversRoute
   AuthRoute: typeof AuthRoute
   BranchesRoute: typeof BranchesRoute
-  CartRoute: typeof CartRoute
   CommitteesRoute: typeof CommitteesRoute
   ContactRoute: typeof ContactRoute
   ContributeRoute: typeof ContributeRoute
@@ -593,13 +580,6 @@ declare module '@tanstack/react-router' {
       path: '/committees'
       fullPath: '/committees'
       preLoaderRoute: typeof CommitteesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cart': {
-      id: '/cart'
-      path: '/cart'
-      fullPath: '/cart'
-      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/branches': {
@@ -760,7 +740,6 @@ const rootRouteChildren: RootRouteChildren = {
   AchieversRoute: AchieversRoute,
   AuthRoute: AuthRoute,
   BranchesRoute: BranchesRoute,
-  CartRoute: CartRoute,
   CommitteesRoute: CommitteesRoute,
   ContactRoute: ContactRoute,
   ContributeRoute: ContributeRoute,
