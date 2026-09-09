@@ -157,7 +157,7 @@ async function main() {
   const staticEntries = [
     { loc: `${SITE_URL}/`, changefreq: "daily", priority: "1.0" },
     { loc: `${SITE_URL}/about`, changefreq: "monthly", priority: "0.9" },
-    { loc: `${SITE_URL}/foundation`, changefreq: "monthly", priority: "0.9" },
+    { loc: `${SITE_URL}/committees`, changefreq: "monthly", priority: "0.9" },
     { loc: `${SITE_URL}/committees`, changefreq: "monthly", priority: "0.8" },
     { loc: `${SITE_URL}/branches`, changefreq: "monthly", priority: "0.9" },
     { loc: `${SITE_URL}/family-tree`, changefreq: "weekly", priority: "0.9" },

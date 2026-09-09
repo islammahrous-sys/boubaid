@@ -6,8 +6,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { siteMeta } from "@/content/site";
-import { navGroups, isRouteActive   navLinkProps,
-} from "@/content/navigation";
+import { navGroups, isRouteActive, navLinkProps } from "@/content/navigation";
 import { getPublicNavigation } from "@/lib/cms.functions";
 import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
