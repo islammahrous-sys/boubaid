@@ -1,22 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Download } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import {
   boardOfTrustees,
   boardTerm,
-  committees,
   foundingMembers,
   ceoRequirement,
-  hqProject,
   siteMeta,
 } from "@/content/site";
 import { pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { Eyebrow, Prose, Ornament } from "@/components/site/Editorial";
-import { DocumentShowcase } from "@/components/site/DocumentShowcase";
 import { Seal } from "@/components/site/Seal";
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublicSiteSettings } from "@/lib/cms.functions";
