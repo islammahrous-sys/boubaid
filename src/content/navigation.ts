@@ -33,7 +33,6 @@ export const primaryNav: NavItem[] = [
       },
       { to: "/dna", label: { ar: "الدراسة الجينية للأسرة", en: "Family Genetic Study" } },
       { to: "/branches", label: { ar: "جذور الأسرة", en: "Family Roots" } },
-      { to: "/branches", label: { ar: "نقاط التقاء جذور الأسرة", en: "Roots Meeting Points" } },
       { to: "/branches", label: { ar: "فروع الأسرة", en: "Family Branches" } },
       { to: "/library", label: { ar: "كتاب بني تميم", en: "Banu Tamim Book" } },
     ],
@@ -50,8 +49,17 @@ export const primaryNav: NavItem[] = [
     short: { ar: "الصندوق", en: "Fund" },
     children: [
       {
-        to: "/foundation",
-        label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" },
+        to: "/committees",
+        label: { ar: "اللجان", en: "Committees" },
+        children: [
+          {
+            to: "/committees#mandate",
+            label: { ar: "الغرض والاختصاص", en: "Purpose & Remit" },
+          },
+          { to: "/committees#board", label: { ar: "مجلس الأمناء", en: "Board of Trustees" } },
+          { to: "/committees#y1444", label: { ar: "عام ١٤٤٤", en: "Year 1444" } },
+          { to: "/committees#y1445", label: { ar: "عام ١٤٤٥", en: "Year 1445" } },
+        ],
       },
       {
         to: "/fund-certificates",
@@ -109,8 +117,17 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         short: { ar: "الصندوق", en: "Fund" },
         children: [
           {
-            to: "/foundation",
-            label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" },
+            to: "/committees",
+            label: { ar: "اللجان", en: "Committees" },
+            children: [
+              {
+                to: "/committees#mandate",
+                label: { ar: "الغرض والاختصاص", en: "Purpose & Remit" },
+              },
+              { to: "/committees#board", label: { ar: "مجلس الأمناء", en: "Board of Trustees" } },
+              { to: "/committees#y1444", label: { ar: "عام ١٤٤٤", en: "Year 1444" } },
+              { to: "/committees#y1445", label: { ar: "عام ١٤٤٥", en: "Year 1445" } },
+            ],
           },
           {
             to: "/fund-certificates",
@@ -131,7 +148,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
           },
         ],
       },
-      { to: "/committees", label: { ar: "اللجان", en: "Committees" } },
       {
         to: "/initiatives",
         label: { ar: "المشاريع", en: "Projects" },
@@ -169,6 +185,12 @@ export const secondaryNav: NavItem[] = navGroups
   .flatMap((g) => g.items)
   .filter((item) => !primaryNav.some((p) => p.to === item.to));
 
+/** Split a nav URL such as "/committees#board" into Link props. */
+export function navLinkProps(to: string): { to: string; hash?: string } {
+  const [path, hash] = to.split("#");
+  return hash ? { to: path || "/", hash } : { to: path || "/" };
+}
+
 export function isRouteActive(pathname: string, to: string): boolean {
   return to === "/" ? pathname === "/" : pathname === to || pathname.startsWith(`${to}/`);
 }
@@ -176,6 +198,6 @@ export function isRouteActive(pathname: string, to: string): boolean {
 /** Check if any child route in a nav item is active */
 export function isNavItemActive(pathname: string, item: NavItem): boolean {
   if (isRouteActive(pathname, item.to)) return true;
-  if (item.children?.some((child) => isRouteActive(pathname, child.to))) return true;
+  if (item.children?.some((child) => isNavItemActive(pathname, child))) return true;
   return false;
 }
