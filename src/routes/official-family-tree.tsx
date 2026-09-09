@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Maximize2, ShoppingBag, Sparkles, Ruler, Check } from "lucide-react";
+import { Maximize2, ExternalLink, Sparkles, Ruler } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
-import { useCart } from "@/hooks/useCart";
+import { siteMeta } from "@/content/site";
 import {
   treeFrameProducts,
   treeFrameCustom,
@@ -59,8 +59,8 @@ const copy = {
     en: "Choose the Family Tree design and size that suits you and order yours now.",
   } as BiText,
   noticeBody: {
-    ar: "جميع المقاسات تُسلَّم مؤطرة وجاهزة للتعليق، والطلب يتم عبر متجر الأسرة الرسمي.",
-    en: "Every size is delivered framed and ready to hang. Orders are placed through the family's official store.",
+    ar: "جميع المقاسات تُسلَّم مؤطرة وجاهزة للتعليق. اختر ما يناسبك واستكمل عملية الشراء والدفع عبر متجر الأسرة الرسمي.",
+    en: "Every size is delivered framed and ready to hang. Choose what suits you and complete the purchase and payment through the family's official store.",
   } as BiText,
 
   productsEyebrow: { ar: "الفريمات والمقاسات", en: "Frames & sizes" } as BiText,
@@ -79,8 +79,6 @@ const copy = {
 function OfficialFamilyTreePage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
-  const { addItem, itemCount } = useCart();
-  const [addedId, setAddedId] = useState<string | null>(null);
 
   const priceText = (product: TreeFrameProduct) =>
     product.price === null ? null : isAr ? `${product.price} ريال` : `${product.price} SAR`;
@@ -137,11 +135,13 @@ function OfficialFamilyTreePage() {
               </div>
             </div>
             <a
-              href="#tree-frames"
+              href={siteMeta.frameStoreUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex shrink-0 items-center justify-center gap-2 border border-gold bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
             >
-              <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-              {isAr ? "تصفح المقاسات" : "Browse the sizes"}
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              {isAr ? "الشراء الآن" : "Buy now"}
             </a>
           </div>
         </div>
@@ -218,11 +218,7 @@ function OfficialFamilyTreePage() {
                   <span className="nums font-serif text-lg font-bold text-bronze dark:text-gold">
                     {priceText(product)}
                   </span>
-                  <AddToCartButton
-                    product={product}
-                    onClick={() => addToBasket(product)}
-                    isAdded={addedId === product.id}
-                  />
+                  <PurchaseLink product={product} />
                 </div>
               </div>
             </li>
@@ -253,54 +249,29 @@ function OfficialFamilyTreePage() {
             </div>
 
             <div className="shrink-0">
-              <AddToCartButton
-                product={treeFrameCustom}
-                onClick={() => addToBasket(treeFrameCustom)}
-                isAdded={addedId === treeFrameCustom.id}
-                variant="dark"
-                label={copy.order}
-                icon={<Ruler className="h-4 w-4" aria-hidden="true" />}
-              />
+              <PurchaseLink product={treeFrameCustom} variant="dark" label={copy.order} icon={<Ruler className="h-4 w-4" aria-hidden="true" />} />
             </div>
           </div>
         </div>
       </section>
     </div>
   );
-
-  function addToBasket(product: TreeFrameProduct) {
-    addItem({
-      id: product.id,
-      name: product.name,
-      frameNo: product.frameNo,
-      sizeName: product.sizeName,
-      width: product.width,
-      length: product.length,
-      price: product.price,
-    });
-    setAddedId(product.id);
-    setTimeout(() => setAddedId((current) => (current === product.id ? null : current)), 1500);
-  }
 }
 
-function AddToCartButton({
+function PurchaseLink({
   product,
-  onClick,
-  isAdded,
   variant = "gold",
   label,
   icon,
 }: {
   product: TreeFrameProduct;
-  onClick: () => void;
-  isAdded: boolean;
   variant?: "gold" | "dark";
   label?: BiText;
   icon?: React.ReactNode;
 }) {
   const { t, lang } = useLang();
-  const defaultLabel = { ar: "أضف إلى السلة", en: "Add to basket" } as BiText;
-  const addedText = { ar: "تمت الإضافة", en: "Added" } as BiText;
+  const isAr = lang === "ar";
+  const defaultLabel = { ar: "شراء الآن", en: "Buy now" } as BiText;
 
   const baseClasses =
     "inline-flex items-center gap-2 px-4 py-2 text-[13px] font-bold transition-colors rounded-md";
@@ -310,23 +281,15 @@ function AddToCartButton({
       : "border border-gold bg-gold text-ink hover:bg-transparent hover:text-gold";
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <a
+      href={siteMeta.frameStoreUrl}
+      target="_blank"
+      rel="noopener noreferrer"
       className={`${baseClasses} ${variantClasses}`}
       aria-label={`${t(label ?? defaultLabel)} — ${t(product.name)}`}
     >
-      {isAdded ? (
-        <>
-          <Check className="h-4 w-4" aria-hidden="true" />
-          {t(addedText)}
-        </>
-      ) : (
-        <>
-          {icon ?? <ShoppingBag className="h-4 w-4" aria-hidden="true" />}
-          {t(label ?? defaultLabel)}
-        </>
-      )}
-    </button>
+      {icon ?? <ExternalLink className="h-4 w-4" aria-hidden="true" />}
+      {t(label ?? defaultLabel)}
+    </a>
   );
 }

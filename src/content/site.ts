@@ -54,6 +54,7 @@ export const siteMeta = {
     } as BiText,
   },
   domain: "albouabidfamily.com",
+  frameStoreUrl: "https://albouabidfamily.com/",
   sallaStoreUrl: "https://albouabidfamily.com/القسط-الشهري/c1360847582",
   contact: {
     phone: "+966 13 580 0000",

@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/hooks/useCart";
 import { siteMeta } from "@/content/site";
 import {
   primaryNav,
