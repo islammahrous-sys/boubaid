@@ -91,8 +91,8 @@ const copy = {
 
   artworkEyebrow: { ar: "الإصدار الأول — ١٤٤٧هـ", en: "First Edition — 1447H" } as BiText,
   artworkTitle: {
-    ar: "اللوحة الرسمية المصورة للشجرة",
-    en: "The official pictorial tree plate",
+    ar: "اللوحة الرسمية المصورة لشجرة العائلة",
+    en: "Official Illustrated Family Tree",
   } as BiText,
   artworkBody: {
     ar: "أُخرجت الأسرة هذه اللوحة الجدارية بتكلفة استثمارية بلغت 14,948 ريالاً سعودياً، وسُجلت حقوق ملكيتها الفكرية رسمياً لتكون مرجعاً بصرياً حصرياً يربط الجيل الناشئ بجذوره التميمية.",
