@@ -171,6 +171,7 @@ async function main() {
     { loc: `${SITE_URL}/library`, changefreq: "monthly", priority: "0.7" },
     { loc: `${SITE_URL}/directory`, changefreq: "weekly", priority: "0.7" },
     { loc: `${SITE_URL}/contribute`, changefreq: "monthly", priority: "0.7" },
+    { loc: `${SITE_URL}/requests`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/contact`, changefreq: "monthly", priority: "0.6" },
   ];
 
