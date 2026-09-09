@@ -104,3 +104,17 @@ export const businessSubmissionSchema = z.object({
 });
 
 export type BusinessSubmissionInput = z.infer<typeof businessSubmissionSchema>;
+
+export const frameOrderSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().email().max(255),
+  phone: z.string().trim().min(7).max(30),
+  notes: z.string().trim().max(1000).optional().or(z.literal("")),
+  locale: localeSchema,
+  order_lines: z.string().trim().min(1),
+  total: z.number().min(0),
+  turnstile_token: z.string().max(2048).optional(),
+  website_url_check: honeypotSchema,
+});
+
+export type FrameOrderInput = z.infer<typeof frameOrderSchema>;

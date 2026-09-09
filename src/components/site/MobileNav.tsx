@@ -1,10 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, UserRound, HeartHandshake, ChevronLeft, ChevronRight } from "lucide-react";
+import { Menu, UserRound, HeartHandshake, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { navGroups, isRouteActive } from "@/content/navigation";
 import { getPublicNavigation } from "@/lib/cms.functions";
 import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 
-/** Four most-used destinations. Heritage glyphs earn their place here —
+/** Five most-used destinations. Heritage glyphs earn their place here —
  *  a thumb-reachable tab bar with identity, not just generic UI. */
 const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?: string }> }[] = [
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, Icon: PalmGlyph },
@@ -31,6 +32,7 @@ const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?:
 export function MobileNav() {
   const { t, lang } = useLang();
   const { user, profile } = useAuth();
+  const { itemCount } = useCart();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
 
@@ -53,22 +55,43 @@ export function MobileNav() {
           const Icon = item.Icon;
           const active = isRouteActive(pathname, item.to);
           return (
-            <Link
-              key={item.to}
-              to={item.to}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
-                active
-                  ? "border-bronze text-foreground dark:border-gold font-semibold"
-                  : "border-transparent text-muted-foreground",
-              )}
-            >
-              <Icon className="h-5 w-5" aria-hidden="true" />
-              <span className={cn("text-[11px]", active && "font-semibold")}>{t(item.label)}</span>
-            </Link>
-          );
-        })}
+          <Link
+            key={item.to}
+            to={item.to}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
+              active
+                ? "border-bronze text-foreground dark:border-gold font-semibold"
+                : "border-transparent text-muted-foreground",
+            )}
+          >
+            <Icon className="h-5 w-5" aria-hidden="true" />
+            <span className={cn("text-[11px]", active && "font-semibold")}>{t(item.label)}</span>
+          </Link>
+        );
+      })}
+
+      <Link
+        to="/cart"
+        aria-current={isRouteActive(pathname, "/cart") ? "page" : undefined}
+        className={cn(
+          "relative flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
+          isRouteActive(pathname, "/cart")
+            ? "border-bronze text-foreground dark:border-gold font-semibold"
+            : "border-transparent text-muted-foreground",
+        )}
+      >
+        <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+        <span className={cn("text-[11px]", isRouteActive(pathname, "/cart") && "font-semibold")}>
+          {lang === "ar" ? "السلة" : "Cart"}
+        </span>
+        {itemCount > 0 && (
+          <span className="absolute top-1 end-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-bronze px-1 text-[9px] font-bold text-white dark:bg-gold dark:text-ink">
+            {itemCount > 99 ? "99+" : itemCount}
+          </span>
+        )}
+      </Link>
 
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
