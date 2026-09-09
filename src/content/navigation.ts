@@ -115,6 +115,11 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         short: { ar: "الصندوق", en: "Fund" },
         children: [
           {
+            to: "/governance",
+            label: { ar: "الحوكمة و مجلس الامناء", en: "Governance & Board of Trustees" },
+          },
+          {
+
             to: "/fund-certificates",
             label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
           },
