@@ -449,20 +449,8 @@ export function Header() {
             <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
 
-          {/* E-Commerce Store Icon Button */}
-          <a
-            href={storeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-gold/40 bg-gold/10 text-amber-900 transition-all duration-200 hover:scale-105 hover:bg-gold hover:text-ink dark:border-gold/30 dark:bg-gold/15 dark:text-gold dark:hover:bg-gold dark:hover:text-ink cursor-pointer rounded-md shrink-0"
-            aria-label={lang === "ar" ? "المتجر الإلكتروني" : "E-Commerce Store"}
-            title={lang === "ar" ? "المتجر الإلكتروني (سلة)" : "Online Store (Salla)"}
-          >
-            <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span className="sr-only">
-              {lang === "ar" ? "المتجر الإلكتروني" : "E-Commerce Store"}
-            </span>
-          </a>
+
+
 
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
             <ThemeToggle tone="default" />
