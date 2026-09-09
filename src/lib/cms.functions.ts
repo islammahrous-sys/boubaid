@@ -1039,24 +1039,30 @@ export const getPublicNavigation = createServerFn({ method: "GET" }).handler(asy
       if (!code) continue;
 
       const topLevel = menuItems.filter((i) => !i.parent_id);
-      const structured: PublicNavItem[] = [];
 
-      for (const top of topLevel) {
-        const subItems = menuItems
-          .filter((i) => i.parent_id === top.id)
-          .map((sub) => ({
-            id: sub.id,
-            to: sub.url,
-            label: { ar: sub.label_ar, en: sub.label_en || sub.label_ar },
-          }));
+      // Nested up to three levels (e.g. Fund → Committees → Purpose & Remit).
+      const build = (parentId: string | null): PublicNavItem[] =>
+        menuItems
+          .filter((i) => i.parent_id === parentId)
+          .map((item) => {
+            const children = build(item.id);
+            return {
+              id: item.id,
+              to: item.url,
+              label: { ar: item.label_ar, en: item.label_en || item.label_ar },
+              ...(children.length > 0 ? { children } : {}),
+            };
+          });
 
-        structured.push({
+      const structured: PublicNavItem[] = topLevel.map((top) => {
+        const children = build(top.id);
+        return {
           id: top.id,
           to: top.url,
           label: { ar: top.label_ar, en: top.label_en || top.label_ar },
-          ...(subItems.length > 0 ? { children: subItems } : {}),
-        });
-      }
+          ...(children.length > 0 ? { children } : {}),
+        };
+      });
 
       byCode[code] = structured;
     }
