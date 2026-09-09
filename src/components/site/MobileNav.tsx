@@ -99,7 +99,7 @@ export function MobileNav() {
 
             <div className="overflow-y-auto px-4 pt-4 pb-10">
               {/* Quick Actions Strip */}
-              <div className="grid grid-cols-3 gap-2 mb-6">
+              <div className="grid grid-cols-2 gap-2 mb-6">
                 <DrawerClose asChild>
                   <Link
                     to={user ? "/account" : "/auth"}
@@ -121,18 +121,6 @@ export function MobileNav() {
                   </Link>
                 </DrawerClose>
 
-                <a
-                  href={storeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded border border-gold/40 bg-gold/10 text-center transition-all duration-200 active:scale-95 hover:bg-gold/20"
-                >
-                  <ShoppingBag className="h-5 w-5 text-amber-800 dark:text-gold" />
-                  <span className="text-[11px] font-bold text-amber-950 dark:text-gold line-clamp-1">
-                    {lang === "ar" ? "المتجر" : "Store"}
-                  </span>
-                </a>
-
                 <DrawerClose asChild>
                   <Link
                     to="/contribute"
@@ -145,6 +133,7 @@ export function MobileNav() {
                   </Link>
                 </DrawerClose>
               </div>
+
 
               {usingLiveNav ? (
                 <div className="mb-5 last:mb-0">
