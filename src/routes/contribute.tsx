@@ -100,13 +100,6 @@ const copy = {
 
   channelsEyebrow: { ar: "قنوات السداد", en: "How to pay" } as BiText,
   channelsTitle: { ar: "القنوات المعتمدة", en: "Approved channels" } as BiText,
-  sallaTitle: { ar: "المتجر الإلكتروني (سلة)", en: "Online store (Salla)" } as BiText,
-  sallaBody: {
-    ar: "الاشتراك الشهري المتكرر يُدار عبر متجر الصندوق على منصة سلة، وتصدر الإيصالات آلياً باسم الصندوق.",
-    en: "Recurring monthly subscriptions are handled through the organisation's Salla storefront, which issues receipts automatically in the organisation's name.",
-  } as BiText,
-  sallaCta: { ar: "الانتقال إلى المتجر", en: "Go to the store" } as BiText,
-
   transferTitle: { ar: "التحويل البنكي", en: "Bank transfer" } as BiText,
   transferBody: {
     ar: "للمساهمات الكبيرة والقروض الحسنة، تُطلب بيانات الحساب من الأمانة العامة مباشرة. ولا تُنشر أرقام الحسابات على الموقع.",
