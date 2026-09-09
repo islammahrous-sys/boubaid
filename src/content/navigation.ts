@@ -22,13 +22,8 @@ export type NavItem = {
 export const primaryNav: NavItem[] = [
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, short: { ar: "الرئيسية", en: "Home" } },
   {
-    to: "/directory",
-    label: { ar: "الخدمات", en: "Services" },
-    short: { ar: "الخدمات", en: "Services" },
-  },
-  {
     to: "/about",
-    label: { ar: "النسب والتاريخ", en: "History & Lineage" },
+    label: { ar: "النسب والتاريخ", en: "Lineage & History" },
     children: [
       { to: "/about", label: { ar: "تاريخ الأسرة", en: "Family History" } },
       {
@@ -38,6 +33,7 @@ export const primaryNav: NavItem[] = [
       },
       { to: "/dna", label: { ar: "الدراسة الجينية للأسرة", en: "Family Genetic Study" } },
       { to: "/branches", label: { ar: "جذور الأسرة", en: "Family Roots" } },
+      { to: "/branches", label: { ar: "نقاط التقاء جذور الأسرة", en: "Roots Meeting Points" } },
       { to: "/branches", label: { ar: "فروع الأسرة", en: "Family Branches" } },
       { to: "/library", label: { ar: "كتاب بني تميم", en: "Banu Tamim Book" } },
     ],
@@ -47,11 +43,7 @@ export const primaryNav: NavItem[] = [
     label: { ar: "شجرة العائلة", en: "Family Tree" },
     short: { ar: "الشجرة", en: "Tree" },
   },
-  {
-    to: "/initiatives",
-    label: { ar: "المشاريع", en: "Projects" },
-    short: { ar: "المشاريع", en: "Projects" },
-  },
+
   {
     to: "/fund",
     label: { ar: "صندوق التنمية العائلية", en: "Family Development Fund" },
@@ -70,6 +62,19 @@ export const primaryNav: NavItem[] = [
       },
     ],
   },
+  {
+    to: "/directory",
+    label: { ar: "الخدمات", en: "Services" },
+    short: { ar: "الخدمات", en: "Services" },
+  },
+  {
+    to: "/initiatives",
+    label: { ar: "المشاريع", en: "Projects" },
+    short: { ar: "المشاريع", en: "Projects" },
+  },
+  // "Archive" (/library) lives in the "More" menu below — four inline items is
+  // the most the header fits alongside the action cluster at the `xl` width in
+  // English. `secondaryNav` picks it up automatically from `navGroups`.
 ];
 
 /** Secondary routes, grouped for the header dropdown and the footer. */
