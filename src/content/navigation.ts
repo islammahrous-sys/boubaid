@@ -110,19 +110,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         short: { ar: "الصندوق", en: "Fund" },
         children: [
           {
-            to: "/committees",
-            label: { ar: "اللجان", en: "Committees" },
-            children: [
-              {
-                to: "/committees#mandate",
-                label: { ar: "الغرض والاختصاص", en: "Purpose & Remit" },
-              },
-              { to: "/committees#board", label: { ar: "مجلس الأمناء", en: "Board of Trustees" } },
-              { to: "/committees#y1444", label: { ar: "عام ١٤٤٤", en: "Year 1444" } },
-              { to: "/committees#y1445", label: { ar: "عام ١٤٤٥", en: "Year 1445" } },
-            ],
-          },
-          {
             to: "/fund-certificates",
             label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
           },
