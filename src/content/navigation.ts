@@ -50,6 +50,10 @@ export const primaryNav: NavItem[] = [
     short: { ar: "الصندوق", en: "Fund" },
     children: [
       {
+        to: "/foundation",
+        label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" },
+      },
+      {
         to: "/fund-certificates",
         label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
       },
@@ -59,6 +63,9 @@ export const primaryNav: NavItem[] = [
           ar: "القوائم المالية والموازنة والحسابات",
           en: "Financial Statements, Budget & Accounts",
         },
+        children: [
+          { to: "/contribute", label: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" } },
+        ],
       },
     ],
   },
