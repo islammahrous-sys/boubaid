@@ -535,23 +535,7 @@ export function Header() {
       {open ? (
         <div className="max-h-[80vh] overflow-y-auto border-t border-border bg-background text-foreground min-[1920px]:hidden animate-in slide-in-from-top-2 duration-200">
           <nav className="container-page py-6" aria-label="Mobile">
-            {/* Mobile E-Commerce Store Banner Link */}
-            <div className="mb-5">
-              <a
-                href={storeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between border border-gold/40 bg-gold/10 px-4 py-3 text-xs font-bold text-amber-900 transition-colors hover:bg-gold hover:text-ink dark:border-gold/30 dark:bg-gold/15 dark:text-gold dark:hover:bg-gold dark:hover:text-ink"
-              >
-                <span className="flex items-center gap-2">
-                  <ShoppingBag className="h-4 w-4 text-bronze dark:text-gold" />
-                  {lang === "ar" ? "المتجر الإلكتروني (سلة)" : "E-Commerce Store (Salla)"}
-                </span>
-                <span className="text-[11px] font-semibold opacity-90">
-                  {lang === "ar" ? "تسوق الآن ↗" : "Shop Now ↗"}
-                </span>
-              </a>
-            </div>
+
 
             {usingLiveNav ? (
               <div className="menu-in mb-6 last:mb-0">
