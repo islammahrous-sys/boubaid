@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/hooks/useCart";
+import { siteMeta } from "@/content/site";
 import { navGroups, isRouteActive } from "@/content/navigation";
 import { getPublicNavigation } from "@/lib/cms.functions";
 import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
@@ -32,7 +32,6 @@ const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?:
 export function MobileNav() {
   const { t, lang } = useLang();
   const { user, profile } = useAuth();
-  const { itemCount } = useCart();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
 
@@ -72,26 +71,19 @@ export function MobileNav() {
         );
       })}
 
-      <Link
-        to="/cart"
-        aria-current={isRouteActive(pathname, "/cart") ? "page" : undefined}
+      <a
+        href={siteMeta.frameStoreUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className={cn(
-          "relative flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
-          isRouteActive(pathname, "/cart")
-            ? "border-bronze text-foreground dark:border-gold font-semibold"
-            : "border-transparent text-muted-foreground",
+          "relative flex flex-1 flex-col items-center justify-center gap-1 border-t-2 border-transparent text-muted-foreground transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
         )}
       >
         <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-        <span className={cn("text-[11px]", isRouteActive(pathname, "/cart") && "font-semibold")}>
-          {lang === "ar" ? "السلة" : "Cart"}
+        <span className="text-[11px]">
+          {lang === "ar" ? "المتجر" : "Store"}
         </span>
-        {itemCount > 0 && (
-          <span className="absolute top-1 end-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-bronze px-1 text-[9px] font-bold text-white dark:bg-gold dark:text-ink">
-            {itemCount > 99 ? "99+" : itemCount}
-          </span>
-        )}
-      </Link>
+      </a>
 
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
