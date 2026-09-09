@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 /** Top-bar links shown inline before the rest fold into "More". Kept to four so
  *  the English labels ("Lineage & History", "Services"…) plus the right-hand
  *  action cluster still fit within the container at the `xl` breakpoint. */
-const HEADER_PRIMARY_COUNT = 5;
+const HEADER_PRIMARY_COUNT = 6;
 
 export function Header() {
   const { t, lang } = useLang();
@@ -255,7 +255,7 @@ export function Header() {
                     aria-haspopup="true"
                     data-nav-active={isItemActive ? "true" : undefined}
                     className={cn(
-                      "active-scale flex items-center gap-1 rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
+                      "active-scale flex items-center gap-1 rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
                       isItemActive
                         ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -313,7 +313,7 @@ export function Header() {
                 data-nav-active={isItemActive ? "true" : undefined}
                 aria-current={isItemActive ? "page" : undefined}
                 className={cn(
-                  "nav-link active-scale rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
+                  "nav-link active-scale rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
                   isItemActive
                     ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -338,7 +338,7 @@ export function Header() {
               aria-haspopup="true"
               data-nav-active={isSecondaryActive ? "true" : undefined}
               className={cn(
-                "active-scale flex items-center gap-1 rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-medium whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
+                "active-scale flex items-center gap-1 rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
                 isSecondaryActive
                   ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
