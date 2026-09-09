@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Maximize2, ShoppingBag, Sparkles, Ruler } from "lucide-react";
+import { useState } from "react";
+import { Maximize2, ShoppingBag, Sparkles, Ruler, Check } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
-import { siteMeta } from "@/content/site";
-import { getPublicSiteSettings } from "@/lib/cms.functions";
+import { useCart } from "@/hooks/useCart";
 import {
   treeFrameProducts,
   treeFrameCustom,
@@ -80,13 +79,8 @@ const copy = {
 function OfficialFamilyTreePage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
-
-  const { data: dynamicSettings = {} } = useQuery({
-    queryKey: ["public_site_settings"],
-    queryFn: () => getPublicSiteSettings(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const storeUrl = dynamicSettings.salla_url || siteMeta.sallaStoreUrl;
+  const { addItem, itemCount } = useCart();
+  const [addedId, setAddedId] = useState<string | null>(null);
 
   const priceText = (product: TreeFrameProduct) =>
     product.price === null ? null : isAr ? `${product.price} ريال` : `${product.price} SAR`;
@@ -208,39 +202,27 @@ function OfficialFamilyTreePage() {
               key={product.id}
               className="flex flex-col border border-border bg-card transition-colors hover:border-bronze dark:hover:border-gold rounded-md overflow-hidden"
             >
-              <img
-                src={product.image}
-                alt={t(product.name)}
-                loading="lazy"
-                className="aspect-[4/3] w-full border-b border-border bg-background object-contain"
-              />
-
-              <div className="flex flex-1 flex-col p-4">
+              <div className="flex flex-1 flex-col p-5">
                 <h3 className="font-serif text-base font-bold leading-snug text-foreground md:text-lg">
                   {t(product.name)}
                 </h3>
 
-                <div className="mt-3 flex-1">
+                <div className="mt-4 flex-1">
                   <Row label={copy.frameLabel} value={t(product.frameNo)} />
                   <Row label={copy.sizeLabel} value={t(product.sizeName)} />
                   <Row label={copy.widthLabel} value={t(product.width)} />
                   <Row label={copy.lengthLabel} value={t(product.length)} />
                 </div>
 
-                <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="mt-5 flex items-center justify-between gap-3">
                   <span className="nums font-serif text-lg font-bold text-bronze dark:text-gold">
                     {priceText(product)}
                   </span>
-                  <a
-                    href={product.storeUrl || storeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 border border-gold bg-gold px-4 py-2 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
-                    aria-label={`${t(copy.buy)} — ${t(product.name)}`}
-                  >
-                    <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-                    {t(copy.buy)}
-                  </a>
+                  <AddToCartButton
+                    product={product}
+                    onClick={() => addToBasket(product)}
+                    isAdded={addedId === product.id}
+                  />
                 </div>
               </div>
             </li>
@@ -249,14 +231,8 @@ function OfficialFamilyTreePage() {
 
         {/* ── Custom frame ───────────────────────────────────── */}
         <div className="mt-10 border border-dashed border-bronze/50 bg-secondary/30 p-5 md:p-6 dark:border-gold/40 rounded-md">
-          <div className="grid gap-6 md:grid-cols-[minmax(0,16rem)_1fr] md:items-center">
-            <img
-              src={treeFrameCustom.image}
-              alt={t(treeFrameCustom.name)}
-              loading="lazy"
-              className="w-full border border-border bg-background object-contain rounded-md"
-            />
-            <div>
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-xl">
               <Eyebrow>{t(copy.customEyebrow)}</Eyebrow>
               <h3 className="mt-3 font-serif text-lg font-bold text-foreground md:text-xl">
                 {t(treeFrameCustom.name)}
@@ -274,21 +250,83 @@ function OfficialFamilyTreePage() {
               <p className="mt-3 text-[12.5px] font-semibold text-bronze dark:text-gold">
                 {t(treeFrameCustomPriceNote)}
               </p>
+            </div>
 
-              <a
-                href={treeFrameCustom.storeUrl || storeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-2 border border-ink bg-ink px-5 py-2.5 text-[13px] font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold rounded-md"
-                aria-label={`${t(copy.order)} — ${t(treeFrameCustom.name)}`}
-              >
-                <Ruler className="h-4 w-4" aria-hidden="true" />
-                {t(copy.order)}
-              </a>
+            <div className="shrink-0">
+              <AddToCartButton
+                product={treeFrameCustom}
+                onClick={() => addToBasket(treeFrameCustom)}
+                isAdded={addedId === treeFrameCustom.id}
+                variant="dark"
+                label={copy.order}
+                icon={<Ruler className="h-4 w-4" aria-hidden="true" />}
+              />
             </div>
           </div>
         </div>
       </section>
     </div>
+  );
+
+  function addToBasket(product: TreeFrameProduct) {
+    addItem({
+      id: product.id,
+      name: product.name,
+      frameNo: product.frameNo,
+      sizeName: product.sizeName,
+      width: product.width,
+      length: product.length,
+      price: product.price,
+    });
+    setAddedId(product.id);
+    setTimeout(() => setAddedId((current) => (current === product.id ? null : current)), 1500);
+  }
+}
+
+function AddToCartButton({
+  product,
+  onClick,
+  isAdded,
+  variant = "gold",
+  label,
+  icon,
+}: {
+  product: TreeFrameProduct;
+  onClick: () => void;
+  isAdded: boolean;
+  variant?: "gold" | "dark";
+  label?: BiText;
+  icon?: React.ReactNode;
+}) {
+  const { t, lang } = useLang();
+  const defaultLabel = { ar: "أضف إلى السلة", en: "Add to basket" } as BiText;
+  const addedText = { ar: "تمت الإضافة", en: "Added" } as BiText;
+
+  const baseClasses =
+    "inline-flex items-center gap-2 px-4 py-2 text-[13px] font-bold transition-colors rounded-md";
+  const variantClasses =
+    variant === "dark"
+      ? "border border-ink bg-ink text-ivory hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+      : "border border-gold bg-gold text-ink hover:bg-transparent hover:text-gold";
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${baseClasses} ${variantClasses}`}
+      aria-label={`${t(label ?? defaultLabel)} — ${t(product.name)}`}
+    >
+      {isAdded ? (
+        <>
+          <Check className="h-4 w-4" aria-hidden="true" />
+          {t(addedText)}
+        </>
+      ) : (
+        <>
+          {icon ?? <ShoppingBag className="h-4 w-4" aria-hidden="true" />}
+          {t(label ?? defaultLabel)}
+        </>
+      )}
+    </button>
   );
 }

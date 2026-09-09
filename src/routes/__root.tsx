@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider, LANG_STORAGE_KEY } from "@/i18n/LanguageProvider";
 import { ThemeProvider, THEME_STORAGE_KEY } from "@/lib/ThemeProvider";
 import { AuthProvider } from "@/hooks/useAuth";
+import { CartProvider } from "@/hooks/useCart";
 import { Header } from "@/components/site/Header";
 import { AnnouncementTicker } from "@/components/site/AnnouncementTicker";
 import { Footer } from "@/components/site/Footer";
@@ -275,33 +276,35 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <LanguageProvider>
-            <div
-              className={`flex min-h-screen w-full flex-col overflow-x-clip ${isConsole ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"}`}
-            >
-              <TopProgressBar />
-              <a href="#main" className="skip-link">
-                تخطَّ إلى المحتوى — Skip to content
-              </a>
-              <div className={cn(isConsole && "hidden")}>
-                <AnnouncementTicker />
-                <Header />
-              </div>
-              <main id="main" className="flex-1">
-                <PageTransition>
-                  <Outlet />
-                </PageTransition>
-              </main>
+          <CartProvider>
+            <LanguageProvider>
+              <div
+                className={`flex min-h-screen w-full flex-col overflow-x-clip ${isConsole ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"}`}
+              >
+                <TopProgressBar />
+                <a href="#main" className="skip-link">
+                  تخطَّ إلى المحتوى — Skip to content
+                </a>
+                <div className={cn(isConsole && "hidden")}>
+                  <AnnouncementTicker />
+                  <Header />
+                </div>
+                <main id="main" className="flex-1">
+                  <PageTransition>
+                    <Outlet />
+                  </PageTransition>
+                </main>
 
-              <div className={cn(isConsole && "hidden")}>
-                <Footer />
-                <MobileNav />
+                <div className={cn(isConsole && "hidden")}>
+                  <Footer />
+                  <MobileNav />
+                </div>
+                <ScrollReveal />
               </div>
-              <ScrollReveal />
-            </div>
-            <NetworkStatusBanner />
-            <Toaster richColors position="top-center" />
-          </LanguageProvider>
+              <NetworkStatusBanner />
+              <Toaster richColors position="top-center" />
+            </LanguageProvider>
+          </CartProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

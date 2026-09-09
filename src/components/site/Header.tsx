@@ -1,9 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, ChevronDown, UserRound, Search } from "lucide-react";
+import { Menu, X, ChevronDown, UserRound, Search, ShoppingBag } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { siteMeta } from "@/content/site";
 import {
   primaryNav,
@@ -29,6 +30,7 @@ const HEADER_PRIMARY_COUNT = 6;
 export function Header() {
   const { t, lang } = useLang();
   const { user, roles, profile } = useAuth();
+  const { itemCount } = useCart();
   const canReviewTreasury = roles.includes("admin") || roles.includes("treasurer");
 
   /** Dynamic site settings from Supabase (for Salla store URL override, etc.) */
@@ -452,6 +454,19 @@ export function Header() {
 
 
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+            <Link
+              to="/cart"
+              className="relative grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary rounded-md shrink-0"
+              aria-label={lang === "ar" ? `السلة (${itemCount})` : `Cart (${itemCount})`}
+              title={lang === "ar" ? "سلة المشتريات" : "Shopping cart"}
+            >
+              <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1.5 -end-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-bronze px-1 text-[9px] font-bold text-white dark:bg-gold dark:text-ink">
+                  {itemCount > 99 ? "99+" : itemCount}
+                </span>
+              )}
+            </Link>
             <ThemeToggle tone="default" />
             <LanguageSwitcher tone="default" />
             {user && <NotificationBell />}
