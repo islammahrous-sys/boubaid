@@ -162,10 +162,8 @@ const copy = {
 
 const railSections: RailSection[] = [
   { id: "mandate", label: { ar: "الاختصاص", en: "Mandate" } },
-  { id: "board", label: { ar: "مجلس الإدارة", en: "Board" } },
-  { id: "committees", label: { ar: "اللجان", en: "Committees" } },
+  { id: "board", label: { ar: "مجلس الأمناء", en: "Board" } },
   { id: "finance", label: { ar: "الموارد", en: "Resources" } },
-  { id: "reports", label: { ar: "التقارير", en: "Reports" } },
   { id: "documents", label: { ar: "الوثائق", en: "Documents" } },
 ];
 
