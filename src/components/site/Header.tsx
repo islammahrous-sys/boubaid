@@ -12,6 +12,7 @@ import {
   isRouteActive,
   isNavItemActive,
   type NavItem,
+  navLinkProps,
 } from "@/content/navigation";
 import { getPublicNavigation, getPublicSiteSettings } from "@/lib/cms.functions";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -283,7 +284,7 @@ export function Header() {
                             return (
                               <li key={child.id ?? child.to}>
                                 <Link
-                                  to={child.to}
+                                  {...navLinkProps(child.to)}
                                   onClick={() => setOpenDropdown(null)}
                                   className={cn(
                                     "block rounded-md px-3 py-2 text-[13px] transition-colors",
@@ -294,6 +295,21 @@ export function Header() {
                                 >
                                   {typeof child.label === "string" ? child.label : t(child.label)}
                                 </Link>
+                                {child.children && child.children.length > 0 ? (
+                                  <ul className="mt-1 ms-3 space-y-0.5 border-s border-border/70 ps-3">
+                                    {child.children.map((sub) => (
+                                      <li key={sub.id ?? sub.to}>
+                                        <Link
+                                          {...navLinkProps(sub.to)}
+                                          onClick={() => setOpenDropdown(null)}
+                                          className="block rounded-md px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                                        >
+                                          {typeof sub.label === "string" ? sub.label : t(sub.label)}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : null}
                               </li>
                             );
                           })}
@@ -562,7 +578,7 @@ export function Header() {
                                 return (
                                   <li key={child.id ?? child.to}>
                                     <Link
-                                      to={child.to}
+                                      {...navLinkProps(child.to)}
                                       onClick={() => setOpen(false)}
                                       className={cn(
                                         "active-scale block py-1 text-[13px] transition-colors",
@@ -575,6 +591,21 @@ export function Header() {
                                         ? child.label
                                         : t(child.label)}
                                     </Link>
+                                    {child.children && child.children.length > 0 ? (
+                                      <ul className="mt-1 ms-3 space-y-1 border-s border-border/70 ps-3">
+                                        {child.children.map((sub) => (
+                                          <li key={sub.id ?? sub.to}>
+                                            <Link
+                                              {...navLinkProps(sub.to)}
+                                              onClick={() => setOpen(false)}
+                                              className="active-scale block py-1 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
+                                            >
+                                              {typeof sub.label === "string" ? sub.label : t(sub.label)}
+                                            </Link>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    ) : null}
                                   </li>
                                 );
                               })}
@@ -632,7 +663,7 @@ export function Header() {
                                   return (
                                     <li key={child.id ?? child.to}>
                                       <Link
-                                        to={child.to}
+                                        {...navLinkProps(child.to)}
                                         onClick={() => setOpen(false)}
                                         className={cn(
                                           "active-scale block py-1 text-[13px] transition-colors",
@@ -643,6 +674,21 @@ export function Header() {
                                       >
                                         {t(child.label)}
                                       </Link>
+                                      {child.children && child.children.length > 0 ? (
+                                        <ul className="mt-1 ms-3 space-y-1 border-s border-border/70 ps-3">
+                                          {child.children.map((sub) => (
+                                            <li key={sub.id ?? sub.to}>
+                                              <Link
+                                                {...navLinkProps(sub.to)}
+                                                onClick={() => setOpen(false)}
+                                                className="active-scale block py-1 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
+                                              >
+                                                {t(sub.label)}
+                                              </Link>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      ) : null}
                                     </li>
                                   );
                                 })}

@@ -6,7 +6,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { siteMeta } from "@/content/site";
-import { navGroups, isRouteActive } from "@/content/navigation";
+import { navGroups, isRouteActive, navLinkProps } from "@/content/navigation";
 import { getPublicNavigation } from "@/lib/cms.functions";
 import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
@@ -26,7 +26,7 @@ const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?:
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, Icon: PalmGlyph },
   { to: "/family-tree", label: { ar: "المشجرة", en: "Tree" }, Icon: CompassGlyph },
   { to: "/library", label: { ar: "الأرشيف", en: "Archive" }, Icon: BookGlyph },
-  { to: "/foundation", label: { ar: "الحوكمة", en: "Governance" }, Icon: SealGlyph },
+  { to: "/committees", label: { ar: "اللجان", en: "Committees" }, Icon: SealGlyph },
 ];
 
 export function MobileNav() {
@@ -166,7 +166,7 @@ export function MobileNav() {
                                     <li key={child.id ?? child.to}>
                                       <DrawerClose asChild>
                                         <Link
-                                          to={child.to}
+                                          {...navLinkProps(child.to)}
                                           onClick={() => setOpen(false)}
                                           className={cn(
                                             "flex items-center justify-between py-2 text-[13px] transition-colors rounded px-2 active:bg-secondary",
@@ -179,6 +179,23 @@ export function MobileNav() {
                                           <ChevronIcon className="h-3.5 w-3.5 opacity-50" />
                                         </Link>
                                       </DrawerClose>
+                                      {child.children && child.children.length > 0 ? (
+                                        <ul className="mt-1 ms-3 space-y-1 border-s border-border/70 ps-3">
+                                          {child.children.map((sub) => (
+                                            <li key={sub.id ?? sub.to}>
+                                              <DrawerClose asChild>
+                                                <Link
+                                                  {...navLinkProps(sub.to)}
+                                                  onClick={() => setOpen(false)}
+                                                  className="block py-1.5 px-2 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
+                                                >
+                                                  {typeof sub.label === "string" ? sub.label : t(sub.label)}
+                                                </Link>
+                                              </DrawerClose>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      ) : null}
                                     </li>
                                   );
                                 })}
