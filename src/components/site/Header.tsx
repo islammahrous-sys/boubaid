@@ -29,7 +29,6 @@ const HEADER_PRIMARY_COUNT = 6;
 export function Header() {
   const { t, lang } = useLang();
   const { user, roles, profile } = useAuth();
-  const { itemCount } = useCart();
   const canReviewTreasury = roles.includes("admin") || roles.includes("treasurer");
 
   /** Dynamic site settings from Supabase (for Salla store URL override, etc.) */
