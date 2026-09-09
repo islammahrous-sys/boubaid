@@ -50,6 +50,10 @@ export const primaryNav: NavItem[] = [
     short: { ar: "الصندوق", en: "Fund" },
     children: [
       {
+        to: "/foundation",
+        label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" },
+      },
+      {
         to: "/fund-certificates",
         label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
       },
@@ -59,6 +63,9 @@ export const primaryNav: NavItem[] = [
           ar: "القوائم المالية والموازنة والحسابات",
           en: "Financial Statements, Budget & Accounts",
         },
+        children: [
+          { to: "/contribute", label: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" } },
+        ],
       },
     ],
   },
@@ -102,6 +109,10 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         short: { ar: "الصندوق", en: "Fund" },
         children: [
           {
+            to: "/foundation",
+            label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" },
+          },
+          {
             to: "/fund-certificates",
             label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
           },
@@ -111,10 +122,16 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
               ar: "القوائم المالية والموازنة والحسابات",
               en: "Financial Statements, Budget & Accounts",
             },
+            children: [
+              {
+                to: "/contribute",
+                label: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" },
+              },
+            ],
           },
         ],
       },
-      { to: "/foundation", label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Trustees" } },
+      { to: "/committees", label: { ar: "اللجان", en: "Committees" } },
       {
         to: "/initiatives",
         label: { ar: "المشاريع", en: "Projects" },
@@ -142,7 +159,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         label: { ar: "الخدمات والدليل", en: "Services & Directory" },
         short: { ar: "الخدمات", en: "Services" },
       },
-      { to: "/contribute", label: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" } },
       { to: "/contact", label: { ar: "تواصل معنا", en: "Contact" } },
     ],
   },
