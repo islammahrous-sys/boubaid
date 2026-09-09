@@ -85,7 +85,7 @@ const copy = {
   } as BiText,
 
   metaChannel: { ar: "قناة السداد", en: "Payment channel" } as BiText,
-  metaChannelValue: { ar: "متجر سلة المعتمد", en: "Approved Salla store" } as BiText,
+  metaChannelValue: { ar: "التحويل البنكي المعتمد", en: "Approved bank transfer" } as BiText,
   metaAudit: { ar: "المراجعة", en: "Audit" } as BiText,
   metaAuditValue: { ar: "سنوية مستقلة", en: "Independent, annual" } as BiText,
   metaLicence: { ar: "رقم الترخيص", en: "Licence no." } as BiText,
@@ -100,13 +100,6 @@ const copy = {
 
   channelsEyebrow: { ar: "قنوات السداد", en: "How to pay" } as BiText,
   channelsTitle: { ar: "القنوات المعتمدة", en: "Approved channels" } as BiText,
-  sallaTitle: { ar: "المتجر الإلكتروني (سلة)", en: "Online store (Salla)" } as BiText,
-  sallaBody: {
-    ar: "الاشتراك الشهري المتكرر يُدار عبر متجر الصندوق على منصة سلة، وتصدر الإيصالات آلياً باسم الصندوق.",
-    en: "Recurring monthly subscriptions are handled through the organisation's Salla storefront, which issues receipts automatically in the organisation's name.",
-  } as BiText,
-  sallaCta: { ar: "الانتقال إلى المتجر", en: "Go to the store" } as BiText,
-
   transferTitle: { ar: "التحويل البنكي", en: "Bank transfer" } as BiText,
   transferBody: {
     ar: "للمساهمات الكبيرة والقروض الحسنة، تُطلب بيانات الحساب من الأمانة العامة مباشرة. ولا تُنشر أرقام الحسابات على الموقع.",
@@ -273,7 +266,6 @@ function ContributePage() {
       ? treasuryConfig.quickAmounts
       : [100, 250, 500, 1000, 2500];
 
-  const sallaUrl = treasuryConfig?.sallaStoreUrl || siteMeta.sallaStoreUrl;
   const fundPurposes =
     treasuryConfig?.fundPurposes && treasuryConfig.fundPurposes.length > 0
       ? treasuryConfig.fundPurposes

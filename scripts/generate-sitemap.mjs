@@ -160,6 +160,8 @@ async function main() {
     { loc: `${SITE_URL}/foundation`, changefreq: "monthly", priority: "0.9" },
     { loc: `${SITE_URL}/branches`, changefreq: "monthly", priority: "0.9" },
     { loc: `${SITE_URL}/family-tree`, changefreq: "weekly", priority: "0.9" },
+    { loc: `${SITE_URL}/official-family-tree`, changefreq: "monthly", priority: "0.8" },
+
     { loc: `${SITE_URL}/dna`, changefreq: "monthly", priority: "0.8" },
     { loc: `${SITE_URL}/achievers`, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/initiatives`, lastmod: initiativesListLastmod, changefreq: "weekly", priority: "0.8" },
