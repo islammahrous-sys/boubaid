@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, ChevronDown, UserRound, Search, ShoppingBag } from "lucide-react";
+import { Menu, X, ChevronDown, UserRound, Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -37,7 +37,6 @@ export function Header() {
     queryFn: () => getPublicSiteSettings(),
     staleTime: 5 * 60 * 1000,
   });
-  const storeUrl = dynamicSettings.salla_url || siteMeta.sallaStoreUrl;
 
   /** Live, CMS-managed navigation (Navigation Manager in the admin console).
    *  Falls back to the static `@/content/navigation` lists whenever the
