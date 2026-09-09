@@ -183,20 +183,20 @@ export function Header() {
 
       <div
         className={cn(
-          "container-header flex items-center justify-between gap-2 sm:gap-3 md:gap-4 xl:gap-5 2xl:gap-8 py-1.5 sm:py-2 transition-[height] duration-500 ease-out",
+          "container-header flex items-center justify-between gap-2 sm:gap-3 md:gap-4 lg:gap-3 xl:gap-5 2xl:gap-8 py-1.5 sm:py-2 transition-[height] duration-500 ease-out",
           condensed ? "h-14 sm:h-16 md:h-18" : "h-16 sm:h-20 md:h-24 lg:h-28",
         )}
       >
         <Link
           to="/"
-          className="group active-scale flex shrink-0 items-center gap-2 sm:gap-3.5 md:gap-4 max-w-[62%] sm:max-w-none"
+          className="group active-scale flex shrink-0 items-center gap-2 sm:gap-3.5 md:gap-4 lg:gap-2 xl:gap-4 max-w-[62%] sm:max-w-none"
           onClick={() => setOpen(false)}
         >
           <img
             src="/logo-mark-brown.svg"
             alt=""
             className={cn(
-              "shrink-0 object-contain transition-[height,width,transform] duration-500 ease-out group-hover:scale-105 dark:hidden",
+              "shrink-0 object-contain transition-[height,width,transform] duration-500 ease-out group-hover:scale-105 dark:hidden lg:h-12 lg:w-12 xl:h-16 xl:w-16",
               condensed
                 ? "h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12"
                 : "h-9 w-9 sm:h-12 sm:w-12 md:h-16 md:w-16 lg:h-20 lg:w-20",
@@ -207,14 +207,14 @@ export function Header() {
             src="/logo-mark-gold.svg"
             alt=""
             className={cn(
-              "hidden shrink-0 object-contain transition-[height,width,transform] duration-500 ease-out group-hover:scale-105 dark:block",
+              "hidden shrink-0 object-contain transition-[height,width,transform] duration-500 ease-out group-hover:scale-105 dark:block lg:h-12 lg:w-12 xl:h-16 xl:w-16",
               condensed
                 ? "h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12"
                 : "h-9 w-9 sm:h-12 sm:w-12 md:h-16 md:w-16 lg:h-20 lg:w-20",
             )}
             aria-hidden="true"
           />
-          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="flex min-w-0 flex-col leading-tight lg:hidden xl:flex">
             <span
               className={cn(
                 "truncate font-brand font-bold text-foreground transition-[color,font-size] duration-500 group-hover:text-bronze dark:group-hover:text-gold",
@@ -229,7 +229,7 @@ export function Header() {
         </Link>
 
         <nav
-          className="relative hidden min-w-0 flex-1 items-center justify-center gap-1.5 mx-3 xl:flex 2xl:mx-4"
+          className="relative hidden min-w-0 flex-1 items-center justify-center gap-1 lg:flex lg:mx-1 xl:gap-1.5 xl:mx-3 2xl:mx-4"
           aria-label="Primary"
         >
           {navPrimary.map((n) => {
@@ -255,7 +255,7 @@ export function Header() {
                     aria-haspopup="true"
                     data-nav-active={isItemActive ? "true" : undefined}
                     className={cn(
-                      "active-scale flex items-center gap-1 rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
+                       "active-scale flex items-center gap-1 rounded-md px-1.5 xl:px-2 2xl:px-3 py-1.5 text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
                       isItemActive
                         ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -328,7 +328,7 @@ export function Header() {
                 data-nav-active={isItemActive ? "true" : undefined}
                 aria-current={isItemActive ? "page" : undefined}
                 className={cn(
-                  "nav-link active-scale rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
+                  "nav-link active-scale rounded-md px-1.5 xl:px-2 2xl:px-3 py-1.5 text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
                   isItemActive
                     ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -353,7 +353,7 @@ export function Header() {
               aria-haspopup="true"
               data-nav-active={isSecondaryActive ? "true" : undefined}
               className={cn(
-                "active-scale flex items-center gap-1 rounded-md px-2 2xl:px-3 py-1.5 text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
+                "active-scale flex items-center gap-1 rounded-md px-1.5 xl:px-2 2xl:px-3 py-1.5 text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
                 isSecondaryActive
                   ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -537,7 +537,7 @@ export function Header() {
                   : "Open menu"
             }
             aria-expanded={open}
-            className="hidden md:grid xl:hidden h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary cursor-pointer rounded-md shrink-0"
+            className="hidden md:grid lg:hidden h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary cursor-pointer rounded-md shrink-0"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -546,7 +546,7 @@ export function Header() {
       </div>
 
       {open ? (
-        <div className="max-h-[80vh] overflow-y-auto border-t border-border bg-background text-foreground xl:hidden animate-in slide-in-from-top-2 duration-200">
+        <div className="max-h-[80vh] overflow-y-auto border-t border-border bg-background text-foreground lg:hidden animate-in slide-in-from-top-2 duration-200">
           <nav className="container-page py-6" aria-label="Mobile">
 
 
