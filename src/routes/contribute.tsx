@@ -85,7 +85,7 @@ const copy = {
   } as BiText,
 
   metaChannel: { ar: "قناة السداد", en: "Payment channel" } as BiText,
-  metaChannelValue: { ar: "متجر سلة المعتمد", en: "Approved Salla store" } as BiText,
+  metaChannelValue: { ar: "التحويل البنكي المعتمد", en: "Approved bank transfer" } as BiText,
   metaAudit: { ar: "المراجعة", en: "Audit" } as BiText,
   metaAuditValue: { ar: "سنوية مستقلة", en: "Independent, annual" } as BiText,
   metaLicence: { ar: "رقم الترخيص", en: "Licence no." } as BiText,
@@ -273,7 +273,6 @@ function ContributePage() {
       ? treasuryConfig.quickAmounts
       : [100, 250, 500, 1000, 2500];
 
-  const sallaUrl = treasuryConfig?.sallaStoreUrl || siteMeta.sallaStoreUrl;
   const fundPurposes =
     treasuryConfig?.fundPurposes && treasuryConfig.fundPurposes.length > 0
       ? treasuryConfig.fundPurposes
