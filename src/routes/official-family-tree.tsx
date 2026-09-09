@@ -64,7 +64,7 @@ const copy = {
     ar: "اضغط على الزر أدناه للانتقال إلى متجر الأسرة الرسمي واختيار المقاس والفريم المناسبين.",
     en: "Click the button below to visit the family's official store and choose the right size and frame.",
   } as BiText,
-  ctaButton: { ar: "Click Here", en: "Click here" } as BiText,
+  ctaButton: { ar: "اضغط هنا", en: "Click here" } as BiText,
 };
 
 function OfficialFamilyTreePage() {
