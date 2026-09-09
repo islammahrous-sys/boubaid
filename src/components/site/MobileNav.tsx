@@ -1,13 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, UserRound, ShoppingBag, HeartHandshake, ChevronLeft, ChevronRight } from "lucide-react";
+import { Menu, UserRound, HeartHandshake, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
-import { siteMeta } from "@/content/site";
 import { navGroups, isRouteActive } from "@/content/navigation";
-import { getPublicNavigation, getPublicSiteSettings } from "@/lib/cms.functions";
+import { getPublicNavigation } from "@/lib/cms.functions";
 import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import {
@@ -34,14 +33,6 @@ export function MobileNav() {
   const { user, profile } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
-
-  /** Dynamic site settings from Supabase (for Salla store URL override) */
-  const { data: dynamicSettings = {} } = useQuery({
-    queryKey: ["public_site_settings"],
-    queryFn: () => getPublicSiteSettings(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const storeUrl = dynamicSettings.salla_url || siteMeta.sallaStoreUrl;
 
   /** Live, CMS-managed navigation — falls back to the static navGroups
    *  index when the "header" menu has no public items configured. */
