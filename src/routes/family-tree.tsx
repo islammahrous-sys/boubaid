@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { Search, Maximize2, Lock, X } from "lucide-react";
 import { z } from "zod";
@@ -91,8 +91,8 @@ const copy = {
 
   artworkEyebrow: { ar: "الإصدار الأول — ١٤٤٧هـ", en: "First Edition — 1447H" } as BiText,
   artworkTitle: {
-    ar: "اللوحة الرسمية المصورة للشجرة",
-    en: "The official pictorial tree plate",
+    ar: "اللوحة الرسمية المصورة لشجرة العائلة",
+    en: "Official Illustrated Family Tree",
   } as BiText,
   artworkBody: {
     ar: "أُخرجت الأسرة هذه اللوحة الجدارية بتكلفة استثمارية بلغت 14,948 ريالاً سعودياً، وسُجلت حقوق ملكيتها الفكرية رسمياً لتكون مرجعاً بصرياً حصرياً يربط الجيل الناشئ بجذوره التميمية.",
@@ -373,43 +373,28 @@ function FamilyTreePage() {
         </div>
       </aside>
 
-      {/* ── The official commissioned artwork, alongside the digital explorer ── */}
+      {/* ── Pointer to the dedicated Family Tree plate page ─── */}
       <section className="reveal-on-scroll container-page py-12 md:py-14">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
+        <div className="flex flex-col gap-4 border border-border bg-card p-5 md:flex-row md:items-center md:justify-between md:p-6 rounded-md">
           <div>
             <Eyebrow>{t(copy.artworkEyebrow)}</Eyebrow>
             <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl font-serif">
               {t(copy.artworkTitle)}
             </h2>
-            <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.artworkBody)}
             </p>
-            <a
-              href="/images/family_tree_official_artwork.jpg"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-xs font-semibold label-caps text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-            >
-              {t(copy.artworkOpen)}
-              <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
-            </a>
           </div>
-
-          <a
-            href="/images/family_tree_official_artwork.jpg"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block border border-border bg-card p-3 transition-colors hover:border-foreground"
+          <Link
+            to="/official-family-tree"
+            className="inline-flex shrink-0 items-center gap-2 border border-gold bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
           >
-            <img
-              src="/images/family_tree_official_artwork.jpg"
-              alt="اللوحة الجدارية المعتمدة للمشجرة العامة لأسرة آل بوعبيد"
-              className="mx-auto h-auto max-h-[36rem] w-auto object-contain"
-              loading="lazy"
-            />
-          </a>
+            {t(copy.artworkOpen)}
+            <Maximize2 className="h-4 w-4" aria-hidden="true" />
+          </Link>
         </div>
       </section>
+
 
       {/* ── Generation explorer ─────────────────────────────── */}
       <section className="reveal-on-scroll container-page py-12 md:py-14">

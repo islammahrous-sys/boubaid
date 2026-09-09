@@ -39,6 +39,12 @@ export const primaryNav: NavItem[] = [
     ],
   },
   {
+    to: "/official-family-tree",
+    label: { ar: "شجرة العائلة", en: "Family Tree" },
+    short: { ar: "الشجرة", en: "Tree" },
+  },
+
+  {
     to: "/fund",
     label: { ar: "صندوق التنمية العائلية", en: "Family Development Fund" },
     short: { ar: "الصندوق", en: "Fund" },
