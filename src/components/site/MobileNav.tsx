@@ -32,7 +32,6 @@ const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?:
 export function MobileNav() {
   const { t, lang } = useLang();
   const { user, profile } = useAuth();
-  const { itemCount } = useCart();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
 
