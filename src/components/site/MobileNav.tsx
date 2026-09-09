@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/hooks/useCart";
+import { siteMeta } from "@/content/site";
 import { navGroups, isRouteActive } from "@/content/navigation";
 import { getPublicNavigation } from "@/lib/cms.functions";
 import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
