@@ -1,18 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Maximize2, ExternalLink, Sparkles, Ruler } from "lucide-react";
+import { Maximize2, ExternalLink, Sparkles, MousePointerClick } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
-import {
-  treeFrameProducts,
-  treeFrameCustom,
-  treeFrameCustomColour,
-  treeFrameCustomPriceNote,
-  type TreeFrameProduct,
-} from "@/content/tree-frames";
 import { getCanonicalUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/official-family-tree")({
@@ -22,12 +14,12 @@ export const Route = createFileRoute("/official-family-tree")({
       {
         name: "description",
         content:
-          "اللوحة الرسمية المصورة لشجرة العائلة لأسرة آل بوعبيد: الفريمات والمقاسات المتوفرة وأسعارها، مع إمكانية طلب فريم خاص بمقاس حسب الطلب.",
+          "اللوحة الرسمية المصورة لشجرة العائلة لأسرة آل بوعبيد: للاقتناء والاطلاع على المقاسات والطلب عبر متجر الأسرة الرسمي.",
       },
       { property: "og:title", content: "اللوحة الرسمية المصورة لشجرة العائلة — آل بوعبيد" },
       {
         property: "og:description",
-        content: "اختر تصميم ومقاس شجرة العائلة المناسب لك واطلبها الآن.",
+        content: "للاقتناء والاطلاع على المقاسات وطلب اللوحة عبر متجر الأسرة الرسمي.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/official-family-tree") },
@@ -63,32 +55,21 @@ const copy = {
     en: "Every size is delivered framed and ready to hang. Choose what suits you and complete the purchase and payment through the family's official store.",
   } as BiText,
 
-  productsEyebrow: { ar: "الفريمات والمقاسات", en: "Frames & sizes" } as BiText,
-  productsTitle: { ar: "المقاسات المتوفرة", en: "Available editions" } as BiText,
-  frameLabel: { ar: "الفريم", en: "Frame" } as BiText,
-  sizeLabel: { ar: "المقاس", en: "Size" } as BiText,
-  widthLabel: { ar: "العرض", en: "Width" } as BiText,
-  lengthLabel: { ar: "الطول", en: "Length" } as BiText,
-  colourLabel: { ar: "اللون", en: "Colour" } as BiText,
-  priceLabel: { ar: "السعر", en: "Price" } as BiText,
-  buy: { ar: "أضف إلى السلة", en: "Add to basket" } as BiText,
-  order: { ar: "اطلب فريم خاص", en: "Order a custom frame" } as BiText,
-  customEyebrow: { ar: "حسب الطلب", en: "Made to order" } as BiText,
+  ctaEyebrow: { ar: "للاقتناء والاطلاع على المقاسات", en: "View sizes and order" } as BiText,
+  ctaTitle: {
+    ar: "للاقتناء و الاطلاع علي المقاسات",
+    en: "View sizes and order your copy",
+  } as BiText,
+  ctaHint: {
+    ar: "اضغط على الزر أدناه للانتقال إلى متجر الأسرة الرسمي واختيار المقاس والفريم المناسبين.",
+    en: "Click the button below to visit the family's official store and choose the right size and frame.",
+  } as BiText,
+  ctaButton: { ar: "Click Here", en: "Click here" } as BiText,
 };
 
 function OfficialFamilyTreePage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
-
-  const priceText = (product: TreeFrameProduct) =>
-    product.price === null ? null : isAr ? `${product.price} ريال` : `${product.price} SAR`;
-
-  const Row = ({ label, value }: { label: BiText; value: string }) => (
-    <div className="flex items-baseline justify-between gap-3 border-b border-border/60 py-1.5 last:border-b-0">
-      <span className="text-[12px] text-muted-foreground">{t(label)}</span>
-      <span className="nums text-[13px] font-semibold text-foreground">{value}</span>
-    </div>
-  );
 
   return (
     <div>
@@ -98,14 +79,13 @@ function OfficialFamilyTreePage() {
         subtitle={t(copy.subtitle)}
         meta={[
           {
-            label: isAr ? "عدد المقاسات" : "Editions",
-            value: `${treeFrameProducts.length}`,
+            label: isAr ? "الإصدار" : "Edition",
+            value: isAr ? "الأول ١٤٤٧هـ" : "First 1447H",
             mono: true,
           },
           {
-            label: isAr ? "يبدأ من" : "From",
-            value: isAr ? "220 ريال" : "220 SAR",
-            mono: true,
+            label: isAr ? "التوصيل" : "Delivery",
+            value: isAr ? "مؤطر وجاهز" : "Framed & ready",
           },
           {
             label: isAr ? "مقاس خاص" : "Custom size",
@@ -189,107 +169,35 @@ function OfficialFamilyTreePage() {
         </div>
       </section>
 
-      {/* ── Product catalogue ────────────────────────────────── */}
-      <section id="tree-frames" className="container-page border-t border-border py-12 md:py-14">
-        <Eyebrow rule>{t(copy.productsEyebrow)}</Eyebrow>
-        <h2 className="mt-4 font-serif text-2xl leading-tight text-foreground md:text-3xl">
-          {t(copy.productsTitle)}
-        </h2>
-
-        <ul className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {treeFrameProducts.map((product) => (
-            <li
-              key={product.id}
-              className="flex flex-col border border-border bg-card transition-colors hover:border-bronze dark:hover:border-gold rounded-md overflow-hidden"
-            >
-              <div className="flex flex-1 flex-col p-5">
-                <h3 className="font-serif text-base font-bold leading-snug text-foreground md:text-lg">
-                  {t(product.name)}
-                </h3>
-
-                <div className="mt-4 flex-1">
-                  <Row label={copy.frameLabel} value={t(product.frameNo)} />
-                  <Row label={copy.sizeLabel} value={t(product.sizeName)} />
-                  <Row label={copy.widthLabel} value={t(product.width)} />
-                  <Row label={copy.lengthLabel} value={t(product.length)} />
-                </div>
-
-                <div className="mt-5 flex items-center justify-between gap-3">
-                  <span className="nums font-serif text-lg font-bold text-bronze dark:text-gold">
-                    {priceText(product)}
-                  </span>
-                  <PurchaseLink product={product} />
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        {/* ── Custom frame ───────────────────────────────────── */}
-        <div className="mt-10 border border-dashed border-bronze/50 bg-secondary/30 p-5 md:p-6 dark:border-gold/40 rounded-md">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-xl">
-              <Eyebrow>{t(copy.customEyebrow)}</Eyebrow>
-              <h3 className="mt-3 font-serif text-lg font-bold text-foreground md:text-xl">
-                {t(treeFrameCustom.name)}
-              </h3>
-              <p className="mt-1 text-[13px] text-muted-foreground">
-                {t(treeFrameCustom.sizeName)}
-              </p>
-
-              <div className="mt-3 max-w-sm">
-                <Row label={copy.widthLabel} value={t(treeFrameCustom.width)} />
-                <Row label={copy.lengthLabel} value={t(treeFrameCustom.length)} />
-                <Row label={copy.colourLabel} value={t(treeFrameCustomColour)} />
-              </div>
-
-              <p className="mt-3 text-[12.5px] font-semibold text-bronze dark:text-gold">
-                {t(treeFrameCustomPriceNote)}
-              </p>
-            </div>
-
-            <div className="shrink-0">
-              <PurchaseLink product={treeFrameCustom} variant="dark" label={copy.order} icon={<Ruler className="h-4 w-4" aria-hidden="true" />} />
-            </div>
-          </div>
+      {/* ── Catalog CTA ───────────────────────────────────────── */}
+      <section className="container-page border-t border-border py-12 md:py-16">
+        <div className="relative mx-auto max-w-3xl overflow-hidden border border-gold/40 bg-gold/[0.06] p-6 text-center dark:border-gold/30 dark:bg-gold/[0.05] md:p-10 rounded-md">
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70"
+            aria-hidden="true"
+          />
+          <Eyebrow className="justify-center">{t(copy.ctaEyebrow)}</Eyebrow>
+          <h2 className="mt-4 font-serif text-2xl leading-tight text-foreground md:text-3xl">
+            {t(copy.ctaTitle)}
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+            {t(copy.ctaHint)}
+          </p>
+          <a
+            href={siteMeta.frameStoreUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center justify-center gap-2 border border-gold bg-gold px-6 py-3 text-[14px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
+          >
+            <MousePointerClick className="h-4 w-4" aria-hidden="true" />
+            {t(copy.ctaButton)}
+          </a>
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70"
+            aria-hidden="true"
+          />
         </div>
       </section>
     </div>
-  );
-}
-
-function PurchaseLink({
-  product,
-  variant = "gold",
-  label,
-  icon,
-}: {
-  product: TreeFrameProduct;
-  variant?: "gold" | "dark";
-  label?: BiText;
-  icon?: React.ReactNode;
-}) {
-  const { t, lang } = useLang();
-  const isAr = lang === "ar";
-  const defaultLabel = { ar: "شراء الآن", en: "Buy now" } as BiText;
-
-  const baseClasses =
-    "inline-flex items-center gap-2 px-4 py-2 text-[13px] font-bold transition-colors rounded-md";
-  const variantClasses =
-    variant === "dark"
-      ? "border border-ink bg-ink text-ivory hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
-      : "border border-gold bg-gold text-ink hover:bg-transparent hover:text-gold";
-
-  return (
-    <a
-      href={siteMeta.frameStoreUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`${baseClasses} ${variantClasses}`}
-      aria-label={`${t(label ?? defaultLabel)} — ${t(product.name)}`}
-    >
-      {icon ?? <ExternalLink className="h-4 w-4" aria-hidden="true" />}
-      {t(label ?? defaultLabel)}
-    </a>
   );
 }
