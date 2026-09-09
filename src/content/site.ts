@@ -54,8 +54,11 @@ export const siteMeta = {
     } as BiText,
   },
   domain: "albouabidfamily.com",
-  frameStoreUrl: "https://albouabidfamily.com/",
+  /** Official family-tree frames catalog on the external store. */
+  frameStoreUrl: "https://albouabidfamily.com/%D8%B4%D8%AC%D8%B1%D8%A9-%D8%A7%D9%84%D8%A3%D8%B3%D8%B1%D8%A9/c1284478939",
   sallaStoreUrl: "https://albouabidfamily.com/القسط-الشهري/c1360847582",
+
+
   contact: {
     phone: "+966 13 580 0000",
     email: "contact@albouabidfamily.com",
