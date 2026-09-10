@@ -2,7 +2,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 
 import nationalAddress from "@/assets/docs/national-address.pdf.asset.json";
 import bylaws from "@/assets/docs/bylaws-current.pdf.asset.json";
-import councilRenewal from "@/assets/docs/council-renewal.pdf.asset.json";
+import authorisationRenewal2026 from "@/assets/docs/authorisation-renewal-2026.pdf.asset.json";
 import bankAuthorization from "@/assets/docs/bank-authorization.pdf.asset.json";
 import councilFormation from "@/assets/docs/council-formation.pdf.asset.json";
 import registrationDecision from "@/assets/docs/registration-decision.pdf.asset.json";
@@ -92,19 +92,6 @@ export const fundDocuments: FundDocument[] = [
     kind: "PDF",
     href: councilFormation.url,
     preview: "/images/board_formation_letter.jpg",
-  },
-  {
-    id: "council-renewal",
-    group: "governance",
-    title: { ar: "تجديد المجلس", en: "Council Renewal" },
-    note: {
-      ar: "خطاب تجديد دورة مجلس الأمناء للدورة الحالية.",
-      en: "Letter renewing the Board of Trustees for the current term.",
-    },
-    year: 1447,
-    kind: "PDF",
-    href: councilRenewal.url,
-    isNew: true,
   },
   {
     id: "bank-authorization",
