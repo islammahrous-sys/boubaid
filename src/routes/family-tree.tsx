@@ -594,18 +594,30 @@ function FamilyTreePage() {
           })}
         </p>
 
-        <a
-          href={officialChartsPdf}
-          download
+        <button
+          type="button"
+          onClick={() =>
+            openMediaViewer({
+              src: officialChartsPdf,
+              kind: "pdf",
+              title: t({ ar: "المشجرات الرسمية المعتمدة", en: "Official verified charts" }),
+            })
+          }
           className="label-caps mt-5 inline-flex items-center gap-2 border border-border bg-card px-4 py-2 text-xs text-foreground transition-colors hover:border-foreground"
         >
-          {t({ ar: "تنزيل الملف الكامل (PDF)", en: "Download full file (PDF)" })}
-        </a>
+          {t({ ar: "عرض الملف الكامل (PDF)", en: "View full file (PDF)" })}
+        </button>
 
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {officialCharts.map((c) => (
             <li key={c.chart} className="border border-border bg-card">
-              <a href={c.image} target="_blank" rel="noreferrer" className="block">
+              <button
+                type="button"
+                onClick={() =>
+                  openMediaViewer({ src: c.image, kind: "image", title: c.titleAr })
+                }
+                className="block w-full text-start"
+              >
                 <img
                   src={c.image}
                   alt={c.titleAr}
