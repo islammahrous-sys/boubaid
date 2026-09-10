@@ -130,19 +130,24 @@ export function DocumentShowcase({
 
                 <div className="shrink-0">
                   {doc.href ? (
-                    <a
-                      href={doc.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openMediaViewer({
+                          src: doc.href!,
+                          kind: isImage ? "image" : "pdf",
+                          title: t(doc.title),
+                        })
+                      }
                       className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
                     >
                       {isImage ? (
                         <ImageIcon className="h-3.5 w-3.5" aria-hidden="true" />
                       ) : (
-                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                        <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                       )}
-                      {t({ ar: "تحميل", en: "Download" })}
-                    </a>
+                      {t({ ar: "عرض", en: "View" })}
+                    </button>
                   ) : (
                     <button
                       type="button"
