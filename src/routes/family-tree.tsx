@@ -635,7 +635,7 @@ function FamilyTreePage() {
                     {t({ ar: `${c.people} اسمًا موثقًا`, en: `${c.people} documented names` })}
                   </p>
                 </div>
-              </a>
+              </button>
             </li>
           ))}
         </ul>
