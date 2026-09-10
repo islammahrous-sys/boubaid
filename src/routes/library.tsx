@@ -268,11 +268,13 @@ function DownloadControl({
   onUnavailable,
   label,
   className,
+  docTitle,
 }: {
   doc: LibraryDocument;
   onUnavailable: () => void;
   label: string;
   className?: string;
+  docTitle?: string;
 }) {
   return doc.href ? (
     <EditorialButton
