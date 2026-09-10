@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileText, ExternalLink, Download } from "lucide-react";
+import { useState } from "react";
+import { FileText, Eye } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
+import { MediaViewerDialog } from "@/components/site/MediaViewerDialog";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
