@@ -42,6 +42,7 @@ import { Route as AuthenticatedContentRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as LibraryMuseumSlugRouteImport } from './routes/library.museum.$slug'
+import { Route as ApiPublicFundDocRouteImport } from './routes/api/public/fund-doc'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -207,6 +208,11 @@ const LibraryMuseumSlugRoute = LibraryMuseumSlugRouteImport.update({
   path: '/museum/$slug',
   getParentRoute: () => LibraryRoute,
 } as any)
+const ApiPublicFundDocRoute = ApiPublicFundDocRouteImport.update({
+  id: '/api/public/fund-doc',
+  path: '/api/public/fund-doc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/fund-doc': typeof ApiPublicFundDocRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRoutesByTo {
@@ -274,6 +281,7 @@ export interface FileRoutesByTo {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/fund-doc': typeof ApiPublicFundDocRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRoutesById {
@@ -310,6 +318,7 @@ export interface FileRoutesById {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/fund-doc': typeof ApiPublicFundDocRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRouteTypes {
@@ -346,6 +355,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/api/public/fund-doc'
     | '/library/museum/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/api/public/fund-doc'
     | '/library/museum/$slug'
   id:
     | '__root__'
@@ -415,6 +426,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/api/public/fund-doc'
     | '/library/museum/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -445,6 +457,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyRoute: typeof VerifyRoute
   PSlugRoute: typeof PSlugRoute
+  ApiPublicFundDocRoute: typeof ApiPublicFundDocRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -680,6 +693,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibraryMuseumSlugRouteImport
       parentRoute: typeof LibraryRoute
     }
+    '/api/public/fund-doc': {
+      id: '/api/public/fund-doc'
+      path: '/api/public/fund-doc'
+      fullPath: '/api/public/fund-doc'
+      preLoaderRoute: typeof ApiPublicFundDocRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -760,6 +780,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyRoute: VerifyRoute,
   PSlugRoute: PSlugRoute,
+  ApiPublicFundDocRoute: ApiPublicFundDocRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

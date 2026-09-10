@@ -277,7 +277,7 @@ export function Header() {
                       onMouseEnter={() => handleDropdownEnter(n.to)}
                       onMouseLeave={handleDropdownLeave}
                     >
-                      <div className="min-w-[15rem] origin-top-start border border-border bg-popover p-2 shadow-lg transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rounded-md">
+                      <div className="min-w-[15rem] max-w-[min(22rem,calc(100vw-2rem))] origin-top-start border border-border bg-popover p-2 shadow-lg transition-[opacity,transform] duration-150 ease-out animate-in fade-in-0 zoom-in-95 rounded-md">
                         <ul className="space-y-1">
                           {n.children!.map((child) => {
                             const childActive = isRouteActive(pathname, child.to);
@@ -296,7 +296,7 @@ export function Header() {
                                   {typeof child.label === "string" ? child.label : t(child.label)}
                                 </Link>
                                 {child.children && child.children.length > 0 ? (
-                                  <ul className="mt-1 ms-3 space-y-0.5 ps-3">
+                                  <ul className="mt-1 space-y-0.5 ps-3">
                                     {child.children.map((sub) => (
                                       <li key={sub.id ?? sub.to}>
                                         <Link

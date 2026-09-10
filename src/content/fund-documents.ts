@@ -2,7 +2,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 
 import nationalAddress from "@/assets/docs/national-address.pdf.asset.json";
 import bylaws from "@/assets/docs/bylaws-current.pdf.asset.json";
-import councilRenewal from "@/assets/docs/council-renewal.pdf.asset.json";
+import authorisationRenewal2026 from "@/assets/docs/authorisation-renewal-2026.pdf.asset.json";
 import bankAuthorization from "@/assets/docs/bank-authorization.pdf.asset.json";
 import councilFormation from "@/assets/docs/council-formation.pdf.asset.json";
 import registrationDecision from "@/assets/docs/registration-decision.pdf.asset.json";
@@ -94,19 +94,6 @@ export const fundDocuments: FundDocument[] = [
     preview: "/images/board_formation_letter.jpg",
   },
   {
-    id: "council-renewal",
-    group: "governance",
-    title: { ar: "تجديد المجلس", en: "Council Renewal" },
-    note: {
-      ar: "خطاب تجديد دورة مجلس الأمناء للدورة الحالية.",
-      en: "Letter renewing the Board of Trustees for the current term.",
-    },
-    year: 1447,
-    kind: "PDF",
-    href: councilRenewal.url,
-    isNew: true,
-  },
-  {
     id: "bank-authorization",
     group: "banking",
     title: { ar: "تفويض إدارة الحسابات البنكية", en: "Bank Accounts Signatory Authorisation" },
@@ -118,6 +105,19 @@ export const fundDocuments: FundDocument[] = [
     kind: "PDF",
     href: bankAuthorization.url,
     preview: "/images/bank_authorization_letter.jpg",
+  },
+  {
+    id: "authorisation-renewal-2026",
+    group: "banking",
+    title: { ar: "تجديد التفويض 2026", en: "تجديد التفويض 2026" },
+    note: {
+      ar: "خطاب تجديد التفويض بإدارة الحسابات البنكية لعام 2026 (مُحجوبة أرقام الهوية).",
+      en: "Renewal of the bank accounts management authorisation for 2026 (ID numbers redacted).",
+    },
+    year: 1447,
+    kind: "PDF",
+    href: authorisationRenewal2026.url,
+    isNew: true,
   },
 ];
 

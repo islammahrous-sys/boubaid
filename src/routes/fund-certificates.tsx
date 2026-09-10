@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileText, ExternalLink, Download } from "lucide-react";
+import { useState } from "react";
+import { FileText, Eye } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
+import { MediaViewerDialog } from "@/components/site/MediaViewerDialog";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
@@ -32,6 +34,7 @@ export const Route = createFileRoute("/fund-certificates")({
 function FundCertificatesPage() {
   const { lang, t } = useLang();
   const isAr = lang === "ar";
+  const [viewing, setViewing] = useState<{ id: string; title: string } | null>(null);
 
   return (
     <div>
@@ -101,16 +104,14 @@ function FundCertificatesPage() {
                         {doc.year} هـ · {doc.kind}
                       </p>
 
-                      <a
-                        href={doc.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => setViewing({ id: doc.id, title: t(doc.title) })}
                         className="mt-3 inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
                       >
-                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
-                        {isAr ? "عرض وتحميل" : "View & download"}
-                        <ExternalLink className="h-3 w-3 opacity-60" aria-hidden="true" />
-                      </a>
+                        <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                        {isAr ? "عرض الوثيقة" : "View document"}
+                      </button>
                     </div>
                   </li>
                 ))}
@@ -140,6 +141,14 @@ function FundCertificatesPage() {
           )}
         </Prose>
       </section>
+
+      <MediaViewerDialog
+        open={!!viewing}
+        onClose={() => setViewing(null)}
+        kind="pdf"
+        src={viewing ? `/api/public/fund-doc?id=${encodeURIComponent(viewing.id)}` : null}
+        title={viewing?.title}
+      />
     </div>
   );
 }
