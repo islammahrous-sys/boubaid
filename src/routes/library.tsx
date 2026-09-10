@@ -208,7 +208,7 @@ const copy = {
   colFormat: { ar: "التصنيف", en: "Category" } as BiText,
   colAction: { ar: "الإجراء", en: "Action" } as BiText,
 
-  download: { ar: "تحميل الملف", en: "Download" } as BiText,
+  download: { ar: "عرض الملف", en: "View file" } as BiText,
   play: { ar: "مشاهدة التسجيل", en: "Watch Recording" } as BiText,
   plate: { ar: "لوحة", en: "Plate" } as BiText,
   preview: { ar: "معاينة الوثيقة", en: "Preview" } as BiText,
@@ -275,19 +275,18 @@ function DownloadControl({
   className?: string;
 }) {
   return doc.href ? (
-    <EditorialLink
-      href={doc.href}
-      target="_blank"
-      rel="noopener noreferrer"
+    <EditorialButton
+      type="button"
+      onClick={() => openMediaViewer({ src: doc.href!, title: docTitle })}
       size="sm"
       className={className}
     >
-      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
       {label}
-    </EditorialLink>
+    </EditorialButton>
   ) : (
     <EditorialButton type="button" onClick={onUnavailable} size="sm" className={className}>
-      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
       {label}
     </EditorialButton>
   );
