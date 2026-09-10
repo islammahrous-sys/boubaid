@@ -23,6 +23,7 @@ import { ScrollReveal } from "@/components/site/ScrollReveal";
 import { PageTransition } from "@/components/site/PageTransition";
 import { TopProgressBar } from "@/components/site/TopProgressBar";
 import { NetworkStatusBanner } from "@/components/common/NetworkStatusBanner";
+import { GlobalMediaViewer } from "@/components/site/GlobalMediaViewer";
 
 import { Toaster } from "@/components/ui/sonner";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -300,6 +301,7 @@ function RootComponent() {
               <ScrollReveal />
             </div>
             <NetworkStatusBanner />
+            <GlobalMediaViewer />
             <Toaster richColors position="top-center" />
           </LanguageProvider>
         </AuthProvider>
