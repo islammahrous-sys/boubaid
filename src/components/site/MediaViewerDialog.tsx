@@ -95,6 +95,7 @@ export function MediaViewerDialog({
           />
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
