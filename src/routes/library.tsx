@@ -1,7 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import {
-  Download,
   Play,
   Search,
   X,
@@ -28,6 +27,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { EditorialButton, EditorialLink } from "@/components/site/Editorial";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { libraryItems as staticLibraryItems, siteMeta } from "@/content/site";
 import { getPublishedLibrary, getPublishedGalleries } from "@/lib/cms.functions";
 import {
