@@ -141,6 +141,14 @@ function FundCertificatesPage() {
           )}
         </Prose>
       </section>
+
+      <MediaViewerDialog
+        open={!!viewing}
+        onClose={() => setViewing(null)}
+        kind="pdf"
+        src={viewing ? `/api/public/fund-doc?id=${encodeURIComponent(viewing.id)}` : null}
+        title={viewing?.title}
+      />
     </div>
   );
 }
