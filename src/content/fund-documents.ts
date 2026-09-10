@@ -106,6 +106,19 @@ export const fundDocuments: FundDocument[] = [
     href: bankAuthorization.url,
     preview: "/images/bank_authorization_letter.jpg",
   },
+  {
+    id: "authorisation-renewal-2026",
+    group: "banking",
+    title: { ar: "تجديد التفويض 2026", en: "تجديد التفويض 2026" },
+    note: {
+      ar: "خطاب تجديد التفويض بإدارة الحسابات البنكية لعام 2026 (مُحجوبة أرقام الهوية).",
+      en: "Renewal of the bank accounts management authorisation for 2026 (ID numbers redacted).",
+    },
+    year: 1447,
+    kind: "PDF",
+    href: authorisationRenewal2026.url,
+    isNew: true,
+  },
 ];
 
 export const fundDocumentGroups: { id: FundDocumentGroup; title: BiText }[] = [
