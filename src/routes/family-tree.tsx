@@ -9,6 +9,7 @@ import { officialCharts, officialChartsPdf } from "@/content/tree/charts";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Eyebrow } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import { cn } from "@/lib/utils";
 import { getPublicFamilyTreeData } from "@/lib/cms.functions";
