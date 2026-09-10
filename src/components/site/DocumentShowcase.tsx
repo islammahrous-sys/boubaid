@@ -1,4 +1,5 @@
-import { Download, FileText, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Eye, FileText, Image as ImageIcon } from "lucide-react";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -73,20 +74,24 @@ export function DocumentShowcase({
 
                 <div className="mt-3">
                   {doc.href ? (
-                    <a
-                      href={doc.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openMediaViewer({
+                          src: doc.href!,
+                          kind: isImage ? "image" : "pdf",
+                          title: t(doc.title),
+                        })
+                      }
                       className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
                     >
                       {isImage ? (
                         <ImageIcon className="h-3.5 w-3.5" aria-hidden="true" />
                       ) : (
-                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                        <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                       )}
-                      {t({ ar: "عرض وتحميل", en: "View & download" })}
-                      <ExternalLink className="h-3 w-3 opacity-60" aria-hidden="true" />
-                    </a>
+                      {t({ ar: "عرض الوثيقة", en: "View document" })}
+                    </button>
                   ) : (
                     <button
                       type="button"
