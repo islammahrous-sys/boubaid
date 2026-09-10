@@ -43,11 +43,11 @@ export function MediaViewerDialog({
     };
   }, [open, onClose]);
 
-  if (!open || !src) return null;
+  if (!open || !src || typeof document === "undefined") return null;
 
   const closeLabel = t({ ar: "إغلاق العارض", en: "Close viewer" });
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
