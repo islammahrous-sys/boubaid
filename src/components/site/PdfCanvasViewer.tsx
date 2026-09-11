@@ -32,7 +32,8 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
     }).then((pdf) => {
       if (!pdf || disposed) return;
       setDocument(pdf);
-    }).catch(() => {
+    }).catch((reason: unknown) => {
+      console.error("[pdf-viewer] failed to load document", reason);
       if (!disposed) setError(true);
     }).finally(() => {
       if (!disposed) setLoading(false);
