@@ -415,6 +415,9 @@ export const preloadAdminManager = (tabId: string) => {
     case "directory":
       void import("@/components/console/directory/DirectoryManager");
       break;
+    case "services":
+      void import("@/components/console/services/ServicesManager");
+      break;
     case "treasury_ledger":
       void import("@/components/console/treasury/TreasuryManager");
       break;
