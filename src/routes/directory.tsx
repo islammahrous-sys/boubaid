@@ -278,7 +278,7 @@ function cleanPhoneForWhatsApp(phone: string): string {
 function DirectoryPage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
-  const { liveBusinesses } = Route.useLoaderData();
+  const { liveBusinesses, services } = Route.useLoaderData();
   const { user, isMember: authIsMember, loading: authLoading } = useAuth();
 
   const [activeTab, setActiveTab] = useState("businesses");
