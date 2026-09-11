@@ -256,6 +256,14 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         description_en: "Family member businesses and ventures",
         icon: Building2,
       },
+      {
+        id: "services",
+        label_ar: "خدمات افراد الأسرة و خدمات المنشأت",
+        label_en: "Family Member & Establishment Services",
+        description_ar: "إدارة الخدمات في التصنيفين ورفع وثائقها",
+        description_en: "Manage both service categories and upload their documents",
+        icon: Layers,
+      },
     ],
   },
   {
