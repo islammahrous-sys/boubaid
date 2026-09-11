@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Edit2, Trash2, Upload, FileText, Layers, Eye, Loader2 } from "lucide-react";
+import { Plus, Edit2, Trash2, Upload, FileText, Layers, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +26,6 @@ import {
 } from "@/lib/admin-hub.functions";
 import { uploadContentMedia } from "@/lib/cms.functions";
 import type { ServiceInput } from "@/lib/admin-hub.schemas";
-import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 
 type ServiceRow = {
   id: string;
