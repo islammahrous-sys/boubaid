@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { PdfCanvasViewer } from "@/components/site/PdfCanvasViewer";
 import { useLang } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
 
@@ -70,13 +71,9 @@ export function MediaViewerDialog({
 
       <div className={cn("flex min-h-0 flex-1 items-center justify-center p-2 sm:p-4")}>
         {kind === "pdf" ? (
-          <iframe
-            // #toolbar=0 removes the built-in download/print controls in the
-            // browsers that honour it; the file is streamed inline.
-            src={`${src}#toolbar=0&navpanes=0&statusbar=0&view=FitH`}
-            title={title ?? "document"}
-            className="h-full w-full border-0 bg-white"
-          />
+          <div className="h-full w-full overflow-hidden bg-background">
+            <PdfCanvasViewer src={src} title={title ?? "document"} />
+          </div>
         ) : kind === "image" ? (
           <img
             src={src}
