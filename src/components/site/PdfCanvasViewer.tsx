@@ -71,6 +71,7 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
       return renderTask.promise;
     }).catch((reason: unknown) => {
       if (!disposed && !(reason instanceof Error && reason.name === "RenderingCancelledException")) {
+        console.error("[pdf-viewer] failed to render page", reason);
         setError(true);
       }
     });
