@@ -3,11 +3,18 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import letter1 from "@/assets/docs/الخطاب_1.pdf.asset.json";
 import letter2 from "@/assets/docs/الخطاب_2.pdf.asset.json";
 import letter3 from "@/assets/docs/الخطاب_3.pdf.asset.json";
-import planMedia from "@/assets/docs/خطة_اللجنة_الاعلامية_والتقنية.pdf.asset.json";
-import planFinance from "@/assets/docs/خطة_اللجنة_المالية_والاستثمارية.pdf.asset.json";
-import planActivities from "@/assets/docs/خطة_لجنة_الأنشطة_والمبادرات.pdf.asset.json";
-import planCommunication from "@/assets/docs/خطة_لجنة_التواصل_الأسري.pdf.asset.json";
-import planHq from "@/assets/docs/خطة_لجنة_شؤون_مقر_مجلس_الأسرة.pdf.asset.json";
+import planMedia1444 from "@/assets/docs/خطة_اللجنة_الاعلامية_والتقنية.pdf.asset.json";
+import planFinance1444 from "@/assets/docs/خطة_اللجنة_المالية_والاستثمارية.pdf.asset.json";
+import planActivities1444 from "@/assets/docs/خطة_لجنة_الأنشطة_والمبادرات.pdf.asset.json";
+import planCommunication1444 from "@/assets/docs/خطة_لجنة_التواصل_الأسري.pdf.asset.json";
+import planHq1444 from "@/assets/docs/خطة_لجنة_شؤون_مقر_مجلس_الأسرة.pdf.asset.json";
+import letter4 from "@/assets/docs/1445_الخطاب_4.pdf.asset.json";
+import letter5 from "@/assets/docs/1445_الخطاب_5.pdf.asset.json";
+import planMedia1445 from "@/assets/docs/1445_خطة_اللجنة_الإعلامية_والتقنية.pdf.asset.json";
+import planFinance1445 from "@/assets/docs/1445_خطة_اللجنة_المالية_والاستثمارية-2.pdf.asset.json";
+import planActivities1445 from "@/assets/docs/1445_خطة_لجنة_الأنشطة_والمبادرات-2.pdf.asset.json";
+import planCommunication1445 from "@/assets/docs/1445_خطة_لجنة_التواصل_الأسري-2.pdf.asset.json";
+import planHq1445 from "@/assets/docs/1445_خطة_لجنة_شؤون_مقر_مجلس_الأسرة-2.pdf.asset.json";
 
 export interface CommitteeDocument {
   id: string;
@@ -22,46 +29,10 @@ export interface CommitteeDocument {
  * Plans and official letters of the fund's standing committees, published on
  * the Committees page grouped by work year. Served inline through
  * /api/public/committee-doc so storage URLs are never rendered in the UI.
+ * Each year lists the official letters first, then the committee plans.
  */
 export const committeeDocuments: CommitteeDocument[] = [
-  {
-    id: "plan-media-committee-1444",
-    year: 1444,
-    title: { ar: "خطة اللجنة الإعلامية والتقنية", en: "Media & Technology Committee Plan" },
-    kind: "PDF",
-    href: planMedia.url,
-  },
-  {
-    id: "plan-finance-committee-1444",
-    year: 1444,
-    title: { ar: "خطة اللجنة المالية والاستثمارية", en: "Finance & Investment Committee Plan" },
-    kind: "PDF",
-    href: planFinance.url,
-  },
-  {
-    id: "plan-activities-committee-1444",
-    year: 1444,
-    title: { ar: "خطة لجنة الأنشطة والمبادرات", en: "Activities & Initiatives Committee Plan" },
-    kind: "PDF",
-    href: planActivities.url,
-  },
-  {
-    id: "plan-communication-committee-1444",
-    year: 1444,
-    title: { ar: "خطة لجنة التواصل الأسري", en: "Family Communication Committee Plan" },
-    kind: "PDF",
-    href: planCommunication.url,
-  },
-  {
-    id: "plan-hq-committee-1444",
-    year: 1444,
-    title: {
-      ar: "خطة لجنة شؤون مقر مجلس الأسرة",
-      en: "Family Council Headquarters Affairs Committee Plan",
-    },
-    kind: "PDF",
-    href: planHq.url,
-  },
+  // ── عام ١٤٤٤هـ — الخطابات ثم خطط اللجان ─────────────────
   {
     id: "letter-1-1444",
     year: 1444,
@@ -82,5 +53,97 @@ export const committeeDocuments: CommitteeDocument[] = [
     title: { ar: "الخطاب (3)", en: "Official Letter (3)" },
     kind: "PDF",
     href: letter3.url,
+  },
+  {
+    id: "plan-media-committee-1444",
+    year: 1444,
+    title: { ar: "خطة اللجنة الإعلامية والتقنية", en: "Media & Technology Committee Plan" },
+    kind: "PDF",
+    href: planMedia1444.url,
+  },
+  {
+    id: "plan-finance-committee-1444",
+    year: 1444,
+    title: { ar: "خطة اللجنة المالية والاستثمارية", en: "Finance & Investment Committee Plan" },
+    kind: "PDF",
+    href: planFinance1444.url,
+  },
+  {
+    id: "plan-activities-committee-1444",
+    year: 1444,
+    title: { ar: "خطة لجنة الأنشطة والمبادرات", en: "Activities & Initiatives Committee Plan" },
+    kind: "PDF",
+    href: planActivities1444.url,
+  },
+  {
+    id: "plan-communication-committee-1444",
+    year: 1444,
+    title: { ar: "خطة لجنة التواصل الأسري", en: "Family Communication Committee Plan" },
+    kind: "PDF",
+    href: planCommunication1444.url,
+  },
+  {
+    id: "plan-hq-committee-1444",
+    year: 1444,
+    title: {
+      ar: "خطة لجنة شؤون مقر مجلس الأسرة",
+      en: "Family Council Headquarters Affairs Committee Plan",
+    },
+    kind: "PDF",
+    href: planHq1444.url,
+  },
+
+  // ── عام ١٤٤٥هـ — الخطابات ثم خطط اللجان ─────────────────
+  {
+    id: "letter-4-1445",
+    year: 1445,
+    title: { ar: "الخطاب (4)", en: "Official Letter (4)" },
+    kind: "PDF",
+    href: letter4.url,
+  },
+  {
+    id: "letter-5-1445",
+    year: 1445,
+    title: { ar: "الخطاب (5)", en: "Official Letter (5)" },
+    kind: "PDF",
+    href: letter5.url,
+  },
+  {
+    id: "plan-media-committee-1445",
+    year: 1445,
+    title: { ar: "خطة اللجنة الإعلامية والتقنية", en: "Media & Technology Committee Plan" },
+    kind: "PDF",
+    href: planMedia1445.url,
+  },
+  {
+    id: "plan-finance-committee-1445",
+    year: 1445,
+    title: { ar: "خطة اللجنة المالية والاستثمارية", en: "Finance & Investment Committee Plan" },
+    kind: "PDF",
+    href: planFinance1445.url,
+  },
+  {
+    id: "plan-activities-committee-1445",
+    year: 1445,
+    title: { ar: "خطة لجنة الأنشطة والمبادرات", en: "Activities & Initiatives Committee Plan" },
+    kind: "PDF",
+    href: planActivities1445.url,
+  },
+  {
+    id: "plan-communication-committee-1445",
+    year: 1445,
+    title: { ar: "خطة لجنة التواصل الأسري", en: "Family Communication Committee Plan" },
+    kind: "PDF",
+    href: planCommunication1445.url,
+  },
+  {
+    id: "plan-hq-committee-1445",
+    year: 1445,
+    title: {
+      ar: "خطة لجنة شؤون مقر مجلس الأسرة",
+      en: "Family Council Headquarters Affairs Committee Plan",
+    },
+    kind: "PDF",
+    href: planHq1445.url,
   },
 ];
