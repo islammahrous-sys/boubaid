@@ -1146,6 +1146,71 @@ export const upsertGallery = createServerFn({ method: "POST" })
     return { ok: true, gallery: gal };
   });
 
+/* ---------------- services catalogue (family / establishment) ---------------- */
+
+/** Every service row plus the documents attached to each one. */
+export const getServicesAdminData = createServerFn({ method: "GET" })
+  .middleware([requireAdminAuth])
+  .handler(async ({ context }) => {
+    const { supabase } = context;
+    const [servicesRes, docsRes] = await Promise.all([
+      supabase.from("services").select("*").order("sort_order", { ascending: true }),
+      supabase
+        .from("documents")
+        .select("*")
+        .not("service_id", "is", null)
+        .order("created_at", { ascending: false }),
+    ]);
+    return {
+      services: unwrapRows(servicesRes, "الخدمات / services"),
+      documents: unwrapRows(docsRes, "وثائق الخدمات / service documents"),
+    };
+  });
+
+export const upsertService = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => serviceInputSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, session } = context;
+    const payload: Record<string, any> = data.id
+      ? { ...data }
+      : {
+          ...data,
+          created_by: context.userId || session?.user?.id || (context.claims?.sub as string),
+        };
+    await ensureUniqueSlug(supabase as any, "services", payload, data.id);
+    const { data: svc, error } = await supabase
+      .from("services")
+      .upsert(payload as never)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return { ok: true, service: svc };
+  });
+
+export const deleteService = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    // Documents keep their rows; only the service link is cleared so nothing
+    // an administrator uploaded is lost when a service is removed.
+    await supabase.from("documents").update({ service_id: null }).eq("service_id", data.id);
+    const { error } = await supabase.from("services").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteServiceDocument = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { error } = await supabase.from("documents").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const upsertDocument = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
   .validator((d: unknown) => documentInputSchema.parse(d))
