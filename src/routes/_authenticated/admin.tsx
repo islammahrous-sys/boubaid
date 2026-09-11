@@ -179,6 +179,11 @@ const SiteSettingsManager = lazy(() =>
     default: m.SiteSettingsManager,
   })),
 );
+const ServicesManager = lazy(() =>
+  import("@/components/console/services/ServicesManager").then((m) => ({
+    default: m.ServicesManager,
+  })),
+);
 const DirectoryManager = lazy(() =>
   import("@/components/console/directory/DirectoryManager").then((m) => ({
     default: m.DirectoryManager,
