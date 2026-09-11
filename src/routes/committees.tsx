@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { committees, siteMeta } from "@/content/site";
+import { committeeDocuments } from "@/content/committee-documents";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { Eyebrow, Ornament } from "@/components/site/Editorial";
@@ -58,6 +60,8 @@ const copy = {
     ar: "الانتقال إلى الشهادات والإثباتات",
     en: "Go to Certificates & Attestations",
   } as BiText,
+
+  viewDoc: { ar: "عرض الوثيقة", en: "View document" } as BiText,
 };
 
 const years: { id: string; eyebrow: BiText; title: BiText; note: BiText }[] = [
