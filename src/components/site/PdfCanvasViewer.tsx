@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
 
-type PdfDocument = Awaited<ReturnType<typeof import("pdfjs-dist")["getDocument"]>>["promise"];
+type PdfDocument = import("pdfjs-dist").PDFDocumentProxy;
 
 export function PdfCanvasViewer({ src, title }: { src: string; title: string }) {
   const { lang } = useLang();
