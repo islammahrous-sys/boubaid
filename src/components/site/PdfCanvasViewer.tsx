@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 type PdfDocument = import("pdfjs-dist").PDFDocumentProxy;
 
@@ -25,10 +26,7 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
 
     void import("pdfjs-dist").then((pdfjs) => {
       if (disposed) return;
-      pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-        "pdfjs-dist/build/pdf.worker.min.mjs",
-        import.meta.url,
-      ).toString();
+      pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
       task = pdfjs.getDocument({ url: src });
       return task.promise;
     }).then((pdf) => {
