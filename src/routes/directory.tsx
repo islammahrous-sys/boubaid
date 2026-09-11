@@ -72,20 +72,21 @@ import QRCode from "qrcode";
 
 export const Route = createFileRoute("/directory")({
   loader: async () => {
-    const liveBiz = await getPublishedBusinesses();
-    return { liveBusinesses: liveBiz };
+    const [liveBiz, services] = await Promise.all([getPublishedBusinesses(), getPublicServices()]);
+    return { liveBusinesses: liveBiz, services };
   },
   head: () => ({
     meta: [
-      { title: "دليل الأعمال والمنشآت العائلية | آل بوعبيد" },
+      { title: "خدمات أفراد الأسرة وخدمات المنشآت | آل بوعبيد" },
       {
         name: "description",
-        content: "دليل المنشآت والأعمال وأفراد أسرة آل بوعبيد المعتمدين في المملكة والخليج.",
+        content:
+          "خدمات أفراد أسرة آل بوعبيد وخدمات المنشآت العائلية: الاستشارات القانونية والمحاسبية والتعليمية، وخدمات الأعمال والمواقع الإلكترونية وشجرات العائلة.",
       },
-      { property: "og:title", content: "دليل الأعمال والمنشآت العائلية | آل بوعبيد" },
+      { property: "og:title", content: "خدمات أفراد الأسرة وخدمات المنشآت | آل بوعبيد" },
       {
         property: "og:description",
-        content: "دليل المنشآت والأعمال وأفراد أسرة آل بوعبيد المعتمدين.",
+        content: "دليل خدمات أفراد أسرة آل بوعبيد وخدمات المنشآت العائلية المعتمدة.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/directory") },
@@ -96,8 +97,11 @@ export const Route = createFileRoute("/directory")({
 });
 
 const copy = {
-  eyebrow: { ar: "دليل مبوب", en: "Classified index" } as BiText,
-  title: { ar: "دليل الأسرة والأعمال", en: "Family & Business Directory" } as BiText,
+  eyebrow: { ar: "دليل الخدمات", en: "Services index" } as BiText,
+  title: {
+    ar: "خدمات افراد الأسرة و خدمات المنشأت",
+    en: "Family Member Services & Establishment Services",
+  } as BiText,
   subtitle: {
     ar: "بوابة التواصل المهني والتجاري والاجتماعي، تشمل منشآت أبناء الأسرة ودليل الأفراد المعتمدين.",
     en: "Professional, commercial, and social directory featuring family-owned businesses and verified members.",
