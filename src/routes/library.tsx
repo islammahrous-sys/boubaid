@@ -28,6 +28,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { EditorialButton, EditorialLink } from "@/components/site/Editorial";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
+import { PdfCanvasViewer } from "@/components/site/PdfCanvasViewer";
 import { libraryItems as staticLibraryItems, siteMeta } from "@/content/site";
 import { getPublishedLibrary, getPublishedGalleries } from "@/lib/cms.functions";
 import {
@@ -1638,12 +1639,8 @@ function LibraryPage() {
             {previewModal.type === "documents" && (
               <>
                 {previewModal.href && isPdfUrl(previewModal.href) ? (
-                  <div className="mb-6 aspect-[4/3] w-full overflow-hidden border border-border rounded bg-muted/50">
-                    <iframe
-                      src={`${previewModal.href}#view=FitH`}
-                      title={previewModal.title}
-                      className="h-full w-full"
-                    />
+                  <div className="mb-6 h-[min(70vh,52rem)] w-full overflow-hidden border border-border rounded bg-muted/50">
+                    <PdfCanvasViewer src={previewModal.href} title={previewModal.title} />
                   </div>
                 ) : (
                   <div className="border border-border bg-muted/30 p-6 mb-6 rounded">
