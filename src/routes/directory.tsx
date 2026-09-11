@@ -1022,9 +1022,10 @@ function DirectoryPage() {
           </TabsContent>
 
           {/* ════════════════════════════════════════════════════════════════ */}
-          {/* TAB 2: MEMBER DIRECTORY (AUTH GATED)                            */}
+          {/* CATEGORY: خدمات أفراد الأسرة — services + member directory      */}
           {/* ════════════════════════════════════════════════════════════════ */}
-          <TabsContent value="members" className="mt-0 focus-visible:ring-0 space-y-6">
+          <TabsContent value="members" className="mt-0 focus-visible:ring-0 space-y-8">
+            <ServiceCatalogue services={services} category="family" />
             {!user ? (
               <Card className="mx-auto mt-8 max-w-2xl border-dashed">
                 <CardHeader className="text-center">
