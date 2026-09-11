@@ -105,13 +105,13 @@ const copy = {
     en: "Family Member Services & Establishment Services",
   } as BiText,
   subtitle: {
-    ar: "بوابة التواصل المهني والتجاري والاجتماعي، تشمل منشآت أبناء الأسرة ودليل الأفراد المعتمدين.",
-    en: "Professional, commercial, and social directory featuring family-owned businesses and verified members.",
+    ar: "بوابة موحدة تجمع الخدمات المتاحة لأفراد أسرة آل بوعبيد وخدمات منشآتها، مع دليل المنشآت المعتمدة ودليل الأفراد.",
+    en: "A single gateway to the services available to Al Bu Obaid family members and to their establishments, alongside the verified establishment and member directories.",
   } as BiText,
 
   tabs: {
-    businesses: { ar: "دليل الأعمال والمنشآت", en: "Business Directory" } as BiText,
-    members: { ar: "دليل أفراد الأسرة", en: "Member Directory" } as BiText,
+    businesses: { ar: "خدمات المنشأت", en: "Establishment Services" } as BiText,
+    members: { ar: "خدمات افراد الأسرة", en: "Family Member Services" } as BiText,
   },
 
   metaListings: { ar: "عدد القيود", en: "Listings" } as BiText,
