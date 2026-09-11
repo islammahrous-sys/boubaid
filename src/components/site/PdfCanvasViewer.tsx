@@ -27,7 +27,14 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
     void import("pdfjs-dist").then((pdfjs) => {
       if (disposed) return;
       pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
-      task = pdfjs.getDocument({ url: src });
+      // Some official Arabic PDFs use custom-encoded embedded fonts. Letting
+      // the browser substitute those fonts corrupts joining and character
+      // order, so PDF.js must render the embedded glyph outlines directly.
+      task = pdfjs.getDocument({
+        url: src,
+        disableFontFace: true,
+        useSystemFonts: false,
+      });
       return task.promise;
     }).then((pdf) => {
       if (!pdf || disposed) return;
