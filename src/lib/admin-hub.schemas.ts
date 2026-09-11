@@ -286,10 +286,28 @@ export const documentInputSchema = z.object({
   description_en: z.string().optional().nullable(),
   file_path: z.string().min(1, "مسار الملف مطلوب"),
   category: z.string().default("governance"),
+  /** Optional link to a row in `services`, used by the services catalogue. */
+  service_id: z.string().uuid().optional().nullable(),
   visibility: visibilityLevelSchema.default("public"),
   status: z.string().default("published"),
 });
 export type DocumentInput = z.infer<typeof documentInputSchema>;
+
+// 14b. Service Schema (خدمات أفراد الأسرة / خدمات المنشآت)
+export const serviceInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug: z.string().trim().optional(),
+    category: z.enum(["family", "establishment"]),
+    title_ar: z.string().trim().min(2, "اسم الخدمة بالعربية مطلوب"),
+    title_en: z.string().trim().optional().nullable(),
+    description_ar: z.string().optional().nullable(),
+    description_en: z.string().optional().nullable(),
+    sort_order: z.number().int().default(0),
+    is_published: z.boolean().default(true),
+  })
+  .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "service"));
+export type ServiceInput = z.infer<typeof serviceInputSchema>;
 
 // 15. Inquiries & Notes Schema
 export const inquiryStatusUpdateSchema = z.object({

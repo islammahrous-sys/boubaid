@@ -162,7 +162,10 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
     items: [
       {
         to: "/directory",
-        label: { ar: "الخدمات والدليل", en: "Services & Directory" },
+        label: {
+          ar: "خدمات افراد الأسرة و خدمات المنشأت",
+          en: "Family Member & Establishment Services",
+        },
         short: { ar: "الخدمات", en: "Services" },
       },
       {

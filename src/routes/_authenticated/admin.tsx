@@ -179,6 +179,11 @@ const SiteSettingsManager = lazy(() =>
     default: m.SiteSettingsManager,
   })),
 );
+const ServicesManager = lazy(() =>
+  import("@/components/console/services/ServicesManager").then((m) => ({
+    default: m.ServicesManager,
+  })),
+);
 const DirectoryManager = lazy(() =>
   import("@/components/console/directory/DirectoryManager").then((m) => ({
     default: m.DirectoryManager,
@@ -1435,6 +1440,8 @@ function MasterAdminPage() {
                   onNavigateTab={(d, t) => handleSelectTab(d, t)}
                 />
               ))}
+
+            {activeDomainId === "community" && activeTabId === "services" && <ServicesManager />}
 
             {activeDomainId === "community" &&
               activeTabId === "verification" &&

@@ -1,6 +1,8 @@
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { getMemberDirectory, getPublishedBusinesses } from "@/lib/directory.functions";
+import { getPublicServices } from "@/lib/services-public.functions";
+import { ServiceCatalogue } from "@/components/site/ServiceCatalogue";
 import { submitBusinessListing } from "@/lib/forms.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@tanstack/react-router";
@@ -72,20 +74,21 @@ import QRCode from "qrcode";
 
 export const Route = createFileRoute("/directory")({
   loader: async () => {
-    const liveBiz = await getPublishedBusinesses();
-    return { liveBusinesses: liveBiz };
+    const [liveBiz, services] = await Promise.all([getPublishedBusinesses(), getPublicServices()]);
+    return { liveBusinesses: liveBiz, services };
   },
   head: () => ({
     meta: [
-      { title: "دليل الأعمال والمنشآت العائلية | آل بوعبيد" },
+      { title: "خدمات أفراد الأسرة وخدمات المنشآت | آل بوعبيد" },
       {
         name: "description",
-        content: "دليل المنشآت والأعمال وأفراد أسرة آل بوعبيد المعتمدين في المملكة والخليج.",
+        content:
+          "خدمات أفراد أسرة آل بوعبيد وخدمات المنشآت العائلية: الاستشارات القانونية والمحاسبية والتعليمية، وخدمات الأعمال والمواقع الإلكترونية وشجرات العائلة.",
       },
-      { property: "og:title", content: "دليل الأعمال والمنشآت العائلية | آل بوعبيد" },
+      { property: "og:title", content: "خدمات أفراد الأسرة وخدمات المنشآت | آل بوعبيد" },
       {
         property: "og:description",
-        content: "دليل المنشآت والأعمال وأفراد أسرة آل بوعبيد المعتمدين.",
+        content: "دليل خدمات أفراد أسرة آل بوعبيد وخدمات المنشآت العائلية المعتمدة.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/directory") },
@@ -96,16 +99,19 @@ export const Route = createFileRoute("/directory")({
 });
 
 const copy = {
-  eyebrow: { ar: "دليل مبوب", en: "Classified index" } as BiText,
-  title: { ar: "دليل الأسرة والأعمال", en: "Family & Business Directory" } as BiText,
+  eyebrow: { ar: "دليل الخدمات", en: "Services index" } as BiText,
+  title: {
+    ar: "خدمات افراد الأسرة و خدمات المنشأت",
+    en: "Family Member Services & Establishment Services",
+  } as BiText,
   subtitle: {
-    ar: "بوابة التواصل المهني والتجاري والاجتماعي، تشمل منشآت أبناء الأسرة ودليل الأفراد المعتمدين.",
-    en: "Professional, commercial, and social directory featuring family-owned businesses and verified members.",
+    ar: "بوابة موحدة تجمع الخدمات المتاحة لأفراد أسرة آل بوعبيد وخدمات منشآتها، مع دليل المنشآت المعتمدة ودليل الأفراد.",
+    en: "A single gateway to the services available to Al Bu Obaid family members and to their establishments, alongside the verified establishment and member directories.",
   } as BiText,
 
   tabs: {
-    businesses: { ar: "دليل الأعمال والمنشآت", en: "Business Directory" } as BiText,
-    members: { ar: "دليل أفراد الأسرة", en: "Member Directory" } as BiText,
+    businesses: { ar: "خدمات المنشأت", en: "Establishment Services" } as BiText,
+    members: { ar: "خدمات افراد الأسرة", en: "Family Member Services" } as BiText,
   },
 
   metaListings: { ar: "عدد القيود", en: "Listings" } as BiText,
@@ -272,10 +278,10 @@ function cleanPhoneForWhatsApp(phone: string): string {
 function DirectoryPage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
-  const { liveBusinesses } = Route.useLoaderData();
+  const { liveBusinesses, services } = Route.useLoaderData();
   const { user, isMember: authIsMember, loading: authLoading } = useAuth();
 
-  const [activeTab, setActiveTab] = useState("businesses");
+  const [activeTab, setActiveTab] = useState("members");
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
@@ -507,15 +513,21 @@ function DirectoryPage() {
       />
 
       <div className="container-page py-10 md:py-14">
-        {/* Main Tabs: Businesses vs Members */}
+        {/* Two primary categories: family-member services vs establishment services */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <TabsList className="grid w-full sm:w-80 grid-cols-2 p-1 bg-muted/60 border border-border">
-              <TabsTrigger value="businesses" className="text-xs sm:text-sm font-medium">
-                {t(copy.tabs.businesses)}
-              </TabsTrigger>
-              <TabsTrigger value="members" className="text-xs sm:text-sm font-medium">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+            <TabsList className="grid h-auto w-full sm:w-[26rem] grid-cols-2 gap-1 p-1 bg-muted/60 border border-border">
+              <TabsTrigger
+                value="members"
+                className="h-auto whitespace-normal py-2 text-center text-xs leading-5 font-medium sm:text-sm"
+              >
                 {t(copy.tabs.members)}
+              </TabsTrigger>
+              <TabsTrigger
+                value="businesses"
+                className="h-auto whitespace-normal py-2 text-center text-xs leading-5 font-medium sm:text-sm"
+              >
+                {t(copy.tabs.businesses)}
               </TabsTrigger>
             </TabsList>
 
@@ -532,9 +544,10 @@ function DirectoryPage() {
           </div>
 
           {/* ════════════════════════════════════════════════════════════════ */}
-          {/* TAB 1: BUSINESS DIRECTORY (GUEST & PUBLIC ACCESSIBLE)           */}
+          {/* CATEGORY: خدمات المنشآت — services + establishment directory     */}
           {/* ════════════════════════════════════════════════════════════════ */}
           <TabsContent value="businesses" className="mt-0 focus-visible:ring-0 space-y-8">
+            <ServiceCatalogue services={services} category="establishment" />
             {/* Top Metrics & Value Banner */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-gradient-to-r from-card via-card to-muted/30 border border-border">
               <div className="flex items-center gap-3">
@@ -1009,9 +1022,10 @@ function DirectoryPage() {
           </TabsContent>
 
           {/* ════════════════════════════════════════════════════════════════ */}
-          {/* TAB 2: MEMBER DIRECTORY (AUTH GATED)                            */}
+          {/* CATEGORY: خدمات أفراد الأسرة — services + member directory      */}
           {/* ════════════════════════════════════════════════════════════════ */}
-          <TabsContent value="members" className="mt-0 focus-visible:ring-0 space-y-6">
+          <TabsContent value="members" className="mt-0 focus-visible:ring-0 space-y-8">
+            <ServiceCatalogue services={services} category="family" />
             {!user ? (
               <Card className="mx-auto mt-8 max-w-2xl border-dashed">
                 <CardHeader className="text-center">
