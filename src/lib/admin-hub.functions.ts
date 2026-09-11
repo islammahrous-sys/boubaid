@@ -17,6 +17,7 @@ import {
   mediaAssetInputSchema,
   galleryInputSchema,
   documentInputSchema,
+  serviceInputSchema,
   inquiryStatusUpdateSchema,
   inquiryNoteInputSchema,
   contactMessageStatusUpdateSchema,
