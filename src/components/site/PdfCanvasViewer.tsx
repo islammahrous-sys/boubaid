@@ -66,7 +66,7 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
       if (!context) return;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       renderTaskRef.current?.cancel();
-      const renderTask = page.render({ canvas, canvasContext: context, viewport });
+      const renderTask = page.render({ canvasContext: context, viewport });
       renderTaskRef.current = renderTask;
       return renderTask.promise;
     }).catch((reason: unknown) => {
