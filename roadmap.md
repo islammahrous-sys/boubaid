@@ -9,3 +9,4 @@
 - Rename and restructure the directory into family-member services and establishment services.
 - Connect service documents to existing admin upload and view-only viewer flows.
 - Verify Arabic/English, desktop/mobile, permissions, and existing workflows.
+- [ ] Fix distorted Arabic text rendering in the shared document viewer across all site pages.
