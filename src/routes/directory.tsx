@@ -281,7 +281,7 @@ function DirectoryPage() {
   const { liveBusinesses, services } = Route.useLoaderData();
   const { user, isMember: authIsMember, loading: authLoading } = useAuth();
 
-  const [activeTab, setActiveTab] = useState("businesses");
+  const [activeTab, setActiveTab] = useState("members");
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
