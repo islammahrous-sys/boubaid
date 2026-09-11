@@ -64,18 +64,20 @@ const copy = {
   viewDoc: { ar: "عرض الوثيقة", en: "View document" } as BiText,
 };
 
-const years: { id: string; eyebrow: BiText; title: BiText; note: BiText }[] = [
+const years: { id: string; year: number; eyebrow: BiText; title: BiText; note: BiText }[] = [
   {
     id: "y1444",
+    year: 1444,
     eyebrow: { ar: "أولاً", en: "Article I" },
     title: { ar: "عام ١٤٤٤هـ", en: "Year 1444H" },
     note: {
-      ar: "يُدرج هنا ملخص أعمال اللجان ولقاءاتها وقراراتها لعام ١٤٤٤هـ.",
-      en: "A summary of the committees' work, meetings, and decisions for 1444H is published here.",
+      ar: "خطط اللجان التنفيذية والخطابات الرسمية لعام ١٤٤٤هـ.",
+      en: "Plans of the standing committees and official letters for 1444H.",
     },
   },
   {
     id: "y1445",
+    year: 1445,
     eyebrow: { ar: "ثانياً", en: "Article II" },
     title: { ar: "عام ١٤٤٥هـ", en: "Year 1445H" },
     note: {
@@ -164,6 +166,43 @@ function CommitteesPage() {
                 <p className="measure text-[13px] leading-relaxed text-muted-foreground">
                   {t(y.note)}
                 </p>
+                {(() => {
+                  const docs = committeeDocuments.filter((d) => d.year === y.year);
+                  if (docs.length === 0) return null;
+                  return (
+                    <ul className="mt-6 border-t border-border">
+                      {docs.map((doc) => (
+                        <li
+                          key={doc.id}
+                          className="flex items-center justify-between gap-4 border-b border-border py-3.5 transition-colors hover:bg-secondary/30"
+                        >
+                          <span className="flex min-w-0 items-center gap-3">
+                            <FileText
+                              className="h-4 w-4 shrink-0 text-bronze/70 dark:text-gold/60"
+                              aria-hidden="true"
+                            />
+                            <span className="truncate text-[14px] font-medium text-foreground">
+                              {t(doc.title)}
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openMediaViewer({
+                                src: `/api/public/committee-doc?id=${doc.id}`,
+                                kind: "pdf",
+                                title: t(doc.title),
+                              })
+                            }
+                            className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                          >
+                            {t(copy.viewDoc)}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  );
+                })()}
               </div>
             </div>
           </section>
