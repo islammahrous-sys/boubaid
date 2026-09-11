@@ -81,8 +81,8 @@ const years: { id: string; year: number; eyebrow: BiText; title: BiText; note: B
     eyebrow: { ar: "ثانياً", en: "Article II" },
     title: { ar: "عام ١٤٤٥هـ", en: "Year 1445H" },
     note: {
-      ar: "يُدرج هنا ملخص أعمال اللجان ولقاءاتها وقراراتها لعام ١٤٤٥هـ.",
-      en: "A summary of the committees' work, meetings, and decisions for 1445H is published here.",
+      ar: "الخطابات الرسمية وخطط اللجان التنفيذية لعام ١٤٤٥هـ.",
+      en: "Official letters and plans of the standing committees for 1445H.",
     },
   },
 ];
