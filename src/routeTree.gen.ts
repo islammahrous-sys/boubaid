@@ -43,6 +43,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as LibraryMuseumSlugRouteImport } from './routes/library.museum.$slug'
 import { Route as ApiPublicFundDocRouteImport } from './routes/api/public/fund-doc'
+import { Route as ApiPublicCommitteeDocRouteImport } from './routes/api/public/committee-doc'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -213,6 +214,11 @@ const ApiPublicFundDocRoute = ApiPublicFundDocRouteImport.update({
   path: '/api/public/fund-doc',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCommitteeDocRoute = ApiPublicCommitteeDocRouteImport.update({
+  id: '/api/public/committee-doc',
+  path: '/api/public/committee-doc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -246,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
@@ -281,6 +288,7 @@ export interface FileRoutesByTo {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
@@ -318,6 +326,7 @@ export interface FileRoutesById {
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
@@ -355,6 +364,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/api/public/committee-doc'
     | '/api/public/fund-doc'
     | '/library/museum/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/api/public/committee-doc'
     | '/api/public/fund-doc'
     | '/library/museum/$slug'
   id:
@@ -426,6 +437,7 @@ export interface FileRouteTypes {
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
+    | '/api/public/committee-doc'
     | '/api/public/fund-doc'
     | '/library/museum/$slug'
   fileRoutesById: FileRoutesById
@@ -457,6 +469,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyRoute: typeof VerifyRoute
   PSlugRoute: typeof PSlugRoute
+  ApiPublicCommitteeDocRoute: typeof ApiPublicCommitteeDocRoute
   ApiPublicFundDocRoute: typeof ApiPublicFundDocRoute
 }
 
@@ -700,6 +713,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicFundDocRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/committee-doc': {
+      id: '/api/public/committee-doc'
+      path: '/api/public/committee-doc'
+      fullPath: '/api/public/committee-doc'
+      preLoaderRoute: typeof ApiPublicCommitteeDocRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -780,6 +800,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyRoute: VerifyRoute,
   PSlugRoute: PSlugRoute,
+  ApiPublicCommitteeDocRoute: ApiPublicCommitteeDocRoute,
   ApiPublicFundDocRoute: ApiPublicFundDocRoute,
 }
 export const routeTree = rootRouteImport
