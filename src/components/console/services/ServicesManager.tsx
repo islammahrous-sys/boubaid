@@ -346,20 +346,6 @@ export function ServicesManager() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 gap-1.5 text-[11px]"
-                            onClick={() =>
-                              openMediaViewer({
-                                src: `/api/public/service-doc?id=${encodeURIComponent(d.id)}`,
-                                title: d.title_ar,
-                              })
-                            }
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                            {isAr ? "عرض" : "View"}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
                             className="h-7 gap-1.5 text-[11px] text-destructive"
                             onClick={() => onDeleteDoc(d)}
                           >
