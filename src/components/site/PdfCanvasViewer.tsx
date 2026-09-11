@@ -79,7 +79,7 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
       disposed = true;
       renderTaskRef.current?.cancel();
     };
-  }, [document, pageNumber]);
+  }, [document, loading, pageNumber]);
 
   if (loading) {
     return (
