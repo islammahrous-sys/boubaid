@@ -18,6 +18,8 @@
 const DEFAULT_SUPABASE_URL = "https://ywsvittlswbbyqhahorh.supabase.co";
 const MIRROR_BUCKET = "documents-public";
 const MIRROR_PREFIX = "official-docs";
+const DEFAULT_ASSET_ORIGIN = "https://alboabid-heritage-hub.lovable.app";
+
 
 function supabaseBaseUrl(): string {
   return (
@@ -53,7 +55,21 @@ export function documentSourceCandidates(href: string, origin: string): string[]
     /* ignore malformed hrefs */
   }
 
+  // Last resort for a newly added externalised asset that has not been mirrored
+  // into Storage yet: the Lovable publish host always serves `/__l5e/...`, so a
+  // future document keeps opening in production without a manual mirror step.
+  if (assetId) {
+    try {
+      const lovableOrigin = process.env["LOVABLE_ASSET_ORIGIN"] || DEFAULT_ASSET_ORIGIN;
+      const fallback = new URL(href, lovableOrigin).toString();
+      if (!candidates.includes(fallback)) candidates.push(fallback);
+    } catch {
+      /* ignore */
+    }
+  }
+
   return candidates;
+
 }
 
 /**
