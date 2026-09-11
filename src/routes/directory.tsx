@@ -1,6 +1,8 @@
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { getMemberDirectory, getPublishedBusinesses } from "@/lib/directory.functions";
+import { getPublicServices } from "@/lib/services-public.functions";
+import { ServiceCatalogue } from "@/components/site/ServiceCatalogue";
 import { submitBusinessListing } from "@/lib/forms.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@tanstack/react-router";
