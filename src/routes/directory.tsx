@@ -513,15 +513,21 @@ function DirectoryPage() {
       />
 
       <div className="container-page py-10 md:py-14">
-        {/* Main Tabs: Businesses vs Members */}
+        {/* Two primary categories: family-member services vs establishment services */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <TabsList className="grid w-full sm:w-80 grid-cols-2 p-1 bg-muted/60 border border-border">
-              <TabsTrigger value="businesses" className="text-xs sm:text-sm font-medium">
-                {t(copy.tabs.businesses)}
-              </TabsTrigger>
-              <TabsTrigger value="members" className="text-xs sm:text-sm font-medium">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+            <TabsList className="grid h-auto w-full sm:w-[26rem] grid-cols-2 gap-1 p-1 bg-muted/60 border border-border">
+              <TabsTrigger
+                value="members"
+                className="h-auto whitespace-normal py-2 text-center text-xs leading-5 font-medium sm:text-sm"
+              >
                 {t(copy.tabs.members)}
+              </TabsTrigger>
+              <TabsTrigger
+                value="businesses"
+                className="h-auto whitespace-normal py-2 text-center text-xs leading-5 font-medium sm:text-sm"
+              >
+                {t(copy.tabs.businesses)}
               </TabsTrigger>
             </TabsList>
 
@@ -538,9 +544,10 @@ function DirectoryPage() {
           </div>
 
           {/* ════════════════════════════════════════════════════════════════ */}
-          {/* TAB 1: BUSINESS DIRECTORY (GUEST & PUBLIC ACCESSIBLE)           */}
+          {/* CATEGORY: خدمات المنشآت — services + establishment directory     */}
           {/* ════════════════════════════════════════════════════════════════ */}
           <TabsContent value="businesses" className="mt-0 focus-visible:ring-0 space-y-8">
+            <ServiceCatalogue services={services} category="establishment" />
             {/* Top Metrics & Value Banner */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-gradient-to-r from-card via-card to-muted/30 border border-border">
               <div className="flex items-center gap-3">
