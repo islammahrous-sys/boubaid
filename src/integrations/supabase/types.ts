@@ -773,6 +773,7 @@ export type Database = {
           file_path: string | null
           id: string
           media_asset_id: string | null
+          service_id: string | null
           status: string
           title_ar: string
           title_en: string | null
@@ -788,6 +789,7 @@ export type Database = {
           file_path?: string | null
           id?: string
           media_asset_id?: string | null
+          service_id?: string | null
           status?: string
           title_ar: string
           title_en?: string | null
@@ -803,6 +805,7 @@ export type Database = {
           file_path?: string | null
           id?: string
           media_asset_id?: string | null
+          service_id?: string | null
           status?: string
           title_ar?: string
           title_en?: string | null
@@ -816,6 +819,13 @@ export type Database = {
             columns: ["media_asset_id"]
             isOneToOne: false
             referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
         ]
@@ -2076,6 +2086,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      services: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description_ar: string | null
+          description_en: string | null
+          id: string
+          is_published: boolean
+          slug: string
+          sort_order: number
+          title_ar: string
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          is_published?: boolean
+          slug: string
+          sort_order?: number
+          title_ar: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          is_published?: boolean
+          slug?: string
+          sort_order?: number
+          title_ar?: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       site_settings: {
         Row: {
