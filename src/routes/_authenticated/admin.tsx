@@ -1436,6 +1436,8 @@ function MasterAdminPage() {
                 />
               ))}
 
+            {activeDomainId === "community" && activeTabId === "services" && <ServicesManager />}
+
             {activeDomainId === "community" &&
               activeTabId === "verification" &&
               (usersLoading && !usersData ? (
