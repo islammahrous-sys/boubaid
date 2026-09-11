@@ -147,7 +147,9 @@ const DOCUMENT_CONTENT_TYPE_RE = /^application\/pdf$/;
 
 export const contentMediaUploadSchema = z
   .object({
-    folder: cmsTableSchema,
+    // Uploads may also land in the `documents` folder (service attachments),
+    // which is not a CMS row table and therefore not part of cmsTableSchema.
+    folder: z.union([cmsTableSchema, z.literal("documents")]),
     fileName: z.string().trim().min(1).max(200),
     contentType: z
       .string()
