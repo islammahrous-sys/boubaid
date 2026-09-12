@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import { siteMeta } from "@/content/site";
-import { navGroups } from "@/content/navigation";
+import { primaryNav, secondaryNav, buildFooterColumns } from "@/content/navigation";
 import { subscribeToNewsletter } from "@/lib/forms.functions";
 import { getPublicSiteSettings, getPublicNavigation } from "@/lib/cms.functions";
 import { newsletterSchema } from "@/lib/forms.schemas";
@@ -53,15 +53,24 @@ export function Footer() {
     staleTime: 5 * 60 * 1000,
   });
 
-  /** Live, CMS-managed footer links — falls back to the static navGroups
-   *  index when the "footer" menu has no public items configured. */
+  /** Live, CMS-managed navigation — the same query the header uses, so the
+   *  footer index can never drift from the header again. Priority:
+   *  1. an explicit CMS "footer" menu, when one is configured;
+   *  2. otherwise the live "header" menu, folded into footer columns;
+   *  3. otherwise the static navigation lists (build-time fallback). */
   const { data: liveNav } = useQuery({
     queryKey: ["public_navigation"],
     queryFn: () => getPublicNavigation(),
     staleTime: 5 * 60 * 1000,
   });
   const liveFooterItems = liveNav?.footer ?? [];
-  const usingLiveFooterNav = liveFooterItems.length > 0;
+  const liveHeaderItems = liveNav?.header ?? [];
+  const footerColumns = liveFooterItems.length
+    ? buildFooterColumns(liveFooterItems)
+    : liveHeaderItems.length
+      ? buildFooterColumns(liveHeaderItems)
+      : buildFooterColumns([...primaryNav, ...secondaryNav]);
+
 
   // Live values are saved by the admin console under category-keyed rows
   // (e.g. { site_contact: { phone, email, whatsapp }, site_general: { license, national_address } }) —
@@ -201,16 +210,16 @@ export function Footer() {
             </dl>
           </div>
 
-          {/* Index */}
+          {/* Index — derived from the live navigation, so it always matches the header */}
           <div className="grid gap-8 sm:grid-cols-3">
-            {usingLiveFooterNav ? (
-              <nav aria-label="Footer">
+            {footerColumns.map((column) => (
+              <nav key={column.key} aria-label={column.title.en || column.title.ar}>
                 <p className="label-caps mb-3 border-b border-ivory/15 pb-2 text-gold/80">
-                  {lang === "ar" ? "فهرس الموقع" : "Site Index"}
+                  {t(column.title)}
                 </p>
                 <ul className="space-y-2.5">
-                  {liveFooterItems.map((n) => (
-                    <li key={n.to}>
+                  {column.items.map((n) => (
+                    <li key={`${column.key}-${n.to}-${n.label.ar}`}>
                       <Link
                         to={n.to}
                         className="text-[13px] text-ivory/65 transition-colors hover:text-gold"
@@ -221,28 +230,9 @@ export function Footer() {
                   ))}
                 </ul>
               </nav>
-            ) : (
-              navGroups.map((group) => (
-                <nav key={group.title.en} aria-label={group.title.en}>
-                  <p className="label-caps mb-3 border-b border-ivory/15 pb-2 text-gold/80">
-                    {t(group.title)}
-                  </p>
-                  <ul className="space-y-2.5">
-                    {group.items.map((n) => (
-                      <li key={n.to}>
-                        <Link
-                          to={n.to}
-                          className="text-[13px] text-ivory/65 transition-colors hover:text-gold"
-                        >
-                          {t(n.label)}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              ))
-            )}
+            ))}
           </div>
+
         </div>
 
         {/* Contact & newsletter */}
