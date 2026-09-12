@@ -210,16 +210,16 @@ export function Footer() {
             </dl>
           </div>
 
-          {/* Index */}
+          {/* Index — derived from the live navigation, so it always matches the header */}
           <div className="grid gap-8 sm:grid-cols-3">
-            {usingLiveFooterNav ? (
-              <nav aria-label="Footer">
+            {footerColumns.map((column) => (
+              <nav key={column.key} aria-label={column.title.en || column.title.ar}>
                 <p className="label-caps mb-3 border-b border-ivory/15 pb-2 text-gold/80">
-                  {lang === "ar" ? "فهرس الموقع" : "Site Index"}
+                  {t(column.title)}
                 </p>
                 <ul className="space-y-2.5">
-                  {liveFooterItems.map((n) => (
-                    <li key={n.to}>
+                  {column.items.map((n) => (
+                    <li key={`${column.key}-${n.to}-${n.label.ar}`}>
                       <Link
                         to={n.to}
                         className="text-[13px] text-ivory/65 transition-colors hover:text-gold"
@@ -230,28 +230,9 @@ export function Footer() {
                   ))}
                 </ul>
               </nav>
-            ) : (
-              navGroups.map((group) => (
-                <nav key={group.title.en} aria-label={group.title.en}>
-                  <p className="label-caps mb-3 border-b border-ivory/15 pb-2 text-gold/80">
-                    {t(group.title)}
-                  </p>
-                  <ul className="space-y-2.5">
-                    {group.items.map((n) => (
-                      <li key={n.to}>
-                        <Link
-                          to={n.to}
-                          className="text-[13px] text-ivory/65 transition-colors hover:text-gold"
-                        >
-                          {t(n.label)}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              ))
-            )}
+            ))}
           </div>
+
         </div>
 
         {/* Contact & newsletter */}
