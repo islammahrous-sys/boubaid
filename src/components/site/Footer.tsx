@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
 import { siteMeta } from "@/content/site";
-import { navGroups } from "@/content/navigation";
+import { primaryNav, secondaryNav, buildFooterColumns } from "@/content/navigation";
 import { subscribeToNewsletter } from "@/lib/forms.functions";
 import { getPublicSiteSettings, getPublicNavigation } from "@/lib/cms.functions";
 import { newsletterSchema } from "@/lib/forms.schemas";
