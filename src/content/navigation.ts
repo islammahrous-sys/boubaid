@@ -183,6 +183,63 @@ export const secondaryNav: NavItem[] = navGroups
   .flatMap((g) => g.items)
   .filter((item) => !primaryNav.some((p) => p.to === item.to));
 
+/* ------------------------------------------------------------------------
+ * Footer index — derived, never hand-maintained.
+ *
+ * The footer used to keep its own copy of `navGroups`, so every navigation
+ * change (Committees, Governance, renamed Services…) had to be mirrored by
+ * hand and the footer silently drifted out of date. `buildFooterColumns`
+ * derives the columns from whatever navigation tree it is handed — the live
+ * CMS "header" menu in production, the static lists as fallback — so any
+ * future navigation edit shows up in the footer automatically.
+ *
+ * Shape: sections that have children become their own column (title = the
+ * parent label, links = all descendants); everything without children is
+ * collected into a leading "Site sections" column.
+ * ---------------------------------------------------------------------- */
+
+export type FooterNavItem = { to: string; label: BiText; children?: FooterNavItem[] };
+export type FooterColumn = { key: string; title: BiText; items: { to: string; label: BiText }[] };
+
+const SITE_SECTIONS_TITLE: BiText = { ar: "أقسام الموقع", en: "Site Sections" };
+
+function flattenNav(items: FooterNavItem[]): { to: string; label: BiText }[] {
+  const out: { to: string; label: BiText }[] = [];
+  const walk = (list: FooterNavItem[]) => {
+    for (const item of list) {
+      if (!out.some((o) => o.to === item.to && o.label.ar === item.label.ar)) {
+        out.push({ to: item.to, label: item.label });
+      }
+      if (item.children?.length) walk(item.children);
+    }
+  };
+  walk(items);
+  return out;
+}
+
+export function buildFooterColumns(items: FooterNavItem[]): FooterColumn[] {
+  const columns: FooterColumn[] = [];
+  const flat: { to: string; label: BiText }[] = [];
+
+  for (const item of items) {
+    if (item.children?.length) {
+      columns.push({
+        key: `${item.to}-${item.label.en || item.label.ar}`,
+        title: item.label,
+        items: flattenNav(item.children),
+      });
+    } else if (item.to !== "/") {
+      // "Home" is already the logo link; keep the index lean.
+      if (!flat.some((f) => f.to === item.to)) flat.push({ to: item.to, label: item.label });
+    }
+  }
+
+  return flat.length
+    ? [{ key: "site-sections", title: SITE_SECTIONS_TITLE, items: flat }, ...columns]
+    : columns;
+}
+
+
 /** Split a nav URL such as "/committees#board" into Link props. */
 export function navLinkProps(to: string): { to: string; hash?: string } {
   const [path, hash] = to.split("#");
