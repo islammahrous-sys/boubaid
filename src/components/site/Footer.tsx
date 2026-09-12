@@ -53,15 +53,24 @@ export function Footer() {
     staleTime: 5 * 60 * 1000,
   });
 
-  /** Live, CMS-managed footer links — falls back to the static navGroups
-   *  index when the "footer" menu has no public items configured. */
+  /** Live, CMS-managed navigation — the same query the header uses, so the
+   *  footer index can never drift from the header again. Priority:
+   *  1. an explicit CMS "footer" menu, when one is configured;
+   *  2. otherwise the live "header" menu, folded into footer columns;
+   *  3. otherwise the static navigation lists (build-time fallback). */
   const { data: liveNav } = useQuery({
     queryKey: ["public_navigation"],
     queryFn: () => getPublicNavigation(),
     staleTime: 5 * 60 * 1000,
   });
   const liveFooterItems = liveNav?.footer ?? [];
-  const usingLiveFooterNav = liveFooterItems.length > 0;
+  const liveHeaderItems = liveNav?.header ?? [];
+  const footerColumns = liveFooterItems.length
+    ? buildFooterColumns(liveFooterItems)
+    : liveHeaderItems.length
+      ? buildFooterColumns(liveHeaderItems)
+      : buildFooterColumns([...primaryNav, ...secondaryNav]);
+
 
   // Live values are saved by the admin console under category-keyed rows
   // (e.g. { site_contact: { phone, email, whatsapp }, site_general: { license, national_address } }) —
