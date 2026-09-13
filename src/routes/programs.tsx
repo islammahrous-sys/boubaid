@@ -97,7 +97,21 @@ function ProgramsPage() {
                       className="mb-4 aspect-[16/9] w-full rounded object-cover"
                     />
                   ) : null}
-                  <Status kind={program.status} />
+                  <Status
+                    tone={
+                      program.status === "ongoing"
+                        ? "active"
+                        : program.status === "completed"
+                          ? "neutral"
+                          : "pending"
+                    }
+                  >
+                    {program.status === "ongoing"
+                      ? t({ ar: "مستمر", en: "Ongoing" })
+                      : program.status === "completed"
+                        ? t({ ar: "مكتمل", en: "Completed" })
+                        : t({ ar: "قادم", en: "Upcoming" })}
+                  </Status>
                   <h2 className="mt-3 text-[17px] font-semibold leading-snug text-foreground">
                     {t(program.title)}
                   </h2>
