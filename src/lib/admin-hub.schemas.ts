@@ -404,6 +404,8 @@ export const achieverInputSchema = z.object({
   field_en: z.string().optional().nullable(),
   achievement_ar: z.string().optional().nullable(),
   achievement_en: z.string().optional().nullable(),
+  section: z.enum(["family_competency", "excellence_award"]).default("excellence_award"),
+  award_year: z.string().trim().max(10).optional().nullable(),
   category: z.string().min(1).default("academic"),
   branch_ar: z.string().optional().nullable(),
   branch_en: z.string().optional().nullable(),

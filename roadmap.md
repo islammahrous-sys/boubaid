@@ -1,6 +1,7 @@
 # Task Roadmap
 
 ## Done
+- [x] Rebuild the Roll of Honor with an empty Family Members’ Competencies section and exactly 22 Excellence Award recipients grouped by 1444–1447 AH; keep all Projects unchanged.
 - Switched Family Tree frame purchase actions and header/mobile basket link to the official external store: https://albouabidfamily.com/
 - Kept current navigation sequence unchanged.
 

@@ -11,7 +11,6 @@ import {
   branches,
   siteMeta,
   dnaInfo,
-  achievers,
   hqProject,
 } from "@/content/site";
 import {
@@ -33,10 +32,11 @@ import {
   getPublishedInitiatives,
   getPublicHomepageConfig,
   getPublicFamilyStats,
+  getPublishedAchievers,
 } from "@/lib/cms.functions";
 import { getPublishedEvents } from "@/lib/events-public.functions";
 import type { PublicEventRow } from "@/lib/events-public.functions";
-import { mergeNews, mergeInitiatives } from "@/content/cms-adapt";
+import { mergeNews, mergeInitiatives, mapAchieverRow } from "@/content/cms-adapt";
 import { getCanonicalUrl } from "@/lib/seo";
 
 type PublicGalleryPreviewItem = {
@@ -140,10 +140,11 @@ const getHomepageGalleryPreview = createServerFn({ method: "GET" }).handler(
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const [newsRows, initiativeRows, homepageConfig, upcomingEvents, galleryPreview, familyStats] =
+    const [newsRows, initiativeRows, achieverRows, homepageConfig, upcomingEvents, galleryPreview, familyStats] =
       await Promise.all([
         getPublishedNews(),
         getPublishedInitiatives(),
+        getPublishedAchievers(),
         getPublicHomepageConfig(),
         getPublishedEvents(),
         getHomepageGalleryPreview(),
@@ -152,6 +153,7 @@ export const Route = createFileRoute("/")({
     return {
       news: mergeNews(newsRows, staticNews),
       initiatives: mergeInitiatives(initiativeRows, staticInitiatives),
+      achievers: achieverRows.map(mapAchieverRow),
       homepageConfig,
       upcomingEvents: upcomingEvents.slice(0, 3),
       galleryPreview,
@@ -339,6 +341,7 @@ function HomePage() {
   const {
     news,
     initiatives,
+    achievers,
     homepageConfig: rawHomepageConfig,
     upcomingEvents,
     galleryPreview,

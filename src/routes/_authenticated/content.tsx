@@ -172,6 +172,8 @@ const TABS: TabConfig[] = [
       field_en: "",
       achievement_ar: "",
       achievement_en: "",
+      section: "excellence_award",
+      award_year: "1447",
       category: "academic",
       branch_ar: "",
       branch_en: "",
@@ -196,6 +198,17 @@ const TABS: TabConfig[] = [
         en: "Achievement (English)",
         kind: "textarea",
       },
+      {
+        name: "section",
+        ar: "القسم",
+        en: "Section",
+        kind: "select",
+        options: [
+          { value: "family_competency", ar: "كفاءات أفراد الأسرة", en: "Family Members’ Competencies" },
+          { value: "excellence_award", ar: "جائزة التميز", en: "Excellence Award" },
+        ],
+      },
+      { name: "award_year", ar: "السنة الهجرية", en: "Hijri year", kind: "text" },
       {
         name: "category",
         ar: "التصنيف",

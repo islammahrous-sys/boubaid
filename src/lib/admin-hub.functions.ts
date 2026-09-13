@@ -2209,6 +2209,7 @@ export const getAchieversManagementData = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("achievers")
       .select("*")
+      .order("award_year", { ascending: true })
       .order("sort_order", { ascending: true });
 
     if (error) throw new Error(error.message);
@@ -2222,6 +2223,7 @@ export const upsertAchiever = createServerFn({ method: "POST" })
     const { supabase, session } = context;
     const payload: Record<string, any> = {
       ...data,
+      award_year: data.section === "family_competency" ? null : data.award_year,
       updated_at: new Date().toISOString(),
     };
     // Stamp the creator only on insert -- see upsertAnnouncement.

@@ -90,18 +90,23 @@ export function mergeInitiatives(
 /* ----------------------------- achievers -------------------------------- */
 
 export type AchieverItem = {
+  id: string;
   name: BiText;
   field: BiText;
   achievement: BiText;
   category: string;
   branch: BiText;
   image: string;
+  section: "family_competency" | "excellence_award";
+  awardYear?: string;
+  sortOrder: number;
 };
 
 const achieverImageFallback = "/images/achiever-executive.png";
 
 export function mapAchieverRow(row: AchieverRow): AchieverItem {
   return {
+    id: row.id,
     name: { ar: row.name_ar, en: row.name_en ?? row.name_ar },
     field: { ar: row.field_ar ?? "", en: row.field_en ?? row.field_ar ?? "" },
     achievement: {
@@ -111,13 +116,10 @@ export function mapAchieverRow(row: AchieverRow): AchieverItem {
     category: row.category,
     branch: { ar: row.branch_ar ?? "", en: row.branch_en ?? row.branch_ar ?? "" },
     image: row.image_url ?? achieverImageFallback,
+    section: row.section,
+    awardYear: row.award_year ?? undefined,
+    sortOrder: row.sort_order,
   };
-}
-
-export function mergeAchievers(dbRows: AchieverRow[], staticItems: AchieverItem[]): AchieverItem[] {
-  const dbItems = dbRows.map(mapAchieverRow);
-  const dbNames = new Set(dbItems.map((i) => i.name.ar));
-  return [...dbItems, ...staticItems.filter((i) => !dbNames.has(i.name.ar))];
 }
 
 /* ------------------------------ library --------------------------------- */

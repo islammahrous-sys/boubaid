@@ -70,6 +70,8 @@ export type AchieverRow = {
   achievement_ar: string | null;
   achievement_en: string | null;
   category: string;
+  section: "family_competency" | "excellence_award";
+  award_year: string | null;
   branch_ar: string | null;
   branch_en: string | null;
   image_path: string | null;
@@ -115,7 +117,7 @@ const NEWS_COLS =
 const INITIATIVE_COLS =
   "id, slug, status, title_ar, title_en, summary_ar, summary_en, body_ar, body_en, cover_path, is_published, sort_order";
 const ACHIEVER_COLS =
-  "id, name_ar, name_en, field_ar, field_en, achievement_ar, achievement_en, category, branch_ar, branch_en, image_path, is_published, sort_order";
+  "id, name_ar, name_en, field_ar, field_en, achievement_ar, achievement_en, category, section, award_year, branch_ar, branch_en, image_path, is_published, sort_order";
 const LIBRARY_COLS =
   "id, collection, title_ar, title_en, description_ar, description_en, year, kind, reference, file_path, external_url, is_published, sort_order";
 const BRANCH_COLS =
@@ -274,6 +276,8 @@ export const getPublishedAchievers = createServerFn({ method: "GET" }).handler(
       const { data, error } = await createPublicServerClient()
         .from("achievers")
         .select(ACHIEVER_COLS)
+        .eq("is_published", true)
+        .order("award_year", { ascending: true })
         .order("sort_order", { ascending: true })
         .limit(300);
       if (error) {
