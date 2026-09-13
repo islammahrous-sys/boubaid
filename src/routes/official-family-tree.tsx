@@ -6,8 +6,23 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { getCanonicalUrl } from "@/lib/seo";
+import { getPublicSiteSettings } from "@/lib/cms.functions";
+
+/** Bundled fallback used only if the managed media record is unavailable. */
+const FALLBACK_PLATE = "/images/family_tree_official_artwork.jpg";
 
 export const Route = createFileRoute("/official-family-tree")({
+  loader: () => getPublicSiteSettings(),
+  errorComponent: () => (
+    <div className="container-page py-20 text-center text-sm text-muted-foreground">
+      تعذّر تحميل الصفحة، يرجى المحاولة مرة أخرى.
+    </div>
+  ),
+  notFoundComponent: () => (
+    <div className="container-page py-20 text-center text-sm text-muted-foreground">
+      الصفحة غير متوفرة.
+    </div>
+  ),
   head: () => ({
     meta: [
       { title: "شجرة العائلة — اللوحة الرسمية المصورة لشجرة العائلة | آل بوعبيد" },
@@ -70,6 +85,8 @@ const copy = {
 function OfficialFamilyTreePage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
+  const settings = Route.useLoaderData();
+  const plateSrc: string = settings?.family_tree_plate?.url || FALLBACK_PLATE;
 
   return (
     <div>
@@ -139,7 +156,7 @@ function OfficialFamilyTreePage() {
               {t(copy.artworkBody)}
             </p>
             <a
-              href="/images/family_tree_official_artwork.jpg"
+              href={plateSrc}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-5 inline-flex items-center gap-2 border-b border-bronze pb-0.5 label-caps text-xs font-semibold text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
@@ -150,13 +167,13 @@ function OfficialFamilyTreePage() {
           </div>
 
           <a
-            href="/images/family_tree_official_artwork.jpg"
+            href={plateSrc}
             target="_blank"
             rel="noopener noreferrer"
             className="block border border-border bg-card p-3 transition-colors hover:border-foreground"
           >
             <img
-              src="/images/family_tree_official_artwork.jpg"
+              src={plateSrc}
               alt={
                 isAr
                   ? "اللوحة الرسمية المصورة لشجرة العائلة لأسرة آل بوعبيد"

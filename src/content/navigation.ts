@@ -23,7 +23,7 @@ export const primaryNav: NavItem[] = [
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, short: { ar: "الرئيسية", en: "Home" } },
   {
     to: "/about",
-    label: { ar: "النسب والتاريخ", en: "Lineage & History" },
+    label: { ar: "التاريخ والجذور", en: "History and Roots" },
     children: [
       { to: "/about", label: { ar: "تاريخ الأسرة", en: "Family History" } },
       { to: "/library", label: { ar: "كتاب بني تميم", en: "Banu Tamim Book" } },
@@ -80,6 +80,16 @@ export const primaryNav: NavItem[] = [
     to: "/directory",
     label: { ar: "الخدمات", en: "Services" },
     short: { ar: "الخدمات", en: "Services" },
+    children: [
+      {
+        to: "/directory#establishment-services",
+        label: { ar: "خدمات المنشأت", en: "Establishment Services" },
+      },
+      {
+        to: "/directory#family-services",
+        label: { ar: "خدمات افراد الأسرة", en: "Family Members Services" },
+      },
+    ],
   },
   {
     to: "/initiatives",
@@ -96,7 +106,7 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
   {
     title: { ar: "النسب والتوثيق", en: "Lineage & Heritage" },
     items: [
-      { to: "/about", label: { ar: "النسب والتاريخ", en: "Lineage & History" } },
+      { to: "/about", label: { ar: "التاريخ والجذور", en: "History and Roots" } },
       {
         to: "/achievers",
         label: { ar: "سجل المتميزين", en: "Roll of Honour" },

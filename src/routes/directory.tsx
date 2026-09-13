@@ -282,6 +282,18 @@ function DirectoryPage() {
   const { user, isMember: authIsMember, loading: authLoading } = useAuth();
 
   const [activeTab, setActiveTab] = useState("members");
+
+  // Deep links from the "Services" dropdown: #family-services / #establishment-services
+  useEffect(() => {
+    const applyHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash === "establishment-services") setActiveTab("businesses");
+      else if (hash === "family-services") setActiveTab("members");
+    };
+    applyHash();
+    window.addEventListener("hashchange", applyHash);
+    return () => window.removeEventListener("hashchange", applyHash);
+  }, []);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
@@ -514,6 +526,8 @@ function DirectoryPage() {
 
       <div className="container-page py-10 md:py-14">
         {/* Two primary categories: family-member services vs establishment services */}
+        <span id="family-services" className="block scroll-mt-28" aria-hidden="true" />
+        <span id="establishment-services" className="block scroll-mt-28" aria-hidden="true" />
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
             <TabsList className="grid h-auto w-full sm:w-[26rem] grid-cols-2 gap-1 p-1 bg-muted/60 border border-border">
