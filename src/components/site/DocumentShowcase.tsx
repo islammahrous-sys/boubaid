@@ -4,7 +4,48 @@ import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { libraryItems } from "@/content/site";
+import { fundDocuments } from "@/content/fund-documents";
 import { cn } from "@/lib/utils";
+
+/**
+ * Reference aliases used by editorial pages (Contact / About) mapped onto the
+ * statutory documents that live in `fundDocuments`. Files are delivered through
+ * the view-only endpoint, exactly like on /fund-certificates.
+ */
+const fundDocRefs: Record<string, string> = {
+  "Lic. 1200758400": "licence-certificate",
+  "Saudi Post": "national-address",
+};
+
+type ShowcaseDoc = {
+  title: BiText;
+  year: number;
+  kind: string;
+  ncnpRef: string;
+  href?: string;
+};
+
+function resolveDocs(refs: string[]): ShowcaseDoc[] {
+  const out: ShowcaseDoc[] = [];
+  for (const ref of refs) {
+    const fundId = fundDocRefs[ref];
+    if (fundId) {
+      const fd = fundDocuments.find((d) => d.id === fundId);
+      if (fd) {
+        out.push({
+          title: fd.title,
+          year: fd.year,
+          kind: fd.kind,
+          ncnpRef: ref,
+          href: `/api/public/fund-doc?id=${encodeURIComponent(fd.id)}`,
+        });
+        continue;
+      }
+    }
+    out.push(...libraryItems.documents.filter((d) => d.ncnpRef === ref));
+  }
+  return out;
+}
 
 interface DocumentShowcaseProps {
   /** Array of NCNP references to filter and display from libraryItems.documents */
