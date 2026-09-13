@@ -425,6 +425,14 @@ function RequestsHubPage() {
           </section>
         ) : null}
       </div>
+
+      <CouncilRequestForm
+        type={activeForm}
+        open={activeForm !== null}
+        onOpenChange={(next) => {
+          if (!next) setActiveForm(null);
+        }}
+      />
     </>
   );
 }
