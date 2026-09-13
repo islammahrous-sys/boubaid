@@ -11,3 +11,11 @@
 - Connect service documents to existing admin upload and view-only viewer flows.
 - Verify Arabic/English, desktop/mobile, permissions, and existing workflows.
 - [x] Fix distorted Arabic text rendering in the shared document viewer across all site pages.
+
+## 33-point update (Sep 2026) — complete
+- [x] Programs (/programs) + `initiatives.kind` section selector in admin
+- [x] Five service price lists uploaded and linked to their service records
+- [x] Three new request types in the Requests Hub (committee nomination, establishment service, family service)
+- [x] "رشّح نفسك" (Committees) and "سجّل خدمتك" (Services) point at the hub
+- [x] Lineage / Branches / Genetic studies moved under Family Tree; News-only under More
+- [x] جائزة التميز ceremony photo on /achievers
