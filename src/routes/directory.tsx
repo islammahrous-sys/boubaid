@@ -296,12 +296,6 @@ function DirectoryPage() {
   }, [liveBusinesses]);
 
 
-  const branchMap = useMemo(() => {
-    const m = new Map<string, BiText>();
-    branches.forEach((b) => m.set(b.id, b.name));
-    return m;
-  }, []);
-
   const sectors = useMemo(() => {
     const set = new Set<string>();
     allBusinesses.forEach((b) => set.add(b.category.ar));
