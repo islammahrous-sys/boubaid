@@ -69,7 +69,7 @@ export function DocumentShowcase({
 }: DocumentShowcaseProps) {
   const { t } = useLang();
 
-  const docs = libraryItems.documents.filter((d) => refs.includes(d.ncnpRef));
+  const docs = resolveDocs(refs);
 
   if (docs.length === 0) return null;
 
