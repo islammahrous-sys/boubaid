@@ -97,9 +97,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
     title: { ar: "النسب والتوثيق", en: "Lineage & Heritage" },
     items: [
       { to: "/about", label: { ar: "النسب والتاريخ", en: "Lineage & History" } },
-      { to: "/branches", label: { ar: "الفروع", en: "Branches" } },
-      { to: "/family-tree", label: { ar: "المشجرة - دقيقة", en: "Detailed Family Tree" } },
-      { to: "/dna", label: { ar: "الدراسة الجينية", en: "Genetic Study" } },
       {
         to: "/achievers",
         label: { ar: "سجل المتميزين", en: "Roll of Honour" },
