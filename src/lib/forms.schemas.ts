@@ -105,3 +105,39 @@ export const businessSubmissionSchema = z.object({
 
 export type BusinessSubmissionInput = z.infer<typeof businessSubmissionSchema>;
 
+
+/**
+ * Council request forms served from the Requests Hub (`/requests`).
+ *
+ * Three distinct request types share one schema and one handler because they
+ * collect the same identity fields and land in the same official inbox
+ * (`inquiries`), separated by `source`. Adding a further type later is a
+ * one-line change to the enum below plus its label in the hub.
+ */
+export const councilRequestTypeSchema = z.enum([
+  /** طلب ترشيح عضوية في احد اللجان */
+  "committee_nomination",
+  /** طلب اضافة خدمة – منشأت */
+  "service_establishment",
+  /** طلب اضافة خدمة – افراد العائلة */
+  "service_family",
+]);
+
+export type CouncilRequestType = z.infer<typeof councilRequestTypeSchema>;
+
+export const councilRequestSchema = z.object({
+  type: councilRequestTypeSchema,
+  full_name: z.string().trim().min(2, "الاسم الكامل مطلوب").max(120),
+  phone: z.string().trim().min(7, "رقم التواصل مطلوب").max(30),
+  email: z.string().trim().email("البريد الإلكتروني غير صحيح").max(255).optional().or(z.literal("")),
+  branch: z.string().trim().max(120).optional().or(z.literal("")),
+  /** Committee requested, or the service/establishment name for service requests. */
+  topic: z.string().trim().min(2, "هذا الحقل مطلوب").max(160),
+  /** Qualifications, or the service description. */
+  details: z.string().trim().min(10, "التفاصيل مطلوبة (10 أحرف على الأقل)").max(1500),
+  link: z.string().trim().url("الرابط غير صحيح").max(500).optional().or(z.literal("")),
+  locale: localeSchema,
+  website_url_check: honeypotSchema,
+});
+
+export type CouncilRequestInput = z.infer<typeof councilRequestSchema>;

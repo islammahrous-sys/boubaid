@@ -4,6 +4,7 @@ import {
   newsletterSchema,
   achieverNominationSchema,
   businessSubmissionSchema,
+  councilRequestSchema,
 } from "./forms.schemas";
 
 /**
@@ -277,3 +278,69 @@ export const submitBusinessListing = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+
+/**
+ * Requests Hub submissions: committee nomination, establishment service, and
+ * family-member service. Each lands in the official inbox (`inquiries`) with
+ * its own `source`, so the console can filter and set a status per type.
+ */
+export const submitCouncilRequest = createServerFn({ method: "POST" })
+  .validator((input: unknown) => councilRequestSchema.parse(input))
+  .handler(async ({ data }): Promise<FormResult> => {
+    const blocked = await guardPublicSubmission({
+      scope: `council_request_${data.type}`,
+      honeypot: data.website_url_check,
+      max: 4,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (blocked) return blocked;
+
+    const { createPublicServerClient } = await import("./supabase-public.server");
+    const supabase = createPublicServerClient();
+
+    const subjects: Record<typeof data.type, string> = {
+      committee_nomination: `طلب ترشيح عضوية في إحدى اللجان: ${data.topic}`,
+      service_establishment: `طلب إضافة خدمة – منشآت: ${data.topic}`,
+      service_family: `طلب إضافة خدمة – أفراد العائلة: ${data.topic}`,
+    };
+    const topicLabels: Record<typeof data.type, string> = {
+      committee_nomination: "اللجنة المطلوبة",
+      service_establishment: "اسم المنشأة والخدمة",
+      service_family: "الخدمة المقدمة",
+    };
+    const detailLabels: Record<typeof data.type, string> = {
+      committee_nomination: "المؤهلات وأسباب الترشيح",
+      service_establishment: "وصف الخدمة",
+      service_family: "وصف الخدمة",
+    };
+
+    const message = [
+      `${topicLabels[data.type]}: ${data.topic}`,
+      data.branch ? `الفرع: ${data.branch}` : null,
+      `${detailLabels[data.type]}:\n${data.details}`,
+      data.link ? `رابط: ${data.link}` : null,
+      `---`,
+      `مقدم الطلب: ${data.full_name}`,
+      `هاتف التواصل: ${data.phone}`,
+      data.email ? `البريد: ${data.email}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const { error } = await supabase.from("inquiries").insert({
+      name: data.full_name,
+      email: data.email || "requests@albouabidfamily.com",
+      phone: data.phone,
+      subject: subjects[data.type],
+      message,
+      source: data.type,
+      status: "new",
+    });
+
+    if (error) {
+      console.error(`[council_request_${data.type}] insert failed`, error.code, error.message);
+      return { ok: false, error: "insert_failed" };
+    }
+
+    return { ok: true };
+  });
