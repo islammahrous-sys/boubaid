@@ -73,6 +73,8 @@ export const achieverInputSchema = z.object({
   field_en: text(200),
   achievement_ar: text(3000),
   achievement_en: text(3000),
+  section: z.enum(["family_competency", "excellence_award"]).default("excellence_award"),
+  award_year: text(10),
   category: z
     .enum(["academic", "military", "business", "civic", "medical", "other"])
     .default("academic"),
