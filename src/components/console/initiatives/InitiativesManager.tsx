@@ -58,6 +58,8 @@ export type InitiativeItem = {
   body_ar?: string | null;
   body_en?: string | null;
   status: string;
+  /** "project" = المشاريع, "program" = البرامج. */
+  kind?: string | null;
   cover_path?: string | null;
   sort_order: number;
   is_published: boolean;
@@ -114,6 +116,7 @@ export function InitiativesManager({
     body_ar: "",
     body_en: "",
     status: "ongoing",
+    kind: "project",
     sort_order: 0,
     is_published: true,
   });
@@ -172,6 +175,7 @@ export function InitiativesManager({
       body_ar: "",
       body_en: "",
       status: "ongoing",
+      kind: "project",
       sort_order: initiatives.length,
       is_published: true,
     });
@@ -190,6 +194,7 @@ export function InitiativesManager({
       body_ar: item.body_ar ?? "",
       body_en: item.body_en ?? "",
       status: (item.status as "ongoing" | "planned" | "completed") || "ongoing",
+      kind: item.kind === "program" ? "program" : "project",
       sort_order: item.sort_order,
       is_published: item.is_published,
       cover_path: item.cover_path ?? undefined,
@@ -659,6 +664,23 @@ export function InitiativesManager({
                 <h4 className="font-bold text-sm text-foreground border-b border-border pb-2">
                   {isAr ? "الحالة والترتيب" : "Status & Ordering"}
                 </h4>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold">{isAr ? "القسم *" : "Section *"}</Label>
+                  <Select
+                    value={form.kind}
+                    onValueChange={(value) =>
+                      setForm({ ...form, kind: value as "project" | "program" })
+                    }
+                  >
+                    <SelectTrigger className="h-10 text-xs bg-background">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="project">{isAr ? "المشاريع" : "Projects"}</SelectItem>
+                      <SelectItem value="program">{isAr ? "البرامج" : "Programs"}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label className="text-xs font-bold">
