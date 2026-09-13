@@ -282,6 +282,18 @@ function DirectoryPage() {
   const { user, isMember: authIsMember, loading: authLoading } = useAuth();
 
   const [activeTab, setActiveTab] = useState("members");
+
+  // Deep links from the "Services" dropdown: #family-services / #establishment-services
+  useEffect(() => {
+    const applyHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash === "establishment-services") setActiveTab("businesses");
+      else if (hash === "family-services") setActiveTab("members");
+    };
+    applyHash();
+    window.addEventListener("hashchange", applyHash);
+    return () => window.removeEventListener("hashchange", applyHash);
+  }, []);
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
