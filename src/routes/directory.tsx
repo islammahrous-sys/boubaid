@@ -526,6 +526,8 @@ function DirectoryPage() {
 
       <div className="container-page py-10 md:py-14">
         {/* Two primary categories: family-member services vs establishment services */}
+        <span id="family-services" className="block scroll-mt-28" aria-hidden="true" />
+        <span id="establishment-services" className="block scroll-mt-28" aria-hidden="true" />
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
             <TabsList className="grid h-auto w-full sm:w-[26rem] grid-cols-2 gap-1 p-1 bg-muted/60 border border-border">
