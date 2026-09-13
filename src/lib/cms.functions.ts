@@ -48,6 +48,8 @@ export type NewsRow = {
 export type InitiativeRow = {
   id: string;
   slug: string;
+  /** "project" (المشاريع) or "program" (البرامج) — one table, two sections. */
+  kind: string;
   status: string;
   title_ar: string;
   title_en: string | null;
@@ -115,7 +117,7 @@ export type BranchRow = {
 const NEWS_COLS =
   "id, slug, section, title_ar, title_en, excerpt_ar, excerpt_en, body_ar, body_en, hijri_date, gregorian_date, cover_path, is_published, sort_order, created_at";
 const INITIATIVE_COLS =
-  "id, slug, status, title_ar, title_en, summary_ar, summary_en, body_ar, body_en, cover_path, is_published, sort_order";
+  "id, slug, kind, status, title_ar, title_en, summary_ar, summary_en, body_ar, body_en, cover_path, is_published, sort_order";
 const ACHIEVER_COLS =
   "id, name_ar, name_en, field_ar, field_en, achievement_ar, achievement_en, category, section, award_year, branch_ar, branch_en, image_path, is_published, sort_order";
 const LIBRARY_COLS =

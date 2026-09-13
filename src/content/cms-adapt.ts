@@ -53,6 +53,8 @@ export function mergeNews(dbRows: NewsRow[], staticItems: NewsItem[]): NewsItem[
 
 export type InitiativeItem = {
   slug: string;
+  /** "project" for المشاريع, "program" for البرامج. */
+  kind?: "project" | "program";
   title: BiText;
   /**
    * "upcoming" is this app's public-facing label for the DB's "planned"
@@ -69,6 +71,7 @@ export type InitiativeItem = {
 export function mapInitiativeRow(row: InitiativeRow): InitiativeItem {
   return {
     slug: row.slug,
+    kind: row.kind === "program" ? "program" : "project",
     title: { ar: row.title_ar, en: row.title_en ?? row.title_ar },
     status:
       row.status === "ongoing" ? "ongoing" : row.status === "completed" ? "completed" : "upcoming",
