@@ -156,7 +156,7 @@ function OfficialFamilyTreePage() {
               {t(copy.artworkBody)}
             </p>
             <a
-              href="/images/family_tree_official_artwork.jpg"
+              href={plateSrc}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-5 inline-flex items-center gap-2 border-b border-bronze pb-0.5 label-caps text-xs font-semibold text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
@@ -167,13 +167,13 @@ function OfficialFamilyTreePage() {
           </div>
 
           <a
-            href="/images/family_tree_official_artwork.jpg"
+            href={plateSrc}
             target="_blank"
             rel="noopener noreferrer"
             className="block border border-border bg-card p-3 transition-colors hover:border-foreground"
           >
             <img
-              src="/images/family_tree_official_artwork.jpg"
+              src={plateSrc}
               alt={
                 isAr
                   ? "اللوحة الرسمية المصورة لشجرة العائلة لأسرة آل بوعبيد"
