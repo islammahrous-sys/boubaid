@@ -6,8 +6,15 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { getCanonicalUrl } from "@/lib/seo";
+import { getPublicSiteSettings } from "@/lib/cms.functions";
+
+/** Bundled fallback used only if the managed media record is unavailable. */
+const FALLBACK_PLATE = "/images/family_tree_official_artwork.jpg";
 
 export const Route = createFileRoute("/official-family-tree")({
+  loader: () => getPublicSiteSettings(),
+  errorComponent: () => null,
+  notFoundComponent: () => null,
   head: () => ({
     meta: [
       { title: "شجرة العائلة — اللوحة الرسمية المصورة لشجرة العائلة | آل بوعبيد" },
