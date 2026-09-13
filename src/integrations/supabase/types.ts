@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           achievement_ar: string | null
           achievement_en: string | null
+          award_year: string | null
           branch_ar: string | null
           branch_en: string | null
           category: string
@@ -30,12 +31,14 @@ export type Database = {
           is_published: boolean
           name_ar: string
           name_en: string | null
+          section: string
           sort_order: number
           updated_at: string
         }
         Insert: {
           achievement_ar?: string | null
           achievement_en?: string | null
+          award_year?: string | null
           branch_ar?: string | null
           branch_en?: string | null
           category?: string
@@ -48,12 +51,14 @@ export type Database = {
           is_published?: boolean
           name_ar: string
           name_en?: string | null
+          section?: string
           sort_order?: number
           updated_at?: string
         }
         Update: {
           achievement_ar?: string | null
           achievement_en?: string | null
+          award_year?: string | null
           branch_ar?: string | null
           branch_en?: string | null
           category?: string
@@ -66,6 +71,7 @@ export type Database = {
           is_published?: boolean
           name_ar?: string
           name_en?: string | null
+          section?: string
           sort_order?: number
           updated_at?: string
         }
