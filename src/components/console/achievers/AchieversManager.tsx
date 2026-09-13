@@ -50,6 +50,8 @@ export type AchieverItem = {
   achievement_ar?: string | null;
   achievement_en?: string | null;
   category: string;
+  section: "family_competency" | "excellence_award";
+  award_year?: string | null;
   branch_ar?: string | null;
   branch_en?: string | null;
   image_path?: string | null;
@@ -84,6 +86,8 @@ export function AchieversManager({
     achievement_ar: "",
     achievement_en: "",
     category: "academic",
+    section: "excellence_award",
+    award_year: "1447",
     branch_ar: "فرع الصالحية",
     branch_en: "Al-Salihiyah",
     sort_order: 0,
@@ -111,6 +115,8 @@ export function AchieversManager({
       achievement_ar: "",
       achievement_en: "",
       category: "academic",
+      section: "excellence_award",
+      award_year: "1447",
       branch_ar: "فرع الصالحية",
       branch_en: "Al-Salihiyah",
       sort_order: achievers.length,
@@ -130,6 +136,8 @@ export function AchieversManager({
       achievement_ar: item.achievement_ar ?? "",
       achievement_en: item.achievement_en ?? "",
       category: item.category,
+      section: item.section,
+      award_year: item.award_year ?? "",
       branch_ar: item.branch_ar ?? "",
       branch_en: item.branch_en ?? "",
       sort_order: item.sort_order,
@@ -365,7 +373,7 @@ export function AchieversManager({
               <TableHead className="font-semibold">
                 {isAr ? "المجال والإنجاز" : "Field & Achievement"}
               </TableHead>
-              <TableHead className="font-semibold">{isAr ? "الفرع" : "Branch"}</TableHead>
+              <TableHead className="font-semibold">{isAr ? "القسم والسنة" : "Section & Year"}</TableHead>
               <TableHead className="font-semibold">{isAr ? "الترتيب" : "Order"}</TableHead>
               <TableHead className="font-semibold text-end">
                 {isAr ? "الإجراء" : "Action"}
@@ -421,7 +429,14 @@ export function AchieversManager({
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm font-medium">{item.branch_ar || "—"}</div>
+                    <div className="text-sm font-medium">
+                      {item.section === "excellence_award"
+                        ? isAr ? "جائزة التميز" : "Excellence Award"
+                        : isAr ? "كفاءات أفراد الأسرة" : "Family Members’ Competencies"}
+                    </div>
+                    <div className="text-xs text-muted-foreground nums">
+                      {item.award_year ? `${item.award_year} ${isAr ? "هـ" : "AH"}` : "—"}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm font-mono">{item.sort_order}</div>
@@ -543,6 +558,36 @@ export function AchieversManager({
                   {isAr ? "التخصص والإنجاز" : "Field & Achievement"}
                 </h4>
                 <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-bold">{isAr ? "قسم سجل الشرف *" : "Roll Section *"}</Label>
+                      <Select
+                        value={form.section}
+                        onValueChange={(value: "family_competency" | "excellence_award") =>
+                          setForm({ ...form, section: value, award_year: value === "family_competency" ? null : form.award_year || "1447" })
+                        }
+                      >
+                        <SelectTrigger className="h-10 text-xs bg-background"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="family_competency">{isAr ? "كفاءات أفراد الأسرة" : "Family Members’ Competencies"}</SelectItem>
+                          <SelectItem value="excellence_award">{isAr ? "جائزة التميز" : "Excellence Award"}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {form.section === "excellence_award" ? (
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-bold">{isAr ? "السنة الهجرية *" : "Hijri Year *"}</Label>
+                        <Input
+                          required
+                          inputMode="numeric"
+                          value={form.award_year ?? ""}
+                          onChange={(e) => setForm({ ...form, award_year: e.target.value })}
+                          placeholder="1447"
+                          className="bg-background nums"
+                        />
+                      </div>
+                    ) : null}
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-xs font-bold">

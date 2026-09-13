@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
   ArrowRight,
-  Search,
   Award,
   Sparkles,
   Send,
@@ -18,10 +17,10 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
-import { achievers as staticAchievers, branches } from "@/content/site";
+import { branches } from "@/content/site";
 import { getPublishedAchievers } from "@/lib/cms.functions";
 import { submitAchieverNomination } from "@/lib/forms.functions";
-import { mergeAchievers } from "@/content/cms-adapt";
+import { mapAchieverRow } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import {
@@ -32,24 +31,12 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
-/** How many entries are shown per page in the register. */
-const PAGE_SIZE = 20;
 
 export const Route = createFileRoute("/achievers")({
   loader: async () => {
     const rows = await getPublishedAchievers();
-    return { achievers: mergeAchievers(rows, staticAchievers) };
+    return { achievers: rows.map(mapAchieverRow) };
   },
   head: () => ({
     meta: [
@@ -66,6 +53,7 @@ export const Route = createFileRoute("/achievers")({
           "كفاءات ومتميزو أسرة آل بوعبيد من أبنائها وبناتها في الطب والأكاديميا والهندسة والخدمة العامة.",
       },
       { property: "og:type", content: "article" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: getCanonicalUrl("/achievers") },
     ],
     links: [{ rel: "canonical", href: getCanonicalUrl("/achievers") }],
@@ -75,31 +63,26 @@ export const Route = createFileRoute("/achievers")({
 
 const copy = {
   eyebrow: { ar: "سجل التميز", en: "Roll of honour" } as BiText,
-  title: { ar: "من كفاءات ومتميزين الأسرة", en: "Among the Family's Achievers" } as BiText,
+  title: { ar: "سجل الشرف", en: "Roll of Honor" } as BiText,
   subtitle: {
     ar: "يقيّد هذا السجل أصحاب التحصيل العلمي والمهني من أبناء وبنات الفروع السبعة. ويُحدَّث سنوياً عند حفل التكريم بالملتقى العام.",
     en: "This register records the academic and professional achievements of the sons and daughters of the seven branches. It is updated each year at the honours ceremony of the general assembly.",
   } as BiText,
 
   metaEntries: { ar: "عدد المقيدين", en: "Entries" } as BiText,
-  metaFields: { ar: "المجالات", en: "Fields" } as BiText,
+  metaFields: { ar: "الأعوام", en: "Years" } as BiText,
   metaUpdated: { ar: "آخر تحديث", en: "Last updated" } as BiText,
   metaUpdatedValue: { ar: "١٤٤٧ هـ", en: "1447 AH" } as BiText,
 
-  filterLabel: { ar: "تصفية حسب المجال", en: "Filter by field" } as BiText,
-  searchPlaceholder: {
-    ar: "ابحث بالاسم، المجال، أو الفرع…",
-    en: "Search by name, field, or branch…",
-  } as BiText,
   empty: {
-    ar: "لا توجد قيود مطابقة لبحثك في هذا المجال.",
-    en: "No matching entries found for your search.",
+    ar: "لا توجد سجلات مضافة في هذا القسم حالياً.",
+    en: "No records have been added to this section yet.",
   } as BiText,
 
   colName: { ar: "الاسم", en: "Name" } as BiText,
-  colField: { ar: "المجال", en: "Field" } as BiText,
   colAchievement: { ar: "التميز", en: "Distinction" } as BiText,
-  colBranch: { ar: "الفرع", en: "Branch" } as BiText,
+  competencies: { ar: "كفاءات افراد الاسرة", en: "Family Members’ Competencies" } as BiText,
+  excellence: { ar: "جائزة التميز", en: "Excellence Award" } as BiText,
 
   nominateTitle: { ar: "الترشيح لسجل المتميزين", en: "Nominations" } as BiText,
   nominateBody: {
@@ -109,22 +92,9 @@ const copy = {
   nominateCta: { ar: "تقديم ترشيح جديد", en: "Submit a nomination" } as BiText,
 };
 
-const categories: { key: string; label: BiText }[] = [
-  { key: "all", label: { ar: "الكل", en: "All" } },
-  { key: "medical", label: { ar: "الطب", en: "Medicine" } },
-  { key: "academic", label: { ar: "الأكاديميا", en: "Academia" } },
-  { key: "military", label: { ar: "الخدمة العسكرية", en: "Military" } },
-  { key: "business", label: { ar: "الأعمال والتقنية", en: "Business & Technology" } },
-  { key: "sports", label: { ar: "الرياضة", en: "Sport" } },
-  { key: "public", label: { ar: "الخدمة العامة", en: "Public service" } },
-];
-
 function AchieversPage() {
   const { t, lang } = useLang();
   const { achievers } = Route.useLoaderData();
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
   const [activeAchiever, setActiveAchiever] = useState<any | null>(null);
   const [nominationOpen, setNominationOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -191,32 +161,12 @@ function AchieversPage() {
       reader.readAsDataURL(file);
     });
 
-  const filtered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    return achievers.filter((a) => {
-      if (selectedCategory !== "all" && a.category !== selectedCategory) return false;
-      if (!q) return true;
-      const name = t(a.name).toLowerCase();
-      const field = t(a.field).toLowerCase();
-      const achievement = t(a.achievement).toLowerCase();
-      const branch = a.branch ? t(a.branch).toLowerCase() : "";
-      return name.includes(q) || field.includes(q) || achievement.includes(q) || branch.includes(q);
-    });
-  }, [achievers, selectedCategory, searchQuery, t]);
-
-  const fieldCount = new Set(achievers.map((a) => a.category)).size;
-
-  // Switching the search or category filter starts a fresh page 1 so the
-  // reader never lands on an out-of-range page for the new result set.
-  useEffect(() => {
-    setPage(1);
-  }, [searchQuery, selectedCategory]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paged = useMemo(
-    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [filtered, page],
-  );
+  const competencies = useMemo(() => achievers.filter((a) => a.section === "family_competency"), [achievers]);
+  const excellence = useMemo(() => achievers.filter((a) => a.section === "excellence_award"), [achievers]);
+  const yearGroups = useMemo(() => {
+    const years = ["1444", "1445", "1446", "1447"];
+    return years.map((year) => ({ year, people: excellence.filter((a) => a.awardYear === year).sort((a, b) => a.sortOrder - b.sortOrder) }));
+  }, [excellence]);
 
   const handleNominationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -270,192 +220,47 @@ function AchieversPage() {
         imageCaption={t(pageImages.achievers.header.caption)}
         meta={[
           { label: t(copy.metaEntries), value: achievers.length.toString(), mono: true },
-          { label: t(copy.metaFields), value: fieldCount.toString(), mono: true },
+          { label: t(copy.metaFields), value: yearGroups.length.toString(), mono: true },
           { label: t(copy.metaUpdated), value: t(copy.metaUpdatedValue) },
         ]}
       />
 
-      <div className="container-page py-12 md:py-14">
-        {/* Search & Category Filter Controls */}
-        <div className="border-b border-border pb-6 space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <Eyebrow>{t(copy.filterLabel)}</Eyebrow>
-            <div className="relative w-full md:w-80">
-              <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t(copy.searchPlaceholder)}
-                className="w-full rounded-md border border-border bg-background ps-9 pe-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              {searchQuery ? (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute end-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
-                >
-                  ✕
-                </button>
-              ) : null}
-            </div>
+      <div className="container-page py-12 md:py-16 space-y-16">
+        <section aria-labelledby="competencies-title">
+          <Eyebrow>{rtl ? "القسم الأول" : "Section One"}</Eyebrow>
+          <h2 id="competencies-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">{t(copy.competencies)}</h2>
+          <div className="mt-6 border-y border-border py-10 text-center">
+            {competencies.length === 0 ? <p className="text-sm text-muted-foreground">{t(copy.empty)}</p> : null}
           </div>
+        </section>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none touch-pan-x -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:gap-x-6 sm:gap-y-2">
-            {categories.map((c) => {
-              const count =
-                c.key === "all"
-                  ? achievers.length
-                  : achievers.filter((a) => a.category === c.key).length;
-              const active = selectedCategory === c.key;
-              return (
-                <button
-                  key={c.key}
-                  type="button"
-                  onClick={() => setSelectedCategory(c.key)}
-                  aria-pressed={active}
-                  className={cn(
-                    "shrink-0 inline-flex items-baseline gap-1.5 rounded-full sm:rounded-none px-3 sm:px-0 py-1 sm:py-0 border sm:border-0 sm:border-b text-xs sm:text-sm transition-all duration-150 active:scale-95 cursor-pointer",
-                    active
-                      ? "border-bronze bg-bronze/10 text-bronze dark:border-gold dark:bg-gold/10 dark:text-gold font-semibold sm:bg-transparent sm:text-foreground"
-                      : "border-border bg-card text-muted-foreground hover:text-foreground sm:border-transparent sm:bg-transparent",
-                  )}
-                >
-                  <span>{t(c.label)}</span>
-                  <span className="nums text-[10px] sm:text-xs opacity-75">({count})</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* The register itself */}
-        {filtered.length === 0 ? (
-          <div className="py-16 text-center space-y-3">
-            <p className="text-sm text-muted-foreground">{t(copy.empty)}</p>
-            {searchQuery ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedCategory("all");
-                }}
-                className="text-xs font-semibold text-bronze dark:text-gold underline cursor-pointer"
-              >
-                {rtl ? "مسح البحث وعوامل التصفية" : "Clear search & filters"}
-              </button>
-            ) : null}
-          </div>
-        ) : (
-          <>
-            {/* Column headings, shown once at the top of the register */}
-            <div className="mt-8 hidden border-b border-ink/25 pb-2.5 md:grid md:grid-cols-[2.5rem_4rem_minmax(0,14rem)_minmax(0,10rem)_1fr] md:gap-6 dark:border-ivory/20">
-              <span className="label-caps text-muted-foreground" aria-hidden="true" />
-              <span className="label-caps text-muted-foreground" aria-hidden="true" />
-              <span className="label-caps text-muted-foreground">{t(copy.colName)}</span>
-              <span className="label-caps text-muted-foreground">{t(copy.colField)}</span>
-              <span className="label-caps text-muted-foreground">{t(copy.colAchievement)}</span>
-            </div>
-
-            <ol>
-              {paged.map((person, i) => (
-                <li
-                  key={`${t(person.name)}-${(page - 1) * PAGE_SIZE + i}`}
-                  onClick={() => setActiveAchiever(person)}
-                  className="group grid grid-cols-[4rem_1fr] items-start gap-x-5 gap-y-1.5 border-b border-border py-5 md:grid-cols-[2.5rem_4rem_minmax(0,14rem)_minmax(0,10rem)_1fr] md:gap-x-6 cursor-pointer hover:bg-secondary/30 transition-colors px-2 rounded-sm"
-                >
-                  <span
-                    className="nums order-2 hidden font-mono text-sm text-bronze/70 md:order-none md:block dark:text-gold/60"
-                    aria-hidden="true"
-                  >
-                    {String((page - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}
-                  </span>
-
-                  <div className="w-16 h-20 rounded-md overflow-hidden border border-border shrink-0 bg-secondary/50">
-                    <SaudiCulturalAvatar
-                      src={person.image}
-                      alt={t(person.name)}
-                      className="w-full h-full object-cover rounded-none"
-                    />
-                  </div>
-
-                  <span className="md:pt-0.5">
-                    <span className="block font-naskh text-base font-bold text-foreground rtl:text-lg group-hover:text-bronze dark:group-hover:text-gold transition-colors">
-                      {t(person.name)}
-                    </span>
-                    <span className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs text-bronze dark:text-gold">
-                      <span>{t(person.field)}</span>
-                      {person.branch ? (
-                        <>
-                          <span className="hidden text-border md:inline" aria-hidden="true">
-                            ·
-                          </span>
-                          <span className="hidden text-muted-foreground md:inline">
-                            {t(person.branch)}
-                          </span>
-                        </>
-                      ) : null}
-                    </span>
-                  </span>
-
-                  <span className="hidden text-[13px] text-bronze md:block md:pt-1 dark:text-gold">
-                    {t(person.field)}
-                  </span>
-
-                  <span className="col-start-2 text-[13px] leading-relaxed text-muted-foreground md:col-start-auto md:pt-1">
-                    {t(person.achievement)}
-                    {person.branch ? (
-                      <span className="mt-1 block text-xs text-muted-foreground md:hidden">
-                        {t(person.branch)}
-                      </span>
-                    ) : null}
-                  </span>
-                </li>
-              ))}
-            </ol>
-
-            {totalPages > 1 && (
-              <Pagination className="mt-10">
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage((p) => Math.max(1, p - 1));
-                      }}
-                      className={cn(page <= 1 && "pointer-events-none opacity-40")}
-                    />
-                  </PaginationItem>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                    <PaginationItem key={p}>
-                      <PaginationLink
-                        href="#"
-                        isActive={p === page}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setPage(p);
-                        }}
-                      >
-                        {p}
-                      </PaginationLink>
-                    </PaginationItem>
+        <section aria-labelledby="excellence-title">
+          <Eyebrow>{rtl ? "القسم الثاني" : "Section Two"}</Eyebrow>
+          <h2 id="excellence-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">{t(copy.excellence)}</h2>
+          <div className="mt-8 space-y-12">
+            {yearGroups.map(({ year, people }) => (
+              <section key={year} aria-labelledby={`award-year-${year}`}>
+                <div className="flex items-center gap-4 border-b border-ink/25 pb-3 dark:border-ivory/20">
+                  <h3 id={`award-year-${year}`} className="nums text-xl font-bold text-bronze dark:text-gold">
+                    {rtl ? `عام ${year}هـ` : `Year ${year} AH`}
+                  </h3>
+                  <span className="nums text-xs text-muted-foreground">{people.length}</span>
+                </div>
+                <ol className="divide-y divide-border">
+                  {people.map((person, index) => (
+                    <li key={person.id} className="grid gap-2 py-5 sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1.4fr)] sm:gap-6">
+                      <span className="nums text-sm text-bronze/70 dark:text-gold/60">{String(index + 1).padStart(2, "0")}</span>
+                      <button type="button" onClick={() => setActiveAchiever(person)} className="text-start font-naskh text-base font-bold text-foreground hover:text-bronze dark:hover:text-gold">
+                        {t(person.name)}
+                      </button>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{t(person.achievement)}</p>
+                    </li>
                   ))}
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage((p) => Math.min(totalPages, p + 1));
-                      }}
-                      className={cn(page >= totalPages && "pointer-events-none opacity-40")}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
-          </>
-        )}
+                </ol>
+              </section>
+            ))}
+          </div>
+        </section>
       </div>
 
       {/* ── Achiever Detail Dialog Modal ──────────────────────── */}
