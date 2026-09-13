@@ -22,6 +22,7 @@ import { getPublishedAchievers } from "@/lib/cms.functions";
 import { submitAchieverNomination } from "@/lib/forms.functions";
 import { mapAchieverRow } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
+import excellenceCeremony from "@/assets/excellence-award-ceremony.jpg.asset.json";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import {
   Dialog,
@@ -237,6 +238,24 @@ function AchieversPage() {
         <section aria-labelledby="excellence-title">
           <Eyebrow>{rtl ? "القسم الثاني" : "Section Two"}</Eyebrow>
           <h2 id="excellence-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">{t(copy.excellence)}</h2>
+          <figure className="mt-6">
+            <img
+              src={excellenceCeremony.url}
+              alt={
+                rtl
+                  ? "تكريم أحد الفائزين بجائزة التميز في مجلس أسرة آل بوعبيد"
+                  : "An Excellence Award recipient being honoured at the Al Bu Obaid Family Council"
+              }
+              width={1920}
+              height={1280}
+              loading="lazy"
+              decoding="async"
+              className="w-full rounded-md border border-border object-contain"
+            />
+            <figcaption className="mt-2 text-xs text-muted-foreground">
+              {rtl ? "من حفل تكريم جائزة التميز" : "From the Excellence Award ceremony"}
+            </figcaption>
+          </figure>
           <div className="mt-8 space-y-12">
             {yearGroups.map(({ year, people }) => (
               <section key={year} aria-labelledby={`award-year-${year}`}>
