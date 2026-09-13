@@ -1,22 +1,12 @@
-import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { getMemberDirectory, getPublishedBusinesses } from "@/lib/directory.functions";
+import { getPublishedBusinesses } from "@/lib/directory.functions";
 import { getPublicServices } from "@/lib/services-public.functions";
 import { ServiceCatalogue } from "@/components/site/ServiceCatalogue";
-import { submitBusinessListing } from "@/lib/forms.functions";
-import { useAuth } from "@/hooks/useAuth";
-import { Link } from "@tanstack/react-router";
 import {
-  Lock,
-  Mail,
-  UserCheck,
   ShieldCheck,
   Search,
   ExternalLink,
   Phone,
   Building2,
-  PlusCircle,
-  CheckCircle2,
   MapPin,
   GitBranch,
   Copy,
@@ -29,30 +19,18 @@ import {
   Code,
   Utensils,
   Store,
-  Sparkles,
   ArrowRight,
   ArrowLeft,
   QrCode,
   Globe,
-  SlidersHorizontal,
   X,
   Compass,
   Building,
 } from "lucide-react";
-import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -68,7 +46,6 @@ import type { BiText } from "@/i18n/LanguageProvider";
 
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
-import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import { getCanonicalUrl } from "@/lib/seo";
 import QRCode from "qrcode";
 
@@ -279,7 +256,6 @@ function DirectoryPage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
   const { liveBusinesses, services } = Route.useLoaderData();
-  const { user, isMember: authIsMember, loading: authLoading } = useAuth();
 
   const [activeTab, setActiveTab] = useState("members");
 
@@ -304,67 +280,6 @@ function DirectoryPage() {
   const [detailBiz, setDetailBiz] = useState<BusinessItem | null>(null);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
 
-  // Member tab query
-  const [memberQuery, setMemberQuery] = useState("");
-  const [memberBranch, setMemberBranch] = useState("all");
-
-  // Business registration modal
-  const [bizModalOpen, setBizModalOpen] = useState(false);
-  const [isSubmittingBiz, setIsSubmittingBiz] = useState(false);
-  const [bizSuccess, setBizSuccess] = useState(false);
-
-  const [bizForm, setBizForm] = useState({
-    name_ar: "",
-    name_en: "",
-    category: "تجارة وتجزئة",
-    city: "المبرز، الأحساء",
-    owner_name_ar: "",
-    branch_slug: "",
-    phone: "",
-    email: "",
-    website: "",
-    national_address: "",
-    description_ar: "",
-    description_en: "",
-    website_url_check: "",
-  });
-
-  const sendBizListing = useServerFn(submitBusinessListing);
-
-  const handleBizSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!bizForm.name_ar || !bizForm.category || !bizForm.owner_name_ar || !bizForm.phone) {
-      toast.error(isAr ? "يرجى تعبئة الحقول الأساسية المطلوبة" : "Please fill in required fields");
-      return;
-    }
-
-    setIsSubmittingBiz(true);
-    try {
-      const res = await sendBizListing({ data: bizForm });
-      if (res.ok) {
-        setBizSuccess(true);
-        toast.success(
-          isAr
-            ? "تم إرسال طلب تسجيل المنشأة للأمانة العامة بنجاح"
-            : "Business listing submitted successfully",
-        );
-      } else {
-        toast.error(isAr ? "تعذر حفظ البيانات، يرجى المحاولة لاحقاً" : "Failed to submit listing");
-      }
-    } catch {
-      toast.error(isAr ? "حدث خطأ أثناء الإرسال" : "An error occurred");
-    } finally {
-      setIsSubmittingBiz(false);
-    }
-  };
-
-  const getMembers = useServerFn(getMemberDirectory);
-  const { data: memberData, isLoading: membersLoading } = useQuery({
-    queryKey: ["member-directory"],
-    queryFn: () => getMembers(),
-    enabled: !!user,
-  });
-
   const allBusinesses: BusinessItem[] = useMemo(() => {
     // The directory shows only real, admin-approved businesses from the
     // database. There is deliberately no static fallback list.
@@ -380,12 +295,6 @@ function DirectoryPage() {
     }));
   }, [liveBusinesses]);
 
-
-  const branchMap = useMemo(() => {
-    const m = new Map<string, BiText>();
-    branches.forEach((b) => m.set(b.id, b.name));
-    return m;
-  }, []);
 
   const sectors = useMemo(() => {
     const set = new Set<string>();
@@ -476,30 +385,6 @@ function DirectoryPage() {
     }
   };
 
-  const filteredMembers = useMemo(() => {
-    if (!memberData?.members) return [];
-    const q = memberQuery.trim().toLowerCase();
-    return memberData.members.filter((m) => {
-      if (memberBranch !== "all" && m.branch_slug !== memberBranch) {
-        return false;
-      }
-      if (q) {
-        const hay = [
-          m.full_name_ar,
-          m.full_name_en,
-          m.email,
-          m.phone,
-          m.branch_slug ? t(branchMap.get(m.branch_slug) || { ar: "", en: "" }) : "",
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    });
-  }, [memberData, memberQuery, memberBranch, branchMap, t]);
-
   const resetFilters = () => {
     setQuery("");
     setSelectedCategory("all");
@@ -516,7 +401,7 @@ function DirectoryPage() {
         meta={[
           {
             label: t(copy.metaListings),
-            value: (allBusinesses.length + (memberData?.members?.length ?? 0)).toString(),
+            value: allBusinesses.length.toString(),
             mono: true,
           },
           { label: t(copy.metaSectors), value: sectors.length.toString(), mono: true },
@@ -529,7 +414,7 @@ function DirectoryPage() {
         <span id="family-services" className="block scroll-mt-28" aria-hidden="true" />
         <span id="establishment-services" className="block scroll-mt-28" aria-hidden="true" />
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+          <div className="mb-8">
             <TabsList className="grid h-auto w-full sm:w-[26rem] grid-cols-2 gap-1 p-1 bg-muted/60 border border-border">
               <TabsTrigger
                 value="members"
@@ -544,17 +429,6 @@ function DirectoryPage() {
                 {t(copy.tabs.businesses)}
               </TabsTrigger>
             </TabsList>
-
-            {activeTab === "businesses" && (
-              <Button
-                type="button"
-                onClick={() => setBizModalOpen(true)}
-                className="gap-2 text-xs font-bold shrink-0 self-start sm:self-auto shadow-sm"
-              >
-                <PlusCircle className="w-4 h-4 text-primary-foreground" />
-                {isAr ? "سجّل منشأتك العائلية" : "Register Your Business"}
-              </Button>
-            )}
           </div>
 
           {/* ════════════════════════════════════════════════════════════════ */}
@@ -1013,185 +887,13 @@ function DirectoryPage() {
               </div>
             )}
 
-            {/* Bottom Invitation Banner */}
-            <aside className="mt-12 rounded-xl border border-border bg-gradient-to-r from-card to-muted/40 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xs">
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-bronze dark:text-gold">
-                  <Sparkles className="w-4 h-4" />
-                  {t(copy.listTitle)}
-                </div>
-                <p className="text-xs leading-relaxed text-muted-foreground max-w-xl">
-                  {t(copy.listBody)}
-                </p>
-              </div>
-              <Button
-                type="button"
-                onClick={() => setBizModalOpen(true)}
-                className="gap-2 text-xs font-bold shrink-0 self-start sm:self-auto"
-              >
-                <PlusCircle className="w-4 h-4" />
-                {isAr ? "تقديم طلب إدراج منشأة" : "Submit Business Request"}
-              </Button>
-            </aside>
           </TabsContent>
 
           {/* ════════════════════════════════════════════════════════════════ */}
-          {/* CATEGORY: خدمات أفراد الأسرة — services + member directory      */}
+          {/* CATEGORY: خدمات أفراد الأسرة — family-member services catalogue */}
           {/* ════════════════════════════════════════════════════════════════ */}
           <TabsContent value="members" className="mt-0 focus-visible:ring-0 space-y-8">
             <ServiceCatalogue services={services} category="family" />
-            {!user ? (
-              <Card className="mx-auto mt-8 max-w-2xl border-dashed">
-                <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                    <Lock className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <CardTitle className="text-xl">{t(copy.memberGated.title)}</CardTitle>
-                  <CardDescription className="mt-2 text-sm leading-relaxed">
-                    {t(copy.memberGated.body)}
-                  </CardDescription>
-                </CardHeader>
-                <CardFooter className="flex justify-center pb-8">
-                  <Button asChild>
-                    <Link to="/auth">{t(copy.memberGated.action)}</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ) : !authIsMember ? (
-              <Card className="mx-auto mt-8 max-w-2xl border-dashed">
-                <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                    <ShieldCheck className="h-6 w-6 text-bronze dark:text-gold" />
-                  </div>
-                  <CardTitle className="text-xl">{t(copy.memberPending.title)}</CardTitle>
-                  <CardDescription className="mt-2 text-sm leading-relaxed">
-                    {t(copy.memberPending.body)}
-                  </CardDescription>
-                </CardHeader>
-                <CardFooter className="flex justify-center pb-8">
-                  <Button variant="outline" asChild>
-                    <Link to="/account">{t(copy.memberPending.action)}</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ) : (
-              <>
-                {/* Member Filter Bar */}
-                <div className="bg-card p-4 rounded-xl border border-border shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                  <div className="relative flex-1">
-                    <Search
-                      className="pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground start-3.5"
-                      aria-hidden="true"
-                    />
-                    <Input
-                      type="search"
-                      value={memberQuery}
-                      onChange={(e) => setMemberQuery(e.target.value)}
-                      placeholder={t(copy.memberSearchPlaceholder)}
-                      className="ps-10 h-10 text-xs sm:text-sm bg-background"
-                    />
-                  </div>
-
-                  <select
-                    value={memberBranch}
-                    onChange={(e) => setMemberBranch(e.target.value)}
-                    className="h-10 rounded-md border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none shrink-0"
-                  >
-                    <option value="all">{isAr ? "كافة الفروع العائلية" : "All Branches"}</option>
-                    {branches.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {t(b.name)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="text-xs text-muted-foreground px-1">
-                  <span className="font-semibold text-foreground nums">
-                    {filteredMembers.length}
-                  </span>{" "}
-                  {isAr ? "عضو معتمد مشارك في الدليل" : "verified members listed"}
-                </div>
-
-                {membersLoading ? (
-                  <div className="py-20 text-center">
-                    <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                  </div>
-                ) : filteredMembers.length === 0 ? (
-                  <p className="py-20 text-center text-sm text-muted-foreground">{t(copy.empty)}</p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredMembers.map((m) => {
-                      const branchText = m.branch_slug ? branchMap.get(m.branch_slug) : null;
-                      return (
-                        <div
-                          key={m.id}
-                          className="rounded-xl border border-border bg-card p-4 flex flex-col justify-between gap-4 hover:shadow-xs transition-shadow"
-                        >
-                          <div className="flex items-start gap-3">
-                            <SaudiCulturalAvatar
-                              src={(m as any).avatar_path}
-                              alt={m.full_name_ar || ""}
-                              size="md"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-sm font-bold text-foreground truncate">
-                                {t({ ar: m.full_name_ar || "", en: m.full_name_en || "" })}
-                              </h3>
-                              {branchText && (
-                                <p className="text-[11px] text-bronze dark:text-gold flex items-center gap-1 mt-0.5">
-                                  <GitBranch className="w-3 h-3" />
-                                  {t(branchText)}
-                                </p>
-                              )}
-                              {m.lineage_notes && (
-                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                  {m.lineage_notes}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="pt-3 border-t border-border flex items-center justify-between gap-2 text-xs">
-                            {m.phone ? (
-                              <a
-                                href={`tel:${m.phone.replace(/\s/g, "")}`}
-                                className="nums inline-flex items-center gap-1 text-muted-foreground hover:text-primary font-mono"
-                              >
-                                <Phone className="w-3 h-3" />
-                                {m.phone}
-                              </a>
-                            ) : (
-                              <span />
-                            )}
-
-                            {m.email && (
-                              <a
-                                href={`mailto:${m.email}`}
-                                className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary truncate max-w-[140px]"
-                                title={m.email}
-                              >
-                                <Mail className="w-3 h-3" />
-                                <span className="truncate">{m.email}</span>
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <aside className="mt-8 border-s-2 border-bronze/40 ps-4 dark:border-gold/40">
-                  <p className="label-caps mb-1 text-bronze dark:text-gold">
-                    {isAr ? "إشعار الخصوصية" : "Privacy Notice"}
-                  </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {t(copy.memberOptInNote)}
-                  </p>
-                </aside>
-              </>
-            )}
           </TabsContent>
         </Tabs>
       </div>
@@ -1385,286 +1087,6 @@ function DirectoryPage() {
                 </div>
               </div>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* ════════════════════════════════════════════════════════════════ */}
-      {/* BUSINESS REGISTRATION MODAL                                      */}
-      {/* ════════════════════════════════════════════════════════════════ */}
-      <Dialog
-        open={bizModalOpen}
-        onOpenChange={(open) => {
-          setBizModalOpen(open);
-          if (!open) setBizSuccess(false);
-        }}
-      >
-        <DialogContent className="max-w-2xl p-6 bg-card border-border max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-bronze dark:text-gold">
-              <Building2 className="w-4 h-4" />
-              {isAr ? "دليل الأعمال العائلي" : "Family Business Index"}
-            </div>
-            <DialogTitle className="text-xl font-bold text-foreground">
-              {isAr ? "تسجيل منشأة في دليل الأعمال" : "Register a Business Listing"}
-            </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              {isAr
-                ? "يتم مراجعة بيانات المنشأة من قبل أمانة المجلس والتحقق من الانتساب العائلي قبل النشر في الدليل العام."
-                : "Listing submissions are audited by the secretariat before being published in the public directory."}
-            </DialogDescription>
-          </DialogHeader>
-
-          {bizSuccess ? (
-            <div className="py-8 text-center space-y-4">
-              <div className="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground">
-                {isAr ? "تم استلام بيانات المنشأة بنجاح" : "Business Submitted Successfully"}
-              </h3>
-              <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
-                {isAr
-                  ? "شكراً لتسجيل منشأتك. ستتم المراجعة والاعتماد من قبل أمانة المجلس والتواصل معكم عند الحاجة لتوثيق السجل التجاري."
-                  : "Thank you for registering. Your submission will be reviewed by the council secretariat and approved shortly."}
-              </p>
-              <Button
-                type="button"
-                onClick={() => {
-                  setBizModalOpen(false);
-                  setBizSuccess(false);
-                }}
-                className="mt-4"
-              >
-                {isAr ? "تم" : "Done"}
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleBizSubmit} className="space-y-4 mt-2">
-              <input
-                type="text"
-                name="website_url_check"
-                value={bizForm.website_url_check}
-                onChange={(e) => setBizForm({ ...bizForm, website_url_check: e.target.value })}
-                className="hidden"
-                tabIndex={-1}
-                autoComplete="off"
-              />
-
-              {/* Section 1: Business Identity */}
-              <div className="space-y-3 p-4 rounded-xl bg-muted/20 border border-border">
-                <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-primary" />
-                  {isAr ? "١. بيانات المنشأة الأساسية" : "1. Business Identity"}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "اسم المنشأة بالعربية *" : "Business Name (Arabic) *"}
-                    </Label>
-                    <Input
-                      required
-                      value={bizForm.name_ar}
-                      onChange={(e) => setBizForm({ ...bizForm, name_ar: e.target.value })}
-                      placeholder={isAr ? "شركة آل بوعبيد للتطوير" : "Arabic name"}
-                      className="text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "اسم المنشأة بالإنجليزية" : "Business Name (English)"}
-                    </Label>
-                    <Input
-                      value={bizForm.name_en}
-                      onChange={(e) => setBizForm({ ...bizForm, name_en: e.target.value })}
-                      placeholder="Al Bu Obaid Development Co."
-                      className="text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "قطاع النشاط *" : "Industry Sector *"}
-                    </Label>
-                    <select
-                      value={bizForm.category}
-                      onChange={(e) => setBizForm({ ...bizForm, category: e.target.value })}
-                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
-                    >
-                      <option value="العقارات والمقاولات">
-                        {isAr ? "العقارات والمقاولات" : "Real Estate & Construction"}
-                      </option>
-                      <option value="الهندسة والاستشارات">
-                        {isAr ? "الهندسة والاستشارات" : "Engineering & Consulting"}
-                      </option>
-                      <option value="الخدمات الطبية والرعاية">
-                        {isAr ? "الخدمات الطبية والرعاية" : "Medical & Healthcare"}
-                      </option>
-                      <option value="التكنولوجيا والبرمجيات">
-                        {isAr ? "التكنولوجيا والبرمجيات" : "Technology & Software"}
-                      </option>
-                      <option value="الأغذية والضيافة">
-                        {isAr ? "الأغذية والضيافة" : "Food & Hospitality"}
-                      </option>
-                      <option value="تجارة وتجزئة">
-                        {isAr ? "تجارة وتجزئة" : "Retail & Commerce"}
-                      </option>
-                      <option value="خدمات مهنية">
-                        {isAr ? "خدمات مهنية وقانونية" : "Professional & Legal"}
-                      </option>
-                      <option value="أخرى">{isAr ? "قطاع آخر" : "Other Sector"}</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "المدينة / المقر الرئيسي *" : "City / HQ *"}
-                    </Label>
-                    <Input
-                      required
-                      value={bizForm.city}
-                      onChange={(e) => setBizForm({ ...bizForm, city: e.target.value })}
-                      placeholder={isAr ? "المبرز، الأحساء" : "e.g. Al-Ahsa / Riyadh"}
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 2: Owner & Affiliation */}
-              <div className="space-y-3 p-4 rounded-xl bg-muted/20 border border-border">
-                <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <GitBranch className="w-3.5 h-3.5 text-primary" />
-                  {isAr ? "٢. بيانات المالك والانتساب العائلي" : "2. Owner & Branch Affiliation"}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "اسم المالك / المدير المسؤول *" : "Owner / Manager Name *"}
-                    </Label>
-                    <Input
-                      required
-                      value={bizForm.owner_name_ar}
-                      onChange={(e) => setBizForm({ ...bizForm, owner_name_ar: e.target.value })}
-                      placeholder={isAr ? "الاسم الثلاثي أو الرباعي" : "Full Name"}
-                      className="text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "الفرع العائلي" : "Family Branch"}
-                    </Label>
-                    <select
-                      value={bizForm.branch_slug}
-                      onChange={(e) => setBizForm({ ...bizForm, branch_slug: e.target.value })}
-                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
-                    >
-                      <option value="">
-                        {isAr ? "-- اختر الفرع العائلي --" : "-- Select Branch --"}
-                      </option>
-                      {branches.map((b) => (
-                        <option key={b.id} value={t(b.name)}>
-                          {t(b.name)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 3: Contact Channels */}
-              <div className="space-y-3 p-4 rounded-xl bg-muted/20 border border-border">
-                <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-primary" />
-                  {isAr ? "٣. قنوات التواصل والموقع" : "3. Contact Channels & Location"}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "هاتف التواصل / واتساب *" : "Phone / WhatsApp *"}
-                    </Label>
-                    <Input
-                      type="tel"
-                      required
-                      value={bizForm.phone}
-                      onChange={(e) => setBizForm({ ...bizForm, phone: e.target.value })}
-                      placeholder="05xxxxxxxx"
-                      className="text-xs font-mono"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "البريد الإلكتروني" : "Email"}
-                    </Label>
-                    <Input
-                      type="email"
-                      value={bizForm.email}
-                      onChange={(e) => setBizForm({ ...bizForm, email: e.target.value })}
-                      placeholder="info@company.com"
-                      className="text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">
-                      {isAr ? "الموقع الإلكتروني" : "Website"}
-                    </Label>
-                    <Input
-                      type="url"
-                      value={bizForm.website}
-                      onChange={(e) => setBizForm({ ...bizForm, website: e.target.value })}
-                      placeholder="https://..."
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">
-                    {isAr ? "نبذة عن النشاط والخدمات *" : "Business Description *"}
-                  </Label>
-                  <textarea
-                    rows={3}
-                    required
-                    value={bizForm.description_ar}
-                    onChange={(e) => setBizForm({ ...bizForm, description_ar: e.target.value })}
-                    placeholder={
-                      isAr
-                        ? "صف نشاط منشأتك وخدماتها لأبناء الأسرة والعموم…"
-                        : "Brief overview of products and services…"
-                    }
-                    className="w-full rounded-md border border-border bg-background p-3 text-xs text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-3 border-t border-border">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setBizModalOpen(false)}
-                  className="text-xs"
-                >
-                  {isAr ? "إلغاء" : "Cancel"}
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmittingBiz}
-                  className="text-xs font-bold gap-1.5"
-                >
-                  {isSubmittingBiz
-                    ? isAr
-                      ? "جاري الإرسال…"
-                      : "Submitting…"
-                    : isAr
-                      ? "إرسال طلب التسجيل"
-                      : "Submit Listing"}
-                </Button>
-              </div>
-            </form>
           )}
         </DialogContent>
       </Dialog>
