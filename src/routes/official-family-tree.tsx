@@ -85,6 +85,8 @@ const copy = {
 function OfficialFamilyTreePage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
+  const settings = Route.useLoaderData();
+  const plateSrc: string = settings?.family_tree_plate?.url || FALLBACK_PLATE;
 
   return (
     <div>
