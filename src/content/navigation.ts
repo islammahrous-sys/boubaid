@@ -142,6 +142,11 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         short: { ar: "المشاريع", en: "Projects" },
       },
       {
+        to: "/programs",
+        label: { ar: "البرامج", en: "Programs" },
+        short: { ar: "البرامج", en: "Programs" },
+      },
+      {
         to: "/library",
         label: { ar: "الأرشيف والمكتبة الرقمية", en: "Archive & Digital Library" },
         short: { ar: "الأرشيف", en: "Archive" },
@@ -151,7 +156,7 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         label: { ar: "مجموعات المتحف المصورة", en: "Museum Photo Collections" },
         short: { ar: "المتحف", en: "Museum" },
       },
-      { to: "/news", label: { ar: "الأخبار والبيانات", en: "News & Notices" } },
+      { to: "/news", label: { ar: "الأخبار", en: "News" } },
       { to: "/events", label: { ar: "الفعاليات واللقاءات", en: "Events & Gatherings" } },
     ],
   },
