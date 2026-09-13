@@ -106,7 +106,7 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
   {
     title: { ar: "النسب والتوثيق", en: "Lineage & Heritage" },
     items: [
-      { to: "/about", label: { ar: "النسب والتاريخ", en: "Lineage & History" } },
+      { to: "/about", label: { ar: "التاريخ والجذور", en: "History and Roots" } },
       {
         to: "/achievers",
         label: { ar: "سجل المتميزين", en: "Roll of Honour" },
