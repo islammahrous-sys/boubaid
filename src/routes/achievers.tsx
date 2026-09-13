@@ -22,7 +22,6 @@ import { getPublishedAchievers } from "@/lib/cms.functions";
 import { submitAchieverNomination } from "@/lib/forms.functions";
 import { mapAchieverRow } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
-import excellenceCeremony from "@/assets/excellence-award-ceremony.jpg.asset.json";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import {
   Dialog,
@@ -33,6 +32,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getCanonicalUrl } from "@/lib/seo";
+
+const EXCELLENCE_CEREMONY_IMAGE =
+  "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/excellence-award-ceremony.jpg";
 
 export const Route = createFileRoute("/achievers")({
   loader: async () => {
@@ -240,7 +242,7 @@ function AchieversPage() {
           <h2 id="excellence-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">{t(copy.excellence)}</h2>
           <figure className="mt-6">
             <img
-              src={excellenceCeremony.url}
+              src={EXCELLENCE_CEREMONY_IMAGE}
               alt={
                 rtl
                   ? "تكريم أحد الفائزين بجائزة التميز في مجلس أسرة آل بوعبيد"

@@ -80,16 +80,6 @@ export const primaryNav: NavItem[] = [
     to: "/directory",
     label: { ar: "الخدمات", en: "Services" },
     short: { ar: "الخدمات", en: "Services" },
-    children: [
-      {
-        to: "/directory#establishment-services",
-        label: { ar: "خدمات المنشأت", en: "Establishment Services" },
-      },
-      {
-        to: "/directory#family-services",
-        label: { ar: "خدمات افراد الأسرة", en: "Family Members Services" },
-      },
-    ],
   },
   {
     to: "/initiatives",
