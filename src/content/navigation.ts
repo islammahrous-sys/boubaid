@@ -23,7 +23,7 @@ export const primaryNav: NavItem[] = [
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, short: { ar: "الرئيسية", en: "Home" } },
   {
     to: "/about",
-    label: { ar: "النسب والتاريخ", en: "Lineage & History" },
+    label: { ar: "التاريخ والجذور", en: "History and Roots" },
     children: [
       { to: "/about", label: { ar: "تاريخ الأسرة", en: "Family History" } },
       { to: "/library", label: { ar: "كتاب بني تميم", en: "Banu Tamim Book" } },
