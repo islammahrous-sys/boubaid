@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { FileText, ChevronRight, ChevronLeft, Layers } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { PublicService, ServiceCategory } from "@/lib/services-public.functions";
@@ -49,6 +50,14 @@ export function ServiceCatalogue({
           {t(heading)}
         </h2>
         <span className="nums text-xs text-muted-foreground">({items.length})</span>
+        {/* "سجل خدمتك" — the single Requests Hub owns the form itself. */}
+        <Link
+          to="/requests"
+          hash={category === "family" ? "service-family" : "service-establishment"}
+          className="ms-auto border-b border-bronze pb-0.5 text-[12.5px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+        >
+          {isAr ? "سجّل خدمتك" : "Register your service"}
+        </Link>
       </div>
 
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
