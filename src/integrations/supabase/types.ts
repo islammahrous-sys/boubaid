@@ -1381,6 +1381,7 @@ export type Database = {
           created_by: string | null
           id: string
           is_published: boolean
+          kind: string
           slug: string
           sort_order: number
           status: string
@@ -1398,6 +1399,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_published?: boolean
+          kind?: string
           slug: string
           sort_order?: number
           status?: string
@@ -1415,6 +1417,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_published?: boolean
+          kind?: string
           slug?: string
           sort_order?: number
           status?: string
