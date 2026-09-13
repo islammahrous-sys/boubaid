@@ -401,7 +401,7 @@ function DirectoryPage() {
         meta={[
           {
             label: t(copy.metaListings),
-            value: (allBusinesses.length + (memberData?.members?.length ?? 0)).toString(),
+            value: allBusinesses.length.toString(),
             mono: true,
           },
           { label: t(copy.metaSectors), value: sectors.length.toString(), mono: true },
@@ -414,7 +414,7 @@ function DirectoryPage() {
         <span id="family-services" className="block scroll-mt-28" aria-hidden="true" />
         <span id="establishment-services" className="block scroll-mt-28" aria-hidden="true" />
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+          <div className="mb-8">
             <TabsList className="grid h-auto w-full sm:w-[26rem] grid-cols-2 gap-1 p-1 bg-muted/60 border border-border">
               <TabsTrigger
                 value="members"
@@ -429,17 +429,6 @@ function DirectoryPage() {
                 {t(copy.tabs.businesses)}
               </TabsTrigger>
             </TabsList>
-
-            {activeTab === "businesses" && (
-              <Button
-                type="button"
-                onClick={() => setBizModalOpen(true)}
-                className="gap-2 text-xs font-bold shrink-0 self-start sm:self-auto shadow-sm"
-              >
-                <PlusCircle className="w-4 h-4 text-primary-foreground" />
-                {isAr ? "سجّل منشأتك العائلية" : "Register Your Business"}
-              </Button>
-            )}
           </div>
 
           {/* ════════════════════════════════════════════════════════════════ */}
