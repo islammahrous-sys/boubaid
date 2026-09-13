@@ -15,6 +15,9 @@ import { cn } from "@/lib/utils";
 import { getPublicFamilyTreeData } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 
+const OFFICIAL_FAMILY_TREE_IMAGE =
+  "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/family-tree-plate-1447.jpg";
+
 const searchSchema = z.object({
   branch: z.string().optional(),
   id: z.string().optional(),
@@ -376,7 +379,22 @@ function FamilyTreePage() {
 
       {/* ── Pointer to the dedicated Family Tree plate page ─── */}
       <section className="reveal-on-scroll container-page py-12 md:py-14">
-        <div className="flex flex-col gap-4 border border-border bg-card p-5 md:flex-row md:items-center md:justify-between md:p-6 rounded-md">
+        <div className="grid gap-6 border border-border bg-card p-5 md:grid-cols-[minmax(0,18rem)_1fr] md:items-center md:p-6 rounded-md">
+          <Link to="/official-family-tree" className="block overflow-hidden border border-border bg-background">
+            <img
+              src={OFFICIAL_FAMILY_TREE_IMAGE}
+              alt={
+                rtl
+                  ? "اللوحة الرسمية المصورة لشجرة العائلة لأسرة آل بوعبيد"
+                  : "The official illustrated family tree of the Al Bu Obaid family"
+              }
+              width={1344}
+              height={1920}
+              loading="lazy"
+              decoding="async"
+              className="mx-auto aspect-[7/10] w-full object-contain"
+            />
+          </Link>
           <div>
             <Eyebrow>{t(copy.artworkEyebrow)}</Eyebrow>
             <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl font-serif">
@@ -385,14 +403,14 @@ function FamilyTreePage() {
             <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
               {t(copy.artworkBody)}
             </p>
+            <Link
+              to="/official-family-tree"
+              className="mt-5 inline-flex shrink-0 items-center gap-2 border border-gold bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
+            >
+              {t(copy.artworkOpen)}
+              <Maximize2 className="h-4 w-4" aria-hidden="true" />
+            </Link>
           </div>
-          <Link
-            to="/official-family-tree"
-            className="inline-flex shrink-0 items-center gap-2 border border-gold bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
-          >
-            {t(copy.artworkOpen)}
-            <Maximize2 className="h-4 w-4" aria-hidden="true" />
-          </Link>
         </div>
       </section>
 
