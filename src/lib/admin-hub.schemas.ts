@@ -389,6 +389,8 @@ export const initiativeInputSchema = z.object({
   body_ar: z.string().optional().nullable(),
   body_en: z.string().optional().nullable(),
   status: z.enum(["ongoing", "planned", "completed"]).default("ongoing"),
+  /** Section this record belongs to: المشاريع (project) or البرامج (program). */
+  kind: z.enum(["project", "program"]).default("project"),
   cover_path: z.string().optional().nullable(),
   sort_order: z.number().int().default(0),
   is_published: z.boolean().default(true),

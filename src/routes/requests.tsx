@@ -8,10 +8,14 @@ import {
   Frame,
   Mail,
   Award,
+  Users,
+  Store,
+  HandHeart,
   ClipboardList,
   ShieldCheck,
 } from "lucide-react";
 import type { ComponentType } from "react";
+import { useState } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,6 +23,8 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { Eyebrow, Ornament } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
+import { CouncilRequestForm } from "@/components/site/CouncilRequestForm";
+import type { CouncilRequestType } from "@/lib/forms.schemas";
 
 export const Route = createFileRoute("/requests")({
   head: () => ({
@@ -86,7 +92,10 @@ const copy = {
 
 type RequestEntry = {
   id: string;
-  to: string;
+  /** Either an existing page on this site… */
+  to?: string;
+  /** …or one of the hub's own forms, submitted in place. */
+  form?: CouncilRequestType;
   Icon: ComponentType<{ className?: string }>;
   name: BiText;
   desc: BiText;
@@ -144,6 +153,42 @@ const requests: RequestEntry[] = [
     desc: {
       ar: "الاطلاع على مقاسات اللوحة الرسمية المصورة لشجرة العائلة وطلب النسخة المناسبة.",
       en: "See the sizes of the Official Illustrated Family Tree and order the one you want.",
+    },
+  },
+  {
+    id: "committee-nomination",
+    form: "committee_nomination",
+    Icon: Users,
+    name: {
+      ar: "طلب ترشيح عضوية في احد اللجان",
+      en: "Committee membership nomination request",
+    },
+    desc: {
+      ar: "التقدم بترشيح نفسك لعضوية إحدى اللجان التنفيذية مع بيان المؤهلات وأسباب الترشيح.",
+      en: "Nominate yourself for membership of one of the standing committees, stating your qualifications.",
+    },
+  },
+  {
+    id: "service-establishment",
+    form: "service_establishment",
+    Icon: Store,
+    name: { ar: "طلب اضافة خدمة – منشأت", en: "Add a service request – Establishments" },
+    desc: {
+      ar: "طلب إضافة خدمة تقدمها منشأة من منشآت الأسرة إلى قائمة خدمات المنشآت.",
+      en: "Request that a service offered by a family establishment be added to the establishment services list.",
+    },
+  },
+  {
+    id: "service-family",
+    form: "service_family",
+    Icon: HandHeart,
+    name: {
+      ar: "طلب اضافة خدمة – افراد العائلة",
+      en: "Add a service request – Family members",
+    },
+    desc: {
+      ar: "طلب إضافة خدمة يقدمها أحد أفراد الأسرة إلى قائمة خدمات أفراد الأسرة.",
+      en: "Request that a service offered by a family member be added to the family member services list.",
     },
   },
   {
@@ -236,6 +281,7 @@ function RequestsHubPage() {
   const Arrow = rtl ? ArrowLeft : ArrowRight;
 
   const myApprovals = approvals.filter((a) => a.allow(roles));
+  const [activeForm, setActiveForm] = useState<CouncilRequestType | null>(null);
 
   return (
     <>
@@ -293,13 +339,25 @@ function RequestsHubPage() {
                   {r.requiresAuth && !user ? (
                     <p className="mt-3 text-[11.5px] text-muted-foreground">{t(copy.signInNote)}</p>
                   ) : null}
-                  <Link
-                    to={r.requiresAuth && !user ? "/auth" : r.to}
-                    className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                  >
-                    {t(copy.action)}
-                    <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                  </Link>
+                  {r.form ? (
+                    <button
+                      type="button"
+                      id={r.id}
+                      onClick={() => setActiveForm(r.form!)}
+                      className="mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                    >
+                      {t(copy.action)}
+                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                    </button>
+                  ) : (
+                    <Link
+                      to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
+                      className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                    >
+                      {t(copy.action)}
+                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Link>
+                  )}
                 </li>
               );
             })}
@@ -367,6 +425,14 @@ function RequestsHubPage() {
           </section>
         ) : null}
       </div>
+
+      <CouncilRequestForm
+        type={activeForm}
+        open={activeForm !== null}
+        onOpenChange={(next) => {
+          if (!next) setActiveForm(null);
+        }}
+      />
     </>
   );
 }
