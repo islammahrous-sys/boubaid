@@ -85,7 +85,9 @@ export function mergeInitiatives(
   dbRows: InitiativeRow[],
   staticItems: InitiativeItem[],
 ): InitiativeItem[] {
-  const dbItems = dbRows.map(mapInitiativeRow);
+  // البرامج live in the same table under kind = "program" and have their own
+  // page (/programs); المشاريع pages must not list them.
+  const dbItems = dbRows.filter((r) => r.kind !== "program").map(mapInitiativeRow);
   const dbSlugs = new Set(dbItems.map((i) => i.slug));
   return [...dbItems, ...staticItems.filter((i) => !dbSlugs.has(i.slug))];
 }
