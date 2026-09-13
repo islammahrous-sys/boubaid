@@ -255,7 +255,6 @@ function DirectoryPage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
   const { liveBusinesses, services } = Route.useLoaderData();
-  const { user, isMember: authIsMember, loading: authLoading } = useAuth();
 
   const [activeTab, setActiveTab] = useState("members");
 
@@ -279,67 +278,6 @@ function DirectoryPage() {
   // Selected Business for Detail Dialog
   const [detailBiz, setDetailBiz] = useState<BusinessItem | null>(null);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
-
-  // Member tab query
-  const [memberQuery, setMemberQuery] = useState("");
-  const [memberBranch, setMemberBranch] = useState("all");
-
-  // Business registration modal
-  const [bizModalOpen, setBizModalOpen] = useState(false);
-  const [isSubmittingBiz, setIsSubmittingBiz] = useState(false);
-  const [bizSuccess, setBizSuccess] = useState(false);
-
-  const [bizForm, setBizForm] = useState({
-    name_ar: "",
-    name_en: "",
-    category: "تجارة وتجزئة",
-    city: "المبرز، الأحساء",
-    owner_name_ar: "",
-    branch_slug: "",
-    phone: "",
-    email: "",
-    website: "",
-    national_address: "",
-    description_ar: "",
-    description_en: "",
-    website_url_check: "",
-  });
-
-  const sendBizListing = useServerFn(submitBusinessListing);
-
-  const handleBizSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!bizForm.name_ar || !bizForm.category || !bizForm.owner_name_ar || !bizForm.phone) {
-      toast.error(isAr ? "يرجى تعبئة الحقول الأساسية المطلوبة" : "Please fill in required fields");
-      return;
-    }
-
-    setIsSubmittingBiz(true);
-    try {
-      const res = await sendBizListing({ data: bizForm });
-      if (res.ok) {
-        setBizSuccess(true);
-        toast.success(
-          isAr
-            ? "تم إرسال طلب تسجيل المنشأة للأمانة العامة بنجاح"
-            : "Business listing submitted successfully",
-        );
-      } else {
-        toast.error(isAr ? "تعذر حفظ البيانات، يرجى المحاولة لاحقاً" : "Failed to submit listing");
-      }
-    } catch {
-      toast.error(isAr ? "حدث خطأ أثناء الإرسال" : "An error occurred");
-    } finally {
-      setIsSubmittingBiz(false);
-    }
-  };
-
-  const getMembers = useServerFn(getMemberDirectory);
-  const { data: memberData, isLoading: membersLoading } = useQuery({
-    queryKey: ["member-directory"],
-    queryFn: () => getMembers(),
-    enabled: !!user,
-  });
 
   const allBusinesses: BusinessItem[] = useMemo(() => {
     // The directory shows only real, admin-approved businesses from the
