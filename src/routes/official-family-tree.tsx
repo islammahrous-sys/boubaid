@@ -13,8 +13,16 @@ const FALLBACK_PLATE = "/images/family_tree_official_artwork.jpg";
 
 export const Route = createFileRoute("/official-family-tree")({
   loader: () => getPublicSiteSettings(),
-  errorComponent: () => null,
-  notFoundComponent: () => null,
+  errorComponent: () => (
+    <div className="container-page py-20 text-center text-sm text-muted-foreground">
+      تعذّر تحميل الصفحة، يرجى المحاولة مرة أخرى.
+    </div>
+  ),
+  notFoundComponent: () => (
+    <div className="container-page py-20 text-center text-sm text-muted-foreground">
+      الصفحة غير متوفرة.
+    </div>
+  ),
   head: () => ({
     meta: [
       { title: "شجرة العائلة — اللوحة الرسمية المصورة لشجرة العائلة | آل بوعبيد" },
