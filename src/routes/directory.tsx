@@ -385,30 +385,6 @@ function DirectoryPage() {
     }
   };
 
-  const filteredMembers = useMemo(() => {
-    if (!memberData?.members) return [];
-    const q = memberQuery.trim().toLowerCase();
-    return memberData.members.filter((m) => {
-      if (memberBranch !== "all" && m.branch_slug !== memberBranch) {
-        return false;
-      }
-      if (q) {
-        const hay = [
-          m.full_name_ar,
-          m.full_name_en,
-          m.email,
-          m.phone,
-          m.branch_slug ? t(branchMap.get(m.branch_slug) || { ar: "", en: "" }) : "",
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    });
-  }, [memberData, memberQuery, memberBranch, branchMap, t]);
-
   const resetFilters = () => {
     setQuery("");
     setSelectedCategory("all");
