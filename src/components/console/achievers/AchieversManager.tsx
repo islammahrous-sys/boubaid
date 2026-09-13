@@ -81,15 +81,15 @@ export function AchieversManager({
     id: undefined,
     name_ar: "",
     name_en: "",
-    field_ar: "الطب والعلوم الصحية",
-    field_en: "Medicine & Health Sciences",
+    field_ar: "",
+    field_en: "",
     achievement_ar: "",
     achievement_en: "",
     category: "academic",
     section: "excellence_award",
     award_year: "1447",
-    branch_ar: "فرع الصالحية",
-    branch_en: "Al-Salihiyah",
+    branch_ar: "",
+    branch_en: "",
     sort_order: 0,
     is_published: true,
   });
@@ -110,15 +110,15 @@ export function AchieversManager({
       id: undefined,
       name_ar: "",
       name_en: "",
-      field_ar: "الطب والعلوم الصحية",
-      field_en: "Medicine & Health Sciences",
+      field_ar: "",
+      field_en: "",
       achievement_ar: "",
       achievement_en: "",
       category: "academic",
       section: "excellence_award",
       award_year: "1447",
-      branch_ar: "فرع الصالحية",
-      branch_en: "Al-Salihiyah",
+      branch_ar: "",
+      branch_en: "",
       sort_order: achievers.length,
       is_published: true,
     });
@@ -626,6 +626,9 @@ export function AchieversManager({
                       <SelectContent>
                         <SelectItem value="academic">
                           {isAr ? "أكاديمي وتعليمي" : "Academic"}
+                        </SelectItem>
+                        <SelectItem value="professional">
+                          {isAr ? "شهادة مهنية" : "Professional Certification"}
                         </SelectItem>
                         <SelectItem value="medical">
                           {isAr ? "طب وصحة" : "Medical & Health"}

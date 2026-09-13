@@ -122,12 +122,6 @@ export function mapAchieverRow(row: AchieverRow): AchieverItem {
   };
 }
 
-export function mergeAchievers(dbRows: AchieverRow[], staticItems: AchieverItem[]): AchieverItem[] {
-  const dbItems = dbRows.map(mapAchieverRow);
-  if (dbItems.length > 0) return dbItems;
-  return staticItems;
-}
-
 /* ------------------------------ library --------------------------------- */
 
 export type LibraryDocument = {
