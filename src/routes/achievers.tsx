@@ -164,11 +164,36 @@ function AchieversPage() {
       reader.readAsDataURL(file);
     });
 
-  const competencies = useMemo(() => achievers.filter((a) => a.section === "family_competency"), [achievers]);
+  const competencies = useMemo(
+    () =>
+      achievers
+        .filter((a) => a.section === "family_competency")
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    [achievers],
+  );
   const excellence = useMemo(() => achievers.filter((a) => a.section === "excellence_award"), [achievers]);
+  // Years come from the records themselves, so a new award year entered in the
+  // console appears here without a code change. Eastern-Arabic digits and a
+  // trailing "هـ"/"AH" typed by an editor normalise to the same group.
   const yearGroups = useMemo(() => {
-    const years = ["1444", "1445", "1446", "1447"];
-    return years.map((year) => ({ year, people: excellence.filter((a) => a.awardYear === year).sort((a, b) => a.sortOrder - b.sortOrder) }));
+    const normalise = (raw: string | null | undefined) => {
+      const digits = String(raw ?? "").replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)));
+      const match = digits.match(/\d{3,4}/);
+      return match ? match[0] : "";
+    };
+    const groups = new Map<string, typeof excellence>();
+    for (const person of excellence) {
+      const year = normalise(person.awardYear);
+      const bucket = groups.get(year);
+      if (bucket) bucket.push(person);
+      else groups.set(year, [person]);
+    }
+    return [...groups.entries()]
+      .sort((a, b) => (a[0] === "" ? 1 : b[0] === "" ? -1 : Number(a[0]) - Number(b[0])))
+      .map(([year, people]) => ({
+        year,
+        people: [...people].sort((a, b) => a.sortOrder - b.sortOrder),
+      }));
   }, [excellence]);
 
   const handleNominationSubmit = async (e: React.FormEvent) => {
@@ -232,9 +257,34 @@ function AchieversPage() {
         <section aria-labelledby="competencies-title">
           <Eyebrow>{rtl ? "القسم الأول" : "Section One"}</Eyebrow>
           <h2 id="competencies-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">{t(copy.competencies)}</h2>
-          <div className="mt-6 border-y border-border py-10 text-center">
-            {competencies.length === 0 ? <p className="text-sm text-muted-foreground">{t(copy.empty)}</p> : null}
-          </div>
+          {competencies.length === 0 ? (
+            <div className="mt-6 border-y border-border py-10 text-center">
+              <p className="text-sm text-muted-foreground">{t(copy.empty)}</p>
+            </div>
+          ) : (
+            <ol className="mt-6 divide-y divide-border border-y border-border">
+              {competencies.map((person, index) => (
+                <li
+                  key={person.id}
+                  className="grid gap-2 py-5 sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1.4fr)] sm:gap-6"
+                >
+                  <span className="nums text-sm text-bronze/70 dark:text-gold/60">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveAchiever(person)}
+                    className="text-start font-naskh text-base font-bold text-foreground hover:text-bronze dark:hover:text-gold"
+                  >
+                    {t(person.name)}
+                  </button>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {t(person.field) || t(person.achievement)}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          )}
         </section>
 
         <section aria-labelledby="excellence-title">
@@ -263,7 +313,13 @@ function AchieversPage() {
               <section key={year} aria-labelledby={`award-year-${year}`}>
                 <div className="flex items-center gap-4 border-b border-ink/25 pb-3 dark:border-ivory/20">
                   <h3 id={`award-year-${year}`} className="nums text-xl font-bold text-bronze dark:text-gold">
-                    {rtl ? `عام ${year}${year === "1446" ? "" : "هـ"}` : `Year ${year}${year === "1446" ? "" : " AH"}`}
+                    {year === ""
+                      ? rtl
+                        ? "بدون سنة محددة"
+                        : "Year not specified"
+                      : rtl
+                        ? `عام ${year}${year === "1446" ? "" : "هـ"}`
+                        : `Year ${year}${year === "1446" ? "" : " AH"}`}
                   </h3>
                   <span className="nums text-xs text-muted-foreground">{people.length}</span>
                 </div>
