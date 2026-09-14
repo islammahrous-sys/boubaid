@@ -135,6 +135,8 @@ type FolderCard = {
 };
 
 function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: string }) {
+  const { lang } = useLang();
+  const pick = (ar: string, en?: string | null) => (lang === "en" ? en || ar : ar);
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((c) => (
