@@ -336,6 +336,9 @@ export function LibraryItemsManager({
                     <SelectItem value="templates">
                       {isAr ? "النماذج و القوالب (Templates)" : "Forms & Templates"}
                     </SelectItem>
+                    <SelectItem value="videos">
+                      {isAr ? "الفيديوهات (Videos)" : "Videos"}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
