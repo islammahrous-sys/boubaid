@@ -183,7 +183,12 @@ function LibraryPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
 
-  const defaultTab = folders[0]?.slug ?? MUSEUM_TAB;
+  // Land on the first folder that actually has photographs; while the new
+  // folders are still empty, the Museum Collection stays the default view.
+  const defaultTab =
+    folders.find((f) =>
+      f.children.length > 0 ? f.children.some((c) => c.image_count > 0) : f.image_count > 0,
+    )?.slug ?? MUSEUM_TAB;
   const [tab, setTab] = useState<string>(searchParams.tab ?? defaultTab);
   const [searchQuery, setSearchQuery] = useState("");
 
