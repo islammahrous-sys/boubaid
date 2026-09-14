@@ -24,3 +24,8 @@
 - [x] 14 official announcement templates uploaded and displayed as a visible gallery with Arabic/English titles and template codes
 - [x] Template index and template system PDFs published with an in-browser View action
 - [x] Records live in the library CMS (collection «النماذج و القوالب») so future templates need no code change
+
+## Requests Hub expansion (Sep 2026) — complete
+- All 24 audit-suggested request types added to /requests (32 cards total), grouped into 7 subject sections in both languages.
+- 21 new types submit through the shared council request form into the `inquiries` inbox with their own `source`; labels live in src/lib/council-requests.ts.
+- Existing pages reused for tree frame, events, initiatives, directory, achievers, contribute, account, contact.

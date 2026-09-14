@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { COUNCIL_REQUEST_TYPES } from "./council-requests";
 
 /** Client-safe validation schemas shared by forms and their server functions. */
 
@@ -109,19 +110,12 @@ export type BusinessSubmissionInput = z.infer<typeof businessSubmissionSchema>;
 /**
  * Council request forms served from the Requests Hub (`/requests`).
  *
- * Three distinct request types share one schema and one handler because they
- * collect the same identity fields and land in the same official inbox
- * (`inquiries`), separated by `source`. Adding a further type later is a
- * one-line change to the enum below plus its label in the hub.
+ * All request types share one schema and one handler because they collect the
+ * same identity fields and land in the same official inbox (`inquiries`),
+ * separated by `source`. The catalogue in `council-requests.ts` is the single
+ * source of truth for the enum and the field labels.
  */
-export const councilRequestTypeSchema = z.enum([
-  /** طلب ترشيح عضوية في احد اللجان */
-  "committee_nomination",
-  /** طلب اضافة خدمة – منشأت */
-  "service_establishment",
-  /** طلب اضافة خدمة – افراد العائلة */
-  "service_family",
-]);
+export const councilRequestTypeSchema = z.enum(COUNCIL_REQUEST_TYPES);
 
 export type CouncilRequestType = z.infer<typeof councilRequestTypeSchema>;
 
