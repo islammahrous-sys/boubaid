@@ -164,11 +164,36 @@ function AchieversPage() {
       reader.readAsDataURL(file);
     });
 
-  const competencies = useMemo(() => achievers.filter((a) => a.section === "family_competency"), [achievers]);
+  const competencies = useMemo(
+    () =>
+      achievers
+        .filter((a) => a.section === "family_competency")
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    [achievers],
+  );
   const excellence = useMemo(() => achievers.filter((a) => a.section === "excellence_award"), [achievers]);
+  // Years come from the records themselves, so a new award year entered in the
+  // console appears here without a code change. Eastern-Arabic digits and a
+  // trailing "هـ"/"AH" typed by an editor normalise to the same group.
   const yearGroups = useMemo(() => {
-    const years = ["1444", "1445", "1446", "1447"];
-    return years.map((year) => ({ year, people: excellence.filter((a) => a.awardYear === year).sort((a, b) => a.sortOrder - b.sortOrder) }));
+    const normalise = (raw: string | null | undefined) => {
+      const digits = String(raw ?? "").replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)));
+      const match = digits.match(/\d{3,4}/);
+      return match ? match[0] : "";
+    };
+    const groups = new Map<string, typeof excellence>();
+    for (const person of excellence) {
+      const year = normalise(person.awardYear);
+      const bucket = groups.get(year);
+      if (bucket) bucket.push(person);
+      else groups.set(year, [person]);
+    }
+    return [...groups.entries()]
+      .sort((a, b) => (a[0] === "" ? 1 : b[0] === "" ? -1 : Number(a[0]) - Number(b[0])))
+      .map(([year, people]) => ({
+        year,
+        people: [...people].sort((a, b) => a.sortOrder - b.sortOrder),
+      }));
   }, [excellence]);
 
   const handleNominationSubmit = async (e: React.FormEvent) => {
