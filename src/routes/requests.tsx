@@ -653,47 +653,62 @@ function RequestsHubPage() {
             {t(copy.submitNote)}
           </p>
 
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {requests.map((r) => {
-              const Icon = r.Icon;
-              return (
-                <li
-                  key={r.id}
-                  className="flex flex-col border border-border bg-card p-5 transition-colors hover:border-bronze dark:hover:border-gold rounded-md"
-                >
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded border border-border bg-secondary/50 text-bronze dark:text-gold">
-                    <Icon className="h-4.5 w-4.5" aria-hidden="true" />
-                  </span>
-                  <h3 className="mt-4 text-[15px] font-semibold text-foreground">{t(r.name)}</h3>
-                  <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted-foreground">
-                    {t(r.desc)}
-                  </p>
-                  {r.requiresAuth && !user ? (
-                    <p className="mt-3 text-[11.5px] text-muted-foreground">{t(copy.signInNote)}</p>
-                  ) : null}
-                  {r.form ? (
-                    <button
-                      type="button"
-                      id={r.id}
-                      onClick={() => setActiveForm(r.form!)}
-                      className="mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                    >
-                      {t(copy.action)}
-                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                    </button>
-                  ) : (
-                    <Link
-                      to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
-                      className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                    >
-                      {t(copy.action)}
-                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+          {groupOrder.map((g) => {
+            const items = requests.filter((r) => r.group === g);
+            if (items.length === 0) return null;
+            return (
+              <div key={g} className="mt-10">
+                <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-bronze dark:text-gold">
+                  {t(groupTitles[g])}
+                </h2>
+                <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {items.map((r) => {
+                    const Icon = r.Icon;
+                    return (
+                      <li
+                        key={r.id}
+                        className="flex flex-col border border-border bg-card p-5 transition-colors hover:border-bronze dark:hover:border-gold rounded-md"
+                      >
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded border border-border bg-secondary/50 text-bronze dark:text-gold">
+                          <Icon className="h-4.5 w-4.5" aria-hidden="true" />
+                        </span>
+                        <h3 className="mt-4 text-[15px] font-semibold text-foreground">
+                          {t(r.name)}
+                        </h3>
+                        <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted-foreground">
+                          {t(r.desc)}
+                        </p>
+                        {r.requiresAuth && !user ? (
+                          <p className="mt-3 text-[11.5px] text-muted-foreground">
+                            {t(copy.signInNote)}
+                          </p>
+                        ) : null}
+                        {r.form ? (
+                          <button
+                            type="button"
+                            id={r.id}
+                            onClick={() => setActiveForm(r.form!)}
+                            className="mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                          >
+                            {t(copy.action)}
+                            <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                          </button>
+                        ) : (
+                          <Link
+                            to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
+                            className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                          >
+                            {t(copy.action)}
+                            <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
         </section>
 
         <Ornament className="mt-16" />
