@@ -1373,6 +1373,7 @@ export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handl
         console.error("[cms] getPublishedArchiveVideos folders failed", folderError.message);
         return [];
       }
+      console.error("[cms] archiveVideos folders", folders?.length);
       if (!folders || folders.length === 0) return [];
 
       const { data: links, error: linkError } = await supabase
@@ -1385,6 +1386,7 @@ export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handl
         )
         .order("sort_order", { ascending: true })
         .limit(2000);
+      console.error("[cms] archiveVideos links", links?.length, linkError?.message);
       if (linkError || !links || links.length === 0) return [];
 
       const { data: assets } = await supabase
@@ -1392,6 +1394,7 @@ export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handl
         .select("id, bucket, storage_path, public_url, mime_type, width, height")
         .in("id", [...new Set(links.map((l) => l.media_asset_id))])
         .like("mime_type", "video%");
+      console.error("[cms] archiveVideos assets", assets?.length);
       if (!assets || assets.length === 0) return [];
 
       const assetsById = new Map(assets.map((a) => [a.id, a]));
