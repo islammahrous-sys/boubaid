@@ -9,6 +9,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { submitCouncilRequest } from "@/lib/forms.functions";
 import type { CouncilRequestType } from "@/lib/forms.schemas";
+import { COUNCIL_REQUESTS } from "@/lib/council-requests";
 
 /**
  * Shared submission form for every Requests Hub request type. All of them
