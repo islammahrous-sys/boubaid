@@ -106,7 +106,7 @@ function CommitteesPage() {
         meta={[
           { label: t(copy.metaLicence), value: siteMeta.ncnpLicense, mono: true },
           { label: t(copy.metaAuthority), value: t(siteMeta.ncnpAuthority) },
-          { label: t(copy.metaRegistered), value: `${siteMeta.foundedHijri} هـ` },
+          { label: t(copy.metaRegistered), value: t(siteMeta.foundedHijriLabel) },
         ]}
       />
 

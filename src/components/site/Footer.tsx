@@ -204,7 +204,7 @@ export function Footer() {
                   {lang === "ar" ? "تاريخ الإشهار" : "Registered"}
                 </dt>
                 <dd className="nums text-ivory/75">
-                  {siteMeta.foundedHijri} هـ · {siteMeta.foundedGregorian}
+                  {t(siteMeta.foundedHijriLabel)} · {t(siteMeta.foundedGregorianLabel)}
                 </dd>
               </div>
             </dl>

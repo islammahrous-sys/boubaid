@@ -8,6 +8,7 @@ import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { fundDocuments, fundDocumentGroups } from "@/content/fund-documents";
 import { getCanonicalUrl } from "@/lib/seo";
+import { formatHijri } from "@/lib/text";
 
 export const Route = createFileRoute("/fund-certificates")({
   head: () => ({
@@ -51,7 +52,7 @@ function FundCertificatesPage() {
           { label: isAr ? "جهة الإصدار" : "Issued by", value: t(siteMeta.ncnpAuthority) },
           {
             label: isAr ? "تاريخ الإشهار" : "Registered",
-            value: `${siteMeta.foundedHijri} هـ · ${siteMeta.foundedGregorian}`,
+            value: `${t(siteMeta.foundedHijriLabel)} · ${t(siteMeta.foundedGregorianLabel)}`,
             mono: true,
           },
         ]}
@@ -101,7 +102,7 @@ function FundCertificatesPage() {
                         {t(doc.note)}
                       </p>
                       <p className="nums label-caps mt-2 text-muted-foreground">
-                        {doc.year} هـ · {doc.kind}
+                        {formatHijri(doc.year, lang)} · {doc.kind}
                       </p>
 
                       <button

@@ -130,6 +130,14 @@ const railSections: RailSection[] = [
   { id: "dna-sources", label: { ar: "المصادر", en: "Sources" } },
 ];
 
+/** Renders an Arabic TMRCA label ("١٦٥٠ سنة") in English ("1650 years"). */
+function localizeYearLabel(value: string): string {
+  const latin = value.replace(/[\u0660-\u0669]/g, (d) =>
+    String(d.charCodeAt(0) - 0x0660),
+  );
+  return latin.replace(/سنة/g, "years").replace(/هـ/g, "AH").trim();
+}
+
 function DnaPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
@@ -343,7 +351,7 @@ function DnaPage() {
                     </p>
 
                     <p className="nums text-[13px] text-bronze dark:text-gold" dir="auto">
-                      {entry.year}
+                      {lang === "en" ? localizeYearLabel(entry.year) : entry.year}
                     </p>
 
                     <div>

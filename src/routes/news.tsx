@@ -7,6 +7,7 @@ import { getPublishedNews } from "@/lib/cms.functions";
 import { mergeNews } from "@/content/cms-adapt";
 import { Eyebrow } from "@/components/site/Editorial";
 import { newsImage } from "@/content/news-images";
+import { formatContentDate } from "@/lib/text";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
 import {
@@ -112,7 +113,7 @@ function NewsPage() {
           </h1>
 
           <div className="mt-6 flex items-center justify-center gap-3 border-t border-border pt-3 text-xs text-muted-foreground">
-            <span className="nums">{siteMeta.foundedHijri} هـ —</span>
+            <span className="nums">{t(siteMeta.foundedHijriLabel)} —</span>
             <span className="ornament-star h-2 w-2 text-bronze dark:text-gold" aria-hidden="true" />
             <span className="nums">{siteMeta.domain}</span>
           </div>
@@ -181,7 +182,7 @@ function NewsPage() {
                     {t(lead.title)}
                   </h2>
 
-                  <p className="nums mt-3 text-xs text-muted-foreground">{lead.dateGregorian}</p>
+                  <p className="nums mt-3 text-xs text-muted-foreground">{formatContentDate(lead.dateGregorian, lang)}</p>
 
                   <p className="measure mt-4 text-sm leading-[1.85] text-ink-soft dark:text-foreground/80">
                     {t(lead.excerpt)}
@@ -214,7 +215,7 @@ function NewsPage() {
                         </span>
                         <span className="h-3 w-px bg-border" aria-hidden="true" />
                         <span className="nums text-xs text-muted-foreground">
-                          {n.dateGregorian}
+                          {formatContentDate(n.dateGregorian, lang)}
                         </span>
                       </div>
 

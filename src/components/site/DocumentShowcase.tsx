@@ -6,6 +6,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { libraryItems } from "@/content/site";
 import { fundDocuments } from "@/content/fund-documents";
 import { cn } from "@/lib/utils";
+import { formatHijri } from "@/lib/text";
 
 /**
  * Reference aliases used by editorial pages (Contact / About) mapped onto the
@@ -67,7 +68,7 @@ export function DocumentShowcase({
   variant = "list",
   className,
 }: DocumentShowcaseProps) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const docs = resolveDocs(refs);
 
@@ -106,7 +107,7 @@ export function DocumentShowcase({
                     {doc.ncnpRef}
                   </span>
                   <span className="nums label-caps text-muted-foreground">
-                    {doc.year} هـ · {doc.kind}
+                    {formatHijri(doc.year, lang)} · {doc.kind}
                   </span>
                 </div>
                 <h4 className="mt-2 text-sm leading-snug font-medium text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
@@ -165,7 +166,7 @@ export function DocumentShowcase({
                     {t(doc.title)}
                   </span>
                   <span className="nums hidden shrink-0 text-xs text-muted-foreground sm:inline">
-                    ({doc.year} هـ · {doc.kind})
+                    ({formatHijri(doc.year, lang)} · {doc.kind})
                   </span>
                 </div>
 

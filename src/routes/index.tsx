@@ -1,6 +1,7 @@
 import { createFileRoute, getRouteApi, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { ArrowLeft, ArrowRight, ExternalLink, CalendarDays } from "lucide-react";
+import { formatContentDate } from "@/lib/text";
 import { cn } from "@/lib/utils";
 
 import { useLang } from "@/i18n/LanguageProvider";
@@ -478,7 +479,7 @@ function HomePage() {
                     { label: copy.licence, value: siteMeta.ncnpLicense, mono: true, link: null },
                     {
                       label: copy.registered,
-                      value: `${siteMeta.foundedHijri} هـ`,
+                      value: t(siteMeta.foundedHijriLabel),
                       mono: false,
                       link: null,
                     },
@@ -903,7 +904,7 @@ function HomePage() {
                       loading="lazy"
                     />
                     <p className="nums label-caps mt-4 text-bronze dark:text-gold">
-                      {lead.dateGregorian}
+                      {formatContentDate(lead.dateGregorian, lang)}
                     </p>
                     <h3 className="mt-2 text-xl leading-snug text-foreground transition-colors group-hover:text-bronze md:text-2xl dark:group-hover:text-gold">
                       {t(lead.title)}
@@ -924,7 +925,7 @@ function HomePage() {
                       params={{ slug: n.slug }}
                       className="group block border-b border-border py-5 hover-lift active-scale"
                     >
-                      <p className="nums label-caps text-muted-foreground">{n.dateGregorian}</p>
+                      <p className="nums label-caps text-muted-foreground">{formatContentDate(n.dateGregorian, lang)}</p>
                       <h3 className="mt-1.5 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
                         {t(n.title)}
                       </h3>
@@ -1195,7 +1196,7 @@ function HomePage() {
             label: { ar: "فرد موثق", en: "Documented Members" },
           },
           { value: siteMeta.ncnpLicense, label: copy.licence },
-          { value: `${siteMeta.foundedHijri} هـ`, label: copy.registered },
+          { value: t(siteMeta.foundedHijriLabel), label: copy.registered },
         ];
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
