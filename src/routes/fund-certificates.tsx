@@ -101,7 +101,7 @@ function FundCertificatesPage() {
                         {t(doc.note)}
                       </p>
                       <p className="nums label-caps mt-2 text-muted-foreground">
-                        {doc.year} هـ · {doc.kind}
+                        {formatHijri(doc.year, lang)} · {doc.kind}
                       </p>
 
                       <button
