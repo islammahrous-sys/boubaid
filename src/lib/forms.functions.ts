@@ -318,7 +318,7 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
       name: data.full_name,
       email: data.email || "requests@albouabidfamily.com",
       phone: data.phone,
-      subject: subjects[data.type],
+      subject: `${def.title.ar}: ${data.topic}`,
       message,
       source: data.type,
       status: "new",

@@ -11,36 +11,13 @@ import { submitCouncilRequest } from "@/lib/forms.functions";
 import type { CouncilRequestType } from "@/lib/forms.schemas";
 
 /**
- * Shared submission form for the three Requests Hub request types. All three
+ * Shared submission form for every Requests Hub request type. All of them
  * write to the official inbox with a distinct `source`, so the console shows
- * them separately with the usual status workflow.
+ * them separately with the usual status workflow. Labels come from the
+ * catalogue in `council-requests.ts`.
  */
 
-type FieldCopy = { title: BiText; topic: BiText; details: BiText };
-
-const FIELDS: Record<CouncilRequestType, FieldCopy> = {
-  committee_nomination: {
-    title: {
-      ar: "طلب ترشيح عضوية في إحدى اللجان",
-      en: "Committee membership nomination request",
-    },
-    topic: { ar: "اللجنة المطلوبة", en: "Requested committee" },
-    details: { ar: "المؤهلات وأسباب الترشيح", en: "Qualifications and reasons" },
-  },
-  service_establishment: {
-    title: { ar: "طلب إضافة خدمة – منشآت", en: "Add a service request – Establishments" },
-    topic: { ar: "اسم المنشأة والخدمة", en: "Establishment and service name" },
-    details: { ar: "وصف الخدمة", en: "Service description" },
-  },
-  service_family: {
-    title: {
-      ar: "طلب إضافة خدمة – أفراد العائلة",
-      en: "Add a service request – Family members",
-    },
-    topic: { ar: "الخدمة المقدمة", en: "Service offered" },
-    details: { ar: "وصف الخدمة", en: "Service description" },
-  },
-};
+const FIELDS = COUNCIL_REQUESTS;
 
 const copy = {
   name: { ar: "الاسم الكامل *", en: "Full name *" } as BiText,
