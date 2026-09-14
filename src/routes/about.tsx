@@ -1,17 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { SectionHeading, Prose, Eyebrow, Ornament, Pullquote } from "@/components/site/Editorial";
-import { DocumentShowcase } from "@/components/site/DocumentShowcase";
+import { SectionHeading, Ornament } from "@/components/site/Editorial";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { HistoryBlocks } from "@/components/site/HistoryBlocks";
 import { historySections } from "@/content/history-source";
 
 const arabicIndex = ["١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩", "١٠"];
 const romanIndex = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
-import { lineageChain, references, siteMeta } from "@/content/site";
+import { lineageChain, siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 import { getPublicFamilyHistory } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -127,8 +126,8 @@ const copy = {
   } as BiText,
 
   marginNote: {
-    ar: "المصادر النسبية المعتمدة في هذه الصفحة مثبتة في قائمة المراجع أسفلها، ومقروءة مع نتائج الدراسة الجينية.",
-    en: "The genealogical sources relied on here are listed in the bibliography below, and are to be read alongside the results of the genetic study.",
+    ar: "المصادر النسبية المعتمدة في هذه الصفحة مثبتة داخل أقسامها، ومقروءة مع نتائج الدراسة الجينية.",
+    en: "The genealogical sources relied on here are cited within each section, and are to be read alongside the results of the genetic study.",
   } as BiText,
   marginNoteLabel: { ar: "ملاحظة", en: "Note" } as BiText,
 
@@ -142,10 +141,6 @@ const copy = {
   dnaCta: { ar: "نتائج الدراسة الجينية", en: "The genetic study" } as BiText,
   branchesCta: { ar: "الفروع السبعة", en: "The seven branches" } as BiText,
 
-  platesEyebrow: { ar: "لوحات", en: "Plates" } as BiText,
-  platesTitle: { ar: "من الأرشيف المصور", en: "From the pictorial archive" } as BiText,
-
-  biblioTitle: { ar: "المراجع", en: "Bibliography" } as BiText,
 };
 
 /**
