@@ -1219,7 +1219,9 @@ export const getPublicGalleryBySlug = createServerFn({ method: "GET" })
     }
   });
 
-/** Museum Archive index page — every published collection, with its cover and image count. */
+/** Museum Archive index page — every published Museum collection (section =
+ *  "museum"), with its cover and image count. The Archive folder tree lives in
+ *  the same table under section = "archive" and must never leak in here. */
 export const getPublishedGalleries = createServerFn({ method: "GET" }).handler(
   async (): Promise<PublicGalleryListItem[]> => {
     try {
@@ -1231,6 +1233,7 @@ export const getPublishedGalleries = createServerFn({ method: "GET" }).handler(
         .select("id, slug, title_ar, title_en, description_ar, description_en, cover_media_path")
         .eq("status", "published")
         .eq("visibility", "public")
+        .eq("section", "museum")
         .order("sort_order", { ascending: true })
         .limit(200);
       if (error) {
@@ -1259,6 +1262,73 @@ export const getPublishedGalleries = createServerFn({ method: "GET" }).handler(
     }
   },
 );
+
+export type ArchiveFolder = PublicGalleryListItem & { children: PublicGalleryListItem[] };
+
+/**
+ * Public Archive folder tree (section = "archive"): top-level folders with the
+ * sub-folders nested under them. Museum collections are excluded by the
+ * `section` filter, so the Museum Collection tab is untouched by this read.
+ */
+export const getPublishedArchiveFolders = createServerFn({ method: "GET" }).handler(
+  async (): Promise<ArchiveFolder[]> => {
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const supabase = createPublicServerClient();
+
+      const { data: rows, error } = await supabase
+        .from("galleries")
+        .select(
+          "id, slug, title_ar, title_en, description_ar, description_en, cover_media_path, parent_id, sort_order",
+        )
+        .eq("status", "published")
+        .eq("visibility", "public")
+        .eq("section", "archive")
+        .order("sort_order", { ascending: true })
+        .limit(500);
+      if (error) {
+        console.error("[cms] getPublishedArchiveFolders read failed", error.code, error.message);
+        return [];
+      }
+      if (!rows || rows.length === 0) return [];
+
+      const { data: counts } = await supabase
+        .from("gallery_media")
+        .select("gallery_id")
+        .eq("is_published", true)
+        .in(
+          "gallery_id",
+          rows.map((g) => g.id),
+        );
+      const countByGallery = new Map<string, number>();
+      for (const row of counts ?? []) {
+        countByGallery.set(row.gallery_id, (countByGallery.get(row.gallery_id) ?? 0) + 1);
+      }
+
+      const toItem = (g: (typeof rows)[number]): PublicGalleryListItem => ({
+        id: g.id,
+        slug: g.slug,
+        title_ar: g.title_ar,
+        title_en: g.title_en,
+        description_ar: g.description_ar,
+        description_en: g.description_en,
+        cover_media_path: g.cover_media_path,
+        image_count: countByGallery.get(g.id) ?? 0,
+      });
+
+      return rows
+        .filter((g) => !g.parent_id)
+        .map((parent) => ({
+          ...toItem(parent),
+          children: rows.filter((c) => c.parent_id === parent.id).map(toItem),
+        }));
+    } catch (err) {
+      console.error("[cms] getPublishedArchiveFolders caught error", err);
+      return [];
+    }
+  },
+);
+
 
 /** Editor-only picker list for the gallery block (id + title, no media payload). */
 export const listGalleriesForEditor = createServerFn({ method: "GET" })
