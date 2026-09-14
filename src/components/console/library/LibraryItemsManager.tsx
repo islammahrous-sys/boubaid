@@ -425,6 +425,24 @@ export function LibraryItemsManager({
               </div>
             </div>
 
+            {form.collection === "videos" && (
+              <div className="space-y-1 pt-1 border-t border-border">
+                <Label className="text-xs font-semibold">
+                  {isAr ? "رابط الفيديو (إنستغرام) *" : "Video URL (Instagram) *"}
+                </Label>
+                <Input
+                  value={form.external_url ?? ""}
+                  onChange={(e) => setForm({ ...form, external_url: e.target.value })}
+                  placeholder="https://www.instagram.com/reel/XXXXXXXXXXX/"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  {isAr
+                    ? "يُعرض المقطع مباشرة في قسم الأرشيف ← الفيديوهات عبر مشغّل إنستغرام الرسمي."
+                    : "The clip is embedded in Archive → Videos through Instagram's official player."}
+                </p>
+              </div>
+            )}
+
             {/* Visual File / Image / PDF Upload */}
             <div className="space-y-1 pt-1 border-t border-border">
               <Label className="text-xs font-semibold">
