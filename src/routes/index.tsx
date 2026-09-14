@@ -478,7 +478,7 @@ function HomePage() {
                     { label: copy.licence, value: siteMeta.ncnpLicense, mono: true, link: null },
                     {
                       label: copy.registered,
-                      value: `${siteMeta.foundedHijri} هـ`,
+                      value: t(siteMeta.foundedHijriLabel),
                       mono: false,
                       link: null,
                     },
@@ -1195,7 +1195,7 @@ function HomePage() {
             label: { ar: "فرد موثق", en: "Documented Members" },
           },
           { value: siteMeta.ncnpLicense, label: copy.licence },
-          { value: `${siteMeta.foundedHijri} هـ`, label: copy.registered },
+          { value: t(siteMeta.foundedHijriLabel), label: copy.registered },
         ];
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">

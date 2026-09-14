@@ -112,7 +112,7 @@ function NewsPage() {
           </h1>
 
           <div className="mt-6 flex items-center justify-center gap-3 border-t border-border pt-3 text-xs text-muted-foreground">
-            <span className="nums">{siteMeta.foundedHijri} هـ —</span>
+            <span className="nums">{t(siteMeta.foundedHijriLabel)} —</span>
             <span className="ornament-star h-2 w-2 text-bronze dark:text-gold" aria-hidden="true" />
             <span className="nums">{siteMeta.domain}</span>
           </div>
