@@ -903,7 +903,7 @@ function HomePage() {
                       loading="lazy"
                     />
                     <p className="nums label-caps mt-4 text-bronze dark:text-gold">
-                      {lead.dateGregorian}
+                      {formatContentDate(lead.dateGregorian, lang)}
                     </p>
                     <h3 className="mt-2 text-xl leading-snug text-foreground transition-colors group-hover:text-bronze md:text-2xl dark:group-hover:text-gold">
                       {t(lead.title)}
@@ -924,7 +924,7 @@ function HomePage() {
                       params={{ slug: n.slug }}
                       className="group block border-b border-border py-5 hover-lift active-scale"
                     >
-                      <p className="nums label-caps text-muted-foreground">{n.dateGregorian}</p>
+                      <p className="nums label-caps text-muted-foreground">{formatContentDate(n.dateGregorian, lang)}</p>
                       <h3 className="mt-1.5 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
                         {t(n.title)}
                       </h3>

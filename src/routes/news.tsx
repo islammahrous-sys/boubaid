@@ -181,7 +181,7 @@ function NewsPage() {
                     {t(lead.title)}
                   </h2>
 
-                  <p className="nums mt-3 text-xs text-muted-foreground">{lead.dateGregorian}</p>
+                  <p className="nums mt-3 text-xs text-muted-foreground">{formatContentDate(lead.dateGregorian, lang)}</p>
 
                   <p className="measure mt-4 text-sm leading-[1.85] text-ink-soft dark:text-foreground/80">
                     {t(lead.excerpt)}
@@ -214,7 +214,7 @@ function NewsPage() {
                         </span>
                         <span className="h-3 w-px bg-border" aria-hidden="true" />
                         <span className="nums text-xs text-muted-foreground">
-                          {n.dateGregorian}
+                          {formatContentDate(n.dateGregorian, lang)}
                         </span>
                       </div>
 
