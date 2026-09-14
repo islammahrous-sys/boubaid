@@ -81,8 +81,8 @@ const copy = {
 
   submitTitle: { ar: "تقديم طلب", en: "Submit a Request" } as BiText,
   submitNote: {
-    ar: "يفتح كل بند الصفحة الرسمية الخاصة به على الموقع، ولا يوجد نموذج بديل أو مواز.",
-    en: "Each item opens its own official page on this site; there is no parallel or duplicate form.",
+    ar: "الطلبات مرتبة في مجموعات. يفتح البند إما الصفحة الرسمية الخاصة به على الموقع، أو نموذج تقديم مباشر يصل إلى الأمانة العامة، ولا يوجد نموذج بديل أو مواز.",
+    en: "Requests are grouped by subject. Each item either opens its own official page on this site or a direct form that reaches the secretariat; there is no parallel or duplicate form.",
   } as BiText,
 
   mineTitle: { ar: "طلباتي ومتابعتها", en: "My Requests & Tracking" } as BiText,
