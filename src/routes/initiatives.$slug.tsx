@@ -8,7 +8,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { initiatives as staticInitiatives } from "@/content/site";
 import { getPublishedInitiatives } from "@/lib/cms.functions";
 import { joinInitiative } from "@/lib/initiatives-public.functions";
-import { mergeInitiatives } from "@/content/cms-adapt";
+import { mergeAllInitiatives } from "@/content/cms-adapt";
 import { Eyebrow, Status, Ornament } from "@/components/site/Editorial";
 import { initiativeImage } from "@/content/images";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -27,7 +27,7 @@ import { TurnstileWidget, type TurnstileWidgetHandle } from "@/components/site/T
 export const Route = createFileRoute("/initiatives/$slug")({
   loader: async ({ params }) => {
     const rows = await getPublishedInitiatives();
-    const initiatives = mergeInitiatives(rows, staticInitiatives);
+    const initiatives = mergeAllInitiatives(rows, staticInitiatives);
     const item = initiatives.find((i) => i.slug === params.slug);
     if (!item) throw notFound();
     return { item, initiatives };

@@ -53,8 +53,8 @@ export function mergeNews(dbRows: NewsRow[], staticItems: NewsItem[]): NewsItem[
 
 export type InitiativeItem = {
   slug: string;
-  /** "project" for المشاريع, "program" for البرامج. */
-  kind?: "project" | "program";
+  /** "project" for المشاريع, "program" for البرامج, "competition" for المسابقات و الجوائز. */
+  kind?: "project" | "program" | "competition";
   title: BiText;
   /**
    * "upcoming" is this app's public-facing label for the DB's "planned"
@@ -71,7 +71,8 @@ export type InitiativeItem = {
 export function mapInitiativeRow(row: InitiativeRow): InitiativeItem {
   return {
     slug: row.slug,
-    kind: row.kind === "program" ? "program" : "project",
+    kind:
+      row.kind === "program" ? "program" : row.kind === "competition" ? "competition" : "project",
     title: { ar: row.title_ar, en: row.title_en ?? row.title_ar },
     status:
       row.status === "ongoing" ? "ongoing" : row.status === "completed" ? "completed" : "upcoming",
@@ -85,9 +86,25 @@ export function mergeInitiatives(
   dbRows: InitiativeRow[],
   staticItems: InitiativeItem[],
 ): InitiativeItem[] {
-  // البرامج live in the same table under kind = "program" and have their own
-  // page (/programs); المشاريع pages must not list them.
-  const dbItems = dbRows.filter((r) => r.kind !== "program").map(mapInitiativeRow);
+  // البرامج (kind = "program") and المسابقات و الجوائز (kind = "competition")
+  // live in the same table but have their own pages (/programs, /competitions);
+  // المشاريع pages must not list them.
+  const dbItems = dbRows
+    .filter((r) => r.kind !== "program" && r.kind !== "competition")
+    .map(mapInitiativeRow);
+  const dbSlugs = new Set(dbItems.map((i) => i.slug));
+  return [...dbItems, ...staticItems.filter((i) => !dbSlugs.has(i.slug))];
+}
+
+/**
+ * Every published record regardless of section — used by the shared detail
+ * route /initiatives/$slug so programme and award pages resolve too.
+ */
+export function mergeAllInitiatives(
+  dbRows: InitiativeRow[],
+  staticItems: InitiativeItem[],
+): InitiativeItem[] {
+  const dbItems = dbRows.map(mapInitiativeRow);
   const dbSlugs = new Set(dbItems.map((i) => i.slug));
   return [...dbItems, ...staticItems.filter((i) => !dbSlugs.has(i.slug))];
 }

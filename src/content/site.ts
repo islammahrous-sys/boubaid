@@ -941,7 +941,13 @@ export const news = [
   },
 ];
 
-export const initiatives = [
+/**
+ * المشاريع والبرامج والمسابقات are maintained exclusively in Supabase through
+ * the CMS; this list stays empty so nothing is duplicated in code.
+ */
+export const initiatives: import("./cms-adapt").InitiativeItem[] = [];
+
+const retiredStaticInitiatives = [
   {
     slug: "excellence-award",
     title: {
