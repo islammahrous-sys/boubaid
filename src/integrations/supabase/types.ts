@@ -1237,6 +1237,8 @@ export type Database = {
           description_ar: string | null
           description_en: string | null
           id: string
+          parent_id: string | null
+          section: string
           slug: string
           sort_order: number
           source_drive_folder_id: string | null
@@ -1253,6 +1255,8 @@ export type Database = {
           description_ar?: string | null
           description_en?: string | null
           id?: string
+          parent_id?: string | null
+          section?: string
           slug: string
           sort_order?: number
           source_drive_folder_id?: string | null
@@ -1269,6 +1273,8 @@ export type Database = {
           description_ar?: string | null
           description_en?: string | null
           id?: string
+          parent_id?: string | null
+          section?: string
           slug?: string
           sort_order?: number
           source_drive_folder_id?: string | null
@@ -1278,7 +1284,15 @@ export type Database = {
           updated_at?: string
           visibility?: Database["public"]["Enums"]["visibility_level"]
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "galleries_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "galleries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gallery_media: {
         Row: {
