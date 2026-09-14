@@ -19,3 +19,8 @@
 - [x] "رشّح نفسك" (Committees) and "سجّل خدمتك" (Services) point at the hub
 - [x] Lineage / Branches / Genetic studies moved under Family Tree; News-only under More
 - [x] جائزة التميز ceremony photo on /achievers
+
+## Forms & Templates (Sep 2026) — complete
+- [x] 14 official announcement templates uploaded and displayed as a visible gallery with Arabic/English titles and template codes
+- [x] Template index and template system PDFs published with an in-browser View action
+- [x] Records live in the library CMS (collection «النماذج و القوالب») so future templates need no code change
