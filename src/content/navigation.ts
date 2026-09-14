@@ -21,13 +21,12 @@ export type NavItem = {
 /** Top-level routes, shown in the desktop header bar. */
 export const primaryNav: NavItem[] = [
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, short: { ar: "الرئيسية", en: "Home" } },
+  // Direct destination — the consolidated historical content lives on /about,
+  // so this item deliberately has no dropdown.
   {
     to: "/about",
     label: { ar: "التاريخ والجذور", en: "History and Roots" },
-    children: [
-      { to: "/about", label: { ar: "تاريخ الأسرة", en: "Family History" } },
-      { to: "/library", label: { ar: "كتاب بني تميم", en: "Banu Tamim Book" } },
-    ],
+    short: { ar: "التاريخ", en: "History" },
   },
   {
     to: "/official-family-tree",
