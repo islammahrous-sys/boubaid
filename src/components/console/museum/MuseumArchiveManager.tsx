@@ -63,6 +63,10 @@ export type GalleryRow = {
   status: string;
   visibility: string;
   sort_order: number;
+  /** "museum" = protected Museum Collection, "archive" = Archive folder tree. */
+  section?: string | null;
+  /** Parent Archive folder for sub-folders; null for a top-level folder. */
+  parent_id?: string | null;
 };
 
 export type GalleryMediaRow = {
@@ -158,6 +162,8 @@ export function MuseumArchiveManager({
     status: "draft",
     visibility: "public",
     sort_order: 0,
+    section: "museum",
+    parent_id: null,
   });
 
   const mediaById = useMemo(() => {
@@ -206,6 +212,8 @@ export function MuseumArchiveManager({
       status: "draft",
       visibility: "public",
       sort_order: sortedGalleries.length,
+      section: "museum",
+      parent_id: null,
     });
     setFormOpen(true);
   };
@@ -223,6 +231,8 @@ export function MuseumArchiveManager({
       status: gallery.status,
       visibility: "public",
       sort_order: gallery.sort_order,
+      section: gallery.section === "archive" ? "archive" : "museum",
+      parent_id: gallery.parent_id ?? null,
     });
     setFormOpen(true);
   };
@@ -279,6 +289,8 @@ export function MuseumArchiveManager({
         status: gallery.status === "published" ? "draft" : "published",
         visibility: "public",
         sort_order: gallery.sort_order,
+        section: gallery.section === "archive" ? "archive" : "museum",
+        parent_id: gallery.parent_id ?? null,
       });
       onRefresh();
     } catch (err: any) {
@@ -433,6 +445,8 @@ export function MuseumArchiveManager({
         status: activeGallery.status,
         visibility: "public",
         sort_order: activeGallery.sort_order,
+        section: activeGallery.section === "archive" ? "archive" : "museum",
+        parent_id: activeGallery.parent_id ?? null,
       });
       onRefresh();
       toast.success(isAr ? "تم تعيين صورة الغلاف" : "Cover image set");
@@ -714,6 +728,46 @@ export function MuseumArchiveManager({
                 onChange={(e) => setForm({ ...form, description_ar: e.target.value })}
               />
             </div>
+            <div className="space-y-1">
+              <Label className="text-xs">{isAr ? "القسم" : "Section"}</Label>
+              <select
+                value={form.section}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    section: e.target.value === "archive" ? "archive" : "museum",
+                    parent_id: e.target.value === "archive" ? form.parent_id : null,
+                  })
+                }
+                className="w-full rounded-md border border-border bg-background px-2.5 py-2 text-xs"
+              >
+                <option value="museum">{isAr ? "مجموعات المتحف" : "Museum Collection"}</option>
+                <option value="archive">{isAr ? "الأرشيف التراثي" : "Heritage Archive"}</option>
+              </select>
+            </div>
+            {form.section === "archive" && (
+              <div className="space-y-1">
+                <Label className="text-xs">
+                  {isAr ? "المجلد الرئيسي (اختياري)" : "Parent folder (optional)"}
+                </Label>
+                <select
+                  value={form.parent_id ?? ""}
+                  onChange={(e) => setForm({ ...form, parent_id: e.target.value || null })}
+                  className="w-full rounded-md border border-border bg-background px-2.5 py-2 text-xs"
+                >
+                  <option value="">{isAr ? "— مجلد رئيسي —" : "— Top-level folder —"}</option>
+                  {sortedGalleries
+                    .filter(
+                      (g) => g.section === "archive" && !g.parent_id && g.id !== selectedGallery?.id,
+                    )
+                    .map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.title_ar}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
             <div className="flex items-center justify-between rounded-lg border border-border p-2.5">
               <Label className="text-xs">{isAr ? "نشر المجموعة" : "Publish collection"}</Label>
               <Switch

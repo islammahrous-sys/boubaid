@@ -274,6 +274,10 @@ export const galleryInputSchema = z.object({
   status: z.string().default("published"),
   visibility: visibilityLevelSchema.default("public"),
   sort_order: z.number().int().default(0),
+  /** "museum" = Museum Collection (protected legacy set), "archive" = Archive folder tree. */
+  section: z.enum(["museum", "archive"]).default("museum"),
+  /** Parent Archive folder, for sub-folders. Null for a top-level folder. */
+  parent_id: z.string().uuid().optional().nullable(),
 }).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "gallery"));
 export type GalleryInput = z.infer<typeof galleryInputSchema>;
 
