@@ -674,7 +674,7 @@ export function InitiativesManager({
                   <Select
                     value={form.kind}
                     onValueChange={(value) =>
-                      setForm({ ...form, kind: value as "project" | "program" })
+                      setForm({ ...form, kind: value as "project" | "program" | "competition" })
                     }
                   >
                     <SelectTrigger className="h-10 text-xs bg-background">
@@ -683,6 +683,9 @@ export function InitiativesManager({
                     <SelectContent>
                       <SelectItem value="project">{isAr ? "المشاريع" : "Projects"}</SelectItem>
                       <SelectItem value="program">{isAr ? "البرامج" : "Programs"}</SelectItem>
+                      <SelectItem value="competition">
+                        {isAr ? "المسابقات و الجوائز" : "Competitions & Awards"}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
