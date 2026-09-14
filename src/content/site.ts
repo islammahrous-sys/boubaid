@@ -34,6 +34,9 @@ export const siteMeta = {
   } as BiText,
   foundedHijri: "20 صفر 1447",
   foundedGregorian: "14 أغسطس 2025",
+  /** Bilingual, display-ready registration date (already includes هـ / AH). */
+  foundedHijriLabel: { ar: "20 صفر 1447 هـ", en: "20 Safar 1447 AH" } as BiText,
+  foundedGregorianLabel: { ar: "14 أغسطس 2025", en: "14 August 2025" } as BiText,
   headquarters: {
     ar: "حي الحزام الذهبي، المبرز، محافظة الأحساء، المملكة العربية السعودية",
     en: "Al-Hizam Al-Dhahabi District, Al-Mubarraz, Al-Ahsa Governorate, KSA",
