@@ -54,11 +54,6 @@ export function InstagramReelEmbed({ url, title, subtitle, className }: Instagra
       <figcaption className="flex flex-col gap-1.5 p-4">
         <h3 className="break-words text-base font-bold leading-snug text-foreground">{title}</h3>
         {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
-        <p className="text-[12px] leading-relaxed text-muted-foreground">
-          {rtl
-            ? "يعمل المقطع داخل مشغّل إنستغرام الرسمي، ويتحكم المشغّل نفسه في التشغيل والصوت (زر كتم/تشغيل الصوت داخل المقطع)."
-            : "The clip plays inside Instagram's official player; playback and sound are controlled by that player (its own mute / unmute button)."}
-        </p>
         <a
           href={url}
           target="_blank"
