@@ -190,6 +190,9 @@ export function LibraryItemsManager({
               <SelectItem value="recordings">
                 {isAr ? "التسجيلات المرئية" : "Recordings"}
               </SelectItem>
+              <SelectItem value="templates">
+                {isAr ? "النماذج و القوالب" : "Forms & Templates"}
+              </SelectItem>
             </SelectContent>
           </Select>
 
