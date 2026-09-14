@@ -661,6 +661,14 @@ function RequestsHubPage() {
                         <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted-foreground">
                           {t(r.desc)}
                         </p>
+                        {r.templateCode ? (
+                          <Link
+                            to="/templates"
+                            className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-bronze underline-offset-4 hover:underline dark:text-gold"
+                          >
+                            {r.templateCode}
+                          </Link>
+                        ) : null}
                         {r.requiresAuth && !user ? (
                           <p className="mt-3 text-[11.5px] text-muted-foreground">
                             {t(copy.signInNote)}
