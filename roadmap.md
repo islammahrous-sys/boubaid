@@ -29,3 +29,9 @@
 - All 24 audit-suggested request types added to /requests (32 cards total), grouped into 7 subject sections in both languages.
 - 21 new types submit through the shared council request form into the `inquiries` inbox with their own `source`; labels live in src/lib/council-requests.ts.
 - Existing pages reused for tree frame, events, initiatives, directory, achievers, contribute, account, contact.
+
+## Templates ↔ Requests Hub alignment + Archive video playback (Sep 2026) — complete
+- [x] 14 template-linked announcement requests generated from the official template library (one per template code, male/female kept separate); each form collects only the fields that template needs, accepts up to 3 attachments, and shows the linked template code.
+- [x] Submissions resolve the template code against the library record, get a unique reference number (ABF-REQ-…), and land in the existing inbox with the template id recorded; historical submissions untouched.
+- [x] The three earlier generic announcement requests (family occasion, customised template, official greeting) retired as duplicates — definitions kept so old submissions stay readable.
+- [x] Archive → الفيديوهات now plays the 11 website-hosted clips with the native player (loop, muted autoplay, real sound toggle in both languages); no Instagram needed. Fixed the batched media lookup that made the tab appear empty.
