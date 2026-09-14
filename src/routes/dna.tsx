@@ -343,7 +343,7 @@ function DnaPage() {
                     </p>
 
                     <p className="nums text-[13px] text-bronze dark:text-gold" dir="auto">
-                      {entry.year}
+                      {lang === "en" ? localizeYearLabel(entry.year) : entry.year}
                     </p>
 
                     <div>
