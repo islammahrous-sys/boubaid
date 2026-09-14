@@ -6,6 +6,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { libraryItems } from "@/content/site";
 import { fundDocuments } from "@/content/fund-documents";
 import { cn } from "@/lib/utils";
+import { formatHijri } from "@/lib/text";
 
 /**
  * Reference aliases used by editorial pages (Contact / About) mapped onto the
@@ -67,7 +68,7 @@ export function DocumentShowcase({
   variant = "list",
   className,
 }: DocumentShowcaseProps) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const docs = resolveDocs(refs);
 

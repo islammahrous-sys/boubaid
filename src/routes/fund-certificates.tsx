@@ -8,6 +8,7 @@ import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { fundDocuments, fundDocumentGroups } from "@/content/fund-documents";
 import { getCanonicalUrl } from "@/lib/seo";
+import { formatHijri } from "@/lib/text";
 
 export const Route = createFileRoute("/fund-certificates")({
   head: () => ({
