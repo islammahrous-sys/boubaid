@@ -194,7 +194,12 @@ export function InitiativesManager({
       body_ar: item.body_ar ?? "",
       body_en: item.body_en ?? "",
       status: (item.status as "ongoing" | "planned" | "completed") || "ongoing",
-      kind: item.kind === "program" ? "program" : "project",
+      kind:
+        item.kind === "program"
+          ? "program"
+          : item.kind === "competition"
+            ? "competition"
+            : "project",
       sort_order: item.sort_order,
       is_published: item.is_published,
       cover_path: item.cover_path ?? undefined,
