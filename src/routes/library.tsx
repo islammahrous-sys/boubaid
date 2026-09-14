@@ -361,18 +361,42 @@ function LibraryPage() {
 
         <section>
           <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
-            {isMuseum
-              ? t(copy.museumNote)
-              : lang === "en"
-                ? (activeFolder?.description_en ??
-                  activeFolder?.title_en ??
-                  activeFolder?.description_ar ??
-                  activeFolder?.title_ar ??
-                  "")
-                : (activeFolder?.description_ar ?? `${activeFolder?.title_ar ?? ""}`)}
+            {isVideos
+              ? t(copy.videosNote)
+              : isMuseum
+                ? t(copy.museumNote)
+                : lang === "en"
+                  ? (activeFolder?.description_en ??
+                    activeFolder?.title_en ??
+                    activeFolder?.description_ar ??
+                    activeFolder?.title_ar ??
+                    "")
+                  : (activeFolder?.description_ar ?? `${activeFolder?.title_ar ?? ""}`)}
           </p>
 
-          {visibleItems.length > 0 ? (
+          {isVideos ? (
+            videos.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {videos.map((v) => (
+                  <InstagramReelEmbed
+                    key={v.id}
+                    url={v.external_url ?? v.file_path ?? ""}
+                    title={lang === "en" ? v.title_en || v.title_ar : v.title_ar}
+                    subtitle={
+                      lang === "en"
+                        ? v.description_en || v.description_ar
+                        : v.description_ar
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 px-6 py-24 text-center text-muted-foreground">
+                <Video className="h-8 w-8 opacity-50" />
+                <p className="measure text-sm">{t(copy.videosEmpty)}</p>
+              </div>
+            )
+          ) : visibleItems.length > 0 ? (
             <FolderGrid items={visibleItems} countLabel={t(copy.imageCount)} />
           ) : searchQuery.trim() ? (
             <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 py-24 text-center text-muted-foreground">
