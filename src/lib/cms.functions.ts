@@ -1373,7 +1373,6 @@ export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handl
         console.error("[cms] getPublishedArchiveVideos folders failed", folderError.message);
         return [];
       }
-      console.error("[cms] archiveVideos folders", folders?.length);
       if (!folders || folders.length === 0) return [];
 
       const { data: links, error: linkError } = await supabase
@@ -1441,7 +1440,6 @@ export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handl
         });
       }
       void index;
-      console.error("[cms] archiveVideos debug", folders.length, links.length, assets.length, videos.length);
       return videos;
     } catch (err) {
       console.error("[cms] getPublishedArchiveVideos caught error", err);
