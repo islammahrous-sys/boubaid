@@ -143,13 +143,12 @@ const copy = {
   biblioTitle: { ar: "المراجع", en: "Bibliography" } as BiText,
 };
 
-/** In-page wayfinding: the page is a five-part essay plus its apparatus. */
+/**
+ * In-page wayfinding: the sections of the authoritative source document,
+ * followed by the page's apparatus.
+ */
 const railSections: RailSection[] = [
-  { id: "origin", label: { ar: "الأصل", en: "Origin" } },
-  { id: "migration", label: { ar: "الهجرة", en: "Migration" } },
-  { id: "sources", label: { ar: "المصادر", en: "Sources" } },
-  { id: "conflicts", label: { ar: "الروايات", en: "Accounts" } },
-  { id: "economy", label: { ar: "التوطن", en: "Settlement" } },
+  ...historySections.map((s) => ({ id: s.id, label: s.label })),
   { id: "chain", label: { ar: "عمود النسب", en: "Chain of descent" } },
   { id: "plates", label: { ar: "اللوحات", en: "Plates" } },
   { id: "bibliography", label: { ar: "المراجع", en: "Bibliography" } },
