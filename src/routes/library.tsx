@@ -203,7 +203,7 @@ function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: st
 
 function LibraryPage() {
   const { t, lang } = useLang();
-  const { collections, folders } = Route.useLoaderData();
+  const { collections, folders, videos } = Route.useLoaderData();
   const searchParams = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
@@ -228,7 +228,9 @@ function LibraryPage() {
   };
 
   const activeFolder = folders.find((f) => f.slug === tab) ?? null;
-  const isMuseum = tab === MUSEUM_TAB || (!activeFolder && folders.length === 0);
+  const isVideos = tab === VIDEOS_TAB;
+  const isMuseum =
+    tab === MUSEUM_TAB || (!activeFolder && !isVideos && folders.length === 0);
 
   /** A folder shows its published sub-folders; a folder with no sub-folders is
    *  itself a photo collection, so it links straight through to its images. */
@@ -262,6 +264,12 @@ function LibraryPage() {
           : f.image_count,
       icon: FolderOpen,
     })),
+    {
+      key: VIDEOS_TAB,
+      label: t(copy.videosTab),
+      count: videos.length,
+      icon: Video,
+    },
     {
       key: MUSEUM_TAB,
       label: t(copy.museumTab),
