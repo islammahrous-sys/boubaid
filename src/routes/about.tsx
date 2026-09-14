@@ -181,76 +181,17 @@ function AboutPage() {
       {/* ── Manuscript spread: narrative with a margin column ── */}
       <section className="container-page py-16 md:py-20 reveal-on-scroll">
         <div className="grid gap-x-16 gap-y-12 lg:grid-cols-[1fr_minmax(0,15rem)]">
-          <div className="space-y-12">
-            <article id="origin" className="scroll-mt-28">
-              <SectionHeading
-                index={rtl ? "١" : "I"}
-                eyebrow={t(copy.narrativeEyebrow)}
-                title={t(copy.narrativeTitle)}
-              />
-              <Prose dropCap className="mt-5">
-                <p>{t(copy.narrativeP1)}</p>
-                <p>{t(copy.narrativeP2)}</p>
-              </Prose>
-            </article>
-
-            <article id="migration" className="scroll-mt-28">
-              <SectionHeading
-                index={rtl ? "٢" : "II"}
-                eyebrow={t(copy.migrationEyebrow)}
-                title={t(copy.migrationTitle)}
-              />
-              <Prose dropCap className="mt-5">
-                <p>{t(copy.migrationP1)}</p>
-                <p>{t(copy.migrationP2)}</p>
-              </Prose>
-            </article>
-
-            <article id="sources" className="scroll-mt-28">
-              <SectionHeading
-                index={rtl ? "٣" : "III"}
-                eyebrow={t(copy.sourcesEyebrow)}
-                title={t(copy.sourcesTitle)}
-              />
-              <Prose dropCap className="mt-5">
-                <p>{t(copy.sourcesP1)}</p>
-              </Prose>
-            </article>
-
-            <article id="conflicts" className="scroll-mt-28">
-              <SectionHeading
-                index={rtl ? "٤" : "IV"}
-                eyebrow={t(copy.conflictsEyebrow)}
-                title={t(copy.conflictsTitle)}
-              />
-              <Prose dropCap className="mt-5">
-                <p>{t(copy.conflictsP1)}</p>
-                <p>{t(copy.conflictsP2)}</p>
-              </Prose>
-
-              <Pullquote
-                className="mt-6"
-                cite={
-                  rtl
-                    ? "من التسلسل التاريخي، الفصل الرابع"
-                    : "From the historical chronology, section IV"
-                }
-              >
-                {t(copy.conflictsQuote)}
-              </Pullquote>
-            </article>
-
-            <article id="economy" className="scroll-mt-28">
-              <SectionHeading
-                index={rtl ? "٥" : "V"}
-                eyebrow={t(copy.economyEyebrow)}
-                title={t(copy.economyTitle)}
-              />
-              <Prose dropCap className="mt-5">
-                <p>{t(copy.economyP1)}</p>
-                <p>{t(copy.economyP2)}</p>
-              </Prose>
-            </article>
+          <div className="space-y-16">
+            {historySections.map((section, i) => (
+              <article key={section.id} id={section.id} className="scroll-mt-28">
+                <SectionHeading
+                  index={rtl ? arabicIndex[i] : romanIndex[i]}
+                  eyebrow={t(section.eyebrow)}
+                  title={t(section.title)}
+                />
+                <HistoryBlocks blocks={section.blocks} />
+              </article>
+            ))}
           </div>
 
           {/* Margin apparatus — the scholarly note and the registration. */}
