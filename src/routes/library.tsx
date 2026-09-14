@@ -9,11 +9,17 @@ import {
   Images,
   ArrowLeft,
   ArrowRight,
+  Video,
 } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { getPublishedGalleries, getPublishedArchiveFolders } from "@/lib/cms.functions";
+import { InstagramReelEmbed } from "@/components/site/InstagramReelEmbed";
+import {
+  getPublishedGalleries,
+  getPublishedArchiveFolders,
+  getPublishedLibrary,
+} from "@/lib/cms.functions";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
 
@@ -39,11 +45,15 @@ export const Route = createFileRoute("/library")({
     return typeof tab === "string" && tab.length > 0 && tab.length < 120 ? { tab } : {};
   },
   loader: async () => {
-    const [collections, folders] = await Promise.all([
+    const [collections, folders, library] = await Promise.all([
       getPublishedGalleries(),
       getPublishedArchiveFolders(),
+      getPublishedLibrary(),
     ]);
-    return { collections, folders };
+    // Videos live in the existing CMS library (collection = "videos"), so new
+    // clips are added from Admin → المكتبة الرقمية with no code change.
+    const videos = library.filter((i) => i.collection === "videos" && i.is_published);
+    return { collections, folders, videos };
   },
   head: () => ({
     meta: [
