@@ -1386,16 +1386,36 @@ export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handl
         )
         .order("sort_order", { ascending: true })
         .limit(2000);
-      console.error("[cms] archiveVideos links", links?.length, linkError?.message);
       if (linkError || !links || links.length === 0) return [];
 
-      const { data: assets } = await supabase
-        .from("media_assets")
-        .select("id, bucket, storage_path, public_url, mime_type, width, height")
-        .in("id", [...new Set(links.map((l) => l.media_asset_id))])
-        .like("mime_type", "video%");
-      console.error("[cms] archiveVideos assets", assets?.length);
-      if (!assets || assets.length === 0) return [];
+      /**
+       * Look the assets up in batches: an `in` filter holding every archive
+       * media id at once produces a request URL long enough for the upstream
+       * fetch to fail outright, which is why this used to come back empty.
+       */
+      const assetIds = [...new Set(links.map((l) => l.media_asset_id))];
+      const assets: {
+        id: string;
+        bucket: string;
+        storage_path: string;
+        public_url: string | null;
+        mime_type: string | null;
+        width: number | null;
+        height: number | null;
+      }[] = [];
+      for (let i = 0; i < assetIds.length; i += 60) {
+        const { data: batch, error: assetError } = await supabase
+          .from("media_assets")
+          .select("id, bucket, storage_path, public_url, mime_type, width, height")
+          .in("id", assetIds.slice(i, i + 60))
+          .like("mime_type", "video%");
+        if (assetError) {
+          console.error("[cms] getPublishedArchiveVideos assets failed", assetError.message);
+          continue;
+        }
+        if (batch) assets.push(...batch);
+      }
+      if (assets.length === 0) return [];
 
       const assetsById = new Map(assets.map((a) => [a.id, a]));
       const folderById = new Map(folders.map((f) => [f.id, f]));
