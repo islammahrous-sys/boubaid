@@ -7,6 +7,7 @@ import { getPublishedNews } from "@/lib/cms.functions";
 import { mergeNews } from "@/content/cms-adapt";
 import { Eyebrow } from "@/components/site/Editorial";
 import { newsImage } from "@/content/news-images";
+import { formatContentDate } from "@/lib/text";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
 import {

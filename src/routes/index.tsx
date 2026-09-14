@@ -1,6 +1,7 @@
 import { createFileRoute, getRouteApi, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { ArrowLeft, ArrowRight, ExternalLink, CalendarDays } from "lucide-react";
+import { formatContentDate } from "@/lib/text";
 import { cn } from "@/lib/utils";
 
 import { useLang } from "@/i18n/LanguageProvider";
