@@ -11,7 +11,7 @@ import { Ornament } from "@/components/site/Editorial";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ReadingProgress } from "@/components/site/ReadingProgress";
 import { newsImage } from "@/content/news-images";
-import { formatHijri } from "@/lib/text";
+import { formatHijri, formatContentDate } from "@/lib/text";
 import { getCanonicalUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/news/$slug")({
