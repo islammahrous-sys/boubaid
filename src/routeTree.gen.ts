@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RequestsRouteImport } from './routes/requests'
 import { Route as ProgramsRouteImport } from './routes/programs'
@@ -50,6 +51,11 @@ import { Route as ApiPublicCommitteeDocRouteImport } from './routes/api/public/c
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TemplatesRoute = TemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -258,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/programs': typeof ProgramsRoute
   '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/templates': typeof TemplatesRoute
   '/verify': typeof VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/programs': typeof ProgramsRoute
   '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/templates': typeof TemplatesRoute
   '/verify': typeof VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -336,6 +344,7 @@ export interface FileRoutesById {
   '/programs': typeof ProgramsRoute
   '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/templates': typeof TemplatesRoute
   '/verify': typeof VerifyRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -376,6 +385,7 @@ export interface FileRouteTypes {
     | '/programs'
     | '/requests'
     | '/reset-password'
+    | '/templates'
     | '/verify'
     | '/account'
     | '/admin'
@@ -414,6 +424,7 @@ export interface FileRouteTypes {
     | '/programs'
     | '/requests'
     | '/reset-password'
+    | '/templates'
     | '/verify'
     | '/account'
     | '/admin'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/programs'
     | '/requests'
     | '/reset-password'
+    | '/templates'
     | '/verify'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -493,6 +505,7 @@ export interface RootRouteChildren {
   ProgramsRoute: typeof ProgramsRoute
   RequestsRoute: typeof RequestsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TemplatesRoute: typeof TemplatesRoute
   VerifyRoute: typeof VerifyRoute
   PSlugRoute: typeof PSlugRoute
   ApiPublicCommitteeDocRoute: typeof ApiPublicCommitteeDocRoute
@@ -506,6 +519,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/templates': {
+      id: '/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof TemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -840,6 +860,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProgramsRoute: ProgramsRoute,
   RequestsRoute: RequestsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TemplatesRoute: TemplatesRoute,
   VerifyRoute: VerifyRoute,
   PSlugRoute: PSlugRoute,
   ApiPublicCommitteeDocRoute: ApiPublicCommitteeDocRoute,
