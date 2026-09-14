@@ -130,6 +130,27 @@ export const councilRequestSchema = z.object({
   /** Qualifications, or the service description. */
   details: z.string().trim().min(10, "التفاصيل مطلوبة (10 أحرف على الأقل)").max(1500),
   link: z.string().trim().url("الرابط غير صحيح").max(500).optional().or(z.literal("")),
+  /**
+   * Template-specific answers, keyed by the field names declared for this
+   * request type in `council-requests.ts` (e.g. father, date, venue). Unknown
+   * keys are dropped server-side, and required fields are re-checked there.
+   */
+  extra: z.record(z.string().max(60), z.string().trim().max(400)).optional().default({}),
+  /**
+   * Optional supporting photograph or document. `data` is base64 without the
+   * data-URI prefix; size and type are re-checked server-side before storage.
+   */
+  attachments: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1).max(200),
+        type: z.enum(["application/pdf", "image/jpeg", "image/png", "image/webp"]),
+        data: z.string().min(1).max(14_000_000),
+      }),
+    )
+    .max(3)
+    .optional()
+    .default([]),
   locale: localeSchema,
   website_url_check: honeypotSchema,
 });

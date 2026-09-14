@@ -1332,6 +1332,123 @@ export const getPublishedArchiveFolders = createServerFn({ method: "GET" }).hand
   },
 );
 
+export type ArchiveVideo = {
+  id: string;
+  /** Public storage URL of the uploaded film clip — played natively on the site. */
+  url: string;
+  mime_type: string | null;
+  title_ar: string;
+  title_en: string | null;
+  /** Folder the clip belongs to, used as a subtitle. */
+  folder_ar: string;
+  folder_en: string | null;
+  folder_slug: string;
+  width: number | null;
+  height: number | null;
+};
+
+/**
+ * Every film clip uploaded into the Archive folders (`galleries.section =
+ * "archive"`), resolved to its own storage URL so the Videos tab can play it
+ * with the website's native player — no external platform involved.
+ *
+ * Data-driven end to end: a new clip uploaded from Admin → المتحف والمعارض into
+ * any archive folder appears here with no code change.
+ */
+export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handler(
+  async (): Promise<ArchiveVideo[]> => {
+    try {
+      const { createPublicServerClient } = await import("./supabase-public.server");
+      const supabase = createPublicServerClient();
+
+      const { data: folders, error: folderError } = await supabase
+        .from("galleries")
+        .select("id, slug, title_ar, title_en, sort_order")
+        .eq("status", "published")
+        .eq("visibility", "public")
+        .eq("section", "archive")
+        .order("sort_order", { ascending: true })
+        .limit(500);
+      if (folderError) {
+        console.error("[cms] getPublishedArchiveVideos folders failed", folderError.message);
+        return [];
+      }
+      if (!folders || folders.length === 0) return [];
+
+      const { data: links, error: linkError } = await supabase
+        .from("gallery_media")
+        .select("media_asset_id, gallery_id, caption_ar, caption_en, sort_order")
+        .eq("is_published", true)
+        .in(
+          "gallery_id",
+          folders.map((f) => f.id),
+        )
+        .order("sort_order", { ascending: true })
+        .limit(2000);
+      if (linkError || !links || links.length === 0) return [];
+
+      /**
+       * Look the assets up in batches: an `in` filter holding every archive
+       * media id at once produces a request URL long enough for the upstream
+       * fetch to fail outright, which is why this used to come back empty.
+       */
+      const assetIds = [...new Set(links.map((l) => l.media_asset_id))];
+      const assets: {
+        id: string;
+        bucket: string;
+        storage_path: string;
+        public_url: string | null;
+        mime_type: string | null;
+        width: number | null;
+        height: number | null;
+      }[] = [];
+      for (let i = 0; i < assetIds.length; i += 60) {
+        const { data: batch, error: assetError } = await supabase
+          .from("media_assets")
+          .select("id, bucket, storage_path, public_url, mime_type, width, height")
+          .in("id", assetIds.slice(i, i + 60))
+          .like("mime_type", "video%");
+        if (assetError) {
+          console.error("[cms] getPublishedArchiveVideos assets failed", assetError.message);
+          continue;
+        }
+        if (batch) assets.push(...batch);
+      }
+      if (assets.length === 0) return [];
+
+      const assetsById = new Map(assets.map((a) => [a.id, a]));
+      const folderById = new Map(folders.map((f) => [f.id, f]));
+
+      const videos: ArchiveVideo[] = [];
+      let index = 0;
+      for (const link of links) {
+        const asset = assetsById.get(link.media_asset_id);
+        const folder = folderById.get(link.gallery_id);
+        if (!asset || !folder) continue;
+        index += 1;
+        videos.push({
+          id: asset.id,
+          url: mediaAssetUrl(asset),
+          mime_type: asset.mime_type,
+          title_ar: link.caption_ar ?? `مقطع من ${folder.title_ar}`,
+          title_en: link.caption_en ?? `Clip from ${folder.title_en ?? folder.title_ar}`,
+          folder_ar: folder.title_ar,
+          folder_en: folder.title_en,
+          folder_slug: folder.slug,
+          width: asset.width,
+          height: asset.height,
+        });
+      }
+      void index;
+      return videos;
+    } catch (err) {
+      console.error("[cms] getPublishedArchiveVideos caught error", err);
+      return [];
+    }
+  },
+);
+
+
 
 /** Editor-only picker list for the gallery block (id + title, no media payload). */
 export const listGalleriesForEditor = createServerFn({ method: "GET" })

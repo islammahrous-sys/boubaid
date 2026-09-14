@@ -47,6 +47,7 @@ import { Eyebrow, Ornament } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
 import { CouncilRequestForm } from "@/components/site/CouncilRequestForm";
 import type { CouncilRequestType } from "@/lib/forms.schemas";
+import { TEMPLATE_REQUESTS } from "@/lib/council-requests";
 
 export const Route = createFileRoute("/requests")({
   head: () => ({
@@ -152,6 +153,8 @@ type RequestEntry = {
   name: BiText;
   desc: BiText;
   requiresAuth?: boolean;
+  /** Official template code, for the announcement requests linked to a template. */
+  templateCode?: string;
 };
 
 /** Only request types that actually exist on this website. */
@@ -482,45 +485,25 @@ const requests: RequestEntry[] = [
     },
   },
 
-  {
-    id: "occasion-announcement",
-    group: "announcements",
-    form: "occasion_announcement",
-    Icon: Megaphone,
-    name: {
-      ar: "طلب إعلان مناسبة عائلية (مولود / زواج / تخرج)",
-      en: "Family occasion announcement request",
-    },
-    desc: {
-      ar: "طلب نشر إعلان رسمي عن مناسبة عائلية عبر قنوات الأسرة المعتمدة.",
-      en: "Ask for an official announcement of a family occasion through the family's channels.",
-    },
-  },
-  {
-    id: "custom-template",
-    group: "announcements",
-    form: "custom_template",
-    Icon: LayoutTemplate,
-    name: { ar: "طلب قالب معدّل بالبيانات", en: "Customised announcement template request" },
-    desc: {
-      ar: "طلب إعداد أحد القوالب الرسمية مع كتابة بيانات المناسبة داخله.",
-      en: "Request one of the official templates prepared with the details of your occasion.",
-    },
-  },
-  {
-    id: "official-greeting",
-    group: "announcements",
-    form: "official_greeting",
-    Icon: Mail,
-    name: {
-      ar: "طلب تعزية أو تهنئة رسمية من المجلس",
-      en: "Official condolence or greeting request",
-    },
-    desc: {
-      ar: "طلب إصدار تعزية أو تهنئة رسمية باسم مجلس الأسرة في مناسبة محددة.",
-      en: "Request an official condolence or greeting issued in the family council's name.",
-    },
-  },
+  /**
+   * Announcement requests are generated from the official template library —
+   * exactly one request per template in النماذج والقوالب, carrying that
+   * template's code. The three earlier generic announcement requests (a family
+   * occasion request, a customised template request and an official greeting
+   * request) duplicated these and have been retired in `council-requests.ts`.
+   */
+  ...TEMPLATE_REQUESTS.map(
+    (tpl): RequestEntry => ({
+      id: `template-${tpl.templateCode.toLowerCase()}`,
+      group: "announcements",
+      form: tpl.key,
+      Icon: LayoutTemplate,
+      name: tpl.title,
+      desc: tpl.desc ?? tpl.details,
+      templateCode: tpl.templateCode,
+    }),
+  ),
+
 
   {
     id: "inquiry",
@@ -678,6 +661,14 @@ function RequestsHubPage() {
                         <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted-foreground">
                           {t(r.desc)}
                         </p>
+                        {r.templateCode ? (
+                          <Link
+                            to="/templates"
+                            className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-bronze underline-offset-4 hover:underline dark:text-gold"
+                          >
+                            {r.templateCode}
+                          </Link>
+                        ) : null}
                         {r.requiresAuth && !user ? (
                           <p className="mt-3 text-[11.5px] text-muted-foreground">
                             {t(copy.signInNote)}
