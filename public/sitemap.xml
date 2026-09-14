@@ -57,6 +57,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://albouabidfamily.com/competitions</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://albouabidfamily.com/news</loc>
     <lastmod>2026-08-31</lastmod>
     <changefreq>daily</changefreq>
@@ -113,12 +118,6 @@
   </url>
   <url>
     <loc>https://albouabidfamily.com/initiatives/social-solidarity-fund</loc>
-    <lastmod>2026-08-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://albouabidfamily.com/initiatives/digital-archive-project</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

@@ -167,6 +167,7 @@ async function main() {
     { loc: `${SITE_URL}/achievers`, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/initiatives`, lastmod: initiativesListLastmod, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/programs`, changefreq: "weekly", priority: "0.8" },
+    { loc: `${SITE_URL}/competitions`, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/news`, lastmod: newsListLastmod, changefreq: "daily", priority: "0.8" },
     { loc: `${SITE_URL}/library`, changefreq: "monthly", priority: "0.7" },
     { loc: `${SITE_URL}/directory`, changefreq: "weekly", priority: "0.7" },

@@ -194,7 +194,12 @@ export function InitiativesManager({
       body_ar: item.body_ar ?? "",
       body_en: item.body_en ?? "",
       status: (item.status as "ongoing" | "planned" | "completed") || "ongoing",
-      kind: item.kind === "program" ? "program" : "project",
+      kind:
+        item.kind === "program"
+          ? "program"
+          : item.kind === "competition"
+            ? "competition"
+            : "project",
       sort_order: item.sort_order,
       is_published: item.is_published,
       cover_path: item.cover_path ?? undefined,
@@ -669,7 +674,7 @@ export function InitiativesManager({
                   <Select
                     value={form.kind}
                     onValueChange={(value) =>
-                      setForm({ ...form, kind: value as "project" | "program" })
+                      setForm({ ...form, kind: value as "project" | "program" | "competition" })
                     }
                   >
                     <SelectTrigger className="h-10 text-xs bg-background">
@@ -678,6 +683,9 @@ export function InitiativesManager({
                     <SelectContent>
                       <SelectItem value="project">{isAr ? "المشاريع" : "Projects"}</SelectItem>
                       <SelectItem value="program">{isAr ? "البرامج" : "Programs"}</SelectItem>
+                      <SelectItem value="competition">
+                        {isAr ? "المسابقات و الجوائز" : "Competitions & Awards"}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

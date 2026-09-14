@@ -28,6 +28,7 @@ import { Route as DnaRouteImport } from './routes/dna'
 import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as CommitteesRouteImport } from './routes/committees'
 import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -141,6 +142,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CommitteesRoute = CommitteesRouteImport.update({
   id: '/committees',
   path: '/committees',
@@ -233,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/committees': typeof CommitteesRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/committees': typeof CommitteesRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
@@ -309,6 +317,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/committees': typeof CommitteesRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
@@ -348,6 +357,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/branches'
     | '/committees'
+    | '/competitions'
     | '/contact'
     | '/contribute'
     | '/directory'
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/branches'
     | '/committees'
+    | '/competitions'
     | '/contact'
     | '/contribute'
     | '/directory'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/branches'
     | '/committees'
+    | '/competitions'
     | '/contact'
     | '/contribute'
     | '/directory'
@@ -462,6 +474,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BranchesRoute: typeof BranchesRoute
   CommitteesRoute: typeof CommitteesRoute
+  CompetitionsRoute: typeof CompetitionsRoute
   ContactRoute: typeof ContactRoute
   ContributeRoute: typeof ContributeRoute
   DirectoryRoute: typeof DirectoryRoute
@@ -619,6 +632,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions': {
+      id: '/competitions'
+      path: '/competitions'
+      fullPath: '/competitions'
+      preLoaderRoute: typeof CompetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/committees': {
@@ -801,6 +821,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BranchesRoute: BranchesRoute,
   CommitteesRoute: CommitteesRoute,
+  CompetitionsRoute: CompetitionsRoute,
   ContactRoute: ContactRoute,
   ContributeRoute: ContributeRoute,
   DirectoryRoute: DirectoryRoute,
