@@ -62,6 +62,39 @@ export function formatHijri(year: string | number, lang: "ar" | "en"): string {
   return lang === "ar" ? `${toEasternNumerals(year)} هـ` : `${year} AH`;
 }
 
+/** Arabic Gregorian month names -> English, for dates authored in Arabic. */
+const ARABIC_MONTHS: Record<string, string> = {
+  يناير: "January",
+  فبراير: "February",
+  مارس: "March",
+  أبريل: "April",
+  ابريل: "April",
+  مايو: "May",
+  يونيو: "June",
+  يوليو: "July",
+  أغسطس: "August",
+  اغسطس: "August",
+  سبتمبر: "September",
+  أكتوبر: "October",
+  اكتوبر: "October",
+  نوفمبر: "November",
+  ديسمبر: "December",
+};
+
+/**
+ * Content dates are authored in Arabic ("14 أغسطس 2025"). In English mode the
+ * month name is swapped for its English equivalent and digits normalised, so
+ * the English pages never show an Arabic date string.
+ */
+export function formatContentDate(value: string, lang: "ar" | "en"): string {
+  if (lang === "ar" || !value) return value;
+  let out = value.replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660));
+  for (const [ar, en] of Object.entries(ARABIC_MONTHS)) {
+    out = out.replace(ar, en);
+  }
+  return out.replace(/\s*هـ\s*/g, " AH ").replace(/\s+م\b/g, "").trim();
+}
+
 /**
  * Supabase Auth throws its own English-only error messages (e.g. "Invalid
  * login credentials"). Displaying them verbatim breaks the bilingual UI for
