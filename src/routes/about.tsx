@@ -289,31 +289,6 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* ── Plates ───────────────────────────────────────────── */}
-      <section id="plates" className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll">
-        <SectionHeading eyebrow={t(copy.platesEyebrow)} title={t(copy.platesTitle)} />
-
-        <div className="reveal-stagger mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2">
-          {pageImages.about.plates.map((plate, i) => (
-            <figure key={i}>
-              <img
-                src={plate.src}
-                alt=""
-                className="photo-plate plate-frame aspect-[4/3] w-full object-cover"
-                loading="lazy"
-              />
-              <figcaption className="mt-3 flex gap-3 border-t border-border pt-3">
-                <span className="nums label-caps shrink-0 text-bronze dark:text-gold">
-                  {rtl ? `لوحة ${i + 1}` : `Plate ${i + 1}`}
-                </span>
-                <span className="text-[13px] leading-relaxed text-muted-foreground">
-                  {t(plate.caption)}
-                </span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
 
       {history.length > 0 && (
         <section
@@ -374,59 +349,6 @@ function AboutPage() {
         <Ornament />
       </div>
 
-      {/* ── Institutional Documentation ─────────────────────────────────────── */}
-      <section className="container-page py-16 md:py-20 reveal-on-scroll">
-        <Eyebrow>
-          {t({
-            ar: "الوثائق المؤسسية والأرشيف المعتمد",
-            en: "Institutional & Historical Archives",
-          })}
-        </Eyebrow>
-        <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
-          {t({
-            ar: "الشهادات واللوائح المعتمدة التي توثق التأسيس الرسمي والاعتماد النظامي لصندوق التنمية العائلية ومراحل الحفظ التاريخي.",
-            en: "Approved certificates and governance bylaws documenting the official institutional foundation and historical preservation milestones.",
-          })}
-        </p>
-        <DocumentShowcase
-          refs={["Lic. 1200758400", "Audit Certificate", "IP-Registered"]}
-          variant="grid"
-          className="mt-6"
-        />
-      </section>
-
-      {/* ── Bibliography ─────────────────────────────────────── */}
-      <section
-        id="bibliography"
-        className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll"
-      >
-        <Eyebrow>{t(copy.biblioTitle)}</Eyebrow>
-
-        <ol className="mt-6 max-w-3xl border-t border-border">
-          {references.map((r, i) => (
-            <li
-              key={i}
-              className="grid grid-cols-[2rem_1fr] gap-4 border-b border-border py-4 text-[13px]"
-            >
-              <span className="nums text-muted-foreground" aria-hidden="true">
-                {i + 1}.
-              </span>
-              <a
-                href={r.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-start gap-2 leading-relaxed text-foreground transition-colors hover:text-bronze dark:hover:text-gold"
-              >
-                <span>{r.label}</span>
-                <ExternalLink
-                  className="mt-1 h-3 w-3 shrink-0 text-muted-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold"
-                  aria-hidden="true"
-                />
-              </a>
-            </li>
-          ))}
-        </ol>
-      </section>
     </>
   );
 }
