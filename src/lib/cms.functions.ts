@@ -1418,7 +1418,7 @@ export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handl
         });
       }
       void index;
-      console.log("[cms] archiveVideos debug", folders.length, links.length, assets.length, videos.length);
+      console.error("[cms] archiveVideos debug", folders.length, links.length, assets.length, videos.length);
       return videos;
     } catch (err) {
       console.error("[cms] getPublishedArchiveVideos caught error", err);
