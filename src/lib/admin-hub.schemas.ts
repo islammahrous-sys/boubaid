@@ -424,7 +424,9 @@ export type AchieverInput = z.infer<typeof achieverInputSchema>;
 // 22. Library Item Schema
 export const libraryItemInputSchema = z.object({
   id: z.string().uuid().optional(),
-  collection: z.enum(["documents", "photographs", "recordings", "templates"]).default("documents"),
+  collection: z
+    .enum(["documents", "photographs", "recordings", "templates", "videos"])
+    .default("documents"),
   title_ar: z.string().trim().min(2, "العنوان بالعربية مطلوب"),
   title_en: z.string().trim().optional().nullable(),
   description_ar: z.string().optional().nullable(),

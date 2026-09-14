@@ -9,11 +9,17 @@ import {
   Images,
   ArrowLeft,
   ArrowRight,
+  Video,
 } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { getPublishedGalleries, getPublishedArchiveFolders } from "@/lib/cms.functions";
+import { InstagramReelEmbed } from "@/components/site/InstagramReelEmbed";
+import {
+  getPublishedGalleries,
+  getPublishedArchiveFolders,
+  getPublishedLibrary,
+} from "@/lib/cms.functions";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
 
@@ -39,11 +45,15 @@ export const Route = createFileRoute("/library")({
     return typeof tab === "string" && tab.length > 0 && tab.length < 120 ? { tab } : {};
   },
   loader: async () => {
-    const [collections, folders] = await Promise.all([
+    const [collections, folders, library] = await Promise.all([
       getPublishedGalleries(),
       getPublishedArchiveFolders(),
+      getPublishedLibrary(),
     ]);
-    return { collections, folders };
+    // Videos live in the existing CMS library (collection = "videos"), so new
+    // clips are added from Admin → المكتبة الرقمية with no code change.
+    const videos = library.filter((i) => i.collection === "videos" && i.is_published);
+    return { collections, folders, videos };
   },
   head: () => ({
     meta: [
@@ -79,6 +89,7 @@ function LibraryRouteLayout() {
 }
 
 const MUSEUM_TAB = "museum";
+const VIDEOS_TAB = "videos";
 
 const copy = {
   eyebrow: { ar: "التراث والتوثيق", en: "Heritage & Archives" } as BiText,
@@ -108,6 +119,15 @@ const copy = {
   folderEmpty: {
     ar: "لم تُضف صور إلى هذا القسم بعد. تُرفع الصور من لوحة الإدارة وتظهر هنا مباشرة.",
     en: "No photographs have been added to this section yet. They are uploaded from the admin console and appear here immediately.",
+  } as BiText,
+  videosTab: { ar: "الفيديوهات", en: "Videos" } as BiText,
+  videosNote: {
+    ar: "مقاطع مرئية موثّقة من مناسبات الأسرة وأنشطتها، معروضة مباشرة على الصفحة.",
+    en: "Documented video clips from family occasions and activities, played directly on this page.",
+  } as BiText,
+  videosEmpty: {
+    ar: "لا توجد مقاطع منشورة حاليًا. تُضاف المقاطع من لوحة الإدارة وتظهر هنا مباشرة.",
+    en: "No clips are published yet. They are added from the admin console and appear here immediately.",
   } as BiText,
   imageCount: { ar: "صورة", en: "images" } as BiText,
   searchPlaceholder: { ar: "ابحث في الأرشيف...", en: "Search the archive..." } as BiText,
@@ -183,7 +203,7 @@ function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: st
 
 function LibraryPage() {
   const { t, lang } = useLang();
-  const { collections, folders } = Route.useLoaderData();
+  const { collections, folders, videos } = Route.useLoaderData();
   const searchParams = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
@@ -208,7 +228,9 @@ function LibraryPage() {
   };
 
   const activeFolder = folders.find((f) => f.slug === tab) ?? null;
-  const isMuseum = tab === MUSEUM_TAB || (!activeFolder && folders.length === 0);
+  const isVideos = tab === VIDEOS_TAB;
+  const isMuseum =
+    tab === MUSEUM_TAB || (!activeFolder && !isVideos && folders.length === 0);
 
   /** A folder shows its published sub-folders; a folder with no sub-folders is
    *  itself a photo collection, so it links straight through to its images. */
@@ -242,6 +264,12 @@ function LibraryPage() {
           : f.image_count,
       icon: FolderOpen,
     })),
+    {
+      key: VIDEOS_TAB,
+      label: t(copy.videosTab),
+      count: videos.length,
+      icon: Video,
+    },
     {
       key: MUSEUM_TAB,
       label: t(copy.museumTab),
@@ -333,18 +361,42 @@ function LibraryPage() {
 
         <section>
           <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
-            {isMuseum
-              ? t(copy.museumNote)
-              : lang === "en"
-                ? (activeFolder?.description_en ??
-                  activeFolder?.title_en ??
-                  activeFolder?.description_ar ??
-                  activeFolder?.title_ar ??
-                  "")
-                : (activeFolder?.description_ar ?? `${activeFolder?.title_ar ?? ""}`)}
+            {isVideos
+              ? t(copy.videosNote)
+              : isMuseum
+                ? t(copy.museumNote)
+                : lang === "en"
+                  ? (activeFolder?.description_en ??
+                    activeFolder?.title_en ??
+                    activeFolder?.description_ar ??
+                    activeFolder?.title_ar ??
+                    "")
+                  : (activeFolder?.description_ar ?? `${activeFolder?.title_ar ?? ""}`)}
           </p>
 
-          {visibleItems.length > 0 ? (
+          {isVideos ? (
+            videos.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {videos.map((v) => (
+                  <InstagramReelEmbed
+                    key={v.id}
+                    url={v.external_url ?? v.file_path ?? ""}
+                    title={lang === "en" ? v.title_en || v.title_ar : v.title_ar}
+                    subtitle={
+                      lang === "en"
+                        ? v.description_en || v.description_ar
+                        : v.description_ar
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 px-6 py-24 text-center text-muted-foreground">
+                <Video className="h-8 w-8 opacity-50" />
+                <p className="measure text-sm">{t(copy.videosEmpty)}</p>
+              </div>
+            )
+          ) : visibleItems.length > 0 ? (
             <FolderGrid items={visibleItems} countLabel={t(copy.imageCount)} />
           ) : searchQuery.trim() ? (
             <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 py-24 text-center text-muted-foreground">
