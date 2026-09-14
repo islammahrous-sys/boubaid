@@ -89,6 +89,7 @@ function LibraryRouteLayout() {
 }
 
 const MUSEUM_TAB = "museum";
+const VIDEOS_TAB = "videos";
 
 const copy = {
   eyebrow: { ar: "التراث والتوثيق", en: "Heritage & Archives" } as BiText,
@@ -118,6 +119,15 @@ const copy = {
   folderEmpty: {
     ar: "لم تُضف صور إلى هذا القسم بعد. تُرفع الصور من لوحة الإدارة وتظهر هنا مباشرة.",
     en: "No photographs have been added to this section yet. They are uploaded from the admin console and appear here immediately.",
+  } as BiText,
+  videosTab: { ar: "الفيديوهات", en: "Videos" } as BiText,
+  videosNote: {
+    ar: "مقاطع مرئية موثّقة من مناسبات الأسرة وأنشطتها، معروضة مباشرة على الصفحة.",
+    en: "Documented video clips from family occasions and activities, played directly on this page.",
+  } as BiText,
+  videosEmpty: {
+    ar: "لا توجد مقاطع منشورة حاليًا. تُضاف المقاطع من لوحة الإدارة وتظهر هنا مباشرة.",
+    en: "No clips are published yet. They are added from the admin console and appear here immediately.",
   } as BiText,
   imageCount: { ar: "صورة", en: "images" } as BiText,
   searchPlaceholder: { ar: "ابحث في الأرشيف...", en: "Search the archive..." } as BiText,
