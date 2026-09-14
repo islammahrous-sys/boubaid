@@ -14,10 +14,11 @@ import {
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
-import { InstagramReelEmbed } from "@/components/site/InstagramReelEmbed";
+import { ArchiveVideoPlayer } from "@/components/site/ArchiveVideoPlayer";
 import {
   getPublishedGalleries,
   getPublishedArchiveFolders,
+  getPublishedArchiveVideos,
   getPublishedLibrary,
 } from "@/lib/cms.functions";
 import { cn } from "@/lib/utils";
@@ -45,14 +46,56 @@ export const Route = createFileRoute("/library")({
     return typeof tab === "string" && tab.length > 0 && tab.length < 120 ? { tab } : {};
   },
   loader: async () => {
-    const [collections, folders, library] = await Promise.all([
+    const [collections, folders, library, archiveVideos] = await Promise.all([
       getPublishedGalleries(),
       getPublishedArchiveFolders(),
       getPublishedLibrary(),
+      getPublishedArchiveVideos(),
     ]);
-    // Videos live in the existing CMS library (collection = "videos"), so new
-    // clips are added from Admin → المكتبة الرقمية with no code change.
-    const videos = library.filter((i) => i.collection === "videos" && i.is_published);
+
+    /**
+     * Videos are served from the website's own storage so they play here, on
+     * this page, with the site's native player. Two data sources feed the tab,
+     * both CMS-driven and both needing no code change for new clips:
+     *  - film clips uploaded into any Archive folder (Admin → المتحف والمعارض);
+     *  - library records in the "videos" collection whose file/link points at a
+     *    real video file (Admin → المكتبة الرقمية).
+     * A library record that only carries an external platform link is kept as
+     * source metadata but is not shown, because it could not be played here.
+     */
+    const isPlayableVideoUrl = (url: string | null | undefined) =>
+      !!url && /\.(mp4|webm|ogv|ogg|mov|m4v)(\?|#|$)/i.test(url);
+
+    const libraryVideos = library
+      .filter(
+        (i) =>
+          i.collection === "videos" &&
+          i.is_published &&
+          isPlayableVideoUrl(i.file_url ?? i.file_path ?? i.external_url),
+      )
+      .map((i) => ({
+        id: i.id,
+        url: (i.file_url ?? i.file_path ?? i.external_url)!,
+        mime_type: null as string | null,
+        title_ar: i.title_ar,
+        title_en: i.title_en,
+        folder_ar: i.description_ar ?? "",
+        folder_en: i.description_en ?? null,
+      }));
+
+    const videos = [
+      ...archiveVideos.map((v) => ({
+        id: v.id,
+        url: v.url,
+        mime_type: v.mime_type,
+        title_ar: v.title_ar,
+        title_en: v.title_en,
+        folder_ar: v.folder_ar,
+        folder_en: v.folder_en,
+      })),
+      ...libraryVideos,
+    ];
+
     return { collections, folders, videos };
   },
   head: () => ({
@@ -378,15 +421,12 @@ function LibraryPage() {
             videos.length > 0 ? (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {videos.map((v) => (
-                  <InstagramReelEmbed
+                  <ArchiveVideoPlayer
                     key={v.id}
-                    url={v.external_url ?? v.file_path ?? ""}
+                    src={v.url}
+                    mimeType={v.mime_type}
                     title={lang === "en" ? v.title_en || v.title_ar : v.title_ar}
-                    subtitle={
-                      lang === "en"
-                        ? v.description_en || v.description_ar
-                        : v.description_ar
-                    }
+                    subtitle={lang === "en" ? v.folder_en || v.folder_ar : v.folder_ar}
                   />
                 ))}
               </div>

@@ -280,13 +280,21 @@ export const submitBusinessListing = createServerFn({ method: "POST" })
 
 
 /**
- * Requests Hub submissions: committee nomination, establishment service, and
- * family-member service. Each lands in the official inbox (`inquiries`) with
- * its own `source`, so the console can filter and set a status per type.
+ * Requests Hub submissions. Every request type lands in the official inbox
+ * (`inquiries`) with its own `source`, so the console can filter and run the
+ * existing status workflow per type.
+ *
+ * Template-linked requests (the announcement requests, one per official
+ * template) additionally:
+ *  - carry the template's code, resolved against the template library row
+ *    (`library_items.reference`, collection = "templates") so the recorded
+ *    relationship points at a real template and never at a stale code;
+ *  - collect the template-specific fields declared for that request;
+ *  - receive a unique reference number the submitter can quote.
  */
 export const submitCouncilRequest = createServerFn({ method: "POST" })
   .validator((input: unknown) => councilRequestSchema.parse(input))
-  .handler(async ({ data }): Promise<FormResult> => {
+  .handler(async ({ data }): Promise<FormResult & { reference?: string }> => {
     const blocked = await guardPublicSubmission({
       scope: `council_request_${data.type}`,
       honeypot: data.website_url_check,
@@ -299,13 +307,88 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     const supabase = createPublicServerClient();
 
     const { COUNCIL_REQUESTS } = await import("./council-requests");
-    const def = COUNCIL_REQUESTS[data.type];
+    const def: import("./council-requests").CouncilRequestDef = COUNCIL_REQUESTS[data.type];
+    if (def.retired) return { ok: false, error: "request_retired" };
+
+    // Template-specific answers: keep only declared fields, and require the
+    // ones the template cannot be produced without.
+    const fields = def.fields ?? [];
+    const answers: { label: string; value: string }[] = [];
+    for (const field of fields) {
+      const value = (data.extra?.[field.name] ?? "").trim();
+      if (!value) {
+        if (field.required) return { ok: false, error: "missing_field" };
+        continue;
+      }
+      answers.push({ label: field.label.ar, value });
+    }
+
+    // Resolve the official template so the stored relationship is a real row.
+    let templateLine: string | null = null;
+    if (def.templateCode) {
+      const { data: template } = await supabase
+        .from("library_items")
+        .select("id, reference, title_ar")
+        .eq("collection", "templates")
+        .eq("reference", def.templateCode)
+        .maybeSingle();
+      if (!template) {
+        console.error(`[council_request_${data.type}] template not found`, def.templateCode);
+        return { ok: false, error: "template_missing" };
+      }
+      templateLine = `القالب الرسمي: ${template.title_ar} — ${template.reference} (معرّف القالب: ${template.id})`;
+    }
+
+    // Unique, quotable reference number for the submission.
+    const stamp = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+    const referenceNumber = `ABF-REQ-${stamp}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+
+    // Supporting photographs or documents live in the private documents bucket.
+    const storedAttachments: string[] = [];
+    const attachments = data.attachments ?? [];
+    if (attachments.length > 0) {
+      const MAX_BYTES = 10 * 1024 * 1024;
+      const EXT: Record<string, string> = {
+        "application/pdf": "pdf",
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp",
+      };
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      for (let i = 0; i < attachments.length; i++) {
+        const att = attachments[i];
+        let bytes: Buffer;
+        try {
+          bytes = Buffer.from(att.data, "base64");
+        } catch {
+          return { ok: false, error: "attachment_invalid" };
+        }
+        if (bytes.length === 0 || bytes.length > MAX_BYTES) {
+          return { ok: false, error: "attachment_too_large" };
+        }
+        const path = `requests/${referenceNumber}/${i + 1}.${EXT[att.type] ?? "bin"}`;
+        const { error: upErr } = await supabaseAdmin.storage
+          .from("documents-private")
+          .upload(path, bytes, { contentType: att.type, upsert: false });
+        if (upErr) {
+          console.error(`[council_request_${data.type}] attachment upload failed`, upErr.message);
+          return { ok: false, error: "attachment_failed" };
+        }
+        storedAttachments.push(`documents-private/${path} — ${att.name}`);
+      }
+    }
 
     const message = [
+      `رقم الطلب: ${referenceNumber}`,
+      templateLine,
       `${def.topic.ar}: ${data.topic}`,
       data.branch ? `الفرع: ${data.branch}` : null,
+      ...answers.map((a) => `${a.label}: ${a.value}`),
       `${def.details.ar}:\n${data.details}`,
       data.link ? `رابط: ${data.link}` : null,
+      storedAttachments.length > 0
+        ? `المرفقات (${storedAttachments.length}):\n${storedAttachments.join("\n")}`
+        : null,
       `---`,
       `مقدم الطلب: ${data.full_name}`,
       `هاتف التواصل: ${data.phone}`,
@@ -318,7 +401,9 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
       name: data.full_name,
       email: data.email || "requests@albouabidfamily.com",
       phone: data.phone,
-      subject: `${def.title.ar}: ${data.topic}`,
+      subject: def.templateCode
+        ? `${def.title.ar} [${def.templateCode}] — ${referenceNumber}: ${data.topic}`
+        : `${def.title.ar}: ${data.topic}`,
       message,
       source: data.type,
       status: "new",
@@ -329,5 +414,5 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
       return { ok: false, error: "insert_failed" };
     }
 
-    return { ok: true };
+    return { ok: true, reference: referenceNumber };
   });
