@@ -1188,6 +1188,7 @@ async function fetchPublicGallery(
         alt_text_en: asset.alt_text_en,
         width: asset.width,
         height: asset.height,
+        mime_type: asset.mime_type,
       };
     })
     .filter((m): m is PublicGalleryMediaItem => m !== null);
