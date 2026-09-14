@@ -313,7 +313,13 @@ function AchieversPage() {
               <section key={year} aria-labelledby={`award-year-${year}`}>
                 <div className="flex items-center gap-4 border-b border-ink/25 pb-3 dark:border-ivory/20">
                   <h3 id={`award-year-${year}`} className="nums text-xl font-bold text-bronze dark:text-gold">
-                    {rtl ? `عام ${year}${year === "1446" ? "" : "هـ"}` : `Year ${year}${year === "1446" ? "" : " AH"}`}
+                    {year === ""
+                      ? rtl
+                        ? "بدون سنة محددة"
+                        : "Year not specified"
+                      : rtl
+                        ? `عام ${year}${year === "1446" ? "" : "هـ"}`
+                        : `Year ${year}${year === "1446" ? "" : " AH"}`}
                   </h3>
                   <span className="nums text-xs text-muted-foreground">{people.length}</span>
                 </div>
