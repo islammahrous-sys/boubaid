@@ -104,6 +104,25 @@ const copy = {
     en: "The family commissioned this wall plate at an investment cost of SAR 14,948, and formally registered its intellectual-property rights to serve as an exclusive visual reference linking the rising generation to its Tamimi roots.",
   } as BiText,
   artworkOpen: { ar: "فتح اللوحة كاملة", en: "Open the full plate" } as BiText,
+  artworkFull: { ar: "عرض الصورة بالحجم الكامل", en: "View full-size image" } as BiText,
+  artworkCaption: {
+    ar: "اضغط على اللوحة لتكبيرها، أو افتح النسخة الأصلية عالية الدقة.",
+    en: "Click the plate to enlarge it, or open the original high-resolution copy.",
+  } as BiText,
+
+  visualEyebrow: { ar: "الدليل البصري", en: "Visual genealogy" } as BiText,
+  visualTitle: {
+    ar: "شجرة آل بوعبيد البصرية — من الجذور إلى الأفق الرقمي",
+    en: "Al Bu Obaid Visual Genealogy — from roots to the digital horizon",
+  } as BiText,
+  visualBody: {
+    ar: "يوضح هذا المخطط البصري كيف تتشابك الجذور النسبية التقليدية مع الأسس الرقمية المعاصرة لتوثيق شجرة الأسرة، مما يجعل الإرث القبلي مرجعاً حياً يُحَدَّث ويُتداول بين الأجيال.",
+    en: "This visual diagram shows how traditional genealogical roots intertwine with contemporary digital foundations for documenting the family tree, turning tribal heritage into a living reference that is updated and shared across generations.",
+  } as BiText,
+  visualCaption: {
+    ar: "الدليل البصري لشجرة أسرة آل بوعبيد: إرث ينمو من الجذور إلى الأفق الرقمي.",
+    en: "Visual guide to the Al Bu Obaid family tree: a heritage growing from its roots to the digital horizon.",
+  } as BiText,
 
   detailLineage: { ar: "النسب", en: "Lineage" } as BiText,
   detailBranch: { ar: "الفرع", en: "Branch" } as BiText,
