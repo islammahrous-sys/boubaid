@@ -150,8 +150,6 @@ const copy = {
 const railSections: RailSection[] = [
   ...historySections.map((s) => ({ id: s.id, label: s.label })),
   { id: "chain", label: { ar: "عمود النسب", en: "Chain of descent" } },
-  { id: "plates", label: { ar: "اللوحات", en: "Plates" } },
-  { id: "bibliography", label: { ar: "المراجع", en: "Bibliography" } },
 ];
 
 function AboutPage() {
