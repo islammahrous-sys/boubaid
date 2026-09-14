@@ -377,10 +377,30 @@ function FamilyTreePage() {
         </div>
       </aside>
 
-      {/* ── Pointer to the dedicated Family Tree plate page ─── */}
-      <section className="reveal-on-scroll container-page py-12 md:py-14">
-        <div className="grid gap-6 border border-border bg-card p-5 md:grid-cols-[minmax(0,18rem)_1fr] md:items-center md:p-6 rounded-md">
-          <Link to="/official-family-tree" className="block overflow-hidden border border-border bg-background">
+      {/* ── The official plate, shown at readable size, plus the
+             existing links to the dedicated page and full resolution ── */}
+      <section id="official-plate" className="reveal-on-scroll container-page scroll-mt-24 py-12 md:py-14">
+        <Eyebrow>{t(copy.artworkEyebrow)}</Eyebrow>
+        <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl font-serif">
+          {t(copy.artworkTitle)}
+        </h2>
+        <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-muted-foreground">
+          {t(copy.artworkBody)}
+        </p>
+
+        <figure className="mt-6 border border-border bg-card p-3 md:p-5 rounded-md">
+          <button
+            type="button"
+            onClick={() =>
+              openMediaViewer({
+                src: OFFICIAL_FAMILY_TREE_IMAGE,
+                kind: "image",
+                title: t(copy.artworkTitle),
+              })
+            }
+            className="group relative block w-full cursor-zoom-in overflow-hidden bg-background"
+            aria-label={t(copy.artworkFull)}
+          >
             <img
               src={OFFICIAL_FAMILY_TREE_IMAGE}
               alt={
@@ -390,29 +410,86 @@ function FamilyTreePage() {
               }
               width={1344}
               height={1920}
-              loading="lazy"
               decoding="async"
-              className="mx-auto aspect-[7/10] w-full object-contain"
+              className="mx-auto h-auto w-full max-w-[54rem] object-contain"
             />
-          </Link>
-          <div>
-            <Eyebrow>{t(copy.artworkEyebrow)}</Eyebrow>
-            <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl font-serif">
-              {t(copy.artworkTitle)}
-            </h2>
-            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
-              {t(copy.artworkBody)}
-            </p>
-            <Link
-              to="/official-family-tree"
-              className="mt-5 inline-flex shrink-0 items-center gap-2 border border-gold bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
+            <span className="pointer-events-none absolute end-3 top-3 inline-flex items-center gap-1.5 border border-border bg-background/90 px-2 py-1 text-[11px] font-semibold text-foreground opacity-0 transition-opacity group-hover:opacity-100">
+              <Maximize2 className="h-3 w-3" aria-hidden="true" />
+              {t(copy.artworkFull)}
+            </span>
+          </button>
+          <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-4">
+            <span className="text-[13px] leading-relaxed text-muted-foreground">
+              {t(copy.artworkCaption)}
+            </span>
+            <span className="flex flex-wrap items-center gap-3">
+              <a
+                href={OFFICIAL_FAMILY_TREE_IMAGE}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 label-caps text-xs font-semibold text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+              >
+                {t(copy.artworkFull)}
+                <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+              <Link
+                to="/official-family-tree"
+                className="inline-flex shrink-0 items-center gap-2 border border-gold bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
+              >
+                {t(copy.artworkOpen)}
+              </Link>
+            </span>
+          </figcaption>
+        </figure>
+      </section>
+
+      {/* ── Visual genealogy chart, next to the lineage explanation ── */}
+      <section id="visual-genealogy" className="reveal-on-scroll container-page scroll-mt-24 pb-12 md:pb-14">
+        <div className="border-t border-border pt-10">
+          <Eyebrow>{t(copy.visualEyebrow)}</Eyebrow>
+          <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl font-serif">
+            {t(copy.visualTitle)}
+          </h2>
+          <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-muted-foreground">
+            {t(copy.visualBody)}
+          </p>
+
+          <figure className="mt-6">
+            <button
+              type="button"
+              onClick={() =>
+                openMediaViewer({
+                  src: historyMedia.visualGenealogy,
+                  kind: "image",
+                  title: t(copy.visualTitle),
+                })
+              }
+              className="group relative block w-full cursor-zoom-in border border-border bg-card p-3 transition-colors hover:border-foreground md:p-4"
+              aria-label={t(copy.artworkFull)}
             >
-              {t(copy.artworkOpen)}
-              <Maximize2 className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
+              <img
+                src={historyMedia.visualGenealogy}
+                alt={
+                  rtl
+                    ? "الدليل البصري لشجرة أسرة آل بوعبيد: إرث ينمو من الجذور إلى الأفق الرقمي"
+                    : "Visual guide to the Al Bu Obaid family tree: a heritage growing from its roots to the digital horizon"
+                }
+                decoding="async"
+                loading="lazy"
+                className="mx-auto h-auto w-full object-contain"
+              />
+              <span className="pointer-events-none absolute end-4 top-4 inline-flex items-center gap-1.5 border border-border bg-background/90 px-2 py-1 text-[11px] font-semibold text-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                <Maximize2 className="h-3 w-3" aria-hidden="true" />
+                {t(copy.artworkFull)}
+              </span>
+            </button>
+            <figcaption className="mt-3 border-t border-border pt-3 text-[13px] leading-relaxed text-muted-foreground">
+              {t(copy.visualCaption)}
+            </figcaption>
+          </figure>
         </div>
       </section>
+
 
 
       {/* ── Generation explorer ─────────────────────────────── */}
