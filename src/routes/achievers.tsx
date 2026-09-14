@@ -257,9 +257,34 @@ function AchieversPage() {
         <section aria-labelledby="competencies-title">
           <Eyebrow>{rtl ? "القسم الأول" : "Section One"}</Eyebrow>
           <h2 id="competencies-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">{t(copy.competencies)}</h2>
-          <div className="mt-6 border-y border-border py-10 text-center">
-            {competencies.length === 0 ? <p className="text-sm text-muted-foreground">{t(copy.empty)}</p> : null}
-          </div>
+          {competencies.length === 0 ? (
+            <div className="mt-6 border-y border-border py-10 text-center">
+              <p className="text-sm text-muted-foreground">{t(copy.empty)}</p>
+            </div>
+          ) : (
+            <ol className="mt-6 divide-y divide-border border-y border-border">
+              {competencies.map((person, index) => (
+                <li
+                  key={person.id}
+                  className="grid gap-2 py-5 sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1.4fr)] sm:gap-6"
+                >
+                  <span className="nums text-sm text-bronze/70 dark:text-gold/60">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveAchiever(person)}
+                    className="text-start font-naskh text-base font-bold text-foreground hover:text-bronze dark:hover:text-gold"
+                  >
+                    {t(person.name)}
+                  </button>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {t(person.field) || t(person.achievement)}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          )}
         </section>
 
         <section aria-labelledby="excellence-title">
