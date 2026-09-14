@@ -69,8 +69,11 @@ function MuseumCollectionPage() {
             {t(copy.back)}
           </Link>
         }
-        title={gallery.title_ar}
-        subtitle={gallery.description_ar ?? undefined}
+        title={rtl ? gallery.title_ar : gallery.title_en || gallery.title_ar}
+        subtitle={
+          (rtl ? gallery.description_ar : gallery.description_en || gallery.description_ar) ??
+          undefined
+        }
       />
 
       <section className="container-page py-10 md:py-14">

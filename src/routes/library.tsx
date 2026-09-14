@@ -130,11 +130,14 @@ type FolderCard = {
   title_ar: string;
   title_en?: string | null;
   description_ar?: string | null;
+  description_en?: string | null;
   cover_media_path?: string | null;
   image_count: number;
 };
 
 function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: string }) {
+  const { lang } = useLang();
+  const pick = (ar: string, en?: string | null) => (lang === "en" ? en || ar : ar);
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((c) => (
@@ -164,10 +167,12 @@ function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: st
           </div>
           <div className="flex flex-1 flex-col gap-1.5 p-4">
             <h3 className="break-words text-base font-bold leading-snug text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
-              {c.title_ar}
+              {pick(c.title_ar, c.title_en)}
             </h3>
             {c.description_ar && (
-              <p className="line-clamp-2 text-sm text-muted-foreground">{c.description_ar}</p>
+              <p className="line-clamp-2 text-sm text-muted-foreground">
+                {pick(c.description_ar, c.description_en)}
+              </p>
             )}
           </div>
         </Link>
@@ -230,7 +235,7 @@ function LibraryPage() {
   const tabDefs = [
     ...folders.map((f) => ({
       key: f.slug,
-      label: f.title_ar,
+      label: lang === "en" ? f.title_en || f.title_ar : f.title_ar,
       count:
         f.children.length > 0
           ? f.children.reduce((sum, c) => sum + c.image_count, 0)
@@ -330,7 +335,13 @@ function LibraryPage() {
           <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
             {isMuseum
               ? t(copy.museumNote)
-              : (activeFolder?.description_ar ?? `${activeFolder?.title_ar ?? ""}`)}
+              : lang === "en"
+                ? (activeFolder?.description_en ??
+                  activeFolder?.title_en ??
+                  activeFolder?.description_ar ??
+                  activeFolder?.title_ar ??
+                  "")
+                : (activeFolder?.description_ar ?? `${activeFolder?.title_ar ?? ""}`)}
           </p>
 
           {visibleItems.length > 0 ? (
