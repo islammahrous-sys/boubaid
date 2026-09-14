@@ -51,7 +51,7 @@ function FundCertificatesPage() {
           { label: isAr ? "جهة الإصدار" : "Issued by", value: t(siteMeta.ncnpAuthority) },
           {
             label: isAr ? "تاريخ الإشهار" : "Registered",
-            value: `${siteMeta.foundedHijri} هـ · ${siteMeta.foundedGregorian}`,
+            value: `${t(siteMeta.foundedHijriLabel)} · ${t(siteMeta.foundedGregorianLabel)}`,
             mono: true,
           },
         ]}
