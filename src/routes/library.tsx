@@ -130,6 +130,7 @@ type FolderCard = {
   title_ar: string;
   title_en?: string | null;
   description_ar?: string | null;
+  description_en?: string | null;
   cover_media_path?: string | null;
   image_count: number;
 };
