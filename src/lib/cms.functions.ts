@@ -1099,6 +1099,8 @@ export type PublicGalleryMediaItem = {
   alt_text_en: string | null;
   width: number | null;
   height: number | null;
+  /** Archive folders may hold film clips beside photographs. */
+  mime_type?: string | null;
 };
 
 export type PublicGallery = {
@@ -1167,7 +1169,7 @@ async function fetchPublicGallery(
   const { data: assets } = await supabase
     .from("media_assets")
     .select(
-      "id, bucket, storage_path, public_url, width, height, caption_ar, caption_en, alt_text_ar, alt_text_en",
+      "id, bucket, storage_path, public_url, width, height, mime_type, caption_ar, caption_en, alt_text_ar, alt_text_en",
     )
     .in("id", assetIds);
 
