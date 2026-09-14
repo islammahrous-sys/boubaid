@@ -235,7 +235,7 @@ function LibraryPage() {
   const tabDefs = [
     ...folders.map((f) => ({
       key: f.slug,
-      label: f.title_ar,
+      label: lang === "en" ? f.title_en || f.title_ar : f.title_ar,
       count:
         f.children.length > 0
           ? f.children.reduce((sum, c) => sum + c.image_count, 0)
@@ -335,7 +335,13 @@ function LibraryPage() {
           <p className="measure mb-6 text-[13px] leading-relaxed text-muted-foreground">
             {isMuseum
               ? t(copy.museumNote)
-              : (activeFolder?.description_ar ?? `${activeFolder?.title_ar ?? ""}`)}
+              : lang === "en"
+                ? (activeFolder?.description_en ??
+                  activeFolder?.title_en ??
+                  activeFolder?.description_ar ??
+                  activeFolder?.title_ar ??
+                  "")
+                : (activeFolder?.description_ar ?? `${activeFolder?.title_ar ?? ""}`)}
           </p>
 
           {visibleItems.length > 0 ? (
