@@ -298,26 +298,13 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
 
-    const subjects: Record<typeof data.type, string> = {
-      committee_nomination: `طلب ترشيح عضوية في إحدى اللجان: ${data.topic}`,
-      service_establishment: `طلب إضافة خدمة – منشآت: ${data.topic}`,
-      service_family: `طلب إضافة خدمة – أفراد العائلة: ${data.topic}`,
-    };
-    const topicLabels: Record<typeof data.type, string> = {
-      committee_nomination: "اللجنة المطلوبة",
-      service_establishment: "اسم المنشأة والخدمة",
-      service_family: "الخدمة المقدمة",
-    };
-    const detailLabels: Record<typeof data.type, string> = {
-      committee_nomination: "المؤهلات وأسباب الترشيح",
-      service_establishment: "وصف الخدمة",
-      service_family: "وصف الخدمة",
-    };
+    const { COUNCIL_REQUESTS } = await import("./council-requests");
+    const def = COUNCIL_REQUESTS[data.type];
 
     const message = [
-      `${topicLabels[data.type]}: ${data.topic}`,
+      `${def.topic.ar}: ${data.topic}`,
       data.branch ? `الفرع: ${data.branch}` : null,
-      `${detailLabels[data.type]}:\n${data.details}`,
+      `${def.details.ar}:\n${data.details}`,
       data.link ? `رابط: ${data.link}` : null,
       `---`,
       `مقدم الطلب: ${data.full_name}`,
