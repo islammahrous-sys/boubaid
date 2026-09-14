@@ -6,6 +6,11 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { SectionHeading, Prose, Eyebrow, Ornament, Pullquote } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
+import { HistoryBlocks } from "@/components/site/HistoryBlocks";
+import { historySections } from "@/content/history-source";
+
+const arabicIndex = ["١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩", "١٠"];
+const romanIndex = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 import { lineageChain, references, siteMeta } from "@/content/site";
 import { pageImages } from "@/content/images";
 import { getPublicFamilyHistory } from "@/lib/cms.functions";
