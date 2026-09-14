@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, ImageOff } from "lucide-react";
+import { ArrowLeft, ArrowRight, ImageOff, PlayCircle } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
@@ -82,21 +82,39 @@ function MuseumCollectionPage() {
         ) : (
           <>
             <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {visible.map((item, i) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setLightboxIndex(i)}
-                  className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary/40 cursor-pointer transition-all active:scale-[0.98] shadow-2xs hover:border-bronze/50 dark:hover:border-gold/50"
-                >
-                  <img
-                    src={item.url}
-                    alt={(rtl ? item.alt_text_ar : item.alt_text_en) || gallery.title_ar}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </button>
-              ))}
+              {visible.map((item, i) => {
+                const isVideo = Boolean(item.mime_type?.startsWith("video/"));
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setLightboxIndex(i)}
+                    className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary/40 cursor-pointer transition-all active:scale-[0.98] shadow-2xs hover:border-bronze/50 dark:hover:border-gold/50"
+                  >
+                    {isVideo ? (
+                      <>
+                        <video
+                          src={item.url}
+                          preload="metadata"
+                          muted
+                          playsInline
+                          className="h-full w-full object-cover"
+                        />
+                        <span className="pointer-events-none absolute inset-0 grid place-items-center bg-black/25">
+                          <PlayCircle className="h-9 w-9 text-white/90" aria-hidden="true" />
+                        </span>
+                      </>
+                    ) : (
+                      <img
+                        src={item.url}
+                        alt={(rtl ? item.alt_text_ar : item.alt_text_en) || gallery.title_ar}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             {visibleCount < gallery.media.length && (
@@ -120,6 +138,7 @@ function MuseumCollectionPage() {
           url: item.url,
           alt: (rtl ? item.alt_text_ar : item.alt_text_en) || gallery.title_ar,
           caption: rtl ? item.caption_ar : item.caption_en,
+          kind: item.mime_type?.startsWith("video/") ? ("video" as const) : ("image" as const),
         }))}
         index={lightboxIndex}
         onClose={() => setLightboxIndex(null)}

@@ -88,6 +88,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://albouabidfamily.com/templates</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://albouabidfamily.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

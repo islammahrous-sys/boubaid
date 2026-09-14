@@ -8,6 +8,8 @@ export interface ArchiveLightboxItem {
   url: string;
   alt: string;
   caption?: string | null;
+  /** Archive folders hold film alongside photographs. */
+  kind?: "image" | "video";
 }
 
 export function ArchiveLightbox({
@@ -134,12 +136,23 @@ export function ArchiveLightbox({
           )}
 
           <div className="relative flex items-center justify-center w-full min-h-[40vh] max-h-[70dvh] sm:max-h-[72vh] overflow-hidden">
-            <img
-              src={current.url}
-              alt={current.alt}
-              className="max-h-[70dvh] sm:max-h-[72vh] w-auto max-w-full rounded-lg object-contain transition-opacity duration-200"
-              draggable={false}
-            />
+            {current.kind === "video" ? (
+              <video
+                key={current.id}
+                src={current.url}
+                controls
+                playsInline
+                preload="metadata"
+                className="max-h-[70dvh] sm:max-h-[72vh] w-auto max-w-full rounded-lg object-contain"
+              />
+            ) : (
+              <img
+                src={current.url}
+                alt={current.alt}
+                className="max-h-[70dvh] sm:max-h-[72vh] w-auto max-w-full rounded-lg object-contain transition-opacity duration-200"
+                draggable={false}
+              />
+            )}
           </div>
 
           {current.caption && (
