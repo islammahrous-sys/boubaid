@@ -166,10 +166,12 @@ function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: st
           </div>
           <div className="flex flex-1 flex-col gap-1.5 p-4">
             <h3 className="break-words text-base font-bold leading-snug text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
-              {c.title_ar}
+              {pick(c.title_ar, c.title_en)}
             </h3>
             {c.description_ar && (
-              <p className="line-clamp-2 text-sm text-muted-foreground">{c.description_ar}</p>
+              <p className="line-clamp-2 text-sm text-muted-foreground">
+                {pick(c.description_ar, c.description_en)}
+              </p>
             )}
           </div>
         </Link>
