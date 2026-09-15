@@ -1,3 +1,4 @@
+import { formatDualDateTime } from "@/lib/dates";
 import { useState } from "react";
 import {
   Table,
@@ -169,7 +170,7 @@ export function AuditLogsViewer({ auditLogs }: { auditLogs: AuditLogRow[] }) {
                     {log.entity_id || "—"}
                   </TableCell>
                   <TableCell className="font-mono text-muted-foreground">
-                    {new Date(log.created_at).toLocaleString(isAr ? "ar-SA" : "en-US")}
+                    {formatDualDateTime(log.created_at, isAr ? "ar" : "en")}
                   </TableCell>
                   <TableCell className="text-end">
                     <Button
@@ -210,7 +211,7 @@ export function AuditLogsViewer({ auditLogs }: { auditLogs: AuditLogRow[] }) {
                 <div>
                   <span className="text-muted-foreground block">{isAr ? "التاريخ:" : "Date:"}</span>
                   <span className="text-foreground">
-                    {new Date(selectedLog.created_at).toLocaleString()}
+                    {formatDualDateTime(selectedLog.created_at, isAr ? "ar" : "en")}
                   </span>
                 </div>
               </div>

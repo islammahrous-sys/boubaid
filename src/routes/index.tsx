@@ -1,7 +1,21 @@
 import { createFileRoute, getRouteApi, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { ArrowLeft, ArrowRight, ExternalLink, CalendarDays } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  CalendarDays,
+  Landmark,
+  Inbox,
+  Archive,
+} from "lucide-react";
 import { formatContentDate } from "@/lib/text";
+import { formatDualDate } from "@/lib/dates";
+import {
+  ElectronicFamilyTreeSection,
+  OfficialPlateSection,
+  VisualGenealogySection,
+} from "@/components/site/FamilyTreeSections";
 import { cn } from "@/lib/utils";
 
 import { useLang } from "@/i18n/LanguageProvider";
@@ -192,6 +206,10 @@ const copy = {
   registered: { ar: "سنة الإشهار", en: "Registered" } as BiText,
   branchCount: { ar: "الفروع الموثقة", en: "Documented branches" } as BiText,
   licence: { ar: "رقم الترخيص", en: "Licence no." } as BiText,
+  quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
+  quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
+  quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
+
 
   openingEyebrow: { ar: "افتتاحية", en: "Introduction" } as BiText,
   openingTitle: {
@@ -301,37 +319,37 @@ type SectionConfig = {
 const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "hero", enabled: true, order: 1 },
   { id: "about_dean", enabled: true, order: 2 },
-  // Vision, mission and core values sit directly under the council address.
-  { id: "vision_mission", enabled: true, order: 3 },
-  { id: "seven_branches", enabled: true, order: 4 },
-  // The genetic-lineage study sits directly under the seven branches.
-  { id: "dna_preview", enabled: true, order: 5 },
-  { id: "initiatives_hq", enabled: true, order: 6 },
-  { id: "latest_news", enabled: true, order: 7 },
-  { id: "family_achievers", enabled: true, order: 8 },
-  
-  { id: "upcoming_events", enabled: true, order: 10 },
-  { id: "heritage_gallery", enabled: true, order: 11 },
-  { id: "contact_inquiry", enabled: true, order: 12 },
+  // The electronic family tree, the official plate and the visual guide
+  // follow the council address directly.
+  { id: "family_tree_home", enabled: true, order: 3 },
+  // Vision, mission and core values sit under the tree.
+  { id: "vision_mission", enabled: true, order: 4 },
+  { id: "initiatives_hq", enabled: true, order: 5 },
+  { id: "latest_news", enabled: true, order: 6 },
+  { id: "heritage_gallery", enabled: true, order: 7 },
+  { id: "contact_inquiry", enabled: true, order: 8 },
 ];
 
+/**
+ * Sections retired from the home page. Their CMS records and their own pages
+ * stay untouched — only the home-page rendering is withdrawn, so a saved
+ * console configuration that still lists them does not bring them back.
+ */
+const RETIRED_HOME_SECTIONS = new Set([
+  "seven_branches",
+  "branches",
+  "dna_preview",
+  "dna",
+  "family_achievers",
+  "achievers",
+  "upcoming_events",
+  "events",
+  "poem_proposal",
+]);
 
-/** Compact date for the homepage events preview cards (no weekday, unlike the full /events page). */
-function formatHomeEventDate(iso: string, lang: "ar" | "en", timezone: string) {
-  try {
-    // calendar: "gregory" pinned -- "ar-SA" can otherwise resolve to the
-    // Hijri calendar in some ICU builds, differently between Node's SSR
-    // render and the browser, causing a hydration mismatch on every load.
-    return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-US", {
-      calendar: "gregory",
-      timeZone: timezone || "Asia/Riyadh",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(new Date(iso));
-  } catch {
-    return new Date(iso).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US");
-  }
+/** Compact date for the homepage events preview cards. */
+function formatHomeEventDate(iso: string, lang: "ar" | "en", _timezone: string) {
+  return formatDualDate(iso, lang);
 }
 
 function HomePage() {
@@ -370,7 +388,8 @@ function HomePage() {
 
     const ordered = [...rawList]
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .filter((s) => s.enabled !== false);
+      .filter((s) => s.enabled !== false)
+      .filter((s) => !RETIRED_HOME_SECTIONS.has(s.id));
 
     // Vision/mission is a required section: if a saved console configuration
     // predates it, insert it right after the council address.
@@ -380,7 +399,15 @@ function HomePage() {
       ordered.splice(anchor >= 0 ? anchor + 1 : ordered.length, 0, section);
     }
 
+    // The family tree follows the council address, whatever the saved order.
+    if (!ordered.some((s) => s.id === "family_tree_home")) {
+      const anchor = ordered.findIndex((s) => s.id === "about_dean" || s.id === "opening");
+      const section: SectionConfig = { id: "family_tree_home", enabled: true, order: 0 };
+      ordered.splice(anchor >= 0 ? anchor + 1 : 0, 0, section);
+    }
+
     return ordered;
+
 
   })();
 
@@ -474,26 +501,52 @@ function HomePage() {
 
               {/* Colophon strip — sits at the base of the cinematic hero */}
               <div className="relative border-t border-gold/20 bg-ink/70 backdrop-blur-md">
-                <dl className="container-page grid grid-cols-2 divide-y divide-ivory/10 sm:grid-cols-4 sm:divide-x sm:divide-y-0 sm:rtl:divide-x-reverse">
-                  {[
-                    { label: copy.licence, value: siteMeta.ncnpLicense, mono: true, link: null },
-                    {
-                      label: copy.registered,
-                      value: t(siteMeta.foundedHijriLabel),
-                      mono: false,
-                      link: null,
-                    },
-                    {
-                      label: copy.branchCount,
-                      value: rtl ? "سبعة فروع" : "Seven Branches",
-                      mono: false,
-                      link: "/branches",
-                    },
-                    { label: copy.seat, value: t(copy.seatValue), mono: false, link: "/contact" },
-                  ].map((item, i) => {
+                <dl className="container-page grid grid-cols-2 divide-y divide-ivory/10 sm:grid-cols-5 sm:divide-x sm:divide-y-0 sm:rtl:divide-x-reverse">
+                  {(
+                    [
+                      // The licence number and the year of registration stay.
+                      {
+                        label: copy.licence,
+                        value: siteMeta.ncnpLicense,
+                        mono: true,
+                        link: null,
+                        icon: null,
+                      },
+                      {
+                        label: copy.registered,
+                        value: t(siteMeta.foundedHijriLabel),
+                        mono: false,
+                        link: null,
+                        icon: null,
+                      },
+                      // Three quick entrances replace the former branch and
+                      // seat cells: the fund, the requests centre, the archive.
+                      { label: copy.quickFund, link: "/fund", icon: Landmark },
+                      { label: copy.quickRequests, link: "/requests", icon: Inbox },
+                      { label: copy.quickArchive, link: "/library", icon: Archive },
+                    ] as {
+                      label: BiText;
+                      value?: string;
+                      mono?: boolean;
+                      link: string | null;
+                      icon: typeof Landmark | null;
+                    }[]
+                  ).map((item, i) => {
+                    const Icon = item.icon;
                     const content = (
-                      <div className="flex h-full flex-col justify-center px-3 py-4 sm:px-6 sm:py-6 transition-[background-color,transform] duration-200 ease-out group-hover:bg-ivory/[0.06] active:scale-[0.98] sm:text-center sm:first:ps-0 sm:last:pe-0">
-                        <dt className="label-caps flex items-center justify-center gap-1 text-[10px] sm:text-xs text-ivory/50 transition-colors group-hover:text-gold">
+                      <div className="flex h-full flex-col items-center justify-center px-3 py-4 sm:px-6 sm:py-6 transition-[background-color,transform] duration-200 ease-out group-hover:bg-ivory/[0.06] active:scale-[0.98] sm:text-center sm:first:ps-0 sm:last:pe-0">
+                        {Icon ? (
+                          <Icon
+                            className="h-5 w-5 text-gold transition-colors group-hover:text-gold-soft"
+                            aria-hidden="true"
+                          />
+                        ) : null}
+                        <dt
+                          className={cn(
+                            "label-caps flex items-center justify-center gap-1 text-[10px] sm:text-xs text-ivory/50 transition-colors group-hover:text-gold",
+                            Icon && "mt-2 text-[11px] font-semibold text-ivory sm:text-sm",
+                          )}
+                        >
                           {t(item.label)}
                           {item.link && (
                             <Arrow
@@ -502,14 +555,16 @@ function HomePage() {
                             />
                           )}
                         </dt>
-                        <dd
-                          className={cn(
-                            "mt-1 sm:mt-2 text-xs sm:text-base font-semibold text-ivory transition-colors group-hover:text-gold",
-                            item.mono && "nums font-mono text-gold group-hover:text-gold-soft",
-                          )}
-                        >
-                          {item.value}
-                        </dd>
+                        {item.value ? (
+                          <dd
+                            className={cn(
+                              "mt-1 sm:mt-2 text-xs sm:text-base font-semibold text-ivory transition-colors group-hover:text-gold",
+                              item.mono && "nums font-mono text-gold group-hover:text-gold-soft",
+                            )}
+                          >
+                            {item.value}
+                          </dd>
+                        ) : null}
                       </div>
                     );
 
@@ -533,6 +588,18 @@ function HomePage() {
             </HeroImage>
             {/* Paper-grain divider */}
             <div className="h-5 w-full paper-texture opacity-25" aria-hidden="true" />
+          </div>
+        );
+
+      // The same electronic tree, official plate and visual guide rendered on
+      // the lineage page — one implementation, two placements.
+      case "family_tree_home":
+      case "tree_sections":
+        return (
+          <div key={sec.id} className="border-y border-border">
+            <ElectronicFamilyTreeSection withHeading />
+            <OfficialPlateSection />
+            <VisualGenealogySection />
           </div>
         );
 

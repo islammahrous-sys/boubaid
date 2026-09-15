@@ -35,8 +35,8 @@ export const primaryNav: NavItem[] = [
     children: [
       {
         to: "/family-tree",
-        label: { ar: "النسب", en: "Lineage" },
-        short: { ar: "النسب", en: "Lineage" },
+        label: { ar: "المشجرة", en: "Lineage" },
+        short: { ar: "المشجرة", en: "Lineage" },
       },
       { to: "/branches", label: { ar: "فروع العائلة", en: "Family Branches" } },
       { to: "/dna", label: { ar: "الدراسات الجينية", en: "Genetic Studies" } },

@@ -1,3 +1,4 @@
+import { formatDualDateTime } from "@/lib/dates";
 import { useState } from "react";
 import {
   Table,
@@ -267,13 +268,7 @@ export function EventsManager({
                   <TableRow key={evt.id} className="text-xs hover:bg-muted/30">
                     <TableCell className="font-semibold text-foreground">{evt.title_ar}</TableCell>
                     <TableCell className="font-mono text-muted-foreground">
-                      {new Date(evt.start_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {formatDualDateTime(evt.start_at, isAr ? "ar" : "en")}
                     </TableCell>
                     <TableCell>
                       {places.find((p) => p.id === evt.place_id)?.name_ar || "—"}

@@ -1,3 +1,4 @@
+import { formatDualDate } from "@/lib/dates";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -2353,11 +2354,7 @@ function AccountPage() {
                           </div>
                           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
                             <span>
-                              {new Date(c.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })}
+                              {formatDualDate(c.created_at, isAr ? "ar" : "en", "short")}
                             </span>
                             {c.reference && (
                               <span>

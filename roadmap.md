@@ -44,3 +44,12 @@
 - Establishment listings, filters and quick-view moved from /directory to /initiatives#establishments via `EstablishmentsDirectory`; records, media and routes unchanged.
 - Forms & Templates: every template and reference document now has «تحميل الملف / Download File» alongside «عرض الملف».
 - 14 official template requests and the 11 self-hosted archive videos verified unchanged.
+
+## Home page & family tree update (Sep 2026) — complete
+- [x] Removed the branches, genetic-study, achievers and family-events blocks from the home page (records and their own pages untouched)
+- [x] Electronic family tree, official tree plate and visual genealogy now render on the home page right after the council message, from one shared implementation (src/components/site/FamilyTreeSections.tsx)
+- [x] Removed the generation-by-generation explorer from the lineage page; family-tree data untouched
+- [x] Names now always fit inside the tree node frames (auto-shrink, then ellipsis with full-name tooltip)
+- [x] Arabic navigation label under Family Tree renamed to «المشجرة» (English stays "Lineage")
+- [x] Home colophon strip keeps the licence number and registration date, and now offers three icon links: Family Development Fund, Requests Centre, Archive
+- [x] All user-facing dates go through src/lib/dates.ts and show Gregorian + Hijri (Umm al-Qura)

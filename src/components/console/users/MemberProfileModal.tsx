@@ -1,3 +1,4 @@
+import { formatDualDate } from "@/lib/dates";
 import { useState, useMemo, useEffect } from "react";
 import {
   Dialog,
@@ -503,7 +504,7 @@ export function MemberProfileModal({
                     <div className="flex justify-between py-1">
                       <span className="text-muted-foreground">{isAr ? "تاريخ إنشاء الحساب" : "Registered On"}</span>
                       <span className="font-mono text-foreground">
-                        {new Date(profile.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
+                        {formatDualDate(profile.created_at, isAr ? "ar" : "en", "short")}
                       </span>
                     </div>
                   </div>
@@ -561,7 +562,7 @@ export function MemberProfileModal({
                       </h4>
                       <p className="text-[11px] text-muted-foreground">
                         {isAr ? "قُدّم الطلب بتاريخ:" : "Submitted on:"}{" "}
-                        {new Date(membershipRequest.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
+                        {formatDualDate(membershipRequest.created_at, isAr ? "ar" : "en", "short")}
                       </p>
                     </div>
                     <Badge

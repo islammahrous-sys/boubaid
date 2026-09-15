@@ -1,3 +1,4 @@
+import { formatDualDate } from "@/lib/dates";
 import { useState, useEffect } from "react";
 import {
   Table,
@@ -897,11 +898,7 @@ export function TreasuryManager({
                       </TableCell>
                       <TableCell>
                         <div className="text-xs">
-                          {new Date(c.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                          {formatDualDate(c.created_at, isAr ? "ar" : "en", "short")}
                         </div>
                       </TableCell>
                       <TableCell>{getStatusDisplay(c.status)}</TableCell>
@@ -2112,10 +2109,7 @@ export function TreasuryManager({
                       {isAr ? "التاريخ" : "Date"}
                     </span>
                     <span className="text-xs font-medium text-foreground block">
-                      {new Date(selectedContribution.created_at).toLocaleDateString(
-                        isAr ? "ar-SA" : "en-US",
-                        { month: "long", day: "numeric", year: "numeric" },
-                      )}
+                      {formatDualDate(selectedContribution.created_at, isAr ? "ar" : "en")}
                     </span>
                   </div>
 

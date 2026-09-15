@@ -1,3 +1,4 @@
+import { formatDualDateTime } from "@/lib/dates";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useRef, useState } from "react";
@@ -104,23 +105,9 @@ const copy = {
   } as BiText,
 };
 
-function formatEventDate(iso: string, lang: "ar" | "en", timezone: string) {
-  try {
-    // calendar: "gregory" pinned -- "ar-SA" can otherwise resolve to the
-    // Hijri calendar in some ICU builds, differently between Node's SSR
-    // render and the browser, causing a hydration mismatch on every load.
-    return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-US", {
-      calendar: "gregory",
-      timeZone: timezone || "Asia/Riyadh",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(iso));
-  } catch {
-    return new Date(iso).toLocaleString(lang === "ar" ? "ar-SA" : "en-US");
-  }
+/** Both calendars plus the clock time, from the one shared date utility. */
+function formatEventDate(iso: string, lang: "ar" | "en", _timezone: string) {
+  return formatDualDateTime(iso, lang);
 }
 
 function placeLabel(place: PublicEventRow["place"], lang: "ar" | "en") {

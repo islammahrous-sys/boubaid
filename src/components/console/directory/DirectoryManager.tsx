@@ -1,3 +1,4 @@
+import { formatDualDate } from "@/lib/dates";
 import { useState, useEffect } from "react";
 import {
   Table,
@@ -628,7 +629,7 @@ export function DirectoryManager({
                           )}
                         </TableCell>
                         <TableCell className="font-mono text-muted-foreground">
-                          {new Date(req.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
+                          {formatDualDate(req.created_at, isAr ? "ar" : "en", "short")}
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge
