@@ -295,7 +295,7 @@
             /** Names must stay inside the pill: shrink the type first, and only
              *  clip (with an ellipsis and a full-name tooltip) as a last resort.
              *  Arabic clips from the logical end, so we trim characters, not bytes. */
-            const NODE_TEXT_W = NODE_W - 18;
+            const NODE_TEXT_W = NODE_W - 26;
             function fitInsideNode(el, startPx, minPx) {
                 const full = el.textContent;
                 let size = startPx;
