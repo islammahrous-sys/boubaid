@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { FileText, Eye } from "lucide-react";
+import { FileText, Eye, Download } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { getPublishedLibrary } from "@/lib/cms.functions";
@@ -9,6 +9,7 @@ import { Eyebrow } from "@/components/site/Editorial";
 import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
 import { MediaViewerDialog } from "@/components/site/MediaViewerDialog";
 import { getCanonicalUrl } from "@/lib/seo";
+import { downloadFile } from "@/lib/download";
 
 /**
  * النماذج و القوالب — official family announcement templates plus the
@@ -66,6 +67,7 @@ const copy = {
   } as BiText,
   docsTitle: { ar: "المستندات المرجعية", en: "Reference Documents" } as BiText,
   view: { ar: "عرض الملف", en: "View Document" } as BiText,
+  download: { ar: "تحميل الملف", en: "Download File" } as BiText,
   empty: {
     ar: "لم تُنشر نماذج أو قوالب حتى الآن. تُضاف من لوحة الإدارة وتظهر في هذه الصفحة مباشرة.",
     en: "No templates have been published yet. They are added from the admin console and appear here immediately.",
@@ -151,6 +153,15 @@ function TemplatesPage() {
                       {r.description}
                     </p>
                   ) : null}
+                  <button
+                    type="button"
+                    onClick={() => void downloadFile(r.href as string, r.title)}
+                    aria-label={`${t(copy.download)} — ${r.title}`}
+                    className="mt-3 inline-flex items-center gap-2 self-start border-b border-transparent pb-0.5 text-[13px] font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+                  >
+                    <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                    {t(copy.download)}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -176,14 +187,25 @@ function TemplatesPage() {
                       {r.description}
                     </p>
                   ) : null}
-                  <button
-                    type="button"
-                    onClick={() => setDoc({ src: r.href as string, title: r.title })}
-                    className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                  >
-                    <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                    {t(copy.view)}
-                  </button>
+                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+                    <button
+                      type="button"
+                      onClick={() => setDoc({ src: r.href as string, title: r.title })}
+                      className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                    >
+                      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t(copy.view)}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void downloadFile(r.href as string, r.title)}
+                      aria-label={`${t(copy.download)} — ${r.title}`}
+                      className="inline-flex items-center gap-2 border-b border-transparent pb-0.5 text-[13px] font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+                    >
+                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t(copy.download)}
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

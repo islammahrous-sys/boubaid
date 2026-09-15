@@ -35,3 +35,12 @@
 - [x] Submissions resolve the template code against the library record, get a unique reference number (ABF-REQ-…), and land in the existing inbox with the template id recorded; historical submissions untouched.
 - [x] The three earlier generic announcement requests (family occasion, customised template, official greeting) retired as duplicates — definitions kept so old submissions stay readable.
 - [x] Archive → الفيديوهات now plays the 11 website-hosted clips with the native player (loop, muted autoplay, real sound toggle in both languages); no Instagram needed. Fixed the batched media lookup that made the tab appear empty.
+
+## 2026-09 — Targeted update (home poem, elders, requests routing, establishments, downloads)
+- Home: «مقترح شاعر» section no longer rendered; its CMS record is untouched.
+- Archive → كبارنا: leaf folders now show all their photographs inline (grid + lightbox, 24 per page).
+- Requests Hub: `?request=<type>` opens a specific form; new requests `achiever_nomination` (replaces the standalone form on /achievers, same inbox source) and `business_listing_new` (replaces the /directory link card).
+- Archive photo CTA and Roll of Honour nomination CTA now open their Requests Hub forms directly.
+- Establishment listings, filters and quick-view moved from /directory to /initiatives#establishments via `EstablishmentsDirectory`; records, media and routes unchanged.
+- Forms & Templates: every template and reference document now has «تحميل الملف / Download File» alongside «عرض الملف».
+- 14 official template requests and the 11 self-hosted archive videos verified unchanged.

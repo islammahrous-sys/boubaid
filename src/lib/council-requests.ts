@@ -402,6 +402,56 @@ export const COUNCIL_REQUESTS = {
     fields: [dateField("تاريخ المناسبة", "Date of the occasion")],
     allowAttachments: true,
   },
+  /**
+   * Roll of Honour nomination — the single request behind the «تقديم ترشيح جديد»
+   * action on /achievers. It keeps the historical `achiever_nomination` source,
+   * so nominations filed before the hub took over stay in the same inbox thread.
+   */
+  achiever_nomination: {
+    title: { ar: "طلب ترشيح لسجل المتميزين", en: "Roll of Honour nomination request" },
+    desc: {
+      ar: "ترشيح أحد أفراد الأسرة لتوثيق تفوق علمي أو تميز مهني في سجل المتميزين.",
+      en: "Nominate a family member so an academic or professional distinction is recorded in the Roll of Honour.",
+    },
+    topic: { ar: "اسم المرشَّح", en: "Name of the nominee" },
+    details: { ar: "وصف الإنجاز وأسباب الترشيح", en: "The achievement and reasons for nomination" },
+    fields: [
+      personField("الفرع", "Branch", "branch_line"),
+      personField("المجال أو التخصص", "Field or speciality", "field"),
+      personField("سنة الترشيح", "Nomination year", "award_year"),
+      {
+        name: "evidence_url",
+        label: { ar: "رابط إثبات (اختياري)", en: "Evidence link (optional)" },
+        maxLength: 300,
+      },
+    ],
+    allowAttachments: true,
+  },
+  /**
+   * New establishment listing — the request behind the directory's invitation to
+   * family members who own a business. Updates to an existing listing keep using
+   * `business_listing_update`.
+   */
+  business_listing_new: {
+    title: { ar: "طلب إدراج منشأة في دليل الأعمال", en: "Business directory listing request" },
+    desc: {
+      ar: "إدراج منشأة عائلية جديدة في دليل المنشآت بعد مراجعة الأمانة العامة.",
+      en: "List a family establishment in the business directory after secretariat review.",
+    },
+    topic: { ar: "اسم المنشأة", en: "Establishment name" },
+    details: { ar: "وصف النشاط والخدمات", en: "Activity and services offered" },
+    fields: [
+      personField("النشاط أو القطاع", "Sector or activity", "sector"),
+      personField("المدينة", "City", "city"),
+      personField("الفرع", "Branch", "branch_line"),
+      {
+        name: "website",
+        label: { ar: "الموقع الإلكتروني (اختياري)", en: "Website (optional)" },
+        maxLength: 300,
+      },
+    ],
+    allowAttachments: true,
+  },
   museum_visit: {
     title: { ar: "طلب زيارة المتحف", en: "Museum visit request" },
     topic: {
