@@ -616,11 +616,7 @@ function DynamicBlockRenderer({ section, isAr }: { section: any; isAr: boolean }
             <div key={ev.id} className="p-5 rounded-2xl border border-border bg-card space-y-2">
               <div className="flex items-center gap-1.5 text-[11px] text-primary font-bold">
                 <Calendar className="w-3.5 h-3.5" />
-                {new Date(ev.start_at).toLocaleDateString(isAr ? "ar" : "en", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {formatDualDate(ev.start_at, isAr ? "ar" : "en")}
               </div>
               <h4 className="text-sm font-bold text-foreground">
                 {isAr ? ev.title_ar : ev.title_en || ev.title_ar}
