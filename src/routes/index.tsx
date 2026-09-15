@@ -591,6 +591,18 @@ function HomePage() {
           </div>
         );
 
+      // The same electronic tree, official plate and visual guide rendered on
+      // the lineage page — one implementation, two placements.
+      case "family_tree_home":
+      case "tree_sections":
+        return (
+          <div key={sec.id} className="border-y border-border">
+            <ElectronicFamilyTreeSection withHeading />
+            <OfficialPlateSection />
+            <VisualGenealogySection />
+          </div>
+        );
+
       case "about_dean":
       case "opening":
         return (
