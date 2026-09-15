@@ -292,6 +292,29 @@
             initialCollapse();
 
             const NODE_W = 158, NODE_H = 44;
+            /** Names must stay inside the pill: shrink the type first, and only
+             *  clip (with an ellipsis and a full-name tooltip) as a last resort.
+             *  Arabic clips from the logical end, so we trim characters, not bytes. */
+            const NODE_TEXT_W = NODE_W - 18;
+            function fitInsideNode(el, startPx, minPx) {
+                const full = el.textContent;
+                let size = startPx;
+                el.style.fontSize = size + 'px';
+                while (el.getComputedTextLength() > NODE_TEXT_W && size > minPx) {
+                    size = Math.max(minPx, size - 0.5);
+                    el.style.fontSize = size + 'px';
+                }
+                if (el.getComputedTextLength() <= NODE_TEXT_W) return;
+                let chars = Array.from(full);
+                while (chars.length > 1 && el.getComputedTextLength() > NODE_TEXT_W) {
+                    chars.pop();
+                    el.textContent = chars.join('') + '…';
+                }
+                const tip = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                tip.textContent = full;
+                el.appendChild(tip);
+            }
+
 
             function layout() {
                 const treemap = vertical
