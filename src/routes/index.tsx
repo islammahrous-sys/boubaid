@@ -376,7 +376,8 @@ function HomePage() {
 
     const ordered = [...rawList]
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .filter((s) => s.enabled !== false);
+      .filter((s) => s.enabled !== false)
+      .filter((s) => !RETIRED_HOME_SECTIONS.has(s.id));
 
     // Vision/mission is a required section: if a saved console configuration
     // predates it, insert it right after the council address.
@@ -386,7 +387,15 @@ function HomePage() {
       ordered.splice(anchor >= 0 ? anchor + 1 : ordered.length, 0, section);
     }
 
+    // The family tree follows the council address, whatever the saved order.
+    if (!ordered.some((s) => s.id === "family_tree_home")) {
+      const anchor = ordered.findIndex((s) => s.id === "about_dean" || s.id === "opening");
+      const section: SectionConfig = { id: "family_tree_home", enabled: true, order: 0 };
+      ordered.splice(anchor >= 0 ? anchor + 1 : 0, 0, section);
+    }
+
     return ordered;
+
 
   })();
 
