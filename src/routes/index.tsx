@@ -574,7 +574,7 @@ function HomePage() {
                         className="group relative transition-transform duration-200 ease-out"
                       >
                         {item.link ? (
-                          <Link to={item.link} className="block h-full w-full">
+                          <Link to={item.link} resetScroll className="block h-full w-full">
                             {content}
                           </Link>
                         ) : (
