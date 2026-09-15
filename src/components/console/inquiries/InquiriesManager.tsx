@@ -1,3 +1,4 @@
+import { formatDualDate, formatDualDateTime } from "@/lib/dates";
 import { useState } from "react";
 import {
   Table,
@@ -427,10 +428,7 @@ export function InquiriesManager({
                   </TableCell>
                   <TableCell>
                     <div className="text-sm font-medium">
-                      {new Date(inq.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {formatDualDate(inq.created_at, isAr ? "ar" : "en", "short")}
                     </div>
                     <div className="text-[10px] text-muted-foreground mt-0.5">
                       {new Date(inq.created_at).getFullYear()}
@@ -567,7 +565,7 @@ export function InquiriesManager({
                     </p>
                   </div>
                   <span className="text-[10px] text-muted-foreground mt-2 block font-mono">
-                    {new Date(selectedInquiry.created_at).toLocaleString(isAr ? "ar-SA" : "en-US")}
+                    {formatDualDateTime(selectedInquiry.created_at, isAr ? "ar" : "en")}
                   </span>
                 </div>
 
@@ -599,7 +597,7 @@ export function InquiriesManager({
                           >
                             <p className="text-foreground leading-relaxed">{n.note}</p>
                             <span className="text-[9px] text-muted-foreground mt-2 block font-mono">
-                              {new Date(n.created_at).toLocaleString(isAr ? "ar-SA" : "en-US")}
+                              {formatDualDateTime(n.created_at, isAr ? "ar" : "en")}
                             </span>
                           </div>
                         ))

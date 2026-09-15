@@ -1,3 +1,4 @@
+import { formatDualDateTime } from "@/lib/dates";
 import { useState, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -1390,7 +1391,7 @@ export function PageBuilderDialog({
                           {rev.change_summary || "—"}
                         </p>
                         <p className="text-[10px] text-muted-foreground mt-0.5 font-mono">
-                          {new Date(rev.created_at).toLocaleString(isAr ? "ar" : "en")}
+                          {formatDualDateTime(rev.created_at, isAr ? "ar" : "en")}
                         </p>
                       </div>
                       <Button
