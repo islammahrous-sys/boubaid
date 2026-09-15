@@ -206,6 +206,10 @@ const copy = {
   registered: { ar: "سنة الإشهار", en: "Registered" } as BiText,
   branchCount: { ar: "الفروع الموثقة", en: "Documented branches" } as BiText,
   licence: { ar: "رقم الترخيص", en: "Licence no." } as BiText,
+  quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
+  quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
+  quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
+
 
   openingEyebrow: { ar: "افتتاحية", en: "Introduction" } as BiText,
   openingTitle: {
