@@ -301,37 +301,37 @@ type SectionConfig = {
 const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "hero", enabled: true, order: 1 },
   { id: "about_dean", enabled: true, order: 2 },
-  // Vision, mission and core values sit directly under the council address.
-  { id: "vision_mission", enabled: true, order: 3 },
-  { id: "seven_branches", enabled: true, order: 4 },
-  // The genetic-lineage study sits directly under the seven branches.
-  { id: "dna_preview", enabled: true, order: 5 },
-  { id: "initiatives_hq", enabled: true, order: 6 },
-  { id: "latest_news", enabled: true, order: 7 },
-  { id: "family_achievers", enabled: true, order: 8 },
-  
-  { id: "upcoming_events", enabled: true, order: 10 },
-  { id: "heritage_gallery", enabled: true, order: 11 },
-  { id: "contact_inquiry", enabled: true, order: 12 },
+  // The electronic family tree, the official plate and the visual guide
+  // follow the council address directly.
+  { id: "family_tree_home", enabled: true, order: 3 },
+  // Vision, mission and core values sit under the tree.
+  { id: "vision_mission", enabled: true, order: 4 },
+  { id: "initiatives_hq", enabled: true, order: 5 },
+  { id: "latest_news", enabled: true, order: 6 },
+  { id: "heritage_gallery", enabled: true, order: 7 },
+  { id: "contact_inquiry", enabled: true, order: 8 },
 ];
 
+/**
+ * Sections retired from the home page. Their CMS records and their own pages
+ * stay untouched — only the home-page rendering is withdrawn, so a saved
+ * console configuration that still lists them does not bring them back.
+ */
+const RETIRED_HOME_SECTIONS = new Set([
+  "seven_branches",
+  "branches",
+  "dna_preview",
+  "dna",
+  "family_achievers",
+  "achievers",
+  "upcoming_events",
+  "events",
+  "poem_proposal",
+]);
 
-/** Compact date for the homepage events preview cards (no weekday, unlike the full /events page). */
-function formatHomeEventDate(iso: string, lang: "ar" | "en", timezone: string) {
-  try {
-    // calendar: "gregory" pinned -- "ar-SA" can otherwise resolve to the
-    // Hijri calendar in some ICU builds, differently between Node's SSR
-    // render and the browser, causing a hydration mismatch on every load.
-    return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-US", {
-      calendar: "gregory",
-      timeZone: timezone || "Asia/Riyadh",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(new Date(iso));
-  } catch {
-    return new Date(iso).toLocaleDateString(lang === "ar" ? "ar-SA" : "en-US");
-  }
+/** Compact date for the homepage events preview cards. */
+function formatHomeEventDate(iso: string, lang: "ar" | "en", _timezone: string) {
+  return formatDualDate(iso, lang);
 }
 
 function HomePage() {
