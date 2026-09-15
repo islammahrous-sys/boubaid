@@ -47,9 +47,20 @@ import { Eyebrow, Ornament } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
 import { CouncilRequestForm } from "@/components/site/CouncilRequestForm";
 import type { CouncilRequestType } from "@/lib/forms.schemas";
-import { TEMPLATE_REQUESTS } from "@/lib/council-requests";
+import { COUNCIL_REQUESTS, TEMPLATE_REQUESTS } from "@/lib/council-requests";
 
 export const Route = createFileRoute("/requests")({
+  /**
+   * `?request=<type>` lets any action elsewhere on the site (Roll of Honour
+   * nomination, archive photo submission, …) land directly on its own request
+   * form instead of asking the visitor to find the card again.
+   */
+  validateSearch: (search: Record<string, unknown>): { request?: CouncilRequestType } => {
+    const value = search.request;
+    return typeof value === "string" && value in COUNCIL_REQUESTS
+      ? { request: value as CouncilRequestType }
+      : {};
+  },
   head: () => ({
     meta: [
       { title: "مركز الطلبات | آل بوعبيد" },
@@ -197,7 +208,7 @@ const requests: RequestEntry[] = [
   {
     id: "directory",
     group: "services",
-    to: "/directory",
+    form: "business_listing_new",
     Icon: Briefcase,
     name: { ar: "إدراج نشاط تجاري في الدليل", en: "Business directory listing" },
     desc: {
@@ -429,7 +440,7 @@ const requests: RequestEntry[] = [
   {
     id: "achiever",
     group: "participation",
-    to: "/achievers",
+    form: "achiever_nomination",
     Icon: Award,
     name: { ar: "الترشيح لسجل المتميزين", en: "Roll of Honour nomination" },
     desc: {
@@ -596,7 +607,8 @@ function RequestsHubPage() {
   const Arrow = rtl ? ArrowLeft : ArrowRight;
 
   const myApprovals = approvals.filter((a) => a.allow(roles));
-  const [activeForm, setActiveForm] = useState<CouncilRequestType | null>(null);
+  const { request: requestedForm } = Route.useSearch();
+  const [activeForm, setActiveForm] = useState<CouncilRequestType | null>(requestedForm ?? null);
 
   return (
     <>

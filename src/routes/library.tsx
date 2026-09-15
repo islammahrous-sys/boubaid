@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState, useMemo, useEffect } from "react";
 import {
   Search,
@@ -9,17 +10,21 @@ import {
   Images,
   ArrowLeft,
   ArrowRight,
+  Loader2,
+  PlayCircle,
   Video,
 } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ArchiveVideoPlayer } from "@/components/site/ArchiveVideoPlayer";
+import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
 import {
   getPublishedGalleries,
   getPublishedArchiveFolders,
   getPublishedArchiveVideos,
   getPublishedLibrary,
+  getPublicGalleryBySlug,
 } from "@/lib/cms.functions";
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
@@ -184,8 +189,133 @@ const copy = {
     ar: "إذا كانت لديك صور تذكارية قديمة أو وثائق عائلية ترغب في حفظها وفهرستها ضمن الأرشيف الرقمي الموحد، نرحب بتواصلك.",
     en: "If you possess historical family photographs or documents you wish to preserve in the digital archive, we welcome your contribution.",
   } as BiText,
-  depositCta: { ar: "تواصل مع فريق التوثيق", en: "Contact Archival Team" } as BiText,
+  depositCta: { ar: "تقديم صورة للأرشيف", en: "Submit a photograph" } as BiText,
+  photosLoading: { ar: "جارٍ تحميل الصور…", en: "Loading photographs…" } as BiText,
+  loadMore: { ar: "عرض المزيد من الصور", en: "Load more images" } as BiText,
 };
+
+const PHOTO_PAGE_SIZE = 24;
+
+type GalleryMediaItem = NonNullable<
+  Awaited<ReturnType<typeof getPublicGalleryBySlug>>
+>["media"][number];
+
+/**
+ * A folder that has no sub-folders is itself a photo collection, so its
+ * photographs are shown here in full instead of behind a cover card. Each photo
+ * still opens in the shared lightbox for a closer look.
+ */
+function ArchiveFolderPhotos({ slug, title }: { slug: string; title: string }) {
+  const { t, lang } = useLang();
+  const rtl = lang === "ar";
+  const loadGallery = useServerFn(getPublicGalleryBySlug);
+  const [media, setMedia] = useState<GalleryMediaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(PHOTO_PAGE_SIZE);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setVisibleCount(PHOTO_PAGE_SIZE);
+    loadGallery({ data: slug })
+      .then((gallery) => {
+        if (!cancelled) setMedia(gallery?.media ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setMedia([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, loadGallery]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 py-24 text-center text-muted-foreground">
+        <Loader2 className="h-6 w-6 animate-spin opacity-70" aria-hidden="true" />
+        <p className="text-sm">{t(copy.photosLoading)}</p>
+      </div>
+    );
+  }
+
+  if (media.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 px-6 py-24 text-center text-muted-foreground">
+        <Images className="h-8 w-8 opacity-50" />
+        <p className="measure text-sm">{t(copy.folderEmpty)}</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4 lg:grid-cols-5">
+        {media.slice(0, visibleCount).map((item, i) => {
+          const isVideo = Boolean(item.mime_type?.startsWith("video/"));
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setLightboxIndex(i)}
+              className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg border border-border bg-secondary/40 shadow-2xs transition-all hover:border-bronze/50 active:scale-[0.98] dark:hover:border-gold/50"
+            >
+              {isVideo ? (
+                <>
+                  <video
+                    src={item.url}
+                    preload="metadata"
+                    muted
+                    playsInline
+                    className="h-full w-full object-cover"
+                  />
+                  <span className="pointer-events-none absolute inset-0 grid place-items-center bg-black/25">
+                    <PlayCircle className="h-9 w-9 text-white/90" aria-hidden="true" />
+                  </span>
+                </>
+              ) : (
+                <img
+                  src={item.url}
+                  alt={(rtl ? item.alt_text_ar : item.alt_text_en) || title}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {visibleCount < media.length && (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((c) => c + PHOTO_PAGE_SIZE)}
+            className="cursor-pointer rounded-lg border border-border bg-card px-5 py-2.5 text-xs font-medium text-foreground shadow-xs transition-colors hover:bg-secondary/60 active:scale-95 sm:text-sm"
+          >
+            {t(copy.loadMore)}
+          </button>
+        </div>
+      )}
+
+      <ArchiveLightbox
+        items={media.map((item) => ({
+          id: item.id,
+          url: item.url,
+          alt: (rtl ? item.alt_text_ar : item.alt_text_en) || title,
+          caption: rtl ? item.caption_ar : item.caption_en,
+          kind: item.mime_type?.startsWith("video/") ? ("video" as const) : ("image" as const),
+        }))}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onNavigate={setLightboxIndex}
+      />
+    </>
+  );
+}
 
 type FolderCard = {
   id: string;
@@ -274,9 +404,11 @@ function LibraryPage() {
   const isVideos = tab === VIDEOS_TAB;
   const isMuseum =
     tab === MUSEUM_TAB || (!activeFolder && !isVideos && folders.length === 0);
+  /** A folder with no sub-folders is itself a photo collection, so all of its
+   *  photographs are shown here directly rather than behind a cover card. */
+  const isLeafFolder = !isMuseum && !isVideos && !!activeFolder && activeFolder.children.length === 0;
 
-  /** A folder shows its published sub-folders; a folder with no sub-folders is
-   *  itself a photo collection, so it links straight through to its images. */
+  /** A folder shows its published sub-folders as cards. */
   const visibleItems = useMemo<FolderCard[]>(() => {
     const source: FolderCard[] = isMuseum
       ? collections
@@ -436,6 +568,11 @@ function LibraryPage() {
                 <p className="measure text-sm">{t(copy.videosEmpty)}</p>
               </div>
             )
+          ) : isLeafFolder && activeFolder ? (
+            <ArchiveFolderPhotos
+              slug={activeFolder.slug}
+              title={lang === "en" ? activeFolder.title_en || activeFolder.title_ar : activeFolder.title_ar}
+            />
           ) : visibleItems.length > 0 ? (
             <FolderGrid items={visibleItems} countLabel={t(copy.imageCount)} />
           ) : searchQuery.trim() ? (
@@ -460,7 +597,8 @@ function LibraryPage() {
             {t(copy.depositBody)}
           </p>
           <Link
-            to="/contact"
+            to="/requests"
+            search={{ request: "archive_contribution" }}
             className="mt-5 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
             {t(copy.depositCta)}

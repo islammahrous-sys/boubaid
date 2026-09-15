@@ -10,6 +10,8 @@ import { pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Status, Prose } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
+import { getPublishedBusinesses } from "@/lib/directory.functions";
+import { EstablishmentsDirectory } from "@/components/site/EstablishmentsDirectory";
 import { cn } from "@/lib/utils";
 import {
   Pagination,
@@ -25,8 +27,11 @@ const PAGE_SIZE = 20;
 
 export const Route = createFileRoute("/initiatives")({
   loader: async () => {
-    const rows = await getPublishedInitiatives();
-    return { initiatives: mergeInitiatives(rows, staticInitiatives) };
+    const [rows, businesses] = await Promise.all([
+      getPublishedInitiatives(),
+      getPublishedBusinesses(),
+    ]);
+    return { initiatives: mergeInitiatives(rows, staticInitiatives), businesses };
   },
   head: () => ({
     meta: [
@@ -105,11 +110,17 @@ const copy = {
     en: "The programmes are funded from monthly subscriptions and from interest-free contributory loans towards the headquarters project.",
   } as BiText,
   supportCta: { ar: "الاشتراك والمساهمة", en: "Subscribe & contribute" } as BiText,
+
+  establishmentsTitle: { ar: "خدمات المنشآت العائلية", en: "Family Establishment Services" } as BiText,
+  establishmentsNote: {
+    ar: "دليل المنشآت العائلية المعتمدة وخدماتها وبيانات التواصل معها، مع إمكانية البحث والتصفية حسب القطاع والفرع والمدينة.",
+    en: "The verified family establishments, their services and contact details, searchable and filterable by sector, branch and city.",
+  } as BiText,
 };
 
 function InitiativesPage() {
   const { t, lang } = useLang();
-  const { initiatives } = Route.useLoaderData();
+  const { initiatives, businesses } = Route.useLoaderData();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
   const [page, setPage] = useState(1);
@@ -308,6 +319,18 @@ function InitiativesPage() {
           </Pagination>
         )}
       </section>
+
+      {/* ── Establishment services (moved here from the Services page) ── */}
+      <section id="establishments" className="container-page scroll-mt-28 py-14 md:py-16">
+        <Eyebrow rule>{t(copy.establishmentsTitle)}</Eyebrow>
+        <p className="measure mt-4 text-[13px] leading-relaxed text-muted-foreground">
+          {t(copy.establishmentsNote)}
+        </p>
+        <div className="mt-8">
+          <EstablishmentsDirectory businesses={businesses} />
+        </div>
+      </section>
+
 
       {/* ── Support ─────────────────────────────────────────── */}
       <section className="reveal-on-scroll border-t border-border bg-secondary/40">

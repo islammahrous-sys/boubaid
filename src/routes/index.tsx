@@ -309,7 +309,7 @@ const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "initiatives_hq", enabled: true, order: 6 },
   { id: "latest_news", enabled: true, order: 7 },
   { id: "family_achievers", enabled: true, order: 8 },
-  { id: "poem_proposal", enabled: true, order: 9 },
+  
   { id: "upcoming_events", enabled: true, order: 10 },
   { id: "heritage_gallery", enabled: true, order: 11 },
   { id: "contact_inquiry", enabled: true, order: 12 },
@@ -994,34 +994,11 @@ function HomePage() {
           </section>
         );
 
+      // «مقترح شاعر» is no longer shown on the home page. Its CMS record is kept
+      // intact, so it stays available in the console and returns the moment an
+      // editor enables it somewhere else.
       case "poem_proposal":
-        return (
-          <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
-            <div className="mx-auto max-w-3xl border-y border-border py-12 text-center">
-              <Eyebrow>
-                {sec.badge_ar && rtl
-                  ? sec.badge_ar
-                  : sec.badge_en && !rtl
-                    ? sec.badge_en
-                    : t(copy.poemEyebrow)}
-              </Eyebrow>
-              <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                {sec.title_ar && rtl
-                  ? sec.title_ar
-                  : sec.title_en && !rtl
-                    ? sec.title_en
-                    : t(copy.poemTitle)}
-              </h2>
-              <p className="measure mx-auto mt-5 text-sm leading-loose text-muted-foreground">
-                {sec.subtitle_ar && rtl
-                  ? sec.subtitle_ar
-                  : sec.subtitle_en && !rtl
-                    ? sec.subtitle_en
-                    : t(copy.poemBody)}
-              </p>
-            </div>
-          </section>
-        );
+        return null;
 
       case "initiatives_list":
       case "programmes":
