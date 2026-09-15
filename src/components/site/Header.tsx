@@ -247,29 +247,46 @@ export function Header() {
                   onMouseEnter={() => handleDropdownEnter(n.to)}
                   onMouseLeave={handleDropdownLeave}
                 >
-                  <button
-                    type="button"
-                    suppressHydrationWarning
-                    onClick={() => setOpenDropdown(isDropdownOpen ? null : n.to)}
-                    aria-expanded={isDropdownOpen}
-                    aria-haspopup="true"
+                  <div
                     data-nav-active={isItemActive ? "true" : undefined}
                     className={cn(
-                       "active-scale flex items-center gap-1 rounded-md px-1.5 xl:px-2 2xl:px-3 py-1.5 text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out cursor-pointer",
+                       "active-scale flex items-center gap-0.5 rounded-md px-1.5 xl:px-2 2xl:px-3 py-1.5 text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
                       isItemActive
                         ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                     )}
                   >
-                    {typeof n.label === "string" ? n.label : t(n.label)}
-                    <ChevronDown
-                      className={cn(
-                        "h-3.5 w-3.5 transition-transform duration-300",
-                        isDropdownOpen && "rotate-180",
-                      )}
-                      aria-hidden="true"
-                    />
-                  </button>
+                    {/* The label itself navigates to the section's page; the
+                        chevron alone toggles the dropdown of sub-pages. */}
+                    <Link
+                      to={n.to}
+                      onClick={() => setOpenDropdown(null)}
+                      className="cursor-pointer"
+                    >
+                      {typeof n.label === "string" ? n.label : t(n.label)}
+                    </Link>
+                    <button
+                      type="button"
+                      suppressHydrationWarning
+                      onClick={() => setOpenDropdown(isDropdownOpen ? null : n.to)}
+                      aria-expanded={isDropdownOpen}
+                      aria-haspopup="true"
+                      aria-label={
+                        typeof n.label === "string"
+                          ? n.label
+                          : `${t(n.label)} — ${lang === "ar" ? "القائمة الفرعية" : "submenu"}`
+                      }
+                      className="cursor-pointer p-0.5"
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "h-3.5 w-3.5 transition-transform duration-300",
+                          isDropdownOpen && "rotate-180",
+                        )}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </div>
 
                   {isDropdownOpen && (
                     <div
