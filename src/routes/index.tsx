@@ -489,22 +489,45 @@ function HomePage() {
 
               {/* Colophon strip — sits at the base of the cinematic hero */}
               <div className="relative border-t border-gold/20 bg-ink/70 backdrop-blur-md">
-                <dl className="container-page grid grid-cols-2 divide-y divide-ivory/10 sm:grid-cols-4 sm:divide-x sm:divide-y-0 sm:rtl:divide-x-reverse">
+                <dl className="container-page grid grid-cols-2 divide-y divide-ivory/10 sm:grid-cols-5 sm:divide-x sm:divide-y-0 sm:rtl:divide-x-reverse">
                   {[
-                    { label: copy.licence, value: siteMeta.ncnpLicense, mono: true, link: null },
+                    {
+                      label: copy.licence,
+                      value: siteMeta.ncnpLicense,
+                      mono: true,
+                      link: null,
+                      icon: null,
+                    },
                     {
                       label: copy.registered,
                       value: t(siteMeta.foundedHijriLabel),
                       mono: false,
                       link: null,
+                      icon: null,
+                    },
+                    // Three quick entrances replace the former branch and seat
+                    // cells: the fund, the requests centre and the archive.
+                    {
+                      label: copy.quickFund,
+                      value: t(copy.quickFund),
+                      mono: false,
+                      link: "/fund",
+                      icon: Landmark,
                     },
                     {
-                      label: copy.branchCount,
-                      value: rtl ? "سبعة فروع" : "Seven Branches",
+                      label: copy.quickRequests,
+                      value: t(copy.quickRequests),
                       mono: false,
-                      link: "/branches",
+                      link: "/requests",
+                      icon: Inbox,
                     },
-                    { label: copy.seat, value: t(copy.seatValue), mono: false, link: "/contact" },
+                    {
+                      label: copy.quickArchive,
+                      value: t(copy.quickArchive),
+                      mono: false,
+                      link: "/library",
+                      icon: Archive,
+                    },
                   ].map((item, i) => {
                     const content = (
                       <div className="flex h-full flex-col justify-center px-3 py-4 sm:px-6 sm:py-6 transition-[background-color,transform] duration-200 ease-out group-hover:bg-ivory/[0.06] active:scale-[0.98] sm:text-center sm:first:ps-0 sm:last:pe-0">
