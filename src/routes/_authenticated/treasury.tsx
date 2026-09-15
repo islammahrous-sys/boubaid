@@ -46,16 +46,7 @@ function formatSar(amount: number, lang: "ar" | "en") {
 }
 
 function formatDate(iso: string, lang: "ar" | "en") {
-  // calendar: "gregory" pinned to avoid a server/client hydration mismatch
-  // -- "ar-SA" can otherwise resolve to the Hijri calendar in some ICU
-  // builds, differently between Node's SSR render and the browser.
-  return new Intl.DateTimeFormat(lang === "ar" ? "ar-SA" : "en-GB", {
-    calendar: "gregory",
-    timeZone: "Asia/Riyadh",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(new Date(iso));
+  return formatDualDate(iso, lang, "short");
 }
 
 function TreasuryPage() {
