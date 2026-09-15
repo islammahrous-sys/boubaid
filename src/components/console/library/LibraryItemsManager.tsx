@@ -428,18 +428,26 @@ export function LibraryItemsManager({
             {form.collection === "videos" && (
               <div className="space-y-1 pt-1 border-t border-border">
                 <Label className="text-xs font-semibold">
-                  {isAr ? "رابط الفيديو (إنستغرام) *" : "Video URL (Instagram) *"}
+                  {isAr ? "رابط ملف الفيديو *" : "Video file URL *"}
                 </Label>
                 <Input
                   value={form.external_url ?? ""}
                   onChange={(e) => setForm({ ...form, external_url: e.target.value })}
-                  placeholder="https://www.instagram.com/reel/XXXXXXXXXXX/"
+                  placeholder="https://.../video.mp4"
                 />
                 <p className="text-[11px] text-muted-foreground">
                   {isAr
-                    ? "يُعرض المقطع مباشرة في قسم الأرشيف ← الفيديوهات عبر مشغّل إنستغرام الرسمي."
-                    : "The clip is embedded in Archive → Videos through Instagram's official player."}
+                    ? "يُشغّل المقطع مباشرة على الموقع، لذا يجب أن يكون الرابط لملف فيديو مرفوع على الموقع (mp4 أو webm أو mov)."
+                    : "The clip plays directly on the site, so the link must point to a video file hosted on the site (mp4, webm or mov)."}
                 </p>
+                {(form.external_url ?? "").trim() !== "" &&
+                  !/\.(mp4|webm|ogv|ogg|mov|m4v)(\?|#|$)/i.test((form.external_url ?? "").trim()) && (
+                    <p className="text-[11px] font-semibold text-destructive">
+                      {isAr
+                        ? "هذا الرابط ليس ملف فيديو، ولن يظهر المقطع في قسم الأرشيف ← الفيديوهات. روابط المنصات (مثل إنستغرام) غير مدعومة — يُرجى رفع ملف الفيديو واستخدام رابطه."
+                        : "This is not a video file link, so the clip will not appear under Archive → Videos. Platform links (such as Instagram) are not supported — upload the video file and use its link."}
+                    </p>
+                  )}
               </div>
             )}
 
