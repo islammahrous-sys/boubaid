@@ -974,6 +974,42 @@
 
           update(root);
           setTimeout(() => fitToView(), 120);
+
+          /* ── Deep link: ?focus=<id>&q=<name> from the site-wide search ──── */
+          (function focusFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const focusId = (params.get("focus") || "").trim();
+            const name = (params.get("q") || "").trim();
+            if (!focusId && !name) return;
+
+            let target = focusId ? ALL_NODES.find((d) => d.data.id === focusId) : null;
+            if (!target && name) {
+              target =
+                ALL_NODES.find((d) => d.data.name === name) ||
+                ALL_NODES.find((d) => d.data.name.includes(name)) ||
+                ALL_NODES.find((d) => name.includes(d.data.name));
+            }
+            if (!target) {
+              if (name) {
+                searchBox.value = name;
+                runSearch(name);
+              }
+              return;
+            }
+
+            let cur = target.parent;
+            while (cur) {
+              expand(cur);
+              cur = cur.parent;
+            }
+            update(root);
+            setTimeout(() => {
+              g.selectAll(".node-group").classed("node--highlighted", (d) => d.id === target.id);
+              centerNode(target, vertical ? 0.85 : 1);
+              showCrumb(target);
+              openDetail(target);
+            }, duration + 120);
+          })();
         } catch (error) {
           console.error("Family tree error:", error);
           container.innerHTML =
