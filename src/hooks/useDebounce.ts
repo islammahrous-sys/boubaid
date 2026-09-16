@@ -2,7 +2,7 @@
 
 /**
  * Custom hook that delays updating the returned value until delayMs milliseconds
- * have elapsed since the last time the input alue changed.
+ * have elapsed since the last time the input value changed.
  *
  * Essential for search inputs to prevent request storms and race conditions.
  */
