@@ -402,11 +402,11 @@ function LibraryPage() {
 
   const activeFolder = folders.find((f) => f.slug === tab) ?? null;
   const isVideos = tab === VIDEOS_TAB;
-  const isMuseum =
-    tab === MUSEUM_TAB || (!activeFolder && !isVideos && folders.length === 0);
+  const isMuseum = tab === MUSEUM_TAB || (!activeFolder && !isVideos && folders.length === 0);
   /** A folder with no sub-folders is itself a photo collection, so all of its
    *  photographs are shown here directly rather than behind a cover card. */
-  const isLeafFolder = !isMuseum && !isVideos && !!activeFolder && activeFolder.children.length === 0;
+  const isLeafFolder =
+    !isMuseum && !isVideos && !!activeFolder && activeFolder.children.length === 0;
 
   /** A folder shows its published sub-folders as cards. */
   const visibleItems = useMemo<FolderCard[]>(() => {
@@ -571,7 +571,11 @@ function LibraryPage() {
           ) : isLeafFolder && activeFolder ? (
             <ArchiveFolderPhotos
               slug={activeFolder.slug}
-              title={lang === "en" ? activeFolder.title_en || activeFolder.title_ar : activeFolder.title_ar}
+              title={
+                lang === "en"
+                  ? activeFolder.title_en || activeFolder.title_ar
+                  : activeFolder.title_ar
+              }
             />
           ) : visibleItems.length > 0 ? (
             <FolderGrid items={visibleItems} countLabel={t(copy.imageCount)} />

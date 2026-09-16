@@ -80,16 +80,18 @@ export function WorkflowStepper({
                     "group flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs transition-all duration-200 text-start",
                     getStepStyle(step.status, isCurrent),
                     isClickable && "cursor-pointer hover:shadow-xs",
-                    !isClickable && "cursor-default"
+                    !isClickable && "cursor-default",
                   )}
                   title={
                     step.status === "blocked"
                       ? isAr
-                        ? step.blockedReason_ar || "هذه الخطوة مقفلة بانتظار إتمام المتطلبات السابقة"
-                        : step.blockedReason_en || "This step is blocked until prerequisites are met"
+                        ? step.blockedReason_ar ||
+                          "هذه الخطوة مقفلة بانتظار إتمام المتطلبات السابقة"
+                        : step.blockedReason_en ||
+                          "This step is blocked until prerequisites are met"
                       : isAr
-                      ? step.description_ar
-                      : step.description_en
+                        ? step.description_ar
+                        : step.description_en
                   }
                 >
                   <span
@@ -97,7 +99,7 @@ export function WorkflowStepper({
                       "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border border-current/20",
                       step.status === "completed" && "bg-emerald-500/20",
                       step.status === "current" && "bg-primary/20",
-                      step.status === "blocked" && "bg-muted/50"
+                      step.status === "blocked" && "bg-muted/50",
                     )}
                   >
                     {getStepIcon(step.status)}
@@ -118,7 +120,7 @@ export function WorkflowStepper({
                   <div
                     className={cn(
                       "h-0.5 w-4 sm:w-6 transition-colors",
-                      step.status === "completed" ? "bg-emerald-500/50" : "bg-border/60"
+                      step.status === "completed" ? "bg-emerald-500/50" : "bg-border/60",
                     )}
                     aria-hidden="true"
                   />

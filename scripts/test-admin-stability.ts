@@ -1,4 +1,7 @@
-import { ADMIN_DOMAINS, preloadAdminManager } from "../src/components/console/layout/AdminNavigation";
+import {
+  ADMIN_DOMAINS,
+  preloadAdminManager,
+} from "../src/components/console/layout/AdminNavigation";
 
 console.log("=== ADMIN PANEL & CMS STABILITY AUDIT VERIFICATION ===");
 
@@ -17,7 +20,9 @@ for (const domain of ADMIN_DOMAINS) {
   }
 }
 
-console.log("✓ Verified " + totalTabs + " admin sub-tabs across " + ADMIN_DOMAINS.length + " domains.");
+console.log(
+  "✓ Verified " + totalTabs + " admin sub-tabs across " + ADMIN_DOMAINS.length + " domains.",
+);
 if (missingPreloadTabs.length === 0) {
   console.log("✓ All tabs have preloader mappings without exception.");
 } else {

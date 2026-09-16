@@ -1,4 +1,11 @@
-import { ArrowLeft, ArrowRight, Sparkles, AlertCircle, CheckCircle2, type LucideIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -77,14 +84,14 @@ export function NextActionCard({
       className={cn(
         "flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl border transition-all duration-200",
         toneStyles.card,
-        className
+        className,
       )}
     >
       <div className="flex items-start gap-3.5 flex-1">
         <div
           className={cn(
             "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5",
-            toneStyles.iconBg
+            toneStyles.iconBg,
           )}
         >
           {tone === "warning" ? (
@@ -98,11 +105,12 @@ export function NextActionCard({
 
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h4 className="text-sm font-bold text-foreground">
-              {isAr ? title_ar : title_en}
-            </h4>
+            <h4 className="text-sm font-bold text-foreground">{isAr ? title_ar : title_en}</h4>
             {(badge_ar || badge_en) && (
-              <Badge variant="outline" className={cn("text-[10px] px-2 py-0.5 font-medium", toneStyles.badge)}>
+              <Badge
+                variant="outline"
+                className={cn("text-[10px] px-2 py-0.5 font-medium", toneStyles.badge)}
+              >
                 {isAr ? badge_ar : badge_en}
               </Badge>
             )}
@@ -129,7 +137,10 @@ export function NextActionCard({
           size="sm"
           onClick={primaryAction.onClick}
           disabled={primaryAction.disabled || primaryAction.loading}
-          className={cn("text-xs font-semibold h-8.5 gap-1.5 rounded-xl shadow-xs", toneStyles.button)}
+          className={cn(
+            "text-xs font-semibold h-8.5 gap-1.5 rounded-xl shadow-xs",
+            toneStyles.button,
+          )}
         >
           <span>{isAr ? primaryAction.label_ar : primaryAction.label_en}</span>
           <PrimaryIcon className="w-3.5 h-3.5" />

@@ -25,7 +25,10 @@ export const MAX_DOC_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB
 
 export type FileValidationResult =
   | { valid: true }
-  | { valid: false; error: "file_too_large" | "invalid_mime_type" | "invalid_extension" | "empty_file" };
+  | {
+      valid: false;
+      error: "file_too_large" | "invalid_mime_type" | "invalid_extension" | "empty_file";
+    };
 
 export function validateFileUpload(options: {
   sizeBytes: number;

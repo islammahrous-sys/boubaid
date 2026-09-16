@@ -813,14 +813,31 @@ export function FamilyMembersTable({
             {isLoading && !queryData ? (
               Array.from({ length: 5 }).map((_, idx) => (
                 <TableRow key={`skeleton-${idx}`}>
-                  <TableCell className="text-center"><div className="w-4 h-4 bg-muted animate-pulse rounded mx-auto" /></TableCell>
-                  <TableCell className="text-center"><div className="w-8 h-8 rounded-full bg-muted animate-pulse mx-auto" /></TableCell>
-                  <TableCell><div className="h-4 w-32 bg-muted animate-pulse rounded mb-1" /><div className="h-3 w-20 bg-muted/60 animate-pulse rounded" /></TableCell>
-                  <TableCell><div className="h-4 w-20 bg-muted animate-pulse rounded" /></TableCell>
-                  <TableCell className="text-center"><div className="h-4 w-8 bg-muted animate-pulse rounded mx-auto" /></TableCell>
-                  <TableCell className="text-center"><div className="h-4 w-12 bg-muted animate-pulse rounded mx-auto" /></TableCell>
-                  <TableCell className="text-center"><div className="h-4 w-14 bg-muted animate-pulse rounded mx-auto" /></TableCell>
-                  <TableCell className="text-end"><div className="h-7 w-20 bg-muted animate-pulse rounded ms-auto" /></TableCell>
+                  <TableCell className="text-center">
+                    <div className="w-4 h-4 bg-muted animate-pulse rounded mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="w-8 h-8 rounded-full bg-muted animate-pulse mx-auto" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-4 w-32 bg-muted animate-pulse rounded mb-1" />
+                    <div className="h-3 w-20 bg-muted/60 animate-pulse rounded" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-4 w-20 bg-muted animate-pulse rounded" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="h-4 w-8 bg-muted animate-pulse rounded mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="h-4 w-12 bg-muted animate-pulse rounded mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="h-4 w-14 bg-muted animate-pulse rounded mx-auto" />
+                  </TableCell>
+                  <TableCell className="text-end">
+                    <div className="h-7 w-20 bg-muted animate-pulse rounded ms-auto" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : paginatedMembers.length === 0 ? (

@@ -11,7 +11,7 @@ async function runLiveInteractiveSession() {
   try {
     browser = await chromium.launch({
       headless: false, // Opens visible browser on the user's screen
-      slowMo: 700,     // Human-like speed so the user can watch every action
+      slowMo: 700, // Human-like speed so the user can watch every action
       args: ["--start-maximized", "--no-sandbox"],
     });
   } catch (err: any) {
@@ -30,7 +30,8 @@ async function runLiveInteractiveSession() {
 
   const context = await browser.newContext({
     viewport: null, // Full-screen window
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   });
 
   const page = await context.newPage();
@@ -62,7 +63,9 @@ async function runLiveInteractiveSession() {
 
       // Toggle back to Arabic
       console.log("▶ Testing Language Switch back to Arabic...");
-      const arBtn = await page.$('button:has-text("عربي"), button:has-text("العربية"), button:has-text("AR")');
+      const arBtn = await page.$(
+        'button:has-text("عربي"), button:has-text("العربية"), button:has-text("AR")',
+      );
       if (arBtn) {
         await arBtn.click();
         await page.waitForTimeout(1500);
@@ -166,7 +169,9 @@ async function runLiveInteractiveSession() {
       await page.waitForTimeout(2000);
 
       // Close modal
-      const closeDialogBtn = await page.$('button:has-text("إلغاء"), button[aria-label="Close"], button:has-text("Close")');
+      const closeDialogBtn = await page.$(
+        'button:has-text("إلغاء"), button[aria-label="Close"], button:has-text("Close")',
+      );
       if (closeDialogBtn) {
         console.log("▶ Closing Add Member Modal...");
         await closeDialogBtn.click();

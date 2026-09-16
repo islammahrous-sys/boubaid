@@ -173,7 +173,9 @@ export function AnnouncementsManager({
       });
       setFormOpen(false);
     } catch (err: unknown) {
-      toast.error(getErrorMessage(err, isAr ? "فشل حفظ الإعلان" : "Failed to save the announcement"));
+      toast.error(
+        getErrorMessage(err, isAr ? "فشل حفظ الإعلان" : "Failed to save the announcement"),
+      );
     } finally {
       setLoading(false);
     }

@@ -106,7 +106,6 @@ export const businessSubmissionSchema = z.object({
 
 export type BusinessSubmissionInput = z.infer<typeof businessSubmissionSchema>;
 
-
 /**
  * Council request forms served from the Requests Hub (`/requests`).
  *
@@ -123,7 +122,13 @@ export const councilRequestSchema = z.object({
   type: councilRequestTypeSchema,
   full_name: z.string().trim().min(2, "الاسم الكامل مطلوب").max(120),
   phone: z.string().trim().min(7, "رقم التواصل مطلوب").max(30),
-  email: z.string().trim().email("البريد الإلكتروني غير صحيح").max(255).optional().or(z.literal("")),
+  email: z
+    .string()
+    .trim()
+    .email("البريد الإلكتروني غير صحيح")
+    .max(255)
+    .optional()
+    .or(z.literal("")),
   branch: z.string().trim().max(120).optional().or(z.literal("")),
   /** Committee requested, or the service/establishment name for service requests. */
   topic: z.string().trim().min(2, "هذا الحقل مطلوب").max(160),

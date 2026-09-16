@@ -166,7 +166,9 @@ export function FamilyMemberFormDialog({
     setForm((prev) => {
       const next = { ...prev, first_name_ar: val };
       if (!prev.slug && val) {
-        next.slug = slugify([val, prev.middle_name_ar, prev.last_name_ar].filter(Boolean).join(" "));
+        next.slug = slugify(
+          [val, prev.middle_name_ar, prev.last_name_ar].filter(Boolean).join(" "),
+        );
       }
       return next;
     });

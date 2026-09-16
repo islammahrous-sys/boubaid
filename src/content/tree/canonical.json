@@ -8,20 +8,7 @@
       "father_id": null,
       "generation": 1,
       "branch_slug": null,
-      "charts": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12
-      ]
+      "charts": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     },
     {
       "id": "076294d8-40a7-669d-ba12-ef893d41a35e",
@@ -30,19 +17,7 @@
       "father_id": "f88efb4f-c318-5308-3a5c-7d7f1c458e30",
       "generation": 2,
       "branch_slug": null,
-      "charts": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        9,
-        10,
-        11,
-        12
-      ]
+      "charts": [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12]
     },
     {
       "id": "74a03116-5dc9-cdbb-de26-d843adcf40b4",
@@ -51,9 +26,7 @@
       "father_id": "f88efb4f-c318-5308-3a5c-7d7f1c458e30",
       "generation": 2,
       "branch_slug": null,
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "01dc2365-2279-fcdb-af41-292d2cb6d458",
@@ -62,9 +35,7 @@
       "father_id": "076294d8-40a7-669d-ba12-ef893d41a35e",
       "generation": 3,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "1fc26caf-8d50-e4f4-1909-e10e123848e0",
@@ -73,14 +44,7 @@
       "father_id": "076294d8-40a7-669d-ba12-ef893d41a35e",
       "generation": 3,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3,
-        4,
-        9,
-        10,
-        11,
-        12
-      ]
+      "charts": [3, 4, 9, 10, 11, 12]
     },
     {
       "id": "32022c83-5932-1fe5-8dc9-6d3c3fb981e1",
@@ -89,9 +53,7 @@
       "father_id": "076294d8-40a7-669d-ba12-ef893d41a35e",
       "generation": 3,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "0cc8f907-d5dc-7608-7af8-52d4a0c093c5",
@@ -100,9 +62,7 @@
       "father_id": "076294d8-40a7-669d-ba12-ef893d41a35e",
       "generation": 3,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "7b185580-63b3-1860-5f1e-a9a18fb21cc9",
@@ -111,9 +71,7 @@
       "father_id": "74a03116-5dc9-cdbb-de26-d843adcf40b4",
       "generation": 3,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "4b2be660-da60-4722-d151-bf75d82e2ced",
@@ -122,9 +80,7 @@
       "father_id": "076294d8-40a7-669d-ba12-ef893d41a35e",
       "generation": 3,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "2489f3cf-7c45-a96d-b575-1bae42277673",
@@ -133,9 +89,7 @@
       "father_id": "076294d8-40a7-669d-ba12-ef893d41a35e",
       "generation": 3,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "307538c9-302c-9998-7e88-9355446a4f05",
@@ -144,9 +98,7 @@
       "father_id": "32022c83-5932-1fe5-8dc9-6d3c3fb981e1",
       "generation": 4,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "49b983eb-5423-de07-612f-8bba7a1eac2e",
@@ -155,9 +107,7 @@
       "father_id": "01dc2365-2279-fcdb-af41-292d2cb6d458",
       "generation": 4,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "7287b68b-ad7c-b863-169e-4a5e23643776",
@@ -166,9 +116,7 @@
       "father_id": "0cc8f907-d5dc-7608-7af8-52d4a0c093c5",
       "generation": 4,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "982b7753-5330-147e-b096-88d8fc66f126",
@@ -177,9 +125,7 @@
       "father_id": "7b185580-63b3-1860-5f1e-a9a18fb21cc9",
       "generation": 4,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "f856a48c-0c1b-0f8c-2b2c-476e09b4be11",
@@ -188,9 +134,7 @@
       "father_id": "1fc26caf-8d50-e4f4-1909-e10e123848e0",
       "generation": 4,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "742fe1e8-99a6-216a-b6a2-add437ffe190",
@@ -199,9 +143,7 @@
       "father_id": "4b2be660-da60-4722-d151-bf75d82e2ced",
       "generation": 4,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "232e38b7-4c27-d479-161b-083efd04fa71",
@@ -210,9 +152,7 @@
       "father_id": "7b185580-63b3-1860-5f1e-a9a18fb21cc9",
       "generation": 4,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "32efde4e-6b87-fad4-e6f9-bfd244256115",
@@ -221,12 +161,7 @@
       "father_id": "1fc26caf-8d50-e4f4-1909-e10e123848e0",
       "generation": 4,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3,
-        4,
-        10,
-        11
-      ]
+      "charts": [3, 4, 10, 11]
     },
     {
       "id": "fef7414d-6c1b-e3cc-f6f3-5a572a9560ec",
@@ -235,9 +170,7 @@
       "father_id": "1fc26caf-8d50-e4f4-1909-e10e123848e0",
       "generation": 4,
       "branch_slug": "al-abdulaziz-abdulrahman",
-      "charts": [
-        9
-      ]
+      "charts": [9]
     },
     {
       "id": "fca50211-92e8-a3d3-7a3b-2501d87a0b80",
@@ -246,9 +179,7 @@
       "father_id": "7b185580-63b3-1860-5f1e-a9a18fb21cc9",
       "generation": 4,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "56603390-de42-631c-1512-9d76227be402",
@@ -257,9 +188,7 @@
       "father_id": "4b2be660-da60-4722-d151-bf75d82e2ced",
       "generation": 4,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "7ee5a0e9-2680-44af-3008-1c2f20991eee",
@@ -268,9 +197,7 @@
       "father_id": "01dc2365-2279-fcdb-af41-292d2cb6d458",
       "generation": 4,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "76b6b88f-8fa0-a34f-9c67-c1fa009bfc3b",
@@ -279,9 +206,7 @@
       "father_id": "2489f3cf-7c45-a96d-b575-1bae42277673",
       "generation": 4,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "5e30182e-e749-79e9-1fae-696b515fc3aa",
@@ -290,9 +215,7 @@
       "father_id": "32022c83-5932-1fe5-8dc9-6d3c3fb981e1",
       "generation": 4,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "7c7a26c5-3a9a-2185-f14d-039b1d15c7a4",
@@ -301,9 +224,7 @@
       "father_id": "01dc2365-2279-fcdb-af41-292d2cb6d458",
       "generation": 4,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "bf4ad97a-4670-a346-2673-1015ef0ef3ad",
@@ -312,9 +233,7 @@
       "father_id": "0cc8f907-d5dc-7608-7af8-52d4a0c093c5",
       "generation": 4,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "63a903ef-2fcf-6d1e-cafd-6bba2fdcf144",
@@ -323,9 +242,7 @@
       "father_id": "2489f3cf-7c45-a96d-b575-1bae42277673",
       "generation": 4,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "7906ea1c-fc77-e123-de9b-1faa0b967cd2",
@@ -334,9 +251,7 @@
       "father_id": "7287b68b-ad7c-b863-169e-4a5e23643776",
       "generation": 5,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "20ca9233-2ea5-8e0d-1e68-1b8ef82fbf84",
@@ -345,9 +260,7 @@
       "father_id": "32efde4e-6b87-fad4-e6f9-bfd244256115",
       "generation": 5,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "e5891cbe-62ba-ae4d-ece0-bffea7fd613a",
@@ -356,9 +269,7 @@
       "father_id": "f856a48c-0c1b-0f8c-2b2c-476e09b4be11",
       "generation": 5,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "e9a7820d-af30-80c5-aa5a-119e4c4cbe32",
@@ -367,9 +278,7 @@
       "father_id": "5e30182e-e749-79e9-1fae-696b515fc3aa",
       "generation": 5,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "de2635ae-a903-bb61-675c-59a82e53e48b",
@@ -378,9 +287,7 @@
       "father_id": "fca50211-92e8-a3d3-7a3b-2501d87a0b80",
       "generation": 5,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "ccea7073-5aa3-1222-2552-97fabe1cab0c",
@@ -389,9 +296,7 @@
       "father_id": "56603390-de42-631c-1512-9d76227be402",
       "generation": 5,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "4f1ced9e-4e3d-69cd-4acb-5c4dfa35b694",
@@ -400,9 +305,7 @@
       "father_id": "5e30182e-e749-79e9-1fae-696b515fc3aa",
       "generation": 5,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "72f7deef-9c6d-ff69-96fa-eb5afa41e119",
@@ -411,9 +314,7 @@
       "father_id": "307538c9-302c-9998-7e88-9355446a4f05",
       "generation": 5,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "df96e5c9-d6a3-c1b7-6d05-b96bc4a590de",
@@ -422,9 +323,7 @@
       "father_id": "7ee5a0e9-2680-44af-3008-1c2f20991eee",
       "generation": 5,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "52aa8469-d376-69ec-be25-b4f572d470fb",
@@ -433,9 +332,7 @@
       "father_id": "307538c9-302c-9998-7e88-9355446a4f05",
       "generation": 5,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "d4d2b0d4-e606-289b-580e-ba87da00591a",
@@ -444,9 +341,7 @@
       "father_id": "982b7753-5330-147e-b096-88d8fc66f126",
       "generation": 5,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "2762abb4-6e44-49c1-3484-e68d418e1fb4",
@@ -455,9 +350,7 @@
       "father_id": "232e38b7-4c27-d479-161b-083efd04fa71",
       "generation": 5,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "d5d2f96f-37c0-5911-a122-4b71f2aaedc0",
@@ -466,9 +359,7 @@
       "father_id": "63a903ef-2fcf-6d1e-cafd-6bba2fdcf144",
       "generation": 5,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "d4e74117-ed62-f83a-bac3-98ba789bd5cd",
@@ -477,9 +368,7 @@
       "father_id": "7ee5a0e9-2680-44af-3008-1c2f20991eee",
       "generation": 5,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "c0971c6c-b302-d6c7-adbb-9541ae6a5836",
@@ -488,9 +377,7 @@
       "father_id": "fca50211-92e8-a3d3-7a3b-2501d87a0b80",
       "generation": 5,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "238bfd3f-eda3-5bfc-3794-bfb7dc0c8638",
@@ -499,9 +386,7 @@
       "father_id": "307538c9-302c-9998-7e88-9355446a4f05",
       "generation": 5,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "52d6fc48-e439-3b57-df73-78fef71f552e",
@@ -510,9 +395,7 @@
       "father_id": "bf4ad97a-4670-a346-2673-1015ef0ef3ad",
       "generation": 5,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "b06ea6c3-68e9-352d-0cda-b8a7d173f3c9",
@@ -521,9 +404,7 @@
       "father_id": "7287b68b-ad7c-b863-169e-4a5e23643776",
       "generation": 5,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "6a014196-2c8f-eff7-2b84-f77a869133a3",
@@ -532,9 +413,7 @@
       "father_id": "32efde4e-6b87-fad4-e6f9-bfd244256115",
       "generation": 5,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "7e6f41da-f1c4-1c73-957a-018f85835eeb",
@@ -543,9 +422,7 @@
       "father_id": "7ee5a0e9-2680-44af-3008-1c2f20991eee",
       "generation": 5,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "d29de970-e8db-396c-5503-26dbd575d084",
@@ -554,9 +431,7 @@
       "father_id": "982b7753-5330-147e-b096-88d8fc66f126",
       "generation": 5,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "75023aba-6238-821a-dca5-a6499965f1d7",
@@ -565,9 +440,7 @@
       "father_id": "fef7414d-6c1b-e3cc-f6f3-5a572a9560ec",
       "generation": 5,
       "branch_slug": "al-abdulaziz-abdulrahman",
-      "charts": [
-        9
-      ]
+      "charts": [9]
     },
     {
       "id": "3e7022e3-21ac-21bb-e496-00e4693b7660",
@@ -576,9 +449,7 @@
       "father_id": "32efde4e-6b87-fad4-e6f9-bfd244256115",
       "generation": 5,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "04b66e93-6921-b2d1-86ad-3ccfff9da9c2",
@@ -587,9 +458,7 @@
       "father_id": "bf4ad97a-4670-a346-2673-1015ef0ef3ad",
       "generation": 5,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "083911f7-2e6b-9d86-eef6-294103a26eb1",
@@ -598,9 +467,7 @@
       "father_id": "63a903ef-2fcf-6d1e-cafd-6bba2fdcf144",
       "generation": 5,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "8f9db192-db6b-5a25-ab81-d531c0b425d7",
@@ -609,9 +476,7 @@
       "father_id": "742fe1e8-99a6-216a-b6a2-add437ffe190",
       "generation": 5,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "826ffdf4-a9f6-3c26-09d3-4c03f250f80c",
@@ -620,9 +485,7 @@
       "father_id": "56603390-de42-631c-1512-9d76227be402",
       "generation": 5,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "31540a28-c5ae-938a-a241-c29755eab1b6",
@@ -631,9 +494,7 @@
       "father_id": "32efde4e-6b87-fad4-e6f9-bfd244256115",
       "generation": 5,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "3deea046-e83b-606e-6f26-4464e6230a5d",
@@ -642,9 +503,7 @@
       "father_id": "7287b68b-ad7c-b863-169e-4a5e23643776",
       "generation": 5,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "2a570be5-a43e-ddc9-5434-eaa3a91f8836",
@@ -653,9 +512,7 @@
       "father_id": "083911f7-2e6b-9d86-eef6-294103a26eb1",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "f62a07b0-969c-d67a-4ab4-ce6bc09aaff0",
@@ -664,9 +521,7 @@
       "father_id": "7e6f41da-f1c4-1c73-957a-018f85835eeb",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "6f8ddcb9-5e30-9dfa-9caa-fa94f83586d0",
@@ -675,9 +530,7 @@
       "father_id": "d4d2b0d4-e606-289b-580e-ba87da00591a",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "590d5ed3-8df7-6a2b-8976-bec2bda0fe7a",
@@ -686,9 +539,7 @@
       "father_id": "083911f7-2e6b-9d86-eef6-294103a26eb1",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "f60e826d-4898-46b0-5220-b137f98e9572",
@@ -697,9 +548,7 @@
       "father_id": "d5d2f96f-37c0-5911-a122-4b71f2aaedc0",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "369be20a-b007-b3cf-9de1-222b3ebe3f87",
@@ -708,9 +557,7 @@
       "father_id": "6a014196-2c8f-eff7-2b84-f77a869133a3",
       "generation": 6,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "610c6549-ddb4-17a2-5725-dfc3c942b1de",
@@ -719,9 +566,7 @@
       "father_id": "826ffdf4-a9f6-3c26-09d3-4c03f250f80c",
       "generation": 6,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "721392f8-6cad-8d44-09c6-2149fdb85641",
@@ -730,9 +575,7 @@
       "father_id": "7e6f41da-f1c4-1c73-957a-018f85835eeb",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "331bbc2f-e29a-0335-1ef1-f3027bec1116",
@@ -741,9 +584,7 @@
       "father_id": "b06ea6c3-68e9-352d-0cda-b8a7d173f3c9",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "a3dd83fd-8e89-756e-5afa-934bd2e6404f",
@@ -752,9 +593,7 @@
       "father_id": "3deea046-e83b-606e-6f26-4464e6230a5d",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "a7273dd7-38c0-5399-9f5c-4bf5878ae90e",
@@ -763,9 +602,7 @@
       "father_id": "d4d2b0d4-e606-289b-580e-ba87da00591a",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "d81d7446-a545-4679-3bf9-e4e65b8c024b",
@@ -774,9 +611,7 @@
       "father_id": "20ca9233-2ea5-8e0d-1e68-1b8ef82fbf84",
       "generation": 6,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "9a640553-7cb8-ee9f-71d7-58a9f9b2aa77",
@@ -785,9 +620,7 @@
       "father_id": "7e6f41da-f1c4-1c73-957a-018f85835eeb",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "1098303d-9254-6832-e47c-1c3b67429473",
@@ -796,9 +629,7 @@
       "father_id": "d4e74117-ed62-f83a-bac3-98ba789bd5cd",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "2846c76c-4001-a64a-8a7c-1d812c215fb2",
@@ -807,9 +638,7 @@
       "father_id": "d4e74117-ed62-f83a-bac3-98ba789bd5cd",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "4305fda3-b9c4-d160-e2a9-e298575ef6ec",
@@ -818,9 +647,7 @@
       "father_id": "3deea046-e83b-606e-6f26-4464e6230a5d",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "6a6c24b7-a3a9-4ac5-105d-9807c4bb151e",
@@ -829,9 +656,7 @@
       "father_id": "c0971c6c-b302-d6c7-adbb-9541ae6a5836",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "460a245f-16c7-05f8-7212-9b80b98fad4b",
@@ -840,9 +665,7 @@
       "father_id": "826ffdf4-a9f6-3c26-09d3-4c03f250f80c",
       "generation": 6,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "ed084f33-fb17-2310-5e45-92fa2acb0d08",
@@ -851,9 +674,7 @@
       "father_id": "3deea046-e83b-606e-6f26-4464e6230a5d",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "0460f691-37f9-fcb2-3498-052f22cda7fc",
@@ -862,9 +683,7 @@
       "father_id": "e9a7820d-af30-80c5-aa5a-119e4c4cbe32",
       "generation": 6,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "7e67ca09-6d26-6ffc-6e0c-d237d7ca34bb",
@@ -873,9 +692,7 @@
       "father_id": "3e7022e3-21ac-21bb-e496-00e4693b7660",
       "generation": 6,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "0e447528-b171-5842-0b40-b9e74a08c3b3",
@@ -884,9 +701,7 @@
       "father_id": "c0971c6c-b302-d6c7-adbb-9541ae6a5836",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "6316d6d5-1eb1-f830-97e0-a4d06b6e193f",
@@ -895,9 +710,7 @@
       "father_id": "083911f7-2e6b-9d86-eef6-294103a26eb1",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "21596d13-adac-c6c7-5035-daafcbde2ea5",
@@ -906,9 +719,7 @@
       "father_id": "d5d2f96f-37c0-5911-a122-4b71f2aaedc0",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
@@ -917,9 +728,7 @@
       "father_id": "3e7022e3-21ac-21bb-e496-00e4693b7660",
       "generation": 6,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "1985af19-5bd5-a893-7700-37f5187c651a",
@@ -928,9 +737,7 @@
       "father_id": "826ffdf4-a9f6-3c26-09d3-4c03f250f80c",
       "generation": 6,
       "branch_slug": "al-mohammed-ahmed",
-      "charts": [
-        5
-      ]
+      "charts": [5]
     },
     {
       "id": "aa4ffbe1-2dd5-b23b-341c-c2de4f2aebec",
@@ -939,9 +746,7 @@
       "father_id": "20ca9233-2ea5-8e0d-1e68-1b8ef82fbf84",
       "generation": 6,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "be597a98-03e2-fd48-e513-298241aec48d",
@@ -950,9 +755,7 @@
       "father_id": "3e7022e3-21ac-21bb-e496-00e4693b7660",
       "generation": 6,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "e7664c93-d249-322a-945c-924dd313fbe1",
@@ -961,9 +764,7 @@
       "father_id": "3deea046-e83b-606e-6f26-4464e6230a5d",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "9bcdd639-f3db-2977-daba-76a2673a9c05",
@@ -972,9 +773,7 @@
       "father_id": "d4d2b0d4-e606-289b-580e-ba87da00591a",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "2cf12c33-8ab7-b5a5-f924-2709f045bb3e",
@@ -983,9 +782,7 @@
       "father_id": "31540a28-c5ae-938a-a241-c29755eab1b6",
       "generation": 6,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "1b1595e4-d140-570d-9201-31c87049db27",
@@ -994,9 +791,7 @@
       "father_id": "20ca9233-2ea5-8e0d-1e68-1b8ef82fbf84",
       "generation": 6,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "e1a9cdd2-0f19-e416-628c-a6fe9833b0a7",
@@ -1005,9 +800,7 @@
       "father_id": "e5891cbe-62ba-ae4d-ece0-bffea7fd613a",
       "generation": 6,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "b54ddfc1-5384-af8f-eba6-af576fa5d17a",
@@ -1016,9 +809,7 @@
       "father_id": "083911f7-2e6b-9d86-eef6-294103a26eb1",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "86ce33c6-6133-0b64-be35-076812bf8340",
@@ -1027,9 +818,7 @@
       "father_id": "6a014196-2c8f-eff7-2b84-f77a869133a3",
       "generation": 6,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "755aa52e-6de2-edc4-6f46-b4bfb666ac8b",
@@ -1038,9 +827,7 @@
       "father_id": "df96e5c9-d6a3-c1b7-6d05-b96bc4a590de",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "7511aeac-063d-5955-39c6-66cd3f3b9f50",
@@ -1049,9 +836,7 @@
       "father_id": "d29de970-e8db-396c-5503-26dbd575d084",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "d89485e7-a101-37e8-c9e2-241ff36b6261",
@@ -1060,9 +845,7 @@
       "father_id": "c0971c6c-b302-d6c7-adbb-9541ae6a5836",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "2a6aae38-2e69-1504-c109-f0ad67f976ca",
@@ -1071,9 +854,7 @@
       "father_id": "75023aba-6238-821a-dca5-a6499965f1d7",
       "generation": 6,
       "branch_slug": "al-abdulaziz-abdulrahman",
-      "charts": [
-        9
-      ]
+      "charts": [9]
     },
     {
       "id": "2ccc8bf6-7b91-6d9a-18ec-1a1ec2736839",
@@ -1082,9 +863,7 @@
       "father_id": "e5891cbe-62ba-ae4d-ece0-bffea7fd613a",
       "generation": 6,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "2cb64f7c-4b7a-9c5f-934e-5b4b736de913",
@@ -1093,9 +872,7 @@
       "father_id": "d5d2f96f-37c0-5911-a122-4b71f2aaedc0",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "bbc1fed3-3416-b9dd-c6fa-1350852a00ad",
@@ -1104,9 +881,7 @@
       "father_id": "083911f7-2e6b-9d86-eef6-294103a26eb1",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "db5ae0a5-d111-abcf-f7e2-14e91900afa6",
@@ -1115,9 +890,7 @@
       "father_id": "d5d2f96f-37c0-5911-a122-4b71f2aaedc0",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "c93b1608-9add-caf4-422b-b74accc1ee53",
@@ -1126,9 +899,7 @@
       "father_id": "b06ea6c3-68e9-352d-0cda-b8a7d173f3c9",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "20ee452e-afa4-f9fc-4f83-8a9bc9500919",
@@ -1137,9 +908,7 @@
       "father_id": "3deea046-e83b-606e-6f26-4464e6230a5d",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "02ca2035-da03-6374-91be-26248a61825b",
@@ -1148,9 +917,7 @@
       "father_id": "d4d2b0d4-e606-289b-580e-ba87da00591a",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "8a411187-e42a-2ad4-e8c6-82801a20daa9",
@@ -1159,9 +926,7 @@
       "father_id": "2762abb4-6e44-49c1-3484-e68d418e1fb4",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "b96fc3fd-900c-8e0d-d596-edf19e829eee",
@@ -1170,9 +935,7 @@
       "father_id": "de2635ae-a903-bb61-675c-59a82e53e48b",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "fdedef79-f7aa-f028-6abc-151e970fbf00",
@@ -1181,9 +944,7 @@
       "father_id": "e9a7820d-af30-80c5-aa5a-119e4c4cbe32",
       "generation": 6,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "3790baee-06c6-6455-2903-48bc4f12413e",
@@ -1192,9 +953,7 @@
       "father_id": "7e6f41da-f1c4-1c73-957a-018f85835eeb",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "06bb3ebf-b857-a623-2f46-a0f6bb9d12f2",
@@ -1203,9 +962,7 @@
       "father_id": "d4e74117-ed62-f83a-bac3-98ba789bd5cd",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "173c4661-8825-68fc-ab01-0614bc6f763a",
@@ -1214,9 +971,7 @@
       "father_id": "df96e5c9-d6a3-c1b7-6d05-b96bc4a590de",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "7ffcbaea-9bf6-84a9-015c-6ae6362541f1",
@@ -1225,9 +980,7 @@
       "father_id": "75023aba-6238-821a-dca5-a6499965f1d7",
       "generation": 6,
       "branch_slug": "al-abdulaziz-abdulrahman",
-      "charts": [
-        9
-      ]
+      "charts": [9]
     },
     {
       "id": "43c92c73-1852-2d2a-112f-7bf7aabf99b8",
@@ -1236,9 +989,7 @@
       "father_id": "d5d2f96f-37c0-5911-a122-4b71f2aaedc0",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "52f0897a-7787-4d84-70d0-5ce2d6252836",
@@ -1247,9 +998,7 @@
       "father_id": "e9a7820d-af30-80c5-aa5a-119e4c4cbe32",
       "generation": 6,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "6b6fe991-4545-4e30-56bf-3403e5a63be0",
@@ -1258,9 +1007,7 @@
       "father_id": "3e7022e3-21ac-21bb-e496-00e4693b7660",
       "generation": 6,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "088ab3ef-6e4f-effb-8538-b1f972fc19db",
@@ -1269,9 +1016,7 @@
       "father_id": "7e6f41da-f1c4-1c73-957a-018f85835eeb",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "c00bc4d8-46bb-88c7-c640-d0f6a66679e6",
@@ -1280,9 +1025,7 @@
       "father_id": "d4e74117-ed62-f83a-bac3-98ba789bd5cd",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "a8ecfd07-6c4e-f947-42c1-2653632598a6",
@@ -1291,9 +1034,7 @@
       "father_id": "df96e5c9-d6a3-c1b7-6d05-b96bc4a590de",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "f90a7e7f-2642-80e5-73fa-9eff14eccf38",
@@ -1302,9 +1043,7 @@
       "father_id": "3deea046-e83b-606e-6f26-4464e6230a5d",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "25e61b65-5cea-fb91-2259-ffc17ffacf24",
@@ -1313,9 +1052,7 @@
       "father_id": "c0971c6c-b302-d6c7-adbb-9541ae6a5836",
       "generation": 6,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "ad0aca45-9860-1489-dbfd-99381e58bd92",
@@ -1324,9 +1061,7 @@
       "father_id": "20ca9233-2ea5-8e0d-1e68-1b8ef82fbf84",
       "generation": 6,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "f540628b-d344-1f4f-2343-5479f5afef74",
@@ -1335,9 +1070,7 @@
       "father_id": "3deea046-e83b-606e-6f26-4464e6230a5d",
       "generation": 6,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ],
+      "charts": [7],
       "uncertain": true
     },
     {
@@ -1347,9 +1080,7 @@
       "father_id": "df96e5c9-d6a3-c1b7-6d05-b96bc4a590de",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "b2f9f91a-eb71-ede6-3ea7-9208224915c9",
@@ -1358,9 +1089,7 @@
       "father_id": "df96e5c9-d6a3-c1b7-6d05-b96bc4a590de",
       "generation": 6,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "b25bb98e-5ca0-f52f-d2ca-ea4c285e6fcd",
@@ -1369,9 +1098,7 @@
       "father_id": "083911f7-2e6b-9d86-eef6-294103a26eb1",
       "generation": 6,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "b1bd2acc-343f-edea-010e-37fd1dda8387",
@@ -1380,9 +1107,7 @@
       "father_id": "e5891cbe-62ba-ae4d-ece0-bffea7fd613a",
       "generation": 6,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "821cf26f-d607-0e15-3b83-fd1ec5f6c6e2",
@@ -1391,9 +1116,7 @@
       "father_id": "52f0897a-7787-4d84-70d0-5ce2d6252836",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "688fe53d-97aa-c52a-9824-70ee651b2168",
@@ -1402,9 +1125,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "b1d9e18f-faa8-b07e-3d1c-540dbb8e63eb",
@@ -1413,9 +1134,7 @@
       "father_id": "c93b1608-9add-caf4-422b-b74accc1ee53",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "0c3c7e73-6971-3b35-9521-2313d44e1660",
@@ -1424,9 +1143,7 @@
       "father_id": "331bbc2f-e29a-0335-1ef1-f3027bec1116",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "dd71dff9-ae00-c534-2372-e6b04b2de179",
@@ -1435,9 +1152,7 @@
       "father_id": "d81d7446-a545-4679-3bf9-e4e65b8c024b",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "566975d0-c5da-6be7-64e4-fdba04a72897",
@@ -1446,9 +1161,7 @@
       "father_id": "e1a9cdd2-0f19-e416-628c-a6fe9833b0a7",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "31b289af-f699-11c0-77fc-11518d86f1c1",
@@ -1457,9 +1170,7 @@
       "father_id": "21596d13-adac-c6c7-5035-daafcbde2ea5",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "f2c55984-a764-885e-a30e-8c619de8f15b",
@@ -1468,9 +1179,7 @@
       "father_id": "6b6fe991-4545-4e30-56bf-3403e5a63be0",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "26bf6f2b-9fab-9e70-1ee1-2c5b5a0ee535",
@@ -1479,9 +1188,7 @@
       "father_id": "088ab3ef-6e4f-effb-8538-b1f972fc19db",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "6c925fed-5654-08b1-9e0d-62e26ff95390",
@@ -1490,9 +1197,7 @@
       "father_id": "ed084f33-fb17-2310-5e45-92fa2acb0d08",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "f097745f-a382-eb06-0b4a-237aaae4909c",
@@ -1501,9 +1206,7 @@
       "father_id": "6f8ddcb9-5e30-9dfa-9caa-fa94f83586d0",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "a439b9a2-b902-4c7c-bf39-c284da2a34f1",
@@ -1512,9 +1215,7 @@
       "father_id": "02ca2035-da03-6374-91be-26248a61825b",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "bd8e9bdc-5064-5a19-3b9f-cb5b61409375",
@@ -1523,9 +1224,7 @@
       "father_id": "7511aeac-063d-5955-39c6-66cd3f3b9f50",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "597b9428-3036-2096-b1d7-c61b148a5d43",
@@ -1534,9 +1233,7 @@
       "father_id": "e1a9cdd2-0f19-e416-628c-a6fe9833b0a7",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "c965f748-f433-4578-5926-9d7fb31402d6",
@@ -1545,9 +1242,7 @@
       "father_id": "2ccc8bf6-7b91-6d9a-18ec-1a1ec2736839",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "d3d6a3c6-00a0-d7d8-c542-ddaaf3d6d047",
@@ -1556,9 +1251,7 @@
       "father_id": "db5ae0a5-d111-abcf-f7e2-14e91900afa6",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "06a63c22-823b-d19f-6a00-65747633c804",
@@ -1567,9 +1260,7 @@
       "father_id": "bbc1fed3-3416-b9dd-c6fa-1350852a00ad",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "94dba4c0-8c88-88c9-2c70-238d3f6d28af",
@@ -1578,9 +1269,7 @@
       "father_id": "9bcdd639-f3db-2977-daba-76a2673a9c05",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "a922686e-84b7-0a0a-7425-1d7681d86771",
@@ -1589,9 +1278,7 @@
       "father_id": "43c92c73-1852-2d2a-112f-7bf7aabf99b8",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "ae18a2b0-f05a-ad12-f181-e324e0121a93",
@@ -1600,9 +1287,7 @@
       "father_id": "6b6fe991-4545-4e30-56bf-3403e5a63be0",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "eff1d49a-140c-fd7a-d852-575920611555",
@@ -1611,9 +1296,7 @@
       "father_id": "a3dd83fd-8e89-756e-5afa-934bd2e6404f",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "dd8295e6-09e2-b111-88ca-f696ae58185a",
@@ -1622,9 +1305,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "92a7d70b-d1bc-7473-45ef-0db9a3653522",
@@ -1633,9 +1314,7 @@
       "father_id": "2ccc8bf6-7b91-6d9a-18ec-1a1ec2736839",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "743e743b-37f1-fe39-5ff0-4ae84e1b7273",
@@ -1644,9 +1323,7 @@
       "father_id": "f60e826d-4898-46b0-5220-b137f98e9572",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "2c5612c9-13c8-8a41-08ac-9c4b395f4910",
@@ -1655,9 +1332,7 @@
       "father_id": "52f0897a-7787-4d84-70d0-5ce2d6252836",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "0efb82f0-f443-74c3-20b5-944ff654dba4",
@@ -1666,9 +1341,7 @@
       "father_id": "fdedef79-f7aa-f028-6abc-151e970fbf00",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "27223c59-9a4e-29c0-1d3d-c3f64cda1004",
@@ -1677,9 +1350,7 @@
       "father_id": "b96fc3fd-900c-8e0d-d596-edf19e829eee",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "db6ae16e-404a-5eb2-8cdf-29dba0e1bc56",
@@ -1688,9 +1359,7 @@
       "father_id": "1b1595e4-d140-570d-9201-31c87049db27",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "eb2b11c2-a062-aa9f-6f37-3ff454a4a1f8",
@@ -1699,9 +1368,7 @@
       "father_id": "2ccc8bf6-7b91-6d9a-18ec-1a1ec2736839",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "b40e29bb-9796-96e4-2fa5-a4a1d626413f",
@@ -1710,9 +1377,7 @@
       "father_id": "7e67ca09-6d26-6ffc-6e0c-d237d7ca34bb",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "c0f5be38-ba47-6ff0-d878-09912252f6e9",
@@ -1721,9 +1386,7 @@
       "father_id": "6b6fe991-4545-4e30-56bf-3403e5a63be0",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "8315df15-e4c8-01b6-d266-ced384f2c3d0",
@@ -1732,9 +1395,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "865b9bb8-5b14-899a-93a6-21317b7cb32a",
@@ -1743,9 +1404,7 @@
       "father_id": "a8ecfd07-6c4e-f947-42c1-2653632598a6",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "0ceab0cd-b0c2-67da-c2c2-9487d8a316a2",
@@ -1754,9 +1413,7 @@
       "father_id": "20ee452e-afa4-f9fc-4f83-8a9bc9500919",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "ea369edc-59fc-149d-02d6-489a1495e45d",
@@ -1765,9 +1422,7 @@
       "father_id": "25e61b65-5cea-fb91-2259-ffc17ffacf24",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "586a6fe4-9892-3c31-cdac-7fe947ad59a6",
@@ -1776,9 +1431,7 @@
       "father_id": "2cf12c33-8ab7-b5a5-f924-2709f045bb3e",
       "generation": 7,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "d147d1b1-80af-a220-ce2f-9b4cf45e36a8",
@@ -1787,9 +1440,7 @@
       "father_id": "1b1595e4-d140-570d-9201-31c87049db27",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "e65f9e84-f122-9e60-ab97-5f1537d829a9",
@@ -1798,9 +1449,7 @@
       "father_id": "aa4ffbe1-2dd5-b23b-341c-c2de4f2aebec",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "6aa4dabc-6559-fac5-71b4-f17b0b144324",
@@ -1809,9 +1458,7 @@
       "father_id": "b1bd2acc-343f-edea-010e-37fd1dda8387",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "fa1243de-3ffe-81e9-b24e-ec8e368a8e68",
@@ -1820,9 +1467,7 @@
       "father_id": "a8ecfd07-6c4e-f947-42c1-2653632598a6",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "57adffe8-e142-0f09-26ff-6ad5169b8538",
@@ -1831,9 +1476,7 @@
       "father_id": "2ccc8bf6-7b91-6d9a-18ec-1a1ec2736839",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "dd8ef401-b04c-f378-15f1-bab57a6d3778",
@@ -1842,9 +1485,7 @@
       "father_id": "4305fda3-b9c4-d160-e2a9-e298575ef6ec",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "f0771f21-7734-3eaa-d385-2965c0187954",
@@ -1853,9 +1494,7 @@
       "father_id": "7511aeac-063d-5955-39c6-66cd3f3b9f50",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "dc3cfad0-f9b0-b50c-3330-8acddc07ee1a",
@@ -1864,9 +1503,7 @@
       "father_id": "b1bd2acc-343f-edea-010e-37fd1dda8387",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "6634fc41-7fc3-13c6-951b-5590ab00e937",
@@ -1875,9 +1512,7 @@
       "father_id": "755aa52e-6de2-edc4-6f46-b4bfb666ac8b",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "e321bc98-9501-8b41-132f-61969fa51d09",
@@ -1886,9 +1521,7 @@
       "father_id": "173c4661-8825-68fc-ab01-0614bc6f763a",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "1c22f2a5-a362-cd9a-f02b-765288127c31",
@@ -1897,9 +1530,7 @@
       "father_id": "b2f9f91a-eb71-ede6-3ea7-9208224915c9",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "3fd93377-69c6-d34e-fb32-2150d598aeb5",
@@ -1908,9 +1539,7 @@
       "father_id": "a8ecfd07-6c4e-f947-42c1-2653632598a6",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "480bde7b-a659-9058-2e37-0996e09785bc",
@@ -1919,9 +1548,7 @@
       "father_id": "86ce33c6-6133-0b64-be35-076812bf8340",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "9e84f20b-815e-d30f-04e2-82164d7e1005",
@@ -1930,9 +1557,7 @@
       "father_id": "4305fda3-b9c4-d160-e2a9-e298575ef6ec",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "8bfa219d-b90a-1d36-2c38-315d4be60512",
@@ -1941,9 +1566,7 @@
       "father_id": "b2f9f91a-eb71-ede6-3ea7-9208224915c9",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "f927050c-f176-a075-db5a-ff929ae14f83",
@@ -1952,9 +1575,7 @@
       "father_id": "52f0897a-7787-4d84-70d0-5ce2d6252836",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "32317f2f-4e68-9c7c-25ce-e5c9da88dd65",
@@ -1963,9 +1584,7 @@
       "father_id": "86ce33c6-6133-0b64-be35-076812bf8340",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "f1331f4a-95b2-b8c1-5d2b-c38d35529fd8",
@@ -1974,9 +1593,7 @@
       "father_id": "9bcdd639-f3db-2977-daba-76a2673a9c05",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "1850739e-1c9d-743f-0e22-e5968c991520",
@@ -1985,9 +1602,7 @@
       "father_id": "a7273dd7-38c0-5399-9f5c-4bf5878ae90e",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "37478570-20b9-4b5e-cc80-b62dd6f35f84",
@@ -1996,9 +1611,7 @@
       "father_id": "6f8ddcb9-5e30-9dfa-9caa-fa94f83586d0",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "af7b07a7-4b1b-f371-2e5b-e8b3fda40a6c",
@@ -2007,9 +1620,7 @@
       "father_id": "02ca2035-da03-6374-91be-26248a61825b",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "07389ce2-f0a5-a2ad-ae2a-fb4edc20489b",
@@ -2018,9 +1629,7 @@
       "father_id": "2cf12c33-8ab7-b5a5-f924-2709f045bb3e",
       "generation": 7,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "617c7c54-db68-13e9-56b0-348543ed774b",
@@ -2029,9 +1638,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "cab59029-85e9-6cab-7118-27dcec96341f",
@@ -2040,9 +1647,7 @@
       "father_id": "8a411187-e42a-2ad4-e8c6-82801a20daa9",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ],
+      "charts": [8],
       "uncertain": true
     },
     {
@@ -2052,9 +1657,7 @@
       "father_id": "ad0aca45-9860-1489-dbfd-99381e58bd92",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "2c875ffd-eab4-8d40-88d2-d534e1f226b2",
@@ -2063,9 +1666,7 @@
       "father_id": "1b1595e4-d140-570d-9201-31c87049db27",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "36095603-f255-dc5b-d546-1976dfdcc100",
@@ -2074,9 +1675,7 @@
       "father_id": "e1a9cdd2-0f19-e416-628c-a6fe9833b0a7",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ],
+      "charts": [12],
       "uncertain": true
     },
     {
@@ -2086,9 +1685,7 @@
       "father_id": "1b1595e4-d140-570d-9201-31c87049db27",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ],
+      "charts": [11],
       "uncertain": true
     },
     {
@@ -2098,9 +1695,7 @@
       "father_id": "02ca2035-da03-6374-91be-26248a61825b",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "10cfe64e-00c0-b9e0-cc45-9ed58b0f0df6",
@@ -2109,9 +1704,7 @@
       "father_id": "52f0897a-7787-4d84-70d0-5ce2d6252836",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "0d031f00-aef6-f233-5f3f-b4633d7f020b",
@@ -2120,9 +1713,7 @@
       "father_id": "7e67ca09-6d26-6ffc-6e0c-d237d7ca34bb",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "cfd83753-2e72-c418-1c6a-fe17de4e0711",
@@ -2131,9 +1722,7 @@
       "father_id": "aa4ffbe1-2dd5-b23b-341c-c2de4f2aebec",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "171d335d-f2bb-769d-f123-391a5e51d60f",
@@ -2142,9 +1731,7 @@
       "father_id": "2a570be5-a43e-ddc9-5434-eaa3a91f8836",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "479643a0-d3b0-2c7c-0658-6a3742a0904d",
@@ -2153,9 +1740,7 @@
       "father_id": "369be20a-b007-b3cf-9de1-222b3ebe3f87",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "caf5edb2-fcd6-30d8-e7f3-5db1a282a077",
@@ -2164,9 +1749,7 @@
       "father_id": "2a570be5-a43e-ddc9-5434-eaa3a91f8836",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "bd31fe12-daca-0c52-8819-627cf1703fb4",
@@ -2175,9 +1758,7 @@
       "father_id": "43c92c73-1852-2d2a-112f-7bf7aabf99b8",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "593b1f80-b583-9e51-fe54-83a8cf7891d9",
@@ -2186,9 +1767,7 @@
       "father_id": "db5ae0a5-d111-abcf-f7e2-14e91900afa6",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "4c54e78b-8d45-9827-1483-8a691b296750",
@@ -2197,9 +1776,7 @@
       "father_id": "f60e826d-4898-46b0-5220-b137f98e9572",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "ac94418c-db27-1422-fae1-bdee97452f9a",
@@ -2208,9 +1785,7 @@
       "father_id": "21596d13-adac-c6c7-5035-daafcbde2ea5",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "30af2f41-ebdb-16b6-06ec-143e9818a1d7",
@@ -2219,9 +1794,7 @@
       "father_id": "2cb64f7c-4b7a-9c5f-934e-5b4b736de913",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "3c7206e8-440a-c54b-c496-39c9e511920b",
@@ -2230,9 +1803,7 @@
       "father_id": "86ce33c6-6133-0b64-be35-076812bf8340",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "74440cde-88dd-07df-f501-12c4ec9e6688",
@@ -2241,9 +1812,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "f99f0f63-bf85-39e2-00b6-7413c85201cc",
@@ -2252,9 +1821,7 @@
       "father_id": "2846c76c-4001-a64a-8a7c-1d812c215fb2",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "cff76b0d-d044-28de-051d-c3d70ba3056a",
@@ -2263,9 +1830,7 @@
       "father_id": "c00bc4d8-46bb-88c7-c640-d0f6a66679e6",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "3e1182da-1b09-3520-f1ca-2b08eb36656b",
@@ -2274,9 +1839,7 @@
       "father_id": "06bb3ebf-b857-a623-2f46-a0f6bb9d12f2",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "09d817bb-851b-1c9c-006a-90c854bfcf29",
@@ -2285,9 +1848,7 @@
       "father_id": "4305fda3-b9c4-d160-e2a9-e298575ef6ec",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "27817625-16ed-3305-69e8-1201eb922e82",
@@ -2296,9 +1857,7 @@
       "father_id": "0e447528-b171-5842-0b40-b9e74a08c3b3",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "28bbf9ef-a872-76b6-d247-8579af7aa521",
@@ -2307,9 +1866,7 @@
       "father_id": "d89485e7-a101-37e8-c9e2-241ff36b6261",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "1b6c3a15-7d55-dbda-0faf-78ae8f3d11f5",
@@ -2318,9 +1875,7 @@
       "father_id": "25e61b65-5cea-fb91-2259-ffc17ffacf24",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "2232be41-dd8f-5e21-5fb4-4e1713b607c0",
@@ -2329,9 +1884,7 @@
       "father_id": "6a6c24b7-a3a9-4ac5-105d-9807c4bb151e",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "5f4c4182-0b2c-d975-91d5-4ce0098e6f66",
@@ -2340,9 +1893,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "dd1804a6-bfab-fc51-2755-4864efafc8f9",
@@ -2351,9 +1902,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "8a563edf-f8f5-2f47-319c-d17358c801cb",
@@ -2362,9 +1911,7 @@
       "father_id": "52f0897a-7787-4d84-70d0-5ce2d6252836",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "fe8701fa-718f-b14b-63d9-f3c03b8955f8",
@@ -2373,9 +1920,7 @@
       "father_id": "52f0897a-7787-4d84-70d0-5ce2d6252836",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "88ce69d9-2775-f455-744e-f34f58acd780",
@@ -2384,9 +1929,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "642c34bb-3306-dfd7-e6bc-939abf435a8a",
@@ -2395,9 +1938,7 @@
       "father_id": "173c4661-8825-68fc-ab01-0614bc6f763a",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "cafdec23-6153-7b73-5581-a29d8c5c429c",
@@ -2406,9 +1947,7 @@
       "father_id": "c93b1608-9add-caf4-422b-b74accc1ee53",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "befc010d-acce-78a9-9676-40fcc001f3fa",
@@ -2417,9 +1956,7 @@
       "father_id": "4305fda3-b9c4-d160-e2a9-e298575ef6ec",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "5e3a0d98-aee0-5f04-9260-3cb54ef2eeb6",
@@ -2428,9 +1965,7 @@
       "father_id": "9bcdd639-f3db-2977-daba-76a2673a9c05",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "c11a1009-3c2a-8c3a-8c9e-8c379ad385ed",
@@ -2439,9 +1974,7 @@
       "father_id": "0e447528-b171-5842-0b40-b9e74a08c3b3",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "47da8b17-2f5a-52e1-f92c-facc9773dbaf",
@@ -2450,9 +1983,7 @@
       "father_id": "2cf12c33-8ab7-b5a5-f924-2709f045bb3e",
       "generation": 7,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "9b24b2f9-fae9-9120-9994-8fcc38d6f55c",
@@ -2461,9 +1992,7 @@
       "father_id": "1b1595e4-d140-570d-9201-31c87049db27",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "81b90778-2d0d-24c6-2448-e5e388e13a2d",
@@ -2472,9 +2001,7 @@
       "father_id": "aa4ffbe1-2dd5-b23b-341c-c2de4f2aebec",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "5fb9133a-e830-61f6-fa13-54aadbceed23",
@@ -2483,9 +2010,7 @@
       "father_id": "bbc1fed3-3416-b9dd-c6fa-1350852a00ad",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "6c259f2a-e604-59d7-de64-8b25fcfea12a",
@@ -2494,9 +2019,7 @@
       "father_id": "86ce33c6-6133-0b64-be35-076812bf8340",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "a2f4dfb5-9490-2719-80d0-2e0b7f853bb8",
@@ -2505,9 +2028,7 @@
       "father_id": "6b6fe991-4545-4e30-56bf-3403e5a63be0",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "64c592fd-d395-726f-cfdf-1158e4d94d2d",
@@ -2516,9 +2037,7 @@
       "father_id": "c93b1608-9add-caf4-422b-b74accc1ee53",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "40b0e57e-c8bc-93ca-1e05-069c6250aa43",
@@ -2527,9 +2046,7 @@
       "father_id": "331bbc2f-e29a-0335-1ef1-f3027bec1116",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "1dcda3d1-153a-20f1-b924-fa75b6a7a1a0",
@@ -2538,9 +2055,7 @@
       "father_id": "1b1595e4-d140-570d-9201-31c87049db27",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ],
+      "charts": [11],
       "uncertain": true
     },
     {
@@ -2550,9 +2065,7 @@
       "father_id": "1b1595e4-d140-570d-9201-31c87049db27",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ],
+      "charts": [11],
       "uncertain": true
     },
     {
@@ -2562,9 +2075,7 @@
       "father_id": "6316d6d5-1eb1-f830-97e0-a4d06b6e193f",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "bbd83c51-7217-d34a-f8fa-d268825fe384",
@@ -2573,9 +2084,7 @@
       "father_id": "43c92c73-1852-2d2a-112f-7bf7aabf99b8",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "d11f23eb-15f8-89eb-0aca-08b72874a7f1",
@@ -2584,9 +2093,7 @@
       "father_id": "369be20a-b007-b3cf-9de1-222b3ebe3f87",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "d3739598-d5a8-c804-640f-cfa174a54a0d",
@@ -2595,9 +2102,7 @@
       "father_id": "6b6fe991-4545-4e30-56bf-3403e5a63be0",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "168d981f-3303-d689-0e1d-c008125f1c77",
@@ -2606,9 +2111,7 @@
       "father_id": "f62a07b0-969c-d67a-4ab4-ce6bc09aaff0",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "1db5214d-adb9-3ebe-b0d0-1da2d45a18db",
@@ -2617,9 +2120,7 @@
       "father_id": "088ab3ef-6e4f-effb-8538-b1f972fc19db",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "44271e3b-a17e-a0bc-f8c4-e475692bbdd2",
@@ -2628,9 +2129,7 @@
       "father_id": "3790baee-06c6-6455-2903-48bc4f12413e",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "a07b8b62-819c-5886-3ad1-4d3b836d5e6a",
@@ -2639,9 +2138,7 @@
       "father_id": "a8ecfd07-6c4e-f947-42c1-2653632598a6",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "e1def04c-a64f-c090-75ba-903d5598ed05",
@@ -2650,9 +2147,7 @@
       "father_id": "4305fda3-b9c4-d160-e2a9-e298575ef6ec",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "c652e4b8-b8b0-094d-403a-de824de8e377",
@@ -2661,9 +2156,7 @@
       "father_id": "6f8ddcb9-5e30-9dfa-9caa-fa94f83586d0",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "1ce9de12-2355-f04f-0c94-f709010daef7",
@@ -2672,9 +2165,7 @@
       "father_id": "7511aeac-063d-5955-39c6-66cd3f3b9f50",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "96fe6e0e-2208-6369-9544-af79f601d7b7",
@@ -2683,9 +2174,7 @@
       "father_id": "0e447528-b171-5842-0b40-b9e74a08c3b3",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "2cb91181-163d-bdeb-4de2-0104331287db",
@@ -2694,9 +2183,7 @@
       "father_id": "d89485e7-a101-37e8-c9e2-241ff36b6261",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "4950a493-5aa2-d9b2-782c-cfeb4fff3c4c",
@@ -2705,9 +2192,7 @@
       "father_id": "25e61b65-5cea-fb91-2259-ffc17ffacf24",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "9cd6ae51-376e-6dd7-7cd2-50f49d87fd11",
@@ -2716,9 +2201,7 @@
       "father_id": "2cf12c33-8ab7-b5a5-f924-2709f045bb3e",
       "generation": 7,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "ace2599d-4c36-d6ec-ea9e-ae8fb911f4a1",
@@ -2727,9 +2210,7 @@
       "father_id": "b1bd2acc-343f-edea-010e-37fd1dda8387",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "e04e202d-6a82-5dff-b8fd-16d88ca65bea",
@@ -2738,9 +2219,7 @@
       "father_id": "3790baee-06c6-6455-2903-48bc4f12413e",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "e6d3a8ce-2d74-aa90-53d8-e08c40f9056f",
@@ -2749,9 +2228,7 @@
       "father_id": "2a570be5-a43e-ddc9-5434-eaa3a91f8836",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "20717b0e-2fdc-63b0-38f3-1830a710a0f9",
@@ -2760,9 +2237,7 @@
       "father_id": "369be20a-b007-b3cf-9de1-222b3ebe3f87",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "aef60353-86a1-c949-7202-de31c8e7b596",
@@ -2771,9 +2246,7 @@
       "father_id": "aa4ffbe1-2dd5-b23b-341c-c2de4f2aebec",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "f7da2df0-4da7-f242-69a4-24aff2b5e70c",
@@ -2782,9 +2255,7 @@
       "father_id": "b2f9f91a-eb71-ede6-3ea7-9208224915c9",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "de09912c-45c8-e75a-ce83-0203f7e33d81",
@@ -2793,9 +2264,7 @@
       "father_id": "fdedef79-f7aa-f028-6abc-151e970fbf00",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "6d957018-5403-920a-59ff-02e7c60e7a47",
@@ -2804,9 +2273,7 @@
       "father_id": "c93b1608-9add-caf4-422b-b74accc1ee53",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "e58b6e4f-6278-393a-5303-f60c844888d0",
@@ -2815,9 +2282,7 @@
       "father_id": "590d5ed3-8df7-6a2b-8976-bec2bda0fe7a",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "2f90c948-2495-91db-52fe-3d00305a3e6d",
@@ -2826,9 +2291,7 @@
       "father_id": "86ce33c6-6133-0b64-be35-076812bf8340",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "39d47a92-77cb-a1c8-3a66-6705463bdf97",
@@ -2837,9 +2300,7 @@
       "father_id": "7511aeac-063d-5955-39c6-66cd3f3b9f50",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "9ef52660-4e80-65ef-1408-5ea352b1b20c",
@@ -2848,9 +2309,7 @@
       "father_id": "1b1595e4-d140-570d-9201-31c87049db27",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "99df54ad-01f6-d92e-a37a-19cb84a0c224",
@@ -2859,9 +2318,7 @@
       "father_id": "2846c76c-4001-a64a-8a7c-1d812c215fb2",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "9b28bf73-60c4-ec4f-dc67-9338617d19b3",
@@ -2870,9 +2327,7 @@
       "father_id": "c00bc4d8-46bb-88c7-c640-d0f6a66679e6",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "fdff78f8-ef5c-a4a1-70a2-e3687adc7cbe",
@@ -2881,9 +2336,7 @@
       "father_id": "c93b1608-9add-caf4-422b-b74accc1ee53",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "00798015-cdd3-02bd-e8b4-3c76bfb537a0",
@@ -2892,9 +2345,7 @@
       "father_id": "6316d6d5-1eb1-f830-97e0-a4d06b6e193f",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "ce0ea1b9-248e-3784-e3b8-f827e81d9bef",
@@ -2903,9 +2354,7 @@
       "father_id": "fdedef79-f7aa-f028-6abc-151e970fbf00",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "d6648faf-d6a0-cefb-5ad9-77bba315e699",
@@ -2914,9 +2363,7 @@
       "father_id": "43c92c73-1852-2d2a-112f-7bf7aabf99b8",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "7823138e-5141-46f2-17f1-684eadbac75b",
@@ -2925,9 +2372,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "6cf4bd98-7640-1bbf-6479-ca3d40b2ecd5",
@@ -2936,9 +2381,7 @@
       "father_id": "c93b1608-9add-caf4-422b-b74accc1ee53",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "f9e78dbf-8d51-4706-a76f-06d807541aa3",
@@ -2947,9 +2390,7 @@
       "father_id": "fdedef79-f7aa-f028-6abc-151e970fbf00",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "806cfb05-43b5-3e7f-f4ed-2b6a3c087d3a",
@@ -2958,9 +2399,7 @@
       "father_id": "a7273dd7-38c0-5399-9f5c-4bf5878ae90e",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "154d0d57-0929-d603-83c6-f4c6cf5d4321",
@@ -2969,9 +2408,7 @@
       "father_id": "d81d7446-a545-4679-3bf9-e4e65b8c024b",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "e4578b84-9459-4ee7-1533-03776acf86a1",
@@ -2980,9 +2417,7 @@
       "father_id": "b1bd2acc-343f-edea-010e-37fd1dda8387",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "136ca6c1-f473-fa68-b55f-98d971d3c1dc",
@@ -2991,9 +2426,7 @@
       "father_id": "6316d6d5-1eb1-f830-97e0-a4d06b6e193f",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "939e6104-d641-6484-63cf-bab7911aed95",
@@ -3002,9 +2435,7 @@
       "father_id": "2a570be5-a43e-ddc9-5434-eaa3a91f8836",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "efc143f6-1664-5d0b-f35e-d9cfd548da43",
@@ -3013,9 +2444,7 @@
       "father_id": "bbc1fed3-3416-b9dd-c6fa-1350852a00ad",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "1fc8ffe2-8245-bf38-f439-46a286ba558a",
@@ -3024,9 +2453,7 @@
       "father_id": "b25bb98e-5ca0-f52f-d2ca-ea4c285e6fcd",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "31ed38ed-f3a4-c2ca-ddf1-0119a73b8d24",
@@ -3035,9 +2462,7 @@
       "father_id": "db5ae0a5-d111-abcf-f7e2-14e91900afa6",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "2b9b8124-539a-d5e0-a924-4fc4484c3fd1",
@@ -3046,9 +2471,7 @@
       "father_id": "f60e826d-4898-46b0-5220-b137f98e9572",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "a24d801e-86cd-dcb8-ec16-53aca78cd2b3",
@@ -3057,9 +2480,7 @@
       "father_id": "369be20a-b007-b3cf-9de1-222b3ebe3f87",
       "generation": 7,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "c0f78f39-21e4-9553-c47f-e005938827d4",
@@ -3068,9 +2489,7 @@
       "father_id": "331bbc2f-e29a-0335-1ef1-f3027bec1116",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "428e7d00-f68d-b9df-61b4-17bbe1dd4382",
@@ -3079,9 +2498,7 @@
       "father_id": "20ee452e-afa4-f9fc-4f83-8a9bc9500919",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "58c5e0fe-847a-7d51-f941-9af3ba3a4e13",
@@ -3090,9 +2507,7 @@
       "father_id": "8a411187-e42a-2ad4-e8c6-82801a20daa9",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "ee71c9d2-a43c-9b04-f8f0-014d0b2f515b",
@@ -3101,9 +2516,7 @@
       "father_id": "b96fc3fd-900c-8e0d-d596-edf19e829eee",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "24a5ce05-d623-f70b-a286-fe2555b1b42f",
@@ -3112,9 +2525,7 @@
       "father_id": "d89485e7-a101-37e8-c9e2-241ff36b6261",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "e80c931c-7f58-8793-48d4-f72f7b0e6e38",
@@ -3123,9 +2534,7 @@
       "father_id": "2cf12c33-8ab7-b5a5-f924-2709f045bb3e",
       "generation": 7,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "a1f32b4e-d5c7-a833-daa1-4c4450614fcf",
@@ -3134,9 +2543,7 @@
       "father_id": "e1a9cdd2-0f19-e416-628c-a6fe9833b0a7",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "4000e459-dca5-be5b-0381-8f8cf95beb50",
@@ -3145,9 +2552,7 @@
       "father_id": "9bcdd639-f3db-2977-daba-76a2673a9c05",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "338c1286-cd70-e899-c259-282d194e2e0e",
@@ -3156,9 +2561,7 @@
       "father_id": "2cb64f7c-4b7a-9c5f-934e-5b4b736de913",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "961915a3-38a7-a844-1cca-c8e0b0efa770",
@@ -3167,9 +2570,7 @@
       "father_id": "b2f9f91a-eb71-ede6-3ea7-9208224915c9",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "893e6911-a5d9-f7ba-2f1d-ba0661df9187",
@@ -3178,9 +2579,7 @@
       "father_id": "f60e826d-4898-46b0-5220-b137f98e9572",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "15bc0048-5bed-0f8d-b91d-ce10c2fd07a9",
@@ -3189,9 +2588,7 @@
       "father_id": "2846c76c-4001-a64a-8a7c-1d812c215fb2",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "c4ceab70-3eeb-004b-d727-c99d0a147ba8",
@@ -3200,9 +2597,7 @@
       "father_id": "c00bc4d8-46bb-88c7-c640-d0f6a66679e6",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "3ebbd2cd-7870-62d6-777d-860ff9e89134",
@@ -3211,9 +2606,7 @@
       "father_id": "a7273dd7-38c0-5399-9f5c-4bf5878ae90e",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "b0f5afa9-46e4-7eb3-f01e-d5b87b77d307",
@@ -3222,9 +2615,7 @@
       "father_id": "8a411187-e42a-2ad4-e8c6-82801a20daa9",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "a86b4d67-1da9-302a-161d-0f07109bac54",
@@ -3233,9 +2624,7 @@
       "father_id": "6b6fe991-4545-4e30-56bf-3403e5a63be0",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "e43cf1ac-d53c-be60-1d2e-28b6e6e64ade",
@@ -3244,9 +2633,7 @@
       "father_id": "d89485e7-a101-37e8-c9e2-241ff36b6261",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "b7f639ac-8d3c-a3c8-6d45-1b706ed54c4b",
@@ -3255,9 +2642,7 @@
       "father_id": "d81d7446-a545-4679-3bf9-e4e65b8c024b",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "46a4443f-6c95-dd60-6caf-8fe23eb06cbf",
@@ -3266,9 +2651,7 @@
       "father_id": "b1bd2acc-343f-edea-010e-37fd1dda8387",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "2dc6ecc3-9333-9d86-1402-5cb7c7a02ef5",
@@ -3277,9 +2660,7 @@
       "father_id": "0460f691-37f9-fcb2-3498-052f22cda7fc",
       "generation": 7,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "07ba548c-6438-0edb-1992-16f3bd2f8be8",
@@ -3288,9 +2669,7 @@
       "father_id": "7e67ca09-6d26-6ffc-6e0c-d237d7ca34bb",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "7a471b6e-3d51-354b-df5c-ac3ca197afdc",
@@ -3299,9 +2678,7 @@
       "father_id": "6b6fe991-4545-4e30-56bf-3403e5a63be0",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "18f4173d-07a1-32d1-66ca-77158e324bb5",
@@ -3310,9 +2687,7 @@
       "father_id": "8a411187-e42a-2ad4-e8c6-82801a20daa9",
       "generation": 7,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "783dfdaa-7174-d367-7249-796249318b0e",
@@ -3321,9 +2696,7 @@
       "father_id": "aa4ffbe1-2dd5-b23b-341c-c2de4f2aebec",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "329b6101-58a0-8815-5f53-a683d3fd8978",
@@ -3332,9 +2705,7 @@
       "father_id": "e1a9cdd2-0f19-e416-628c-a6fe9833b0a7",
       "generation": 7,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "b910fcec-5804-1d5a-acc9-3db6bd0368a2",
@@ -3343,9 +2714,7 @@
       "father_id": "173c4661-8825-68fc-ab01-0614bc6f763a",
       "generation": 7,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "f7546f93-8f73-4326-a313-179bcc33b545",
@@ -3354,9 +2723,7 @@
       "father_id": "21596d13-adac-c6c7-5035-daafcbde2ea5",
       "generation": 7,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "94a1729a-6e30-6e62-67bd-a2a791b1b64c",
@@ -3365,9 +2732,7 @@
       "father_id": "11bfabce-1e68-6e6c-074c-4ceeb46d04d6",
       "generation": 7,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "c7daaed2-7049-cc98-9296-a75eeb27afa6",
@@ -3376,9 +2741,7 @@
       "father_id": "c93b1608-9add-caf4-422b-b74accc1ee53",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "4deae06c-72dd-666a-d1d9-037ed949278a",
@@ -3387,9 +2750,7 @@
       "father_id": "a3dd83fd-8e89-756e-5afa-934bd2e6404f",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "86794dc9-f1db-963f-aaaf-348ca5f51edf",
@@ -3398,9 +2759,7 @@
       "father_id": "4305fda3-b9c4-d160-e2a9-e298575ef6ec",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "868590a1-20b4-ab40-cc97-f60cbda96241",
@@ -3409,9 +2768,7 @@
       "father_id": "20ee452e-afa4-f9fc-4f83-8a9bc9500919",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "f15229a1-b152-54d4-73ab-0e1c9db64ac3",
@@ -3420,9 +2777,7 @@
       "father_id": "ed084f33-fb17-2310-5e45-92fa2acb0d08",
       "generation": 7,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "d79555ab-752c-13bf-f9fd-d76cfbd674a5",
@@ -3431,9 +2786,7 @@
       "father_id": "aa4ffbe1-2dd5-b23b-341c-c2de4f2aebec",
       "generation": 7,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "19aa8726-f6fd-aa81-5b82-81f8ae02651f",
@@ -3442,9 +2795,7 @@
       "father_id": "480bde7b-a659-9058-2e37-0996e09785bc",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "cb30838e-a844-9edd-f3be-a44cef5ae7b2",
@@ -3453,9 +2804,7 @@
       "father_id": "37478570-20b9-4b5e-cc80-b62dd6f35f84",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "01e5b5e9-2bd6-7c67-4648-9a5a3214c17a",
@@ -3464,9 +2813,7 @@
       "father_id": "07389ce2-f0a5-a2ad-ae2a-fb4edc20489b",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "a7a8e92d-58a1-0864-02b6-c8e89094c578",
@@ -3475,9 +2822,7 @@
       "father_id": "d147d1b1-80af-a220-ce2f-9b4cf45e36a8",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "0b3364e8-2ccf-2283-a268-883cdc91bf53",
@@ -3486,9 +2831,7 @@
       "father_id": "81b90778-2d0d-24c6-2448-e5e388e13a2d",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "3a3f429e-1ab0-8231-8017-6400397d428d",
@@ -3497,9 +2840,7 @@
       "father_id": "d79555ab-752c-13bf-f9fd-d76cfbd674a5",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "68015112-9f7f-0557-c304-685298fbd402",
@@ -3508,9 +2849,7 @@
       "father_id": "a24d801e-86cd-dcb8-ec16-53aca78cd2b3",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "6a11871d-fc7c-c7e4-681f-93a450024c17",
@@ -3519,9 +2858,7 @@
       "father_id": "479643a0-d3b0-2c7c-0658-6a3742a0904d",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "0aeff6c2-64de-f766-0cd6-dd6de50f78ae",
@@ -3530,9 +2867,7 @@
       "father_id": "20717b0e-2fdc-63b0-38f3-1830a710a0f9",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "2423d1d8-6053-9855-d540-7cbe244ce718",
@@ -3541,9 +2876,7 @@
       "father_id": "32317f2f-4e68-9c7c-25ce-e5c9da88dd65",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "72c13ed9-bd31-84a9-22ef-dd518930342b",
@@ -3552,9 +2885,7 @@
       "father_id": "480bde7b-a659-9058-2e37-0996e09785bc",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "ab765f96-b02a-e166-122d-9eb7c65e6927",
@@ -3563,9 +2894,7 @@
       "father_id": "40b0e57e-c8bc-93ca-1e05-069c6250aa43",
       "generation": 8,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "9baac14a-5102-22d8-7c83-0ebbc0a97663",
@@ -3574,9 +2903,7 @@
       "father_id": "0c3c7e73-6971-3b35-9521-2313d44e1660",
       "generation": 8,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "695b724f-3ec0-f5a2-33d1-46999f70177b",
@@ -3585,9 +2912,7 @@
       "father_id": "f1331f4a-95b2-b8c1-5d2b-c38d35529fd8",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "d7b8c648-7491-217c-a82a-0cc61f9007be",
@@ -3596,9 +2921,7 @@
       "father_id": "806cfb05-43b5-3e7f-f4ed-2b6a3c087d3a",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "81ea4079-0791-413e-d71e-997670a33625",
@@ -3607,9 +2930,7 @@
       "father_id": "3ebbd2cd-7870-62d6-777d-860ff9e89134",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "54b3039f-2c08-afd9-daa4-be6eab368bc8",
@@ -3618,9 +2939,7 @@
       "father_id": "47da8b17-2f5a-52e1-f92c-facc9773dbaf",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "bf2a1f58-e066-e46b-8163-89b5021b81cd",
@@ -3629,9 +2948,7 @@
       "father_id": "154d0d57-0929-d603-83c6-f4c6cf5d4321",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "c7987242-2268-90e8-3b28-27a09f7b8a50",
@@ -3640,9 +2957,7 @@
       "father_id": "6aa4dabc-6559-fac5-71b4-f17b0b144324",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "647dc734-5877-c788-1044-f999999b3638",
@@ -3651,9 +2966,7 @@
       "father_id": "cfd83753-2e72-c418-1c6a-fe17de4e0711",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "6633500e-24a9-3ea1-2f25-de8c9025bbc4",
@@ -3662,9 +2975,7 @@
       "father_id": "597b9428-3036-2096-b1d7-c61b148a5d43",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "0383c528-1cf8-c4dc-da9b-3d0f58189597",
@@ -3673,9 +2984,7 @@
       "father_id": "f9e78dbf-8d51-4706-a76f-06d807541aa3",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "8767c6aa-8b76-8281-43cb-af83737ccc0d",
@@ -3684,9 +2993,7 @@
       "father_id": "c965f748-f433-4578-5926-9d7fb31402d6",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "6e4ad1cd-204c-5c72-dd4b-5269f17353f6",
@@ -3695,9 +3002,7 @@
       "father_id": "821cf26f-d607-0e15-3b83-fd1ec5f6c6e2",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "150b22a2-31c8-b399-b83e-f96d65e97187",
@@ -3706,9 +3011,7 @@
       "father_id": "b40e29bb-9796-96e4-2fa5-a4a1d626413f",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "428d4c31-1ffa-ff03-c8a1-3af0b51721a7",
@@ -3717,9 +3020,7 @@
       "father_id": "a24d801e-86cd-dcb8-ec16-53aca78cd2b3",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "836eef24-7771-6c38-55bc-feb12a5bc981",
@@ -3728,9 +3029,7 @@
       "father_id": "c0f5be38-ba47-6ff0-d878-09912252f6e9",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "b366a62f-f57d-8c0d-0049-98e089ff66a8",
@@ -3739,9 +3038,7 @@
       "father_id": "dd8295e6-09e2-b111-88ca-f696ae58185a",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "1a00ee4a-c519-d3ae-da2a-8f2fcc6dc82b",
@@ -3750,9 +3047,7 @@
       "father_id": "440b1fc7-7cbf-8dcd-5bff-f9f74e4c90ed",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "6d009d70-0422-1e49-6ce0-8437907564ce",
@@ -3761,9 +3056,7 @@
       "father_id": "94a1729a-6e30-6e62-67bd-a2a791b1b64c",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "955037cf-a748-c765-948e-cedd71b0cec6",
@@ -3772,9 +3065,7 @@
       "father_id": "440b1fc7-7cbf-8dcd-5bff-f9f74e4c90ed",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "2ef94c1e-dc8a-6bbf-2702-3785c1b1fef2",
@@ -3783,9 +3074,7 @@
       "father_id": "ae18a2b0-f05a-ad12-f181-e324e0121a93",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "26794c21-7e07-d81f-4977-af77228087c0",
@@ -3794,9 +3083,7 @@
       "father_id": "07389ce2-f0a5-a2ad-ae2a-fb4edc20489b",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "6d6635a9-017f-b84a-b117-e38a6d9e5cf0",
@@ -3805,9 +3092,7 @@
       "father_id": "e80c931c-7f58-8793-48d4-f72f7b0e6e38",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "86bc9ae4-c05b-87bd-01ca-843bac6a6693",
@@ -3816,9 +3101,7 @@
       "father_id": "dd8295e6-09e2-b111-88ca-f696ae58185a",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "0ef7cafd-6987-cf85-0458-84901fb26cae",
@@ -3827,9 +3110,7 @@
       "father_id": "f9e78dbf-8d51-4706-a76f-06d807541aa3",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "81c9815b-8c27-6580-c813-77b080c9fa75",
@@ -3838,9 +3119,7 @@
       "father_id": "20717b0e-2fdc-63b0-38f3-1830a710a0f9",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "3165854b-44f6-4f93-2348-43806f653639",
@@ -3849,9 +3128,7 @@
       "father_id": "07ba548c-6438-0edb-1992-16f3bd2f8be8",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "cfe13ee1-2216-05a6-d59f-926b276e1e4e",
@@ -3860,9 +3137,7 @@
       "father_id": "94a1729a-6e30-6e62-67bd-a2a791b1b64c",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "c429876b-5dd5-27b6-0959-b69dc1f92791",
@@ -3871,9 +3146,7 @@
       "father_id": "cafdec23-6153-7b73-5581-a29d8c5c429c",
       "generation": 8,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "2930e929-348e-a02d-2048-af13b513caae",
@@ -3882,9 +3155,7 @@
       "father_id": "40b0e57e-c8bc-93ca-1e05-069c6250aa43",
       "generation": 8,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "b4bddff9-53ff-32d3-9a2e-f9b9d3d8cc55",
@@ -3893,9 +3164,7 @@
       "father_id": "783dfdaa-7174-d367-7249-796249318b0e",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "4b39a4f3-ce58-6b7e-8f96-cc24446488b7",
@@ -3904,9 +3173,7 @@
       "father_id": "40b0e57e-c8bc-93ca-1e05-069c6250aa43",
       "generation": 8,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "07877326-34c6-8c81-8685-5ab847760ec7",
@@ -3915,9 +3182,7 @@
       "father_id": "783dfdaa-7174-d367-7249-796249318b0e",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "16a5723c-2879-b50c-9e42-af4612aa6700",
@@ -3926,9 +3191,7 @@
       "father_id": "2c5612c9-13c8-8a41-08ac-9c4b395f4910",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "c8e8896a-dfc9-7f58-f48e-3739a57180f4",
@@ -3937,9 +3200,7 @@
       "father_id": "597b9428-3036-2096-b1d7-c61b148a5d43",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ],
+      "charts": [12],
       "uncertain": true
     },
     {
@@ -3949,9 +3210,7 @@
       "father_id": "d79555ab-752c-13bf-f9fd-d76cfbd674a5",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "71de9b6e-c309-7e8c-c622-c8ff86a8f9ba",
@@ -3960,9 +3219,7 @@
       "father_id": "07ba548c-6438-0edb-1992-16f3bd2f8be8",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "344029f2-0cc7-147a-b03f-6c07de186339",
@@ -3971,9 +3228,7 @@
       "father_id": "b40e29bb-9796-96e4-2fa5-a4a1d626413f",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "78ab7521-0fae-b331-5c66-79678a410407",
@@ -3982,9 +3237,7 @@
       "father_id": "af7b07a7-4b1b-f371-2e5b-e8b3fda40a6c",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "0da85e0e-1a4e-0490-325b-a6d162e62f5d",
@@ -3993,9 +3246,7 @@
       "father_id": "b0f5afa9-46e4-7eb3-f01e-d5b87b77d307",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "64f1ab64-0531-21a8-c35c-85c637823f48",
@@ -4004,9 +3255,7 @@
       "father_id": "58c5e0fe-847a-7d51-f941-9af3ba3a4e13",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "80f4b902-ceae-e5c3-9b2a-30d4df7e557f",
@@ -4015,9 +3264,7 @@
       "father_id": "c11a1009-3c2a-8c3a-8c9e-8c379ad385ed",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "009b0219-620a-7a6b-c0cc-50530db146f4",
@@ -4026,9 +3273,7 @@
       "father_id": "81b90778-2d0d-24c6-2448-e5e388e13a2d",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "b31f1b5a-0748-5394-2f34-ff63ea707218",
@@ -4037,9 +3282,7 @@
       "father_id": "dc3cfad0-f9b0-b50c-3330-8acddc07ee1a",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "be4ae056-bba1-1bd7-1fa7-c66b4752f779",
@@ -4048,9 +3291,7 @@
       "father_id": "593b1f80-b583-9e51-fe54-83a8cf7891d9",
       "generation": 8,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "2e9f77f9-bcfc-cf4e-9a9a-998069e0597f",
@@ -4059,9 +3300,7 @@
       "father_id": "3c7206e8-440a-c54b-c496-39c9e511920b",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "41036258-53af-089c-6eb8-ab5d45afe03f",
@@ -4070,9 +3309,7 @@
       "father_id": "e43cf1ac-d53c-be60-1d2e-28b6e6e64ade",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "bcf56f0b-9cb4-43c6-8d7f-26ce87807389",
@@ -4081,9 +3318,7 @@
       "father_id": "6aa4dabc-6559-fac5-71b4-f17b0b144324",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "4499be40-ae15-fc07-120b-95d48348c81a",
@@ -4092,9 +3327,7 @@
       "father_id": "7823138e-5141-46f2-17f1-684eadbac75b",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "dede55fe-44e4-a73c-b3ed-6a82469e4e30",
@@ -4103,9 +3336,7 @@
       "father_id": "58c5e0fe-847a-7d51-f941-9af3ba3a4e13",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "e3dabb8e-480f-153f-c9a3-f46d079df6c2",
@@ -4114,9 +3345,7 @@
       "father_id": "c11a1009-3c2a-8c3a-8c9e-8c379ad385ed",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "87d1eece-7830-78a2-00c5-8967ed417ec7",
@@ -4125,9 +3354,7 @@
       "father_id": "dd8295e6-09e2-b111-88ca-f696ae58185a",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "4ab14108-f542-dce0-a4d4-6d17b3367816",
@@ -4136,9 +3363,7 @@
       "father_id": "a24d801e-86cd-dcb8-ec16-53aca78cd2b3",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "6819908e-8fb8-2cb8-77ce-f5411ae40dda",
@@ -4147,9 +3372,7 @@
       "father_id": "07ba548c-6438-0edb-1992-16f3bd2f8be8",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "82d8d935-6a07-4ebe-ef8a-b5d184ec6f36",
@@ -4158,9 +3381,7 @@
       "father_id": "a2f4dfb5-9490-2719-80d0-2e0b7f853bb8",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "3210628c-ff28-efa0-d1ab-608a67b0abd4",
@@ -4169,9 +3390,7 @@
       "father_id": "dd8295e6-09e2-b111-88ca-f696ae58185a",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "296e43d1-9019-b1ea-f667-69fe63382d12",
@@ -4180,9 +3399,7 @@
       "father_id": "81b90778-2d0d-24c6-2448-e5e388e13a2d",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "1d37fa1c-6255-fa91-9062-8a132da9aeea",
@@ -4191,9 +3408,7 @@
       "father_id": "d79555ab-752c-13bf-f9fd-d76cfbd674a5",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "491f43be-e9c7-5c99-58d5-615541d0b15d",
@@ -4202,9 +3417,7 @@
       "father_id": "e65f9e84-f122-9e60-ab97-5f1537d829a9",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "09654287-1c47-80d9-c9de-effb9984a0d5",
@@ -4213,9 +3426,7 @@
       "father_id": "cfd83753-2e72-c418-1c6a-fe17de4e0711",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "ec88a868-d60e-21cf-0682-f3045eda045e",
@@ -4224,9 +3435,7 @@
       "father_id": "783dfdaa-7174-d367-7249-796249318b0e",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "1749d245-8d05-1c29-47c9-188ad5d21a2a",
@@ -4235,9 +3444,7 @@
       "father_id": "aef60353-86a1-c949-7202-de31c8e7b596",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "cb710741-f118-0065-a0db-8fb748c5ae03",
@@ -4246,9 +3453,7 @@
       "father_id": "e80c931c-7f58-8793-48d4-f72f7b0e6e38",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "f1eb2f86-ecc1-1535-4802-c1f408cf947f",
@@ -4257,9 +3462,7 @@
       "father_id": "47da8b17-2f5a-52e1-f92c-facc9773dbaf",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "4faf1147-8e56-268a-9fcd-282cf8acf8e7",
@@ -4268,9 +3471,7 @@
       "father_id": "81b90778-2d0d-24c6-2448-e5e388e13a2d",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "509689a2-0733-93f6-5660-220893025590",
@@ -4279,9 +3480,7 @@
       "father_id": "2cb91181-163d-bdeb-4de2-0104331287db",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "004cdb61-8dff-b917-2fb4-6eee7c9412e6",
@@ -4290,9 +3489,7 @@
       "father_id": "cfd83753-2e72-c418-1c6a-fe17de4e0711",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "c70b66a6-82ed-6c1c-1b78-3ee416039df3",
@@ -4301,9 +3498,7 @@
       "father_id": "479643a0-d3b0-2c7c-0658-6a3742a0904d",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "20acff08-b7da-9ee2-3638-880dbd2e5c6d",
@@ -4312,9 +3507,7 @@
       "father_id": "32317f2f-4e68-9c7c-25ce-e5c9da88dd65",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "2d29ecb9-95f2-a3f3-2f36-ebe765eeeb71",
@@ -4323,9 +3516,7 @@
       "father_id": "ae18a2b0-f05a-ad12-f181-e324e0121a93",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "dd963ef7-a12b-66e5-9162-05d53db6797d",
@@ -4334,9 +3525,7 @@
       "father_id": "f2c55984-a764-885e-a30e-8c619de8f15b",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "cae78792-30a3-af5f-1880-4b902a4023ef",
@@ -4345,9 +3534,7 @@
       "father_id": "f1331f4a-95b2-b8c1-5d2b-c38d35529fd8",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "2a5ad9f3-c6b8-bbf9-0f4c-1540c4831072",
@@ -4356,9 +3543,7 @@
       "father_id": "5e3a0d98-aee0-5f04-9260-3cb54ef2eeb6",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "7a3aa444-b1f3-903d-ec2f-0b1ebad20a54",
@@ -4367,9 +3552,7 @@
       "father_id": "e43cf1ac-d53c-be60-1d2e-28b6e6e64ade",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "c5bbf410-8c2a-fbcb-b6bb-7982ec4cd27e",
@@ -4378,9 +3561,7 @@
       "father_id": "2cb91181-163d-bdeb-4de2-0104331287db",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "f0642c2c-fd23-d6d6-a62b-fcefcacfbcae",
@@ -4389,9 +3570,7 @@
       "father_id": "586a6fe4-9892-3c31-cdac-7fe947ad59a6",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "3cfcfc80-3f5b-b9f9-fdc0-46e33783a6b8",
@@ -4400,9 +3579,7 @@
       "father_id": "e80c931c-7f58-8793-48d4-f72f7b0e6e38",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "ea610a15-42e5-a5ad-7070-9aa368f9a9db",
@@ -4411,9 +3588,7 @@
       "father_id": "47da8b17-2f5a-52e1-f92c-facc9773dbaf",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "ce614781-06f7-b369-d9f7-194da7a3c4d8",
@@ -4422,9 +3597,7 @@
       "father_id": "07389ce2-f0a5-a2ad-ae2a-fb4edc20489b",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "a0298d09-c91d-f306-d327-fba85c092ff0",
@@ -4433,9 +3606,7 @@
       "father_id": "9cd6ae51-376e-6dd7-7cd2-50f49d87fd11",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "e0e629ba-50a4-d84f-49c3-d2a0bdc64724",
@@ -4444,9 +3615,7 @@
       "father_id": "d147d1b1-80af-a220-ce2f-9b4cf45e36a8",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "62672623-8673-3fb9-01dc-a942f501c509",
@@ -4455,9 +3624,7 @@
       "father_id": "2c875ffd-eab4-8d40-88d2-d534e1f226b2",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "d549cac1-b2ff-cd6b-67a3-46d20dc64462",
@@ -4466,9 +3633,7 @@
       "father_id": "db6ae16e-404a-5eb2-8cdf-29dba0e1bc56",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "dad9f3a1-a930-aea7-6818-00c05e102939",
@@ -4477,9 +3642,7 @@
       "father_id": "a1f32b4e-d5c7-a833-daa1-4c4450614fcf",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "c9bd09f7-0302-1152-1129-1aa3d5f3d04e",
@@ -4488,9 +3651,7 @@
       "father_id": "36095603-f255-dc5b-d546-1976dfdcc100",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "667ea3d0-ff24-c159-ae05-6909f59196ca",
@@ -4499,9 +3660,7 @@
       "father_id": "46a4443f-6c95-dd60-6caf-8fe23eb06cbf",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "56557caa-cf14-29a2-eaa3-8e479638bd5d",
@@ -4510,9 +3669,7 @@
       "father_id": "2f90c948-2495-91db-52fe-3d00305a3e6d",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "28051073-5d90-f672-0166-68019d44b2c1",
@@ -4521,9 +3678,7 @@
       "father_id": "6c259f2a-e604-59d7-de64-8b25fcfea12a",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "35d58511-0a72-b313-3370-fabf3c3fc248",
@@ -4532,9 +3687,7 @@
       "father_id": "32317f2f-4e68-9c7c-25ce-e5c9da88dd65",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "d3d682ac-bfec-787a-6813-bad1f957bb5c",
@@ -4543,9 +3696,7 @@
       "father_id": "3c7206e8-440a-c54b-c496-39c9e511920b",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "add24a6c-47cd-6078-5004-942740aa8906",
@@ -4554,9 +3705,7 @@
       "father_id": "480bde7b-a659-9058-2e37-0996e09785bc",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "5f55ea2d-9066-f96a-70ec-c04763cc5c33",
@@ -4565,9 +3714,7 @@
       "father_id": "c0f5be38-ba47-6ff0-d878-09912252f6e9",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "e01f4e95-1f7c-3731-b19b-217d94af2962",
@@ -4576,9 +3723,7 @@
       "father_id": "94a1729a-6e30-6e62-67bd-a2a791b1b64c",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ],
+      "charts": [4],
       "uncertain": true
     },
     {
@@ -4588,9 +3733,7 @@
       "father_id": "e43cf1ac-d53c-be60-1d2e-28b6e6e64ade",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "f43a2d88-b418-3cdc-4483-3c690c657b4c",
@@ -4599,9 +3742,7 @@
       "father_id": "2cb91181-163d-bdeb-4de2-0104331287db",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "c40a404a-4d64-36bb-8698-55c46ba6f02f",
@@ -4610,9 +3751,7 @@
       "father_id": "47da8b17-2f5a-52e1-f92c-facc9773dbaf",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "c3611546-1303-c6b9-074a-9d75aafa8675",
@@ -4621,9 +3760,7 @@
       "father_id": "9cd6ae51-376e-6dd7-7cd2-50f49d87fd11",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "ce05176e-ff20-2aed-2531-6452394cbce5",
@@ -4632,9 +3769,7 @@
       "father_id": "d147d1b1-80af-a220-ce2f-9b4cf45e36a8",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "c89d379b-e6b2-63b3-4224-9cbfcf4c4816",
@@ -4643,9 +3778,7 @@
       "father_id": "92a7d70b-d1bc-7473-45ef-0db9a3653522",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "88c726c2-44cc-0d41-39e7-76b762d50327",
@@ -4654,9 +3787,7 @@
       "father_id": "eb2b11c2-a062-aa9f-6f37-3ff454a4a1f8",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "d84ce386-2f5d-f0de-016f-6bcaf44763bd",
@@ -4665,9 +3796,7 @@
       "father_id": "6aa4dabc-6559-fac5-71b4-f17b0b144324",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "bb6a9f90-6fc5-466e-4b4c-aefa2b8bac97",
@@ -4676,9 +3805,7 @@
       "father_id": "e4578b84-9459-4ee7-1533-03776acf86a1",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "0f33b109-fcd0-0d0c-8786-c3001bb21aea",
@@ -4687,9 +3814,7 @@
       "father_id": "440b1fc7-7cbf-8dcd-5bff-f9f74e4c90ed",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "da80c427-a522-20d7-3005-5499c082d44e",
@@ -4698,9 +3823,7 @@
       "father_id": "e65f9e84-f122-9e60-ab97-5f1537d829a9",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "0610eec0-8600-a3e2-11ca-3ac00fa7bf1e",
@@ -4709,9 +3832,7 @@
       "father_id": "593b1f80-b583-9e51-fe54-83a8cf7891d9",
       "generation": 8,
       "branch_slug": "al-yousef",
-      "charts": [
-        1
-      ]
+      "charts": [1]
     },
     {
       "id": "42c282fc-c581-9136-379d-cd9e0987300b",
@@ -4720,9 +3841,7 @@
       "father_id": "479643a0-d3b0-2c7c-0658-6a3742a0904d",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "86600a57-71cc-8de0-85e9-d0c25526096b",
@@ -4731,9 +3850,7 @@
       "father_id": "6c259f2a-e604-59d7-de64-8b25fcfea12a",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "3d70cc87-8b1a-9982-3c40-c8a3fa876e7e",
@@ -4742,9 +3859,7 @@
       "father_id": "32317f2f-4e68-9c7c-25ce-e5c9da88dd65",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "31b4d3fb-7120-f4bb-7bd2-5a4ee3955e2d",
@@ -4753,9 +3868,7 @@
       "father_id": "480bde7b-a659-9058-2e37-0996e09785bc",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "5ba344e7-8c8b-d98f-8d13-5bd157f1e023",
@@ -4764,9 +3877,7 @@
       "father_id": "f2c55984-a764-885e-a30e-8c619de8f15b",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "ce215dd8-dd46-4c99-46a2-572f5ec87d6b",
@@ -4775,9 +3886,7 @@
       "father_id": "94a1729a-6e30-6e62-67bd-a2a791b1b64c",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "fc90fe9f-2cb0-d416-6374-364e123916bf",
@@ -4786,9 +3895,7 @@
       "father_id": "c7daaed2-7049-cc98-9296-a75eeb27afa6",
       "generation": 8,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "85b90d25-6600-2251-6446-acca598ee81b",
@@ -4797,9 +3904,7 @@
       "father_id": "0c3c7e73-6971-3b35-9521-2313d44e1660",
       "generation": 8,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "bbd76699-4c13-49f5-39cd-84d9fd485435",
@@ -4808,9 +3913,7 @@
       "father_id": "af7b07a7-4b1b-f371-2e5b-e8b3fda40a6c",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "be7e71df-28e1-6bbb-5195-0c8d4ce7dc75",
@@ -4819,9 +3922,7 @@
       "father_id": "cab59029-85e9-6cab-7118-27dcec96341f",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "f3d11afa-2a28-e707-0c8c-a6ba473a4f51",
@@ -4830,9 +3931,7 @@
       "father_id": "b0f5afa9-46e4-7eb3-f01e-d5b87b77d307",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "26ef6870-fc47-e0d4-91f3-ae7d652132a5",
@@ -4841,9 +3940,7 @@
       "father_id": "18f4173d-07a1-32d1-66ca-77158e324bb5",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "b48f1ab7-e46b-8f60-192a-bf584719f39c",
@@ -4852,9 +3949,7 @@
       "father_id": "58c5e0fe-847a-7d51-f941-9af3ba3a4e13",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "6d277708-7f6e-27b3-ab1b-dd3ce449a63b",
@@ -4863,9 +3958,7 @@
       "father_id": "27223c59-9a4e-29c0-1d3d-c3f64cda1004",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "f13c7546-631b-b3cb-042e-9d7df1e79236",
@@ -4874,9 +3967,7 @@
       "father_id": "07389ce2-f0a5-a2ad-ae2a-fb4edc20489b",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "8a2c280f-1a12-17bc-789c-f5a13b128a6b",
@@ -4885,9 +3976,7 @@
       "father_id": "2c875ffd-eab4-8d40-88d2-d534e1f226b2",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "c8d9e71e-763b-c6fe-e939-8395c73054e2",
@@ -4896,9 +3985,7 @@
       "father_id": "81b90778-2d0d-24c6-2448-e5e388e13a2d",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "126a2f41-1285-4b5e-cc3d-866e27b33167",
@@ -4907,9 +3994,7 @@
       "father_id": "154d0d57-0929-d603-83c6-f4c6cf5d4321",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "a3c02e48-26b6-da0a-a7ec-9741171fe207",
@@ -4918,9 +4003,7 @@
       "father_id": "2cb91181-163d-bdeb-4de2-0104331287db",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "ff0b05a8-8da2-514b-5495-bd2618b0641d",
@@ -4929,9 +4012,7 @@
       "father_id": "cfd83753-2e72-c418-1c6a-fe17de4e0711",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "59307096-ec82-c2dc-71e2-75467f14bbc5",
@@ -4940,9 +4021,7 @@
       "father_id": "fe8701fa-718f-b14b-63d9-f3c03b8955f8",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "cfe25268-1bd8-e340-db00-8a8b3a92030a",
@@ -4951,9 +4030,7 @@
       "father_id": "2cb91181-163d-bdeb-4de2-0104331287db",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "0c354b2a-68be-f05f-ce76-c4c8e020bab8",
@@ -4962,9 +4039,7 @@
       "father_id": "07389ce2-f0a5-a2ad-ae2a-fb4edc20489b",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "4e619d64-db6e-bd6e-17d6-b0bb085b4997",
@@ -4973,9 +4048,7 @@
       "father_id": "617c7c54-db68-13e9-56b0-348543ed774b",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "7f4dd9d3-4d43-8027-81ec-7f1dc42fddef",
@@ -4984,9 +4057,7 @@
       "father_id": "88ce69d9-2775-f455-744e-f34f58acd780",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "e70a9074-dd25-f134-7500-3e93de77f1f4",
@@ -4995,9 +4066,7 @@
       "father_id": "c0f5be38-ba47-6ff0-d878-09912252f6e9",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "c82dd394-b142-c72e-1d7f-ff7f54ccc1c6",
@@ -5006,9 +4075,7 @@
       "father_id": "e321bc98-9501-8b41-132f-61969fa51d09",
       "generation": 8,
       "branch_slug": "al-saad",
-      "charts": [
-        6
-      ]
+      "charts": [6]
     },
     {
       "id": "78a8a3e6-aa64-1c22-358f-feab8dac7b7b",
@@ -5017,9 +4084,7 @@
       "father_id": "783dfdaa-7174-d367-7249-796249318b0e",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "88a92814-9764-3f48-4d81-11ce49818f1d",
@@ -5028,9 +4093,7 @@
       "father_id": "821cf26f-d607-0e15-3b83-fd1ec5f6c6e2",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "e6b82436-d89a-ea28-60db-9b5b25632df9",
@@ -5039,9 +4102,7 @@
       "father_id": "92a7d70b-d1bc-7473-45ef-0db9a3653522",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "db1275d4-7d38-c7fc-141a-47fb83080ac4",
@@ -5050,9 +4111,7 @@
       "father_id": "f927050c-f176-a075-db5a-ff929ae14f83",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ],
+      "charts": [2],
       "uncertain": true
     },
     {
@@ -5062,9 +4121,7 @@
       "father_id": "74440cde-88dd-07df-f501-12c4ec9e6688",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "f0f20554-41c9-e120-a493-5416942f29c4",
@@ -5073,9 +4130,7 @@
       "father_id": "47da8b17-2f5a-52e1-f92c-facc9773dbaf",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "437b944c-af03-f5d5-e8c3-8984b0912390",
@@ -5084,9 +4139,7 @@
       "father_id": "d79555ab-752c-13bf-f9fd-d76cfbd674a5",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "28d3ade9-d567-96b2-d6ff-3a6e1a2241a2",
@@ -5095,9 +4148,7 @@
       "father_id": "dc3cfad0-f9b0-b50c-3330-8acddc07ee1a",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "d1c2aeb6-cbc5-3f05-c620-0a68a7290537",
@@ -5106,9 +4157,7 @@
       "father_id": "88ce69d9-2775-f455-744e-f34f58acd780",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "63c7f6a5-08f3-d26f-9228-4c8d43688c0a",
@@ -5117,9 +4166,7 @@
       "father_id": "2c5612c9-13c8-8a41-08ac-9c4b395f4910",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "f75eba13-c0e2-5b1f-ba12-79302c4adb96",
@@ -5128,9 +4175,7 @@
       "father_id": "2f90c948-2495-91db-52fe-3d00305a3e6d",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "b0969dba-2ab9-cbab-160a-40cd0c88302d",
@@ -5139,9 +4184,7 @@
       "father_id": "3c7206e8-440a-c54b-c496-39c9e511920b",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "c782cb57-2451-3f9e-c391-30e7f504e73d",
@@ -5150,9 +4193,7 @@
       "father_id": "07ba548c-6438-0edb-1992-16f3bd2f8be8",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "baa18551-c7a8-065c-c9b3-94b9c9561823",
@@ -5161,9 +4202,7 @@
       "father_id": "c0f5be38-ba47-6ff0-d878-09912252f6e9",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "9ff324a0-2b49-3b5b-9d3e-f49db096909b",
@@ -5172,9 +4211,7 @@
       "father_id": "a86b4d67-1da9-302a-161d-0f07109bac54",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "9fe5e3c9-5f7a-ff05-b1b6-1b72e14ef361",
@@ -5183,9 +4220,7 @@
       "father_id": "ae18a2b0-f05a-ad12-f181-e324e0121a93",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "dc39d7ef-8852-a737-d422-424fa13d5bd6",
@@ -5194,9 +4229,7 @@
       "father_id": "a2f4dfb5-9490-2719-80d0-2e0b7f853bb8",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "086ce40e-5fe5-7ab6-7a39-bbd9f6575df5",
@@ -5205,9 +4238,7 @@
       "father_id": "7a471b6e-3d51-354b-df5c-ac3ca197afdc",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "67f33aa1-cd9f-9fd3-ad21-78735b799cb8",
@@ -5216,9 +4247,7 @@
       "father_id": "f2c55984-a764-885e-a30e-8c619de8f15b",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "7c5be288-3bed-f751-2f8d-8e72dbd4a66d",
@@ -5227,9 +4256,7 @@
       "father_id": "617c7c54-db68-13e9-56b0-348543ed774b",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "851876b7-f5c4-f59f-bcc3-64ca54476b78",
@@ -5238,9 +4265,7 @@
       "father_id": "8315df15-e4c8-01b6-d266-ced384f2c3d0",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "3e50e75e-02a1-8987-49bc-a6fb661ab480",
@@ -5249,9 +4274,7 @@
       "father_id": "af7b07a7-4b1b-f371-2e5b-e8b3fda40a6c",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "70345fec-7ca0-5d9c-a5bc-3a86b36cdf55",
@@ -5260,9 +4283,7 @@
       "father_id": "cab59029-85e9-6cab-7118-27dcec96341f",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "2678822c-18c2-cb97-74f5-b9479c8a6a40",
@@ -5271,9 +4292,7 @@
       "father_id": "47da8b17-2f5a-52e1-f92c-facc9773dbaf",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "ddedf47b-a8e3-d4cf-e3ff-6d7b19f5948d",
@@ -5282,9 +4301,7 @@
       "father_id": "07389ce2-f0a5-a2ad-ae2a-fb4edc20489b",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "2ad9628b-1f22-4293-f313-4f3a2adccc59",
@@ -5293,9 +4310,7 @@
       "father_id": "440b1fc7-7cbf-8dcd-5bff-f9f74e4c90ed",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "156b0b4d-4106-2fea-f2d4-d9fdd347d541",
@@ -5304,9 +4319,7 @@
       "father_id": "d147d1b1-80af-a220-ce2f-9b4cf45e36a8",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "06c89b1b-67a9-a5fc-90b6-50111117ad81",
@@ -5315,9 +4328,7 @@
       "father_id": "81b90778-2d0d-24c6-2448-e5e388e13a2d",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "dbbdfa1b-a939-8890-d676-48cd83442aba",
@@ -5326,9 +4337,7 @@
       "father_id": "cfd83753-2e72-c418-1c6a-fe17de4e0711",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "267ac9a5-bd97-a385-31cf-9e16ebc1f256",
@@ -5337,9 +4346,7 @@
       "father_id": "154d0d57-0929-d603-83c6-f4c6cf5d4321",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "85962e53-dd19-99bc-81bf-8f4794a0add1",
@@ -5348,9 +4355,7 @@
       "father_id": "46a4443f-6c95-dd60-6caf-8fe23eb06cbf",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "e2bd7518-8afd-467a-fdb2-0b8b94f6650f",
@@ -5359,9 +4364,7 @@
       "father_id": "586a6fe4-9892-3c31-cdac-7fe947ad59a6",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "c5d716d4-312b-77d6-0ba4-4f9260fa7991",
@@ -5370,9 +4373,7 @@
       "father_id": "3c7206e8-440a-c54b-c496-39c9e511920b",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "d23c6ee2-7dae-418b-08dd-c8d99bccdb4f",
@@ -5381,9 +4382,7 @@
       "father_id": "8315df15-e4c8-01b6-d266-ced384f2c3d0",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "cdbda238-b081-5a20-ad3d-30e7451551ad",
@@ -5392,9 +4391,7 @@
       "father_id": "e80c931c-7f58-8793-48d4-f72f7b0e6e38",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "fbf7db67-4803-7528-8b4e-68fdb41a1306",
@@ -5403,9 +4400,7 @@
       "father_id": "d79555ab-752c-13bf-f9fd-d76cfbd674a5",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "997cc3a8-e081-3219-3627-0163c218a8b3",
@@ -5414,9 +4409,7 @@
       "father_id": "c0f5be38-ba47-6ff0-d878-09912252f6e9",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "c93b9ce7-0640-76fd-e9c8-5c7ecb918d67",
@@ -5425,9 +4418,7 @@
       "father_id": "47da8b17-2f5a-52e1-f92c-facc9773dbaf",
       "generation": 8,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "5847201d-9ee4-0dc8-27d7-221aa756ee9b",
@@ -5436,9 +4427,7 @@
       "father_id": "81b90778-2d0d-24c6-2448-e5e388e13a2d",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "0b2c3433-7c57-7350-dd5f-fb59b4bdbbad",
@@ -5447,9 +4436,7 @@
       "father_id": "cfd83753-2e72-c418-1c6a-fe17de4e0711",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "bd158da0-1ee6-6a95-f591-a8e5fd5af473",
@@ -5458,9 +4445,7 @@
       "father_id": "fe8701fa-718f-b14b-63d9-f3c03b8955f8",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "73193391-8ed8-b249-054f-effed4d16add",
@@ -5469,9 +4454,7 @@
       "father_id": "0efb82f0-f443-74c3-20b5-944ff654dba4",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "8d98689b-82db-85f7-4481-bafef003185d",
@@ -5480,9 +4463,7 @@
       "father_id": "e43cf1ac-d53c-be60-1d2e-28b6e6e64ade",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "13d33800-2a9e-6000-c727-e49bf64a9290",
@@ -5491,9 +4472,7 @@
       "father_id": "dd71dff9-ae00-c534-2372-e6b04b2de179",
       "generation": 8,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "0cf855c9-30af-bb53-8fb0-5ae00d2941c0",
@@ -5502,9 +4481,7 @@
       "father_id": "ace2599d-4c36-d6ec-ea9e-ae8fb911f4a1",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "f76cdff7-39be-aafb-fa21-c07afac5171e",
@@ -5513,9 +4490,7 @@
       "father_id": "566975d0-c5da-6be7-64e4-fdba04a72897",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "c9903c92-e366-7230-9460-939412b4c83d",
@@ -5524,9 +4499,7 @@
       "father_id": "fe8701fa-718f-b14b-63d9-f3c03b8955f8",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "2d556afb-5fd8-60da-1cbd-d27bbfaba69d",
@@ -5535,9 +4508,7 @@
       "father_id": "cab59029-85e9-6cab-7118-27dcec96341f",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "19282117-ea08-4ac2-049c-740ea7623c26",
@@ -5546,9 +4517,7 @@
       "father_id": "2c5612c9-13c8-8a41-08ac-9c4b395f4910",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "a2b4de83-58d0-102f-44b0-aabf814ba63f",
@@ -5557,9 +4526,7 @@
       "father_id": "36095603-f255-dc5b-d546-1976dfdcc100",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "980fe1cb-e202-e1ec-059a-d40cd6fbad6e",
@@ -5568,9 +4535,7 @@
       "father_id": "f9e78dbf-8d51-4706-a76f-06d807541aa3",
       "generation": 8,
       "branch_slug": "al-abdulaziz",
-      "charts": [
-        2
-      ]
+      "charts": [2]
     },
     {
       "id": "5e5f22da-9bf7-cf07-af26-8acbe64130ad",
@@ -5579,9 +4544,7 @@
       "father_id": "94a1729a-6e30-6e62-67bd-a2a791b1b64c",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "314261b0-d937-1bbc-1890-20df0b22b2b2",
@@ -5590,9 +4553,7 @@
       "father_id": "18f4173d-07a1-32d1-66ca-77158e324bb5",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "f8e272b4-4866-6ef9-9f23-1137e39072ab",
@@ -5601,9 +4562,7 @@
       "father_id": "32317f2f-4e68-9c7c-25ce-e5c9da88dd65",
       "generation": 8,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "559847ba-1a9d-61fd-b435-948498eb197e",
@@ -5612,9 +4571,7 @@
       "father_id": "f2c55984-a764-885e-a30e-8c619de8f15b",
       "generation": 8,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "26fea3c0-08c8-3b94-4684-0ce16887bb94",
@@ -5623,9 +4580,7 @@
       "father_id": "27223c59-9a4e-29c0-1d3d-c3f64cda1004",
       "generation": 8,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "053f7a30-815b-3882-3657-7b390eab7567",
@@ -5634,9 +4589,7 @@
       "father_id": "6aa4dabc-6559-fac5-71b4-f17b0b144324",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "2b0d3041-c096-86ae-4690-86fe11b25630",
@@ -5645,9 +4598,7 @@
       "father_id": "46a4443f-6c95-dd60-6caf-8fe23eb06cbf",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "e7f0f58b-a538-98d1-d80c-194c5767dcc6",
@@ -5656,9 +4607,7 @@
       "father_id": "dc3cfad0-f9b0-b50c-3330-8acddc07ee1a",
       "generation": 8,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "522fbf50-a230-01cb-382f-48e0f3bf048e",
@@ -5667,9 +4616,7 @@
       "father_id": "9baac14a-5102-22d8-7c83-0ebbc0a97663",
       "generation": 9,
       "branch_slug": "al-abdullatif",
-      "charts": [
-        7
-      ]
+      "charts": [7]
     },
     {
       "id": "091e7422-e5cf-066d-6d24-272cefc27090",
@@ -5678,9 +4625,7 @@
       "father_id": "67f33aa1-cd9f-9fd3-ad21-78735b799cb8",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "99d7bbd9-f55e-64a5-40bc-a16c88037443",
@@ -5689,9 +4634,7 @@
       "father_id": "31b4d3fb-7120-f4bb-7bd2-5a4ee3955e2d",
       "generation": 9,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "56505197-598d-2a43-5982-8be770b7a56e",
@@ -5700,9 +4643,7 @@
       "father_id": "4faf1147-8e56-268a-9fcd-282cf8acf8e7",
       "generation": 9,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "d3309af5-b2f3-8a27-a9e4-04b476981105",
@@ -5711,9 +4652,7 @@
       "father_id": "cfe13ee1-2216-05a6-d59f-926b276e1e4e",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "07fade88-0dcd-af0f-01cf-2cf8c85d312b",
@@ -5722,9 +4661,7 @@
       "father_id": "cdbda238-b081-5a20-ad3d-30e7451551ad",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "bc5bc786-69c7-4fe7-9642-9fa7d54d2a50",
@@ -5733,9 +4670,7 @@
       "father_id": "baa18551-c7a8-065c-c9b3-94b9c9561823",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "64a652a5-76c7-8614-7cb0-ffd7e767dec8",
@@ -5744,9 +4679,7 @@
       "father_id": "e70a9074-dd25-f134-7500-3e93de77f1f4",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "2e03e78d-ac33-c583-2913-1ab99672f6b4",
@@ -5755,9 +4688,7 @@
       "father_id": "d84ce386-2f5d-f0de-016f-6bcaf44763bd",
       "generation": 9,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "1bd58612-fef4-8737-a1b0-9c3755795140",
@@ -5766,9 +4697,7 @@
       "father_id": "31b4d3fb-7120-f4bb-7bd2-5a4ee3955e2d",
       "generation": 9,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "7f4116b8-5105-bc00-44d9-d42eeb52191b",
@@ -5777,9 +4706,7 @@
       "father_id": "e70a9074-dd25-f134-7500-3e93de77f1f4",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "aedc9403-8f95-6cdf-633d-a3969ce6f42c",
@@ -5788,9 +4715,7 @@
       "father_id": "31b4d3fb-7120-f4bb-7bd2-5a4ee3955e2d",
       "generation": 9,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "ec5ea692-043f-0bbf-3add-b6c3817f76a8",
@@ -5799,9 +4724,7 @@
       "father_id": "c40a404a-4d64-36bb-8698-55c46ba6f02f",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "61edf9ca-77a1-88a2-7c68-739de55539ea",
@@ -5810,9 +4733,7 @@
       "father_id": "d3d682ac-bfec-787a-6813-bad1f957bb5c",
       "generation": 9,
       "branch_slug": "al-abdullah-salih",
-      "charts": [
-        3
-      ]
+      "charts": [3]
     },
     {
       "id": "ca33ca9f-d814-3b8d-4f2f-e1498eef94e1",
@@ -5821,9 +4742,7 @@
       "father_id": "c93b9ce7-0640-76fd-e9c8-5c7ecb918d67",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "8940aa8a-ecda-7da0-1462-06ac80723731",
@@ -5832,9 +4751,7 @@
       "father_id": "d1c2aeb6-cbc5-3f05-c620-0a68a7290537",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "43136c39-cc38-c551-48eb-9ec44d5f8651",
@@ -5843,9 +4760,7 @@
       "father_id": "3cfcfc80-3f5b-b9f9-fdc0-46e33783a6b8",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "bba65e8c-4954-5dd2-3650-817c97c2455f",
@@ -5854,9 +4769,7 @@
       "father_id": "f1eb2f86-ecc1-1535-4802-c1f408cf947f",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "4fed4fc0-3c42-ed17-f411-76656f4c2fc7",
@@ -5865,9 +4778,7 @@
       "father_id": "296e43d1-9019-b1ea-f667-69fe63382d12",
       "generation": 9,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "96500569-a601-fdac-c4d9-96bc4b870fd3",
@@ -5876,9 +4787,7 @@
       "father_id": "0b3364e8-2ccf-2283-a268-883cdc91bf53",
       "generation": 9,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "2eecd689-413e-dd90-823b-e2422497933f",
@@ -5887,9 +4796,7 @@
       "father_id": "009b0219-620a-7a6b-c0cc-50530db146f4",
       "generation": 9,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "d63f0a5b-33a1-8bbe-b66a-931a88b36c55",
@@ -5898,9 +4805,7 @@
       "father_id": "baa18551-c7a8-065c-c9b3-94b9c9561823",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "4fb0f64a-8d01-0c9d-ea98-70b5e1f10ef1",
@@ -5909,9 +4814,7 @@
       "father_id": "be7e71df-28e1-6bbb-5195-0c8d4ce7dc75",
       "generation": 9,
       "branch_slug": "al-abdullah-salih-abdullah",
-      "charts": [
-        8
-      ]
+      "charts": [8]
     },
     {
       "id": "ce2e4d4d-a401-adc9-0bff-c19bbfdb03d2",
@@ -5920,9 +4823,7 @@
       "father_id": "baa18551-c7a8-065c-c9b3-94b9c9561823",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "b536fc68-deb8-4981-e70c-9f4b0b3864fd",
@@ -5931,9 +4832,7 @@
       "father_id": "86bc9ae4-c05b-87bd-01ca-843bac6a6693",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "abc757e5-7ae9-6274-e485-23db481414df",
@@ -5942,9 +4841,7 @@
       "father_id": "c9bd09f7-0302-1152-1129-1aa3d5f3d04e",
       "generation": 9,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "9a9471de-b1e1-771a-2df6-512265ccfbbd",
@@ -5953,9 +4850,7 @@
       "father_id": "1d37fa1c-6255-fa91-9062-8a132da9aeea",
       "generation": 9,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "34043838-6efa-2208-5889-bb4832c75abf",
@@ -5964,9 +4859,7 @@
       "father_id": "6d6635a9-017f-b84a-b117-e38a6d9e5cf0",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "0cf354f5-ee9b-f732-7726-cdfb0bb6cfb9",
@@ -5975,9 +4868,7 @@
       "father_id": "cb710741-f118-0065-a0db-8fb748c5ae03",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "462850f4-6e08-4702-e941-592bd4de4ffb",
@@ -5986,9 +4877,7 @@
       "father_id": "3cfcfc80-3f5b-b9f9-fdc0-46e33783a6b8",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "70dd77d7-3048-bbac-b65a-ada5dafa1f11",
@@ -5997,9 +4886,7 @@
       "father_id": "009b0219-620a-7a6b-c0cc-50530db146f4",
       "generation": 9,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "f3293519-11f2-6555-7b5a-b268a119466d",
@@ -6008,9 +4895,7 @@
       "father_id": "c40a404a-4d64-36bb-8698-55c46ba6f02f",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "4ac23265-8097-141d-9d10-81d89791ecb1",
@@ -6019,9 +4904,7 @@
       "father_id": "bb6a9f90-6fc5-466e-4b4c-aefa2b8bac97",
       "generation": 9,
       "branch_slug": "al-ahmed-abdulrahman",
-      "charts": [
-        12
-      ]
+      "charts": [12]
     },
     {
       "id": "565dbcaa-c6fc-186a-d417-2ec1dd302d47",
@@ -6030,9 +4913,7 @@
       "father_id": "f1eb2f86-ecc1-1535-4802-c1f408cf947f",
       "generation": 9,
       "branch_slug": "al-mohammed-salih",
-      "charts": [
-        10
-      ]
+      "charts": [10]
     },
     {
       "id": "4dbe642a-f624-380d-fcb3-92822970bd37",
@@ -6041,9 +4922,7 @@
       "father_id": "baa18551-c7a8-065c-c9b3-94b9c9561823",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "06fa8c43-dcac-b6b9-4d10-15ac6e989a46",
@@ -6052,9 +4931,7 @@
       "father_id": "6d009d70-0422-1e49-6ce0-8437907564ce",
       "generation": 9,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "d785251f-65af-24e0-d8c2-b6dc4e94523a",
@@ -6063,9 +4940,7 @@
       "father_id": "1d37fa1c-6255-fa91-9062-8a132da9aeea",
       "generation": 9,
       "branch_slug": "al-ibrahim-salih",
-      "charts": [
-        11
-      ]
+      "charts": [11]
     },
     {
       "id": "20c9ace9-1a59-f2ba-578c-17be8add235c",
@@ -6074,9 +4949,7 @@
       "father_id": "d63f0a5b-33a1-8bbe-b66a-931a88b36c55",
       "generation": 10,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     },
     {
       "id": "698fc519-23a8-4d2c-07c5-0492231d6dba",
@@ -6085,9 +4958,7 @@
       "father_id": "d63f0a5b-33a1-8bbe-b66a-931a88b36c55",
       "generation": 10,
       "branch_slug": "al-ali-salih",
-      "charts": [
-        4
-      ]
+      "charts": [4]
     }
   ],
   "branches": [

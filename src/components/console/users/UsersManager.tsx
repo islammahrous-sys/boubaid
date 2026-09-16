@@ -83,7 +83,11 @@ export function UsersManager({
   familyMembers?: any[];
   onAssignRole: (userId: string, role: string) => Promise<void>;
   onRemoveRole: (userId: string, role: string) => Promise<void>;
-  onReviewRequest?: (requestId: string, status: "approved" | "rejected", note?: string) => Promise<void>;
+  onReviewRequest?: (
+    requestId: string,
+    status: "approved" | "rejected",
+    note?: string,
+  ) => Promise<void>;
   onNavigateTab?: (domainId: string, tabId: string) => void;
 }) {
   const { lang } = useLang();
@@ -102,7 +106,8 @@ export function UsersManager({
 
   const isApprovedMember = (userId: string) => {
     const roles = userRoles.filter((r) => r.user_id === userId).map((r) => r.role);
-    if (roles.includes("member") || roles.includes("admin") || roles.includes("super_admin")) return true;
+    if (roles.includes("member") || roles.includes("admin") || roles.includes("super_admin"))
+      return true;
     const req = getMembershipRequest(userId);
     return req?.status === "approved";
   };
@@ -174,9 +179,7 @@ export function UsersManager({
       setLoading(true);
       await onAssignRole(user.id, "member");
       toast.success(
-        isAr
-          ? "تم توثيق ومنح العضوية بنجاح"
-          : "Verified membership granted successfully"
+        isAr ? "تم توثيق ومنح العضوية بنجاح" : "Verified membership granted successfully",
       );
     } catch (err: any) {
       toast.error(err.message || (isAr ? "فشل منح العضوية" : "Failed to grant membership"));
@@ -291,7 +294,9 @@ export function UsersManager({
 
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "no_request" | "council">("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "pending" | "approved" | "no_request" | "council"
+  >("all");
   const [profileModalInitialTab, setProfileModalInitialTab] = useState<string>("overview");
   const [showAdminGuide, setShowAdminGuide] = useState<boolean>(true);
 
@@ -407,7 +412,11 @@ export function UsersManager({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-primary font-bold text-xs">
             <Sparkles className="w-4 h-4 text-gold shrink-0" />
-            <span>{isAr ? "دليل أمانة المجلس السريع: إدارة وتوثيق أفراد الأسرة" : "Council Quick Guide: Verification & Roles"}</span>
+            <span>
+              {isAr
+                ? "دليل أمانة المجلس السريع: إدارة وتوثيق أفراد الأسرة"
+                : "Council Quick Guide: Verification & Roles"}
+            </span>
           </div>
           <Button
             type="button"
@@ -417,9 +426,15 @@ export function UsersManager({
             onClick={() => setShowAdminGuide(!showAdminGuide)}
           >
             {showAdminGuide ? (
-              <span className="flex items-center gap-1">{isAr ? "إخفاء الدليل" : "Hide"}<ChevronUp className="w-3 h-3" /></span>
+              <span className="flex items-center gap-1">
+                {isAr ? "إخفاء الدليل" : "Hide"}
+                <ChevronUp className="w-3 h-3" />
+              </span>
             ) : (
-              <span className="flex items-center gap-1">{isAr ? "عرض الدليل" : "Show"}<ChevronDown className="w-3 h-3" /></span>
+              <span className="flex items-center gap-1">
+                {isAr ? "عرض الدليل" : "Show"}
+                <ChevronDown className="w-3 h-3" />
+              </span>
             )}
           </Button>
         </div>
@@ -473,7 +488,7 @@ export function UsersManager({
           size="sm"
           className={cn(
             "h-8 text-xs font-medium rounded-lg gap-1.5",
-            statusFilter === "all" && "shadow-sm"
+            statusFilter === "all" && "shadow-sm",
           )}
           onClick={() => setStatusFilter("all")}
         >
@@ -490,7 +505,9 @@ export function UsersManager({
           className={cn(
             "h-8 text-xs font-medium rounded-lg gap-1.5",
             statusFilter === "pending" && "bg-amber-600 hover:bg-amber-700 text-white shadow-sm",
-            statusFilter !== "pending" && statusCounts.pending > 0 && "text-amber-700 dark:text-amber-400 font-bold"
+            statusFilter !== "pending" &&
+              statusCounts.pending > 0 &&
+              "text-amber-700 dark:text-amber-400 font-bold",
           )}
           onClick={() => setStatusFilter("pending")}
         >
@@ -500,7 +517,7 @@ export function UsersManager({
             variant="secondary"
             className={cn(
               "text-[10px] h-4 px-1 rounded-md",
-              statusCounts.pending > 0 && "bg-amber-500 text-white font-bold"
+              statusCounts.pending > 0 && "bg-amber-500 text-white font-bold",
             )}
           >
             {statusCounts.pending}
@@ -513,7 +530,8 @@ export function UsersManager({
           size="sm"
           className={cn(
             "h-8 text-xs font-medium rounded-lg gap-1.5",
-            statusFilter === "approved" && "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+            statusFilter === "approved" &&
+              "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm",
           )}
           onClick={() => setStatusFilter("approved")}
         >
@@ -530,7 +548,7 @@ export function UsersManager({
           size="sm"
           className={cn(
             "h-8 text-xs font-medium rounded-lg gap-1.5",
-            statusFilter === "council" && "shadow-sm"
+            statusFilter === "council" && "shadow-sm",
           )}
           onClick={() => setStatusFilter("council")}
         >
@@ -547,7 +565,7 @@ export function UsersManager({
           size="sm"
           className={cn(
             "h-8 text-xs font-medium rounded-lg gap-1.5",
-            statusFilter === "no_request" && "shadow-sm"
+            statusFilter === "no_request" && "shadow-sm",
           )}
           onClick={() => setStatusFilter("no_request")}
         >
@@ -565,10 +583,14 @@ export function UsersManager({
             <TableRow className="bg-muted/40 text-xs">
               <TableHead>{isAr ? "المستخدم" : "User"}</TableHead>
               <TableHead>{isAr ? "البريد الإلكتروني" : "Email"}</TableHead>
-              <TableHead className="text-center">{isAr ? "حالة العضوية والطلب" : "Membership Status"}</TableHead>
+              <TableHead className="text-center">
+                {isAr ? "حالة العضوية والطلب" : "Membership Status"}
+              </TableHead>
               <TableHead>{isAr ? "الصلاحيات والمهام الإدارية" : "Assigned Roles"}</TableHead>
               <TableHead className="text-center">{isAr ? "حالة الحساب" : "Account"}</TableHead>
-              <TableHead className="text-end">{isAr ? "إجراءات أمانة المجلس" : "Council Actions"}</TableHead>
+              <TableHead className="text-end">
+                {isAr ? "إجراءات أمانة المجلس" : "Council Actions"}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -627,13 +649,19 @@ export function UsersManager({
                     </TableCell>
                     <TableCell className="text-center">
                       {approved ? (
-                        <Badge variant="default" className="text-[10px] bg-emerald-600 text-white gap-1 font-medium">
+                        <Badge
+                          variant="default"
+                          className="text-[10px] bg-emerald-600 text-white gap-1 font-medium"
+                        >
                           <CheckCircle2 className="w-3 h-3" />
                           <span>{isAr ? "عضو معتمد وموثق" : "Verified Member"}</span>
                         </Badge>
                       ) : isPending ? (
                         <div className="flex flex-col items-center gap-1">
-                          <Badge variant="outline" className="text-[10px] border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400 gap-1 font-bold">
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400 gap-1 font-bold"
+                          >
                             <Clock className="w-3 h-3 animate-pulse text-amber-600" />
                             <span>{isAr ? "طلب قيد المراجعة" : "Pending Review"}</span>
                           </Badge>
@@ -645,11 +673,17 @@ export function UsersManager({
                           )}
                         </div>
                       ) : req?.status === "rejected" ? (
-                        <Badge variant="outline" className="text-[10px] border-destructive/40 text-destructive font-normal">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] border-destructive/40 text-destructive font-normal"
+                        >
                           {isAr ? "طلب غير معتمد" : "Rejected"}
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="text-[10px] text-muted-foreground font-normal">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] text-muted-foreground font-normal"
+                        >
                           {isAr ? "مسجل فقط (بدون طلب)" : "No request"}
                         </Badge>
                       )}
@@ -667,13 +701,19 @@ export function UsersManager({
                               variant="outline"
                               className={cn(
                                 "text-[10px] font-medium border-border",
-                                r === "super_admin" && "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-400 font-bold",
-                                r === "admin" && "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold",
-                                r === "treasurer" && "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
-                                r === "family_manager" && "border-blue-500/40 bg-blue-500/10 text-blue-700 dark:text-blue-400",
-                                r === "content_manager" && "border-purple-500/40 bg-purple-500/10 text-purple-700 dark:text-purple-400",
-                                r === "editor" && "border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400",
-                                r === "member" && "border-stone-500/30 text-muted-foreground"
+                                r === "super_admin" &&
+                                  "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-400 font-bold",
+                                r === "admin" &&
+                                  "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold",
+                                r === "treasurer" &&
+                                  "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+                                r === "family_manager" &&
+                                  "border-blue-500/40 bg-blue-500/10 text-blue-700 dark:text-blue-400",
+                                r === "content_manager" &&
+                                  "border-purple-500/40 bg-purple-500/10 text-purple-700 dark:text-purple-400",
+                                r === "editor" &&
+                                  "border-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400",
+                                r === "member" && "border-stone-500/30 text-muted-foreground",
                               )}
                             >
                               {getRoleLabel(r)}
@@ -710,7 +750,11 @@ export function UsersManager({
                               setProfileModalInitialTab("membership");
                               setProfileModalUser(user);
                             }}
-                            title={isAr ? "الاطلاع على بيانات العضو ورسالته واعتماده" : "Review application and message"}
+                            title={
+                              isAr
+                                ? "الاطلاع على بيانات العضو ورسالته واعتماده"
+                                : "Review application and message"
+                            }
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>{isAr ? "مراجعة الطلب" : "Review"}</span>
@@ -875,10 +919,7 @@ export function UsersManager({
                   {isAr ? "إسناد دور جديد:" : "Assign New Role:"}
                 </p>
                 <div className="flex gap-2">
-                  <Select
-                    value={selectedRoleToAdd}
-                    onValueChange={setSelectedRoleToAdd}
-                  >
+                  <Select value={selectedRoleToAdd} onValueChange={setSelectedRoleToAdd}>
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue />
                     </SelectTrigger>
@@ -945,7 +986,7 @@ export function UsersManager({
           familyMember={familyMembers.find(
             (f: any) =>
               f.user_id === profileModalUser.id ||
-              f.id === getMembershipRequest(profileModalUser.id)?.family_member_id
+              f.id === getMembershipRequest(profileModalUser.id)?.family_member_id,
           )}
           onAssignRole={onAssignRole}
           onRemoveRole={onRemoveRole}

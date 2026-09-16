@@ -138,7 +138,12 @@ async function importFile(galleryId, filePath, fileName, sortOrder) {
 
   const { error: linkErr } = await supabase
     .from("gallery_media")
-    .insert({ gallery_id: galleryId, media_asset_id: assetId, sort_order: sortOrder, is_published: true });
+    .insert({
+      gallery_id: galleryId,
+      media_asset_id: assetId,
+      sort_order: sortOrder,
+      is_published: true,
+    });
   if (linkErr) throw linkErr;
   return true;
 }

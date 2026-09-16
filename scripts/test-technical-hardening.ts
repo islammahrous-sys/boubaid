@@ -1,4 +1,8 @@
-import { validateFileUpload, MAX_IMAGE_SIZE_BYTES, MAX_DOC_SIZE_BYTES } from "../src/lib/storage-guard.server";
+import {
+  validateFileUpload,
+  MAX_IMAGE_SIZE_BYTES,
+  MAX_DOC_SIZE_BYTES,
+} from "../src/lib/storage-guard.server";
 import { getErrorMessage, toUserFriendlyError, isNetworkError } from "../src/lib/error-utils";
 
 console.log("=== TECHNICAL HARDENING & RESILIENCE VERIFICATION ===");

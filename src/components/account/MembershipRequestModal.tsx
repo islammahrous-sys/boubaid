@@ -108,9 +108,7 @@ export function MembershipRequestModal({
               <ShieldCheck className="w-4 h-4 text-primary" />
             </div>
             <DialogTitle className="text-base font-bold">
-              {isAr
-                ? "تقديم طلب توثيق واعتماد العضوية"
-                : "Submit Membership Verification Request"}
+              {isAr ? "تقديم طلب توثيق واعتماد العضوية" : "Submit Membership Verification Request"}
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-muted-foreground leading-relaxed">
@@ -220,7 +218,11 @@ export function MembershipRequestModal({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-foreground">
                 <MessageSquare className="w-3.5 h-3.5 text-primary" />
-                <span>{isAr ? "رسالة أو ملاحظات لمجلس الأسرة (اختياري)" : "Message or Notes to the Council (Optional)"}</span>
+                <span>
+                  {isAr
+                    ? "رسالة أو ملاحظات لمجلس الأسرة (اختياري)"
+                    : "Message or Notes to the Council (Optional)"}
+                </span>
               </div>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                 {isAr ? "اختياري" : "Optional"}

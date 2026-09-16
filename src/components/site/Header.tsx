@@ -214,7 +214,7 @@ export function Header() {
             )}
             aria-hidden="true"
           />
-            <span className="flex min-w-0 flex-col leading-tight lg:hidden xl:flex">
+          <span className="flex min-w-0 flex-col leading-tight lg:hidden xl:flex">
             <span
               className={cn(
                 "truncate font-brand font-bold text-foreground transition-[color,font-size] duration-500 group-hover:text-bronze dark:group-hover:text-gold",
@@ -250,7 +250,7 @@ export function Header() {
                   <div
                     data-nav-active={isItemActive ? "true" : undefined}
                     className={cn(
-                       "active-scale flex items-center gap-0.5 rounded-md px-1.5 xl:px-2 2xl:px-3 py-1.5 text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
+                      "active-scale flex items-center gap-0.5 rounded-md px-1.5 xl:px-2 2xl:px-3 py-1.5 text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color] duration-200 ease-out",
                       isItemActive
                         ? "bg-bronze/10 font-bold text-bronze dark:bg-gold/15 dark:text-gold"
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -481,9 +481,6 @@ export function Header() {
             <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
 
-
-
-
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
             <a
               href={siteMeta.frameStoreUrl}
@@ -565,8 +562,6 @@ export function Header() {
       {open ? (
         <div className="max-h-[80vh] overflow-y-auto border-t border-border bg-background text-foreground lg:hidden animate-in slide-in-from-top-2 duration-200">
           <nav className="container-page py-6" aria-label="Mobile">
-
-
             {usingLiveNav ? (
               <div className="menu-in mb-6 last:mb-0">
                 <ul>
@@ -617,7 +612,9 @@ export function Header() {
                                               onClick={() => setOpen(false)}
                                               className="active-scale block py-1 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
                                             >
-                                              {typeof sub.label === "string" ? sub.label : t(sub.label)}
+                                              {typeof sub.label === "string"
+                                                ? sub.label
+                                                : t(sub.label)}
                                             </Link>
                                           </li>
                                         ))}

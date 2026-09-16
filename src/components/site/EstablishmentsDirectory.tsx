@@ -802,7 +802,9 @@ export function EstablishmentsDirectory({ businesses }: { businesses: BusinessRo
                       <Phone className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[11px] text-muted-foreground">{t(copy.labelContact)}</div>
+                      <div className="text-[11px] text-muted-foreground">
+                        {t(copy.labelContact)}
+                      </div>
                       <div className="font-mono text-xs font-semibold text-foreground truncate">
                         {detailBiz.contact}
                       </div>
@@ -900,7 +902,12 @@ export function EstablishmentsDirectory({ businesses }: { businesses: BusinessRo
                     <Copy className="w-3.5 h-3.5" />
                     {t(copy.copyContact)}
                   </Button>
-                  <Button type="button" size="sm" onClick={() => setDetailBiz(null)} className="text-xs">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setDetailBiz(null)}
+                    className="text-xs"
+                  >
                     {isAr ? "إغلاق" : "Close"}
                   </Button>
                 </div>

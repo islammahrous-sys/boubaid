@@ -171,7 +171,10 @@ function AchieversPage() {
         .sort((a, b) => a.sortOrder - b.sortOrder),
     [achievers],
   );
-  const excellence = useMemo(() => achievers.filter((a) => a.section === "excellence_award"), [achievers]);
+  const excellence = useMemo(
+    () => achievers.filter((a) => a.section === "excellence_award"),
+    [achievers],
+  );
   // Years come from the records themselves, so a new award year entered in the
   // console appears here without a code change. Eastern-Arabic digits and a
   // trailing "هـ"/"AH" typed by an editor normalise to the same group.
@@ -256,7 +259,12 @@ function AchieversPage() {
       <div className="container-page py-12 md:py-16 space-y-16">
         <section aria-labelledby="competencies-title">
           <Eyebrow>{rtl ? "القسم الأول" : "Section One"}</Eyebrow>
-          <h2 id="competencies-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">{t(copy.competencies)}</h2>
+          <h2
+            id="competencies-title"
+            className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl"
+          >
+            {t(copy.competencies)}
+          </h2>
           {competencies.length === 0 ? (
             <div className="mt-6 border-y border-border py-10 text-center">
               <p className="text-sm text-muted-foreground">{t(copy.empty)}</p>
@@ -289,7 +297,12 @@ function AchieversPage() {
 
         <section aria-labelledby="excellence-title">
           <Eyebrow>{rtl ? "القسم الثاني" : "Section Two"}</Eyebrow>
-          <h2 id="excellence-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">{t(copy.excellence)}</h2>
+          <h2
+            id="excellence-title"
+            className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl"
+          >
+            {t(copy.excellence)}
+          </h2>
           <figure className="mt-6">
             <img
               src={EXCELLENCE_CEREMONY_IMAGE}
@@ -312,7 +325,10 @@ function AchieversPage() {
             {yearGroups.map(({ year, people }) => (
               <section key={year} aria-labelledby={`award-year-${year}`}>
                 <div className="flex items-center gap-4 border-b border-ink/25 pb-3 dark:border-ivory/20">
-                  <h3 id={`award-year-${year}`} className="nums text-xl font-bold text-bronze dark:text-gold">
+                  <h3
+                    id={`award-year-${year}`}
+                    className="nums text-xl font-bold text-bronze dark:text-gold"
+                  >
                     {year === ""
                       ? rtl
                         ? "بدون سنة محددة"
@@ -325,12 +341,23 @@ function AchieversPage() {
                 </div>
                 <ol className="divide-y divide-border">
                   {people.map((person, index) => (
-                    <li key={person.id} className="grid gap-2 py-5 sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1.4fr)] sm:gap-6">
-                      <span className="nums text-sm text-bronze/70 dark:text-gold/60">{String(index + 1).padStart(2, "0")}</span>
-                      <button type="button" onClick={() => setActiveAchiever(person)} className="text-start font-naskh text-base font-bold text-foreground hover:text-bronze dark:hover:text-gold">
+                    <li
+                      key={person.id}
+                      className="grid gap-2 py-5 sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1.4fr)] sm:gap-6"
+                    >
+                      <span className="nums text-sm text-bronze/70 dark:text-gold/60">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setActiveAchiever(person)}
+                        className="text-start font-naskh text-base font-bold text-foreground hover:text-bronze dark:hover:text-gold"
+                      >
                         {t(person.name)}
                       </button>
-                      <p className="text-sm leading-relaxed text-muted-foreground">{t(person.achievement)}</p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {t(person.achievement)}
+                      </p>
                     </li>
                   ))}
                 </ol>

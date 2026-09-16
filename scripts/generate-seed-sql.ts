@@ -62,11 +62,56 @@ branches.forEach((b: any, idx: number) => {
 // 2. SEED PLACES
 sql += "\n-- 2. Places\n";
 const placesList = [
-  { id: "c1000000-0000-0000-0000-000000000001", name_ar: "مقر الأسرة بحي الحزام الذهبي", name_en: "Family HQ - Al Hizam District", city: "المبرز", address: "شارع الصدفة، حي الحزام الذهبي، المبرز", lat: 25.4167, lng: 49.5833, desc_ar: "المقر العام لصندوق التنمية العائلية بحي الحزام الذهبي بالمبرز." },
-  { id: "c1000000-0000-0000-0000-000000000002", name_ar: "واحة الأحساء التاريخية", name_en: "Historic Al-Ahsa Oasis", city: "الأحساء", address: "واحة الأحساء، المنطقة الشرقية", lat: 25.3833, lng: 49.6000, desc_ar: "الموطن التاريخي الموثق لوجود الأسرة منذ سنة 1102 هـ." },
-  { id: "c1000000-0000-0000-0000-000000000003", name_ar: "مجلس فرع آل سعد", name_en: "Al-Saad Branch Diwaniya", city: "المبرز", address: "حي الراشدية، المبرز", lat: 25.4200, lng: 49.5800, desc_ar: "ديوانية وملتقى أعيان وأبناء فرع آل سعد." },
-  { id: "c1000000-0000-0000-0000-000000000004", name_ar: "مجلس فرع آل محمد", name_en: "Al-Mohammed Branch Diwaniya", city: "المبرز", address: "حي اليحيى، المبرز", lat: 25.4180, lng: 49.5820, desc_ar: "ديوانية وملتقى أعيان وأبناء فرع آل محمد." },
-  { id: "c1000000-0000-0000-0000-000000000005", name_ar: "مجلس فرع آل صالح", name_en: "Al-Salih Branch Diwaniya", city: "المبرز", address: "وسط المبرز القديم", lat: 25.4150, lng: 49.5850, desc_ar: "ديوانية وملتقى أعيان وأبناء فرع آل صالح." },
+  {
+    id: "c1000000-0000-0000-0000-000000000001",
+    name_ar: "مقر الأسرة بحي الحزام الذهبي",
+    name_en: "Family HQ - Al Hizam District",
+    city: "المبرز",
+    address: "شارع الصدفة، حي الحزام الذهبي، المبرز",
+    lat: 25.4167,
+    lng: 49.5833,
+    desc_ar: "المقر العام لصندوق التنمية العائلية بحي الحزام الذهبي بالمبرز.",
+  },
+  {
+    id: "c1000000-0000-0000-0000-000000000002",
+    name_ar: "واحة الأحساء التاريخية",
+    name_en: "Historic Al-Ahsa Oasis",
+    city: "الأحساء",
+    address: "واحة الأحساء، المنطقة الشرقية",
+    lat: 25.3833,
+    lng: 49.6,
+    desc_ar: "الموطن التاريخي الموثق لوجود الأسرة منذ سنة 1102 هـ.",
+  },
+  {
+    id: "c1000000-0000-0000-0000-000000000003",
+    name_ar: "مجلس فرع آل سعد",
+    name_en: "Al-Saad Branch Diwaniya",
+    city: "المبرز",
+    address: "حي الراشدية، المبرز",
+    lat: 25.42,
+    lng: 49.58,
+    desc_ar: "ديوانية وملتقى أعيان وأبناء فرع آل سعد.",
+  },
+  {
+    id: "c1000000-0000-0000-0000-000000000004",
+    name_ar: "مجلس فرع آل محمد",
+    name_en: "Al-Mohammed Branch Diwaniya",
+    city: "المبرز",
+    address: "حي اليحيى، المبرز",
+    lat: 25.418,
+    lng: 49.582,
+    desc_ar: "ديوانية وملتقى أعيان وأبناء فرع آل محمد.",
+  },
+  {
+    id: "c1000000-0000-0000-0000-000000000005",
+    name_ar: "مجلس فرع آل صالح",
+    name_en: "Al-Salih Branch Diwaniya",
+    city: "المبرز",
+    address: "وسط المبرز القديم",
+    lat: 25.415,
+    lng: 49.585,
+    desc_ar: "ديوانية وملتقى أعيان وأبناء فرع آل صالح.",
+  },
 ];
 
 placesList.forEach((p) => {
@@ -96,7 +141,7 @@ familyMembersData.forEach((m: any, idx: number) => {
   const branchUuid = branchMap.get(m.branchId) || branchMap.get("al-saad") || null;
   const firstNameAr = m.name.ar.split(" ")[0] || m.name.ar;
   const firstNameEn = m.name.en?.split(" ")[0] || m.name.en;
-  
+
   sql += `INSERT INTO public.family_members (
     id, slug, first_name_ar, last_name_ar, display_name_ar,
     first_name_en, last_name_en, display_name_en,
@@ -132,9 +177,27 @@ familyMembersData.forEach((m: any, idx: number) => {
 // 4. SEED ARTICLE CATEGORIES & ARTICLES
 sql += "\n-- 4. Article Categories & Articles\n";
 const categories = [
-  { id: "e1000000-0000-0000-0000-000000000001", slug: "fund-news", name_ar: "أخبار الصندوق والمجلس", name_en: "Fund News", desc_ar: "البيانات الرسمية والقرارات التنظيمية" },
-  { id: "e1000000-0000-0000-0000-000000000002", slug: "family-affairs", name_ar: "الشؤون والمناسبات العائلية", name_en: "Family Affairs", desc_ar: "أخبار ولقاءات وتكريم أفراد الأسرة" },
-  { id: "e1000000-0000-0000-0000-000000000003", slug: "initiatives-news", name_ar: "مستجدات المبادرات والمشاريع", name_en: "Initiatives News", desc_ar: "تقارير إنجاز المقر الدائم والبرامج" },
+  {
+    id: "e1000000-0000-0000-0000-000000000001",
+    slug: "fund-news",
+    name_ar: "أخبار الصندوق والمجلس",
+    name_en: "Fund News",
+    desc_ar: "البيانات الرسمية والقرارات التنظيمية",
+  },
+  {
+    id: "e1000000-0000-0000-0000-000000000002",
+    slug: "family-affairs",
+    name_ar: "الشؤون والمناسبات العائلية",
+    name_en: "Family Affairs",
+    desc_ar: "أخبار ولقاءات وتكريم أفراد الأسرة",
+  },
+  {
+    id: "e1000000-0000-0000-0000-000000000003",
+    slug: "initiatives-news",
+    name_ar: "مستجدات المبادرات والمشاريع",
+    name_en: "Initiatives News",
+    desc_ar: "تقارير إنجاز المقر الدائم والبرامج",
+  },
 ];
 
 categories.forEach((cat, idx) => {
@@ -231,9 +294,21 @@ achievers.forEach((ach: any, idx: number) => {
 // 7. SEED LIBRARY ITEMS
 sql += "\n-- 7. Library Items\n";
 const allDocs = [
-  ...(libraryItems.documents || []).map((d: any, i: number) => ({ ...d, collection: "documents", order: i + 1 })),
-  ...(libraryItems.photos || []).map((p: any, i: number) => ({ ...p, collection: "photographs", order: i + 20 })),
-  ...(libraryItems.videos || []).map((v: any, i: number) => ({ ...v, collection: "recordings", order: i + 40 })),
+  ...(libraryItems.documents || []).map((d: any, i: number) => ({
+    ...d,
+    collection: "documents",
+    order: i + 1,
+  })),
+  ...(libraryItems.photos || []).map((p: any, i: number) => ({
+    ...p,
+    collection: "photographs",
+    order: i + 20,
+  })),
+  ...(libraryItems.videos || []).map((v: any, i: number) => ({
+    ...v,
+    collection: "recordings",
+    order: i + 40,
+  })),
 ];
 
 allDocs.forEach((lib: any, idx: number) => {
@@ -363,23 +438,75 @@ VALUES
         { mutation: "J-Z20773", name_ar: "تحور بطون بني تميم", name_en: "Banu Tamim Marker" },
         { mutation: "J-Z20775", name_ar: "تحور بني دارم بن مالك", name_en: "Banu Darim Marker" },
         { mutation: "J-Z20777", name_ar: "تحور العبادل", name_en: "Al-Abadil Marker" },
-        { mutation: "J-BY37877", name_ar: "التحور الطرفي لآل بوعبيد", name_en: "Al Bu Obaid Terminal Mutation" }
+        {
+          mutation: "J-BY37877",
+          name_ar: "التحور الطرفي لآل بوعبيد",
+          name_en: "Al Bu Obaid Terminal Mutation",
+        },
       ],
       chronology_milestones: [
-        { mutation: "J-Z20775", age_years: 1850, date_range: "200 م — العصر الجاهلي", note_ar: "السلف المشترك لفرع دارم من بني تميم" },
-        { mutation: "J-Z20777", age_years: 1400, date_range: "600 م — صدر الإسلام", note_ar: "السلف المشترك لفرع العبادل" },
-        { mutation: "J-BY37877", age_years: 400, date_range: "1600 م — استقرار الأحساء", note_ar: "التحور الطرفي لأسرة آل بوعبيد" }
+        {
+          mutation: "J-Z20775",
+          age_years: 1850,
+          date_range: "200 م — العصر الجاهلي",
+          note_ar: "السلف المشترك لفرع دارم من بني تميم",
+        },
+        {
+          mutation: "J-Z20777",
+          age_years: 1400,
+          date_range: "600 م — صدر الإسلام",
+          note_ar: "السلف المشترك لفرع العبادل",
+        },
+        {
+          mutation: "J-BY37877",
+          age_years: 400,
+          date_range: "1600 م — استقرار الأحساء",
+          note_ar: "التحور الطرفي لأسرة آل بوعبيد",
+        },
       ],
       allied_families: [
-        { name_ar: "آل بوعبيد", name_en: "Al Bu Obaid", region_ar: "المبرز، الأحساء", confirmed_samples: 28 },
-        { name_ar: "آل عثمان (بني تميم)", name_en: "Al Othman", region_ar: "الأحساء والشرقية", confirmed_samples: 10 },
-        { name_ar: "آل بن دروش", name_en: "Al Darwish", region_ar: "الأحساء", confirmed_samples: 6 }
+        {
+          name_ar: "آل بوعبيد",
+          name_en: "Al Bu Obaid",
+          region_ar: "المبرز، الأحساء",
+          confirmed_samples: 28,
+        },
+        {
+          name_ar: "آل عثمان (بني تميم)",
+          name_en: "Al Othman",
+          region_ar: "الأحساء والشرقية",
+          confirmed_samples: 10,
+        },
+        {
+          name_ar: "آل بن دروش",
+          name_en: "Al Darwish",
+          region_ar: "الأحساء",
+          confirmed_samples: 6,
+        },
       ],
       country_distributions: [
-        { country_ar: "المملكة العربية السعودية", country_en: "Saudi Arabia", samples_count: 78, regions_ar: "الأحساء، الشرقية، الرياض", note_ar: "التكتل الأكبر الموثق" },
-        { country_ar: "الكويت", country_en: "Kuwait", samples_count: 10, regions_ar: "مدينة الكويت، حولي", note_ar: "عينات موثقة لفروع الأسرة" },
-        { country_ar: "قطر والبحرين", country_en: "Qatar & Bahrain", samples_count: 6, regions_ar: "الدوحة، المنامة", note_ar: "فروع تجارية وتاريخية" }
-      ]
+        {
+          country_ar: "المملكة العربية السعودية",
+          country_en: "Saudi Arabia",
+          samples_count: 78,
+          regions_ar: "الأحساء، الشرقية، الرياض",
+          note_ar: "التكتل الأكبر الموثق",
+        },
+        {
+          country_ar: "الكويت",
+          country_en: "Kuwait",
+          samples_count: 10,
+          regions_ar: "مدينة الكويت، حولي",
+          note_ar: "عينات موثقة لفروع الأسرة",
+        },
+        {
+          country_ar: "قطر والبحرين",
+          country_en: "Qatar & Bahrain",
+          samples_count: 6,
+          regions_ar: "الدوحة، المنامة",
+          note_ar: "فروع تجارية وتاريخية",
+        },
+      ],
     })},
     true, now()
   ),
@@ -409,16 +536,96 @@ VALUES
     'cms_homepage',
     'homepage_sections_config',
     ${escapeJson([
-      { id: "hero", name_ar: "القسم الترحيبي والافتتاحية", name_en: "Hero & Welcome", enabled: true, order: 1, title_ar: "صندوق التنمية العائلية (آل بوعبيد)", subtitle_ar: "أسرة عريقة، جذور تميمية، وحضور مؤسسي معاصر." },
-      { id: "dean_address", name_ar: "كلمة عميد الأسرة", name_en: "Dean's Address", enabled: true, order: 2, title_ar: "كلمة عميد الأسرة", subtitle_ar: "أحمد بن عبد الله بن صالح آل بوعبيد" },
-      { id: "vital_stats", name_ar: "أرقام ومؤشرات الصندوق", name_en: "Vital Statistics", enabled: true, order: 3, title_ar: "أرقام وإحصائيات الكيان الموثقة", subtitle_ar: "ترخيص رسمي، فروع سبعة، ومئات الأفراد" },
-      { id: "branches_grid", name_ar: "شبكة الفروع السبعة", name_en: "Seven Branches Grid", enabled: true, order: 4, title_ar: "الفروع السبعة", subtitle_ar: "تنتظم الأسرة في سبعة فروع رئيسية تنحدر من أبناء الجد أحمد بن صالح" },
-      { id: "interactive_tree", name_ar: "معاينة شجرة الأسرة", name_en: "Interactive Tree Preview", enabled: true, order: 5, title_ar: "المشجرة التفاعلية المعتمدة", subtitle_ar: "شجرة أنساب رقمية متكاملة" },
-      { id: "initiatives_hq", name_ar: "المقر الدائم والمبادرات", name_en: "Headquarters & Initiatives", enabled: true, order: 6, title_ar: "مشروع المقر الدائم والمبادرات", subtitle_ar: "استثمار مستدام يجمع أجيال الأسرة" },
-      { id: "news_feed", name_ar: "شريط الأخبار والبيانات", name_en: "News & Bulletins", enabled: true, order: 7, title_ar: "الأخبار والبيانات الرسمية", subtitle_ar: "تصدر عن أمانة المجلس العام" },
-      { id: "events_schedule", name_ar: "جدول الفعاليات والملتقيات", name_en: "Events & Gatherings", enabled: true, order: 8, title_ar: "الفعاليات والملتقيات القادمة", subtitle_ar: "حضور ومشاركة أفراد العائلة" },
-      { id: "heritage_gallery", name_ar: "معرض التراث والوثائق", name_en: "Heritage & Document Gallery", enabled: true, order: 9, title_ar: "الأرشيف التراثي والمخطوطات", subtitle_ar: "وثائق محاكم شرعية ومخطوطات نادرة" },
-      { id: "contact_inquiry", name_ar: "نموذج التواصل السريع", name_en: "Contact & Inquiry", enabled: true, order: 10, title_ar: "تواصل مع أمانة المجلس", subtitle_ar: "نسعد باستقبال استفساراتكم وملاحظاتكم" }
+      {
+        id: "hero",
+        name_ar: "القسم الترحيبي والافتتاحية",
+        name_en: "Hero & Welcome",
+        enabled: true,
+        order: 1,
+        title_ar: "صندوق التنمية العائلية (آل بوعبيد)",
+        subtitle_ar: "أسرة عريقة، جذور تميمية، وحضور مؤسسي معاصر.",
+      },
+      {
+        id: "dean_address",
+        name_ar: "كلمة عميد الأسرة",
+        name_en: "Dean's Address",
+        enabled: true,
+        order: 2,
+        title_ar: "كلمة عميد الأسرة",
+        subtitle_ar: "أحمد بن عبد الله بن صالح آل بوعبيد",
+      },
+      {
+        id: "vital_stats",
+        name_ar: "أرقام ومؤشرات الصندوق",
+        name_en: "Vital Statistics",
+        enabled: true,
+        order: 3,
+        title_ar: "أرقام وإحصائيات الكيان الموثقة",
+        subtitle_ar: "ترخيص رسمي، فروع سبعة، ومئات الأفراد",
+      },
+      {
+        id: "branches_grid",
+        name_ar: "شبكة الفروع السبعة",
+        name_en: "Seven Branches Grid",
+        enabled: true,
+        order: 4,
+        title_ar: "الفروع السبعة",
+        subtitle_ar: "تنتظم الأسرة في سبعة فروع رئيسية تنحدر من أبناء الجد أحمد بن صالح",
+      },
+      {
+        id: "interactive_tree",
+        name_ar: "معاينة شجرة الأسرة",
+        name_en: "Interactive Tree Preview",
+        enabled: true,
+        order: 5,
+        title_ar: "المشجرة التفاعلية المعتمدة",
+        subtitle_ar: "شجرة أنساب رقمية متكاملة",
+      },
+      {
+        id: "initiatives_hq",
+        name_ar: "المقر الدائم والمبادرات",
+        name_en: "Headquarters & Initiatives",
+        enabled: true,
+        order: 6,
+        title_ar: "مشروع المقر الدائم والمبادرات",
+        subtitle_ar: "استثمار مستدام يجمع أجيال الأسرة",
+      },
+      {
+        id: "news_feed",
+        name_ar: "شريط الأخبار والبيانات",
+        name_en: "News & Bulletins",
+        enabled: true,
+        order: 7,
+        title_ar: "الأخبار والبيانات الرسمية",
+        subtitle_ar: "تصدر عن أمانة المجلس العام",
+      },
+      {
+        id: "events_schedule",
+        name_ar: "جدول الفعاليات والملتقيات",
+        name_en: "Events & Gatherings",
+        enabled: true,
+        order: 8,
+        title_ar: "الفعاليات والملتقيات القادمة",
+        subtitle_ar: "حضور ومشاركة أفراد العائلة",
+      },
+      {
+        id: "heritage_gallery",
+        name_ar: "معرض التراث والوثائق",
+        name_en: "Heritage & Document Gallery",
+        enabled: true,
+        order: 9,
+        title_ar: "الأرشيف التراثي والمخطوطات",
+        subtitle_ar: "وثائق محاكم شرعية ومخطوطات نادرة",
+      },
+      {
+        id: "contact_inquiry",
+        name_ar: "نموذج التواصل السريع",
+        name_en: "Contact & Inquiry",
+        enabled: true,
+        order: 10,
+        title_ar: "تواصل مع أمانة المجلس",
+        subtitle_ar: "نسعد باستقبال استفساراتكم وملاحظاتكم",
+      },
     ])},
     true, now()
   )

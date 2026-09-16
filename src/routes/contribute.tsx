@@ -79,7 +79,10 @@ function ContributePage() {
         title={t(copy.title)}
         subtitle={t(copy.subtitle)}
         meta={[
-          { label: t({ ar: "البنك", en: "Bank" }), value: t({ ar: "بنك البلاد", en: "Bank Albilad" }) },
+          {
+            label: t({ ar: "البنك", en: "Bank" }),
+            value: t({ ar: "بنك البلاد", en: "Bank Albilad" }),
+          },
           {
             label: t({ ar: "رقم الآيبان", en: "IBAN" }),
             value: "SA1915000999146092730006",
@@ -117,7 +120,10 @@ function ContributePage() {
           </dl>
 
           <p className="measure mt-6 flex items-start gap-2 text-[13px] leading-relaxed text-muted-foreground">
-            <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-bronze dark:text-gold" aria-hidden="true" />
+            <Building2
+              className="mt-0.5 h-4 w-4 shrink-0 text-bronze dark:text-gold"
+              aria-hidden="true"
+            />
             {t({
               ar: "يُرجى التحقق من مطابقة اسم الحساب ورقم الآيبان قبل أي تحويل.",
               en: "Please verify the account name and IBAN match before making any transfer.",

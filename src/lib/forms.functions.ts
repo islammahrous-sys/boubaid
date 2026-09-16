@@ -278,7 +278,6 @@ export const submitBusinessListing = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-
 /**
  * Requests Hub submissions. Every request type lands in the official inbox
  * (`inquiries`) with its own `source`, so the console can filter and run the

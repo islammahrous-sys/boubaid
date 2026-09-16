@@ -19,9 +19,7 @@ export const Route = createFileRoute("/programs")({
   loader: async () => {
     const rows = await getPublishedInitiatives();
     return {
-      programs: rows
-        .filter((r) => r.kind === "program" && r.is_published)
-        .map(mapInitiativeRow),
+      programs: rows.filter((r) => r.kind === "program" && r.is_published).map(mapInitiativeRow),
     };
   },
   head: () => ({
@@ -68,11 +66,7 @@ function ProgramsPage() {
 
   return (
     <>
-      <PageHeader
-        eyebrow={t(copy.eyebrow)}
-        title={t(copy.title)}
-        subtitle={t(copy.subtitle)}
-      />
+      <PageHeader eyebrow={t(copy.eyebrow)} title={t(copy.title)} subtitle={t(copy.subtitle)} />
 
       <div className="container-page py-14 md:py-16">
         <section className="reveal-on-scroll">

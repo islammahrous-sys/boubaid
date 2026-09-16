@@ -107,7 +107,9 @@ export function ServiceCatalogue({
                   {isAr ? active.title_ar : active.title_en || active.title_ar}
                 </DialogTitle>
                 <DialogDescription className="text-xs leading-relaxed">
-                  {(isAr ? active.description_ar : active.description_en || active.description_ar) ||
+                  {(isAr
+                    ? active.description_ar
+                    : active.description_en || active.description_ar) ||
                     t({
                       ar: "لمزيد من التفاصيل حول هذه الخدمة، يُرجى التواصل مع أمانة مجلس الأسرة.",
                       en: "For further details about this service, please contact the Family Council secretariat.",

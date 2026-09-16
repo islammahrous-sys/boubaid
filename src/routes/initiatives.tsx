@@ -111,7 +111,10 @@ const copy = {
   } as BiText,
   supportCta: { ar: "الاشتراك والمساهمة", en: "Subscribe & contribute" } as BiText,
 
-  establishmentsTitle: { ar: "خدمات المنشآت العائلية", en: "Family Establishment Services" } as BiText,
+  establishmentsTitle: {
+    ar: "خدمات المنشآت العائلية",
+    en: "Family Establishment Services",
+  } as BiText,
   establishmentsNote: {
     ar: "دليل المنشآت العائلية المعتمدة وخدماتها وبيانات التواصل معها، مع إمكانية البحث والتصفية حسب القطاع والفرع والمدينة.",
     en: "The verified family establishments, their services and contact details, searchable and filterable by sector, branch and city.",
@@ -330,7 +333,6 @@ function InitiativesPage() {
           <EstablishmentsDirectory businesses={businesses} />
         </div>
       </section>
-
 
       {/* ── Support ─────────────────────────────────────────── */}
       <section className="reveal-on-scroll border-t border-border bg-secondary/40">

@@ -14,8 +14,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
  * local development paths.
  */
 
-const MEDIA =
-  "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media";
+const MEDIA = "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media";
 
 export const historyMedia = {
   geneticChart: `${MEDIA}/history/genetic-chart-j-z20773.jpg`,
@@ -839,7 +838,10 @@ export const historySections: HistorySection[] = [
       },
       {
         kind: "para",
-        text: { ar: "ومن أشعاره في وصف الوقائع:", en: "And from his verse describing the engagements:" },
+        text: {
+          ar: "ومن أشعاره في وصف الوقائع:",
+          en: "And from his verse describing the engagements:",
+        },
       },
       {
         kind: "poem",
@@ -1180,7 +1182,10 @@ export const historySections: HistorySection[] = [
         rows: [
           [
             { ar: "المملكة العربية السعودية", en: "Kingdom of Saudi Arabia" },
-            { ar: "28 عينة (Z20773) / 19 عينة (Z20777)", en: "28 samples (Z20773) / 19 samples (Z20777)" },
+            {
+              ar: "28 عينة (Z20773) / 19 عينة (Z20777)",
+              en: "28 samples (Z20773) / 19 samples (Z20777)",
+            },
             {
               ar: "تركز كثيف في المنطقة الشرقية (الأحساء والمبرز) ونجد. يعكس المعقل التاريخي الأول وهجرة العبادل. يضم (آل بوعبيد، آل درويش، السمحان).",
               en: "Dense concentration in the Eastern Province (Al-Ahsa and Al-Mubarraz) and Najd, reflecting the first historical stronghold and the migration of the ʿAbadil. Includes Al Bu Obaid, Al Darwish and Al Samhan.",
@@ -1218,7 +1223,10 @@ export const historySections: HistorySection[] = [
           ],
           [
             { ar: "الإمارات العربية المتحدة", en: "United Arab Emirates" },
-            { ar: "4 عينات (Z20773) / 3 عينات (Z20777)", en: "4 samples (Z20773) / 3 samples (Z20777)" },
+            {
+              ar: "4 عينات (Z20773) / 3 عينات (Z20777)",
+              en: "4 samples (Z20773) / 3 samples (Z20777)",
+            },
             {
               ar: "تجمعات ناتجة عن تحالفات قبلية وهجرات ساحلية لعائلات كالنعيمي، السويدي، والمزروعي.",
               en: "Clusters arising from tribal alliances and coastal migrations of families such as Al Nuaimi, Al Suwaidi and Al Mazrouei.",
@@ -1272,7 +1280,10 @@ export const historySections: HistorySection[] = [
       },
       {
         kind: "para",
-        text: { ar: "وقد تجلى هذا التحول المؤسسي في:", en: "This institutional shift is evident in:" },
+        text: {
+          ar: "وقد تجلى هذا التحول المؤسسي في:",
+          en: "This institutional shift is evident in:",
+        },
       },
       {
         kind: "list",

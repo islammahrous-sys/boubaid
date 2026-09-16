@@ -122,7 +122,11 @@ export function ArchiveLightbox({
                 className="absolute start-2 top-1/2 z-20 grid h-10 w-10 sm:h-11 sm:w-11 -translate-y-1/2 place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-xs transition-colors cursor-pointer active:scale-95"
                 aria-label={rtl ? "السابق" : "Previous"}
               >
-                {rtl ? <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" /> : <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />}
+                {rtl ? (
+                  <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+                ) : (
+                  <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                )}
               </button>
               <button
                 type="button"
@@ -130,7 +134,11 @@ export function ArchiveLightbox({
                 className="absolute end-2 top-1/2 z-20 grid h-10 w-10 sm:h-11 sm:w-11 -translate-y-1/2 place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-xs transition-colors cursor-pointer active:scale-95"
                 aria-label={rtl ? "التالي" : "Next"}
               >
-                {rtl ? <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" /> : <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />}
+                {rtl ? (
+                  <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                ) : (
+                  <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+                )}
               </button>
             </>
           )}

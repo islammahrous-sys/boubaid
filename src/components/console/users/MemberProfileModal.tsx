@@ -34,7 +34,10 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
-import { WorkflowStepper, type WorkflowStepItem } from "@/components/console/common/WorkflowStepper";
+import {
+  WorkflowStepper,
+  type WorkflowStepItem,
+} from "@/components/console/common/WorkflowStepper";
 import { NextActionCard } from "@/components/console/common/NextActionCard";
 import { useConfirm } from "@/hooks/useConfirm";
 import { cn } from "@/lib/utils";
@@ -72,10 +75,21 @@ interface MemberProfileModalProps {
   profile: MemberProfileData | null;
   userRoles: { id: string; user_id: string; role: string }[];
   membershipRequest?: MemberRequestData | null;
-  familyMember?: { id: string; first_name_ar: string; last_name_ar: string; branch_id?: string | null; slug?: string | null; branch_slug?: string | null } | null;
+  familyMember?: {
+    id: string;
+    first_name_ar: string;
+    last_name_ar: string;
+    branch_id?: string | null;
+    slug?: string | null;
+    branch_slug?: string | null;
+  } | null;
   onAssignRole: (userId: string, role: string) => Promise<void>;
   onRemoveRole: (userId: string, role: string) => Promise<void>;
-  onReviewRequest?: (requestId: string, status: "approved" | "rejected", note?: string) => Promise<void>;
+  onReviewRequest?: (
+    requestId: string,
+    status: "approved" | "rejected",
+    note?: string,
+  ) => Promise<void>;
   onNavigateTab?: (domainId: string, tabId: string) => void;
   initialTab?: string;
 }
@@ -188,15 +202,15 @@ export function MemberProfileModal({
           ? `حالة الطلب: ${isMembershipApproved ? "معتمد" : isMembershipRejected ? "مرفوض" : "قيد المراجعة"}`
           : `Request: ${membershipRequest.status}`
         : isAr
-        ? "لم يُقدّم طلب توثيق بعد"
-        : "No request submitted",
+          ? "لم يُقدّم طلب توثيق بعد"
+          : "No request submitted",
       status: isMembershipApproved
         ? "completed"
         : isMembershipPending
-        ? "current"
-        : isMembershipRejected
-        ? "rejected"
-        : "upcoming",
+          ? "current"
+          : isMembershipRejected
+            ? "rejected"
+            : "upcoming",
     },
     {
       id: "approval",
@@ -205,32 +219,32 @@ export function MemberProfileModal({
       description_ar: isMembershipApproved
         ? "تمت مراجعة النسب وتأكيد الانتساب"
         : isMembershipPending
-        ? "بانتظار تدقيق الأمانة"
-        : "متاح للاعتماد المباشر من الأمانة",
+          ? "بانتظار تدقيق الأمانة"
+          : "متاح للاعتماد المباشر من الأمانة",
       description_en: isMembershipApproved
         ? "Lineage confirmed"
         : isMembershipPending
-        ? "Awaiting review"
-        : "Available for direct council approval",
+          ? "Awaiting review"
+          : "Available for direct council approval",
       status: isMembershipApproved
         ? "completed"
         : isMembershipPending
-        ? "current"
-        : isMembershipRejected
-        ? "rejected"
-        : "upcoming",
+          ? "current"
+          : isMembershipRejected
+            ? "rejected"
+            : "upcoming",
     },
     {
       id: "role",
       label_ar: "إسناد الأدوار والصلاحيات",
       label_en: "Role & Access",
-      description_ar: currentRoles.length > 0
-        ? `${currentRoles.length} أدوار مسندة`
-        : "إسناد الأدوار متاح للمشرف",
-      description_en: currentRoles.length > 0 ? `${currentRoles.length} roles` : "Ready for assignment",
-      status: currentRoles.some((r) => r !== "member")
-        ? "completed"
-        : "current",
+      description_ar:
+        currentRoles.length > 0
+          ? `${currentRoles.length} أدوار مسندة`
+          : "إسناد الأدوار متاح للمشرف",
+      description_en:
+        currentRoles.length > 0 ? `${currentRoles.length} roles` : "Ready for assignment",
+      status: currentRoles.some((r) => r !== "member") ? "completed" : "current",
     },
     {
       id: "active",
@@ -246,7 +260,11 @@ export function MemberProfileModal({
 
   const handleDirectGrantMembership = async () => {
     if (!profile) return;
-    const userName = profile.full_name_ar || profile.full_name_en || profile.email || (isAr ? "هذا المستخدم" : "this user");
+    const userName =
+      profile.full_name_ar ||
+      profile.full_name_en ||
+      profile.email ||
+      (isAr ? "هذا المستخدم" : "this user");
     const ok = await confirm({
       title: isAr
         ? `اعتماد وتوثيق عضوية "${userName}" مباشرة؟`
@@ -260,7 +278,9 @@ export function MemberProfileModal({
     try {
       setAssigning(true);
       await onAssignRole(profile.id, "member");
-      toast.success(isAr ? "تم توثيق ومنح العضوية بنجاح" : "Verified membership granted successfully");
+      toast.success(
+        isAr ? "تم توثيق ومنح العضوية بنجاح" : "Verified membership granted successfully",
+      );
     } catch (err: any) {
       toast.error(err.message || (isAr ? "فشل منح العضوية" : "Failed to grant membership"));
     } finally {
@@ -349,11 +369,18 @@ export function MemberProfileModal({
                     {profile.full_name_ar || profile.full_name_en || profile.email}
                   </DialogTitle>
                   <Badge
-                    variant={isMembershipApproved ? "default" : isMembershipPending ? "secondary" : "outline"}
+                    variant={
+                      isMembershipApproved
+                        ? "default"
+                        : isMembershipPending
+                          ? "secondary"
+                          : "outline"
+                    }
                     className={cn(
                       "text-[10px] px-2 py-0.5 font-medium",
                       isMembershipApproved && "bg-emerald-600 text-white",
-                      isMembershipPending && "bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40"
+                      isMembershipPending &&
+                        "bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40",
                     )}
                   >
                     {isMembershipApproved
@@ -361,12 +388,12 @@ export function MemberProfileModal({
                         ? "عضو موثق ومفعل"
                         : "Verified Member"
                       : isMembershipPending
-                      ? isAr
-                        ? "طلب العضوية قيد المراجعة"
-                        : "Verification Pending"
-                      : isAr
-                      ? "حساب غير موثق"
-                      : "Unverified Account"}
+                        ? isAr
+                          ? "طلب العضوية قيد المراجعة"
+                          : "Verification Pending"
+                        : isAr
+                          ? "حساب غير موثق"
+                          : "Unverified Account"}
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground font-mono">
@@ -376,7 +403,10 @@ export function MemberProfileModal({
             </div>
 
             {profile.branch_slug && (
-              <Badge variant="outline" className="text-xs px-2.5 py-1 border-primary/30 text-primary self-start sm:self-auto">
+              <Badge
+                variant="outline"
+                className="text-xs px-2.5 py-1 border-primary/30 text-primary self-start sm:self-auto"
+              >
                 <GitBranch className="w-3 h-3 me-1" />
                 {profile.branch_slug}
               </Badge>
@@ -490,19 +520,31 @@ export function MemberProfileModal({
                   </h4>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between py-1 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "الاسم بالعربية" : "Arabic Name"}</span>
-                      <span className="font-semibold text-foreground">{profile.full_name_ar || "—"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "الاسم بالعربية" : "Arabic Name"}
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        {profile.full_name_ar || "—"}
+                      </span>
                     </div>
                     <div className="flex justify-between py-1 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "الاسم بالإنجليزية" : "English Name"}</span>
-                      <span className="font-semibold text-foreground">{profile.full_name_en || "—"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "الاسم بالإنجليزية" : "English Name"}
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        {profile.full_name_en || "—"}
+                      </span>
                     </div>
                     <div className="flex justify-between py-1 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "البريد الإلكتروني" : "Email"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "البريد الإلكتروني" : "Email"}
+                      </span>
                       <span className="font-mono text-foreground">{profile.email}</span>
                     </div>
                     <div className="flex justify-between py-1">
-                      <span className="text-muted-foreground">{isAr ? "تاريخ إنشاء الحساب" : "Registered On"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "تاريخ إنشاء الحساب" : "Registered On"}
+                      </span>
                       <span className="font-mono text-foreground">
                         {formatDualDate(profile.created_at, isAr ? "ar" : "en", "short")}
                       </span>
@@ -517,23 +559,27 @@ export function MemberProfileModal({
                   </h4>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between py-1 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "حالة العضوية" : "Membership"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "حالة العضوية" : "Membership"}
+                      </span>
                       <span className="font-bold text-foreground">
                         {isMembershipApproved
                           ? isAr
                             ? "معتمد وموثق"
                             : "Approved"
                           : isMembershipPending
-                          ? isAr
-                            ? "قيد المراجعة"
-                            : "Pending"
-                          : isAr
-                          ? "غير موثق"
-                          : "Unverified"}
+                            ? isAr
+                              ? "قيد المراجعة"
+                              : "Pending"
+                            : isAr
+                              ? "غير موثق"
+                              : "Unverified"}
                       </span>
                     </div>
                     <div className="flex justify-between py-1 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "الأدوار النشطة" : "Active Roles"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "الأدوار النشطة" : "Active Roles"}
+                      </span>
                       <div className="flex flex-wrap gap-1 justify-end">
                         {currentRoles.map((r) => (
                           <Badge key={r} variant="outline" className="text-[10px] font-mono">
@@ -543,8 +589,12 @@ export function MemberProfileModal({
                       </div>
                     </div>
                     <div className="flex justify-between py-1">
-                      <span className="text-muted-foreground">{isAr ? "الفرع العائلي" : "Family Branch"}</span>
-                      <span className="font-semibold text-foreground">{profile.branch_slug || "—"}</span>
+                      <span className="text-muted-foreground">
+                        {isAr ? "الفرع العائلي" : "Family Branch"}
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        {profile.branch_slug || "—"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -570,12 +620,12 @@ export function MemberProfileModal({
                         membershipRequest.status === "approved"
                           ? "default"
                           : membershipRequest.status === "rejected"
-                          ? "destructive"
-                          : "secondary"
+                            ? "destructive"
+                            : "secondary"
                       }
                       className={cn(
                         "text-xs px-2.5 py-0.5 font-bold",
-                        membershipRequest.status === "approved" && "bg-emerald-600 text-white"
+                        membershipRequest.status === "approved" && "bg-emerald-600 text-white",
                       )}
                     >
                       {membershipRequest.status === "approved"
@@ -583,12 +633,12 @@ export function MemberProfileModal({
                           ? "طلب معتمد"
                           : "Approved"
                         : membershipRequest.status === "rejected"
-                        ? isAr
-                          ? "طلب مرفوض"
-                          : "Rejected"
-                        : isAr
-                        ? "بانتظار مراجعة الأمانة"
-                        : "Pending Audit"}
+                          ? isAr
+                            ? "طلب مرفوض"
+                            : "Rejected"
+                          : isAr
+                            ? "بانتظار مراجعة الأمانة"
+                            : "Pending Audit"}
                     </Badge>
                   </div>
 
@@ -614,9 +664,16 @@ export function MemberProfileModal({
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-primary font-bold text-xs">
                             <MessageSquare className="w-4 h-4" />
-                            <span>{isAr ? "رسالة وملاحظات العضو إلى مجلس الأسرة:" : "Applicant's Message to the Council:"}</span>
+                            <span>
+                              {isAr
+                                ? "رسالة وملاحظات العضو إلى مجلس الأسرة:"
+                                : "Applicant's Message to the Council:"}
+                            </span>
                           </div>
-                          <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30 font-medium">
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] bg-primary/10 text-primary border-primary/30 font-medium"
+                          >
                             {isAr ? "رسالة مرفقة مع الطلب" : "Attached Note"}
                           </Badge>
                         </div>
@@ -627,7 +684,11 @@ export function MemberProfileModal({
                     ) : (
                       <div className="md:col-span-2 p-2.5 rounded-lg border border-dashed border-border bg-muted/20 text-muted-foreground text-[11px] flex items-center gap-2">
                         <MessageSquare className="w-3.5 h-3.5 opacity-60" />
-                        <span>{isAr ? "لم يرفق مقدم الطلب رسالة أو ملاحظات إضافية مع هذا الطلب." : "No additional applicant note provided."}</span>
+                        <span>
+                          {isAr
+                            ? "لم يرفق مقدم الطلب رسالة أو ملاحظات إضافية مع هذا الطلب."
+                            : "No additional applicant note provided."}
+                        </span>
                       </div>
                     )}
 
@@ -649,8 +710,16 @@ export function MemberProfileModal({
                       <div className="flex items-center gap-2.5 text-xs text-emerald-800 dark:text-emerald-300">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <div>
-                          <p className="font-bold">{isAr ? "العضوية معتمدة وموثقة رسمياً في الأسرة" : "Membership Officially Verified"}</p>
-                          <p className="text-[11px] opacity-90">{isAr ? "تم قيد العضو في السجل. يمكنك الآن إسناد المهام والصلاحيات الإدارية له من تبويب الصلاحيات." : "Member is registered. You can now assign administrative roles."}</p>
+                          <p className="font-bold">
+                            {isAr
+                              ? "العضوية معتمدة وموثقة رسمياً في الأسرة"
+                              : "Membership Officially Verified"}
+                          </p>
+                          <p className="text-[11px] opacity-90">
+                            {isAr
+                              ? "تم قيد العضو في السجل. يمكنك الآن إسناد المهام والصلاحيات الإدارية له من تبويب الصلاحيات."
+                              : "Member is registered. You can now assign administrative roles."}
+                          </p>
                         </div>
                       </div>
                       <Button
@@ -681,11 +750,19 @@ export function MemberProfileModal({
                         variant="outline"
                         disabled={reviewing}
                         onClick={async () => {
-                          const note = window.prompt(isAr ? "سبب رفض الطلب أو الملاحظات المطلوبة:" : "Rejection reason / requested note:");
+                          const note = window.prompt(
+                            isAr
+                              ? "سبب رفض الطلب أو الملاحظات المطلوبة:"
+                              : "Rejection reason / requested note:",
+                          );
                           if (note === null) return;
                           try {
                             setReviewing(true);
-                            await onReviewRequest(membershipRequest.id, "rejected", note || "طلب غير مكتمل");
+                            await onReviewRequest(
+                              membershipRequest.id,
+                              "rejected",
+                              note || "طلب غير مكتمل",
+                            );
                             toast.success(isAr ? "تم تحديث حالة الطلب" : "Request status updated");
                           } catch (e: any) {
                             toast.error(e.message || "فشل التحديث");
@@ -696,7 +773,9 @@ export function MemberProfileModal({
                         className="h-8 text-xs text-destructive hover:bg-destructive/10 border-destructive/30 rounded-xl"
                       >
                         <XCircle className="w-3.5 h-3.5" />
-                        <span>{isAr ? "رفض الطلب أو طلب استكمال بيانات" : "Reject / Request Info"}</span>
+                        <span>
+                          {isAr ? "رفض الطلب أو طلب استكمال بيانات" : "Reject / Request Info"}
+                        </span>
                       </Button>
                     </div>
                   )}
@@ -705,7 +784,9 @@ export function MemberProfileModal({
                 <div className="p-8 text-center border border-border rounded-2xl bg-card space-y-3">
                   <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto" />
                   <p className="text-xs font-bold text-foreground">
-                    {isAr ? "لم يقم هذا المستخدم بتقديم طلب عضوية بعد" : "No membership request on record"}
+                    {isAr
+                      ? "لم يقم هذا المستخدم بتقديم طلب عضوية بعد"
+                      : "No membership request on record"}
                   </p>
                   <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
                     {isAr
@@ -721,7 +802,11 @@ export function MemberProfileModal({
                         className="h-8 text-xs font-bold gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>{isAr ? "منح صفة عضو معتمد مباشرة الآن" : "Grant Verified Membership Directly"}</span>
+                        <span>
+                          {isAr
+                            ? "منح صفة عضو معتمد مباشرة الآن"
+                            : "Grant Verified Membership Directly"}
+                        </span>
                       </Button>
                     </div>
                   )}
@@ -838,7 +923,9 @@ export function MemberProfileModal({
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <GitBranch className="w-4 h-4 text-primary" />
-                    <span>{isAr ? "الربط مع شجرة العائلة وسجل الأنساب" : "Genealogy Tree Link"}</span>
+                    <span>
+                      {isAr ? "الربط مع شجرة العائلة وسجل الأنساب" : "Genealogy Tree Link"}
+                    </span>
                   </h4>
                 </div>
 
@@ -856,7 +943,9 @@ export function MemberProfileModal({
                       )}
                     </div>
                     <p className="text-[11px] text-muted-foreground">
-                      {isAr ? "هذا الحساب مرتبط بسجل موثق في شجرة العائلة." : "Account linked to genealogy record."}
+                      {isAr
+                        ? "هذا الحساب مرتبط بسجل موثق في شجرة العائلة."
+                        : "Account linked to genealogy record."}
                     </p>
                   </div>
                 ) : (

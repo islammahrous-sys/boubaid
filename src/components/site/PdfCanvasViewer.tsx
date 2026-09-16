@@ -17,34 +17,38 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
 
   useEffect(() => {
     let disposed = false;
-    let task: ReturnType<typeof import("pdfjs-dist")["getDocument"]> | null = null;
+    let task: ReturnType<(typeof import("pdfjs-dist"))["getDocument"]> | null = null;
 
     setLoading(true);
     setError(false);
     setDocument(null);
     setPageNumber(1);
 
-    void import("pdfjs-dist").then((pdfjs) => {
-      if (disposed) return;
-      pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
-      // Some official Arabic PDFs use custom-encoded embedded fonts. Letting
-      // the browser substitute those fonts corrupts joining and character
-      // order, so PDF.js must render the embedded glyph outlines directly.
-      task = pdfjs.getDocument({
-        url: src,
-        disableFontFace: true,
-        useSystemFonts: false,
+    void import("pdfjs-dist")
+      .then((pdfjs) => {
+        if (disposed) return;
+        pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+        // Some official Arabic PDFs use custom-encoded embedded fonts. Letting
+        // the browser substitute those fonts corrupts joining and character
+        // order, so PDF.js must render the embedded glyph outlines directly.
+        task = pdfjs.getDocument({
+          url: src,
+          disableFontFace: true,
+          useSystemFonts: false,
+        });
+        return task.promise;
+      })
+      .then((pdf) => {
+        if (!pdf || disposed) return;
+        setDocument(pdf);
+      })
+      .catch((reason: unknown) => {
+        console.error("[pdf-viewer] failed to load document", reason);
+        if (!disposed) setError(true);
+      })
+      .finally(() => {
+        if (!disposed) setLoading(false);
       });
-      return task.promise;
-    }).then((pdf) => {
-      if (!pdf || disposed) return;
-      setDocument(pdf);
-    }).catch((reason: unknown) => {
-      console.error("[pdf-viewer] failed to load document", reason);
-      if (!disposed) setError(true);
-    }).finally(() => {
-      if (!disposed) setLoading(false);
-    });
 
     return () => {
       disposed = true;
@@ -58,30 +62,36 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
     if (!document || !canvas) return;
     let disposed = false;
 
-    void document.getPage(pageNumber).then((page) => {
-      if (disposed) return;
-      const baseViewport = page.getViewport({ scale: 1 });
-      const availableWidth = Math.max(280, canvas.parentElement?.clientWidth ?? 900);
-      const scale = Math.min(2, availableWidth / baseViewport.width);
-      const viewport = page.getViewport({ scale });
-      const ratio = window.devicePixelRatio || 1;
-      canvas.width = Math.floor(viewport.width * ratio);
-      canvas.height = Math.floor(viewport.height * ratio);
-      canvas.style.width = `${Math.floor(viewport.width)}px`;
-      canvas.style.height = `${Math.floor(viewport.height)}px`;
-      const context = canvas.getContext("2d");
-      if (!context) return;
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      renderTaskRef.current?.cancel();
-      const renderTask = page.render({ canvasContext: context, viewport });
-      renderTaskRef.current = renderTask;
-      return renderTask.promise;
-    }).catch((reason: unknown) => {
-      if (!disposed && !(reason instanceof Error && reason.name === "RenderingCancelledException")) {
-        console.error("[pdf-viewer] failed to render page", reason);
-        setError(true);
-      }
-    });
+    void document
+      .getPage(pageNumber)
+      .then((page) => {
+        if (disposed) return;
+        const baseViewport = page.getViewport({ scale: 1 });
+        const availableWidth = Math.max(280, canvas.parentElement?.clientWidth ?? 900);
+        const scale = Math.min(2, availableWidth / baseViewport.width);
+        const viewport = page.getViewport({ scale });
+        const ratio = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(viewport.width * ratio);
+        canvas.height = Math.floor(viewport.height * ratio);
+        canvas.style.width = `${Math.floor(viewport.width)}px`;
+        canvas.style.height = `${Math.floor(viewport.height)}px`;
+        const context = canvas.getContext("2d");
+        if (!context) return;
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        renderTaskRef.current?.cancel();
+        const renderTask = page.render({ canvasContext: context, viewport });
+        renderTaskRef.current = renderTask;
+        return renderTask.promise;
+      })
+      .catch((reason: unknown) => {
+        if (
+          !disposed &&
+          !(reason instanceof Error && reason.name === "RenderingCancelledException")
+        ) {
+          console.error("[pdf-viewer] failed to render page", reason);
+          setError(true);
+        }
+      });
 
     return () => {
       disposed = true;

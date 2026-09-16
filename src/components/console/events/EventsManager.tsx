@@ -362,7 +362,9 @@ export function EventsManager({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "المعرف الفريد (Slug) — يُنشأ تلقائياً" : "Slug (auto-generated)"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "المعرف الفريد (Slug) — يُنشأ تلقائياً" : "Slug (auto-generated)"}
+                </Label>
                 <Input
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}

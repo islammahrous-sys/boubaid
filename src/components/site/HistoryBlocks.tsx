@@ -175,7 +175,9 @@ export function HistoryBlocks({ blocks }: { blocks: HistoryBlock[] }) {
                   </table>
                 </div>
                 <p className="mt-2 text-[12px] text-muted-foreground md:hidden">
-                  {rtl ? "اسحب الجدول أفقياً لعرض جميع الأعمدة." : "Scroll the table horizontally to see all columns."}
+                  {rtl
+                    ? "اسحب الجدول أفقياً لعرض جميع الأعمدة."
+                    : "Scroll the table horizontally to see all columns."}
                 </p>
               </div>
             );

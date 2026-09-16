@@ -17,7 +17,8 @@ export const Route = createFileRoute("/fund-financials")({
       { property: "og:title", content: "القوائم المالية والموازنة والحسابات — آل بوعبيد" },
       {
         property: "og:description",
-        content: "القوائم المالية والموازنة وكشوف حسابات صندوق التنمية العائلية، وطلب استعلام مالي.",
+        content:
+          "القوائم المالية والموازنة وكشوف حسابات صندوق التنمية العائلية، وطلب استعلام مالي.",
       },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/fund-financials") },
@@ -59,7 +60,9 @@ function FundFinancialsPage() {
     <div>
       <PageHeader
         eyebrow={isAr ? "صندوق التنمية العائلية" : "Family Development Fund"}
-        title={isAr ? "القوائم المالية والموازنة والحسابات" : "Financial Statements, Budget & Accounts"}
+        title={
+          isAr ? "القوائم المالية والموازنة والحسابات" : "Financial Statements, Budget & Accounts"
+        }
         subtitle={
           isAr
             ? "سجل الصندوق المالي المعتمد. تُنشر الملفات هنا عقب اعتمادها من مجلس الأسرة، ويمكن لأفراد الأسرة تقديم طلب استعلام مالي رسمي."

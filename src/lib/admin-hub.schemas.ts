@@ -35,53 +35,67 @@ export const relationshipTypeSchema = z.enum(["parent", "child", "spouse"]);
 export const userStatusSchema = z.enum(["ACTIVE", "INVITED", "SUSPENDED", "DISABLED"]);
 
 // 1. Family Member Schema
-export const familyMemberInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  first_name_ar: z.string().trim().min(2, "الاسم الأول بالعربية مطلوب"),
-  middle_name_ar: z.string().trim().optional().nullable(),
-  last_name_ar: z.string().trim().min(2, "اسم العائلة بالعربية مطلوب"),
-  display_name_ar: z.string().trim().optional().nullable(),
-  first_name_en: z.string().trim().optional().nullable(),
-  middle_name_en: z.string().trim().optional().nullable(),
-  last_name_en: z.string().trim().optional().nullable(),
-  display_name_en: z.string().trim().optional().nullable(),
-  slug: autoSlugField,
-  gender: genderSchema.default("male"),
-  date_of_birth: z.string().optional().nullable(),
-  date_of_death: z.string().optional().nullable(),
-  is_living: z.boolean().default(true),
-  biography_ar: z.string().optional().nullable(),
-  biography_en: z.string().optional().nullable(),
-  occupation_ar: z.string().optional().nullable(),
-  occupation_en: z.string().optional().nullable(),
-  education_ar: z.string().optional().nullable(),
-  education_en: z.string().optional().nullable(),
-  birth_place_id: z.string().uuid().optional().nullable(),
-  current_place_id: z.string().uuid().optional().nullable(),
-  branch_id: z.string().uuid().optional().nullable(),
-  avatar_path: z.string().optional().nullable(),
-  cover_path: z.string().optional().nullable(),
-  generation: z.number().int().min(1).default(1),
-  sort_order: z.number().int().default(0),
-  visibility: visibilityLevelSchema.default("public"),
-  status: recordStatusSchema.default("published"),
-}).transform((v) => withAutoSlug(v, [[v.first_name_ar, v.middle_name_ar, v.last_name_ar].filter(Boolean).join(" "), v.display_name_ar, [v.first_name_en, v.last_name_en].filter(Boolean).join(" ")], "member"));
+export const familyMemberInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    first_name_ar: z.string().trim().min(2, "الاسم الأول بالعربية مطلوب"),
+    middle_name_ar: z.string().trim().optional().nullable(),
+    last_name_ar: z.string().trim().min(2, "اسم العائلة بالعربية مطلوب"),
+    display_name_ar: z.string().trim().optional().nullable(),
+    first_name_en: z.string().trim().optional().nullable(),
+    middle_name_en: z.string().trim().optional().nullable(),
+    last_name_en: z.string().trim().optional().nullable(),
+    display_name_en: z.string().trim().optional().nullable(),
+    slug: autoSlugField,
+    gender: genderSchema.default("male"),
+    date_of_birth: z.string().optional().nullable(),
+    date_of_death: z.string().optional().nullable(),
+    is_living: z.boolean().default(true),
+    biography_ar: z.string().optional().nullable(),
+    biography_en: z.string().optional().nullable(),
+    occupation_ar: z.string().optional().nullable(),
+    occupation_en: z.string().optional().nullable(),
+    education_ar: z.string().optional().nullable(),
+    education_en: z.string().optional().nullable(),
+    birth_place_id: z.string().uuid().optional().nullable(),
+    current_place_id: z.string().uuid().optional().nullable(),
+    branch_id: z.string().uuid().optional().nullable(),
+    avatar_path: z.string().optional().nullable(),
+    cover_path: z.string().optional().nullable(),
+    generation: z.number().int().min(1).default(1),
+    sort_order: z.number().int().default(0),
+    visibility: visibilityLevelSchema.default("public"),
+    status: recordStatusSchema.default("published"),
+  })
+  .transform((v) =>
+    withAutoSlug(
+      v,
+      [
+        [v.first_name_ar, v.middle_name_ar, v.last_name_ar].filter(Boolean).join(" "),
+        v.display_name_ar,
+        [v.first_name_en, v.last_name_en].filter(Boolean).join(" "),
+      ],
+      "member",
+    ),
+  );
 export type FamilyMemberInput = z.infer<typeof familyMemberInputSchema>;
 
 // 2. Family Branch Schema
-export const familyBranchInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug: autoSlugField,
-  name_ar: z.string().trim().min(2, "اسم الفرع بالعربية مطلوب"),
-  name_en: z.string().trim().optional().nullable(),
-  description_ar: z.string().optional().nullable(),
-  description_en: z.string().optional().nullable(),
-  elder_ar: z.string().optional().nullable(),
-  elder_en: z.string().optional().nullable(),
-  image_path: z.string().optional().nullable(),
-  sort_order: z.number().int().default(0),
-  is_published: z.boolean().default(true),
-}).transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "branch"));
+export const familyBranchInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug: autoSlugField,
+    name_ar: z.string().trim().min(2, "اسم الفرع بالعربية مطلوب"),
+    name_en: z.string().trim().optional().nullable(),
+    description_ar: z.string().optional().nullable(),
+    description_en: z.string().optional().nullable(),
+    elder_ar: z.string().optional().nullable(),
+    elder_en: z.string().optional().nullable(),
+    image_path: z.string().optional().nullable(),
+    sort_order: z.number().int().default(0),
+    is_published: z.boolean().default(true),
+  })
+  .transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "branch"));
 export type FamilyBranchInput = z.infer<typeof familyBranchInputSchema>;
 
 // 3. Family Relationship Schema
@@ -139,26 +153,28 @@ export const contentSectionInputSchema = z.object({
 export type ContentSectionInput = z.infer<typeof contentSectionInputSchema>;
 
 // 7. Content Page Schema
-export const contentPageInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug: autoSlugField,
-  slug_ar: z.string().trim().optional().nullable(),
-  title_ar: z.string().trim().min(2, "عنوان الصفحة بالعربية مطلوب"),
-  title_en: z.string().trim().optional().nullable(),
-  excerpt_ar: z.string().optional().nullable(),
-  excerpt_en: z.string().optional().nullable(),
-  featured_media_path: z.string().optional().nullable(),
-  status: recordStatusSchema.default("draft"),
-  visibility: visibilityLevelSchema.default("public"),
-  template: z.string().default("default"),
-  seo_title_ar: z.string().optional().nullable(),
-  seo_title_en: z.string().optional().nullable(),
-  seo_description_ar: z.string().optional().nullable(),
-  seo_description_en: z.string().optional().nullable(),
-  canonical_url: z.string().optional().nullable(),
-  no_index: z.boolean().default(false),
-  sections: z.array(contentSectionInputSchema).optional(),
-}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "page", { allowSlashes: true }));
+export const contentPageInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug: autoSlugField,
+    slug_ar: z.string().trim().optional().nullable(),
+    title_ar: z.string().trim().min(2, "عنوان الصفحة بالعربية مطلوب"),
+    title_en: z.string().trim().optional().nullable(),
+    excerpt_ar: z.string().optional().nullable(),
+    excerpt_en: z.string().optional().nullable(),
+    featured_media_path: z.string().optional().nullable(),
+    status: recordStatusSchema.default("draft"),
+    visibility: visibilityLevelSchema.default("public"),
+    template: z.string().default("default"),
+    seo_title_ar: z.string().optional().nullable(),
+    seo_title_en: z.string().optional().nullable(),
+    seo_description_ar: z.string().optional().nullable(),
+    seo_description_en: z.string().optional().nullable(),
+    canonical_url: z.string().optional().nullable(),
+    no_index: z.boolean().default(false),
+    sections: z.array(contentSectionInputSchema).optional(),
+  })
+  .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "page", { allowSlashes: true }));
 export type ContentPageInput = z.infer<typeof contentPageInputSchema>;
 
 // 8. Navigation Menu & Items Schema
@@ -178,47 +194,51 @@ export const navigationItemInputSchema = z.object({
 export type NavigationItemInput = z.infer<typeof navigationItemInputSchema>;
 
 // 9. Articles Schema
-export const articleInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug: autoSlugField,
-  slug_ar: z.string().trim().optional().nullable(),
-  title_ar: z.string().trim().min(2, "عنوان المقال مطلوب"),
-  title_en: z.string().trim().optional().nullable(),
-  excerpt_ar: z.string().optional().nullable(),
-  excerpt_en: z.string().optional().nullable(),
-  content_ar: z.string().optional().nullable(),
-  content_en: z.string().optional().nullable(),
-  featured_media_path: z.string().optional().nullable(),
-  category_id: z.string().uuid().optional().nullable(),
-  status: recordStatusSchema.default("draft"),
-  published_at: z.string().optional().nullable(),
-  is_featured: z.boolean().default(false),
-  seo_title_ar: z.string().optional().nullable(),
-  seo_title_en: z.string().optional().nullable(),
-  seo_description_ar: z.string().optional().nullable(),
-  seo_description_en: z.string().optional().nullable(),
-  tag_ids: z.array(z.string().uuid()).optional(),
-}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "article"));
+export const articleInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug: autoSlugField,
+    slug_ar: z.string().trim().optional().nullable(),
+    title_ar: z.string().trim().min(2, "عنوان المقال مطلوب"),
+    title_en: z.string().trim().optional().nullable(),
+    excerpt_ar: z.string().optional().nullable(),
+    excerpt_en: z.string().optional().nullable(),
+    content_ar: z.string().optional().nullable(),
+    content_en: z.string().optional().nullable(),
+    featured_media_path: z.string().optional().nullable(),
+    category_id: z.string().uuid().optional().nullable(),
+    status: recordStatusSchema.default("draft"),
+    published_at: z.string().optional().nullable(),
+    is_featured: z.boolean().default(false),
+    seo_title_ar: z.string().optional().nullable(),
+    seo_title_en: z.string().optional().nullable(),
+    seo_description_ar: z.string().optional().nullable(),
+    seo_description_en: z.string().optional().nullable(),
+    tag_ids: z.array(z.string().uuid()).optional(),
+  })
+  .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "article"));
 export type ArticleInput = z.infer<typeof articleInputSchema>;
 
 // 10. Events Schema
-export const eventInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug: autoSlugField,
-  title_ar: z.string().trim().min(2, "عنوان الفعالية مطلوب"),
-  title_en: z.string().trim().optional().nullable(),
-  description_ar: z.string().optional().nullable(),
-  description_en: z.string().optional().nullable(),
-  start_at: z.string().min(1, "تاريخ ووقت البدء مطلوب"),
-  end_at: z.string().optional().nullable(),
-  timezone: z.string().default("Asia/Riyadh"),
-  place_id: z.string().uuid().optional().nullable(),
-  cover_path: z.string().optional().nullable(),
-  registration_enabled: z.boolean().default(false),
-  registration_deadline: z.string().optional().nullable(),
-  max_attendees: z.number().int().optional().nullable(),
-  status: z.enum(["draft", "published", "cancelled", "completed"]).default("published"),
-}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "event"));
+export const eventInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug: autoSlugField,
+    title_ar: z.string().trim().min(2, "عنوان الفعالية مطلوب"),
+    title_en: z.string().trim().optional().nullable(),
+    description_ar: z.string().optional().nullable(),
+    description_en: z.string().optional().nullable(),
+    start_at: z.string().min(1, "تاريخ ووقت البدء مطلوب"),
+    end_at: z.string().optional().nullable(),
+    timezone: z.string().default("Asia/Riyadh"),
+    place_id: z.string().uuid().optional().nullable(),
+    cover_path: z.string().optional().nullable(),
+    registration_enabled: z.boolean().default(false),
+    registration_deadline: z.string().optional().nullable(),
+    max_attendees: z.number().int().optional().nullable(),
+    status: z.enum(["draft", "published", "cancelled", "completed"]).default("published"),
+  })
+  .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "event"));
 export type EventInput = z.infer<typeof eventInputSchema>;
 
 // 11. Announcements Schema
@@ -263,22 +283,24 @@ export const mediaAssetInputSchema = z.object({
 export type MediaAssetInput = z.infer<typeof mediaAssetInputSchema>;
 
 // 13. Gallery Schema
-export const galleryInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug: autoSlugField,
-  title_ar: z.string().trim().min(2, "عنوان المعرض مطلوب"),
-  title_en: z.string().trim().optional().nullable(),
-  description_ar: z.string().optional().nullable(),
-  description_en: z.string().optional().nullable(),
-  cover_media_path: z.string().optional().nullable(),
-  status: z.string().default("published"),
-  visibility: visibilityLevelSchema.default("public"),
-  sort_order: z.number().int().default(0),
-  /** "museum" = Museum Collection (protected legacy set), "archive" = Archive folder tree. */
-  section: z.enum(["museum", "archive"]).default("museum"),
-  /** Parent Archive folder, for sub-folders. Null for a top-level folder. */
-  parent_id: z.string().uuid().optional().nullable(),
-}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "gallery"));
+export const galleryInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug: autoSlugField,
+    title_ar: z.string().trim().min(2, "عنوان المعرض مطلوب"),
+    title_en: z.string().trim().optional().nullable(),
+    description_ar: z.string().optional().nullable(),
+    description_en: z.string().optional().nullable(),
+    cover_media_path: z.string().optional().nullable(),
+    status: z.string().default("published"),
+    visibility: visibilityLevelSchema.default("public"),
+    sort_order: z.number().int().default(0),
+    /** "museum" = Museum Collection (protected legacy set), "archive" = Archive folder tree. */
+    section: z.enum(["museum", "archive"]).default("museum"),
+    /** Parent Archive folder, for sub-folders. Null for a top-level folder. */
+    parent_id: z.string().uuid().optional().nullable(),
+  })
+  .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "gallery"));
 export type GalleryInput = z.infer<typeof galleryInputSchema>;
 
 // 14. Document Schema
@@ -338,25 +360,27 @@ export const siteSettingInputSchema = z.object({
 export type SiteSettingInput = z.infer<typeof siteSettingInputSchema>;
 
 // 17. Business Directory Schema
-export const businessInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug: autoSlugField,
-  name_ar: z.string().trim().min(2, "اسم المنشأة بالعربية مطلوب"),
-  name_en: z.string().trim().optional().nullable(),
-  category_ar: z.string().trim().min(2, "القطاع بالعربية مطلوب"),
-  category_en: z.string().trim().min(2, "Category in English is required"),
-  city_ar: z.string().trim().min(2, "المدينة مطلوبة"),
-  city_en: z.string().trim().optional().nullable(),
-  description_ar: z.string().optional().nullable(),
-  description_en: z.string().optional().nullable(),
-  owner_branch_ar: z.string().optional().nullable(),
-  owner_branch_en: z.string().optional().nullable(),
-  contact: z.string().trim().min(3, "رقم التواصل مطلوب"),
-  website: z.string().optional().nullable(),
-  logo_path: z.string().optional().nullable(),
-  is_published: z.boolean().default(true),
-  sort_order: z.number().int().default(0),
-}).transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "business"));
+export const businessInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug: autoSlugField,
+    name_ar: z.string().trim().min(2, "اسم المنشأة بالعربية مطلوب"),
+    name_en: z.string().trim().optional().nullable(),
+    category_ar: z.string().trim().min(2, "القطاع بالعربية مطلوب"),
+    category_en: z.string().trim().min(2, "Category in English is required"),
+    city_ar: z.string().trim().min(2, "المدينة مطلوبة"),
+    city_en: z.string().trim().optional().nullable(),
+    description_ar: z.string().optional().nullable(),
+    description_en: z.string().optional().nullable(),
+    owner_branch_ar: z.string().optional().nullable(),
+    owner_branch_en: z.string().optional().nullable(),
+    contact: z.string().trim().min(3, "رقم التواصل مطلوب"),
+    website: z.string().optional().nullable(),
+    logo_path: z.string().optional().nullable(),
+    is_published: z.boolean().default(true),
+    sort_order: z.number().int().default(0),
+  })
+  .transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "business"));
 export type BusinessInput = z.infer<typeof businessInputSchema>;
 
 // 18. Membership Request Review Schema
@@ -383,22 +407,24 @@ export const treasuryContributionReviewSchema = z.object({
 export type TreasuryContributionReviewInput = z.infer<typeof treasuryContributionReviewSchema>;
 
 // 20. Initiative Schema
-export const initiativeInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug: autoSlugField,
-  title_ar: z.string().trim().min(2, "عنوان المبادرة مطلوب"),
-  title_en: z.string().trim().optional().nullable(),
-  summary_ar: z.string().optional().nullable(),
-  summary_en: z.string().optional().nullable(),
-  body_ar: z.string().optional().nullable(),
-  body_en: z.string().optional().nullable(),
-  status: z.enum(["ongoing", "planned", "completed"]).default("ongoing"),
-  /** Section this record belongs to: المشاريع (project) or البرامج (program). */
-  kind: z.enum(["project", "program", "competition"]).default("project"),
-  cover_path: z.string().optional().nullable(),
-  sort_order: z.number().int().default(0),
-  is_published: z.boolean().default(true),
-}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "initiative"));
+export const initiativeInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug: autoSlugField,
+    title_ar: z.string().trim().min(2, "عنوان المبادرة مطلوب"),
+    title_en: z.string().trim().optional().nullable(),
+    summary_ar: z.string().optional().nullable(),
+    summary_en: z.string().optional().nullable(),
+    body_ar: z.string().optional().nullable(),
+    body_en: z.string().optional().nullable(),
+    status: z.enum(["ongoing", "planned", "completed"]).default("ongoing"),
+    /** Section this record belongs to: المشاريع (project) or البرامج (program). */
+    kind: z.enum(["project", "program", "competition"]).default("project"),
+    cover_path: z.string().optional().nullable(),
+    sort_order: z.number().int().default(0),
+    is_published: z.boolean().default(true),
+  })
+  .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "initiative"));
 export type InitiativeInput = z.infer<typeof initiativeInputSchema>;
 
 // 21. Achiever (Roll of Honour) Schema

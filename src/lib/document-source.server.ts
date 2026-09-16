@@ -20,13 +20,8 @@ const MIRROR_BUCKET = "documents-public";
 const MIRROR_PREFIX = "official-docs";
 const DEFAULT_ASSET_ORIGIN = "https://alboabid-heritage-hub.lovable.app";
 
-
 function supabaseBaseUrl(): string {
-  return (
-    process.env["SUPABASE_URL"] ||
-    process.env["VITE_SUPABASE_URL"] ||
-    DEFAULT_SUPABASE_URL
-  );
+  return process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"] || DEFAULT_SUPABASE_URL;
 }
 
 /** Extract the externalised asset id from a `/__l5e/assets-v1/<id>/<file>` href. */
@@ -69,17 +64,13 @@ export function documentSourceCandidates(href: string, origin: string): string[]
   }
 
   return candidates;
-
 }
 
 /**
  * Stream a stored document back to the browser inline (view-only), trying each
  * candidate source. Returns a 404/502 Response when nothing is reachable.
  */
-export async function streamDocumentInline(
-  href: string,
-  origin: string,
-): Promise<Response> {
+export async function streamDocumentInline(href: string, origin: string): Promise<Response> {
   const candidates = documentSourceCandidates(href, origin);
 
   for (const url of candidates) {

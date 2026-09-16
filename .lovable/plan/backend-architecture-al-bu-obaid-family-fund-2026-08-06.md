@@ -4,7 +4,7 @@ Goal: turn the current static bilingual site into a working system with verified
 
 ## Architecture in one paragraph
 
-A modular monolith on the stack the site already runs: TanStack Start on the server, Lovable Cloud (Postgres + Auth + Storage) for data. No separate API service, no Docker, no microservices — the app's own server layer *is* the backend, deployed with the frontend on every publish. Access control lives in the database (row-level security), so a rule written once holds for every screen, and the family register cannot leak through a forgotten check in the UI.
+A modular monolith on the stack the site already runs: TanStack Start on the server, Lovable Cloud (Postgres + Auth + Storage) for data. No separate API service, no Docker, no microservices — the app's own server layer _is_ the backend, deployed with the frontend on every publish. Access control lives in the database (row-level security), so a rule written once holds for every screen, and the family register cannot leak through a forgotten check in the UI.
 
 Every table gets policies before any screen reads it. Content is public-readable only where the site is already public (news, initiatives, library, achievers); member data (contacts, lineage records, contributions) is readable by its owner and trustees only.
 
@@ -24,21 +24,22 @@ Files (portraits, receipts, PDFs, tree posters) go to Lovable Cloud storage: a p
 
 Each phase ends with a working, verified slice. I do not start the next one until the previous one is exercised end to end in the preview.
 
-**Phase 1 — Foundation & forms.** Enable Lovable Cloud. Create the schema above with RLS and role helpers. Wire the existing contact form, a membership request form, and newsletter signup to real tables with server-side validation. Set up email from the fund's own domain so the secretariat is notified and the sender is confirmed. *Deliverable:* nothing on the site is a dead form any more.
+**Phase 1 — Foundation & forms.** Enable Lovable Cloud. Create the schema above with RLS and role helpers. Wire the existing contact form, a membership request form, and newsletter signup to real tables with server-side validation. Set up email from the fund's own domain so the secretariat is notified and the sender is confirmed. _Deliverable:_ nothing on the site is a dead form any more.
 
-**Phase 2 — Accounts & approval.** Email/password + Google sign-in, email verification, password reset. Registration creates a *pending* membership request, not an active member — an admin approves it from a review queue, which grants the `member` role and notifies the applicant. Sign-in state in the header, sign-out, an account page. *Deliverable:* a real, gated membership.
+**Phase 2 — Accounts & approval.** Email/password + Google sign-in, email verification, password reset. Registration creates a _pending_ membership request, not an active member — an admin approves it from a review queue, which grants the `member` role and notifies the applicant. Sign-in state in the header, sign-out, an account page. _Deliverable:_ a real, gated membership.
 
-**Phase 3 — Admin panel, content first.** A trustee-only area: publish and edit news, initiatives, library items, achievers, and businesses, with image upload, draft/publish, and bilingual fields. Public pages start reading from the database instead of `src/content/site.ts`, migrated content-type by content-type so no page ever goes blank. *Deliverable:* trustees maintain the site without me.
+**Phase 3 — Admin panel, content first.** A trustee-only area: publish and edit news, initiatives, library items, achievers, and businesses, with image upload, draft/publish, and bilingual fields. Public pages start reading from the database instead of `src/content/site.ts`, migrated content-type by content-type so no page ever goes blank. _Deliverable:_ trustees maintain the site without me.
 
-**Phase 4 — Family tree & branches.** Admin editors for branches and lineage records, including the parent-child structure that feeds the tree view, plus per-branch documents. Members-only visibility for living individuals. *Deliverable:* the register stops being hard-coded.
+**Phase 4 — Family tree & branches.** Admin editors for branches and lineage records, including the parent-child structure that feeds the tree view, plus per-branch documents. Members-only visibility for living individuals. _Deliverable:_ the register stops being hard-coded.
 
 **Phase 5 — Contributions.** Two paths, one ledger:
-- *Bank transfer:* the member records a transfer and uploads a receipt; the treasurer confirms or rejects it; the member sees the status.
-- *Online:* card / Apple Pay / mada checkout through Lovable's built-in payment integration, with a signed webhook writing confirmed contributions.
+
+- _Bank transfer:_ the member records a transfer and uploads a receipt; the treasurer confirms or rejects it; the member sees the status.
+- _Online:_ card / Apple Pay / mada checkout through Lovable's built-in payment integration, with a signed webhook writing confirmed contributions.
 
 Both feed the same `contributions` table, so the treasurer sees one reconciled view. A treasurer dashboard shows totals by period and branch, with CSV export.
 
-*Two things to confirm before I build this phase:* Lovable's built-in payments needs a Pro plan, and I need to check whether the fund can onboard as a seller from Saudi Arabia — if not, we use a Saudi gateway (Moyasar or Tap) with the fund's merchant credentials instead. The bank-transfer path works either way and ships first.
+_Two things to confirm before I build this phase:_ Lovable's built-in payments needs a Pro plan, and I need to check whether the fund can onboard as a seller from Saudi Arabia — if not, we use a Saudi gateway (Moyasar or Tap) with the fund's merchant credentials instead. The bank-transfer path works either way and ships first.
 
 **Phase 6 — Member directory & search.** A signed-in directory of approved members with search and filtering by branch, honouring each member's visibility preference. Postgres full-text search across news, initiatives, and library items with Arabic-aware normalisation.
 
