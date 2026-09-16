@@ -1,4 +1,4 @@
-import { formatDualDate, formatDualDateTime } from "@/lib/dates";
+import { formatDualDate, formatDualDateTime, formatDualYear } from "@/lib/dates";
 import { useState } from "react";
 import {
   Table,
@@ -431,7 +431,7 @@ export function InquiriesManager({
                       {formatDualDate(inq.created_at, isAr ? "ar" : "en", "short")}
                     </div>
                     <div className="text-[10px] text-muted-foreground mt-0.5">
-                      {new Date(inq.created_at).getFullYear()}
+                      {formatDualYear(new Date(inq.created_at).getFullYear(), isAr ? "ar" : "en")}
                     </div>
                   </TableCell>
                   <TableCell>{getStatusDisplay(inq.status)}</TableCell>

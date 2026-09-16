@@ -8,7 +8,7 @@ import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { fundDocuments, fundDocumentGroups } from "@/content/fund-documents";
 import { getCanonicalUrl } from "@/lib/seo";
-import { formatHijri } from "@/lib/text";
+import { formatDualHijriYear } from "@/lib/dates";
 
 export const Route = createFileRoute("/fund-certificates")({
   head: () => ({
@@ -102,7 +102,7 @@ function FundCertificatesPage() {
                         {t(doc.note)}
                       </p>
                       <p className="nums label-caps mt-2 text-muted-foreground">
-                        {formatHijri(doc.year, lang)} · {doc.kind}
+                        {formatDualHijriYear(doc.year, lang)} · {doc.kind}
                       </p>
 
                       <button
