@@ -451,7 +451,9 @@ export type AchieverInput = z.infer<typeof achieverInputSchema>;
 export const libraryItemInputSchema = z.object({
   id: z.string().uuid().optional(),
   collection: z
-    .enum(["documents", "photographs", "recordings", "templates", "videos"])
+    // "financials" backs the Family Development Fund's financial statements
+    // page, so future statements are added through this same editor.
+    .enum(["documents", "photographs", "recordings", "templates", "videos", "financials"])
     .default("documents"),
   title_ar: z.string().trim().min(2, "العنوان بالعربية مطلوب"),
   title_en: z.string().trim().optional().nullable(),

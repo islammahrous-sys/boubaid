@@ -11,7 +11,8 @@ import { Ornament } from "@/components/site/Editorial";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ReadingProgress } from "@/components/site/ReadingProgress";
 import { newsImage } from "@/content/news-images";
-import { formatHijri, formatContentDate } from "@/lib/text";
+import { formatContentDate } from "@/lib/text";
+import { formatDualHijriYear } from "@/lib/dates";
 import { getCanonicalUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/news/$slug")({
@@ -114,7 +115,7 @@ function NewsDetail() {
           </span>
           <span className="h-3 w-px bg-border" aria-hidden="true" />
           <span className="nums text-xs text-muted-foreground">
-            {formatHijri(item.date.match(/^\d+/)?.[0] ?? item.date, lang)}
+            {formatDualHijriYear(item.date.match(/^\d+/)?.[0] ?? item.date, lang)}
           </span>
           <span className="h-3 w-px bg-border" aria-hidden="true" />
           <span className="nums text-xs text-muted-foreground flex items-center gap-1">

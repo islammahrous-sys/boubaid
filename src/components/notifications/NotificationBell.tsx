@@ -17,6 +17,7 @@ import {
   Settings,
   BellOff,
 } from "lucide-react";
+import { formatDualDate } from "@/lib/dates";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -118,10 +119,8 @@ export function NotificationBell({ className, align = "end" }: NotificationBellP
       if (diffHour < 24) return isAr ? `منذ ${diffHour} س` : `${diffHour}h ago`;
       const diffDay = Math.floor(diffHour / 24);
       if (diffDay < 7) return isAr ? `منذ ${diffDay} ي` : `${diffDay}d ago`;
-      return new Date(dateStr).toLocaleDateString(isAr ? "ar-SA" : "en-US", {
-        month: "short",
-        day: "numeric",
-      });
+      // Older than a week: both calendars, via the site-wide date utility.
+      return formatDualDate(dateStr, isAr ? "ar" : "en", "short");
     } catch {
       return "";
     }

@@ -122,3 +122,81 @@ export function formatDualDateTime(
   }).format(d);
   return `${formatDualDate(d, lang, "short")} · ${time}`;
 }
+
+/** Hijri year (Umm al-Qura) that a given Gregorian instant falls in. */
+function hijriYear(value: Date): string {
+  try {
+    return (
+      new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
+        timeZone: SITE_TIMEZONE,
+        year: "numeric",
+      })
+        .formatToParts(value)
+        .find((p) => p.type === "year")?.value ?? ""
+    );
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * A year, both calendars: "2025م · 1447هـ" / "2025 CE · 1447 AH".
+ * The Hijri year is derived from the Gregorian one, never hardcoded.
+ */
+export function formatDualYear(year: number, lang: DateLang): string {
+  const h = hijriYear(new Date(Date.UTC(year, 6, 1)));
+  const g = lang === "ar" ? `${year}م` : `${year} CE`;
+  if (!h) return g;
+  return lang === "ar" ? `${g} · ${h}هـ` : `${g} · ${h} AH`;
+}
+
+/**
+ * A span of years in both calendars, e.g.
+ * "2023م – 2025م · 1444هـ – 1447هـ".
+ */
+export function formatDualYearRange(from: number, to: number, lang: DateLang): string {
+  const hFrom = hijriYear(new Date(Date.UTC(from, 0, 1)));
+  const hTo = hijriYear(new Date(Date.UTC(to, 11, 31)));
+  if (lang === "ar") {
+    const g = `${from}م – ${to}م`;
+    return hFrom && hTo ? `${g} · ${hFrom}هـ – ${hTo}هـ` : g;
+  }
+  const g = `${from} – ${to} CE`;
+  return hFrom && hTo ? `${g} · ${hFrom} – ${hTo} AH` : g;
+}
+
+/**
+ * A record whose stored year is Hijri (statutory documents are dated 1447 and
+ * the like) still has to show both calendars. The Gregorian side is derived
+ * from the Hijri year through the same Umm al-Qura calendar — a Hijri year
+ * straddles two Gregorian ones, so both are shown: "1447هـ · 2025–2026م".
+ */
+export function formatDualHijriYear(hijri: string | number, lang: DateLang): string {
+  const h = String(hijri).replace(/[^\d]/g, "");
+  const hLabel = lang === "ar" ? `${h}هـ` : `${h} AH`;
+  const n = Number(h);
+  if (!n || n < 1000 || n > 1600) return hLabel;
+
+  // A Hijri year overlaps two Gregorian ones. Start from the standard
+  // approximation and let the Umm al-Qura calendar itself confirm which
+  // Gregorian years that Hijri year actually touches.
+  const approx = Math.round(n * 0.970224 + 621.5);
+  const touched: number[] = [];
+  for (let gy = approx - 2; gy <= approx + 2; gy += 1) {
+    const probes = [Date.UTC(gy, 0, 1), Date.UTC(gy, 5, 15), Date.UTC(gy, 11, 31)];
+    if (probes.some((ms) => Number(hijriYear(new Date(ms))) === n)) touched.push(gy);
+  }
+  if (touched.length === 0) return hLabel;
+
+  const gFrom = touched[0]!;
+  const gTo = touched[touched.length - 1]!;
+  const gLabel =
+    lang === "ar"
+      ? gFrom === gTo
+        ? `${gFrom}م`
+        : `${gFrom}–${gTo}م`
+      : gFrom === gTo
+        ? `${gFrom} CE`
+        : `${gFrom}–${gTo} CE`;
+  return `${hLabel} · ${gLabel}`;
+}

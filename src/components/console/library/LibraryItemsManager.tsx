@@ -193,6 +193,10 @@ export function LibraryItemsManager({
               <SelectItem value="templates">
                 {isAr ? "النماذج و القوالب" : "Forms & Templates"}
               </SelectItem>
+              <SelectItem value="videos">{isAr ? "الفيديوهات" : "Videos"}</SelectItem>
+              <SelectItem value="financials">
+                {isAr ? "القوائم المالية وكشوف الحسابات" : "Financial statements"}
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -338,6 +342,11 @@ export function LibraryItemsManager({
                     </SelectItem>
                     <SelectItem value="videos">
                       {isAr ? "الفيديوهات (Videos)" : "Videos"}
+                    </SelectItem>
+                    <SelectItem value="financials">
+                      {isAr
+                        ? "القوائم المالية وكشوف الحسابات (Financials)"
+                        : "Financial statements & accounts"}
                     </SelectItem>
                   </SelectContent>
                 </Select>

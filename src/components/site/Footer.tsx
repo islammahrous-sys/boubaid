@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { formatDualYear } from "@/lib/dates";
 import { useLang } from "@/i18n/LanguageProvider";
 import { siteMeta } from "@/content/site";
 import { primaryNav, secondaryNav, buildFooterColumns } from "@/content/navigation";
@@ -331,7 +332,7 @@ export function Footer() {
       <div className="border-t border-ivory/15">
         <div className="container-page flex flex-col items-center justify-between gap-3 py-4 sm:flex-row">
           <p className="nums text-xs text-ivory/40">
-            © {new Date().getFullYear()} {t(siteMeta.officialName)} ·{" "}
+            © {formatDualYear(new Date().getFullYear(), lang)} {t(siteMeta.officialName)} ·{" "}
             {lang === "ar" ? "جميع الحقوق محفوظة" : "All rights reserved"}
           </p>
           <button
