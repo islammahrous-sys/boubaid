@@ -217,7 +217,10 @@ function AuthPage() {
   });
 
   return (
-    <div suppressHydrationWarning className="flex min-h-[calc(100vh-8rem)] items-center py-10 sm:py-14">
+    <div
+      suppressHydrationWarning
+      className="flex min-h-[calc(100vh-8rem)] items-center py-10 sm:py-14"
+    >
       <section className="container-page w-full">
         <div className="mx-auto grid w-full max-w-6xl overflow-hidden rounded-2xl border border-ink/10 bg-card shadow-[0_24px_80px_-24px_color-mix(in_oklab,var(--ink)_25%,transparent)] lg:min-h-[680px] lg:grid-cols-[5fr_7fr]">
           {/* ── Heritage panel ─────────────────────────────────────── */}

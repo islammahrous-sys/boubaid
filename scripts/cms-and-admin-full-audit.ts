@@ -29,7 +29,8 @@ function loadEnv() {
 loadEnv();
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://ywsvittlswbbyqhahorh.supabase.co";
-const SUPABASE_ANON_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
+const SUPABASE_ANON_KEY =
+  process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -62,7 +63,9 @@ async function runDeepCmsAndAdminAudit() {
   // -------------------------------------------------------------
   // 1. CMS ARTICLES LIFECYCLE
   // -------------------------------------------------------------
-  console.log("--- 1. CMS Articles: Create -> Edit -> Publish -> Public Verification -> Delete ---");
+  console.log(
+    "--- 1. CMS Articles: Create -> Edit -> Publish -> Public Verification -> Delete ---",
+  );
   const testArticleSlug = `audit-article-${timestamp}`;
   let articleId: string | null = null;
 
@@ -75,7 +78,8 @@ async function runDeepCmsAndAdminAudit() {
         title_en: `System Audit Article ${timestamp}`,
         slug: testArticleSlug,
         content_ar: "هذا مقال تجريبي لاختبار دورة حياة المحتوى والنشر في نظام إدارة المحتوى.",
-        content_en: "This is a test article to verify CMS content lifecycle and publishing workflow.",
+        content_en:
+          "This is a test article to verify CMS content lifecycle and publishing workflow.",
         status: "draft",
         published_at: null,
       })
@@ -95,7 +99,12 @@ async function runDeepCmsAndAdminAudit() {
       .select("id")
       .eq("slug", testArticleSlug)
       .maybeSingle();
-    check("CMS Articles", "Draft Hidden from Public Visitors", !anonDraft, "Draft is properly isolated");
+    check(
+      "CMS Articles",
+      "Draft Hidden from Public Visitors",
+      !anonDraft,
+      "Draft is properly isolated",
+    );
 
     // 1.3 Publish Article
     const { data: pubData, error: pubErr } = await adminClient
@@ -108,7 +117,12 @@ async function runDeepCmsAndAdminAudit() {
       .select()
       .single();
 
-    check("CMS Articles", "Publish Article", !pubErr && pubData?.status === "published", pubErr?.message);
+    check(
+      "CMS Articles",
+      "Publish Article",
+      !pubErr && pubData?.status === "published",
+      pubErr?.message,
+    );
 
     // 1.4 Verify Published Article Visible to Anon
     const { data: anonPub } = await anonClient
@@ -117,7 +131,12 @@ async function runDeepCmsAndAdminAudit() {
       .eq("slug", testArticleSlug)
       .eq("status", "published")
       .single();
-    check("CMS Articles", "Published Article Visible on Public News", !!anonPub, `Found: ${anonPub?.title_ar}`);
+    check(
+      "CMS Articles",
+      "Published Article Visible on Public News",
+      !!anonPub,
+      `Found: ${anonPub?.title_ar}`,
+    );
 
     // 1.5 Soft Delete / Cleanup
     if (articleId) {
@@ -202,7 +221,12 @@ async function runDeepCmsAndAdminAudit() {
           .eq("id", regId)
           .select()
           .single();
-        check("CMS Events", "Admin Confirms Registration", !appErr && appReg?.status === "confirmed", appErr?.message);
+        check(
+          "CMS Events",
+          "Admin Confirms Registration",
+          !appErr && appReg?.status === "confirmed",
+          appErr?.message,
+        );
 
         // Cleanup registration
         await adminClient.from("event_registrations").delete().eq("id", regId);
@@ -323,12 +347,10 @@ async function runDeepCmsAndAdminAudit() {
 
     if (inqData) {
       // 4.3 Admin attaches internal staff note
-      const { error: noteErr } = await adminClient
-        .from("inquiry_notes")
-        .insert({
-          inquiry_id: inqData.id,
-          note: "تم التواصل مع العضو هاتفياً وتزويده بالاستمارة المطلوبة.",
-        });
+      const { error: noteErr } = await adminClient.from("inquiry_notes").insert({
+        inquiry_id: inqData.id,
+        note: "تم التواصل مع العضو هاتفياً وتزويده بالاستمارة المطلوبة.",
+      });
       check("Inquiries", "Attach Staff Note to Inquiry", !noteErr, noteErr?.message);
 
       // 4.4 Admin marks as resolved

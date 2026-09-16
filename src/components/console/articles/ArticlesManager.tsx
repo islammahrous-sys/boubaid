@@ -56,7 +56,10 @@ import {
 import type { ArticleInput, BulkArticlesActionInput } from "@/lib/admin-hub.schemas";
 import { toast } from "sonner";
 import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
-import { PublishReadinessChecklist, type ReadinessCheckItem } from "@/components/console/common/PublishReadinessChecklist";
+import {
+  PublishReadinessChecklist,
+  type ReadinessCheckItem,
+} from "@/components/console/common/PublishReadinessChecklist";
 import { useConfirm } from "@/hooks/useConfirm";
 import { getErrorMessage } from "@/lib/error-utils";
 
@@ -365,7 +368,9 @@ export function ArticlesManager({
         published_at: form.published_at || new Date().toISOString(),
       });
       setFormOpen(false);
-      toast.success(isAr ? "تم اعتماد ونشر المقال بنجاح" : "Article approved & published successfully");
+      toast.success(
+        isAr ? "تم اعتماد ونشر المقال بنجاح" : "Article approved & published successfully",
+      );
     } catch (err: unknown) {
       toast.error(getErrorMessage(err, isAr ? "فشل نشر المقال" : "Failed to publish"));
     } finally {

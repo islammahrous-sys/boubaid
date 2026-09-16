@@ -113,7 +113,9 @@ export function CouncilRequestForm({
       toast.error(t(copy.attachmentTooLarge));
       return;
     }
-    if (picked.some((f) => !ATTACHMENT_TYPES.includes(f.type as (typeof ATTACHMENT_TYPES)[number]))) {
+    if (
+      picked.some((f) => !ATTACHMENT_TYPES.includes(f.type as (typeof ATTACHMENT_TYPES)[number]))
+    ) {
       toast.error(t(copy.attachmentType));
       return;
     }
@@ -247,7 +249,14 @@ export function CouncilRequestForm({
             <Label htmlFor="cr-details" className="text-xs">
               {t(field.details)} *
             </Label>
-            <Textarea id="cr-details" name="details" required minLength={10} maxLength={1500} rows={5} />
+            <Textarea
+              id="cr-details"
+              name="details"
+              required
+              minLength={10}
+              maxLength={1500}
+              rows={5}
+            />
           </div>
 
           {field.allowAttachments ? (

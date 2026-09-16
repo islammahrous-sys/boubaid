@@ -123,6 +123,9 @@ export const fundDocuments: FundDocument[] = [
 
 export const fundDocumentGroups: { id: FundDocumentGroup; title: BiText }[] = [
   { id: "statutory", title: { ar: "التوثيق النظامي والترخيص", en: "Statutory & licensing" } },
-  { id: "governance", title: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" } },
+  {
+    id: "governance",
+    title: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" },
+  },
   { id: "banking", title: { ar: "التفويضات البنكية", en: "Banking authorisations" } },
 ];

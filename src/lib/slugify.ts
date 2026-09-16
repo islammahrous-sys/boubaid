@@ -104,7 +104,19 @@ const AR_STOPWORDS = new Set([
   "كل",
 ]);
 
-const EN_STOPWORDS = new Set(["the", "a", "an", "of", "and", "or", "in", "on", "for", "to", "with"]);
+const EN_STOPWORDS = new Set([
+  "the",
+  "a",
+  "an",
+  "of",
+  "and",
+  "or",
+  "in",
+  "on",
+  "for",
+  "to",
+  "with",
+]);
 
 /** Strip Arabic diacritics (harakat), tatweel and zero-width marks. */
 function stripArabicMarks(input: string): string {
@@ -193,7 +205,10 @@ export function slugify(input: string | null | undefined, options: SlugifyOption
 
   slug = slug.replace(/-{2,}/g, "-").replace(/^[-/]+|[-/]+$/g, "");
   if (slug.length > maxLength) {
-    slug = slug.slice(0, maxLength).replace(/-[^-]*$/, "").replace(/-+$/, "");
+    slug = slug
+      .slice(0, maxLength)
+      .replace(/-[^-]*$/, "")
+      .replace(/-+$/, "");
   }
   return slug;
 }

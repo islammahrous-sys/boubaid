@@ -25,6 +25,7 @@ documents rather than a navigable archive.
 ## Planned work
 
 **1. Wayfinding**
+
 - Sticky in-page section rail on the long pages (About, Foundation, DNA, Library,
   Family Tree) — bilingual labels, current-section highlight, collapses to a compact
   chip row on mobile.
@@ -34,6 +35,7 @@ documents rather than a navigable archive.
 - Thin reading-progress rule under the masthead on article routes only.
 
 **2. Archive usability**
+
 - Filter and sort controls for Library (kind, decade, ascending/descending), News (year,
   category) and Achievers (branch, field), with live result counts and a clear-all.
 - Filter state reflected in the URL so views are shareable and survive reload.
@@ -43,6 +45,7 @@ documents rather than a navigable archive.
   bare "no results".
 
 **3. Reading comfort**
+
 - Consistent numeral and Hijri/Gregorian date formatting through one shared helper, used
   everywhere.
 - Measure and hyphenation tuned per script — Arabic and English need different line
@@ -52,6 +55,7 @@ documents rather than a navigable archive.
 - Language switch preserves the scroll anchor so the reader stays on the same section.
 
 **4. Interaction feedback**
+
 - Contact and contribute forms: inline per-field validation with bilingual messages,
   disabled/pending button state, and a persistent success panel rather than a toast that
   disappears.
@@ -60,6 +64,7 @@ documents rather than a navigable archive.
   searches so the layout does not jump.
 
 **5. Accessibility and polish**
+
 - Skip-to-content link, a single `<main>` landmark check, and a heading-level audit per
   page.
 - Uniform `focus-visible` treatment on every custom control; `aria-label` on all

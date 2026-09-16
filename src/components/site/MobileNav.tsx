@@ -1,5 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, UserRound, HeartHandshake, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
+import {
+  Menu,
+  UserRound,
+  HeartHandshake,
+  ChevronLeft,
+  ChevronRight,
+  ShoppingBag,
+} from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -54,36 +61,34 @@ export function MobileNav() {
           const Icon = item.Icon;
           const active = isRouteActive(pathname, item.to);
           return (
-          <Link
-            key={item.to}
-            to={item.to}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
-              active
-                ? "border-bronze text-foreground dark:border-gold font-semibold"
-                : "border-transparent text-muted-foreground",
-            )}
-          >
-            <Icon className="h-5 w-5" aria-hidden="true" />
-            <span className={cn("text-[11px]", active && "font-semibold")}>{t(item.label)}</span>
-          </Link>
-        );
-      })}
+            <Link
+              key={item.to}
+              to={item.to}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
+                active
+                  ? "border-bronze text-foreground dark:border-gold font-semibold"
+                  : "border-transparent text-muted-foreground",
+              )}
+            >
+              <Icon className="h-5 w-5" aria-hidden="true" />
+              <span className={cn("text-[11px]", active && "font-semibold")}>{t(item.label)}</span>
+            </Link>
+          );
+        })}
 
-      <a
-        href={siteMeta.frameStoreUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={cn(
-          "relative flex flex-1 flex-col items-center justify-center gap-1 border-t-2 border-transparent text-muted-foreground transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
-        )}
-      >
-        <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-        <span className="text-[11px]">
-          {lang === "ar" ? "المتجر" : "Store"}
-        </span>
-      </a>
+        <a
+          href={siteMeta.frameStoreUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            "relative flex flex-1 flex-col items-center justify-center gap-1 border-t-2 border-transparent text-muted-foreground transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
+          )}
+        >
+          <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+          <span className="text-[11px]">{lang === "ar" ? "المتجر" : "Store"}</span>
+        </a>
 
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
@@ -114,7 +119,11 @@ export function MobileNav() {
                     {user ? (
                       <SaudiCulturalAvatar
                         src={profile?.avatar_path}
-                        alt={profile?.full_name_ar || (user?.user_metadata?.full_name_ar as string) || ""}
+                        alt={
+                          profile?.full_name_ar ||
+                          (user?.user_metadata?.full_name_ar as string) ||
+                          ""
+                        }
                         size="sm"
                         className="w-6 h-6 rounded-full border border-gold/40 shadow-xs"
                       />
@@ -122,7 +131,13 @@ export function MobileNav() {
                       <UserRound className="h-5 w-5 text-bronze dark:text-gold" />
                     )}
                     <span className="text-[11px] font-bold text-foreground line-clamp-1">
-                      {user ? (lang === "ar" ? "حسابي" : "Account") : (lang === "ar" ? "دخول" : "Sign in")}
+                      {user
+                        ? lang === "ar"
+                          ? "حسابي"
+                          : "Account"
+                        : lang === "ar"
+                          ? "دخول"
+                          : "Sign in"}
                     </span>
                   </Link>
                 </DrawerClose>
@@ -139,7 +154,6 @@ export function MobileNav() {
                   </Link>
                 </DrawerClose>
               </div>
-
 
               {usingLiveNav ? (
                 <div className="mb-5 last:mb-0">
@@ -175,7 +189,11 @@ export function MobileNav() {
                                               : "text-muted-foreground hover:text-foreground",
                                           )}
                                         >
-                                          <span>{typeof child.label === "string" ? child.label : t(child.label)}</span>
+                                          <span>
+                                            {typeof child.label === "string"
+                                              ? child.label
+                                              : t(child.label)}
+                                          </span>
                                           <ChevronIcon className="h-3.5 w-3.5 opacity-50" />
                                         </Link>
                                       </DrawerClose>
@@ -189,7 +207,9 @@ export function MobileNav() {
                                                   onClick={() => setOpen(false)}
                                                   className="block py-1.5 px-2 text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
                                                 >
-                                                  {typeof sub.label === "string" ? sub.label : t(sub.label)}
+                                                  {typeof sub.label === "string"
+                                                    ? sub.label
+                                                    : t(sub.label)}
                                                 </Link>
                                               </DrawerClose>
                                             </li>
@@ -226,7 +246,10 @@ export function MobileNav() {
               ) : (
                 <div className="space-y-6">
                   {navGroups.map((group) => (
-                    <div key={group.title.en} className="border border-border/70 bg-card/50 rounded-lg p-3.5">
+                    <div
+                      key={group.title.en}
+                      className="border border-border/70 bg-card/50 rounded-lg p-3.5"
+                    >
                       <p className="label-caps mb-2 border-b border-border/60 pb-1.5 text-bronze dark:text-gold text-xs font-bold">
                         {t(group.title)}
                       </p>

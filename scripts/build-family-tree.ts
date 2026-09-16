@@ -65,7 +65,9 @@ function displayChain(p: string[]) {
 }
 function stableId(p: string[]) {
   const h = createHash("md5").update(displayChain(p)).digest("hex");
-  return [h.slice(0, 8), h.slice(8, 12), h.slice(12, 16), h.slice(16, 20), h.slice(20, 32)].join("-");
+  return [h.slice(0, 8), h.slice(8, 12), h.slice(12, 16), h.slice(16, 20), h.slice(20, 32)].join(
+    "-",
+  );
 }
 
 function ensureNode(parent: Node | null, name: string, chart: number, uncertain: boolean): Node {
@@ -95,10 +97,18 @@ function ensureNode(parent: Node | null, name: string, chart: number, uncertain:
 }
 
 /** Resolve a chart-local father reference to an already-created node. */
-function resolveFather(ref: string, chart: number, local: Map<string, Node[]>, keyed: Map<string, Node>): Node {
+function resolveFather(
+  ref: string,
+  chart: number,
+  local: Map<string, Node[]>,
+  keyed: Map<string, Node>,
+): Node {
   if (keyed.has(ref)) return keyed.get(ref)!;
 
-  const parts = ref.split(" بن ").map((s) => s.trim()).filter(Boolean);
+  const parts = ref
+    .split(" بن ")
+    .map((s) => s.trim())
+    .filter(Boolean);
   const [head, ...ancestors] = parts;
   let candidates = local.get(head) ?? [];
   if (candidates.length === 0) throw new Error(`chart ${chart}: unknown father "${ref}"`);
@@ -166,7 +176,9 @@ for (const chart of charts) {
   }
 }
 
-const all = [...byPath.values()].sort((a, b) => a.generation - b.generation || a.name.localeCompare(b.name, "ar"));
+const all = [...byPath.values()].sort(
+  (a, b) => a.generation - b.generation || a.name.localeCompare(b.name, "ar"),
+);
 
 // ---------- canonical.json ----------
 const canonical = {
@@ -189,7 +201,10 @@ const canonical = {
   flags: charts.flatMap((c) => c.flags.map((f) => `المشجرة ${c.chart}: ${f}`)).slice(),
   resolution_notes: [...new Set(warnings)],
 };
-writeFileSync(join(process.cwd(), "src/content/tree/canonical.json"), JSON.stringify(canonical, null, 2) + "\n");
+writeFileSync(
+  join(process.cwd(), "src/content/tree/canonical.json"),
+  JSON.stringify(canonical, null, 2) + "\n",
+);
 
 // ---------- public/family-tree-data.js ----------
 function toD3(n: Node): any {
@@ -201,7 +216,8 @@ function toD3(n: Node): any {
   if (n.children.length) o.children = n.children.map(toD3);
   return o;
 }
-const treeRoot = root.length === 1 ? toD3(root[0]) : { name: "آل بوعبيد", isRoot: true, children: root.map(toD3) };
+const treeRoot =
+  root.length === 1 ? toD3(root[0]) : { name: "آل بوعبيد", isRoot: true, children: root.map(toD3) };
 writeFileSync(
   join(process.cwd(), "public/family-tree-data.js"),
   `/**
@@ -272,6 +288,8 @@ SELECT id, father, 'child'::relationship_type FROM tmp_tree WHERE father IS NOT 
 `;
 writeFileSync(join(process.cwd(), "scripts/seed-family-tree.sql"), sql);
 
-console.log(`people: ${all.length}, roots: ${root.length}, max generation: ${Math.max(...all.map((n) => n.generation))}`);
+console.log(
+  `people: ${all.length}, roots: ${root.length}, max generation: ${Math.max(...all.map((n) => n.generation))}`,
+);
 console.log(`branch-tagged: ${all.filter((n) => n.branchSlug).length}`);
 console.log(`flags: ${canonical.flags.length}, notes: ${canonical.resolution_notes.length}`);

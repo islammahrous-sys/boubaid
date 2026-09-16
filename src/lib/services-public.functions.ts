@@ -39,7 +39,9 @@ export const getPublicServices = createServerFn({ method: "GET" }).handler(
       const [servicesRes, docsRes] = await Promise.all([
         supabase
           .from("services")
-          .select("id, slug, category, title_ar, title_en, description_ar, description_en, sort_order")
+          .select(
+            "id, slug, category, title_ar, title_en, description_ar, description_en, sort_order",
+          )
           .eq("is_published", true)
           .order("sort_order", { ascending: true }),
         supabase

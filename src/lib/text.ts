@@ -92,7 +92,10 @@ export function formatContentDate(value: string, lang: "ar" | "en"): string {
   for (const [ar, en] of Object.entries(ARABIC_MONTHS)) {
     out = out.replace(ar, en);
   }
-  return out.replace(/\s*هـ\s*/g, " AH ").replace(/\s+م\b/g, "").trim();
+  return out
+    .replace(/\s*هـ\s*/g, " AH ")
+    .replace(/\s+م\b/g, "")
+    .trim();
 }
 
 /**

@@ -155,16 +155,23 @@ const getHomepageGalleryPreview = createServerFn({ method: "GET" }).handler(
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const [newsRows, initiativeRows, achieverRows, homepageConfig, upcomingEvents, galleryPreview, familyStats] =
-      await Promise.all([
-        getPublishedNews(),
-        getPublishedInitiatives(),
-        getPublishedAchievers(),
-        getPublicHomepageConfig(),
-        getPublishedEvents(),
-        getHomepageGalleryPreview(),
-        getPublicFamilyStats(),
-      ]);
+    const [
+      newsRows,
+      initiativeRows,
+      achieverRows,
+      homepageConfig,
+      upcomingEvents,
+      galleryPreview,
+      familyStats,
+    ] = await Promise.all([
+      getPublishedNews(),
+      getPublishedInitiatives(),
+      getPublishedAchievers(),
+      getPublicHomepageConfig(),
+      getPublishedEvents(),
+      getHomepageGalleryPreview(),
+      getPublicFamilyStats(),
+    ]);
     return {
       news: mergeNews(newsRows, staticNews),
       initiatives: mergeInitiatives(initiativeRows, staticInitiatives),
@@ -209,7 +216,6 @@ const copy = {
   quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
   quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
   quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
-
 
   openingEyebrow: { ar: "افتتاحية", en: "Introduction" } as BiText,
   openingTitle: {
@@ -269,8 +275,6 @@ const copy = {
     ar: "مساحة مخصصة لقصيدة الأسرة المقترحة. يُدرج النص هنا عند اعتماده من مجلس الأسرة.",
     en: "A reserved space for the proposed family poem. The text will appear here once approved by the family council.",
   } as BiText,
-
-
 
   hqSupportCta: { ar: "ننتظر دعمك", en: "We await your support" } as BiText,
   hqLocationLink: {
@@ -407,8 +411,6 @@ function HomePage() {
     }
 
     return ordered;
-
-
   })();
 
   const renderSection = (sec: SectionConfig) => {
@@ -416,9 +418,7 @@ function HomePage() {
       case "hero":
         return (
           <div key={sec.id}>
-            <HeroImage
-              slides={sec.custom_payload?.hero_slides}
-            >
+            <HeroImage slides={sec.custom_payload?.hero_slides}>
               <div className="container-page flex min-h-[75vh] sm:min-h-[86vh] md:min-h-[92vh] flex-col items-center justify-center py-14 sm:py-20 md:py-24 text-center">
                 {/* Emblem */}
                 <div className="mx-auto w-max motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
@@ -641,7 +641,6 @@ function HomePage() {
                     {t(councilAddress.hadithSource)}
                   </figcaption>
                 </figure>
-
               </div>
 
               <div>
@@ -678,10 +677,7 @@ function HomePage() {
 
       case "vision_mission":
         return (
-          <section
-            key={sec.id}
-            className="border-y border-border bg-secondary/40 reveal-on-scroll"
-          >
+          <section key={sec.id} className="border-y border-border bg-secondary/40 reveal-on-scroll">
             <div className="container-page py-16 md:py-20">
               <SectionHeading
                 eyebrow={
@@ -702,10 +698,7 @@ function HomePage() {
 
               <div className="mt-10 grid gap-6 md:grid-cols-2">
                 {[visionMission.vision, visionMission.mission].map((block) => (
-                  <div
-                    key={block.label.en}
-                    className="border border-border bg-card p-6 md:p-7"
-                  >
+                  <div key={block.label.en} className="border border-border bg-card p-6 md:p-7">
                     <h3 className="label-caps text-bronze dark:text-gold">{t(block.label)}</h3>
                     <p className="mt-3 text-[15px] leading-loose text-foreground">
                       {t(block.body)}
@@ -728,7 +721,6 @@ function HomePage() {
             </div>
           </section>
         );
-
 
       case "seven_branches":
       case "branches":
@@ -829,7 +821,6 @@ function HomePage() {
                   <span>{t(pageImages.home.project.caption)}</span>
                 </figcaption>
               </figure>
-
 
               <div>
                 <Eyebrow>
@@ -992,7 +983,9 @@ function HomePage() {
                       params={{ slug: n.slug }}
                       className="group block border-b border-border py-5 hover-lift active-scale"
                     >
-                      <p className="nums label-caps text-muted-foreground">{formatContentDate(n.dateGregorian, lang)}</p>
+                      <p className="nums label-caps text-muted-foreground">
+                        {formatContentDate(n.dateGregorian, lang)}
+                      </p>
                       <h3 className="mt-1.5 text-[15px] leading-snug font-semibold text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
                         {t(n.title)}
                       </h3>
@@ -1069,7 +1062,6 @@ function HomePage() {
 
       case "initiatives_list":
       case "programmes":
-
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">

@@ -117,9 +117,7 @@ function CompetitionsPage() {
                       {t(item.summary)}
                     </p>
                   ) : null}
-                  {t(item.body) ? (
-                    <Prose className="mt-3 text-[13px]">{t(item.body)}</Prose>
-                  ) : null}
+                  {t(item.body) ? <Prose className="mt-3 text-[13px]">{t(item.body)}</Prose> : null}
                 </li>
               ))}
             </ul>

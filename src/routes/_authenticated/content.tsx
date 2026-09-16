@@ -204,7 +204,11 @@ const TABS: TabConfig[] = [
         en: "Section",
         kind: "select",
         options: [
-          { value: "family_competency", ar: "كفاءات أفراد الأسرة", en: "Family Members’ Competencies" },
+          {
+            value: "family_competency",
+            ar: "كفاءات أفراد الأسرة",
+            en: "Family Members’ Competencies",
+          },
           { value: "excellence_award", ar: "جائزة التميز", en: "Excellence Award" },
         ],
       },

@@ -63,13 +63,17 @@ function latest(...values) {
 }
 
 function xmlEscape(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&apos;",
-  })[c]);
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&apos;",
+      })[c],
+  );
 }
 
 function urlEntry(loc, lastmod, changefreq, priority) {
@@ -94,19 +98,13 @@ async function main() {
     { data: initiatives, error: initiativesErr },
     { data: contentPages, error: contentPagesErr },
   ] = await Promise.all([
-    supabase
-      .from("news_posts")
-      .select("slug, updated_at, created_at")
-      .eq("is_published", true),
+    supabase.from("news_posts").select("slug, updated_at, created_at").eq("is_published", true),
     supabase
       .from("articles")
       .select("slug, updated_at, published_at, created_at")
       .eq("status", "published")
       .is("deleted_at", null),
-    supabase
-      .from("initiatives")
-      .select("slug, updated_at, created_at")
-      .eq("is_published", true),
+    supabase.from("initiatives").select("slug, updated_at, created_at").eq("is_published", true),
     supabase
       .from("content_pages")
       .select("slug, updated_at, published_at, no_index, visibility")
@@ -165,7 +163,12 @@ async function main() {
 
     { loc: `${SITE_URL}/dna`, changefreq: "monthly", priority: "0.8" },
     { loc: `${SITE_URL}/achievers`, changefreq: "weekly", priority: "0.8" },
-    { loc: `${SITE_URL}/initiatives`, lastmod: initiativesListLastmod, changefreq: "weekly", priority: "0.8" },
+    {
+      loc: `${SITE_URL}/initiatives`,
+      lastmod: initiativesListLastmod,
+      changefreq: "weekly",
+      priority: "0.8",
+    },
     { loc: `${SITE_URL}/programs`, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/competitions`, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/news`, lastmod: newsListLastmod, changefreq: "daily", priority: "0.8" },

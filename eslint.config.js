@@ -16,6 +16,8 @@ export default tseslint.config(
       ".tanstack",
       "node_modules",
       "scripts",
+      "src/routeTree.gen.ts",
+      "src/integrations/supabase/types.ts",
     ],
   },
   {

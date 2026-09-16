@@ -251,7 +251,8 @@ async function setCoverIfMissing(galleryId) {
   if (!asset) return;
 
   const url =
-    asset.public_url || `${SUPABASE_URL}/storage/v1/object/public/${asset.bucket}/${asset.storage_path}`;
+    asset.public_url ||
+    `${SUPABASE_URL}/storage/v1/object/public/${asset.bucket}/${asset.storage_path}`;
   await supabase.from("galleries").update({ cover_media_path: url }).eq("id", galleryId);
 }
 
@@ -263,7 +264,9 @@ async function main() {
   }
 
   const entries = await readdir(root, { withFileTypes: true });
-  const folders = entries.filter((e) => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name));
+  const folders = entries
+    .filter((e) => e.isDirectory())
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   console.log(`Found ${folders.length} collection folder(s) under ${root}\n`);
 

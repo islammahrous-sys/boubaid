@@ -552,7 +552,9 @@ export function DirectoryManager({
                 <UserCheck className="w-4 h-4 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-bold text-foreground">
-                    {isAr ? "مسار انضمام وتوثيق أفراد الأسرة" : "Family Member Verification Workflow"}
+                    {isAr
+                      ? "مسار انضمام وتوثيق أفراد الأسرة"
+                      : "Family Member Verification Workflow"}
                   </p>
                   <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
                     {isAr
@@ -678,7 +680,10 @@ export function DirectoryManager({
                                     );
                                   } catch (err: unknown) {
                                     toast.error(
-                                      getErrorMessage(err, isAr ? "فشل الاعتماد" : "Failed to approve"),
+                                      getErrorMessage(
+                                        err,
+                                        isAr ? "فشل الاعتماد" : "Failed to approve",
+                                      ),
                                     );
                                   } finally {
                                     setLoading(false);
@@ -762,7 +767,9 @@ export function DirectoryManager({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">{isAr ? "المعرف الفريد (Slug) — يُنشأ تلقائياً" : "Slug (auto-generated)"}</Label>
+                <Label className="text-xs">
+                  {isAr ? "المعرف الفريد (Slug) — يُنشأ تلقائياً" : "Slug (auto-generated)"}
+                </Label>
                 <Input
                   value={bizForm.slug}
                   onChange={(e) => setBizForm({ ...bizForm, slug: e.target.value })}

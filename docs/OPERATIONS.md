@@ -113,17 +113,22 @@ contains full data, so treat it like the production database.
 The application is deployed on **Vercel** (`https://alboabid-heritage-hub.vercel.app`).
 
 ### Build Configuration (`vercel.json`)
+
 The build is configured in `vercel.json`:
+
 ```json
 {
   "framework": null,
   "buildCommand": "NITRO_PRESET=vercel npm run build"
 }
 ```
+
 Nitro compiles the TanStack Start application to `.vercel/output`, ready for Vercel Serverless & Static delivery.
 
 ### Environment Variables on Vercel
+
 Set these in **Vercel Dashboard → Project Settings → Environment Variables**:
+
 - `SUPABASE_URL`
 - `SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY` (Server only - sensitive)
@@ -134,4 +139,3 @@ Set these in **Vercel Dashboard → Project Settings → Environment Variables**
 - (Optional) `VITE_TURNSTILE_SITE_KEY` & `TURNSTILE_SECRET_KEY`
 - (Optional) `VITE_SENTRY_DSN`
 - (Optional) `VITE_GA_MEASUREMENT_ID`
-

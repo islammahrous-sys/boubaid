@@ -71,7 +71,6 @@ export function Footer() {
       ? buildFooterColumns(liveHeaderItems)
       : buildFooterColumns([...primaryNav, ...secondaryNav]);
 
-
   // Live values are saved by the admin console under category-keyed rows
   // (e.g. { site_contact: { phone, email, whatsapp }, site_general: { license, national_address } }) —
   // see SiteSettingsManager.tsx / upsertSiteSetting. Fall back to the static
@@ -232,7 +231,6 @@ export function Footer() {
               </nav>
             ))}
           </div>
-
         </div>
 
         {/* Contact & newsletter */}

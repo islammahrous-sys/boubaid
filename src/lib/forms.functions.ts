@@ -235,8 +235,10 @@ export const submitBusinessListing = createServerFn({ method: "POST" })
     });
     if (blocked) return blocked;
 
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const supabase = createPublicServerClient();
+    // Written with the service-role client so the public `anon` INSERT grant
+    // isn't needed: submissions can only reach the table through this
+    // rate-limited, schema-validated server function.
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
 
     // The `businesses` table's real columns don't line up 1:1 with this
     // public form (no single `category`/`phone`+`email`/`national_address`,
@@ -277,7 +279,6 @@ export const submitBusinessListing = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
-
 
 /**
  * Requests Hub submissions. Every request type lands in the official inbox

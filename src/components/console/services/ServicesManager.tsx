@@ -96,9 +96,7 @@ export function ServicesManager() {
 
   const rows = useMemo(
     () =>
-      services
-        .filter((s) => s.category === category)
-        .sort((a, b) => a.sort_order - b.sort_order),
+      services.filter((s) => s.category === category).sort((a, b) => a.sort_order - b.sort_order),
     [services, category],
   );
 
@@ -398,7 +396,9 @@ export function ServicesManager() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs">{isAr ? "اسم الخدمة (عربي)" : "Service name (Arabic)"}</Label>
+              <Label className="text-xs">
+                {isAr ? "اسم الخدمة (عربي)" : "Service name (Arabic)"}
+              </Label>
               <Input
                 value={form.title_ar ?? ""}
                 onChange={(e) => setForm((f) => ({ ...f, title_ar: e.target.value }))}
@@ -423,7 +423,9 @@ export function ServicesManager() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">{isAr ? "الوصف (إنجليزي)" : "Description (English)"}</Label>
+              <Label className="text-xs">
+                {isAr ? "الوصف (إنجليزي)" : "Description (English)"}
+              </Label>
               <Textarea
                 rows={3}
                 value={form.description_en ?? ""}

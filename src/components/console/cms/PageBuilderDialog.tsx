@@ -1191,7 +1191,8 @@ export function PageBuilderDialog({
                     value={form.slug}
                     onChange={(e) => setForm({ ...form, slug: e.target.value })}
                     placeholder={
-                      slugify(form.title_ar, { allowSlashes: true }) || "يُنشأ تلقائياً من العنوان العربي"
+                      slugify(form.title_ar, { allowSlashes: true }) ||
+                      "يُنشأ تلقائياً من العنوان العربي"
                     }
                   />
                 </div>

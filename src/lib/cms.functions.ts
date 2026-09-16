@@ -364,9 +364,7 @@ export const getPublicFamilyStats = createServerFn({ method: "GET" }).handler(
       // Added by migration family_public_stats_rpc — not yet in the generated
       // Database type, so call through a narrow cast (see saveContentPageSectionsAtomic).
       const rpcClient = createPublicServerClient() as unknown as {
-        rpc: (
-          fn: "family_public_stats",
-        ) => Promise<{
+        rpc: (fn: "family_public_stats") => Promise<{
           data: Record<string, any> | null;
           error: { code?: string; message: string } | null;
         }>;
@@ -1447,8 +1445,6 @@ export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handl
     }
   },
 );
-
-
 
 /** Editor-only picker list for the gallery block (id + title, no media payload). */
 export const listGalleriesForEditor = createServerFn({ method: "GET" })

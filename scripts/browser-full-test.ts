@@ -70,7 +70,8 @@ async function runBrowserAudit() {
 
   const context = await browser.newContext({
     viewport: { width: 1280, height: 800 },
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   });
 
   const page = await context.newPage();
@@ -122,7 +123,11 @@ async function runBrowserAudit() {
       // Check page has no React error boundary or fatal crash
       const errorBoundary = await page.$("text=Something went wrong");
       if (errorBoundary) {
-        recordFailure(route.name, "React Crash Boundary", "Crash boundary caught an error on page!");
+        recordFailure(
+          route.name,
+          "React Crash Boundary",
+          "Crash boundary caught an error on page!",
+        );
       }
     } catch (err: any) {
       recordFailure(route.name, "Navigation / Load Exception", err);
@@ -149,7 +154,9 @@ async function runBrowserAudit() {
       recordSuccess("UI Controls", `Switched to English (dir="${switchedDir}")`);
 
       // Switch back to Arabic
-      const arButton = await page.$('button:has-text("عربي"), button:has-text("العربية"), button:has-text("AR")');
+      const arButton = await page.$(
+        'button:has-text("عربي"), button:has-text("العربية"), button:has-text("AR")',
+      );
       if (arButton) {
         await arButton.click();
         await page.waitForTimeout(300);
@@ -168,7 +175,10 @@ async function runBrowserAudit() {
   try {
     // Clear existing session state to test fresh login
     await page.evaluate(() => {
-      try { localStorage.clear(); sessionStorage.clear(); } catch {}
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch {}
     });
     await context.clearCookies();
 
@@ -176,11 +186,11 @@ async function runBrowserAudit() {
     recordSuccess("Auth Page", "Navigated to /auth");
 
     // Wait for form input
-    await page.waitForSelector('#email', { state: "visible", timeout: 8000 });
+    await page.waitForSelector("#email", { state: "visible", timeout: 8000 });
 
     // Fill credentials
-    await page.fill('#email', "admin@alboubaidfamily.com");
-    await page.fill('#password', "AlBuObaid#Admin2026!Hub");
+    await page.fill("#email", "admin@alboubaidfamily.com");
+    await page.fill("#password", "AlBuObaid#Admin2026!Hub");
 
     // Click submit button
     const submitBtn = page.locator('form button[type="submit"]').first();
@@ -192,14 +202,22 @@ async function runBrowserAudit() {
     const currentUrl = page.url();
     console.log("Post-login URL:", currentUrl);
 
-    if (currentUrl.includes("/account") || currentUrl.includes("/admin") || currentUrl === `${BASE_URL}/`) {
+    if (
+      currentUrl.includes("/account") ||
+      currentUrl.includes("/admin") ||
+      currentUrl === `${BASE_URL}/`
+    ) {
       recordSuccess("Auth Flow", `Sign in succeeded -> redirected to ${currentUrl}`);
     } else {
       // Check for error toast message
-      const toastEl = await page.$('[data-sonner-toast]');
+      const toastEl = await page.$("[data-sonner-toast]");
       const toastText = toastEl ? await toastEl.textContent() : "none";
       console.log("Toast message displayed:", toastText);
-      recordFailure("Auth Flow", "Sign In Redirection", `Did not navigate away from /auth (Current: ${currentUrl}, Toast: ${toastText})`);
+      recordFailure(
+        "Auth Flow",
+        "Sign In Redirection",
+        `Did not navigate away from /auth (Current: ${currentUrl}, Toast: ${toastText})`,
+      );
     }
   } catch (err: any) {
     recordFailure("Auth Flow", "Sign In Exception", err);
@@ -269,7 +287,10 @@ async function runBrowserAudit() {
 
     for (const tab of adminTabs) {
       try {
-        await page.goto(`${BASE_URL}/admin?tab=${tab}`, { waitUntil: "domcontentloaded", timeout: 10000 });
+        await page.goto(`${BASE_URL}/admin?tab=${tab}`, {
+          waitUntil: "domcontentloaded",
+          timeout: 10000,
+        });
         await page.waitForTimeout(200);
 
         // Check if crash boundary or error occurred

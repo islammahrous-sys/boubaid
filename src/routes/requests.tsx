@@ -515,7 +515,6 @@ const requests: RequestEntry[] = [
     }),
   ),
 
-
   {
     id: "inquiry",
     group: "general",
@@ -612,11 +611,7 @@ function RequestsHubPage() {
 
   return (
     <>
-      <PageHeader
-        eyebrow={t(copy.eyebrow)}
-        title={t(copy.title)}
-        subtitle={t(copy.subtitle)}
-      />
+      <PageHeader eyebrow={t(copy.eyebrow)} title={t(copy.title)} subtitle={t(copy.subtitle)} />
 
       <SectionRail sections={railSections} className="print-hide" />
 
@@ -642,7 +637,10 @@ function RequestsHubPage() {
         </section>
 
         {/* ── تقديم طلب ──────────────────────────────────────── */}
-        <section id="submit" className="scroll-mt-28 reveal-on-scroll mt-14 border-t border-border pt-12">
+        <section
+          id="submit"
+          className="scroll-mt-28 reveal-on-scroll mt-14 border-t border-border pt-12"
+        >
           <Eyebrow rule>{t(copy.submitTitle)}</Eyebrow>
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.submitNote)}
@@ -717,7 +715,10 @@ function RequestsHubPage() {
         <Ornament className="mt-16" />
 
         {/* ── طلباتي ─────────────────────────────────────────── */}
-        <section id="mine" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12">
+        <section
+          id="mine"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12"
+        >
           <Eyebrow rule>{t(copy.mineTitle)}</Eyebrow>
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.mineNote)}

@@ -157,7 +157,10 @@ export function AdminDashboardOverview({
             </div>
 
             {totalNeedsAttention > 0 ? (
-              <Badge variant="destructive" className="gap-1 font-bold px-3 py-1 rounded-xl animate-pulse">
+              <Badge
+                variant="destructive"
+                className="gap-1 font-bold px-3 py-1 rounded-xl animate-pulse"
+              >
                 <AlertCircle className="w-3.5 h-3.5" />
                 {totalNeedsAttention} {isAr ? "عنصر يحتاج مراجعة" : "items need attention"}
               </Badge>
@@ -416,7 +419,9 @@ export function AdminDashboardOverview({
                     {isAr ? "أعضاء بدون أدوار تشغيلية" : "Members Without Roles"}
                   </h4>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {isAr ? "عضويات موثقة بانتظار تحديد الصلاحيات" : "Approved members awaiting roles"}
+                    {isAr
+                      ? "عضويات موثقة بانتظار تحديد الصلاحيات"
+                      : "Approved members awaiting roles"}
                   </p>
                 </div>
                 <Button

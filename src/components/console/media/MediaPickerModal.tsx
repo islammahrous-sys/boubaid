@@ -153,7 +153,11 @@ export function MediaPickerModal({
     const isImage = file.type.startsWith("image/") && !file.type.includes("svg");
 
     if (!isImage && !(allowPdf && isPdf)) {
-      toast.error(isAr ? "يرجى اختيار صورة صالحة (PNG, JPG, WebP) أو PDF" : "Please choose a valid image or PDF");
+      toast.error(
+        isAr
+          ? "يرجى اختيار صورة صالحة (PNG, JPG, WebP) أو PDF"
+          : "Please choose a valid image or PDF",
+      );
       return;
     }
 
@@ -184,7 +188,9 @@ export function MediaPickerModal({
       const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
       const storagePath = `${Date.now()}-${cleanName}`;
 
-      const { error: uploadErr } = await supabase.storage.from(targetBucket).upload(storagePath, file);
+      const { error: uploadErr } = await supabase.storage
+        .from(targetBucket)
+        .upload(storagePath, file);
       if (uploadErr) throw uploadErr;
 
       const { data: urlData } = supabase.storage.from(targetBucket).getPublicUrl(storagePath);
@@ -314,7 +320,9 @@ export function MediaPickerModal({
               {loading ? (
                 <div className="flex flex-col items-center justify-center h-52 text-muted-foreground gap-2">
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  <span className="text-xs">{isAr ? "جارٍ تحميل الوسائط..." : "Loading media..."}</span>
+                  <span className="text-xs">
+                    {isAr ? "جارٍ تحميل الوسائط..." : "Loading media..."}
+                  </span>
                 </div>
               ) : filteredItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-52 text-muted-foreground gap-2 text-center p-4">
@@ -355,7 +363,7 @@ export function MediaPickerModal({
                           "group relative flex flex-col border rounded-xl overflow-hidden cursor-pointer transition-all bg-card hover:border-primary/60",
                           isSelected
                             ? "border-primary ring-2 ring-primary/30 shadow-sm"
-                            : "border-border/70"
+                            : "border-border/70",
                         )}
                       >
                         {/* Thumbnail */}
@@ -383,13 +391,18 @@ export function MediaPickerModal({
 
                         {/* Caption & Metadata */}
                         <div className="p-2 space-y-0.5">
-                          <p className="text-[11px] font-medium text-foreground truncate" title={item.file_name}>
+                          <p
+                            className="text-[11px] font-medium text-foreground truncate"
+                            title={item.file_name}
+                          >
                             {item.alt_text_ar || item.file_name}
                           </p>
                           <div className="flex items-center justify-between text-[10px] text-muted-foreground font-mono">
                             <span>{formatFileSize(item.file_size)}</span>
                             {item.width && item.height && (
-                              <span>{item.width}×{item.height}</span>
+                              <span>
+                                {item.width}×{item.height}
+                              </span>
                             )}
                           </div>
                         </div>
@@ -444,7 +457,9 @@ export function MediaPickerModal({
               }}
               className={cn(
                 "w-full max-w-lg border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center gap-3 transition-colors",
-                dragActive ? "border-primary bg-primary/10" : "border-border/80 bg-muted/20 hover:bg-muted/30"
+                dragActive
+                  ? "border-primary bg-primary/10"
+                  : "border-border/80 bg-muted/20 hover:bg-muted/30",
               )}
             >
               <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
@@ -469,7 +484,11 @@ export function MediaPickerModal({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept={allowPdf ? "image/png,image/jpeg,image/webp,image/gif,application/pdf" : "image/png,image/jpeg,image/webp,image/gif"}
+                accept={
+                  allowPdf
+                    ? "image/png,image/jpeg,image/webp,image/gif,application/pdf"
+                    : "image/png,image/jpeg,image/webp,image/gif"
+                }
                 className="hidden"
                 onChange={(e) => void handleUploadFile(e.target.files)}
               />
@@ -482,7 +501,15 @@ export function MediaPickerModal({
                 className="h-8 text-xs font-semibold gap-1.5 rounded-xl mt-2"
               >
                 <Upload className="w-3.5 h-3.5" />
-                <span>{uploading ? (isAr ? "جارٍ الرفع..." : "Uploading...") : (isAr ? "تصفح من جهازك" : "Browse Files")}</span>
+                <span>
+                  {uploading
+                    ? isAr
+                      ? "جارٍ الرفع..."
+                      : "Uploading..."
+                    : isAr
+                      ? "تصفح من جهازك"
+                      : "Browse Files"}
+                </span>
               </Button>
             </div>
           </div>

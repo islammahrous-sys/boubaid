@@ -109,7 +109,9 @@ function NewsDetail() {
         <div className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-ink/25 pb-3 dark:border-ivory/20">
           <span className="label-caps text-bronze dark:text-gold">{sectionLabel}</span>
           <span className="h-3 w-px bg-border" aria-hidden="true" />
-          <span className="nums text-xs text-muted-foreground">{formatContentDate(item.dateGregorian, lang)}</span>
+          <span className="nums text-xs text-muted-foreground">
+            {formatContentDate(item.dateGregorian, lang)}
+          </span>
           <span className="h-3 w-px bg-border" aria-hidden="true" />
           <span className="nums text-xs text-muted-foreground">
             {formatHijri(item.date.match(/^\d+/)?.[0] ?? item.date, lang)}
@@ -205,7 +207,9 @@ function NewsDetail() {
                     params={{ slug: n.slug }}
                     className="group block border-b border-border py-4"
                   >
-                    <p className="nums label-caps text-muted-foreground">{formatContentDate(n.dateGregorian, lang)}</p>
+                    <p className="nums label-caps text-muted-foreground">
+                      {formatContentDate(n.dateGregorian, lang)}
+                    </p>
                     <p className="mt-1.5 text-[15px] leading-snug font-medium text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
                       {t(n.title)}
                     </p>

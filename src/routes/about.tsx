@@ -140,7 +140,6 @@ const copy = {
 
   dnaCta: { ar: "نتائج الدراسة الجينية", en: "The genetic study" } as BiText,
   branchesCta: { ar: "الفروع السبعة", en: "The seven branches" } as BiText,
-
 };
 
 /**
@@ -282,7 +281,6 @@ function AboutPage() {
         </div>
       </section>
 
-
       {history.length > 0 && (
         <section
           id="timeline"
@@ -341,7 +339,6 @@ function AboutPage() {
       <div className="container-page">
         <Ornament />
       </div>
-
     </>
   );
 }

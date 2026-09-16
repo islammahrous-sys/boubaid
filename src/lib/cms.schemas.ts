@@ -33,37 +33,41 @@ function withAutoSlug<T extends { slug?: string | null }>(
   };
 }
 
-export const newsInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug,
-  section: z.enum(["fund", "family"]).default("fund"),
-  title_ar: z.string().trim().min(3).max(300),
-  title_en: text(300),
-  excerpt_ar: text(600),
-  excerpt_en: text(600),
-  body_ar: text(20000),
-  body_en: text(20000),
-  hijri_date: text(40),
-  gregorian_date: text(60),
-  cover_path: text(500),
-  is_published: z.boolean().default(false),
-  sort_order: z.number().int().min(0).max(9999).default(0),
-}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "news"));
+export const newsInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug,
+    section: z.enum(["fund", "family"]).default("fund"),
+    title_ar: z.string().trim().min(3).max(300),
+    title_en: text(300),
+    excerpt_ar: text(600),
+    excerpt_en: text(600),
+    body_ar: text(20000),
+    body_en: text(20000),
+    hijri_date: text(40),
+    gregorian_date: text(60),
+    cover_path: text(500),
+    is_published: z.boolean().default(false),
+    sort_order: z.number().int().min(0).max(9999).default(0),
+  })
+  .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "news"));
 
-export const initiativeInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug,
-  status: z.enum(["ongoing", "planned", "completed"]).default("ongoing"),
-  title_ar: z.string().trim().min(3).max(300),
-  title_en: text(300),
-  summary_ar: text(600),
-  summary_en: text(600),
-  body_ar: text(20000),
-  body_en: text(20000),
-  cover_path: text(500),
-  is_published: z.boolean().default(false),
-  sort_order: z.number().int().min(0).max(9999).default(0),
-}).transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "initiative"));
+export const initiativeInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug,
+    status: z.enum(["ongoing", "planned", "completed"]).default("ongoing"),
+    title_ar: z.string().trim().min(3).max(300),
+    title_en: text(300),
+    summary_ar: text(600),
+    summary_en: text(600),
+    body_ar: text(20000),
+    body_en: text(20000),
+    cover_path: text(500),
+    is_published: z.boolean().default(false),
+    sort_order: z.number().int().min(0).max(9999).default(0),
+  })
+  .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "initiative"));
 
 export const achieverInputSchema = z.object({
   id: z.string().uuid().optional(),
@@ -76,7 +80,17 @@ export const achieverInputSchema = z.object({
   section: z.enum(["family_competency", "excellence_award"]).default("excellence_award"),
   award_year: text(10),
   category: z
-    .enum(["academic", "professional", "military", "business", "civic", "public", "medical", "sports", "other"])
+    .enum([
+      "academic",
+      "professional",
+      "military",
+      "business",
+      "civic",
+      "public",
+      "medical",
+      "sports",
+      "other",
+    ])
     .default("academic"),
   branch_ar: text(120),
   branch_en: text(120),
@@ -101,19 +115,21 @@ export const libraryInputSchema = z.object({
   sort_order: z.number().int().min(0).max(9999).default(0),
 });
 
-export const branchInputSchema = z.object({
-  id: z.string().uuid().optional(),
-  slug,
-  name_ar: z.string().trim().min(2).max(200),
-  name_en: text(200),
-  description_ar: text(3000),
-  description_en: text(3000),
-  elder_ar: text(200),
-  elder_en: text(200),
-  image_path: text(500),
-  is_published: z.boolean().default(false),
-  sort_order: z.number().int().min(0).max(9999).default(0),
-}).transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "branch"));
+export const branchInputSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    slug,
+    name_ar: z.string().trim().min(2).max(200),
+    name_en: text(200),
+    description_ar: text(3000),
+    description_en: text(3000),
+    elder_ar: text(200),
+    elder_en: text(200),
+    image_path: text(500),
+    is_published: z.boolean().default(false),
+    sort_order: z.number().int().min(0).max(9999).default(0),
+  })
+  .transform((v) => withAutoSlug(v, [v.name_ar, v.name_en], "branch"));
 
 export const cmsUpsertSchema = z.discriminatedUnion("table", [
   z.object({ table: z.literal("news_posts"), values: newsInputSchema }),

@@ -2353,9 +2353,7 @@ function AccountPage() {
                             </span>
                           </div>
                           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                            <span>
-                              {formatDualDate(c.created_at, isAr ? "ar" : "en", "short")}
-                            </span>
+                            <span>{formatDualDate(c.created_at, isAr ? "ar" : "en", "short")}</span>
                             {c.reference && (
                               <span>
                                 {isAr ? "مرجع:" : "Ref:"}{" "}

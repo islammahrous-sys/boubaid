@@ -1,4 +1,13 @@
-import { CheckCircle2, XCircle, AlertCircle, ArrowLeft, ArrowRight, Upload, Sparkles, ShieldAlert } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Upload,
+  Sparkles,
+  ShieldAlert,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -38,7 +47,8 @@ export function PublishReadinessChecklist({
 
   const requiredChecks = checks.filter((c) => c.required);
   const passedRequired = requiredChecks.filter((c) => c.passed);
-  const allRequiredPassed = requiredChecks.length > 0 && passedRequired.length === requiredChecks.length;
+  const allRequiredPassed =
+    requiredChecks.length > 0 && passedRequired.length === requiredChecks.length;
   const missingCount = requiredChecks.length - passedRequired.length;
 
   return (
@@ -55,7 +65,7 @@ export function PublishReadinessChecklist({
                 "text-[10px] px-2 py-0.5 font-mono",
                 allRequiredPassed
                   ? "bg-emerald-600 text-white"
-                  : "border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10"
+                  : "border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10",
               )}
             >
               {passedRequired.length} / {requiredChecks.length} {isAr ? "مكتمل" : "Ready"}
@@ -67,8 +77,8 @@ export function PublishReadinessChecklist({
                 ? "جميع المتطلبات الإلزامية مكتملة. يمكنك النشر الآن."
                 : "All required criteria are satisfied. Ready to publish."
               : isAr
-              ? `يوجد ${missingCount} متطلب إلزامي بحاجة للاكتمال قبل إتاحة النشر.`
-              : `${missingCount} required item(s) must be resolved before publishing.`}
+                ? `يوجد ${missingCount} متطلب إلزامي بحاجة للاكتمال قبل إتاحة النشر.`
+                : `${missingCount} required item(s) must be resolved before publishing.`}
           </p>
         </div>
 
@@ -81,7 +91,7 @@ export function PublishReadinessChecklist({
               "h-8 text-xs font-bold gap-1.5 rounded-xl transition-all shadow-xs",
               allRequiredPassed
                 ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
-                : "bg-muted text-muted-foreground opacity-60 cursor-not-allowed"
+                : "bg-muted text-muted-foreground opacity-60 cursor-not-allowed",
             )}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -99,8 +109,8 @@ export function PublishReadinessChecklist({
               item.passed
                 ? "border-emerald-500/20 bg-emerald-500/5 text-foreground"
                 : item.required
-                ? "border-destructive/30 bg-destructive/5 text-foreground"
-                : "border-border/60 bg-muted/20 text-muted-foreground"
+                  ? "border-destructive/30 bg-destructive/5 text-foreground"
+                  : "border-border/60 bg-muted/20 text-muted-foreground",
             )}
           >
             <div className="flex items-center gap-2 min-w-0 flex-1">

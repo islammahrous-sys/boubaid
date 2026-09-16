@@ -40,7 +40,11 @@ async function main() {
   const branchId = new Map((branchRows ?? []).map((r) => [r.slug, r.id]));
 
   // 2. wipe the old, unsourced rows
-  for (const table of ["family_relationships", "family_member_privacy", "family_members"] as const) {
+  for (const table of [
+    "family_relationships",
+    "family_member_privacy",
+    "family_members",
+  ] as const) {
     const { error } = await db.from(table).delete().not("id", "is", null);
     if (error && table !== "family_member_privacy") throw error;
   }

@@ -758,7 +758,8 @@ export function MuseumArchiveManager({
                   <option value="">{isAr ? "— مجلد رئيسي —" : "— Top-level folder —"}</option>
                   {sortedGalleries
                     .filter(
-                      (g) => g.section === "archive" && !g.parent_id && g.id !== selectedGallery?.id,
+                      (g) =>
+                        g.section === "archive" && !g.parent_id && g.id !== selectedGallery?.id,
                     )
                     .map((g) => (
                       <option key={g.id} value={g.id}>
@@ -875,13 +876,20 @@ function SortableGalleryRow({
         )}
       </button>
 
-      <button type="button" onClick={onOpen} className="flex-1 min-w-[130px] text-start cursor-pointer">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex-1 min-w-[130px] text-start cursor-pointer"
+      >
         <p className="text-xs font-semibold text-foreground truncate">{gallery.title_ar}</p>
         <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 flex-wrap">
           <Badge variant="outline" className="text-[9px] px-1.5 h-4 font-mono">
             {imageCount} {isAr ? "صورة" : "images"}
           </Badge>
-          <span className="text-[10px] text-muted-foreground font-mono truncate max-w-[120px] sm:max-w-none" dir="ltr">
+          <span
+            className="text-[10px] text-muted-foreground font-mono truncate max-w-[120px] sm:max-w-none"
+            dir="ltr"
+          >
             /{gallery.slug}
           </span>
         </div>
@@ -1002,11 +1010,19 @@ function SortableImageCard({
                   : "Publish"
             }
           >
-            {gm.is_published ? <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground" />}
+            {gm.is_published ? (
+              <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            ) : (
+              <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground" />
+            )}
           </Button>
           <Popover open={editOpen} onOpenChange={setEditOpen}>
             <PopoverTrigger asChild>
-              <Button variant="secondary" size="icon" className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 text-foreground hover:bg-white shadow-xs">
+              <Button
+                variant="secondary"
+                size="icon"
+                className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 text-foreground hover:bg-white shadow-xs"
+              >
                 <Edit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </Button>
             </PopoverTrigger>

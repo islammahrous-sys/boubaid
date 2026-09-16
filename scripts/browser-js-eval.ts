@@ -42,10 +42,14 @@ async function executeBrowserJavascript() {
 
   // 2. Evaluate Browser Performance & Memory Metrics
   const perfMetrics = await page.evaluate(() => {
-    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    const nav = performance.getEntriesByType("navigation")[0] as
+      | PerformanceNavigationTiming
+      | undefined;
     const memory = (performance as any).memory;
     return {
-      domContentLoadedTime: nav ? Math.round(nav.domContentLoadedEventEnd - nav.startTime) + "ms" : "N/A",
+      domContentLoadedTime: nav
+        ? Math.round(nav.domContentLoadedEventEnd - nav.startTime) + "ms"
+        : "N/A",
       loadCompleteTime: nav ? Math.round(nav.loadEventEnd - nav.startTime) + "ms" : "N/A",
       transferSize: nav ? (nav.transferSize / 1024).toFixed(2) + " KB" : "N/A",
       decodedBodySize: nav ? (nav.decodedBodySize / 1024).toFixed(2) + " KB" : "N/A",
@@ -111,7 +115,9 @@ async function executeBrowserJavascript() {
     return {
       hasQrVisualElement: !!qrSvgOrCanvas,
       elementTag: qrSvgOrCanvas?.tagName.toLowerCase() || "none",
-      hasSeal: document.body.innerText.includes("المركز الوطني") || document.body.innerText.includes("معتمد"),
+      hasSeal:
+        document.body.innerText.includes("المركز الوطني") ||
+        document.body.innerText.includes("معتمد"),
     };
   });
   console.log("Verification Page JS Canvas Evaluation:", qrCanvasEval);

@@ -29,7 +29,8 @@ function loadEnv() {
 loadEnv();
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://ywsvittlswbbyqhahorh.supabase.co";
-const SUPABASE_ANON_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
+const SUPABASE_ANON_KEY =
+  process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -80,10 +81,15 @@ async function runComprehensiveAudit() {
     }
 
     if (adminUserId) {
-      const { data: roles } = await adminClient.from("user_roles").select("role").eq("user_id", adminUserId);
+      const { data: roles } = await adminClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", adminUserId);
       const roleList = (roles ?? []).map((r) => r.role);
       const hasSuperAdmin = roleList.includes("super_admin") || roleList.includes("admin");
-      record("RBAC", "Admin Has Privileged Role (admin/super_admin)", hasSuperAdmin, undefined, { roles: roleList });
+      record("RBAC", "Admin Has Privileged Role (admin/super_admin)", hasSuperAdmin, undefined, {
+        roles: roleList,
+      });
     }
   } catch (err: any) {
     record("Auth", "Admin Sign In Exception", false, err.message);
@@ -109,7 +115,10 @@ async function runComprehensiveAudit() {
       record("User Lifecycle", "Create Verified Test User", false, createErr?.message);
     } else {
       testUserId = createdUser.user.id;
-      record("User Lifecycle", "Create Verified Test User", true, undefined, { id: testUserId, email: testUserEmail });
+      record("User Lifecycle", "Create Verified Test User", true, undefined, {
+        id: testUserId,
+        email: testUserEmail,
+      });
     }
 
     // 2.2 Fresh User Signs In
@@ -154,17 +163,23 @@ async function runComprehensiveAudit() {
       record("User Lifecycle", "Save Profile Details", !updErr, updErr?.message);
 
       // 2.5 Submit Membership Request
-      const { data: memReq, error: reqErr } = await userClient.from("membership_requests").insert({
-        user_id: testUserId,
-        full_name_ar: "عبدالله بن علي بن حمد آل بوعبيد",
-        full_name_en: "Abdullah Ali Hamad Al Bu Obaid",
-        email: testUserEmail,
-        phone: "+966550001122",
-        branch_slug: "al-hamad",
-        father_lineage: "ابن علي بن حمد بن إبراهيم آل بوعبيد",
-        notes: "طلب عضوية للتدقيق",
-      }).select().single();
-      record("User Lifecycle", "Submit Membership Request", !reqErr, reqErr?.message, { reqId: memReq?.id });
+      const { data: memReq, error: reqErr } = await userClient
+        .from("membership_requests")
+        .insert({
+          user_id: testUserId,
+          full_name_ar: "عبدالله بن علي بن حمد آل بوعبيد",
+          full_name_en: "Abdullah Ali Hamad Al Bu Obaid",
+          email: testUserEmail,
+          phone: "+966550001122",
+          branch_slug: "al-hamad",
+          father_lineage: "ابن علي بن حمد بن إبراهيم آل بوعبيد",
+          notes: "طلب عضوية للتدقيق",
+        })
+        .select()
+        .single();
+      record("User Lifecycle", "Submit Membership Request", !reqErr, reqErr?.message, {
+        reqId: memReq?.id,
+      });
 
       // 2.6 Duplicate Membership Request Prevention
       const { error: dupReqErr } = await userClient.from("membership_requests").insert({
@@ -172,7 +187,12 @@ async function runComprehensiveAudit() {
         full_name_ar: "عبدالله بن علي آل بوعبيد",
         email: testUserEmail,
       });
-      record("User Lifecycle", "Block Duplicate Membership Request", !!dupReqErr, dupReqErr ? undefined : "Duplicate was allowed!");
+      record(
+        "User Lifecycle",
+        "Block Duplicate Membership Request",
+        !!dupReqErr,
+        dupReqErr ? undefined : "Duplicate was allowed!",
+      );
 
       // 2.7 Verify Pending State Security: Regular user cannot see others' pending requests
       const { data: otherRequests } = await userClient.from("membership_requests").select("*");
@@ -186,19 +206,25 @@ async function runComprehensiveAudit() {
 
       // 2.9 Admin Reviews and Approves Membership Request
       if (memReq?.id) {
-        const { error: appErr } = await adminClient.from("membership_requests").update({
-          status: "approved",
-          review_note: "تم التدقيق والاعتماد الرسمي",
-          reviewed_by: adminUserId,
-          reviewed_at: new Date().toISOString(),
-        }).eq("id", memReq.id);
+        const { error: appErr } = await adminClient
+          .from("membership_requests")
+          .update({
+            status: "approved",
+            review_note: "تم التدقيق والاعتماد الرسمي",
+            reviewed_by: adminUserId,
+            reviewed_at: new Date().toISOString(),
+          })
+          .eq("id", memReq.id);
         record("Admin Operations", "Approve Membership Request", !appErr, appErr?.message);
 
         // Assign 'member' role
-        await adminClient.from("user_roles").upsert({
-          user_id: testUserId,
-          role: "member",
-        }, { onConflict: "user_id,role" });
+        await adminClient.from("user_roles").upsert(
+          {
+            user_id: testUserId,
+            role: "member",
+          },
+          { onConflict: "user_id,role" },
+        );
         record("Admin Operations", "Assign Member Role", true);
 
         // Dispatch Approval Notification with required 'type' field
@@ -208,51 +234,83 @@ async function runComprehensiveAudit() {
           title_ar: "تم اعتماد عضويتك الرسمية",
           title_en: "Official Membership Approved",
           message_ar: "مبارك، تم اعتماد عضويتك في سجل أسرة آل بوعبيد وبطاقتك الرقمية جاهزة الآن.",
-          message_en: "Congratulations, your membership has been approved and your digital ID is ready.",
+          message_en:
+            "Congratulations, your membership has been approved and your digital ID is ready.",
           link: "/account",
           is_read: false,
         });
-        record("Admin Operations", "Send Approval Notification", !notifInsErr, notifInsErr?.message);
+        record(
+          "Admin Operations",
+          "Send Approval Notification",
+          !notifInsErr,
+          notifInsErr?.message,
+        );
 
         // 2.10 Verify Notification Received by User
-        const { data: userNotifs } = await userClient.from("notifications").select("*").eq("user_id", testUserId);
+        const { data: userNotifs } = await userClient
+          .from("notifications")
+          .select("*")
+          .eq("user_id", testUserId);
         const hasNotif = (userNotifs ?? []).length > 0;
-        record("Notifications", "User Received Approval Notification", hasNotif, undefined, { count: userNotifs?.length });
+        record("Notifications", "User Received Approval Notification", hasNotif, undefined, {
+          count: userNotifs?.length,
+        });
 
         // Mark notification as read
         if (userNotifs && userNotifs[0]) {
-          const { error: markErr } = await userClient.from("notifications").update({ is_read: true }).eq("id", userNotifs[0].id);
+          const { error: markErr } = await userClient
+            .from("notifications")
+            .update({ is_read: true })
+            .eq("id", userNotifs[0].id);
           record("Notifications", "Mark Notification As Read", !markErr, markErr?.message);
         }
       }
 
       // 2.11 Submit Private Contribution & Receipt Link
-      const { data: contrib, error: contribErr } = await userClient.from("contributions").insert({
-        user_id: testUserId,
-        contributor_name: "عبدالله بن علي آل بوعبيد",
-        email: testUserEmail,
-        phone: "+966550001122",
-        amount: 500,
-        currency: "SAR",
-        method: "bank_transfer",
-        purpose: "صندوق التنمية العائلية",
-        status: "pending",
-      }).select().single();
-      record("Treasury", "Member Submits Pending Contribution", !contribErr, contribErr?.message, { contribId: contrib?.id });
+      const { data: contrib, error: contribErr } = await userClient
+        .from("contributions")
+        .insert({
+          user_id: testUserId,
+          contributor_name: "عبدالله بن علي آل بوعبيد",
+          email: testUserEmail,
+          phone: "+966550001122",
+          amount: 500,
+          currency: "SAR",
+          method: "bank_transfer",
+          purpose: "صندوق التنمية العائلية",
+          status: "pending",
+        })
+        .select()
+        .single();
+      record("Treasury", "Member Submits Pending Contribution", !contribErr, contribErr?.message, {
+        contribId: contrib?.id,
+      });
 
       // 2.12 Verify Unauthenticated Visitors Cannot See Contributions Ledger
       const { data: anonContribs } = await unauthClient.from("contributions").select("*");
-      record("Security & RLS", "Anonymous Visitors Cannot Access Contributions Ledger", !anonContribs || anonContribs.length === 0);
+      record(
+        "Security & RLS",
+        "Anonymous Visitors Cannot Access Contributions Ledger",
+        !anonContribs || anonContribs.length === 0,
+      );
 
       // Admin Approves Contribution
       if (contrib?.id) {
-        const { error: appContribErr } = await adminClient.from("contributions").update({
-          status: "verified",
-          reviewed_by: adminUserId,
-          reviewed_at: new Date().toISOString(),
-          review_note: "تم التحقق من الحوالة البنكية والاعتماد",
-        }).eq("id", contrib.id);
-        record("Treasury", "Treasurer Verifies Contribution", !appContribErr, appContribErr?.message);
+        const { error: appContribErr } = await adminClient
+          .from("contributions")
+          .update({
+            status: "verified",
+            reviewed_by: adminUserId,
+            reviewed_at: new Date().toISOString(),
+            review_note: "تم التحقق من الحوالة البنكية والاعتماد",
+          })
+          .eq("id", contrib.id);
+        record(
+          "Treasury",
+          "Treasurer Verifies Contribution",
+          !appContribErr,
+          appContribErr?.message,
+        );
       }
     }
   } catch (err: any) {
@@ -272,21 +330,29 @@ async function runComprehensiveAudit() {
   // 3.1 Articles / News
   try {
     const slug = `qa-article-${Date.now()}`;
-    const { data: art, error: artErr } = await adminClient.from("articles").insert({
-      slug,
-      title_ar: "افتتاح ديوان الأسرة الجديد بالأحساء",
-      title_en: "Inauguration of the New Family Diwan in Al-Ahsa",
-      excerpt_ar: "تم بحمد الله تدشين المقر الجديد بحضور أعيان وأبناء الأسرة",
-      content_ar: "<p>تفاصيل الحفل واللقاء السنوي المبارك لأسرة آل بوعبيد</p>",
-      status: "published",
-      published_at: new Date().toISOString(),
-      is_featured: true,
-      created_by: adminUserId,
-    }).select().single();
+    const { data: art, error: artErr } = await adminClient
+      .from("articles")
+      .insert({
+        slug,
+        title_ar: "افتتاح ديوان الأسرة الجديد بالأحساء",
+        title_en: "Inauguration of the New Family Diwan in Al-Ahsa",
+        excerpt_ar: "تم بحمد الله تدشين المقر الجديد بحضور أعيان وأبناء الأسرة",
+        content_ar: "<p>تفاصيل الحفل واللقاء السنوي المبارك لأسرة آل بوعبيد</p>",
+        status: "published",
+        published_at: new Date().toISOString(),
+        is_featured: true,
+        created_by: adminUserId,
+      })
+      .select()
+      .single();
     record("CMS", "Create & Publish Article", !artErr, artErr?.message, { slug });
 
     // Public read
-    const { data: pubArt } = await unauthClient.from("articles").select("id, title_ar").eq("slug", slug).maybeSingle();
+    const { data: pubArt } = await unauthClient
+      .from("articles")
+      .select("id, title_ar")
+      .eq("slug", slug)
+      .maybeSingle();
     record("CMS", "Public Visitor Can Read Published Article", !!pubArt);
 
     if (art) await adminClient.from("articles").delete().eq("id", art.id);
@@ -296,15 +362,19 @@ async function runComprehensiveAudit() {
 
   // 3.2 Announcements
   try {
-    const { data: ann, error: annErr } = await adminClient.from("announcements").insert({
-      title_ar: "تنويه هام: موعد انعقاد الجمعية العمومية",
-      title_en: "General Assembly Meeting Notice",
-      message_ar: "يسر أمانة المجلس دعوة جميع أفراد الأسرة لحضور الاجتماع السنوي",
-      type: "important",
-      priority: "high",
-      status: "published",
-      created_by: adminUserId,
-    }).select().single();
+    const { data: ann, error: annErr } = await adminClient
+      .from("announcements")
+      .insert({
+        title_ar: "تنويه هام: موعد انعقاد الجمعية العمومية",
+        title_en: "General Assembly Meeting Notice",
+        message_ar: "يسر أمانة المجلس دعوة جميع أفراد الأسرة لحضور الاجتماع السنوي",
+        type: "important",
+        priority: "high",
+        status: "published",
+        created_by: adminUserId,
+      })
+      .select()
+      .single();
     record("CMS", "Create Published Announcement", !annErr, annErr?.message);
 
     if (ann) await adminClient.from("announcements").delete().eq("id", ann.id);
@@ -315,29 +385,37 @@ async function runComprehensiveAudit() {
   // 3.3 Events & RSVPs
   try {
     const evtSlug = `qa-gathering-${Date.now()}`;
-    const { data: evt, error: evtErr } = await adminClient.from("events").insert({
-      slug: evtSlug,
-      title_ar: "ملتقى الأسرة الرمضاني السنوي",
-      title_en: "Annual Ramadan Family Gathering",
-      description_ar: "اللقاء السنوي لتبادل التهاني والتواصل",
-      start_at: new Date(Date.now() + 86400000 * 14).toISOString(),
-      timezone: "Asia/Riyadh",
-      registration_enabled: true,
-      max_attendees: 150,
-      status: "published",
-      created_by: adminUserId,
-    }).select().single();
+    const { data: evt, error: evtErr } = await adminClient
+      .from("events")
+      .insert({
+        slug: evtSlug,
+        title_ar: "ملتقى الأسرة الرمضاني السنوي",
+        title_en: "Annual Ramadan Family Gathering",
+        description_ar: "اللقاء السنوي لتبادل التهاني والتواصل",
+        start_at: new Date(Date.now() + 86400000 * 14).toISOString(),
+        timezone: "Asia/Riyadh",
+        registration_enabled: true,
+        max_attendees: 150,
+        status: "published",
+        created_by: adminUserId,
+      })
+      .select()
+      .single();
     record("CMS", "Create Event with RSVP Enabled", !evtErr, evtErr?.message);
 
     if (evt) {
-      const { data: rsvp, error: rsvpErr } = await adminClient.from("event_registrations").insert({
-        event_id: evt.id,
-        name: "عبدالعزيز بن فهد آل بوعبيد",
-        email: "abdulaziz@example.com",
-        phone: "+966509988776",
-        attendees_count: 2,
-        status: "registered",
-      }).select().single();
+      const { data: rsvp, error: rsvpErr } = await adminClient
+        .from("event_registrations")
+        .insert({
+          event_id: evt.id,
+          name: "عبدالعزيز بن فهد آل بوعبيد",
+          email: "abdulaziz@example.com",
+          phone: "+966509988776",
+          attendees_count: 2,
+          status: "registered",
+        })
+        .select()
+        .single();
       record("CMS", "Register Attendee for Event", !rsvpErr, rsvpErr?.message);
 
       if (rsvp) await adminClient.from("event_registrations").delete().eq("id", rsvp.id);
@@ -350,26 +428,34 @@ async function runComprehensiveAudit() {
   // 3.4 Initiatives & Volunteers
   try {
     const initSlug = `qa-init-${Date.now()}`;
-    const { data: init, error: initErr } = await adminClient.from("initiatives").insert({
-      slug: initSlug,
-      title_ar: "مشروع وقف القرآن الكريم ورعاية الموهوبين",
-      title_en: "Quran Endowment & Talent Support Initiative",
-      summary_ar: "مبادرة مجتمعية تعليمية لأبناء وبنات الأسرة",
-      body_ar: "<p>تفاصيل المبادرة ومراحل التنفيذ</p>",
-      status: "ongoing",
-      is_published: true,
-      created_by: adminUserId,
-    }).select().single();
+    const { data: init, error: initErr } = await adminClient
+      .from("initiatives")
+      .insert({
+        slug: initSlug,
+        title_ar: "مشروع وقف القرآن الكريم ورعاية الموهوبين",
+        title_en: "Quran Endowment & Talent Support Initiative",
+        summary_ar: "مبادرة مجتمعية تعليمية لأبناء وبنات الأسرة",
+        body_ar: "<p>تفاصيل المبادرة ومراحل التنفيذ</p>",
+        status: "ongoing",
+        is_published: true,
+        created_by: adminUserId,
+      })
+      .select()
+      .single();
     record("CMS", "Create Published Initiative", !initErr, initErr?.message);
 
     if (init) {
-      const { data: reg, error: regErr } = await adminClient.from("initiative_registrations").insert({
-        initiative_id: init.id,
-        name: "نورة بنت صالح آل بوعبيد",
-        email: "noura@example.com",
-        phone: "+966505544332",
-        status: "new",
-      }).select().single();
+      const { data: reg, error: regErr } = await adminClient
+        .from("initiative_registrations")
+        .insert({
+          initiative_id: init.id,
+          name: "نورة بنت صالح آل بوعبيد",
+          email: "noura@example.com",
+          phone: "+966505544332",
+          status: "new",
+        })
+        .select()
+        .single();
       record("CMS", "Submit Initiative Participation", !regErr, regErr?.message);
 
       if (reg) await adminClient.from("initiative_registrations").delete().eq("id", reg.id);
@@ -381,17 +467,21 @@ async function runComprehensiveAudit() {
 
   // 3.5 Achievers (Roll of Honour)
   try {
-    const { data: ach, error: achErr } = await adminClient.from("achievers").insert({
-      name_ar: "المهندس سلطان بن أحمد آل بوعبيد",
-      name_en: "Eng. Sultan Ahmed Al Bu Obaid",
-      field_ar: "هندسة الفضاء والذكاء الاصطناعي",
-      field_en: "Aerospace Engineering & AI",
-      achievement_ar: "براءة اختراع دولية ونشر أبحاث في مجلات علمية مرموقة",
-      achievement_en: "International patent and published research in prestigious journals",
-      category: "engineering",
-      branch_ar: "فرع آل إبراهيم",
-      is_published: true,
-    }).select().single();
+    const { data: ach, error: achErr } = await adminClient
+      .from("achievers")
+      .insert({
+        name_ar: "المهندس سلطان بن أحمد آل بوعبيد",
+        name_en: "Eng. Sultan Ahmed Al Bu Obaid",
+        field_ar: "هندسة الفضاء والذكاء الاصطناعي",
+        field_en: "Aerospace Engineering & AI",
+        achievement_ar: "براءة اختراع دولية ونشر أبحاث في مجلات علمية مرموقة",
+        achievement_en: "International patent and published research in prestigious journals",
+        category: "engineering",
+        branch_ar: "فرع آل إبراهيم",
+        is_published: true,
+      })
+      .select()
+      .single();
     record("CMS", "Create Published Achiever", !achErr, achErr?.message);
 
     if (ach) await adminClient.from("achievers").delete().eq("id", ach.id);
@@ -401,15 +491,19 @@ async function runComprehensiveAudit() {
 
   // 3.6 Library & Historical Documents
   try {
-    const { data: lib, error: libErr } = await adminClient.from("library_items").insert({
-      collection: "documents",
-      title_ar: "وثيقة وقفية قديمة مؤرخة سنة ١٣٢٠ هـ",
-      title_en: "Historic Endowment Deed Dated 1320 AH",
-      description_ar: "مخطوطة أصلية موثقة لسجل أوقاف النخيل والمزارع",
-      year: 1320,
-      kind: "وثيقة أوقاف",
-      is_published: true,
-    }).select().single();
+    const { data: lib, error: libErr } = await adminClient
+      .from("library_items")
+      .insert({
+        collection: "documents",
+        title_ar: "وثيقة وقفية قديمة مؤرخة سنة ١٣٢٠ هـ",
+        title_en: "Historic Endowment Deed Dated 1320 AH",
+        description_ar: "مخطوطة أصلية موثقة لسجل أوقاف النخيل والمزارع",
+        year: 1320,
+        kind: "وثيقة أوقاف",
+        is_published: true,
+      })
+      .select()
+      .single();
     record("CMS", "Create Library Archive Item", !libErr, libErr?.message);
 
     if (lib) await adminClient.from("library_items").delete().eq("id", lib.id);
@@ -420,34 +514,46 @@ async function runComprehensiveAudit() {
   // 3.7 Museum Galleries & Gallery Media
   try {
     const galSlug = `qa-museum-${Date.now()}`;
-    const { data: gal, error: galErr } = await adminClient.from("galleries").insert({
-      slug: galSlug,
-      title_ar: "معرض مقتنيات ومخطوطات الأجداد",
-      title_en: "Ancestral Manuscripts & Artifacts Exhibition",
-      description_ar: "صور توثيقية لمقتنيات تاريخية نادرة",
-      status: "published",
-      visibility: "public",
-      sort_order: 1,
-    }).select().single();
+    const { data: gal, error: galErr } = await adminClient
+      .from("galleries")
+      .insert({
+        slug: galSlug,
+        title_ar: "معرض مقتنيات ومخطوطات الأجداد",
+        title_en: "Ancestral Manuscripts & Artifacts Exhibition",
+        description_ar: "صور توثيقية لمقتنيات تاريخية نادرة",
+        status: "published",
+        visibility: "public",
+        sort_order: 1,
+      })
+      .select()
+      .single();
     record("CMS", "Create Museum Gallery", !galErr, galErr?.message);
 
     if (gal) {
-      const { data: asset, error: assetErr } = await adminClient.from("media_assets").insert({
-        bucket_id: "media",
-        file_path: "media/museum-artifact-test.jpg",
-        file_name: "museum-artifact-test.jpg",
-        public_url: "https://example.com/artifact.jpg",
-        title_ar: "مخطوطة تاريخية نادرة",
-      }).select().single();
+      const { data: asset, error: assetErr } = await adminClient
+        .from("media_assets")
+        .insert({
+          bucket_id: "media",
+          file_path: "media/museum-artifact-test.jpg",
+          file_name: "museum-artifact-test.jpg",
+          public_url: "https://example.com/artifact.jpg",
+          title_ar: "مخطوطة تاريخية نادرة",
+        })
+        .select()
+        .single();
 
       if (asset) {
-        const { data: gm, error: gmErr } = await adminClient.from("gallery_media").insert({
-          gallery_id: gal.id,
-          media_asset_id: asset.id,
-          title_ar: "صورة عالية الدقة للمخطوطة",
-          sort_order: 1,
-          is_published: true,
-        }).select().single();
+        const { data: gm, error: gmErr } = await adminClient
+          .from("gallery_media")
+          .insert({
+            gallery_id: gal.id,
+            media_asset_id: asset.id,
+            title_ar: "صورة عالية الدقة للمخطوطة",
+            sort_order: 1,
+            is_published: true,
+          })
+          .select()
+          .single();
         record("CMS", "Link Media Item to Museum Gallery", !gmErr, gmErr?.message);
 
         if (gm) await adminClient.from("gallery_media").delete().eq("id", gm.id);
@@ -490,14 +596,23 @@ async function runComprehensiveAudit() {
       visibility: "public",
     });
 
-    record("Family Tree", "Create Generational Family Members", !insAErr && !insBErr, insAErr?.message || insBErr?.message);
+    record(
+      "Family Tree",
+      "Create Generational Family Members",
+      !insAErr && !insBErr,
+      insAErr?.message || insBErr?.message,
+    );
 
     // Link Parent-Child Relationship
-    const { data: rel, error: relErr } = await adminClient.from("family_relationships").insert({
-      person_id: personBId,
-      related_person_id: personAId,
-      relationship_type: "parent",
-    }).select().single();
+    const { data: rel, error: relErr } = await adminClient
+      .from("family_relationships")
+      .insert({
+        person_id: personBId,
+        related_person_id: personAId,
+        relationship_type: "parent",
+      })
+      .select()
+      .single();
     record("Family Tree", "Link Parent-Child Relationship", !relErr, relErr?.message);
 
     // Cleanup
@@ -509,14 +624,18 @@ async function runComprehensiveAudit() {
 
   // 3.9 Inquiries & Notes
   try {
-    const { data: inq, error: inqErr } = await adminClient.from("inquiries").insert({
-      name: "منذر بن إبراهيم",
-      email: "munther@example.com",
-      phone: "+966500112233",
-      subject: "طلب إضافة فرع عائلي في الدليل",
-      message: "نرجو تحديث بيانات الفرع التابع لنا وإضافة جهات الاتصال",
-      status: "new",
-    }).select().single();
+    const { data: inq, error: inqErr } = await adminClient
+      .from("inquiries")
+      .insert({
+        name: "منذر بن إبراهيم",
+        email: "munther@example.com",
+        phone: "+966500112233",
+        subject: "طلب إضافة فرع عائلي في الدليل",
+        message: "نرجو تحديث بيانات الفرع التابع لنا وإضافة جهات الاتصال",
+        status: "new",
+      })
+      .select()
+      .single();
     record("Inquiries", "Create New Inquiry", !inqErr, inqErr?.message);
 
     if (inq) {
@@ -527,7 +646,10 @@ async function runComprehensiveAudit() {
       });
       record("Inquiries", "Attach Staff Note to Inquiry", !noteErr, noteErr?.message);
 
-      const { error: stErr } = await adminClient.from("inquiries").update({ status: "resolved" }).eq("id", inq.id);
+      const { error: stErr } = await adminClient
+        .from("inquiries")
+        .update({ status: "resolved" })
+        .eq("id", inq.id);
       record("Inquiries", "Resolve Inquiry Status", !stErr, stErr?.message);
 
       await adminClient.from("inquiries").delete().eq("id", inq.id);
@@ -539,21 +661,29 @@ async function runComprehensiveAudit() {
   // 3.10 Navigation Menus & Links
   try {
     const menuCode = `nav_qa_${Date.now()}`;
-    const { data: menu, error: menuErr } = await adminClient.from("navigation_menus").insert({
-      code: menuCode,
-      name_ar: "القائمة العلوية التجريبية",
-      name_en: "Test Header Menu",
-    }).select().single();
+    const { data: menu, error: menuErr } = await adminClient
+      .from("navigation_menus")
+      .insert({
+        code: menuCode,
+        name_ar: "القائمة العلوية التجريبية",
+        name_en: "Test Header Menu",
+      })
+      .select()
+      .single();
     record("Navigation", "Create Navigation Menu", !menuErr, menuErr?.message);
 
     if (menu) {
-      const { data: item, error: itemErr } = await adminClient.from("navigation_items").insert({
-        menu_id: menu.id,
-        label_ar: "من نحن",
-        label_en: "About Us",
-        url: "/about",
-        sort_order: 1,
-      }).select().single();
+      const { data: item, error: itemErr } = await adminClient
+        .from("navigation_items")
+        .insert({
+          menu_id: menu.id,
+          label_ar: "من نحن",
+          label_en: "About Us",
+          url: "/about",
+          sort_order: 1,
+        })
+        .select()
+        .single();
       record("Navigation", "Create Navigation Menu Item", !itemErr, itemErr?.message);
 
       if (item) await adminClient.from("navigation_items").delete().eq("id", item.id);
@@ -575,16 +705,23 @@ async function runComprehensiveAudit() {
       last_updated: new Date().toISOString(),
     };
 
-    const { error: setErr } = await adminClient.from("site_settings").upsert({
-      category: "dna",
-      key: "dna_studies_data",
-      value: dnaPayload,
-      is_public: true,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: "key" });
+    const { error: setErr } = await adminClient.from("site_settings").upsert(
+      {
+        category: "dna",
+        key: "dna_studies_data",
+        value: dnaPayload,
+        is_public: true,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "key" },
+    );
     record("Settings & DNA", "Save DNA Studies Configuration", !setErr, setErr?.message);
 
-    const { data: publicDna } = await unauthClient.from("site_settings").select("value").eq("key", "dna_studies_data").maybeSingle();
+    const { data: publicDna } = await unauthClient
+      .from("site_settings")
+      .select("value")
+      .eq("key", "dna_studies_data")
+      .maybeSingle();
     record("Settings & DNA", "Public Access to DNA Studies Data", !!publicDna?.value);
   } catch (err: any) {
     record("Settings & DNA", "Settings & DNA Exception", false, err.message);
@@ -598,7 +735,17 @@ async function runComprehensiveAudit() {
       record("Storage", "List Buckets", false, bErr.message);
     } else {
       const names = (buckets ?? []).map((b) => b.name);
-      const essential = ["media", "site-media", "family-photos", "avatars", "galleries", "receipts", "content", "documents-public", "documents-private"];
+      const essential = [
+        "media",
+        "site-media",
+        "family-photos",
+        "avatars",
+        "galleries",
+        "receipts",
+        "content",
+        "documents-public",
+        "documents-private",
+      ];
       for (const req of essential) {
         const found = names.includes(req);
         record("Storage", `Storage Bucket "${req}" Verified`, found);
@@ -623,9 +770,11 @@ async function runComprehensiveAudit() {
 
   if (failed > 0) {
     console.log("FAILURES REQUIRING ATTENTION:");
-    results.filter((r) => !r.passed).forEach((r) => {
-      console.log(`❌ [${r.category}] ${r.name}: ${r.error}`);
-    });
+    results
+      .filter((r) => !r.passed)
+      .forEach((r) => {
+        console.log(`❌ [${r.category}] ${r.name}: ${r.error}`);
+      });
   } else {
     console.log("🎉 ALL AUDIT CHECKS PASSED WITH 100% SUCCESS!");
   }

@@ -441,7 +441,9 @@ export function LibraryItemsManager({
                     : "The clip plays directly on the site, so the link must point to a video file hosted on the site (mp4, webm or mov)."}
                 </p>
                 {(form.external_url ?? "").trim() !== "" &&
-                  !/\.(mp4|webm|ogv|ogg|mov|m4v)(\?|#|$)/i.test((form.external_url ?? "").trim()) && (
+                  !/\.(mp4|webm|ogv|ogg|mov|m4v)(\?|#|$)/i.test(
+                    (form.external_url ?? "").trim(),
+                  ) && (
                     <p className="text-[11px] font-semibold text-destructive">
                       {isAr
                         ? "هذا الرابط ليس ملف فيديو، ولن يظهر المقطع في قسم الأرشيف ← الفيديوهات. روابط المنصات (مثل إنستغرام) غير مدعومة — يُرجى رفع ملف الفيديو واستخدام رابطه."

@@ -501,10 +501,7 @@ function MasterAdminPage() {
   } = useQuery({
     queryKey: ["directory-management-data"],
     queryFn: () => fetchDirectory(),
-    enabled:
-      canAccessConsole &&
-      activeDomainId === "community" &&
-      activeTabId === "directory",
+    enabled: canAccessConsole && activeDomainId === "community" && activeTabId === "directory",
     ...queryConfig,
   });
 
@@ -909,7 +906,8 @@ function MasterAdminPage() {
     (usersData?.profiles ?? []).forEach((u: any) => {
       list.push({
         id: `user-${u.id}`,
-        title: u.full_name_ar || u.full_name_en || u.email || (isAr ? "مستخدم مسجل" : "Registered User"),
+        title:
+          u.full_name_ar || u.full_name_en || u.email || (isAr ? "مستخدم مسجل" : "Registered User"),
         subtitle: u.email || "",
         category: "users",
         onSelect: () => handleSelectTab("system", "users"),
@@ -1431,11 +1429,14 @@ function MasterAdminPage() {
                     runMutation(() => delBizMut({ data: { id } }), refreshDirectory)
                   }
                   onReviewRequest={(data) =>
-                    runMutation(() => reviewReqMut({ data }), () => {
-                      refreshDirectory();
-                      refreshUsers();
-                      refreshOverview();
-                    })
+                    runMutation(
+                      () => reviewReqMut({ data }),
+                      () => {
+                        refreshDirectory();
+                        refreshUsers();
+                        refreshOverview();
+                      },
+                    )
                   }
                   onNavigateTab={(d, t) => handleSelectTab(d, t)}
                 />
@@ -1454,16 +1455,22 @@ function MasterAdminPage() {
                   membershipRequests={(usersData?.membershipRequests ?? []) as any}
                   familyMembers={(usersData?.familyMembers ?? []) as any}
                   onAssignRole={(user_id, role) =>
-                    runMutation(() => assignRoleMut({ data: { user_id, role } }), () => {
-                      refreshUsers();
-                      refreshOverview();
-                    })
+                    runMutation(
+                      () => assignRoleMut({ data: { user_id, role } }),
+                      () => {
+                        refreshUsers();
+                        refreshOverview();
+                      },
+                    )
                   }
                   onRemoveRole={(user_id, role) =>
-                    runMutation(() => removeRoleMut({ data: { user_id, role } }), () => {
-                      refreshUsers();
-                      refreshOverview();
-                    })
+                    runMutation(
+                      () => removeRoleMut({ data: { user_id, role } }),
+                      () => {
+                        refreshUsers();
+                        refreshOverview();
+                      },
+                    )
                   }
                   onReviewRequest={async (id, status, review_note) => {
                     await runMutation(
@@ -1571,16 +1578,22 @@ function MasterAdminPage() {
                   membershipRequests={(usersData?.membershipRequests ?? []) as any}
                   familyMembers={(usersData?.familyMembers ?? []) as any}
                   onAssignRole={(user_id, role) =>
-                    runMutation(() => assignRoleMut({ data: { user_id, role } }), () => {
-                      refreshUsers();
-                      refreshOverview();
-                    })
+                    runMutation(
+                      () => assignRoleMut({ data: { user_id, role } }),
+                      () => {
+                        refreshUsers();
+                        refreshOverview();
+                      },
+                    )
                   }
                   onRemoveRole={(user_id, role) =>
-                    runMutation(() => removeRoleMut({ data: { user_id, role } }), () => {
-                      refreshUsers();
-                      refreshOverview();
-                    })
+                    runMutation(
+                      () => removeRoleMut({ data: { user_id, role } }),
+                      () => {
+                        refreshUsers();
+                        refreshOverview();
+                      },
+                    )
                   }
                   onReviewRequest={async (id, status, review_note) => {
                     await runMutation(
@@ -1589,7 +1602,7 @@ function MasterAdminPage() {
                         refreshUsers();
                         refreshDirectory();
                         refreshOverview();
-                      }
+                      },
                     );
                   }}
                   onNavigateTab={(d, t) => handleSelectTab(d, t)}

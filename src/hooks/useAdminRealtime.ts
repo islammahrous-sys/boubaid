@@ -34,13 +34,9 @@ export function useAdminRealtime(enabled = true) {
 
     const channel = supabase
       .channel("admin-console-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "contributions" },
-        () => {
-          invalidateWithDebounce(["admin", "treasury", "my-contributions"]);
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "contributions" }, () => {
+        invalidateWithDebounce(["admin", "treasury", "my-contributions"]);
+      })
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "membership_requests" },
@@ -48,34 +44,18 @@ export function useAdminRealtime(enabled = true) {
           invalidateWithDebounce(["admin", "membership", "family-members"]);
         },
       )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "inquiries" },
-        () => {
-          invalidateWithDebounce(["admin", "inquiries"]);
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "inquiry_notes" },
-        () => {
-          invalidateWithDebounce(["admin", "inquiries"]);
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "site_settings" },
-        () => {
-          invalidateWithDebounce(["admin", "site-settings", "settings"]);
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "audit_logs" },
-        () => {
-          invalidateWithDebounce(["admin", "audit-logs"]);
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "inquiries" }, () => {
+        invalidateWithDebounce(["admin", "inquiries"]);
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "inquiry_notes" }, () => {
+        invalidateWithDebounce(["admin", "inquiries"]);
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => {
+        invalidateWithDebounce(["admin", "site-settings", "settings"]);
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "audit_logs" }, () => {
+        invalidateWithDebounce(["admin", "audit-logs"]);
+      })
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
           // Connected to realtime stream

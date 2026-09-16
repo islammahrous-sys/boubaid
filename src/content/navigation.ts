@@ -53,7 +53,6 @@ export const primaryNav: NavItem[] = [
         label: { ar: "الحوكمة و مجلس الامناء", en: "Governance & Board of Trustees" },
       },
       {
-
         to: "/fund-certificates",
         label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
       },
@@ -116,7 +115,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
             label: { ar: "الحوكمة و مجلس الامناء", en: "Governance & Board of Trustees" },
           },
           {
-
             to: "/fund-certificates",
             label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
           },
@@ -250,7 +248,6 @@ export function buildFooterColumns(items: FooterNavItem[]): FooterColumn[] {
     ? [{ key: "site-sections", title: SITE_SECTIONS_TITLE, items: flat }, ...columns]
     : columns;
 }
-
 
 /** Split a nav URL such as "/committees#board" into Link props. */
 export function navLinkProps(to: string): { to: string; hash?: string } {

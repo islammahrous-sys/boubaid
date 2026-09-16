@@ -295,7 +295,6 @@ function DirectoryPage() {
     }));
   }, [liveBusinesses]);
 
-
   const sectors = useMemo(() => {
     const set = new Set<string>();
     allBusinesses.forEach((b) => set.add(b.category.ar));
@@ -455,8 +454,6 @@ function DirectoryPage() {
                 {isAr ? "الانتقال إلى دليل المنشآت" : "Open the establishments directory"}
               </Link>
             </div>
-
-
           </TabsContent>
 
           {/* ════════════════════════════════════════════════════════════════ */}
