@@ -216,6 +216,7 @@ const copy = {
   quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
   quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
   quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
+  quickCta: { ar: "اضغط هنا", en: "Explore" } as BiText,
 
   openingEyebrow: { ar: "افتتاحية", en: "Introduction" } as BiText,
   openingTitle: {
