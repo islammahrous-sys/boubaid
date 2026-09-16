@@ -116,8 +116,8 @@ function ResetPasswordPage() {
         void navigate({ to: "/account" });
       }, 1500);
     } catch (error) {
-      const message = error instanceof Error ? error.message : undefined;
-      toast.error(translateAuthError(message, lang));
+      toast.error(translateAuthError(error, lang));
+
     } finally {
       setBusy(false);
     }
