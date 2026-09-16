@@ -18,6 +18,7 @@ const searchSchema = z.object({
   branch: z.string().optional(),
   id: z.string().optional(),
   focus: z.string().optional(),
+  q: z.string().optional(),
 });
 
 export const Route = createFileRoute("/family-tree")({
