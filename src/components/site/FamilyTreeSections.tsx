@@ -102,7 +102,8 @@ export function ElectronicFamilyTreeSection({
 
       <div className={withHeading ? "mt-6 bg-ink" : "bg-ink"}>
         <iframe
-          src="/interactive-tree.html"
+          key={canvasSrc}
+          src={canvasSrc}
           title={t(treeCopy.treeTitle)}
           className="block h-[50vh] min-h-[22rem] w-full border-0 bg-card sm:h-[65vh] sm:min-h-[32rem]"
         />
