@@ -216,6 +216,7 @@ const copy = {
   quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
   quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
   quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
+  quickCta: { ar: "اضغط هنا", en: "Explore" } as BiText,
 
   openingEyebrow: { ar: "افتتاحية", en: "Introduction" } as BiText,
   openingTitle: {
@@ -548,13 +549,24 @@ function HomePage() {
                           )}
                         >
                           {t(item.label)}
-                          {item.link && (
+                        </dt>
+                        {item.link ? (
+                          // Persistent click invitation — always visible so the
+                          // entrance reads as a navigation action, not a label.
+                          <span
+                            className={cn(
+                              "mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1",
+                              "text-[10px] font-semibold leading-none text-gold sm:text-[11px]",
+                              "transition-colors duration-200 group-hover:border-gold/70 group-hover:bg-gold/20 group-hover:text-gold-soft",
+                            )}
+                          >
+                            {t(copy.quickCta)}
                             <Arrow
-                              className="h-2.5 w-2.5 sm:h-3 sm:w-3 opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-x-0.5 group-hover:opacity-100 rtl:group-hover:-translate-x-0.5"
+                              className="h-3 w-3 transition-transform duration-200 ease-out group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
                               aria-hidden="true"
                             />
-                          )}
-                        </dt>
+                          </span>
+                        ) : null}
                         {item.value ? (
                           <dd
                             className={cn(
@@ -571,7 +583,11 @@ function HomePage() {
                     return (
                       <div
                         key={i}
-                        className="group relative transition-transform duration-200 ease-out"
+                        className={cn(
+                          "group relative",
+                          item.link &&
+                            "transition-transform duration-200 ease-out hover:-translate-y-0.5",
+                        )}
                       >
                         {item.link ? (
                           <Link to={item.link} resetScroll className="block h-full w-full">
