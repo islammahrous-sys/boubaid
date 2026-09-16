@@ -125,7 +125,13 @@ export function GlobalSearchModal({
             {results.members.map((m) => (
               <CommandItem
                 key={m.id}
-                onSelect={() => handleSelect(`/family-tree?focus=${m.id}`)}
+                onSelect={() =>
+                  handleSelect(
+                    `/family-tree?focus=${encodeURIComponent(m.id)}&q=${encodeURIComponent(
+                      m.first_name_ar ?? "",
+                    )}`,
+                  )
+                }
                 className="flex items-center gap-3 p-2 cursor-pointer rounded-lg hover:bg-accent"
               >
                 <SaudiCulturalAvatar src={m.avatar_path} alt={m.first_name_ar} size="sm" />
