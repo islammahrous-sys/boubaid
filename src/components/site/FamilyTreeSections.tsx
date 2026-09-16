@@ -88,7 +88,7 @@ export function ElectronicFamilyTreeSection({
               {t(treeCopy.treeTitle)}
             </h2>
             <a
-              href="/interactive-tree.html"
+              href={canvasSrc}
               target="_blank"
               rel="noopener noreferrer"
               className="label-caps inline-flex shrink-0 items-center gap-2 border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-foreground"
