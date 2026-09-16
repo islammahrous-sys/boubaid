@@ -206,10 +206,13 @@ function AuthPage() {
       }
     } catch (error) {
       navigatingRef.current = false;
-      const message = error instanceof Error ? error.message : undefined;
-      toast.error(translateAuthError(message, lang));
+      // Pass the provider error itself: its `code` distinguishes an exhausted
+      // confirmation-email quota from a genuine per-visitor attempt limit,
+      // which the message text alone does not.
+      toast.error(translateAuthError(error, lang));
       setBusy(false);
     }
+
   };
 
   const rise = (delay: number): React.CSSProperties => ({
