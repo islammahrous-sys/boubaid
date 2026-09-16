@@ -63,6 +63,7 @@ const copy = {
 
 function FamilyTreePage() {
   const { t } = useLang();
+  const { focus, q } = Route.useSearch();
 
   return (
     <>
