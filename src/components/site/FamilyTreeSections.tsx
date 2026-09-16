@@ -76,7 +76,9 @@ export function ElectronicFamilyTreeSection({
   const query = new URLSearchParams();
   if (focusId) query.set("focus", focusId);
   if (focusName) query.set("q", focusName);
-  const canvasSrc = query.size ? `/interactive-tree.html?${query.toString()}` : "/interactive-tree.html";
+  const canvasSrc = query.size
+    ? `/interactive-tree.html?${query.toString()}`
+    : "/interactive-tree.html";
 
   return (
     <section id="electronic-family-tree" className="scroll-mt-24">
