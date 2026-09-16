@@ -61,8 +61,24 @@ export const treeCopy = {
  * the home page, where the tree is one section among many rather than the
  * whole page.
  */
-export function ElectronicFamilyTreeSection({ withHeading = false }: { withHeading?: boolean }) {
+export function ElectronicFamilyTreeSection({
+  withHeading = false,
+  focusId,
+  focusName,
+}: {
+  withHeading?: boolean;
+  /** Deep-link target coming from the site-wide search, forwarded to the canvas. */
+  focusId?: string;
+  focusName?: string;
+}) {
   const { t } = useLang();
+
+  const query = new URLSearchParams();
+  if (focusId) query.set("focus", focusId);
+  if (focusName) query.set("q", focusName);
+  const canvasSrc = query.size
+    ? `/interactive-tree.html?${query.toString()}`
+    : "/interactive-tree.html";
 
   return (
     <section id="electronic-family-tree" className="scroll-mt-24">
@@ -74,7 +90,7 @@ export function ElectronicFamilyTreeSection({ withHeading = false }: { withHeadi
               {t(treeCopy.treeTitle)}
             </h2>
             <a
-              href="/interactive-tree.html"
+              href={canvasSrc}
               target="_blank"
               rel="noopener noreferrer"
               className="label-caps inline-flex shrink-0 items-center gap-2 border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-foreground"
@@ -88,7 +104,8 @@ export function ElectronicFamilyTreeSection({ withHeading = false }: { withHeadi
 
       <div className={withHeading ? "mt-6 bg-ink" : "bg-ink"}>
         <iframe
-          src="/interactive-tree.html"
+          key={canvasSrc}
+          src={canvasSrc}
           title={t(treeCopy.treeTitle)}
           className="block h-[50vh] min-h-[22rem] w-full border-0 bg-card sm:h-[65vh] sm:min-h-[32rem]"
         />

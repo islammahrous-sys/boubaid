@@ -18,6 +18,7 @@ const searchSchema = z.object({
   branch: z.string().optional(),
   id: z.string().optional(),
   focus: z.string().optional(),
+  q: z.string().optional(),
 });
 
 export const Route = createFileRoute("/family-tree")({
@@ -62,6 +63,7 @@ const copy = {
 
 function FamilyTreePage() {
   const { t } = useLang();
+  const { focus, q } = Route.useSearch();
 
   return (
     <>
@@ -99,7 +101,7 @@ function FamilyTreePage() {
 
       {/* The electronic tree, the official plate and the visual guide are the
           shared sections also rendered on the home page. */}
-      <ElectronicFamilyTreeSection />
+      <ElectronicFamilyTreeSection focusId={focus} focusName={q} />
       <OfficialPlateSection />
       <VisualGenealogySection />
 
