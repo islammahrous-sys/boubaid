@@ -101,7 +101,7 @@ function FamilyTreePage() {
 
       {/* The electronic tree, the official plate and the visual guide are the
           shared sections also rendered on the home page. */}
-      <ElectronicFamilyTreeSection />
+      <ElectronicFamilyTreeSection focusId={focus} focusName={q} />
       <OfficialPlateSection />
       <VisualGenealogySection />
 
