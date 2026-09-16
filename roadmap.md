@@ -61,3 +61,14 @@
 - [x] Arabic navigation label under Family Tree renamed to «المشجرة» (English stays "Lineage")
 - [x] Home colophon strip keeps the licence number and registration date, and now offers three icon links: Family Development Fund, Requests Centre, Archive
 - [x] All user-facing dates go through src/lib/dates.ts and show Gregorian + Hijri (Umm al-Qura)
+
+## Audit follow-up (Sep 2026) — complete
+
+- [x] Photos compressed: public/images 63 MB → 17 MB (largest file now 0.65 MB); no filenames or references changed, no visible quality loss.
+- [x] All 27 archive/museum folders now have English titles (Arabic untouched).
+- [x] Empty published folder `archive-occasions-eid-greetings` set back to draft so it no longer shows an empty page.
+- [x] Business listing submissions now write via the service-role client inside the rate-limited server function; the direct public insert policy was dropped.
+- [x] Private buckets `receipts` and `nomination-docs` given the missing update/delete policies (owner + treasury/CMS staff).
+- [x] Prettier run across the project; both real lint errors fixed (irregular whitespace, prefer-const). Generated files (routeTree.gen.ts, supabase/types.ts) excluded from lint/format. `eslint .` = 0 errors, `tsgo --noEmit` clean.
+- [ ] Leaked-password protection: must be switched on in the hosted auth settings (no code/SQL path) — pending user action.
+- [ ] Deliberately not done (structural, higher risk than benefit right now): merging the `articles`/`news_posts` models, removing the static `src/content` duplicates, splitting the four largest files.
