@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Download, Eye, FileArchive, FileText, Image as ImageIcon, Palette, Type } from "lucide-react";
+import { FileArchive, FileText, Image as ImageIcon, Palette, Type } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { getPublishedLibrary } from "@/lib/cms.functions";
@@ -12,7 +12,6 @@ import {
   type EditableTemplateRecord,
 } from "@/components/site/EditableTemplatesLibrary";
 import { getCanonicalUrl } from "@/lib/seo";
-import { downloadFile } from "@/lib/download";
 
 
 /**
