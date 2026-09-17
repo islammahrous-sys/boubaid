@@ -74,3 +74,5 @@
 - [ ] Deliberately not done (structural, higher risk than benefit right now): merging the `articles`/`news_posts` models, removing the static `src/content` duplicates, splitting the four largest files.
 
 - Templates Editable Assets Library: name the library "Occasions Manual Editable Templates" (user rename request 2026-09-17).
+
+- [x] Occasions Manual Editable Templates library (14 editable PPTX + reference PDF, native reference content) — done 2026-09-17
