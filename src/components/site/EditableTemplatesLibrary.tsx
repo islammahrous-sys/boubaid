@@ -35,7 +35,7 @@ const copy = {
     en: "Occasions Manual Editable Templates",
   } as BiText,
   intro: {
-    ar: "المكتبة المخصصة للأصول القابلة للتحرير: ملف PowerPoint مستقل لكل قالب من القوالب الأربعة عشر المعتمدة، مع الملف المرجعي الرسمي.",
+    ar: "المكتبة المخصصة للأصول القابلة للتحرير: ملف عرض تقديمي مستقل لكل قالب من القوالب الأربعة عشر المعتمدة، مع المستندات المرجعية الرسمية.",
     en: "The dedicated library of editable master assets: an individual PowerPoint file for each of the fourteen approved templates, together with the official reference file.",
   } as BiText,
   editable: { ar: "قالب قابل للتحرير", en: "Editable Template" } as BiText,
@@ -63,9 +63,12 @@ function KindIcon({ kind }: { kind: string | null }) {
 
 export function EditableTemplatesLibrary({
   items,
+  referenceItems = [],
   previews,
 }: {
   items: EditableTemplateRecord[];
+  /** Existing official reference documents displayed in this section. */
+  referenceItems?: EditableTemplateRecord[];
   /** Official template code → published announcement artwork URL. */
   previews: Record<string, string>;
 }) {
@@ -80,7 +83,10 @@ export function EditableTemplatesLibrary({
   if (items.length === 0) return null;
 
   const templates = items.filter((r) => (r.kind ?? "").toUpperCase() !== "PDF");
-  const references = items.filter((r) => (r.kind ?? "").toUpperCase() === "PDF");
+  const references = [
+    ...items.filter((r) => (r.kind ?? "").toUpperCase() === "PDF"),
+    ...referenceItems,
+  ];
 
   const label = (r: EditableTemplateRecord) => (rtl ? r.title_ar : r.title_en || r.title_ar);
   const note = (r: EditableTemplateRecord) =>
@@ -114,7 +120,7 @@ export function EditableTemplatesLibrary({
                 <div className="flex items-center gap-2">
                   <KindIcon kind={r.kind} />
                   <span className="nums font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
-                    {(r.kind || "PPTX").toUpperCase()}
+                    {rtl ? "عرض تقديمي" : (r.kind || "PPTX").toUpperCase()}
                   </span>
                   <span className="rounded-sm border border-bronze/50 px-2 py-0.5 text-[11px] font-medium text-bronze dark:border-gold/50 dark:text-gold">
                     {t(copy.editable)}
@@ -124,7 +130,7 @@ export function EditableTemplatesLibrary({
                 <h3 className="mt-3 break-words text-[15px] font-semibold leading-snug text-foreground">
                   {name}
                 </h3>
-                {r.reference ? (
+                {r.reference && !rtl ? (
                   <p className="nums mt-1 font-mono text-[12px] tracking-wide text-muted-foreground">
                     {r.reference}
                   </p>
@@ -143,7 +149,7 @@ export function EditableTemplatesLibrary({
                         setViewer({
                           src: preview,
                           kind: "image",
-                          title: `${t(copy.previewTitle)} — ${name}${r.reference ? ` (${r.reference})` : ""}`,
+                          title: `${t(copy.previewTitle)} — ${name}${r.reference && !rtl ? ` (${r.reference})` : ""}`,
                         })
                       }
                       aria-label={`${t(copy.view)} — ${name}`}
@@ -156,7 +162,7 @@ export function EditableTemplatesLibrary({
                   <button
                     type="button"
                     onClick={() => void downloadFile(r.href, `${r.reference ?? name} — ${name}`)}
-                    aria-label={`${t(copy.download)} — ${name} (${(r.kind || "PPTX").toUpperCase()})`}
+                      aria-label={`${t(copy.download)} — ${name}${rtl ? "" : ` (${(r.kind || "PPTX").toUpperCase()})`}`}
                     className="inline-flex items-center gap-2 border-b border-transparent pb-0.5 text-[13px] font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                   >
                     <Download className="h-3.5 w-3.5" aria-hidden="true" />
@@ -185,7 +191,7 @@ export function EditableTemplatesLibrary({
                   <div className="flex items-center gap-2">
                     <KindIcon kind={r.kind} />
                     <span className="nums font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
-                      PDF
+                      {rtl ? "مستند مرجعي" : "PDF"}
                     </span>
                   </div>
                   <h4 className="mt-3 break-words text-[15px] font-semibold leading-snug text-foreground">
@@ -209,7 +215,7 @@ export function EditableTemplatesLibrary({
                     <button
                       type="button"
                       onClick={() => void downloadFile(r.href, name)}
-                      aria-label={`${t(copy.download)} — ${name} (PDF)`}
+                      aria-label={`${t(copy.download)} — ${name}${rtl ? "" : " (PDF)"}`}
                       className="inline-flex items-center gap-2 border-b border-transparent pb-0.5 text-[13px] font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                     >
                       <Download className="h-3.5 w-3.5" aria-hidden="true" />
