@@ -8,8 +8,13 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
 import { MediaViewerDialog } from "@/components/site/MediaViewerDialog";
+import {
+  EditableTemplatesLibrary,
+  type EditableTemplateRecord,
+} from "@/components/site/EditableTemplatesLibrary";
 import { getCanonicalUrl } from "@/lib/seo";
 import { downloadFile } from "@/lib/download";
+
 
 /**
  * النماذج و القوالب — official family announcement templates plus the
