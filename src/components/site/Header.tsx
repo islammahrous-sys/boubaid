@@ -396,7 +396,6 @@ export function Header() {
                   {navSecondaryFlat ? (
                     <ul className="grid grid-cols-2 gap-x-8 gap-y-1.5">
                       {navSecondaryFlat.map((n) => {
-                        const active = isRouteActive(pathname, n.to);
                         return (
                           <li key={n.to}>
                             <Link
@@ -419,7 +418,6 @@ export function Header() {
                           </p>
                           <ul className="space-y-1.5">
                             {group.items.map((n) => {
-                              const active = isRouteActive(pathname, n.to);
                               return (
                                 <li key={n.to}>
                                   <Link
