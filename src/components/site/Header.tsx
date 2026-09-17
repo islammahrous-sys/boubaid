@@ -402,12 +402,7 @@ export function Header() {
                             <Link
                               to={n.to}
                               onClick={() => setMoreOpen(false)}
-                              className={cn(
-                                "block py-1 text-[13px] transition-colors",
-                                active
-                                  ? "font-bold text-bronze dark:text-gold"
-                                  : "text-muted-foreground hover:text-foreground",
-                              )}
+                              className="block py-1 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
                             >
                               {typeof n.label === "string" ? n.label : t(n.label)}
                             </Link>
@@ -430,12 +425,7 @@ export function Header() {
                                   <Link
                                     to={n.to}
                                     onClick={() => setMoreOpen(false)}
-                                    className={cn(
-                                      "block py-1 text-[13px] transition-colors",
-                                      active
-                                        ? "font-bold text-bronze dark:text-gold"
-                                        : "text-muted-foreground hover:text-foreground",
-                                    )}
+                                    className="block py-1 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
                                   >
                                     {t(n.label)}
                                   </Link>
