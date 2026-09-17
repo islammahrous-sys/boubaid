@@ -206,6 +206,12 @@ function TemplatesPage() {
                 open: t(copy.open),
                 download: t(copy.download),
                 preview: t(copy.preview),
+                file: rtl ? "ملف" : "File",
+                image: rtl ? "صورة" : "Image",
+                document: rtl ? "مستند" : "PDF",
+                font: rtl ? "خط" : "Font",
+                styles: rtl ? "أنماط" : "CSS",
+                showReference: !rtl,
               }}
               onView={(src, title, kind) => setAssetViewer({ src, title, kind })}
             />
@@ -257,6 +263,12 @@ function VisualIdentityLibrary({
     open: string;
     download: string;
     preview: string;
+    file: string;
+    image: string;
+    document: string;
+    font: string;
+    styles: string;
+    showReference: boolean;
   };
   onView: (src: string, title: string, kind: MediaViewerKind) => void;
 }) {
@@ -326,6 +338,12 @@ function VisualIdentityCard({
     open: string;
     download: string;
     preview: string;
+    file: string;
+    image: string;
+    document: string;
+    font: string;
+    styles: string;
+    showReference: boolean;
   };
   onView: (src: string, title: string, kind: MediaViewerKind) => void;
   featured?: boolean;
@@ -337,8 +355,25 @@ function VisualIdentityCard({
   const kind = viewerKind(record.item.kind, href);
   const isImage = kind === "image";
   const isPdf = kind === "pdf";
-  const typeLabel = (record.item.kind || "FILE").toUpperCase();
-  const Icon = isPdf ? FileText : isImage ? ImageIcon : typeLabel === "FONT" ? Type : typeLabel === "CSS" ? Palette : FileArchive;
+  const rawType = (record.item.kind || "FILE").toUpperCase();
+  const typeLabel = isPdf
+    ? labels.document
+    : isImage
+      ? labels.image
+      : rawType === "FONT"
+        ? labels.font
+        : rawType === "CSS"
+          ? labels.styles
+          : labels.file;
+  const Icon = isPdf
+    ? FileText
+    : isImage
+      ? ImageIcon
+      : rawType === "FONT"
+        ? Type
+        : rawType === "CSS"
+          ? Palette
+          : FileArchive;
   const primaryAction = kind ? labels.view : labels.open;
 
   const handleOpen = () => {
@@ -392,7 +427,7 @@ function VisualIdentityCard({
           <span className="nums font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
             {typeLabel}
           </span>
-          {record.item.reference ? (
+          {record.item.reference && labels.showReference ? (
             <span className="nums font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
               {record.item.reference}
             </span>
