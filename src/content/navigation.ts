@@ -180,8 +180,8 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
       },
       {
         to: "/templates",
-        label: { ar: "النماذج و القوالب", en: "Forms & Templates" },
-        short: { ar: "النماذج", en: "Templates" },
+        label: { ar: "الهوية البصرية", en: "Visual Identity" },
+        short: { ar: "الهوية", en: "Identity" },
       },
       { to: "/contact", label: { ar: "تواصل معنا", en: "Contact" } },
     ],

@@ -16,7 +16,7 @@ import { downloadFile } from "@/lib/download";
 
 
 /**
- * النماذج و القوالب — official family announcement templates plus the
+ * الهوية البصرية — official family identity assets plus the
  * reference documents that govern them.
  *
  * Records live in the existing `library_items` CMS table under the
@@ -69,7 +69,7 @@ export const Route = createFileRoute("/templates")({
 const copy = {
   eyebrow: { ar: "الهوية والمراسلات", en: "Identity and correspondence" } as BiText,
   title: {
-    ar: "Al Bu Obaid Family Council Visual Identity",
+    ar: "الهوية البصرية لمجلس أسرة آل بوعبيد",
     en: "Al Bu Obaid Family Council Visual Identity",
   } as BiText,
   subtitle: {
@@ -86,7 +86,6 @@ const copy = {
   } as BiText,
   assetsTitle: { ar: "أصول الهوية البصرية", en: "Visual Identity Assets" } as BiText,
   paletteTitle: { ar: "الألوان والطباعة", en: "Colour and Typography" } as BiText,
-  docsTitle: { ar: "المستندات المرجعية", en: "Reference Documents" } as BiText,
   view: { ar: "عرض الملف", en: "View Document" } as BiText,
   open: { ar: "فتح الملف", en: "Open File" } as BiText,
   download: { ar: "تحميل الملف", en: "Download File" } as BiText,
@@ -123,7 +122,6 @@ function TemplatesPage() {
   const rtl = lang === "ar";
   const { items, editable, visualIdentity } = Route.useLoaderData();
 
-  const [doc, setDoc] = useState<{ src: string; title: string } | null>(null);
   const [assetViewer, setAssetViewer] = useState<{
     src: string;
     title: string;
@@ -170,6 +168,17 @@ function TemplatesPage() {
     }))
     .filter((r) => r.href);
 
+  const referenceRecords: EditableTemplateRecord[] = documents.map((record) => ({
+    id: record.item.id,
+    reference: record.item.reference,
+    title_ar: record.item.title_ar,
+    title_en: record.item.title_en,
+    description_ar: record.item.description_ar,
+    description_en: record.item.description_en,
+    kind: record.item.kind,
+    href: record.href as string,
+  }));
+
   return (
     <>
       <PageHeader eyebrow={t(copy.eyebrow)} title={t(copy.title)} subtitle={t(copy.subtitle)} />
@@ -203,63 +212,16 @@ function TemplatesPage() {
           </section>
         ) : null}
 
-        {documents.length > 0 ? (
-          <section className="reveal-on-scroll mt-16">
-            <Eyebrow rule>{t(copy.docsTitle)}</Eyebrow>
-
-            <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-              {documents.map((r) => (
-                <li
-                  key={r.item.id}
-                  className="flex flex-col rounded-md border border-border bg-card p-5"
-                >
-                  <FileText className="h-5 w-5 text-bronze dark:text-gold" aria-hidden="true" />
-                  <h3 className="mt-3 text-[15px] font-semibold leading-snug text-foreground">
-                    {r.title}
-                  </h3>
-                  {r.description ? (
-                    <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                      {r.description}
-                    </p>
-                  ) : null}
-                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
-                    <button
-                      type="button"
-                      onClick={() => setDoc({ src: r.href as string, title: r.title })}
-                        aria-label={`${t(copy.view)} — ${r.title}`}
-                      className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                    >
-                      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                      {t(copy.view)}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void downloadFile(r.href as string, r.title)}
-                      aria-label={`${t(copy.download)} — ${r.title}`}
-                      className="inline-flex items-center gap-2 border-b border-transparent pb-0.5 text-[13px] font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
-                    >
-                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
-                      {t(copy.download)}
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
       </div>
 
       <div className="container-page pb-14 md:pb-16">
-        <EditableTemplatesLibrary items={editableRecords} previews={previews} />
+        <EditableTemplatesLibrary
+          items={editableRecords}
+          referenceItems={referenceRecords}
+          previews={previews}
+        />
       </div>
 
-      <MediaViewerDialog
-        open={doc !== null}
-        onClose={() => setDoc(null)}
-        src={doc?.src ?? null}
-        kind="pdf"
-        title={doc?.title}
-      />
       <MediaViewerDialog
         open={assetViewer !== null}
         onClose={() => setAssetViewer(null)}
