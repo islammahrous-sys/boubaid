@@ -453,8 +453,19 @@ export const libraryItemInputSchema = z.object({
   collection: z
     // "financials" backs the Family Development Fund's financial statements
     // page, so future statements are added through this same editor.
-    .enum(["documents", "photographs", "recordings", "templates", "videos", "financials"])
+    // "templates_editable" backs the "Occasions Manual Editable Templates"
+    // library on the Forms & Templates page (editable PowerPoint masters).
+    .enum([
+      "documents",
+      "photographs",
+      "recordings",
+      "templates",
+      "templates_editable",
+      "videos",
+      "financials",
+    ])
     .default("documents"),
+
   title_ar: z.string().trim().min(2, "العنوان بالعربية مطلوب"),
   title_en: z.string().trim().optional().nullable(),
   description_ar: z.string().optional().nullable(),

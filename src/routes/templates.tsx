@@ -8,8 +8,13 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
 import { MediaViewerDialog } from "@/components/site/MediaViewerDialog";
+import {
+  EditableTemplatesLibrary,
+  type EditableTemplateRecord,
+} from "@/components/site/EditableTemplatesLibrary";
 import { getCanonicalUrl } from "@/lib/seo";
 import { downloadFile } from "@/lib/download";
+
 
 /**
  * النماذج و القوالب — official family announcement templates plus the
@@ -28,6 +33,9 @@ export const Route = createFileRoute("/templates")({
     return {
       items: rows
         .filter((r) => r.collection === "templates" && r.is_published)
+        .sort((a, b) => a.sort_order - b.sort_order),
+      editable: rows
+        .filter((r) => r.collection === "templates_editable" && r.is_published)
         .sort((a, b) => a.sort_order - b.sort_order),
     };
   },
@@ -83,7 +91,7 @@ function isImageRecord(kind: string | null | undefined, href: string | null) {
 function TemplatesPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
-  const { items } = Route.useLoaderData();
+  const { items, editable } = Route.useLoaderData();
 
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [doc, setDoc] = useState<{ src: string; title: string } | null>(null);
@@ -97,6 +105,28 @@ function TemplatesPage() {
 
   const templates = resolved.filter((r) => isImageRecord(r.item.kind, r.href) && r.href);
   const documents = resolved.filter((r) => !isImageRecord(r.item.kind, r.href) && r.href);
+
+  /**
+   * Published announcement artwork, keyed by official template code, reused as
+   * the website preview for the matching editable master. No file is altered.
+   */
+  const previews: Record<string, string> = {};
+  for (const r of templates) {
+    if (r.item.reference && r.href) previews[r.item.reference] = r.href;
+  }
+
+  const editableRecords: EditableTemplateRecord[] = editable
+    .map((item) => ({
+      id: item.id,
+      reference: item.reference,
+      title_ar: item.title_ar,
+      title_en: item.title_en,
+      description_ar: item.description_ar,
+      description_en: item.description_en,
+      kind: item.kind,
+      href: item.file_path || item.external_url || "",
+    }))
+    .filter((r) => r.href);
 
   const lightboxItems = templates.map((r) => ({
     id: r.item.id,
@@ -211,6 +241,10 @@ function TemplatesPage() {
             </ul>
           </section>
         ) : null}
+      </div>
+
+      <div className="container-page pb-14 md:pb-16">
+        <EditableTemplatesLibrary items={editableRecords} previews={previews} />
       </div>
 
       <ArchiveLightbox
