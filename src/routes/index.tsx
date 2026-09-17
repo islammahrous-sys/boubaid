@@ -324,11 +324,11 @@ type SectionConfig = {
 const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "hero", enabled: true, order: 1 },
   { id: "about_dean", enabled: true, order: 2 },
+  // Vision, mission and core values follow the council address directly.
+  { id: "vision_mission", enabled: true, order: 3 },
   // The electronic family tree, the official plate and the visual guide
-  // follow the council address directly.
-  { id: "family_tree_home", enabled: true, order: 3 },
-  // Vision, mission and core values sit under the tree.
-  { id: "vision_mission", enabled: true, order: 4 },
+  // sit under vision & mission.
+  { id: "family_tree_home", enabled: true, order: 4 },
   { id: "initiatives_hq", enabled: true, order: 5 },
   { id: "latest_news", enabled: true, order: 6 },
   { id: "heritage_gallery", enabled: true, order: 7 },
@@ -404,9 +404,9 @@ function HomePage() {
       ordered.splice(anchor >= 0 ? anchor + 1 : ordered.length, 0, section);
     }
 
-    // The family tree follows the council address, whatever the saved order.
+    // The family tree follows vision & mission, whatever the saved order.
     if (!ordered.some((s) => s.id === "family_tree_home")) {
-      const anchor = ordered.findIndex((s) => s.id === "about_dean" || s.id === "opening");
+      const anchor = ordered.findIndex((s) => s.id === "vision_mission");
       const section: SectionConfig = { id: "family_tree_home", enabled: true, order: 0 };
       ordered.splice(anchor >= 0 ? anchor + 1 : 0, 0, section);
     }
