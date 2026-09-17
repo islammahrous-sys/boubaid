@@ -338,6 +338,12 @@ function VisualIdentityCard({
     open: string;
     download: string;
     preview: string;
+    file: string;
+    image: string;
+    document: string;
+    font: string;
+    styles: string;
+    showReference: boolean;
   };
   onView: (src: string, title: string, kind: MediaViewerKind) => void;
   featured?: boolean;
@@ -359,7 +365,15 @@ function VisualIdentityCard({
         : rawType === "CSS"
           ? labels.styles
           : labels.file;
-  const Icon = isPdf ? FileText : isImage ? ImageIcon : rawType === "FONT" ? Type : rawType === "CSS" ? Palette : FileArchive;
+  const Icon = isPdf
+    ? FileText
+    : isImage
+      ? ImageIcon
+      : rawType === "FONT"
+        ? Type
+        : rawType === "CSS"
+          ? Palette
+          : FileArchive;
   const primaryAction = kind ? labels.view : labels.open;
 
   const handleOpen = () => {
