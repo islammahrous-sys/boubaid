@@ -193,6 +193,11 @@ export function LibraryItemsManager({
               <SelectItem value="templates">
                 {isAr ? "النماذج و القوالب" : "Forms & Templates"}
               </SelectItem>
+              <SelectItem value="templates_editable">
+                {isAr
+                  ? "قوالب المناسبات القابلة للتحرير يدويًا"
+                  : "Occasions Manual Editable Templates"}
+              </SelectItem>
               <SelectItem value="videos">{isAr ? "الفيديوهات" : "Videos"}</SelectItem>
               <SelectItem value="financials">
                 {isAr ? "القوائم المالية وكشوف الحسابات" : "Financial statements"}
@@ -339,6 +344,11 @@ export function LibraryItemsManager({
                     </SelectItem>
                     <SelectItem value="templates">
                       {isAr ? "النماذج و القوالب (Templates)" : "Forms & Templates"}
+                    </SelectItem>
+                    <SelectItem value="templates_editable">
+                      {isAr
+                        ? "قوالب المناسبات القابلة للتحرير يدويًا (Editable)"
+                        : "Occasions Manual Editable Templates"}
                     </SelectItem>
                     <SelectItem value="videos">
                       {isAr ? "الفيديوهات (Videos)" : "Videos"}
