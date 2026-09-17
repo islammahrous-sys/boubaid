@@ -83,3 +83,4 @@
 - [x] Uploaded the supplied visual identity PDF, colour image, typography image, and 68 extracted assets unchanged into the existing CMS/storage system.
 - [x] Preserved official PDFs and the Occasions Manual Editable Templates section; hid only the image-based official announcement template gallery from public display.
 - [x] Renamed the More-menu destination to Visual Identity in Arabic and English, made the Arabic page MSA-first, and moved the two official reference cards beneath the editable occasions templates without changing their files.
+- [x] Extracted both AI prompts from the identity guide and published them in a bilingual copy-ready section with concise usage and confidentiality guidance.

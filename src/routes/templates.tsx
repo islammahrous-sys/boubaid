@@ -13,6 +13,7 @@ import {
 } from "@/components/site/EditableTemplatesLibrary";
 import { getCanonicalUrl } from "@/lib/seo";
 import { downloadFile } from "@/lib/download";
+import { AiDocumentPrompts } from "@/components/site/AiDocumentPrompts";
 
 
 /**
@@ -226,6 +227,7 @@ function TemplatesPage() {
           referenceItems={referenceRecords}
           previews={previews}
         />
+        <AiDocumentPrompts />
       </div>
 
       <MediaViewerDialog
