@@ -76,3 +76,9 @@
 - Templates Editable Assets Library: name the library "Occasions Manual Editable Templates" (user rename request 2026-09-17).
 
 - [x] Occasions Manual Editable Templates library (14 editable PPTX + reference PDF, native reference content) — done 2026-09-17
+
+## Visual Identity Library (Sep 2026) — complete
+
+- [x] Added the first visual-identity section to the existing Forms & Templates area without changing unrelated pages.
+- [x] Uploaded the supplied visual identity PDF, colour image, typography image, and 68 extracted assets unchanged into the existing CMS/storage system.
+- [x] Preserved official PDFs and the Occasions Manual Editable Templates section; hid only the image-based official announcement template gallery from public display.
