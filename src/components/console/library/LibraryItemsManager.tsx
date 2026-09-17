@@ -198,6 +198,9 @@ export function LibraryItemsManager({
                   ? "قوالب المناسبات القابلة للتحرير يدويًا"
                   : "Occasions Manual Editable Templates"}
               </SelectItem>
+              <SelectItem value="visual_identity">
+                {isAr ? "هوية المجلس البصرية" : "Visual Identity"}
+              </SelectItem>
               <SelectItem value="videos">{isAr ? "الفيديوهات" : "Videos"}</SelectItem>
               <SelectItem value="financials">
                 {isAr ? "القوائم المالية وكشوف الحسابات" : "Financial statements"}

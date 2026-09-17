@@ -455,12 +455,14 @@ export const libraryItemInputSchema = z.object({
     // page, so future statements are added through this same editor.
     // "templates_editable" backs the "Occasions Manual Editable Templates"
     // library on the Forms & Templates page (editable PowerPoint masters).
+    // "visual_identity" backs the council visual identity library.
     .enum([
       "documents",
       "photographs",
       "recordings",
       "templates",
       "templates_editable",
+      "visual_identity",
       "videos",
       "financials",
     ])
