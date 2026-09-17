@@ -229,10 +229,12 @@ export function EditableTemplatesLibrary({
         </div>
       ) : null}
 
-      <div className="mt-12">
-        <h3 className="text-[15px] font-semibold text-foreground">{t(copy.readOnSite)}</h3>
-        <EditableTemplatesReferenceContent />
-      </div>
+      {rtl ? (
+        <div className="mt-12">
+          <h3 className="text-[15px] font-semibold text-foreground">{t(copy.readOnSite)}</h3>
+          <EditableTemplatesReferenceContent />
+        </div>
+      ) : null}
 
       <MediaViewerDialog
         open={viewer !== null}
@@ -246,10 +248,8 @@ export function EditableTemplatesLibrary({
 }
 
 /**
- * Native reproduction of «ملف-مرجعي-القوالب-القابلة-للتحرير» — the complete
- * written content of the supplied reference PDF, in its original Arabic and in
- * the original order, headings, table and closing note included. The Arabic
- * source is authoritative; no translation is supplied, so none is invented.
+ * Native reproduction of the supplied Arabic reference document. It is shown
+ * only on the Arabic page because the source is authoritative and untranslated.
  */
 const REFERENCE_ROWS: {
   code: string;
@@ -428,10 +428,10 @@ export function EditableTemplatesReferenceContent() {
         الملف المرجعي لمكتبة القوالب القابلة للتحرير
       </h4>
       <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-        مجلس أسرة آل بوعبيد — نسخة PowerPoint القابلة للتحرير اليدوي
+        مجلس أسرة آل بوعبيد — نسخة العروض التقديمية القابلة للتحرير اليدوي
       </p>
       <p className="mt-4 text-[13.5px] leading-relaxed text-foreground">
-        يوثّق هذا الملف القوالب الأربعة عشر المستخرجة إلى ملفات PowerPoint مستقلة قابلة للتحرير، مع
+        يوثّق هذا الملف القوالب الأربعة عشر المستخرجة إلى ملفات عروض تقديمية مستقلة قابلة للتحرير، مع
         رمز كل قالب، ولونه الأساسي المعتمد، وحقوله القابلة للتحرير، وحقوله الاختيارية، ومدى توفر
         مساحة صورة فيه، وملاحظات استعمال خاصة به.
       </p>
@@ -441,7 +441,7 @@ export function EditableTemplatesReferenceContent() {
 
       <h5 className="mt-8 text-[15px] font-semibold text-foreground">جدول القوالب الأربعة عشر</h5>
       <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-        كل قالب يقابله ملف PowerPoint مستقل بنفس رمزه، بصيغة: «رمز_القالب_اسم_القالب_قابل_للتحرير.pptx».
+        يقابل كل قالب ملف عرض تقديمي مستقل يحمل رمزه واسمه المعتمد.
       </p>
 
       <div className="mt-4 -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
