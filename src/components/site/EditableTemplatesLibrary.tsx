@@ -42,7 +42,7 @@ const copy = {
   view: { ar: "عرض الملف", en: "View Document" } as BiText,
   download: { ar: "تحميل", en: "Download" } as BiText,
   previewNote: {
-    ar: "المعاينة صورة للقالب فقط؛ الملف القابل للتحرير يُنزَّل بصيغة PowerPoint.",
+    ar: "المعاينة صورة للقالب فقط؛ ويُنزَّل الملف الأصلي بصيغة عرض تقديمي قابلة للتحرير.",
     en: "The preview is an image of the template only; the editable file is downloaded as PowerPoint.",
   } as BiText,
   previewTitle: { ar: "معاينة القالب", en: "Template preview" } as BiText,
@@ -89,8 +89,12 @@ export function EditableTemplatesLibrary({
   ];
 
   const label = (r: EditableTemplateRecord) => (rtl ? r.title_ar : r.title_en || r.title_ar);
-  const note = (r: EditableTemplateRecord) =>
-    (rtl ? r.description_ar : r.description_en || r.description_ar) || null;
+  const note = (r: EditableTemplateRecord) => {
+    if (rtl && (r.kind ?? "").toUpperCase() !== "PDF") {
+      return "ملف عرض تقديمي أصلي قابل للتحرير، محفوظ باسمه ومحتواه دون تعديل.";
+    }
+    return (rtl ? r.description_ar : r.description_en || r.description_ar) || null;
+  };
 
   return (
     <section className="reveal-on-scroll mt-16">
