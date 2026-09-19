@@ -242,6 +242,11 @@ function TemplatesPage() {
           </section>
         ) : null}
 
+        <CollateralsLibrary
+          items={collateralRecords}
+          onView={(src, title) => setAssetViewer({ src, title, kind: "image" })}
+        />
+
       </div>
 
       <div className="container-page pb-14 md:pb-16">
