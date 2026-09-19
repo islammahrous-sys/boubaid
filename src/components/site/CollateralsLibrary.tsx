@@ -71,7 +71,7 @@ export function CollateralsLibrary({
 
   return (
     <section className="reveal-on-scroll mt-16">
-      <Eyebrow rule>{`${t(copy.title)} — Collaterals`}</Eyebrow>
+      <Eyebrow rule>{rtl ? "المواد التعريفية — Collaterals" : "Collaterals — المواد التعريفية"}</Eyebrow>
       <p className="measure mt-4 text-[13px] leading-relaxed text-muted-foreground">
         {t(copy.intro)}
       </p>
