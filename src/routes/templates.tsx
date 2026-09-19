@@ -173,6 +173,25 @@ function TemplatesPage() {
     }))
     .filter((r) => r.href);
 
+  /**
+   * «المواد التعريفية» — the nine original collateral documents supplied in
+   * the identity package. `file_path` is the untouched source document;
+   * `external_url` is the separately generated first-page preview image.
+   */
+  const collateralRecords: CollateralRecord[] = collaterals
+    .map((item) => ({
+      id: item.id,
+      reference: item.reference,
+      title_ar: item.title_ar,
+      title_en: item.title_en,
+      description_ar: item.description_ar,
+      description_en: item.description_en,
+      kind: item.kind,
+      href: item.file_path || "",
+      previewUrl: item.external_url || null,
+    }))
+    .filter((r) => r.href);
+
   const referenceRecords: EditableTemplateRecord[] = documents.map((record) => ({
     id: record.item.id,
     reference: record.item.reference,
