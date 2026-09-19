@@ -84,3 +84,10 @@
 - [x] Preserved official PDFs and the Occasions Manual Editable Templates section; hid only the image-based official announcement template gallery from public display.
 - [x] Renamed the More-menu destination to Visual Identity in Arabic and English, made the Arabic page MSA-first, and moved the two official reference cards beneath the editable occasions templates without changing their files.
 - [x] Extracted both AI prompts from the identity guide and published them in a bilingual copy-ready section with concise usage and confidentiality guidance.
+
+## Collaterals section (Sep 2026) — complete
+
+- [x] Added «المواد التعريفية — Collaterals» directly after «أصول الهوية البصرية» on the Visual Identity page; no existing section modified.
+- [x] Only the 9 actual documents inside Collaterals.zip included (7 DOCX, 1 PPTX, 1 XLSX) — nothing added from the identity PDF, prior lists, or recommendations.
+- [x] Originals uploaded byte-identical (SHA-256 verified) to the media bucket; 9 CMS records (COLL-001..COLL-009) with MSA labels taken from each document; previews are separately generated first-page images — no HTML conversion, originals always downloaded.
+- [x] View opens the first-page preview in the site viewer; Download delivers the original editable file; responsive (desktop/mobile), bilingual, keyboard-accessible, no console errors, no horizontal overflow.
