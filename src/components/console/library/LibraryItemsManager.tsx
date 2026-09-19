@@ -356,6 +356,12 @@ export function LibraryItemsManager({
                         ? "قوالب المناسبات القابلة للتحرير يدويًا (Editable)"
                         : "Occasions Manual Editable Templates"}
                     </SelectItem>
+                    <SelectItem value="visual_identity">
+                      {isAr ? "هوية المجلس البصرية (Visual Identity)" : "Visual Identity"}
+                    </SelectItem>
+                    <SelectItem value="collaterals">
+                      {isAr ? "المواد التعريفية (Collaterals)" : "Collaterals"}
+                    </SelectItem>
                     <SelectItem value="videos">
                       {isAr ? "الفيديوهات (Videos)" : "Videos"}
                     </SelectItem>
