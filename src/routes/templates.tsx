@@ -14,6 +14,7 @@ import {
 import { getCanonicalUrl } from "@/lib/seo";
 import { downloadFile } from "@/lib/download";
 import { AiDocumentPrompts } from "@/components/site/AiDocumentPrompts";
+import { CollateralsLibrary, type CollateralRecord } from "@/components/site/CollateralsLibrary";
 
 
 /**
@@ -39,6 +40,9 @@ export const Route = createFileRoute("/templates")({
         .sort((a, b) => a.sort_order - b.sort_order),
       visualIdentity: rows
         .filter((r) => r.collection === "visual_identity" && r.is_published)
+        .sort((a, b) => a.sort_order - b.sort_order),
+      collaterals: rows
+        .filter((r) => r.collection === "collaterals" && r.is_published)
         .sort((a, b) => a.sort_order - b.sort_order),
     };
   },
