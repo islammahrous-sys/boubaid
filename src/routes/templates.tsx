@@ -16,6 +16,32 @@ import { downloadFile } from "@/lib/download";
 import { AiDocumentPrompts } from "@/components/site/AiDocumentPrompts";
 import { CollateralsLibrary, type CollateralRecord } from "@/components/site/CollateralsLibrary";
 
+const COLLATERAL_DISPLAY_ORDER: Record<string, number> = {
+  "COLL-001": 10,
+  "COLL-002": 20,
+  "COLL-003": 30,
+  "COLL-010": 31,
+  "COLL-011": 32,
+  "COLL-012": 33,
+  "COLL-004": 40,
+  "COLL-005": 50,
+  "COLL-013": 51,
+  "COLL-014": 52,
+  "COLL-015": 53,
+  "COLL-006": 60,
+  "COLL-016": 61,
+  "COLL-017": 62,
+  "COLL-018": 63,
+  "COLL-007": 70,
+  "COLL-008": 80,
+  "COLL-009": 90,
+};
+
+function collateralDisplayOrder(reference: string | null, fallback: number) {
+  if (!reference) return fallback + 1000;
+  return COLLATERAL_DISPLAY_ORDER[reference] ?? fallback + 1000;
+}
+
 
 /**
  * الهوية البصرية — official family identity assets plus the
@@ -43,7 +69,11 @@ export const Route = createFileRoute("/templates")({
         .sort((a, b) => a.sort_order - b.sort_order),
       collaterals: rows
         .filter((r) => r.collection === "collaterals" && r.is_published)
-        .sort((a, b) => a.sort_order - b.sort_order),
+        .sort(
+          (a, b) =>
+            collateralDisplayOrder(a.reference, a.sort_order) -
+            collateralDisplayOrder(b.reference, b.sort_order),
+        ),
     };
   },
   head: () => ({
@@ -174,8 +204,8 @@ function TemplatesPage() {
     .filter((r) => r.href);
 
   /**
-   * «المواد التعريفية» — the nine original collateral documents supplied in
-   * the identity package. `file_path` is the untouched source document;
+   * «المواد التعريفية» — original collateral documents and their supplied
+   * colour editions. `file_path` is the untouched source document;
    * `external_url` is the separately generated first-page preview image.
    */
   const collateralRecords: CollateralRecord[] = collaterals
