@@ -456,6 +456,7 @@ export const libraryItemInputSchema = z.object({
     // "templates_editable" backs the "Occasions Manual Editable Templates"
     // library on the Forms & Templates page (editable PowerPoint masters).
     // "visual_identity" backs the council visual identity library.
+    // "collaterals" backs the «المواد التعريفية» collateral documents section.
     .enum([
       "documents",
       "photographs",
@@ -463,6 +464,7 @@ export const libraryItemInputSchema = z.object({
       "templates",
       "templates_editable",
       "visual_identity",
+      "collaterals",
       "videos",
       "financials",
     ])

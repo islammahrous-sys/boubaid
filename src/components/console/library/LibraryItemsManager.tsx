@@ -201,6 +201,9 @@ export function LibraryItemsManager({
               <SelectItem value="visual_identity">
                 {isAr ? "هوية المجلس البصرية" : "Visual Identity"}
               </SelectItem>
+              <SelectItem value="collaterals">
+                {isAr ? "المواد التعريفية" : "Collaterals"}
+              </SelectItem>
               <SelectItem value="videos">{isAr ? "الفيديوهات" : "Videos"}</SelectItem>
               <SelectItem value="financials">
                 {isAr ? "القوائم المالية وكشوف الحسابات" : "Financial statements"}
