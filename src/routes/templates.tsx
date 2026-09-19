@@ -125,7 +125,7 @@ function viewerKind(kind: string | null | undefined, href: string | null): Media
 function TemplatesPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
-  const { items, editable, visualIdentity } = Route.useLoaderData();
+  const { items, editable, visualIdentity, collaterals } = Route.useLoaderData();
 
   const [assetViewer, setAssetViewer] = useState<{
     src: string;
