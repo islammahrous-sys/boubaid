@@ -91,3 +91,4 @@
 - [x] Only the 9 actual documents inside Collaterals.zip included (7 DOCX, 1 PPTX, 1 XLSX) — nothing added from the identity PDF, prior lists, or recommendations.
 - [x] Originals uploaded byte-identical (SHA-256 verified) to the media bucket; 9 CMS records (COLL-001..COLL-009) with MSA labels taken from each document; previews are separately generated first-page images — no HTML conversion, originals always downloaded.
 - [x] View opens the first-page preview in the site viewer; Download delivers the original editable file; responsive (desktop/mobile), bilingual, keyboard-accessible, no console errors, no horizontal overflow.
+- [x] Added nine supplied DOCX variants as individual collateral records: gold, clay, and copper editions of the business card, certificate of appreciation, and report cover. Each original was SHA-256 verified after upload and has its own generated preview, View action, and original-file Download action.
