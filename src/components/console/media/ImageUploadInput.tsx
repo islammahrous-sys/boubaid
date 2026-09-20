@@ -238,7 +238,14 @@ export function ImageUploadInput({
         {value ? (
           <div className="relative group flex items-center gap-3 p-2.5 bg-muted/40 rounded-xl border border-border">
             {!hidePreview &&
-              (isPdf ? (
+              (isDocumentValue ? (
+                <div className="relative w-16 h-16 rounded-lg bg-primary/10 border border-primary/20 shrink-0 flex flex-col items-center justify-center shadow-xs">
+                  <FileText className="w-6 h-6 text-primary" />
+                  <Badge variant="outline" className="h-3.5 px-1 text-[8px] font-mono mt-0.5">
+                    {documentExt}
+                  </Badge>
+                </div>
+              ) : isPdf ? (
                 <div className="relative w-16 h-16 rounded-lg bg-rose-500/10 border border-rose-500/20 shrink-0 flex flex-col items-center justify-center shadow-xs">
                   <FileText className="w-6 h-6 text-rose-500" />
                   <Badge variant="destructive" className="h-3.5 px-1 text-[8px] font-mono mt-0.5">
