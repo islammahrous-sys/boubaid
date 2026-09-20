@@ -99,15 +99,21 @@ export function ImageUploadInput({
       return;
     }
 
-    if (!isImage && !(allowPdf && isFilePdf)) {
+    const isFileDocument = allowDocuments && DOCUMENT_EXT.test(file.name);
+
+    if (!isImage && !(allowPdf && isFilePdf) && !isFileDocument) {
       toast.error(
-        allowPdf
+        allowDocuments
           ? isAr
-            ? "يرجى اختيار ملف صالح (PDF أو صورة PNG, JPG, WebP)"
-            : "Please choose a valid PDF or image file (PNG, JPG, WebP)"
-          : isAr
-            ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)"
-            : "Please choose a valid image file",
+            ? "يرجى اختيار ملف صالح (Word أو PowerPoint أو Excel أو PDF أو صورة)"
+            : "Please choose a valid Word, PowerPoint, Excel, PDF or image file"
+          : allowPdf
+            ? isAr
+              ? "يرجى اختيار ملف صالح (PDF أو صورة PNG, JPG, WebP)"
+              : "Please choose a valid PDF or image file (PNG, JPG, WebP)"
+            : isAr
+              ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)"
+              : "Please choose a valid image file",
       );
       return;
     }
