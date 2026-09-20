@@ -49,6 +49,14 @@ const KIND_LABEL: Record<string, BiText> = {
   XLSX: { ar: "جدول بيانات", en: "Excel" },
 };
 
+/**
+ * Only an actual image URL may be rendered as the card's visual preview or
+ * opened in the site's image viewer. Records added from the admin console can
+ * carry a document URL (or nothing) in the preview field, in which case the
+ * card falls back to the file-type icon and offers to open the document itself.
+ */
+const IMAGE_URL = /\.(jpe?g|png|webp|gif|avif)(\?|#|$)/i;
+
 function KindIcon({ kind }: { kind: string | null }) {
   const cls = "h-5 w-5 text-bronze dark:text-gold";
   const k = (kind ?? "").toUpperCase();
