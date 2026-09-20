@@ -61,14 +61,29 @@ export function ImageUploadInput({
   // rendered inline or served back with an image content-type, so they are
   // excluded from the accepted image types for this general-purpose upload
   // input (none of its current uses need vector/logo uploads).
+  const DOCUMENT_ACCEPT =
+    ".docx,.doc,.pptx,.ppt,.xlsx,.xls," +
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document," +
+    "application/msword," +
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation," +
+    "application/vnd.ms-powerpoint," +
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet," +
+    "application/vnd.ms-excel";
+  const DOCUMENT_EXT = /\.(docx?|pptx?|xlsx?)(\?|#|$)/i;
   const fileAccept =
     accept ||
     (allowPdf
-      ? "image/png,image/jpeg,image/webp,image/gif,application/pdf,.pdf"
-      : "image/png,image/jpeg,image/webp,image/gif");
+      ? `image/png,image/jpeg,image/webp,image/gif,application/pdf,.pdf${
+          allowDocuments ? `,${DOCUMENT_ACCEPT}` : ""
+        }`
+      : `image/png,image/jpeg,image/webp,image/gif${allowDocuments ? `,${DOCUMENT_ACCEPT}` : ""}`);
   const isPdf = value
     ? value.toLowerCase().includes(".pdf") || value.toLowerCase().endsWith(".pdf")
     : false;
+  const isDocumentValue = value ? DOCUMENT_EXT.test(value) : false;
+  const documentExt = isDocumentValue
+    ? ((value ?? "").split(/[?#]/)[0]?.split(".").pop() ?? "").toUpperCase()
+    : "";
 
   const processFile = async (file: File) => {
     const isFilePdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
