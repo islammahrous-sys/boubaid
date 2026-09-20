@@ -148,9 +148,13 @@ export function ImageUploadInput({
           ? isAr
             ? "تم رفع ملف الـ PDF بنجاح"
             : "PDF document uploaded successfully"
-          : isAr
-            ? "تم رفع الصورة بنجاح"
-            : "Image uploaded successfully",
+          : isFileDocument
+            ? isAr
+              ? "تم رفع المستند بنجاح"
+              : "Document uploaded successfully"
+            : isAr
+              ? "تم رفع الصورة بنجاح"
+              : "Image uploaded successfully",
       );
     } catch (err: any) {
       console.error("Storage upload failed:", err);
