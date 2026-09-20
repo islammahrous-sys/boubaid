@@ -89,6 +89,7 @@ export function CollateralsLibrary({
           const name = (rtl ? r.title_ar : r.title_en || r.title_ar) || r.title_ar;
           const description = (rtl ? r.description_ar : r.description_en) || null;
           const kindLabel = KIND_LABEL[(r.kind ?? "").toUpperCase()];
+          const imagePreview = r.previewUrl && IMAGE_URL.test(r.previewUrl) ? r.previewUrl : null;
           return (
             <li
               key={r.id}
