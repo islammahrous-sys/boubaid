@@ -376,7 +376,7 @@ export function ImageUploadInput({
               </p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 {allowPdf
-                  ? `PDF, PNG, JPG, WebP (حتى ${maxSizeMB}MB)`
+                  ? `${allowDocuments ? "DOCX, PPTX, XLSX, " : ""}PDF, PNG, JPG, WebP (حتى ${maxSizeMB}MB)`
                   : `PNG, JPG, WebP (حتى ${maxSizeMB}MB)`}
               </p>
             </div>
