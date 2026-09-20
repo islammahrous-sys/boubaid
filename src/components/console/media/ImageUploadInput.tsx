@@ -26,6 +26,8 @@ export interface ImageUploadInputProps {
   placeholder?: string;
   helperText?: string;
   allowPdf?: boolean;
+  /** Also accept editable office documents (DOCX / PPTX / XLSX and legacy DOC / PPT / XLS). */
+  allowDocuments?: boolean;
   hidePreview?: boolean;
   accept?: string;
   maxSizeMB?: number;
