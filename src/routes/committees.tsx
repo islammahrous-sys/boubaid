@@ -150,7 +150,7 @@ function CommitteesPage() {
           {/* "رشح نفسك" — nomination is submitted through the Requests Hub. */}
           <Link
             to="/requests"
-            hash="committee-nomination"
+            search={{ request: "committee_nomination" }}
             className="mt-6 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
             {t({ ar: "رشّح نفسك لعضوية إحدى اللجان", en: "Nominate yourself for a committee" })}

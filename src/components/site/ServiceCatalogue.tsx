@@ -53,7 +53,7 @@ export function ServiceCatalogue({
         {/* "سجل خدمتك" — the single Requests Hub owns the form itself. */}
         <Link
           to="/requests"
-          hash={category === "family" ? "service-family" : "service-establishment"}
+          search={{ request: category === "family" ? "service_family" : "service_establishment" }}
           className="ms-auto border-b border-bronze pb-0.5 text-[12.5px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
         >
           {isAr ? "سجّل خدمتك" : "Register your service"}
