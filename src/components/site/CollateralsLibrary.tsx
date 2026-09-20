@@ -35,6 +35,11 @@ const copy = {
     en: "The official collateral documents supplied with the visual identity package; every document downloads in its original editable format.",
   } as BiText,
   view: { ar: "عرض", en: "View" } as BiText,
+  open: { ar: "فتح المستند", en: "Open document" } as BiText,
+  originalNote: {
+    ar: "يُفتح المستند بصيغته الأصلية القابلة للتحرير، ويُنزَّل كما هو دون أي تعديل.",
+    en: "The document opens in its original editable format and downloads unchanged.",
+  } as BiText,
   download: { ar: "تحميل", en: "Download" } as BiText,
   previewTitle: { ar: "معاينة المستند", en: "Document preview" } as BiText,
   previewNote: {
@@ -48,6 +53,14 @@ const KIND_LABEL: Record<string, BiText> = {
   PPTX: { ar: "عرض تقديمي", en: "PowerPoint" },
   XLSX: { ar: "جدول بيانات", en: "Excel" },
 };
+
+/**
+ * Only an actual image URL may be rendered as the card's visual preview or
+ * opened in the site's image viewer. Records added from the admin console can
+ * carry a document URL (or nothing) in the preview field, in which case the
+ * card falls back to the file-type icon and offers to open the document itself.
+ */
+const IMAGE_URL = /\.(jpe?g|png|webp|gif|avif)(\?|#|$)/i;
 
 function KindIcon({ kind }: { kind: string | null }) {
   const cls = "h-5 w-5 text-bronze dark:text-gold";
@@ -81,20 +94,21 @@ export function CollateralsLibrary({
           const name = (rtl ? r.title_ar : r.title_en || r.title_ar) || r.title_ar;
           const description = (rtl ? r.description_ar : r.description_en) || null;
           const kindLabel = KIND_LABEL[(r.kind ?? "").toUpperCase()];
+          const imagePreview = r.previewUrl && IMAGE_URL.test(r.previewUrl) ? r.previewUrl : null;
           return (
             <li
               key={r.id}
               className="flex flex-col overflow-hidden rounded-md border border-border bg-card"
             >
-              {r.previewUrl ? (
+              {imagePreview ? (
                 <button
                   type="button"
-                  onClick={() => onView(r.previewUrl as string, name)}
+                  onClick={() => onView(imagePreview, name)}
                   aria-label={`${t(copy.view)} ${name}`}
                   className="flex w-full items-center justify-center border-b border-border bg-muted/30 p-4 transition-colors hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <img
-                    src={r.previewUrl}
+                    src={imagePreview}
                     alt={`${t(copy.previewTitle)} — ${name}`}
                     loading="lazy"
                     className="block max-h-72 w-auto max-w-full object-contain"
@@ -119,21 +133,32 @@ export function CollateralsLibrary({
                   </p>
                 ) : null}
                 <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-                  {t(copy.previewNote)}
+                  {t(imagePreview ? copy.previewNote : copy.originalNote)}
                 </p>
 
                 <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
-                  {r.previewUrl ? (
+                  {imagePreview ? (
                     <button
                       type="button"
-                      onClick={() => onView(r.previewUrl as string, name)}
+                      onClick={() => onView(imagePreview, name)}
                       aria-label={`${t(copy.view)} ${name}`}
                       className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                     >
                       <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                       {t(copy.view)}
                     </button>
-                  ) : null}
+                  ) : (
+                    <a
+                      href={r.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${t(copy.open)} ${name}`}
+                      className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                    >
+                      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t(copy.open)}
+                    </a>
+                  )}
                   <button
                     type="button"
                     onClick={() => void downloadFile(r.href, name)}

@@ -26,6 +26,8 @@ export interface ImageUploadInputProps {
   placeholder?: string;
   helperText?: string;
   allowPdf?: boolean;
+  /** Also accept editable office documents (DOCX / PPTX / XLSX and legacy DOC / PPT / XLS). */
+  allowDocuments?: boolean;
   hidePreview?: boolean;
   accept?: string;
   maxSizeMB?: number;
@@ -40,6 +42,7 @@ export function ImageUploadInput({
   placeholder,
   helperText,
   allowPdf = true,
+  allowDocuments = false,
   hidePreview = false,
   accept,
   maxSizeMB = 25,
@@ -58,14 +61,29 @@ export function ImageUploadInput({
   // rendered inline or served back with an image content-type, so they are
   // excluded from the accepted image types for this general-purpose upload
   // input (none of its current uses need vector/logo uploads).
+  const DOCUMENT_ACCEPT =
+    ".docx,.doc,.pptx,.ppt,.xlsx,.xls," +
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document," +
+    "application/msword," +
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation," +
+    "application/vnd.ms-powerpoint," +
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet," +
+    "application/vnd.ms-excel";
+  const DOCUMENT_EXT = /\.(docx?|pptx?|xlsx?)(\?|#|$)/i;
   const fileAccept =
     accept ||
     (allowPdf
-      ? "image/png,image/jpeg,image/webp,image/gif,application/pdf,.pdf"
-      : "image/png,image/jpeg,image/webp,image/gif");
+      ? `image/png,image/jpeg,image/webp,image/gif,application/pdf,.pdf${
+          allowDocuments ? `,${DOCUMENT_ACCEPT}` : ""
+        }`
+      : `image/png,image/jpeg,image/webp,image/gif${allowDocuments ? `,${DOCUMENT_ACCEPT}` : ""}`);
   const isPdf = value
     ? value.toLowerCase().includes(".pdf") || value.toLowerCase().endsWith(".pdf")
     : false;
+  const isDocumentValue = value ? DOCUMENT_EXT.test(value) : false;
+  const documentExt = isDocumentValue
+    ? ((value ?? "").split(/[?#]/)[0]?.split(".").pop() ?? "").toUpperCase()
+    : "";
 
   const processFile = async (file: File) => {
     const isFilePdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
@@ -81,15 +99,21 @@ export function ImageUploadInput({
       return;
     }
 
-    if (!isImage && !(allowPdf && isFilePdf)) {
+    const isFileDocument = allowDocuments && DOCUMENT_EXT.test(file.name);
+
+    if (!isImage && !(allowPdf && isFilePdf) && !isFileDocument) {
       toast.error(
-        allowPdf
+        allowDocuments
           ? isAr
-            ? "يرجى اختيار ملف صالح (PDF أو صورة PNG, JPG, WebP)"
-            : "Please choose a valid PDF or image file (PNG, JPG, WebP)"
-          : isAr
-            ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)"
-            : "Please choose a valid image file",
+            ? "يرجى اختيار ملف صالح (Word أو PowerPoint أو Excel أو PDF أو صورة)"
+            : "Please choose a valid Word, PowerPoint, Excel, PDF or image file"
+          : allowPdf
+            ? isAr
+              ? "يرجى اختيار ملف صالح (PDF أو صورة PNG, JPG, WebP)"
+              : "Please choose a valid PDF or image file (PNG, JPG, WebP)"
+            : isAr
+              ? "يرجى اختيار ملف صورة صالح (PNG, JPG, WebP)"
+              : "Please choose a valid image file",
       );
       return;
     }
@@ -124,9 +148,13 @@ export function ImageUploadInput({
           ? isAr
             ? "تم رفع ملف الـ PDF بنجاح"
             : "PDF document uploaded successfully"
-          : isAr
-            ? "تم رفع الصورة بنجاح"
-            : "Image uploaded successfully",
+          : isFileDocument
+            ? isAr
+              ? "تم رفع المستند بنجاح"
+              : "Document uploaded successfully"
+            : isAr
+              ? "تم رفع الصورة بنجاح"
+              : "Image uploaded successfully",
       );
     } catch (err: any) {
       console.error("Storage upload failed:", err);
@@ -210,7 +238,14 @@ export function ImageUploadInput({
         {value ? (
           <div className="relative group flex items-center gap-3 p-2.5 bg-muted/40 rounded-xl border border-border">
             {!hidePreview &&
-              (isPdf ? (
+              (isDocumentValue ? (
+                <div className="relative w-16 h-16 rounded-lg bg-primary/10 border border-primary/20 shrink-0 flex flex-col items-center justify-center shadow-xs">
+                  <FileText className="w-6 h-6 text-primary" />
+                  <Badge variant="outline" className="h-3.5 px-1 text-[8px] font-mono mt-0.5">
+                    {documentExt}
+                  </Badge>
+                </div>
+              ) : isPdf ? (
                 <div className="relative w-16 h-16 rounded-lg bg-rose-500/10 border border-rose-500/20 shrink-0 flex flex-col items-center justify-center shadow-xs">
                   <FileText className="w-6 h-6 text-rose-500" />
                   <Badge variant="destructive" className="h-3.5 px-1 text-[8px] font-mono mt-0.5">
@@ -234,7 +269,7 @@ export function ImageUploadInput({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 min-w-0">
                 <Badge variant="outline" className="text-[10px] font-mono shrink-0">
-                  {isPdf ? "PDF" : isAr ? "صورة" : "Image"}
+                  {isDocumentValue ? documentExt : isPdf ? "PDF" : isAr ? "صورة" : "Image"}
                 </Badge>
                 <span
                   className="truncate text-[11px] text-muted-foreground font-mono"
@@ -341,7 +376,7 @@ export function ImageUploadInput({
               </p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 {allowPdf
-                  ? `PDF, PNG, JPG, WebP (حتى ${maxSizeMB}MB)`
+                  ? `${allowDocuments ? "DOCX, PPTX, XLSX, " : ""}PDF, PNG, JPG, WebP (حتى ${maxSizeMB}MB)`
                   : `PNG, JPG, WebP (حتى ${maxSizeMB}MB)`}
               </p>
             </div>
