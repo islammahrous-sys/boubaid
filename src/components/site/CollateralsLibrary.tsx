@@ -95,15 +95,15 @@ export function CollateralsLibrary({
               key={r.id}
               className="flex flex-col overflow-hidden rounded-md border border-border bg-card"
             >
-              {r.previewUrl ? (
+              {imagePreview ? (
                 <button
                   type="button"
-                  onClick={() => onView(r.previewUrl as string, name)}
+                  onClick={() => onView(imagePreview, name)}
                   aria-label={`${t(copy.view)} ${name}`}
                   className="flex w-full items-center justify-center border-b border-border bg-muted/30 p-4 transition-colors hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <img
-                    src={r.previewUrl}
+                    src={imagePreview}
                     alt={`${t(copy.previewTitle)} — ${name}`}
                     loading="lazy"
                     className="block max-h-72 w-auto max-w-full object-contain"
