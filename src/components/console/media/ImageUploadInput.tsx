@@ -42,6 +42,7 @@ export function ImageUploadInput({
   placeholder,
   helperText,
   allowPdf = true,
+  allowDocuments = false,
   hidePreview = false,
   accept,
   maxSizeMB = 25,
