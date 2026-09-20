@@ -35,6 +35,11 @@ const copy = {
     en: "The official collateral documents supplied with the visual identity package; every document downloads in its original editable format.",
   } as BiText,
   view: { ar: "عرض", en: "View" } as BiText,
+  open: { ar: "فتح المستند", en: "Open document" } as BiText,
+  originalNote: {
+    ar: "يُفتح المستند بصيغته الأصلية القابلة للتحرير، ويُنزَّل كما هو دون أي تعديل.",
+    en: "The document opens in its original editable format and downloads unchanged.",
+  } as BiText,
   download: { ar: "تحميل", en: "Download" } as BiText,
   previewTitle: { ar: "معاينة المستند", en: "Document preview" } as BiText,
   previewNote: {
