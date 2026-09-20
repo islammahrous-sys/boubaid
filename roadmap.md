@@ -93,3 +93,8 @@
 - [x] View opens the first-page preview in the site viewer; Download delivers the original editable file; responsive (desktop/mobile), bilingual, keyboard-accessible, no console errors, no horizontal overflow.
 - [x] Added nine supplied DOCX variants as individual collateral records: gold, clay, and copper editions of the business card, certificate of appreciation, and report cover. Each original was SHA-256 verified after upload and has its own generated preview, View action, and original-file Download action.
 - [x] Grouped collateral editions by document type so each business card, certificate, and report-cover family appears together in the public library.
+
+## News & establishments cleanup (Sep 2026) — complete
+- Deleted all 9 family establishment listings (businesses) and removed the "خدمات المنشآت العائلية" section from Projects.
+- Deleted all news records (news_posts + articles, including archived test rows) and cleared the static news fallback in src/content/site.ts.
+- Published a single news item "تجديد التفويض بإدارة الحسابات البنكية لعام 2026" (slug authorisation-renewal-2026, section fund); shown on Home and /news.
