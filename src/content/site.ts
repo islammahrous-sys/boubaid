@@ -869,80 +869,20 @@ export const hqProject = {
   ],
 };
 
-export const news = [
-  {
-    slug: "ncnp-license-issuance",
-    date: "1447-02-20",
-    dateGregorian: "14 أغسطس 2025",
-    section: "fund" as const,
-    title: {
-      ar: "صدور الترخيص الرسمي لصندوق التنمية العائلية (آل بوعبيد) برقم (1200758400)",
-      en: "Official NCNP License No. 1200758400 Issued for Al Bu Obaid Family Fund",
-    } as BiText,
-    excerpt: {
-      ar: "تكللت الجهود الصادقة لأبناء الأسرة بتحصيل الاعتماد الرسمي من المركز الوطني لتنمية القطاع غير الربحي، مما ينقل أعمال الصندوق إلى المأسسة الكاملة.",
-      en: "The sincere efforts of family members culminated in receiving official NCNP licensing, establishing full institutional governance.",
-    } as BiText,
-    body: {
-      ar: "في خطوة تاريخية مباركة، أعلن مجلس الأمناء عن استلام الترخيص الرسمي الصادر من المركز الوطني لتنمية القطاع غير الربحي تحت رقم (1200758400) وتاريخ 20 صفر 1447 هـ (الموافق 14 أغسطس 2025 م). يأتي هذا الانجاز ليعزز مبادئ الشفافية والامتثال الزكوي والمالي وفق مستهدفات رؤية المملكة 2030، وليوفر مظلة نظامية معتمدة لجميع مبادرات الأسرة وبرامجها التنموية بالأحساء والمنطقة الشرقية.",
-      en: "In a landmark achievement, the Board of Trustees announced the receipt of NCNP License #1200758400 dated 20 Safar 1447H (August 14, 2025). This milestone strengthens transparency, financial audit compliance, and zakat regulations aligned with Saudi Vision 2030, offering an accredited framework for all family initiatives.",
-    } as BiText,
-  },
-  {
-    slug: "hq-land-hizam-dhahabi",
-    date: "1447-01-15",
-    dateGregorian: "9 أغسطس 2025",
-    section: "fund" as const,
-    title: {
-      ar: "استكمال إجراءات أرض المقر الدائم بحي الحزام الذهبي بالمبرز",
-      en: "Finalizing Acquisition Procedures for Headquarters Land in Al-Hizam Al-Dhahabi",
-    } as BiText,
-    excerpt: {
-      ar: "استثمار عقاري استراتيجي يوفر مقراً جامعاً لكافة الفروع السبعة ومرافق ثقافية واجتماعية متكاملة.",
-      en: "A strategic capital expenditure securing a permanent home for all 7 branches with comprehensive cultural facilities.",
-    } as BiText,
-    body: {
-      ar: "أنهت لجنة المقر والتطوير العقاري إجراءات الشراء وتوثيق أرض المقر الدائم الواقعة في حي الحزام الذهبي بمدينة المبرز بمحافظة الأحساء. وتمثل هذه الأرض الركيزة الأساسية لبناء ديوان الأسرة والمجمع الثقافي الاجتماعي، وتم تمويل المشروع من خلال القروض الحسنة المساهمة وااشتراكات الصندوق المعتمدة.",
-      en: "The Headquarters & Real Estate Committee finalized deed procedures for the permanent site in Al-Hizam Al-Dhahabi district, Al-Mubarraz. Funded through interest-free shareholder loans and subscription funds, the site will house the main assembly hall and cultural complex.",
-    } as BiText,
-  },
-  {
-    slug: "excellence-award-1447",
-    date: "1447-03-01",
-    dateGregorian: "24 أغسطس 2025",
-    section: "family" as const,
-    title: {
-      ar: "فتح باب الترشح لجائزة آل بوعبيد للتفوق العلمي والتميز المهني",
-      en: "Nominations Open for Al Bu Obaid Academic & Professional Excellence Award",
-    } as BiText,
-    excerpt: {
-      ar: "التكريم السنوي للطلاب والطالبات الحاصلين على مرتبة الشرف والأطباء والمهندسين وأصحاب الابتكارات.",
-      en: "Annual ceremony honoring students with first-class honors, medical doctors, engineers, and innovators.",
-    } as BiText,
-    body: {
-      ar: "أعلنت لجنة الأنشطة والبرامج عن بدء استقبال طلبات الترشح لـ 'جائزة آل بوعبيد للتفوق العلمي' في دورته الجديدة. تهدف الجائزة إلى تشجيع التحصيل الأكاديمي المتميز في المراحل الجامعية والدراسات العليا وتكريم حملة الدكتوراة والماجستير والكفاءات الوطنية المبدعة من أبناء الأسرة.",
-      en: "The Activities Committee launched nominations for the annual Academic Excellence Award. The prize celebrates high-achieving undergraduates, postgraduate scholars, PhD holders, and outstanding innovators across all 7 family branches.",
-    } as BiText,
-  },
-  {
-    slug: "ramadan-quiz-series",
-    date: "1447-03-10",
-    dateGregorian: "2 سبتمبر 2025",
-    section: "family" as const,
-    title: {
-      ar: "انطلاق المسابقة الثقافية الرمضانية التفاعلية عبر مجتمعات واتساب الأسرة",
-      en: "Launch of the Interactive Ramadan Cultural Competition on WhatsApp",
-    } as BiText,
-    excerpt: {
-      ar: "مسابقة اليومية تهدف لتثقيف الجيل الجديد بتاريخ الأسرة ونسبها التميمي وسير أعلامها.",
-      en: "Daily quiz series educating youth on family heritage, Tamimi lineage, and historic figures.",
-    } as BiText,
-    body: {
-      ar: "تواصل اللجنة الإعلامية إقامة المسابقة الثقافية الرمضانية اليومية عبر القناة الرسمية للأسرة في واتساب. وتتضمن الأسئلة مسابقات في حفظ القرآن الكريم، وتاريخ الأحساء والمبرز، وتوثيق السيرة التاريخية لأعلام آل بوعبيد، مع رصد جوائز تشجيعية للفائزين.",
-      en: "The Media Committee continues the daily Ramadan cultural quiz via the family's official WhatsApp channel. Questions cover Quranic memorization, Al-Ahsa history, Tamimi heritage, and biographies of family ancestors, with prizes awarded to youth winners.",
-    } as BiText,
-  },
-];
+/**
+ * الأخبار تُدار حصريًا من لوحة التحكم (Supabase)؛ تبقى هذه القائمة فارغة
+ * حتى لا يظهر أي خبر مكرر أو قديم في الموقع.
+ */
+export const news: {
+  slug: string;
+  date: string;
+  dateGregorian: string;
+  section: "fund" | "family";
+  title: BiText;
+  excerpt: BiText;
+  body: BiText;
+  image?: string;
+}[] = [];
 
 /**
  * المشاريع والبرامج والمسابقات are maintained exclusively in Supabase through
