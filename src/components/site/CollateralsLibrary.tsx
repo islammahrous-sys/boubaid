@@ -128,21 +128,32 @@ export function CollateralsLibrary({
                   </p>
                 ) : null}
                 <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-                  {t(copy.previewNote)}
+                  {t(imagePreview ? copy.previewNote : copy.originalNote)}
                 </p>
 
                 <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
-                  {r.previewUrl ? (
+                  {imagePreview ? (
                     <button
                       type="button"
-                      onClick={() => onView(r.previewUrl as string, name)}
+                      onClick={() => onView(imagePreview, name)}
                       aria-label={`${t(copy.view)} ${name}`}
                       className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                     >
                       <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                       {t(copy.view)}
                     </button>
-                  ) : null}
+                  ) : (
+                    <a
+                      href={r.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${t(copy.open)} ${name}`}
+                      className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                    >
+                      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t(copy.open)}
+                    </a>
+                  )}
                   <button
                     type="button"
                     onClick={() => void downloadFile(r.href, name)}
