@@ -102,15 +102,21 @@ export function DocumentShowcase({
             const isImage = doc.kind === "JPG" || doc.kind === "PNG";
             return (
               <div key={idx} className="group flex flex-col border-t border-border py-4">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="nums font-mono text-xs font-semibold text-bronze dark:text-gold">
+                <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                  <span
+                    dir="ltr"
+                    className="nums max-w-full break-all font-mono text-xs font-semibold text-bronze dark:text-gold"
+                  >
                     {doc.ncnpRef}
                   </span>
-                  <span className="nums label-caps text-muted-foreground">
+                  <span
+                    dir="ltr"
+                    className="nums label-caps max-w-full break-words text-muted-foreground [overflow-wrap:anywhere]"
+                  >
                     {formatDualHijriYear(doc.year, lang)} · {doc.kind}
                   </span>
                 </div>
-                <h4 className="mt-2 text-sm leading-snug font-medium text-foreground transition-colors group-hover:text-bronze dark:group-hover:text-gold">
+                <h4 className="mt-2 break-words text-sm leading-snug font-medium text-foreground transition-colors [overflow-wrap:anywhere] group-hover:text-bronze dark:group-hover:text-gold">
                   {t(doc.title)}
                 </h4>
 
