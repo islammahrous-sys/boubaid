@@ -444,8 +444,16 @@ function HomePage() {
                   </h1>
                 </div>
 
+                <p className="mx-auto mt-4 max-w-4xl text-balance font-arabic text-sm font-semibold leading-relaxed text-gold sm:mt-5 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                  {sec.badge_ar && rtl
+                    ? sec.badge_ar
+                    : sec.badge_en && !rtl
+                      ? sec.badge_en
+                      : t(siteMeta.ncnpAuthority)}
+                </p>
 
                 <div
+
                   className="mx-auto mt-5 sm:mt-8 flex max-w-xs items-center gap-4 text-gold/70 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-500"
                   aria-hidden="true"
                 >
