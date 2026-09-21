@@ -444,25 +444,7 @@ function HomePage() {
                   </h1>
                 </div>
 
-                <p className="mx-auto mt-4 max-w-4xl text-balance font-arabic text-sm font-semibold leading-relaxed text-gold sm:mt-5 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
-                  {sec.badge_ar && rtl
-                    ? sec.badge_ar
-                    : sec.badge_en && !rtl
-                      ? sec.badge_en
-                      : t(siteMeta.ncnpAuthority)}
-                </p>
-
-                <div
-
-                  className="mx-auto mt-5 sm:mt-8 flex max-w-xs items-center gap-4 text-gold/70 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-500"
-                  aria-hidden="true"
-                >
-                  <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-                  <span className="ornament-star text-gold drop-shadow-[0_0_10px_rgba(237,167,70,0.6)]" />
-                  <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
-                </div>
-
-                <p className="mx-auto mt-4 max-w-3xl text-balance text-sm leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:mt-5 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-700">
+                <p className="mx-auto mt-4 max-w-3xl text-balance text-sm leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:mt-6 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-700">
                   {sec.subtitle_ar && rtl
                     ? sec.subtitle_ar
                     : sec.subtitle_en && !rtl
