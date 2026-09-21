@@ -435,7 +435,7 @@ function HomePage() {
                     }
                     className="h-auto w-[clamp(9rem,36vw,13rem)] shrink-0 object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] sm:w-[clamp(11rem,25vw,15rem)] lg:w-[17rem]"
                   />
-                  <h1 className="whitespace-nowrap font-brand text-[clamp(2.25rem,9vw,3.5rem)] font-bold leading-none text-ivory drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-[clamp(3rem,5vw,4.5rem)] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                  <h1 className="whitespace-nowrap font-brand text-[clamp(2.75rem,11vw,4.25rem)] font-bold leading-none text-ivory drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-[clamp(3.5rem,6vw,5.25rem)] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                     {sec.title_ar && rtl
                       ? sec.title_ar
                       : sec.title_en && !rtl
