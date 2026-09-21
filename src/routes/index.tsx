@@ -435,9 +435,13 @@ function HomePage() {
                     }
                     className="h-auto w-[clamp(9rem,36vw,13rem)] shrink-0 object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] sm:w-[clamp(11rem,25vw,15rem)] lg:w-[17rem]"
                   />
-                  <span className="whitespace-nowrap font-brand text-[clamp(2.25rem,9vw,3.5rem)] font-bold leading-none text-ivory drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-[clamp(3rem,5vw,4.5rem)]">
-                    Awaser
-                  </span>
+                  <h1 className="whitespace-nowrap font-brand text-[clamp(2.25rem,9vw,3.5rem)] font-bold leading-none text-ivory drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-[clamp(3rem,5vw,4.5rem)] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                    {sec.title_ar && rtl
+                      ? sec.title_ar
+                      : sec.title_en && !rtl
+                        ? sec.title_en
+                        : t(siteMeta.officialName)}
+                  </h1>
                 </div>
 
                 <p className="mx-auto mt-4 max-w-4xl text-balance font-arabic text-sm font-semibold leading-relaxed text-gold sm:mt-5 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
@@ -448,15 +452,8 @@ function HomePage() {
                       : t(siteMeta.ncnpAuthority)}
                 </p>
 
-                <h1 className="mx-auto mt-2 max-w-4xl text-balance font-brand text-4xl font-bold leading-[1.2] text-ivory sm:mt-3 sm:text-5xl md:text-7xl lg:text-8xl motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
-                  {sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : t(siteMeta.officialName)}
-                </h1>
-
                 <div
+
                   className="mx-auto mt-5 sm:mt-8 flex max-w-xs items-center gap-4 text-gold/70 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-1000 motion-safe:delay-500"
                   aria-hidden="true"
                 >
