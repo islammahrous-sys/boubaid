@@ -98,3 +98,6 @@
 - Deleted all 9 family establishment listings (businesses) and removed the "خدمات المنشآت العائلية" section from Projects.
 - Deleted all news records (news_posts + articles, including archived test rows) and cleared the static news fallback in src/content/site.ts.
 - Published a single news item "تجديد التفويض بإدارة الحسابات البنكية لعام 2026" (slug authorisation-renewal-2026, section fund); shown on Home and /news.
+
+## Request hub CTA behaviour (Sep 2026) — complete
+- Roll of Honour "تقديم ترشيح جديد" now links to /requests (hub overview) without auto-opening the nomination dialog; verified mobile viewport, no dialog, no console errors.
