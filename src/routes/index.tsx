@@ -422,16 +422,19 @@ function HomePage() {
             <HeroImage slides={sec.custom_payload?.hero_slides}>
               <div className="container-page flex min-h-[75vh] sm:min-h-[86vh] md:min-h-[92vh] flex-col items-center justify-center py-14 sm:py-20 md:py-24 text-center">
                 {/* Emblem */}
-                <div className="mx-auto w-max motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                <div className="mx-auto flex w-full justify-center motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                   <img
                     src="/logo-mark-gold.svg"
-                    alt=""
-                    className="h-16 w-16 sm:h-24 sm:w-24 md:h-32 md:w-32 object-contain"
-                    aria-hidden="true"
+                    alt={
+                      rtl
+                        ? "شعار مجلس أسرة آل بوعبيد"
+                        : "Al Bu Obaid Family Council mark"
+                    }
+                    className="h-auto w-[min(76vw,18rem)] object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] sm:w-[min(68vw,22rem)] md:w-[min(58vw,26rem)] lg:w-[30rem]"
                   />
                 </div>
 
-                <p className="label-caps mt-5 sm:mt-8 text-xs sm:text-sm text-gold/90 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                <p className="mx-auto mt-3 max-w-4xl text-balance font-arabic text-sm font-semibold leading-relaxed text-gold sm:mt-4 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                   {sec.badge_ar && rtl
                     ? sec.badge_ar
                     : sec.badge_en && !rtl
@@ -439,7 +442,7 @@ function HomePage() {
                       : t(siteMeta.ncnpAuthority)}
                 </p>
 
-                <h1 className="mx-auto mt-3 sm:mt-5 max-w-4xl text-balance font-brand text-3xl sm:text-4xl md:text-6xl lg:text-7xl leading-[1.2] font-bold text-ivory motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                <h1 className="mx-auto mt-2 max-w-4xl text-balance font-brand text-4xl font-bold leading-[1.2] text-ivory sm:mt-3 sm:text-5xl md:text-7xl lg:text-8xl motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                   {sec.title_ar && rtl
                     ? sec.title_ar
                     : sec.title_en && !rtl
@@ -456,7 +459,7 @@ function HomePage() {
                   <span className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
                 </div>
 
-                <p className="measure mx-auto mt-5 sm:mt-8 text-balance text-sm sm:text-base leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-700 md:text-lg">
+                <p className="mx-auto mt-4 max-w-3xl text-balance text-sm leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:mt-5 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-700">
                   {sec.subtitle_ar && rtl
                     ? sec.subtitle_ar
                     : sec.subtitle_en && !rtl
@@ -464,7 +467,7 @@ function HomePage() {
                       : t(copy.standfirst)}
                 </p>
 
-                <div className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-1000 motion-safe:delay-1000">
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:mt-8 sm:gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-1000 motion-safe:delay-1000">
                   <Link
                     to={sec.cta_url || "/family-tree"}
                     className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-bold text-ink shadow-[0_10px_40px_-10px_rgba(237,167,70,0.6)] transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.03] hover:shadow-[0_15px_50px_-10px_rgba(237,167,70,0.8)] active:scale-[0.98]"

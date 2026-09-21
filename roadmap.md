@@ -101,3 +101,8 @@
 
 ## Request hub CTA behaviour (Sep 2026) — complete
 - Roll of Honour "تقديم ترشيح جديد" now links to /requests (hub overview) without auto-opening the nomination dialog; verified mobile viewport, no dialog, no console errors.
+
+## Homepage Awaser identity (Sep 2026) — complete
+- [x] Enlarged the official calligraphic family mark in the homepage opening area using the existing vector artwork.
+- [x] Renamed the homepage platform to «أواصر | Awaser» and added the supplied bilingual primary tagline and full descriptor.
+- [x] Kept the homepage structure, imagery, navigation, calls to action and visual identity unchanged.
