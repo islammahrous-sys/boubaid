@@ -423,7 +423,7 @@ function HomePage() {
               <div className="container-page flex min-h-[75vh] sm:min-h-[86vh] md:min-h-[92vh] flex-col items-center justify-center py-14 sm:py-20 md:py-24 text-center">
                 {/* Council mark and official website name */}
                 <div
-                  className="mx-auto flex w-full flex-col items-center justify-center gap-5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 sm:flex-row sm:gap-10 md:gap-14"
+                  className="mx-auto flex w-full flex-col items-center justify-center gap-2 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 sm:gap-3"
                   dir="ltr"
                 >
                   <img
