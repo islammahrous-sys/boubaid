@@ -421,8 +421,11 @@ function HomePage() {
           <div key={sec.id}>
             <HeroImage slides={sec.custom_payload?.hero_slides}>
               <div className="container-page flex min-h-[75vh] sm:min-h-[86vh] md:min-h-[92vh] flex-col items-center justify-center py-14 sm:py-20 md:py-24 text-center">
-                {/* Emblem */}
-                <div className="mx-auto flex w-full justify-center motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                {/* Council mark and official website name */}
+                <div
+                  className="mx-auto flex w-full flex-col items-center justify-center gap-2 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 sm:flex-row sm:gap-6 md:gap-8"
+                  dir="ltr"
+                >
                   <img
                     src="/logo-mark-gold.svg"
                     alt={
@@ -430,11 +433,14 @@ function HomePage() {
                         ? "شعار مجلس أسرة آل بوعبيد"
                         : "Al Bu Obaid Family Council mark"
                     }
-                    className="h-auto w-[min(76vw,18rem)] object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] sm:w-[min(68vw,22rem)] md:w-[min(58vw,26rem)] lg:w-[30rem]"
+                    className="h-auto w-[clamp(9rem,36vw,13rem)] shrink-0 object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] sm:w-[clamp(11rem,25vw,15rem)] lg:w-[17rem]"
                   />
+                  <span className="whitespace-nowrap font-brand text-[clamp(2.25rem,9vw,3.5rem)] font-bold leading-none text-ivory drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-[clamp(3rem,5vw,4.5rem)]">
+                    Awaser
+                  </span>
                 </div>
 
-                <p className="mx-auto mt-3 max-w-4xl text-balance font-arabic text-sm font-semibold leading-relaxed text-gold sm:mt-4 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
+                <p className="mx-auto mt-4 max-w-4xl text-balance font-arabic text-sm font-semibold leading-relaxed text-gold sm:mt-5 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                   {sec.badge_ar && rtl
                     ? sec.badge_ar
                     : sec.badge_en && !rtl
