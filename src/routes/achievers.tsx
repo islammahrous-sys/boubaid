@@ -439,7 +439,6 @@ function AchieversPage() {
               the site follows one submission, review and tracking path. */}
           <Link
             to="/requests"
-            search={{ request: "achiever_nomination" }}
             className="inline-flex shrink-0 items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold cursor-pointer"
           >
             <Sparkles className="h-4 w-4 text-gold dark:text-ink" />
