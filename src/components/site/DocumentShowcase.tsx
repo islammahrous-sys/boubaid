@@ -84,7 +84,7 @@ export function DocumentShowcase({
   };
 
   return (
-    <div className={cn("border border-border p-6", className)}>
+    <div className={cn("min-w-0 overflow-hidden border border-border p-4 sm:p-6", className)}>
       {title || description ? (
         <div className="mb-5 border-b border-border pb-4">
           {title ? <h3 className="text-base font-semibold text-foreground">{t(title)}</h3> : null}
@@ -156,21 +156,27 @@ export function DocumentShowcase({
             return (
               <li
                 key={idx}
-                className="flex flex-wrap items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0"
+                className="flex min-w-0 flex-col items-start gap-3 py-3.5 first:pt-0 last:pb-0 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
               >
-                <div className="flex min-w-0 items-baseline gap-3">
-                  <span className="nums shrink-0 font-mono text-xs font-semibold text-bronze dark:text-gold">
+                <div className="flex w-full min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1 sm:flex-1">
+                  <span
+                    dir="ltr"
+                    className="nums max-w-full break-all font-mono text-xs font-semibold text-bronze dark:text-gold"
+                  >
                     {doc.ncnpRef}
                   </span>
-                  <span className="truncate text-sm font-medium text-foreground">
+                  <span dir="auto" className="min-w-0 max-w-full break-words text-sm font-medium text-foreground [overflow-wrap:anywhere]">
                     {t(doc.title)}
                   </span>
-                  <span className="nums hidden shrink-0 text-xs text-muted-foreground sm:inline">
+                  <span
+                    dir="ltr"
+                    className="nums max-w-full break-words text-xs text-muted-foreground [overflow-wrap:anywhere]"
+                  >
                     ({formatDualHijriYear(doc.year, lang)} · {doc.kind})
                   </span>
                 </div>
 
-                <div className="shrink-0">
+                <div className="max-w-full shrink-0">
                   {doc.href ? (
                     <button
                       type="button"
