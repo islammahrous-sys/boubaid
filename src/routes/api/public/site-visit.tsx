@@ -180,13 +180,18 @@ async function getAlAhsaWeather(): Promise<WeatherPayload | null> {
     return value;
   } catch (error) {
     console.error("[site-visit] Google weather lookup failed, trying fallback", error);
+    // Fresh controller: the original may already be aborted by the timeout.
+    const fallbackController = new AbortController();
+    const fallbackTimeout = setTimeout(() => fallbackController.abort(), 6000);
     try {
-      const value = await openMeteoWeather(controller.signal);
+      const value = await openMeteoWeather(fallbackController.signal);
       lastSuccessfulWeather = value;
       cachedWeather = { expiresAt: now + 10 * 60 * 1000, value };
       return value;
     } catch (fallbackError) {
       console.error("[site-visit] fallback weather lookup failed", fallbackError);
+    } finally {
+      clearTimeout(fallbackTimeout);
     }
     const fallback = lastSuccessfulWeather ? { ...lastSuccessfulWeather, stale: true } : null;
     // Short negative cache so a transient failure retries soon, but repeated
