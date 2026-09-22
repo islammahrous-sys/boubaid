@@ -11,6 +11,13 @@ import { Eyebrow, Ornament } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedLibrary } from "@/lib/cms.functions";
 import { downloadFile } from "@/lib/download";
+import englishMasterChart from "@/assets/committee-charts-en/E-_Master_Org_Map.PNG.asset.json";
+import englishDevelopmentChart from "@/assets/committee-charts-en/Slide2-2.PNG.asset.json";
+import englishHeadquartersChart from "@/assets/committee-charts-en/Slide3-2.PNG.asset.json";
+import englishFinanceChart from "@/assets/committee-charts-en/Slide4-2.PNG.asset.json";
+import englishCommunicationChart from "@/assets/committee-charts-en/Slide5-2.PNG.asset.json";
+import englishActivitiesChart from "@/assets/committee-charts-en/Slide6-2.PNG.asset.json";
+import englishMediaChart from "@/assets/committee-charts-en/Slide7-2.PNG.asset.json";
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
@@ -121,6 +128,15 @@ const committeeChartRefs: Record<string, string> = {
   "media-support": "COMM-ORG-07",
 };
 
+const englishCommitteeCharts: Record<string, string> = {
+  "development-followup": englishDevelopmentChart.url,
+  "hq-affairs": englishHeadquartersChart.url,
+  "finance-investment": englishFinanceChart.url,
+  "family-communication": englishCommunicationChart.url,
+  "activities-initiatives": englishActivitiesChart.url,
+  "media-support": englishMediaChart.url,
+};
+
 type CommitteeChart = {
   id: string;
   reference: string | null;
@@ -169,6 +185,7 @@ function CommitteesPage() {
             <Eyebrow rule>{t(copy.chartsEyebrow)}</Eyebrow>
             <CommitteeChartCard
               chart={masterChart}
+              hrefOverride={lang === "en" ? englishMasterChart.url : undefined}
               title={t(copy.masterChartTitle)}
               labels={{ view: t(copy.viewChart), download: t(copy.downloadChart) }}
               featured
@@ -209,6 +226,7 @@ function CommitteesPage() {
                     <dd className="mt-5">
                       <CommitteeChartCard
                         chart={chartsByRef[committeeChartRefs[c.id]]}
+                        hrefOverride={lang === "en" ? englishCommitteeCharts[c.id] : undefined}
                         title={t(c.name)}
                         labels={{ view: t(copy.viewChart), download: t(copy.downloadChart) }}
                       />
@@ -314,16 +332,18 @@ function CommitteesPage() {
 
 function CommitteeChartCard({
   chart,
+  hrefOverride,
   title,
   labels,
   featured = false,
 }: {
   chart: CommitteeChart;
+  hrefOverride?: string;
   title: string;
   labels: { view: string; download: string };
   featured?: boolean;
 }) {
-  const href = chartHref(chart);
+  const href = hrefOverride || chartHref(chart);
   if (!href) return null;
   const safeTitle = title || chart.title_ar;
 
