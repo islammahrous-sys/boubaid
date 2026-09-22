@@ -6,12 +6,19 @@ import {
   ArrowRight,
   ExternalLink,
   CalendarDays,
+  Cloud,
+  CloudFog,
+  CloudLightning,
+  CloudRain,
   CloudSun,
+  Sun,
+  Wind,
   Eye,
   Inbox,
   Archive,
   type LucideIcon,
 } from "lucide-react";
+
 import { formatContentDate } from "@/lib/text";
 import { formatDualDate } from "@/lib/dates";
 import {
@@ -73,15 +80,25 @@ type PublicGalleryPreview = {
   title_en: string | null;
 } & { items: PublicGalleryPreviewItem[] };
 
+type WeatherPayload = {
+  temperature: number;
+  high: number | null;
+  low: number | null;
+  condition: string;
+  label_ar: string;
+  label_en: string;
+  location_ar: string;
+  location_en: string;
+  stale: boolean;
+  updated_at: string;
+};
+
 type HomeMetrics = {
   visits: number | null;
   now: string;
-  weather: {
-    temperature: number;
-    label_ar: string;
-    label_en: string;
-  } | null;
+  weather: WeatherPayload | null;
 };
+
 
 /**
  * Homepage "heritage gallery" preview: a handful of images from one
