@@ -117,4 +117,5 @@
 - [ ] Add six committee-specific request options in the Requests Hub and store the selected committee with submissions.
 - [ ] Add admin filtering/search visibility for committee requests.
 - [ ] Replace the homepage licence/date/fund card area with visit count, current date, and Eastern Province weather.
+- [ ] Apply the confirmed wording: homepage CTA points to Requests Hub, request workflow says “Send a Request”, and committee requests are dedicated.
 - [ ] Verify homepage and all six committee request flows on desktop and mobile.

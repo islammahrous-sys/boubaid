@@ -307,9 +307,51 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     const { createPublicServerClient } = await import("./supabase-public.server");
     const supabase = createPublicServerClient();
 
-    const { COUNCIL_REQUESTS } = await import("./council-requests");
+    const { COUNCIL_REQUESTS, COMMITTEE_REQUEST_DESTINATIONS } = await import(
+      "./council-requests"
+    );
     const def: import("./council-requests").CouncilRequestDef = COUNCIL_REQUESTS[data.type];
     if (def.retired) return { ok: false, error: "request_retired" };
+
+    let committeeMeta: {
+      slug: string;
+      name_ar: string;
+      name_en: string | null;
+    } | null = null;
+    if (def.committeeSlug) {
+      const fallback = COMMITTEE_REQUEST_DESTINATIONS.find((c) => c.slug === def.committeeSlug);
+      const { data: committee, error: committeeError } = await supabase
+        .from("council_committees")
+        .select("slug, name_ar, name_en")
+        .eq("slug", def.committeeSlug)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (committeeError) {
+        console.error(
+          `[council_request_${data.type}] committee lookup failed`,
+          committeeError.code,
+          committeeError.message,
+        );
+        return { ok: false, error: "committee_missing" };
+      }
+
+      committeeMeta = committee
+        ? {
+            slug: committee.slug,
+            name_ar: committee.name_ar,
+            name_en: committee.name_en,
+          }
+        : fallback
+          ? {
+              slug: fallback.slug,
+              name_ar: fallback.name.ar,
+              name_en: fallback.name.en,
+            }
+          : null;
+
+      if (!committeeMeta) return { ok: false, error: "committee_missing" };
+    }
 
     // Template-specific answers: keep only declared fields, and require the
     // ones the template cannot be produced without.
@@ -343,6 +385,16 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     // Unique, quotable reference number for the submission.
     const stamp = new Date().toISOString().slice(2, 10).replace(/-/g, "");
     const referenceNumber = `ABF-REQ-${stamp}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+    const requestMetadata: Record<string, string> = {
+      reference: referenceNumber,
+      request_type: data.type,
+    };
+    if (def.templateCode) requestMetadata.template_code = def.templateCode;
+    if (committeeMeta) {
+      requestMetadata.committee_slug = committeeMeta.slug;
+      requestMetadata.committee_name_ar = committeeMeta.name_ar;
+      if (committeeMeta.name_en) requestMetadata.committee_name_en = committeeMeta.name_en;
+    }
 
     // Supporting photographs or documents live in the private documents bucket.
     const storedAttachments: string[] = [];
@@ -382,6 +434,7 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     const message = [
       `رقم الطلب: ${referenceNumber}`,
       templateLine,
+      committeeMeta ? `اللجنة المختصة: ${committeeMeta.name_ar}` : null,
       `${def.topic.ar}: ${data.topic}`,
       data.branch ? `الفرع: ${data.branch}` : null,
       ...answers.map((a) => `${a.label}: ${a.value}`),
@@ -408,6 +461,7 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
       message,
       source: data.type,
       status: "new",
+      request_metadata: requestMetadata,
     });
 
     if (error) {

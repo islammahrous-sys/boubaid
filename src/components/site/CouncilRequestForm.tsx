@@ -9,7 +9,11 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { submitCouncilRequest } from "@/lib/forms.functions";
 import type { CouncilRequestType } from "@/lib/forms.schemas";
-import { COUNCIL_REQUESTS, type CouncilRequestDef } from "@/lib/council-requests";
+import {
+  COMMITTEE_REQUEST_DESTINATIONS,
+  COUNCIL_REQUESTS,
+  type CouncilRequestDef,
+} from "@/lib/council-requests";
 
 /**
  * Shared submission form for every Requests Hub request type. All of them
@@ -36,7 +40,8 @@ const copy = {
     en: "Attachments (photo or document — up to 3 files)",
   } as BiText,
   templateLabel: { ar: "القالب الرسمي المرتبط", en: "Linked official template" } as BiText,
-  submit: { ar: "إرسال الطلب", en: "Submit request" } as BiText,
+  committeeLabel: { ar: "اللجنة المختصة", en: "Destination committee" } as BiText,
+  submit: { ar: "إرسال الطلب", en: "Send a Request" } as BiText,
   sending: { ar: "جارٍ الإرسال…", en: "Sending…" } as BiText,
   success: {
     ar: "تم استلام طلبك، وستتم مراجعته من الأمانة العامة.",
@@ -97,6 +102,9 @@ export function CouncilRequestForm({
   if (!type) return null;
   const field = FIELDS[type]!;
   const extraFields = field.fields ?? [];
+  const selectedCommittee = field.committeeSlug
+    ? COMMITTEE_REQUEST_DESTINATIONS.find((committee) => committee.slug === field.committeeSlug)
+    : null;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -168,6 +176,15 @@ export function CouncilRequestForm({
           <p className="-mt-2 text-start text-[11.5px] text-muted-foreground">
             {t(copy.templateLabel)}:{" "}
             <span className="font-mono text-bronze dark:text-gold">{field.templateCode}</span>
+          </p>
+        ) : null}
+
+        {selectedCommittee ? (
+          <p className="-mt-2 text-start text-[11.5px] text-muted-foreground">
+            {t(copy.committeeLabel)}: {" "}
+            <span className="font-semibold text-bronze dark:text-gold">
+              {t(selectedCommittee.name)}
+            </span>
           </p>
         ) : null}
 

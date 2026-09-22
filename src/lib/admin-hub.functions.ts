@@ -74,6 +74,7 @@ export const paginationSchema = z.object({
   // non-integer page offset) through the admin list endpoints.
   search: z.string().trim().max(120).optional(),
   status: z.string().trim().max(40).optional(),
+  committeeSlug: z.string().trim().max(80).optional(),
 });
 
 /* =========================================================================
@@ -1434,6 +1435,8 @@ export const getInquiriesPaginated = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { page, pageSize, search, status } = data;
+    const committeeSlug =
+      data.committeeSlug && /^[a-z0-9-]+$/.test(data.committeeSlug) ? data.committeeSlug : "";
 
     // There is no SQL view for the inquiries + contact_messages union, so the
     // two are merged, sorted and sliced here. The search term is pushed down to
@@ -1454,14 +1457,24 @@ export const getInquiriesPaginated = createServerFn({ method: "POST" })
       .order("created_at", { ascending: false })
       .limit(MAX_ROWS_PER_SOURCE);
 
-    if (cleanSearch) {
-      const term = `%${cleanSearch}%`;
-      const orFilter = `name.ilike.${term},email.ilike.${term},subject.ilike.${term}`;
-      inquiriesQuery = inquiriesQuery.or(orFilter);
-      contactQuery = contactQuery.or(orFilter);
+    if (committeeSlug) {
+      inquiriesQuery = inquiriesQuery.contains("request_metadata", { committee_slug: committeeSlug });
     }
 
-    const [inqRes, contactRes] = await Promise.all([inquiriesQuery, contactQuery]);
+    if (cleanSearch) {
+      const term = `%${cleanSearch}%`;
+      inquiriesQuery = inquiriesQuery.or(
+        `name.ilike.${term},email.ilike.${term},subject.ilike.${term},message.ilike.${term},source.ilike.${term}`,
+      );
+      contactQuery = contactQuery.or(
+        `name.ilike.${term},email.ilike.${term},subject.ilike.${term},message.ilike.${term}`,
+      );
+    }
+
+    const [inqRes, contactRes] = await Promise.all([
+      inquiriesQuery,
+      committeeSlug ? Promise.resolve({ data: [], error: null }) : contactQuery,
+    ]);
 
     let all = [
       ...unwrapRows(inqRes, "الاستفسارات / inquiries").map((i) => ({

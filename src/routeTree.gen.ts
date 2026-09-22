@@ -45,6 +45,7 @@ import { Route as AuthenticatedContentRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as LibraryMuseumSlugRouteImport } from './routes/library.museum.$slug'
+import { Route as ApiPublicSiteVisitRouteImport } from './routes/api/public/site-visit'
 import { Route as ApiPublicFundDocRouteImport } from './routes/api/public/fund-doc'
 import { Route as ApiPublicCommitteeDocRouteImport } from './routes/api/public/committee-doc'
 
@@ -227,6 +228,11 @@ const LibraryMuseumSlugRoute = LibraryMuseumSlugRouteImport.update({
   path: '/museum/$slug',
   getParentRoute: () => LibraryRoute,
 } as any)
+const ApiPublicSiteVisitRoute = ApiPublicSiteVisitRouteImport.update({
+  id: '/api/public/site-visit',
+  path: '/api/public/site-visit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicFundDocRoute = ApiPublicFundDocRouteImport.update({
   id: '/api/public/fund-doc',
   path: '/api/public/fund-doc',
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/p/$slug': typeof PSlugRoute
   '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
+  '/api/public/site-visit': typeof ApiPublicSiteVisitRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRoutesByTo {
@@ -314,6 +321,7 @@ export interface FileRoutesByTo {
   '/p/$slug': typeof PSlugRoute
   '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
+  '/api/public/site-visit': typeof ApiPublicSiteVisitRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRoutesById {
@@ -355,6 +363,7 @@ export interface FileRoutesById {
   '/p/$slug': typeof PSlugRoute
   '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
+  '/api/public/site-visit': typeof ApiPublicSiteVisitRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
 export interface FileRouteTypes {
@@ -396,6 +405,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/api/public/committee-doc'
     | '/api/public/fund-doc'
+    | '/api/public/site-visit'
     | '/library/museum/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -435,6 +445,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/api/public/committee-doc'
     | '/api/public/fund-doc'
+    | '/api/public/site-visit'
     | '/library/museum/$slug'
   id:
     | '__root__'
@@ -475,6 +486,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/api/public/committee-doc'
     | '/api/public/fund-doc'
+    | '/api/public/site-visit'
     | '/library/museum/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -510,6 +522,7 @@ export interface RootRouteChildren {
   PSlugRoute: typeof PSlugRoute
   ApiPublicCommitteeDocRoute: typeof ApiPublicCommitteeDocRoute
   ApiPublicFundDocRoute: typeof ApiPublicFundDocRoute
+  ApiPublicSiteVisitRoute: typeof ApiPublicSiteVisitRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -766,6 +779,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LibraryMuseumSlugRouteImport
       parentRoute: typeof LibraryRoute
     }
+    '/api/public/site-visit': {
+      id: '/api/public/site-visit'
+      path: '/api/public/site-visit'
+      fullPath: '/api/public/site-visit'
+      preLoaderRoute: typeof ApiPublicSiteVisitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/fund-doc': {
       id: '/api/public/fund-doc'
       path: '/api/public/fund-doc'
@@ -865,6 +885,7 @@ const rootRouteChildren: RootRouteChildren = {
   PSlugRoute: PSlugRoute,
   ApiPublicCommitteeDocRoute: ApiPublicCommitteeDocRoute,
   ApiPublicFundDocRoute: ApiPublicFundDocRoute,
+  ApiPublicSiteVisitRoute: ApiPublicSiteVisitRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
