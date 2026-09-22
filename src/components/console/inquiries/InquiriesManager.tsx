@@ -645,10 +645,16 @@ export function InquiriesManager({
                   </div>
                 ) : null}
 
-                {/* Message Body */}
+                {/* Message / request body */}
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-2">
-                    {isAr ? "نص الرسالة" : "Message Body"}
+                    {selectedInquiry.source_table === "inquiries"
+                      ? isAr
+                        ? "تفاصيل الطلب"
+                        : "Request Details"
+                      : isAr
+                        ? "نص الرسالة"
+                        : "Message Body"}
                   </span>
                   <div className="p-4 bg-card border border-border rounded-xl">
                     <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">

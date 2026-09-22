@@ -1,6 +1,5 @@
 import { createFileRoute, getRouteApi, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import type { ComponentType } from "react";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -11,6 +10,7 @@ import {
   Eye,
   Inbox,
   Archive,
+  type LucideIcon,
 } from "lucide-react";
 import { formatContentDate } from "@/lib/text";
 import { formatDualDate } from "@/lib/dates";
@@ -525,27 +525,32 @@ function HomePage() {
                   {(
                     [
                       {
-                          label: copy.visitCount,
-                          value: visitValue,
+                        label: copy.visitCount,
+                        value: visitValue,
                         mono: true,
                         link: null,
-                          icon: Eye,
+                        icon: Eye,
                       },
                       {
-                          label: copy.todayDate,
-                          value: todayValue,
+                        label: copy.todayDate,
+                        value: todayValue,
                         mono: false,
                         link: null,
-                          icon: CalendarDays,
+                        icon: CalendarDays,
                       },
-                        {
-                          label: copy.easternWeather,
-                          value: weatherValue,
-                          mono: false,
-                          link: null,
-                          icon: CloudSun,
-                        },
-                        { label: copy.quickRequests, link: "/requests", hash: "committee-requests", icon: Inbox },
+                      {
+                        label: copy.easternWeather,
+                        value: weatherValue,
+                        mono: false,
+                        link: null,
+                        icon: CloudSun,
+                      },
+                      {
+                        label: copy.quickRequests,
+                        link: "/requests",
+                        hash: "committee-requests",
+                        icon: Inbox,
+                      },
                       { label: copy.quickArchive, link: "/library", icon: Archive },
                     ] as {
                       label: BiText;
@@ -553,7 +558,7 @@ function HomePage() {
                       mono?: boolean;
                       link: string | null;
                       hash?: string;
-                      icon: ComponentType<{ className?: string }> | null;
+                      icon: LucideIcon | null;
                     }[]
                   ).map((item, i) => {
                     const Icon = item.icon;
