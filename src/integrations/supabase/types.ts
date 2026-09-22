@@ -770,6 +770,45 @@ export type Database = {
         }
         Relationships: []
       }
+      council_committees: {
+        Row: {
+          created_at: string
+          description_ar: string | null
+          description_en: string | null
+          id: string
+          is_active: boolean
+          name_ar: string
+          name_en: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          is_active?: boolean
+          name_ar: string
+          name_en?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          is_active?: boolean
+          name_ar?: string
+          name_en?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           category: string
@@ -1452,6 +1491,7 @@ export type Database = {
           message: string
           name: string
           phone: string | null
+          request_metadata: Json
           source: string
           status: string
           subject: string | null
@@ -1465,6 +1505,7 @@ export type Database = {
           message: string
           name: string
           phone?: string | null
+          request_metadata?: Json
           source?: string
           status?: string
           subject?: string | null
@@ -1478,6 +1519,7 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+          request_metadata?: Json
           source?: string
           status?: string
           subject?: string | null
