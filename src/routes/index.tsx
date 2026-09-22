@@ -702,6 +702,23 @@ function HomePage() {
                             {item.value}
                           </dd>
                         ) : null}
+                        {item.detail ? (
+                          <dd className="nums mt-0.5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-medium text-ivory/70 sm:text-[11px]">
+                            {item.detail}
+                          </dd>
+                        ) : null}
+                        {item.retry ? (
+                          <dd className="mt-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setMetricsNonce((n) => n + 1)}
+                              className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10px] font-semibold leading-none text-gold transition-colors hover:border-gold/70 hover:bg-gold/20 sm:text-[11px]"
+                            >
+                              {t(copy.weatherRetry)}
+                            </button>
+                          </dd>
+                        ) : null}
+
                       </div>
                     );
 
