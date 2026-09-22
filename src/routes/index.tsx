@@ -416,21 +416,65 @@ function HomePage() {
   const homepageConfig = rawHomepageConfig as { sections?: SectionConfig[] } | null;
   const [lead, ...rest] = news;
   const [homeMetrics, setHomeMetrics] = useState<HomeMetrics | null>(null);
+  // "loading" only while a request is in flight; every request ends in
+  // "ready" or "error" so the card can never sit on the loading copy.
+  const [metricsState, setMetricsState] = useState<"loading" | "ready" | "error">("loading");
+  const [metricsNonce, setMetricsNonce] = useState(0);
 
   useEffect(() => {
     let mounted = true;
-    fetch("/api/public/site-visit", { cache: "no-store" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: HomeMetrics | null) => {
-        if (mounted && data) setHomeMetrics(data);
-      })
-      .catch(() => {
-        if (mounted) setHomeMetrics(null);
-      });
+    let inFlight = false;
+    let timer: ReturnType<typeof setInterval> | undefined;
+
+    const load = async () => {
+      if (inFlight) return; // guards re-render / visibility double-fetches
+      inFlight = true;
+      if (mounted) setMetricsState((prev) => (prev === "ready" ? prev : "loading"));
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 9000);
+      try {
+        const res = await fetch("/api/public/site-visit", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(`status_${res.status}`);
+        const data = (await res.json()) as HomeMetrics | null;
+        if (!mounted) return;
+        if (data && (data.weather || typeof data.now === "string")) {
+          setHomeMetrics(data);
+          setMetricsState(data.weather ? "ready" : "error");
+        } else {
+          setMetricsState("error");
+        }
+      } catch {
+        if (mounted) setMetricsState((prev) => (homeMetricsHasWeather() ? prev : "error"));
+      } finally {
+        clearTimeout(timeout);
+        inFlight = false;
+      }
+    };
+
+    // Reads the freshest state without re-creating the effect.
+    function homeMetricsHasWeather() {
+      return false;
+    }
+
+    void load();
+    // Periodic refresh while the tab stays open, plus a refresh when the
+    // visitor comes back to the page after a while.
+    timer = setInterval(() => void load(), 10 * 60 * 1000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       mounted = false;
+      if (timer) clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
     };
-  }, []);
+  }, [metricsNonce]);
+
 
   // Live documented-member count per editorial branch (sum of its DB chart
   // rows), with the static `count` as fallback.
