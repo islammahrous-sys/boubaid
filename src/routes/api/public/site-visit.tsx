@@ -175,7 +175,7 @@ export const Route = createFileRoute("/api/public/site-visit")({
         const response = Response.json({
           visits,
           now: new Date().toISOString(),
-          weather: await getEasternProvinceWeather(),
+          weather: await getAlAhsaWeather(),
         });
 
         if (visitKey !== existingKey) {
