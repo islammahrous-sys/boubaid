@@ -246,10 +246,15 @@ const copy = {
   visitCount: { ar: "عدد الزيارات", en: "Visits" } as BiText,
   todayDate: { ar: "تاريخ اليوم", en: "Today" } as BiText,
   easternWeather: {
-    ar: "المنطقة الشرقية، المملكة العربية السعودية",
-    en: "Eastern Province, Saudi Arabia",
+    ar: "الطقس — الأحساء",
+    en: "Weather — Al Ahsa",
   } as BiText,
   weatherUpdating: { ar: "جارٍ تحديث الطقس", en: "Updating weather" } as BiText,
+  weatherFailed: { ar: "تعذر تحديث الطقس حالياً", en: "Weather unavailable right now" } as BiText,
+  weatherRetry: { ar: "إعادة المحاولة", en: "Retry" } as BiText,
+  weatherHigh: { ar: "العظمى", en: "High" } as BiText,
+  weatherLow: { ar: "الصغرى", en: "Low" } as BiText,
+
   quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
   quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
   quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
