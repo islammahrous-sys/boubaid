@@ -112,3 +112,9 @@
 - [x] Update committee text and names to the official six-committee source.
 - [x] Add the supplied editable committee organizational-charts PPTX under Visual Identity.
 - [x] Remove the Awaser name from the homepage in Arabic and English.
+## 2026-09 — Homepage dynamic cards and committee requests
+- [ ] Replace the homepage committee-contact CTA and route it to committee requests.
+- [ ] Add six committee-specific request options in the Requests Hub and store the selected committee with submissions.
+- [ ] Add admin filtering/search visibility for committee requests.
+- [ ] Replace the homepage licence/date/fund card area with visit count, current date, and Eastern Province weather.
+- [ ] Verify homepage and all six committee request flows on desktop and mobile.
