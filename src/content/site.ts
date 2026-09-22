@@ -655,7 +655,7 @@ export const boardTerm = {
  * The fund's ten founders, per the current bylaws (Article II). Four of the
  * ten (Hussein bin Abdullah, Khaled bin Yousef, Abdulrahman bin Abdulaziz,
  * and Abdullah bin Saud) also sit on the Board of Trustees — see
- * `boardOfTrustees` — while the remaining six lead the five standing
+ * `boardOfTrustees` — while the remaining six lead the six executive
  * committees. National IDs and phone numbers on file are not published here.
  */
 export const foundingMembers = [
