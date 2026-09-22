@@ -693,69 +693,93 @@ export const ceoRequirement = {
 
 export const committees = [
   {
-    id: "comm",
+    id: "development-followup",
     name: {
-      ar: "لجنة التواصل والخدمة الاجتماعية",
-      en: "Communication & Social Services Committee",
+      ar: "لجنة التطوير والمتابعة",
+      en: "Development and Follow-up Committee",
     } as BiText,
     desc: {
-      ar: "تتولى تنظيم الملتقيات السنوية، متابعة المناسبات الأهلية، وتقديم الدعم الاجتماعي والتكافل بين أبناء الأسرة.",
-      en: "Organizes annual assemblies, monitors family occasions, and provides social solidarity support.",
+      ar: "تتابع أعمال اللجان التنفيذية ومؤشرات التقدم، وترفع التوصيات التطويرية إلى رئيس مجلس الأسرة.",
+      en: "Follows up on executive committee work and progress indicators, and submits development recommendations to the Council Chair.",
     } as BiText,
     lead: {
-      ar: "الأستاذ عبدالله بن عبدالعزيز بن عبدالرحمن بوعبيد",
-      en: "Mr. Abdullah bin Abdulaziz bin Abdulrahman Bu Obaid",
+      ar: "الدكتور خالد بن يوسف بن أحمد",
+      en: "Dr. Khalid bin Yusuf bin Ahmed",
     } as BiText,
   },
   {
-    id: "finance",
-    name: { ar: "لجنة الشؤون المالية والادخار", en: "Finance & Endowment Committee" } as BiText,
-    desc: {
-      ar: "تُشرف على الميزانية المعتمدة، الاشتراكات الشهرية، الحسابات المستقلة للزكاة والصُّندُوق، والتخطيط الاستثماري الوقفي.",
-      en: "Oversees the approved budget, monthly subscriptions, dedicated zakat accounts, and endowment planning.",
-    } as BiText,
-    lead: {
-      ar: "الأستاذ عبدالرحمن بن صالح بن علي بوعبيد",
-      en: "Mr. Abdulrahman bin Salih bin Ali Bu Obaid",
-    } as BiText,
-  },
-  {
-    id: "hq",
+    id: "hq-affairs",
     name: {
-      ar: "لجنة المقر والتطوير العقاري",
-      en: "Headquarters & Real Estate Committee",
+      ar: "لجنة شؤون مقر مجلس الأسرة",
+      en: "Family Council Headquarters Affairs Committee",
     } as BiText,
     desc: {
-      ar: "مسؤولة عن متابعة أرض مشروع المقر الدائم بحي الحزام الذهبي بالمبرز، والتصاميم الهندسية ومراحل الإنشاء والتطوير.",
-      en: "Responsible for managing the headquarters land project in Al-Hizam Al-Dhahabi district, engineering designs, and construction.",
+      ar: "تُعنى بشؤون مقر مجلس الأسرة واحتياجاته التشغيلية والتنظيمية، ومتابعة ما يرتبط بالمقر من أعمال.",
+      en: "Oversees the Family Council headquarters, its operational and organisational needs, and related follow-up work.",
     } as BiText,
     lead: {
-      ar: "الأستاذ رياض بن عبدالعزيز بن أحمد بوعبيد",
-      en: "Mr. Riyadh bin Abdulaziz bin Ahmed Bu Obaid",
+      ar: "الأستاذ سعد بن عبدالرحمن بن علي",
+      en: "Mr. Saad bin Abdulrahman bin Ali",
     } as BiText,
   },
   {
-    id: "activities",
-    name: { ar: "لجنة الأنشطة والبرامج", en: "Activities & Youth Programs Committee" } as BiText,
+    id: "finance-investment",
+    name: {
+      ar: "اللجنة المالية والاستثمارية",
+      en: "Finance and Investment Committee",
+    } as BiText,
     desc: {
-      ar: "تنظم جائزة التفوق العلمي، مسابقة رمضان الثقافية عبر واتساب، الدورات التدريبية للشباب واللقاءات الرياضية.",
-      en: "Organizes the Academic Excellence Award, Ramadan WhatsApp quiz, youth skills workshops, and sports events.",
+      ar: "تختص بالشؤون المالية والاستثمارية، ومتابعة الموارد والالتزامات وفق الأطر المعتمدة من مجلس الأسرة.",
+      en: "Handles financial and investment affairs, and monitors resources and obligations under the Council's approved framework.",
     } as BiText,
     lead: {
-      ar: "الأستاذ صالح بن عبدالعزيز بن عبدالله بوعبيد",
-      en: "Mr. Saleh bin Abdulaziz bin Abdullah Bu Obaid",
+      ar: "الأستاذ حسين عبدالله بن حسين",
+      en: "Mr. Hussein Abdullah bin Hussein",
     } as BiText,
   },
   {
-    id: "media",
-    name: { ar: "اللجنة الإعلامية والتوثيق", en: "Media & Documentation Committee" } as BiText,
+    id: "family-communication",
+    name: {
+      ar: "لجنة التواصل الأسري",
+      en: "Family Communication Committee",
+    } as BiText,
     desc: {
-      ar: "إدارة البوابة الرقمية، حسابات التواصل الاجتماعي، التوثيق التاريخي والجيني، وتصميم إصدارات الأسرة.",
-      en: "Manages the web platform, official social channels, historical/DNA archives, and family publications.",
+      ar: "تعزز التواصل بين أفراد الأسرة وفروعها، وتتابع المبادرات التي تخدم صلة الرحم والتواصل الاجتماعي.",
+      en: "Strengthens communication among family members and branches, and follows initiatives that support kinship and social connection.",
     } as BiText,
     lead: {
-      ar: "الأستاذ عامر بن أحمد بن إبراهيم بوعبيد",
-      en: "Mr. Amer bin Ahmed bin Ibrahim Bu Obaid",
+      ar: "الأستاذ عبدالرحمن بن عبدالعزيز بن عبدالرحمن",
+      en: "Mr. Abdulrahman bin Abdulaziz bin Abdulrahman",
+    } as BiText,
+  },
+  {
+    id: "activities-initiatives",
+    name: {
+      ar: "لجنة الأنشطة والمبادرات",
+      en: "Activities and Initiatives Committee",
+    } as BiText,
+    desc: {
+      ar: "تنظم الأنشطة والمبادرات الأسرية، وتدير برامج التكريم والمسابقات واللقاءات الموجهة لأبناء الأسرة.",
+      en: "Organises family activities and initiatives, including recognition programmes, competitions, and gatherings for family members.",
+    } as BiText,
+    lead: {
+      ar: "الأستاذ عبدالرؤوف بن أحمد بن عبدالله",
+      en: "Mr. Abdulraouf bin Ahmed bin Abdullah",
+    } as BiText,
+  },
+  {
+    id: "media-support",
+    name: {
+      ar: "لجنة الإعلام والخدمات المساندة",
+      en: "Media and Support Services Committee",
+    } as BiText,
+    desc: {
+      ar: "تتولى الإعلام الرسمي والخدمات المساندة، وإبراز أعمال المجلس ولجانه عبر القنوات المعتمدة.",
+      en: "Oversees official media and support services, and presents the work of the Council and its committees through approved channels.",
+    } as BiText,
+    lead: {
+      ar: "الأستاذ عبدالعزيز بن سعود بن عبدالعزيز بن عبدالله",
+      en: "Mr. Abdulaziz bin Saud bin Abdulaziz bin Abdullah",
     } as BiText,
   },
 ];

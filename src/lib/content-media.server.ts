@@ -92,7 +92,15 @@ const ALLOWED_IMAGE_TYPES = new Set([
   "image/gif",
   "image/svg+xml",
 ]);
-const ALLOWED_DOCUMENT_TYPES = new Set(["application/pdf"]);
+const ALLOWED_DOCUMENT_TYPES = new Set([
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel",
+]);
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024; // 25 MB
 

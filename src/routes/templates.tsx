@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Download, Eye, FileArchive, FileText, Image as ImageIcon, Palette, Type } from "lucide-react";
+import { Download, Eye, FileArchive, FileText, Image as ImageIcon, Palette, Presentation, Type } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { getPublishedLibrary } from "@/lib/cms.functions";
@@ -121,6 +121,10 @@ const copy = {
   } as BiText,
   assetsTitle: { ar: "أصول الهوية البصرية", en: "Visual Identity Assets" } as BiText,
   paletteTitle: { ar: "الألوان والطباعة", en: "Colour and Typography" } as BiText,
+  committeeChartsTitle: {
+    ar: "Edttable Committees Organization charts",
+    en: "Edttable Committees Organization charts",
+  } as BiText,
   view: { ar: "عرض الملف", en: "View Document" } as BiText,
   open: { ar: "فتح الملف", en: "Open File" } as BiText,
   download: { ar: "تحميل الملف", en: "Download File" } as BiText,
@@ -256,6 +260,7 @@ function TemplatesPage() {
               labels={{
                 assetsTitle: t(copy.assetsTitle),
                 paletteTitle: t(copy.paletteTitle),
+                committeeChartsTitle: t(copy.committeeChartsTitle),
                 view: t(copy.view),
                 open: t(copy.open),
                 download: t(copy.download),
@@ -319,6 +324,7 @@ function VisualIdentityLibrary({
   labels: {
     assetsTitle: string;
     paletteTitle: string;
+    committeeChartsTitle: string;
     view: string;
     open: string;
     download: string;
@@ -336,6 +342,9 @@ function VisualIdentityLibrary({
   const paletteRecords = records.filter((r) => isPaletteRecord(r.item.reference));
   const assetRecords = records.filter(
     (r) => r.item.reference?.startsWith("VI-ASSET-") && r.href,
+  );
+  const committeeEditableRecords = records.filter(
+    (r) => r.item.reference?.startsWith("COMM-ORG-PPTX-") && r.href,
   );
 
   return (
@@ -370,6 +379,25 @@ function VisualIdentityLibrary({
           <h3 className="text-[15px] font-semibold text-foreground">{labels.assetsTitle}</h3>
           <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {assetRecords.map((record) => (
+              <VisualIdentityCard
+                key={record.item.id}
+                record={record}
+                compact
+                labels={labels}
+                onView={onView}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {committeeEditableRecords.length > 0 ? (
+        <div>
+          <h3 className="text-[15px] font-semibold text-foreground">
+            {labels.committeeChartsTitle}
+          </h3>
+          <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {committeeEditableRecords.map((record) => (
               <VisualIdentityCard
                 key={record.item.id}
                 record={record}
@@ -429,6 +457,8 @@ function VisualIdentityCard({
     ? FileText
     : isImage
       ? ImageIcon
+      : rawType === "PPTX"
+        ? Presentation
       : rawType === "FONT"
         ? Type
         : rawType === "CSS"

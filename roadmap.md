@@ -106,3 +106,9 @@
 - [x] Enlarged the official calligraphic family mark in the homepage opening area using the existing vector artwork.
 - [x] Renamed the homepage platform to «أواصر | Awaser» and added the supplied bilingual primary tagline and full descriptor.
 - [x] Kept the homepage structure, imagery, navigation, calls to action and visual identity unchanged.
+
+## Committee organizational charts + homepage name removal (Sep 2026) — in progress
+- [ ] Add the supplied master and six committee organizational-chart images to the existing Committees page, with View and Download actions.
+- [ ] Update committee text and names to the official six-committee source.
+- [ ] Add the supplied editable committee organizational-charts PPTX under Visual Identity.
+- [ ] Remove the Awaser name from the homepage in Arabic and English.

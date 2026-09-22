@@ -204,6 +204,9 @@ export function LibraryItemsManager({
               <SelectItem value="collaterals">
                 {isAr ? "المواد التعريفية" : "Collaterals"}
               </SelectItem>
+              <SelectItem value="committee_charts">
+                {isAr ? "المخططات التنظيمية للجان" : "Committee org charts"}
+              </SelectItem>
               <SelectItem value="videos">{isAr ? "الفيديوهات" : "Videos"}</SelectItem>
               <SelectItem value="financials">
                 {isAr ? "القوائم المالية وكشوف الحسابات" : "Financial statements"}
@@ -362,6 +365,9 @@ export function LibraryItemsManager({
                     <SelectItem value="collaterals">
                       {isAr ? "المواد التعريفية (Collaterals)" : "Collaterals"}
                     </SelectItem>
+                    <SelectItem value="committee_charts">
+                      {isAr ? "المخططات التنظيمية للجان" : "Committee org charts"}
+                    </SelectItem>
                     <SelectItem value="videos">
                       {isAr ? "الفيديوهات (Videos)" : "Videos"}
                     </SelectItem>
@@ -491,10 +497,14 @@ export function LibraryItemsManager({
                 document URL must never be written into `external_url`. */}
             <div className="space-y-1 pt-1 border-t border-border">
               <Label className="text-xs font-semibold">
-                {form.collection === "collaterals"
+                  {form.collection === "collaterals"
                   ? isAr
                     ? "المستند الأصلي القابل للتحرير (Word / PowerPoint / Excel / PDF) *"
                     : "Original editable document (Word / PowerPoint / Excel / PDF) *"
+                    : form.collection === "committee_charts"
+                      ? isAr
+                        ? "صورة المخطط التنظيمي (PNG / JPG) *"
+                        : "Organisational chart image (PNG / JPG) *"
                   : isAr
                     ? "الملف / الصورة / الوثيقة المرفقة (PDF / صور)"
                     : "Attached File / PDF Document / Photo"}
