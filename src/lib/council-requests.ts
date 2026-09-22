@@ -34,6 +34,8 @@ export type CouncilRequestDef = {
   fields?: CouncilRequestField[];
   /** Accepts supporting photographs or documents. */
   allowAttachments?: boolean;
+  /** Official committee destination for committee-addressed requests. */
+  committeeSlug?: (typeof COMMITTEE_REQUEST_DESTINATIONS)[number]["slug"];
   /**
    * Legacy definition replaced by a template-linked request. Kept in the enum so
    * historical submissions filed under this `source` stay readable in the
@@ -57,6 +59,79 @@ const dateField = (ar: string, en: string, name = "date"): CouncilRequestField =
   required: true,
 });
 
+export const COMMITTEE_REQUEST_DESTINATIONS = [
+  {
+    slug: "development-follow-up",
+    requestType: "committee_development_follow_up",
+    name: { ar: "لجنة التطوير والمتابعة", en: "Development & Follow-up Committee" },
+    desc: {
+      ar: "طلبات التطوير المؤسسي والمتابعة وتحسين مسارات العمل في مجلس الأسرة.",
+      en: "Requests about institutional development, follow-up, and improving council workflows.",
+    },
+  },
+  {
+    slug: "family-headquarters",
+    requestType: "committee_family_headquarters",
+    name: { ar: "لجنة شؤون مقر مجلس الأسرة", en: "Family Council Headquarters Committee" },
+    desc: {
+      ar: "طلبات استخدام المقر، مرافقه، احتياجاته، وتنظيم شؤونه التشغيلية.",
+      en: "Requests about headquarters use, facilities, needs, and operational matters.",
+    },
+  },
+  {
+    slug: "finance-investment",
+    requestType: "committee_finance_investment",
+    name: { ar: "اللجنة المالية والاستثمارية", en: "Finance & Investment Committee" },
+    desc: {
+      ar: "طلبات الاشتراكات، الدعم، المقترحات المالية، وفرص تنمية موارد الأسرة.",
+      en: "Requests about contributions, support, financial proposals, and resource development.",
+    },
+  },
+  {
+    slug: "family-communication",
+    requestType: "committee_family_communication",
+    name: { ar: "لجنة التواصل الأسري", en: "Family Communication Committee" },
+    desc: {
+      ar: "طلبات التواصل بين الفروع، تحديث البيانات، وصلة الرحم والمناسبات الأسرية.",
+      en: "Requests about branch communication, data updates, kinship, and family occasions.",
+    },
+  },
+  {
+    slug: "activities-initiatives",
+    requestType: "committee_activities_initiatives",
+    name: { ar: "لجنة الأنشطة والمبادرات", en: "Activities & Initiatives Committee" },
+    desc: {
+      ar: "طلبات الفعاليات، المبادرات، البرامج، والمسابقات التي تخدم أبناء الأسرة.",
+      en: "Requests about events, initiatives, programmes, and competitions for the family.",
+    },
+  },
+  {
+    slug: "media-support-services",
+    requestType: "committee_media_support_services",
+    name: { ar: "لجنة الإعلام والخدمات المساندة", en: "Media & Support Services Committee" },
+    desc: {
+      ar: "طلبات النشر، التغطية الإعلامية، التصاميم، والخدمات التقنية أو المساندة.",
+      en: "Requests about publishing, media coverage, design, and technical or support services.",
+    },
+  },
+] as const satisfies readonly {
+  slug: string;
+  requestType: string;
+  name: BiText;
+  desc: BiText;
+}[];
+
+const committeeRequest = (
+  committee: (typeof COMMITTEE_REQUEST_DESTINATIONS)[number],
+): CouncilRequestDef => ({
+  title: committee.name,
+  desc: committee.desc,
+  topic: { ar: "موضوع الطلب", en: "Request subject" },
+  details: { ar: "تفاصيل الطلب والمساعدة المطلوبة", en: "Request details and assistance needed" },
+  committeeSlug: committee.slug,
+  allowAttachments: true,
+});
+
 export const COUNCIL_REQUESTS = {
   committee_nomination: {
     title: {
@@ -66,6 +141,12 @@ export const COUNCIL_REQUESTS = {
     topic: { ar: "اللجنة المطلوبة", en: "Requested committee" },
     details: { ar: "المؤهلات وأسباب الترشيح", en: "Qualifications and reasons" },
   },
+  committee_development_follow_up: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[0]),
+  committee_family_headquarters: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[1]),
+  committee_finance_investment: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[2]),
+  committee_family_communication: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[3]),
+  committee_activities_initiatives: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[4]),
+  committee_media_support_services: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[5]),
   service_establishment: {
     title: { ar: "طلب إضافة خدمة – منشآت", en: "Add a service request – Establishments" },
     topic: { ar: "اسم المنشأة والخدمة", en: "Establishment and service name" },
