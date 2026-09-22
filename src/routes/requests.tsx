@@ -47,7 +47,11 @@ import { Eyebrow, Ornament } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
 import { CouncilRequestForm } from "@/components/site/CouncilRequestForm";
 import type { CouncilRequestType } from "@/lib/forms.schemas";
-import { COUNCIL_REQUESTS, TEMPLATE_REQUESTS } from "@/lib/council-requests";
+import {
+  COMMITTEE_REQUEST_DESTINATIONS,
+  COUNCIL_REQUESTS,
+  TEMPLATE_REQUESTS,
+} from "@/lib/council-requests";
 
 export const Route = createFileRoute("/requests")({
   /**
@@ -121,11 +125,16 @@ const copy = {
   ] as BiText[],
 
   action: { ar: "تقديم الطلب", en: "Submit request" } as BiText,
+  committeeIntro: {
+    ar: "اختر اللجنة المختصة حتى يصل الطلب مباشرة إلى مسار المتابعة المناسب.",
+    en: "Choose the relevant committee so your request reaches the correct review path directly.",
+  } as BiText,
   signInNote: { ar: "يتطلب تسجيل الدخول", en: "Requires sign-in" } as BiText,
 };
 
 type RequestGroup =
   | "membership"
+  | "committee_requests"
   | "services"
   | "tree"
   | "fund"
@@ -135,6 +144,10 @@ type RequestGroup =
 
 const groupTitles: Record<RequestGroup, BiText> = {
   membership: { ar: "العضوية والاشتراك", en: "Membership & subscription" },
+  committee_requests: {
+    ar: "طلبات لجان مجلس الأسرة",
+    en: "Family Council Committee Requests",
+  },
   services: { ar: "الخدمات ودليل الأعمال", en: "Services & business directory" },
   tree: { ar: "شجرة العائلة والأرشيف والتراث", en: "Family tree, archive & heritage" },
   fund: { ar: "صندوق التنمية والدعم", en: "Development fund & support" },
@@ -145,6 +158,7 @@ const groupTitles: Record<RequestGroup, BiText> = {
 
 const groupOrder: RequestGroup[] = [
   "membership",
+  "committee_requests",
   "services",
   "tree",
   "fund",
@@ -166,6 +180,18 @@ type RequestEntry = {
   requiresAuth?: boolean;
   /** Official template code, for the announcement requests linked to a template. */
   templateCode?: string;
+};
+
+const committeeIcons: Record<
+  (typeof COMMITTEE_REQUEST_DESTINATIONS)[number]["slug"],
+  ComponentType<{ className?: string }>
+> = {
+  "development-follow-up": ClipboardList,
+  "family-headquarters": Landmark,
+  "finance-investment": Banknote,
+  "family-communication": HeartHandshake,
+  "activities-initiatives": Sparkles,
+  "media-support-services": Megaphone,
 };
 
 /** Only request types that actually exist on this website. */
@@ -204,6 +230,17 @@ const requests: RequestEntry[] = [
       en: "Register a subscription or contribution to the family development fund and attach your payment notice for review.",
     },
   },
+
+  ...COMMITTEE_REQUEST_DESTINATIONS.map(
+    (committee): RequestEntry => ({
+      id: committee.slug,
+      group: "committee_requests",
+      form: committee.requestType as CouncilRequestType,
+      Icon: committeeIcons[committee.slug],
+      name: committee.name,
+      desc: committee.desc,
+    }),
+  ),
 
   {
     id: "directory",
@@ -650,10 +687,19 @@ function RequestsHubPage() {
             const items = requests.filter((r) => r.group === g);
             if (items.length === 0) return null;
             return (
-              <div key={g} className="mt-10">
+              <div
+                key={g}
+                id={g === "committee_requests" ? "committee-requests" : undefined}
+                className="mt-10 scroll-mt-28"
+              >
                 <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-bronze dark:text-gold">
                   {t(groupTitles[g])}
                 </h2>
+                {g === "committee_requests" ? (
+                  <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                    {t(copy.committeeIntro)}
+                  </p>
+                ) : null}
                 <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {items.map((r) => {
                     const Icon = r.Icon;
@@ -691,7 +737,7 @@ function RequestsHubPage() {
                             onClick={() => setActiveForm(r.form!)}
                             className="mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                           >
-                            {t(copy.action)}
+                            {lang === "ar" ? t(copy.action) : "Send a Request"}
                             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                           </button>
                         ) : (
@@ -699,7 +745,7 @@ function RequestsHubPage() {
                             to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
                             className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                           >
-                            {t(copy.action)}
+                            {lang === "ar" ? t(copy.action) : "Send a Request"}
                             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                           </Link>
                         )}

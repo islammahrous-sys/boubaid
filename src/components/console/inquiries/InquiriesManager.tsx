@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useConfirm } from "@/hooks/useConfirm";
@@ -40,6 +41,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getInquiriesPaginated } from "@/lib/admin-hub.functions";
 import { cn } from "@/lib/utils";
+import { COMMITTEE_REQUEST_DESTINATIONS } from "@/lib/council-requests";
+
+type RequestMetadata = {
+  reference?: string;
+  committee_slug?: string;
+  committee_name_ar?: string;
+  committee_name_en?: string;
+};
 
 export type InquiryRow = {
   id: string;
@@ -53,6 +62,7 @@ export type InquiryRow = {
   source: string;
   created_at: string;
   source_table: "inquiries" | "contact_messages";
+  request_metadata?: RequestMetadata | null;
 };
 
 export type InquiryNoteRow = {
@@ -91,6 +101,8 @@ export function InquiriesManager({
   const confirm = useConfirm();
 
   const [statusFilter, setStatusFilter] = useState("all");
+  const [committeeFilter, setCommitteeFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryRow | null>(null);
   const [newNote, setNewNote] = useState("");
   const [submittingNote, setSubmittingNote] = useState(false);
@@ -105,13 +117,15 @@ export function InquiriesManager({
     isLoading,
     isFetching,
   } = useQuery({
-    queryKey: ["inquiries-paginated", currentPage, pageSize, statusFilter],
+    queryKey: ["inquiries-paginated", currentPage, pageSize, statusFilter, committeeFilter, searchTerm],
     queryFn: () =>
       fetchInquiriesPage({
         data: {
           page: currentPage,
           pageSize,
           status: statusFilter === "all" ? undefined : statusFilter,
+          committeeSlug: committeeFilter === "all" ? undefined : committeeFilter,
+          search: searchTerm || undefined,
         },
       }),
     staleTime: 1000 * 60 * 3,
@@ -167,6 +181,15 @@ export function InquiriesManager({
   const currentNotes = selectedInquiry
     ? notes.filter((n) => n.inquiry_id === selectedInquiry.id)
     : [];
+
+  const getCommitteeLabel = (inquiry: InquiryRow | null) => {
+    const metadata = inquiry?.request_metadata;
+    if (!metadata || typeof metadata !== "object") return "";
+    const direct = isAr ? metadata.committee_name_ar : metadata.committee_name_en;
+    if (direct) return direct;
+    const fallback = COMMITTEE_REQUEST_DESTINATIONS.find((c) => c.slug === metadata.committee_slug);
+    return fallback ? (isAr ? fallback.name.ar : fallback.name.en) : "";
+  };
 
   const handleAddNoteSubmit = async () => {
     if (!selectedInquiry || !newNote.trim()) return;
@@ -311,7 +334,10 @@ export function InquiriesManager({
         <div className="border-b border-border p-2 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/20">
           <div className="flex items-center gap-4 text-sm font-medium overflow-x-auto no-scrollbar">
             <button
-              onClick={() => setStatusFilter("all")}
+              onClick={() => {
+                setCurrentPage(1);
+                setStatusFilter("all");
+              }}
               className={cn(
                 "py-2.5 px-1 relative whitespace-nowrap transition-colors",
                 statusFilter === "all"
@@ -326,7 +352,10 @@ export function InquiriesManager({
               )}
             </button>
             <button
-              onClick={() => setStatusFilter("new")}
+              onClick={() => {
+                setCurrentPage(1);
+                setStatusFilter("new");
+              }}
               className={cn(
                 "py-2.5 px-1 relative whitespace-nowrap transition-colors",
                 statusFilter === "new"
@@ -341,7 +370,10 @@ export function InquiriesManager({
               )}
             </button>
             <button
-              onClick={() => setStatusFilter("in_progress")}
+              onClick={() => {
+                setCurrentPage(1);
+                setStatusFilter("in_progress");
+              }}
               className={cn(
                 "py-2.5 px-1 relative whitespace-nowrap transition-colors",
                 statusFilter === "in_progress"
@@ -356,7 +388,10 @@ export function InquiriesManager({
               )}
             </button>
             <button
-              onClick={() => setStatusFilter("resolved")}
+              onClick={() => {
+                setCurrentPage(1);
+                setStatusFilter("resolved");
+              }}
               className={cn(
                 "py-2.5 px-1 relative whitespace-nowrap transition-colors",
                 statusFilter === "resolved"
@@ -370,6 +405,38 @@ export function InquiriesManager({
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
               )}
             </button>
+          </div>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[26rem] sm:flex-row">
+            <Input
+              value={searchTerm}
+              onChange={(e) => {
+                setCurrentPage(1);
+                setSearchTerm(e.target.value);
+              }}
+              placeholder={isAr ? "بحث بالاسم أو الموضوع أو اللجنة" : "Search name, subject, or committee"}
+              className="h-9 text-xs"
+            />
+            <Select
+              value={committeeFilter}
+              onValueChange={(value) => {
+                setCurrentPage(1);
+                setCommitteeFilter(value);
+              }}
+            >
+              <SelectTrigger className="h-9 text-xs sm:w-[14rem]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="text-xs">
+                  {isAr ? "كل اللجان" : "All committees"}
+                </SelectItem>
+                {COMMITTEE_REQUEST_DESTINATIONS.map((committee) => (
+                  <SelectItem key={committee.slug} value={committee.slug} className="text-xs">
+                    {isAr ? committee.name.ar : committee.name.en}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -406,56 +473,64 @@ export function InquiriesManager({
                 </TableCell>
               </TableRow>
             ) : (
-              filteredInquiries.map((inq) => (
-                <TableRow
-                  key={inq.id}
-                  className="group cursor-pointer hover:bg-muted/30"
-                  onClick={() => setSelectedInquiry(inq)}
-                >
-                  <TableCell>
-                    <div className="font-bold text-foreground">{inq.name}</div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">
-                      {inq.email}
-                    </div>
-                  </TableCell>
-                  <TableCell className="max-w-[250px]">
-                    <div className="font-medium text-foreground truncate">
-                      {inq.subject || (isAr ? "استفسار عام" : "General Inquiry")}
-                    </div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5 truncate">
-                      {inq.message}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm font-medium">
-                      {formatDualDate(inq.created_at, isAr ? "ar" : "en", "short")}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground mt-0.5">
-                      {formatDualYear(new Date(inq.created_at).getFullYear(), isAr ? "ar" : "en")}
-                    </div>
-                  </TableCell>
-                  <TableCell>{getStatusDisplay(inq.status)}</TableCell>
-                  <TableCell className="text-end">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 px-3 text-xs font-bold transition-all text-primary hover:bg-primary/10"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedInquiry(inq);
-                      }}
-                    >
-                      {inq.status === "new"
-                        ? isAr
-                          ? "الرد"
-                          : "Reply"
-                        : isAr
-                          ? "عرض التفاصيل"
-                          : "View Details"}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
+              filteredInquiries.map((inq) => {
+                const committeeLabel = getCommitteeLabel(inq);
+                return (
+                  <TableRow
+                    key={inq.id}
+                    className="group cursor-pointer hover:bg-muted/30"
+                    onClick={() => setSelectedInquiry(inq)}
+                  >
+                    <TableCell>
+                      <div className="font-bold text-foreground">{inq.name}</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">
+                        {inq.email}
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-[250px]">
+                      <div className="font-medium text-foreground truncate">
+                        {inq.subject || (isAr ? "استفسار عام" : "General Inquiry")}
+                      </div>
+                      {committeeLabel ? (
+                        <Badge variant="outline" className="mt-1 max-w-full truncate text-[10px]">
+                          {committeeLabel}
+                        </Badge>
+                      ) : null}
+                      <div className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                        {inq.message}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm font-medium">
+                        {formatDualDate(inq.created_at, isAr ? "ar" : "en", "short")}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">
+                        {formatDualYear(new Date(inq.created_at).getFullYear(), isAr ? "ar" : "en")}
+                      </div>
+                    </TableCell>
+                    <TableCell>{getStatusDisplay(inq.status)}</TableCell>
+                    <TableCell className="text-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-3 text-xs font-bold transition-all text-primary hover:bg-primary/10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedInquiry(inq);
+                        }}
+                      >
+                        {inq.status === "new"
+                          ? isAr
+                            ? "الرد"
+                            : "Reply"
+                          : isAr
+                            ? "عرض التفاصيل"
+                            : "View Details"}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
@@ -553,6 +628,22 @@ export function InquiriesManager({
                     )}
                   </div>
                 </div>
+
+                {getCommitteeLabel(selectedInquiry) ? (
+                  <div className="bg-primary/5 p-4 rounded-xl border border-primary/10">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-2">
+                      {isAr ? "اللجنة المختصة" : "Destination Committee"}
+                    </span>
+                    <span className="text-sm font-bold text-foreground block">
+                      {getCommitteeLabel(selectedInquiry)}
+                    </span>
+                    {selectedInquiry.request_metadata?.reference ? (
+                      <span className="mt-2 block font-mono text-[11px] text-muted-foreground">
+                        {selectedInquiry.request_metadata.reference}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 {/* Message Body */}
                 <div>

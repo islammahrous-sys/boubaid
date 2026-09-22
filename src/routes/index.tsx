@@ -1,11 +1,14 @@
 import { createFileRoute, getRouteApi, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import type { ComponentType } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
   ExternalLink,
   CalendarDays,
-  Landmark,
+  CloudSun,
+  Eye,
   Inbox,
   Archive,
 } from "lucide-react";
@@ -69,6 +72,16 @@ type PublicGalleryPreview = {
   title_ar: string;
   title_en: string | null;
 } & { items: PublicGalleryPreviewItem[] };
+
+type HomeMetrics = {
+  visits: number | null;
+  now: string;
+  weather: {
+    temperature: number;
+    label_ar: string;
+    label_en: string;
+  } | null;
+};
 
 /**
  * Homepage "heritage gallery" preview: a handful of images from one
@@ -213,6 +226,10 @@ const copy = {
   registered: { ar: "سنة الإشهار", en: "Registered" } as BiText,
   branchCount: { ar: "الفروع الموثقة", en: "Documented branches" } as BiText,
   licence: { ar: "رقم الترخيص", en: "Licence no." } as BiText,
+  visitCount: { ar: "عدد الزيارات", en: "Visits" } as BiText,
+  todayDate: { ar: "تاريخ اليوم", en: "Today" } as BiText,
+  easternWeather: { ar: "طقس الشرقية", en: "Eastern Province Weather" } as BiText,
+  weatherUnavailable: { ar: "غير متاح", en: "Unavailable" } as BiText,
   quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
   quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
   quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
@@ -292,7 +309,7 @@ const copy = {
     en: "Monthly subscription funds the endowments, the solidarity programmes, and the headquarters project. Family members may also join a committee or update their record in the register.",
   } as BiText,
   joinCta: { ar: "الاشتراك والمساهمة", en: "Subscribe & contribute" } as BiText,
-  contactCta: { ar: "تواصل مع الأمانة العامة", en: "Contact the secretariat" } as BiText,
+  contactCta: { ar: "تواصل مع لجان مجلس الأسرة", en: "Contact Family Council Committees" } as BiText,
 };
 
 /** Arabic abjad-style ordinals for the branch index. */
@@ -373,6 +390,22 @@ function HomePage() {
   } = homeRoute.useLoaderData();
   const homepageConfig = rawHomepageConfig as { sections?: SectionConfig[] } | null;
   const [lead, ...rest] = news;
+  const [homeMetrics, setHomeMetrics] = useState<HomeMetrics | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/public/site-visit", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: HomeMetrics | null) => {
+        if (mounted && data) setHomeMetrics(data);
+      })
+      .catch(() => {
+        if (mounted) setHomeMetrics(null);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Live documented-member count per editorial branch (sum of its DB chart
   // rows), with the static `count` as fallback.
@@ -413,6 +446,14 @@ function HomePage() {
 
     return ordered;
   })();
+
+  const visitValue = homeMetrics?.visits
+    ? homeMetrics.visits.toLocaleString(lang === "ar" ? "ar-EG" : "en-US")
+    : "—";
+  const todayValue = formatDualDate(homeMetrics?.now ?? new Date(), lang, "short");
+  const weatherValue = homeMetrics?.weather
+    ? `${Math.round(homeMetrics.weather.temperature).toLocaleString(lang === "ar" ? "ar-EG" : "en-US")}°C · ${lang === "ar" ? homeMetrics.weather.label_ar : homeMetrics.weather.label_en}`
+    : t(copy.weatherUnavailable);
 
   const renderSection = (sec: SectionConfig) => {
     switch (sec.id) {
@@ -483,32 +524,36 @@ function HomePage() {
                 <dl className="container-page grid grid-cols-2 divide-y divide-ivory/10 sm:grid-cols-5 sm:divide-x sm:divide-y-0 sm:rtl:divide-x-reverse">
                   {(
                     [
-                      // The licence number and the year of registration stay.
                       {
-                        label: copy.licence,
-                        value: siteMeta.ncnpLicense,
+                          label: copy.visitCount,
+                          value: visitValue,
                         mono: true,
                         link: null,
-                        icon: null,
+                          icon: Eye,
                       },
                       {
-                        label: copy.registered,
-                        value: t(siteMeta.foundedHijriLabel),
+                          label: copy.todayDate,
+                          value: todayValue,
                         mono: false,
                         link: null,
-                        icon: null,
+                          icon: CalendarDays,
                       },
-                      // Three quick entrances replace the former branch and
-                      // seat cells: the fund, the requests centre, the archive.
-                      { label: copy.quickFund, link: "/fund", icon: Landmark },
-                      { label: copy.quickRequests, link: "/requests", icon: Inbox },
+                        {
+                          label: copy.easternWeather,
+                          value: weatherValue,
+                          mono: false,
+                          link: null,
+                          icon: CloudSun,
+                        },
+                        { label: copy.quickRequests, link: "/requests", hash: "committee-requests", icon: Inbox },
                       { label: copy.quickArchive, link: "/library", icon: Archive },
                     ] as {
                       label: BiText;
                       value?: string;
                       mono?: boolean;
                       link: string | null;
-                      icon: typeof Landmark | null;
+                      hash?: string;
+                      icon: ComponentType<{ className?: string }> | null;
                     }[]
                   ).map((item, i) => {
                     const Icon = item.icon;
@@ -568,7 +613,12 @@ function HomePage() {
                         )}
                       >
                         {item.link ? (
-                          <Link to={item.link} resetScroll className="block h-full w-full">
+                          <Link
+                            to={item.link}
+                            hash={item.hash}
+                            resetScroll={!item.hash}
+                            className="block h-full w-full"
+                          >
                             {content}
                           </Link>
                         ) : (
@@ -1345,7 +1395,8 @@ function HomePage() {
                   {t(copy.joinCta)}
                 </Link>
                 <Link
-                  to={sec.cta_url || "/contact"}
+                  to={(sec.cta_url || "/requests").split("#")[0] || "/requests"}
+                  hash={(sec.cta_url || "/requests#committee-requests").split("#")[1]}
                   className="inline-flex items-center border border-border px-5 py-3 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-secondary active:scale-[0.97]"
                 >
                   {sec.cta_label_ar && rtl
