@@ -616,6 +616,7 @@ function HomePage() {
                         key={i}
                         className={cn(
                           "group relative",
+                          i === 1 && "col-span-2 sm:col-span-1",
                           item.link &&
                             "transition-transform duration-200 ease-out hover:-translate-y-0.5",
                         )}
