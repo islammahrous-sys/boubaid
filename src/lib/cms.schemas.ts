@@ -101,7 +101,22 @@ export const achieverInputSchema = z.object({
 
 export const libraryInputSchema = z.object({
   id: z.string().uuid().optional(),
-  collection: z.enum(["documents", "publications", "media"]).default("documents"),
+  collection: z
+    .enum([
+      "documents",
+      "publications",
+      "media",
+      "photographs",
+      "recordings",
+      "templates",
+      "templates_editable",
+      "visual_identity",
+      "collaterals",
+      "committee_charts",
+      "videos",
+      "financials",
+    ])
+    .default("documents"),
   title_ar: z.string().trim().min(3).max(300),
   title_en: text(300),
   description_ar: text(2000),
@@ -161,7 +176,7 @@ const MAX_IMAGE_BASE64_LENGTH = Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 4;
 const MAX_DOCUMENT_BASE64_LENGTH = Math.ceil((MAX_DOCUMENT_BYTES * 4) / 3) + 4;
 
 const IMAGE_CONTENT_TYPE_RE = /^image\/(jpeg|png|webp|gif|svg\+xml)$/;
-const DOCUMENT_CONTENT_TYPE_RE = /^application\/pdf$/;
+const DOCUMENT_CONTENT_TYPE_RE = /^(application\/pdf|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document|application\/msword|application\/vnd\.openxmlformats-officedocument\.presentationml\.presentation|application\/vnd\.ms-powerpoint|application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|application\/vnd\.ms-excel)$/;
 
 export const contentMediaUploadSchema = z
   .object({
@@ -172,7 +187,10 @@ export const contentMediaUploadSchema = z
     contentType: z
       .string()
       .trim()
-      .regex(/^(image\/(jpeg|png|webp|gif|svg\+xml)|application\/pdf)$/, "unsupported_type"),
+      .regex(
+        /^(image\/(jpeg|png|webp|gif|svg\+xml)|application\/pdf|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document|application\/msword|application\/vnd\.openxmlformats-officedocument\.presentationml\.presentation|application\/vnd\.ms-powerpoint|application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|application\/vnd\.ms-excel)$/,
+        "unsupported_type",
+      ),
     // Hard ceiling at the larger (document) ratio; the refine below applies
     // the tighter image ceiling so the error message matches the field type.
     dataBase64: z.string().min(16).max(MAX_DOCUMENT_BASE64_LENGTH),

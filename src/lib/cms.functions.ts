@@ -302,7 +302,7 @@ export const getPublishedLibrary = createServerFn({ method: "GET" }).handler(
         .from("library_items")
         .select(LIBRARY_COLS)
         .order("sort_order", { ascending: true })
-        .limit(300);
+        .limit(1000);
       if (error) {
         console.error("[cms] library read failed", error.code, error.message);
         return [];

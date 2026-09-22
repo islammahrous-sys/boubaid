@@ -43,8 +43,8 @@ const copy = {
   eyebrow: { ar: "الإطار النظامي", en: "Constitution" } as BiText,
   title: { ar: "الحوكمة و مجلس الامناء", en: "Governance & Board of Trustees" } as BiText,
   subtitle: {
-    ar: "تعمل الصندوق بموجب لائحة أساسية معتمدة من المركز الوطني لتنمية القطاع غير الربحي، ويتولى إدارتها مجلس أمناء وخمس لجان تنفيذية تمثل الفروع السبعة.",
-    en: "The organisation operates under a charter approved by the National Center for Nonprofit Sector. It is administered by a board of trustees and five standing committees representing the seven branches.",
+    ar: "تعمل الصندوق بموجب لائحة أساسية معتمدة من المركز الوطني لتنمية القطاع غير الربحي، ويتولى إدارتها مجلس أمناء وست لجان تنفيذية تمثل الفروع السبعة.",
+    en: "The organisation operates under a charter approved by the National Center for Nonprofit Sector. It is administered by a board of trustees and six executive committees representing the seven branches.",
   } as BiText,
 
   metaLicence: { ar: "رقم الترخيص", en: "Licence no." } as BiText,
@@ -77,7 +77,7 @@ const copy = {
   holderLabel: { ar: "شاغل المنصب", en: "Holder" } as BiText,
   foundersEyebrow: { ar: "الأعضاء المؤسسون", en: "Founding members" } as BiText,
   foundersNote: {
-    ar: `يتولى الأعضاء المؤسسون الستة قيادة اللجان التنفيذية الخمس، ويُشترط في المدير التنفيذي للصندوق حاملاً درجة البكالوريوس مع خبرة إدارية تتجاوز 16 عاماً. ${ceoRequirement.ar}`,
+    ar: `يتولى الأعضاء المؤسسون الستة قيادة اللجان التنفيذية الست، ويُشترط في المدير التنفيذي للصندوق حاملاً درجة البكالوريوس مع خبرة إدارية تتجاوز 16 عاماً. ${ceoRequirement.ar}`,
     en: `The six founding members lead the five executive committees. The bylaws require the fund's Chief Executive to hold a bachelor's degree with over 16 years of administrative experience.`,
   } as BiText,
 
