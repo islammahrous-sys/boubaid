@@ -59,16 +59,18 @@ function weatherLabel(type: string, englishDescription?: string) {
 
 /** Map an Open-Meteo WMO weathercode to the same bilingual labels used for
  *  Google's condition types, so both providers render identically. */
-function openMeteoLabel(code: number) {
-  if (code === 0) return weatherLabel("CLEAR");
-  if (code === 1) return weatherLabel("MOSTLY_CLEAR");
-  if (code === 2) return weatherLabel("PARTLY_CLOUDY");
-  if (code === 3) return weatherLabel("CLOUDY");
-  if (code === 45 || code === 48) return weatherLabel("FOG");
-  if (code >= 51 && code <= 57) return weatherLabel("LIGHT_RAIN");
-  if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return weatherLabel("RAIN");
-  if (code >= 95) return weatherLabel("THUNDERSTORM");
-  return weatherLabel("");
+function openMeteoCondition(code: number) {
+  const type =
+    code === 0 ? "CLEAR"
+    : code === 1 ? "MOSTLY_CLEAR"
+    : code === 2 ? "PARTLY_CLOUDY"
+    : code === 3 ? "CLOUDY"
+    : code === 45 || code === 48 ? "FOG"
+    : code >= 51 && code <= 57 ? "LIGHT_RAIN"
+    : (code >= 61 && code <= 67) || (code >= 80 && code <= 82) ? "RAIN"
+    : code >= 95 ? "THUNDERSTORM"
+    : "";
+  return { condition: type, ...weatherLabel(type) };
 }
 
 /** Key-free fallback so deployments without the Google Maps connector
