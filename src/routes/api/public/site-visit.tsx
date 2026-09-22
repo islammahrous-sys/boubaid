@@ -57,6 +57,53 @@ function weatherLabel(type: string, englishDescription?: string) {
   return labels[type] ?? { label_ar: "مستقر", label_en: englishDescription || "Stable" };
 }
 
+/** Map an Open-Meteo WMO weathercode to the same bilingual labels used for
+ *  Google's condition types, so both providers render identically. */
+function openMeteoLabel(code: number) {
+  if (code === 0) return weatherLabel("CLEAR");
+  if (code === 1) return weatherLabel("MOSTLY_CLEAR");
+  if (code === 2) return weatherLabel("PARTLY_CLOUDY");
+  if (code === 3) return weatherLabel("CLOUDY");
+  if (code === 45 || code === 48) return weatherLabel("FOG");
+  if (code >= 51 && code <= 57) return weatherLabel("LIGHT_RAIN");
+  if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return weatherLabel("RAIN");
+  if (code >= 95) return weatherLabel("THUNDERSTORM");
+  return weatherLabel("");
+}
+
+/** Key-free fallback so deployments without the Google Maps connector
+ *  credentials (e.g. the Vercel mirror) still show live Al Ahsa weather. */
+async function openMeteoWeather(signal: AbortSignal): Promise<WeatherPayload> {
+  const params = new URLSearchParams({
+    latitude: String(AL_AHSA.latitude),
+    longitude: String(AL_AHSA.longitude),
+    current: "temperature_2m,weather_code",
+    daily: "temperature_2m_max,temperature_2m_min",
+    timezone: "Asia/Riyadh",
+    forecast_days: "1",
+  });
+  const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal });
+  if (!response.ok) throw new Error(`open_meteo_status_${response.status}`);
+  const data = (await response.json()) as {
+    current?: { temperature_2m?: number; weather_code?: number };
+    daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[] };
+  };
+  const temperature = data.current?.temperature_2m;
+  if (typeof temperature !== "number") throw new Error("open_meteo_empty_response");
+  const code = data.current?.weather_code ?? -1;
+  return {
+    temperature,
+    high: typeof data.daily?.temperature_2m_max?.[0] === "number" ? data.daily.temperature_2m_max[0] : null,
+    low: typeof data.daily?.temperature_2m_min?.[0] === "number" ? data.daily.temperature_2m_min[0] : null,
+    condition: "OPEN_METEO",
+    ...openMeteoLabel(code),
+    location_ar: "الأحساء",
+    location_en: "Al Ahsa",
+    stale: false,
+    updated_at: new Date().toISOString(),
+  };
+}
+
 async function gatewayLookup(path: string, params: URLSearchParams, signal: AbortSignal) {
   const lovableApiKey = process.env['LOVABLE_API_KEY'];
   const googleMapsApiKey = process.env['GOOGLE_MAPS_API_KEY'];
