@@ -447,17 +447,15 @@ function HomePage() {
           setMetricsState("error");
         }
       } catch {
-        if (mounted) setMetricsState((prev) => (homeMetricsHasWeather() ? prev : "error"));
+        // Keep previously received weather on screen if we already have some.
+        if (mounted) setMetricsState((prev) => (prev === "ready" ? "ready" : "error"));
       } finally {
         clearTimeout(timeout);
         inFlight = false;
       }
     };
 
-    // Reads the freshest state without re-creating the effect.
-    function homeMetricsHasWeather() {
-      return false;
-    }
+
 
     void load();
     // Periodic refresh while the tab stays open, plus a refresh when the
