@@ -39,7 +39,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { branches } from "@/content/site";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -431,29 +431,10 @@ function DirectoryPage() {
           </div>
 
           {/* ════════════════════════════════════════════════════════════════ */}
-          {/* CATEGORY: خدمات المنشآت — services + establishment directory     */}
+          {/* CATEGORY: خدمات المنشآت — services catalogue                     */}
           {/* ════════════════════════════════════════════════════════════════ */}
           <TabsContent value="businesses" className="mt-0 focus-visible:ring-0 space-y-8">
             <ServiceCatalogue services={services} category="establishment" />
-            {/* دليل المنشآت moved to the Projects page; this points visitors there
-                instead of keeping a second copy of the same listings. */}
-            <div className="rounded-xl border border-border bg-card p-5">
-              <h3 className="text-sm font-bold text-foreground">
-                {isAr ? "دليل المنشآت العائلية" : "Family Establishments Directory"}
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground max-w-2xl">
-                {isAr
-                  ? "قوائم المنشآت العائلية المعتمدة وبيانات التواصل معها معروضة الآن في صفحة المشاريع."
-                  : "The verified family establishment listings and their contact details are now shown on the Projects page."}
-              </p>
-              <Link
-                to="/initiatives"
-                hash="establishments"
-                className="mt-4 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-              >
-                {isAr ? "الانتقال إلى دليل المنشآت" : "Open the establishments directory"}
-              </Link>
-            </div>
           </TabsContent>
 
           {/* ════════════════════════════════════════════════════════════════ */}
@@ -464,9 +445,6 @@ function DirectoryPage() {
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* The establishment listings and their quick-view card now live on the
-          Projects page (`/initiatives`); the records themselves are unchanged. */}
     </>
   );
 }
