@@ -633,9 +633,11 @@ function HomePage() {
                       {
                         label: copy.easternWeather,
                         value: weatherValue,
+                        detail: weatherDetail,
+                        retry: !weather && metricsState === "error",
                         mono: false,
                         link: null,
-                        icon: CloudSun,
+                        icon: WeatherIcon,
                       },
                       {
                         label: copy.quickRequests,
@@ -647,11 +649,14 @@ function HomePage() {
                     ] as {
                       label: BiText;
                       value?: string;
+                      detail?: string | null;
+                      retry?: boolean;
                       mono?: boolean;
                       link: string | null;
                       hash?: string;
                       icon: LucideIcon | null;
                     }[]
+
                   ).map((item, i) => {
                     const Icon = item.icon;
                     const content = (
