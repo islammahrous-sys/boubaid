@@ -35,8 +35,8 @@ import {
   Store,
   Trophy,
   Users,
+  type LucideIcon,
 } from "lucide-react";
-import type { ComponentType } from "react";
 import { useState } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -124,7 +124,7 @@ const copy = {
     { ar: "الإنجاز", en: "Completion" },
   ] as BiText[],
 
-  action: { ar: "تقديم الطلب", en: "Submit request" } as BiText,
+  action: { ar: "تقديم الطلب", en: "Send a Request" } as BiText,
   committeeIntro: {
     ar: "اختر اللجنة المختصة حتى يصل الطلب مباشرة إلى مسار المتابعة المناسب.",
     en: "Choose the relevant committee so your request reaches the correct review path directly.",
@@ -174,7 +174,7 @@ type RequestEntry = {
   to?: string;
   /** …or one of the hub's own forms, submitted in place. */
   form?: CouncilRequestType;
-  Icon: ComponentType<{ className?: string }>;
+  Icon: LucideIcon;
   name: BiText;
   desc: BiText;
   requiresAuth?: boolean;
@@ -184,7 +184,7 @@ type RequestEntry = {
 
 const committeeIcons: Record<
   (typeof COMMITTEE_REQUEST_DESTINATIONS)[number]["slug"],
-  ComponentType<{ className?: string }>
+  LucideIcon
 > = {
   "development-follow-up": ClipboardList,
   "family-headquarters": Landmark,
@@ -737,7 +737,7 @@ function RequestsHubPage() {
                             onClick={() => setActiveForm(r.form!)}
                             className="mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                           >
-                            {lang === "ar" ? t(copy.action) : "Send a Request"}
+                            {t(copy.action)}
                             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                           </button>
                         ) : (
@@ -745,7 +745,7 @@ function RequestsHubPage() {
                             to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
                             className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                           >
-                            {lang === "ar" ? t(copy.action) : "Send a Request"}
+                            {t(copy.action)}
                             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                           </Link>
                         )}
