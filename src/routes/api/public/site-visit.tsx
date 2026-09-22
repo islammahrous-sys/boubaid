@@ -7,6 +7,7 @@ type WeatherPayload = {
 };
 
 let cachedWeather: { expiresAt: number; value: WeatherPayload | null } | null = null;
+let lastSuccessfulWeather: WeatherPayload | null = null;
 
 function parseCookie(header: string, name: string): string | null {
   const pair = header
@@ -23,15 +24,20 @@ function createVisitKey() {
   );
 }
 
-function weatherLabel(code: number): { label_ar: string; label_en: string } {
-  if (code === 0) return { label_ar: "صافٍ", label_en: "Clear" };
-  if ([1, 2, 3].includes(code)) return { label_ar: "غائم جزئياً", label_en: "Partly cloudy" };
-  if ([45, 48].includes(code)) return { label_ar: "ضباب", label_en: "Fog" };
-  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
-    return { label_ar: "أمطار", label_en: "Rain" };
-  }
-  if ([95, 96, 99].includes(code)) return { label_ar: "عواصف رعدية", label_en: "Thunderstorms" };
-  return { label_ar: "مستقر", label_en: "Stable" };
+function weatherLabel(type: string, englishDescription?: string) {
+  const labels: Record<string, { label_ar: string; label_en: string }> = {
+    CLEAR: { label_ar: "صافٍ", label_en: "Clear" },
+    MOSTLY_CLEAR: { label_ar: "صافٍ غالباً", label_en: "Mostly clear" },
+    PARTLY_CLOUDY: { label_ar: "غائم جزئياً", label_en: "Partly cloudy" },
+    MOSTLY_CLOUDY: { label_ar: "غائم غالباً", label_en: "Mostly cloudy" },
+    CLOUDY: { label_ar: "غائم", label_en: "Cloudy" },
+    FOG: { label_ar: "ضباب", label_en: "Fog" },
+    LIGHT_RAIN: { label_ar: "أمطار خفيفة", label_en: "Light rain" },
+    RAIN: { label_ar: "أمطار", label_en: "Rain" },
+    HEAVY_RAIN: { label_ar: "أمطار غزيرة", label_en: "Heavy rain" },
+    THUNDERSTORM: { label_ar: "عواصف رعدية", label_en: "Thunderstorms" },
+  };
+  return labels[type] ?? { label_ar: "مستقر", label_en: englishDescription || "Stable" };
 }
 
 async function getEasternProvinceWeather(): Promise<WeatherPayload | null> {
@@ -39,26 +45,50 @@ async function getEasternProvinceWeather(): Promise<WeatherPayload | null> {
   if (cachedWeather && cachedWeather.expiresAt > now) return cachedWeather.value;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 3000);
+  const timeout = setTimeout(() => controller.abort(), 5000);
   try {
+    const lovableApiKey = process.env['LOVABLE_API_KEY'];
+    const googleMapsApiKey = process.env['GOOGLE_MAPS_API_KEY'];
+    if (!lovableApiKey || !googleMapsApiKey) throw new Error("weather_credentials_missing");
+
+    const params = new URLSearchParams({
+      "location.latitude": "26.4207",
+      "location.longitude": "50.0888",
+      unitsSystem: "METRIC",
+      languageCode: "en",
+    });
     const response = await fetch(
-      "https://api.open-meteo.com/v1/forecast?latitude=26.4207&longitude=50.0888&current=temperature_2m,weather_code&timezone=Asia%2FRiyadh",
-      { signal: controller.signal },
+      `https://connector-gateway.lovable.dev/google_maps/weather/v1/currentConditions:lookup?${params}`,
+      {
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${lovableApiKey}`,
+          "X-Connection-Api-Key": googleMapsApiKey,
+        },
+      },
     );
-    if (!response.ok) throw new Error(`weather_status_${response.status}`);
+    if (!response.ok) {
+      const body = await response.text();
+      console.error(`[site-visit] Google weather failed [${response.status}]: ${body}`);
+      throw new Error(`weather_status_${response.status}`);
+    }
     const payload = (await response.json()) as {
-      current?: { temperature_2m?: number; weather_code?: number };
+      temperature?: { degrees?: number };
+      weatherCondition?: { type?: string; description?: { text?: string } };
     };
-    const temperature = payload.current?.temperature_2m;
-    const code = payload.current?.weather_code ?? 0;
+    const temperature = payload.temperature?.degrees;
+    const condition = payload.weatherCondition;
     const value =
-      typeof temperature === "number" ? { temperature, ...weatherLabel(Number(code)) } : null;
+      typeof temperature === "number"
+        ? { temperature, ...weatherLabel(condition?.type ?? "", condition?.description?.text) }
+        : null;
+    if (value) lastSuccessfulWeather = value;
     cachedWeather = { expiresAt: now + 10 * 60 * 1000, value };
     return value;
   } catch (error) {
     console.error("[site-visit] weather lookup failed", error);
-    cachedWeather = { expiresAt: now + 2 * 60 * 1000, value: null };
-    return null;
+    cachedWeather = { expiresAt: now + 2 * 60 * 1000, value: lastSuccessfulWeather };
+    return lastSuccessfulWeather;
   } finally {
     clearTimeout(timeout);
   }

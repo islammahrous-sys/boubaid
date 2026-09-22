@@ -258,8 +258,8 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
       },
       {
         id: "services",
-        label_ar: "خدمات افراد الأسرة و خدمات المنشأت",
-        label_en: "Family Member & Establishment Services",
+        label_ar: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج",
+        label_en: "Family Member & Establishment Services – My Family Produces",
         description_ar: "إدارة الخدمات في التصنيفين ورفع وثائقها",
         description_en: "Manage both service categories and upload their documents",
         icon: Layers,

@@ -56,13 +56,13 @@ export const Route = createFileRoute("/directory")({
   },
   head: () => ({
     meta: [
-      { title: "خدمات أفراد الأسرة وخدمات المنشآت | آل بوعبيد" },
+      { title: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج | آل بوعبيد" },
       {
         name: "description",
         content:
           "خدمات أفراد أسرة آل بوعبيد وخدمات المنشآت العائلية: الاستشارات القانونية والمحاسبية والتعليمية، وخدمات الأعمال والمواقع الإلكترونية وشجرات العائلة.",
       },
-      { property: "og:title", content: "خدمات أفراد الأسرة وخدمات المنشآت | آل بوعبيد" },
+      { property: "og:title", content: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج | آل بوعبيد" },
       {
         property: "og:description",
         content: "دليل خدمات أفراد أسرة آل بوعبيد وخدمات المنشآت العائلية المعتمدة.",
@@ -78,8 +78,8 @@ export const Route = createFileRoute("/directory")({
 const copy = {
   eyebrow: { ar: "دليل الخدمات", en: "Services index" } as BiText,
   title: {
-    ar: "خدمات افراد الأسرة و خدمات المنشأت",
-    en: "Family Member Services & Establishment Services",
+    ar: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج",
+    en: "Family Member & Establishment Services – My Family Produces",
   } as BiText,
   subtitle: {
     ar: "بوابة موحدة تجمع الخدمات المتاحة لأفراد أسرة آل بوعبيد وخدمات منشآتها، مع دليل المنشآت المعتمدة ودليل الأفراد.",

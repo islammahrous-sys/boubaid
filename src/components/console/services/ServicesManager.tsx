@@ -224,8 +224,8 @@ export function ServicesManager() {
           <Layers className="h-5 w-5 text-primary" />
           <h3 className="text-sm font-bold text-foreground">
             {isAr
-              ? "خدمات افراد الأسرة و خدمات المنشأت"
-              : "Family Member Services & Establishment Services"}
+              ? "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج"
+              : "Family Member & Establishment Services – My Family Produces"}
           </h3>
         </div>
         <Button size="sm" onClick={openAdd} className="h-8 gap-1.5 text-xs">

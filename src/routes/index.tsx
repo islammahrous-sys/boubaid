@@ -228,8 +228,11 @@ const copy = {
   licence: { ar: "رقم الترخيص", en: "Licence no." } as BiText,
   visitCount: { ar: "عدد الزيارات", en: "Visits" } as BiText,
   todayDate: { ar: "تاريخ اليوم", en: "Today" } as BiText,
-  easternWeather: { ar: "طقس الشرقية", en: "Eastern Province Weather" } as BiText,
-  weatherUnavailable: { ar: "غير متاح", en: "Unavailable" } as BiText,
+  easternWeather: {
+    ar: "المنطقة الشرقية، المملكة العربية السعودية",
+    en: "Eastern Province, Saudi Arabia",
+  } as BiText,
+  weatherUpdating: { ar: "جارٍ تحديث الطقس", en: "Updating weather" } as BiText,
   quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
   quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
   quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
@@ -450,10 +453,10 @@ function HomePage() {
   const visitValue = homeMetrics?.visits
     ? homeMetrics.visits.toLocaleString(lang === "ar" ? "ar-EG" : "en-US")
     : "—";
-  const todayValue = formatDualDate(homeMetrics?.now ?? new Date(), lang, "short");
+  const todayValue = homeMetrics?.now ? formatDualDate(homeMetrics.now, lang, "short") : "—";
   const weatherValue = homeMetrics?.weather
     ? `${Math.round(homeMetrics.weather.temperature).toLocaleString(lang === "ar" ? "ar-EG" : "en-US")}°C · ${lang === "ar" ? homeMetrics.weather.label_ar : homeMetrics.weather.label_en}`
-    : t(copy.weatherUnavailable);
+    : t(copy.weatherUpdating);
 
   const renderSection = (sec: SectionConfig) => {
     switch (sec.id) {
@@ -598,7 +601,7 @@ function HomePage() {
                         {item.value ? (
                           <dd
                             className={cn(
-                              "mt-1 sm:mt-2 text-xs sm:text-base font-semibold text-ivory transition-colors group-hover:text-gold",
+                              "mt-1 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-semibold text-ivory transition-colors group-hover:text-gold sm:mt-2 sm:text-xs xl:text-sm",
                               item.mono && "nums font-mono text-gold group-hover:text-gold-soft",
                             )}
                           >

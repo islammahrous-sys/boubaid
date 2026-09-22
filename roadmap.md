@@ -13,6 +13,7 @@
 - Connect service documents to existing admin upload and view-only viewer flows.
 - Verify Arabic/English, desktop/mobile, permissions, and existing workflows.
 - [x] Fix distorted Arabic text rendering in the shared document viewer across all site pages.
+- [x] Stabilize Eastern Province weather, keep the homepage date on one line, rename Services, and show supplied English committee charts on the English page.
 
 ## 33-point update (Sep 2026) — complete
 
