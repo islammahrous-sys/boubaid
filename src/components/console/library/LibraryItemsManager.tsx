@@ -513,7 +513,7 @@ export function LibraryItemsManager({
                 bucket="site-media"
                 value={form.file_path}
                 allowPdf={true}
-                allowDocuments={form.collection === "collaterals"}
+                allowDocuments={form.collection === "collaterals" || form.collection === "visual_identity"}
                 onChange={(url) =>
                   setForm(
                     form.collection === "collaterals"
@@ -531,6 +531,10 @@ export function LibraryItemsManager({
                     ? isAr
                       ? "يُحمَّل هذا الملف كما هو دون أي تعديل، ويدعم صيغ DOCX و PPTX و XLSX و PDF حتى 25 ميغابايت"
                       : "This file is delivered unchanged; DOCX, PPTX, XLSX and PDF up to 25MB"
+                    : form.collection === "visual_identity"
+                      ? isAr
+                        ? "يدعم رفع ملفات PDF وPowerPoint والصور حتى 25 ميغابايت"
+                        : "Supports PDF, PowerPoint and image files up to 25MB"
                     : isAr
                       ? "يدعم رفع ملفات PDF واللوائح والصور والوثائق حتى 25 ميغابايت"
                       : "Supports PDF documents, bylaws, scans and photos up to 25MB"
