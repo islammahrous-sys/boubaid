@@ -2185,6 +2185,42 @@ export type Database = {
         }
         Relationships: []
       }
+      site_visit_counters: {
+        Row: {
+          key: string
+          total_count: number
+          updated_at: string
+        }
+        Insert: {
+          key?: string
+          total_count?: number
+          updated_at?: string
+        }
+        Update: {
+          key?: string
+          total_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_visit_sessions: {
+        Row: {
+          created_at: string
+          last_counted_at: string
+          visit_key: string
+        }
+        Insert: {
+          created_at?: string
+          last_counted_at?: string
+          visit_key: string
+        }
+        Update: {
+          created_at?: string
+          last_counted_at?: string
+          visit_key?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -2215,6 +2251,7 @@ export type Database = {
     }
     Functions: {
       family_public_stats: { Args: never; Returns: Json }
+      record_site_visit: { Args: { p_visit_key: string }; Returns: number }
       replace_content_page_sections: {
         Args: { p_page_id: string; p_sections: Json }
         Returns: {
