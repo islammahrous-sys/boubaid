@@ -30,7 +30,15 @@ VITE_SUPABASE_URL
 VITE_SUPABASE_PUBLISHABLE_KEY
 VITE_SITE_URL=https://alboabid-heritage-hub.vercel.app
 SITE_URL=https://alboabid-heritage-hub.vercel.app
+LOVABLE_API_KEY
+GOOGLE_MAPS_API_KEY
 ```
+
+`LOVABLE_API_KEY` and `GOOGLE_MAPS_API_KEY` are required for the homepage
+Al Ahsa weather card (Google Weather via the Lovable connector gateway).
+Without them, `/api/public/site-visit` returns `weather: null` and the card
+shows the friendly "weather unavailable" state. Copy both values from the
+Lovable project secrets into Vercel Production (and Preview), then redeploy.
 
 Never prefix the service role key with `VITE_`; it must stay server-only.
 
