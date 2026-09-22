@@ -770,6 +770,45 @@ export type Database = {
         }
         Relationships: []
       }
+      council_committees: {
+        Row: {
+          created_at: string
+          description_ar: string | null
+          description_en: string | null
+          id: string
+          is_active: boolean
+          name_ar: string
+          name_en: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          is_active?: boolean
+          name_ar: string
+          name_en?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          is_active?: boolean
+          name_ar?: string
+          name_en?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           category: string
@@ -1452,6 +1491,7 @@ export type Database = {
           message: string
           name: string
           phone: string | null
+          request_metadata: Json
           source: string
           status: string
           subject: string | null
@@ -1465,6 +1505,7 @@ export type Database = {
           message: string
           name: string
           phone?: string | null
+          request_metadata?: Json
           source?: string
           status?: string
           subject?: string | null
@@ -1478,6 +1519,7 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+          request_metadata?: Json
           source?: string
           status?: string
           subject?: string | null
@@ -2185,6 +2227,42 @@ export type Database = {
         }
         Relationships: []
       }
+      site_visit_counters: {
+        Row: {
+          key: string
+          total_count: number
+          updated_at: string
+        }
+        Insert: {
+          key?: string
+          total_count?: number
+          updated_at?: string
+        }
+        Update: {
+          key?: string
+          total_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_visit_sessions: {
+        Row: {
+          created_at: string
+          last_counted_at: string
+          visit_key: string
+        }
+        Insert: {
+          created_at?: string
+          last_counted_at?: string
+          visit_key: string
+        }
+        Update: {
+          created_at?: string
+          last_counted_at?: string
+          visit_key?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -2215,6 +2293,7 @@ export type Database = {
     }
     Functions: {
       family_public_stats: { Args: never; Returns: Json }
+      record_site_visit: { Args: { p_visit_key: string }; Returns: number }
       replace_content_page_sections: {
         Args: { p_page_id: string; p_sections: Json }
         Returns: {
