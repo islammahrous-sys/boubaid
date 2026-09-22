@@ -6,12 +6,19 @@ import {
   ArrowRight,
   ExternalLink,
   CalendarDays,
+  Cloud,
+  CloudFog,
+  CloudLightning,
+  CloudRain,
   CloudSun,
+  Sun,
+  Wind,
   Eye,
   Inbox,
   Archive,
   type LucideIcon,
 } from "lucide-react";
+
 import { formatContentDate } from "@/lib/text";
 import { formatDualDate } from "@/lib/dates";
 import {
@@ -73,15 +80,25 @@ type PublicGalleryPreview = {
   title_en: string | null;
 } & { items: PublicGalleryPreviewItem[] };
 
+type WeatherPayload = {
+  temperature: number;
+  high: number | null;
+  low: number | null;
+  condition: string;
+  label_ar: string;
+  label_en: string;
+  location_ar: string;
+  location_en: string;
+  stale: boolean;
+  updated_at: string;
+};
+
 type HomeMetrics = {
   visits: number | null;
   now: string;
-  weather: {
-    temperature: number;
-    label_ar: string;
-    label_en: string;
-  } | null;
+  weather: WeatherPayload | null;
 };
+
 
 /**
  * Homepage "heritage gallery" preview: a handful of images from one
@@ -229,10 +246,15 @@ const copy = {
   visitCount: { ar: "عدد الزيارات", en: "Visits" } as BiText,
   todayDate: { ar: "تاريخ اليوم", en: "Today" } as BiText,
   easternWeather: {
-    ar: "المنطقة الشرقية، المملكة العربية السعودية",
-    en: "Eastern Province, Saudi Arabia",
+    ar: "الطقس — الأحساء",
+    en: "Weather — Al Ahsa",
   } as BiText,
   weatherUpdating: { ar: "جارٍ تحديث الطقس", en: "Updating weather" } as BiText,
+  weatherFailed: { ar: "تعذر تحديث الطقس حالياً", en: "Weather unavailable right now" } as BiText,
+  weatherRetry: { ar: "إعادة المحاولة", en: "Retry" } as BiText,
+  weatherHigh: { ar: "العظمى", en: "High" } as BiText,
+  weatherLow: { ar: "الصغرى", en: "Low" } as BiText,
+
   quickFund: { ar: "صندوق تنمية الأسرة", en: "Family Development Fund" } as BiText,
   quickRequests: { ar: "مركز الطلبات", en: "Requests Centre" } as BiText,
   quickArchive: { ar: "الأرشيف", en: "Archive" } as BiText,
@@ -394,21 +416,63 @@ function HomePage() {
   const homepageConfig = rawHomepageConfig as { sections?: SectionConfig[] } | null;
   const [lead, ...rest] = news;
   const [homeMetrics, setHomeMetrics] = useState<HomeMetrics | null>(null);
+  // "loading" only while a request is in flight; every request ends in
+  // "ready" or "error" so the card can never sit on the loading copy.
+  const [metricsState, setMetricsState] = useState<"loading" | "ready" | "error">("loading");
+  const [metricsNonce, setMetricsNonce] = useState(0);
 
   useEffect(() => {
     let mounted = true;
-    fetch("/api/public/site-visit", { cache: "no-store" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: HomeMetrics | null) => {
-        if (mounted && data) setHomeMetrics(data);
-      })
-      .catch(() => {
-        if (mounted) setHomeMetrics(null);
-      });
+    let inFlight = false;
+    let timer: ReturnType<typeof setInterval> | undefined;
+
+    const load = async () => {
+      if (inFlight) return; // guards re-render / visibility double-fetches
+      inFlight = true;
+      if (mounted) setMetricsState((prev) => (prev === "ready" ? prev : "loading"));
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 9000);
+      try {
+        const res = await fetch("/api/public/site-visit", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(`status_${res.status}`);
+        const data = (await res.json()) as HomeMetrics | null;
+        if (!mounted) return;
+        if (data && (data.weather || typeof data.now === "string")) {
+          setHomeMetrics(data);
+          setMetricsState(data.weather ? "ready" : "error");
+        } else {
+          setMetricsState("error");
+        }
+      } catch {
+        // Keep previously received weather on screen if we already have some.
+        if (mounted) setMetricsState((prev) => (prev === "ready" ? "ready" : "error"));
+      } finally {
+        clearTimeout(timeout);
+        inFlight = false;
+      }
+    };
+
+
+
+    void load();
+    // Periodic refresh while the tab stays open, plus a refresh when the
+    // visitor comes back to the page after a while.
+    timer = setInterval(() => void load(), 10 * 60 * 1000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       mounted = false;
+      if (timer) clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
     };
-  }, []);
+  }, [metricsNonce]);
+
 
   // Live documented-member count per editorial branch (sum of its DB chart
   // rows), with the static `count` as fallback.
@@ -454,9 +518,34 @@ function HomePage() {
     ? homeMetrics.visits.toLocaleString(lang === "ar" ? "ar-EG" : "en-US")
     : "—";
   const todayValue = homeMetrics?.now ? formatDualDate(homeMetrics.now, lang, "short") : "—";
-  const weatherValue = homeMetrics?.weather
-    ? `${Math.round(homeMetrics.weather.temperature).toLocaleString(lang === "ar" ? "ar-EG" : "en-US")}°C · ${lang === "ar" ? homeMetrics.weather.label_ar : homeMetrics.weather.label_en}`
-    : t(copy.weatherUpdating);
+  const weather = homeMetrics?.weather ?? null;
+  const numberLocale = lang === "ar" ? "ar-EG" : "en-US";
+  const deg = (value: number) => `${Math.round(value).toLocaleString(numberLocale)}°C`;
+  const weatherValue = weather
+    ? `${deg(weather.temperature)} · ${lang === "ar" ? weather.label_ar : weather.label_en}`
+    : metricsState === "loading"
+      ? t(copy.weatherUpdating)
+      : t(copy.weatherFailed);
+  const weatherDetail =
+    weather && (weather.high !== null || weather.low !== null)
+      ? [
+          weather.high !== null ? `${t(copy.weatherHigh)} ${deg(weather.high)}` : null,
+          weather.low !== null ? `${t(copy.weatherLow)} ${deg(weather.low)}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")
+      : null;
+  const WeatherIcon = ((): LucideIcon => {
+    const c = weather?.condition ?? "";
+    if (c === "CLEAR" || c === "MOSTLY_CLEAR") return Sun;
+    if (c === "CLOUDY" || c === "MOSTLY_CLOUDY") return Cloud;
+    if (c === "THUNDERSTORM") return CloudLightning;
+    if (c.includes("RAIN") || c.includes("SHOWER")) return CloudRain;
+    if (c === "FOG" || c === "HAZE" || c === "DUST" || c === "SANDSTORM") return CloudFog;
+    if (c === "WINDY") return Wind;
+    return CloudSun;
+  })();
+
 
   const renderSection = (sec: SectionConfig) => {
     switch (sec.id) {
@@ -544,9 +633,11 @@ function HomePage() {
                       {
                         label: copy.easternWeather,
                         value: weatherValue,
+                        detail: weatherDetail,
+                        retry: !weather && metricsState === "error",
                         mono: false,
                         link: null,
-                        icon: CloudSun,
+                        icon: WeatherIcon,
                       },
                       {
                         label: copy.quickRequests,
@@ -558,11 +649,14 @@ function HomePage() {
                     ] as {
                       label: BiText;
                       value?: string;
+                      detail?: string | null;
+                      retry?: boolean;
                       mono?: boolean;
                       link: string | null;
                       hash?: string;
                       icon: LucideIcon | null;
                     }[]
+
                   ).map((item, i) => {
                     const Icon = item.icon;
                     const content = (
@@ -608,6 +702,23 @@ function HomePage() {
                             {item.value}
                           </dd>
                         ) : null}
+                        {item.detail ? (
+                          <dd className="nums mt-0.5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-medium text-ivory/70 sm:text-[11px]">
+                            {item.detail}
+                          </dd>
+                        ) : null}
+                        {item.retry ? (
+                          <dd className="mt-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setMetricsNonce((n) => n + 1)}
+                              className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10px] font-semibold leading-none text-gold transition-colors hover:border-gold/70 hover:bg-gold/20 sm:text-[11px]"
+                            >
+                              {t(copy.weatherRetry)}
+                            </button>
+                          </dd>
+                        ) : null}
+
                       </div>
                     );
 
