@@ -518,9 +518,34 @@ function HomePage() {
     ? homeMetrics.visits.toLocaleString(lang === "ar" ? "ar-EG" : "en-US")
     : "—";
   const todayValue = homeMetrics?.now ? formatDualDate(homeMetrics.now, lang, "short") : "—";
-  const weatherValue = homeMetrics?.weather
-    ? `${Math.round(homeMetrics.weather.temperature).toLocaleString(lang === "ar" ? "ar-EG" : "en-US")}°C · ${lang === "ar" ? homeMetrics.weather.label_ar : homeMetrics.weather.label_en}`
-    : t(copy.weatherUpdating);
+  const weather = homeMetrics?.weather ?? null;
+  const numberLocale = lang === "ar" ? "ar-EG" : "en-US";
+  const deg = (value: number) => `${Math.round(value).toLocaleString(numberLocale)}°C`;
+  const weatherValue = weather
+    ? `${deg(weather.temperature)} · ${lang === "ar" ? weather.label_ar : weather.label_en}`
+    : metricsState === "loading"
+      ? t(copy.weatherUpdating)
+      : t(copy.weatherFailed);
+  const weatherDetail =
+    weather && (weather.high !== null || weather.low !== null)
+      ? [
+          weather.high !== null ? `${t(copy.weatherHigh)} ${deg(weather.high)}` : null,
+          weather.low !== null ? `${t(copy.weatherLow)} ${deg(weather.low)}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")
+      : null;
+  const WeatherIcon = ((): LucideIcon => {
+    const c = weather?.condition ?? "";
+    if (c === "CLEAR" || c === "MOSTLY_CLEAR") return Sun;
+    if (c === "CLOUDY" || c === "MOSTLY_CLOUDY") return Cloud;
+    if (c === "THUNDERSTORM") return CloudLightning;
+    if (c.includes("RAIN") || c.includes("SHOWER")) return CloudRain;
+    if (c === "FOG" || c === "HAZE" || c === "DUST" || c === "SANDSTORM") return CloudFog;
+    if (c === "WINDY") return Wind;
+    return CloudSun;
+  })();
+
 
   const renderSection = (sec: SectionConfig) => {
     switch (sec.id) {
