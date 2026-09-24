@@ -27,7 +27,7 @@ export const Route = createFileRoute("/news")({
     const rows = await getPublishedNews();
     return { news: mergeNews(rows, staticNews) };
   },
-  head: ({ matches, match }) => (console.log("HEADDBG", matches.map((m) => m.routeId), match.routeId), {
+  head: ({ matches, match }) => ({
     meta: [
       { title: "الأخبار والبيانات الرسمية | آل بوعبيد" },
       {
