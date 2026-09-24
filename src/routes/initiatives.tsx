@@ -28,7 +28,7 @@ export const Route = createFileRoute("/initiatives")({
     const rows = await getPublishedInitiatives();
     return { initiatives: mergeInitiatives(rows, staticInitiatives) };
   },
-  head: () => ({
+  head: ({ matches, match }) => ({
     meta: [
       { title: "المبادرات والمشاريع | آل بوعبيد" },
       {
@@ -45,7 +45,10 @@ export const Route = createFileRoute("/initiatives")({
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/initiatives") },
     ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/initiatives") }],
+    links:
+      matches[matches.length - 1]?.routeId === match.routeId
+        ? [{ rel: "canonical", href: getCanonicalUrl("/initiatives") }]
+        : [],
   }),
   component: InitiativesLayout,
 });

@@ -27,7 +27,7 @@ export const Route = createFileRoute("/news")({
     const rows = await getPublishedNews();
     return { news: mergeNews(rows, staticNews) };
   },
-  head: () => ({
+  head: ({ matches, match }) => ({
     meta: [
       { title: "الأخبار والبيانات الرسمية | آل بوعبيد" },
       {
@@ -44,7 +44,10 @@ export const Route = createFileRoute("/news")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/news") },
     ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/news") }],
+    links:
+      matches[matches.length - 1]?.routeId === match.routeId
+        ? [{ rel: "canonical", href: getCanonicalUrl("/news") }]
+        : [],
   }),
   component: NewsLayout,
 });
