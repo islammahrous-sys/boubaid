@@ -120,3 +120,8 @@
 - [x] Replace the homepage licence/date/fund card area with visit count, current date, and Eastern Province weather.
 - [x] Apply the confirmed wording: homepage CTA points to Requests Hub, request workflow says “Send a Request”, and committee requests are dedicated.
 - [x] Verify homepage and committee request flows on desktop and mobile.
+
+## Production audit (24 Sep 2026)
+- [x] Family stats permission, permissions/role_permissions lockdown, private content bucket, storage listing, CSV formula neutralisation, robots/sitemap/canonical domain, duplicate canonicals.
+- [ ] Leaked-password protection — waiting on owner (hosted auth setting).
+- [ ] Redeploy Vercel copy — waiting on owner.
