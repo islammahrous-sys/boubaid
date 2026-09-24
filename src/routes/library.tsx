@@ -103,7 +103,7 @@ export const Route = createFileRoute("/library")({
 
     return { collections, folders, videos };
   },
-  head: () => ({
+  head: ({ matches, match }) => ({
     meta: [
       { title: "الأرشيف التراثي المصور | آل بوعبيد" },
       {
@@ -120,7 +120,10 @@ export const Route = createFileRoute("/library")({
       { property: "og:url", content: getCanonicalUrl("/library") },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/library") }],
+    links:
+      matches[matches.length - 1]?.routeId === match.routeId
+        ? [{ rel: "canonical", href: getCanonicalUrl("/library") }]
+        : [],
   }),
   component: LibraryRouteLayout,
 });
