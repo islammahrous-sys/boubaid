@@ -360,10 +360,10 @@ export type PublicFamilyStats = {
 export const getPublicFamilyStats = createServerFn({ method: "GET" }).handler(
   async (): Promise<PublicFamilyStats | null> => {
     try {
-      const { createPublicServerClient } = await import("./supabase-public.server");
-      // Added by migration family_public_stats_rpc — not yet in the generated
-      // Database type, so call through a narrow cast (see saveContentPageSectionsAtomic).
-      const rpcClient = createPublicServerClient() as unknown as {
+      // EXECUTE is granted to service_role only; the function returns
+      // aggregate counts only, so call it with the server-side admin client.
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const rpcClient = supabaseAdmin as unknown as {
         rpc: (fn: "family_public_stats") => Promise<{
           data: Record<string, any> | null;
           error: { code?: string; message: string } | null;
