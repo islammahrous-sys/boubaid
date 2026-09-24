@@ -1,4 +1,3 @@
-import { siteMeta } from "@/content/site";
 
 const DEFAULT_BASE_URL = "https://alboabid-heritage-hub.lovable.app";
 
