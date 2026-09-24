@@ -30,7 +30,7 @@ const DEFAULT_SUPABASE_PUBLISHABLE_KEY =
 const SITE_URL = (
   process.env.VITE_SITE_URL ||
   process.env.SITE_URL ||
-  "https://albouabidfamily.com"
+  "https://alboabid-heritage-hub.lovable.app"
 ).replace(/\/+$/, "");
 
 function getSupabase() {
@@ -177,6 +177,11 @@ async function main() {
     { loc: `${SITE_URL}/contribute`, changefreq: "monthly", priority: "0.7" },
     { loc: `${SITE_URL}/requests`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/contact`, changefreq: "monthly", priority: "0.6" },
+    { loc: `${SITE_URL}/templates`, changefreq: "monthly", priority: "0.6" },
+    { loc: `${SITE_URL}/fund`, changefreq: "monthly", priority: "0.7" },
+    { loc: `${SITE_URL}/fund-certificates`, changefreq: "monthly", priority: "0.6" },
+    { loc: `${SITE_URL}/fund-financials`, changefreq: "monthly", priority: "0.6" },
+    { loc: `${SITE_URL}/events`, changefreq: "weekly", priority: "0.6" },
   ];
 
   // news_posts and articles can share a slug on /news/$slug — one URL, one entry.

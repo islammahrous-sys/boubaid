@@ -1,6 +1,5 @@
-import { siteMeta } from "@/content/site";
 
-const DEFAULT_BASE_URL = `https://${siteMeta.domain || "albouabidfamily.com"}`;
+const DEFAULT_BASE_URL = "https://alboabid-heritage-hub.lovable.app";
 
 export function getBaseUrl(): string {
   const envUrl =

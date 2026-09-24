@@ -7,4 +7,4 @@ Disallow: /content
 Disallow: /auth
 Disallow: /verify
 
-Sitemap: https://albouabidfamily.com/sitemap.xml
+Sitemap: https://alboabid-heritage-hub.lovable.app/sitemap.xml
