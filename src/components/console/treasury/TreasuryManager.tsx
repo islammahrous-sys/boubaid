@@ -1,3 +1,4 @@
+import { csvLine } from "@/lib/csv";
 import { formatDualDate } from "@/lib/dates";
 import { useState, useEffect } from "react";
 import {
@@ -536,7 +537,7 @@ export function TreasuryManager({
       `"${new Date(c.created_at).toISOString()}"`,
     ]);
 
-    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => csvLine(r))].join("\r\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");

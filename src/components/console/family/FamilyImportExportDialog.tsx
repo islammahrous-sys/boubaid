@@ -1,3 +1,4 @@
+import { csvCell } from "@/lib/csv";
 import { useState } from "react";
 import {
   Dialog,
@@ -96,7 +97,7 @@ export function FamilyImportExportDialog({
           m.generation || 1,
           `"${m.visibility || "public"}"`,
           `"${m.status || "published"}"`,
-        ].join(","),
+        ].map(csvCell).join(","),
       );
 
       const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
