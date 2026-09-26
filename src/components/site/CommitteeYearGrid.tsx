@@ -51,7 +51,7 @@ export function CommitteeYearGrid({
                 {committee.id === "hq-affairs" ? (
                   <a
                     href="#hq-project"
-                    className="mt-2 inline-block border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze dark:border-gold dark:text-gold"
+                    className="mt-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze dark:border-gold dark:text-gold"
                   >
                     {t({ ar: "مشروع المقر الدائم للأسرة", en: "Permanent Family Headquarters Project" })}
                   </a>
