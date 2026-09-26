@@ -1,3 +1,4 @@
+import { registerCopy } from "@/i18n/editable-copy";
 import type { BiText } from "@/i18n/LanguageProvider";
 
 /**
@@ -6,7 +7,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
  * Licensed by NCNP (المركز الوطني لتنمية القطاع غير الربحي) under license #1200758400 (20 Safar 1447H / 14 August 2025)
  */
 
-export const siteMeta = {
+export const siteMeta = registerCopy("site", {
   officialName: {
     ar: "صندوق التنمية العائلية (آل بوعبيد)",
     en: "Al-Boabid Family Development Fund",
@@ -82,7 +83,7 @@ export const siteMeta = {
   // every anonymous visitor in the client bundle. It is served member-gated by
   // `getMemberBankAccount` (src/lib/contributions.functions.ts) from `SITE_BANK_*`
   // server env.
-};
+});
 
 /**
  * The seven principal lines of the family, as drawn in the twelve

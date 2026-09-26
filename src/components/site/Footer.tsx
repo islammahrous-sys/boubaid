@@ -14,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { formatDualYear } from "@/lib/dates";
+import { copy } from "@/content/page-copy/footer";
 import { useLang } from "@/i18n/LanguageProvider";
 import { siteMeta } from "@/content/site";
 import {
@@ -95,7 +96,7 @@ export function Footer() {
     const parsed = newsletterSchema.safeParse({ email, locale: lang });
     if (!parsed.success) {
       toast.error(
-        lang === "ar" ? "يرجى إدخال بريد إلكتروني صحيح." : "Please enter a valid email address.",
+        t(copy.text1),
       );
       return;
     }
@@ -106,26 +107,18 @@ export function Footer() {
       if (res.ok) {
         toast.success(
           res.already
-            ? lang === "ar"
-              ? "بريدك مسجَّل مسبقاً في نشرة الأسرة."
-              : "This address is already on the family newsletter."
-            : lang === "ar"
-              ? "تم تسجيل اشتراكك في نشرة الأسرة."
-              : "You have been added to the family newsletter.",
+            ? t(copy.text2)
+            : t(copy.text3),
         );
         setEmail("");
       } else {
         toast.error(
-          lang === "ar"
-            ? "تعذّر تسجيل الاشتراك. حاول مرة أخرى."
-            : "Subscription failed. Please try again.",
+          t(copy.text4),
         );
       }
     } catch {
       toast.error(
-        lang === "ar"
-          ? "تعذّر تسجيل الاشتراك. حاول مرة أخرى."
-          : "Subscription failed. Please try again.",
+        t(copy.text5),
       );
     } finally {
       setSubscribing(false);
@@ -134,16 +127,16 @@ export function Footer() {
 
   const channels = [
     {
-      label: { ar: "قناة واتساب", en: "WhatsApp" },
+      label: copy.whatsappLabel,
       href: contactWhatsapp,
       icon: MessageCircle,
     },
     {
-      label: { ar: "الموقع الرسمي", en: "Website" },
+      label: copy.websiteLabel,
       href: `https://${siteMeta.domain}`,
       icon: Globe,
     },
-    { label: { ar: "البريد", en: "Email" }, href: `mailto:${contactEmail}`, icon: Mail },
+    { label: copy.emailLabel, href: `mailto:${contactEmail}`, icon: Mail },
   ];
 
   // Official social channels. Live overrides from `site_contact` win; only
@@ -185,28 +178,26 @@ export function Footer() {
             </div>
 
             <p className="measure-tight mt-6 text-sm leading-relaxed text-ivory/65">
-              {lang === "ar"
-                ? "كيان أهلي مرخص يعنى بتوثيق نسب الأسرة وأرشيفها، وتنظيم أوقافها ومبادراتها التنموية، ومقره مدينة المبرز بمحافظة الأحساء."
-                : "A licensed nonprofit documenting the family's lineage and archive, and administering its endowments and development programmes from Al-Mubarraz, Al-Ahsa."}
+              {t(copy.text6)}
             </p>
 
             {/* Registration statement, set as a formal colophon rather than a badge. */}
             <dl className="mt-7 border-t border-ivory/15 pt-5 text-sm">
               <div className="flex flex-wrap gap-x-3 gap-y-1">
                 <dt className="label-caps pt-1 text-ivory/45">
-                  {lang === "ar" ? "رقم الترخيص" : "Licence no."}
+                  {t(copy.text7)}
                 </dt>
                 <dd className="nums font-mono text-gold">{ncnpLicense}</dd>
               </div>
               <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
                 <dt className="label-caps pt-1 text-ivory/45">
-                  {lang === "ar" ? "جهة الإصدار" : "Issued by"}
+                  {t(copy.text8)}
                 </dt>
                 <dd className="text-ivory/75">{t(siteMeta.ncnpAuthority)}</dd>
               </div>
               <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
                 <dt className="label-caps pt-1 text-ivory/45">
-                  {lang === "ar" ? "تاريخ الإشهار" : "Registered"}
+                  {t(copy.text9)}
                 </dt>
                 <dd className="nums text-ivory/75">
                   {t(siteMeta.foundedHijriLabel)} · {t(siteMeta.foundedGregorianLabel)}
@@ -263,12 +254,10 @@ export function Footer() {
           <div>
             <form onSubmit={handleSubscribe} className="max-w-md">
               <label htmlFor="footer-email" className="label-caps mb-2.5 block text-gold/80">
-                {lang === "ar" ? "نشرة الأسرة" : "Family Newsletter"}
+                {t(copy.text10)}
               </label>
               <p className="mb-3 text-[13px] leading-relaxed text-ivory/55">
-                {lang === "ar"
-                  ? "إشعار دوري بمواعيد اللقاءات والبيانات الرسمية."
-                  : "Periodic notice of assemblies and official announcements."}
+                {t(copy.text11)}
               </p>
               <div className="flex">
                 <input
@@ -277,7 +266,7 @@ export function Footer() {
                   suppressHydrationWarning
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={lang === "ar" ? "البريد الإلكتروني" : "Email address"}
+                  placeholder={t(copy.text12)}
                   required
                   className="w-full border border-ivory/20 bg-transparent px-3.5 py-2.5 text-sm text-ivory outline-none transition-colors placeholder:text-ivory/35 focus:border-gold"
                 />
@@ -287,7 +276,7 @@ export function Footer() {
                   disabled={subscribing}
                   className="shrink-0 border border-gold bg-gold px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-transparent hover:text-gold disabled:opacity-60"
                 >
-                  {lang === "ar" ? "اشتراك" : "Subscribe"}
+                  {t(copy.text13)}
                 </button>
               </div>
             </form>
@@ -338,7 +327,7 @@ export function Footer() {
         <div className="container-page flex flex-col items-center justify-between gap-3 py-4 sm:flex-row">
           <p className="nums text-xs text-ivory/40">
             © {formatDualYear(new Date().getFullYear(), lang)} {t(siteMeta.officialName)} ·{" "}
-            {lang === "ar" ? "جميع الحقوق محفوظة" : "All rights reserved"}
+            {t(copy.text14)}
           </p>
           <button
             type="button"
@@ -346,7 +335,7 @@ export function Footer() {
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="inline-flex items-center gap-1.5 text-xs text-ivory/50 transition-colors hover:text-gold"
           >
-            {lang === "ar" ? "إلى الأعلى" : "Back to top"}
+            {t(copy.text15)}
             <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </div>
