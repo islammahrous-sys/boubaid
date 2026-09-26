@@ -279,17 +279,6 @@ function GovernancePage() {
               new URL(rtl ? boardChartAr.url : boardChartEn.url, "https://alboabid-heritage-hub.lovable.app").toString()
             }
           />
-          <BoardChartFigure
-            className="mt-6"
-            title={
-              rtl
-                ? "الهيكل التنظيمي لمجلس أمناء الصندوق — النسخة الإنجليزية"
-                : "Organizational Chart of the Fund's Board of Trustees — The Arabic version"
-            }
-            href={
-              new URL(rtl ? boardChartEn.url : boardChartAr.url, "https://alboabid-heritage-hub.lovable.app").toString()
-            }
-          />
         </section>
 
         <Ornament className="mt-16" />

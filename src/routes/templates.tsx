@@ -125,10 +125,8 @@ const copy = {
     ar: "المخططات التنظيمية للجان - نسخة قابلة للتحرير",
     en: "Editable Committees Organization Charts",
   } as BiText,
-  fundChartsTitle: {
-    ar: "الهيكل التنظيمي لمجلس أمناء الصندوق - نسخة قابلة للتحرير",
-    en: "Editable Fund_Board_of_Trustees_Org_Chart",
-  } as BiText,
+  fundChartsTitleAr: "الهيكل التنظيمي لمجلس أمناء الصندوق — نسخة قابلة للتحرير",
+  fundChartsTitleEn: "Organizational Chart of the Fund's Board of Trustees — Editable",
   view: { ar: "عرض الملف", en: "View Document" } as BiText,
   open: { ar: "فتح الملف", en: "Open File" } as BiText,
   download: { ar: "تحميل الملف", en: "Download File" } as BiText,
@@ -265,8 +263,12 @@ function TemplatesPage() {
                 assetsTitle: t(copy.assetsTitle),
                 paletteTitle: t(copy.paletteTitle),
                 committeeChartsTitle: t(copy.committeeChartsTitle),
-                fundChartsTitle: t(copy.fundChartsTitle),
+                fundChartsTitle: {
+                  primary: rtl ? copy.fundChartsTitleAr : copy.fundChartsTitleEn,
+                  secondary: rtl ? copy.fundChartsTitleEn : copy.fundChartsTitleAr,
+                },
                 lang,
+                rtl,
                 view: t(copy.view),
                 open: t(copy.open),
                 download: t(copy.download),
@@ -331,8 +333,9 @@ function VisualIdentityLibrary({
     assetsTitle: string;
     paletteTitle: string;
     committeeChartsTitle: string;
-    fundChartsTitle: string;
+    fundChartsTitle: { primary: string; secondary: string };
     lang: string;
+    rtl: boolean;
     view: string;
     open: string;
     download: string;
@@ -423,7 +426,18 @@ function VisualIdentityLibrary({
 
       {fundEditableRecords.length > 0 ? (
         <div>
-          <h3 className="text-[15px] font-semibold text-foreground">{labels.fundChartsTitle}</h3>
+          <h3
+            dir={labels.rtl ? "rtl" : "ltr"}
+            className="break-words text-[15px] font-semibold text-foreground"
+          >
+            {labels.fundChartsTitle.primary}
+          </h3>
+          <p
+            dir={labels.rtl ? "ltr" : "rtl"}
+            className="mt-1 break-words text-[13px] text-muted-foreground"
+          >
+            {labels.fundChartsTitle.secondary}
+          </p>
           <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {fundEditableRecords.map((record) => (
               <VisualIdentityCard
