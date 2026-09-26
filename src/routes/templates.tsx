@@ -426,7 +426,18 @@ function VisualIdentityLibrary({
 
       {fundEditableRecords.length > 0 ? (
         <div>
-          <h3 className="text-[15px] font-semibold text-foreground">{labels.fundChartsTitle}</h3>
+          <h3
+            dir={labels.rtl ? "rtl" : "ltr"}
+            className="break-words text-[15px] font-semibold text-foreground"
+          >
+            {labels.fundChartsTitle.primary}
+          </h3>
+          <p
+            dir={labels.rtl ? "ltr" : "rtl"}
+            className="mt-1 break-words text-[13px] text-muted-foreground"
+          >
+            {labels.fundChartsTitle.secondary}
+          </p>
           <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {fundEditableRecords.map((record) => (
               <VisualIdentityCard
