@@ -392,6 +392,9 @@ const RETIRED_HOME_SECTIONS = new Set([
   "upcoming_events",
   "events",
   "poem_proposal",
+  // The Projects and Programs pages were retired; their list block goes too.
+  "initiatives_list",
+  "programmes",
 ]);
 
 /** Compact date for the homepage events preview cards. */
@@ -976,7 +979,8 @@ function HomePage() {
         const hqSummary = liveHq?.summary ?? hqProject.fundingModel;
 
         return (
-          <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
+          <Fragment key={sec.id}>
+          <section className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
               <figure>
                 <HqProjectVideo label={t(hqTitle)} className="aspect-[4/3] w-full" />
@@ -1032,6 +1036,32 @@ function HomePage() {
                   </div>
                 </div>
 
+                {/* Supporter recognition levels */}
+                <div className="mt-7 border-t border-border pt-5">
+                  <p className="label-caps text-muted-foreground">
+                    {t({ ar: "مستويات الداعمين", en: "Supporter levels" })}
+                  </p>
+                  <ol className="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
+                    {[
+                      { ar: "الماسي", en: "Diamond" },
+                      { ar: "البلاتيني", en: "Platinum" },
+                      { ar: "الذهبي", en: "Golden" },
+                    ].map((tier, i) => (
+                      <li
+                        key={tier.en}
+                        className="rounded-md border border-bronze/40 bg-secondary/40 px-2 py-4 text-center dark:border-gold/40"
+                      >
+                        <span className="nums block font-mono text-xs text-bronze dark:text-gold">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="mt-1 block text-[15px] font-semibold text-foreground">
+                          {t(tier)}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
                 <div className="mt-8 flex flex-wrap items-center gap-3">
                   <Link
                     to="/contribute"
@@ -1042,14 +1072,11 @@ function HomePage() {
                     <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                   </Link>
                   <Link
-                    to={sec.cta_url || "/initiatives"}
+                    to="/committees"
+                    hash="hq-project"
                     className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                   >
-                    {sec.cta_label_ar && rtl
-                      ? sec.cta_label_ar
-                      : sec.cta_label_en && !rtl
-                        ? sec.cta_label_en
-                        : t(copy.hqDetails)}
+                    {t({ ar: "مشروع مقر مجلس الأسرة", en: "Family Council Headquarters Project" })}
                     <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                   </Link>
                 </div>
@@ -1066,6 +1093,27 @@ function HomePage() {
               </div>
             </div>
           </section>
+          <section
+            key={`${sec.id}-testimonials`}
+            aria-labelledby="home-testimonials"
+            className="border-y border-border bg-secondary/40 reveal-on-scroll"
+          >
+            <div className="container-page py-16 md:py-20">
+              <SectionHeading
+                eyebrow={t({ ar: "شهادات", en: "Testimonials" })}
+                title={t({ ar: "قالوا عن الأسرة", en: "What They Said About the Family" })}
+              />
+              <div className="mt-8 rounded-md border border-dashed border-border bg-card px-6 py-10 text-center">
+                <p id="home-testimonials" className="text-sm leading-relaxed text-muted-foreground">
+                  {t({
+                    ar: "ستُنشر هنا الشهادات والأقوال الموثقة عن الأسرة قريباً.",
+                    en: "Documented testimonials about the family will be published here soon.",
+                  })}
+                </p>
+              </div>
+            </div>
+          </section>
+          </Fragment>
         );
       }
 
