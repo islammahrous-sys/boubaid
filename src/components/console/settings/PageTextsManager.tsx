@@ -10,11 +10,15 @@ import type { SiteSettingInput } from "@/lib/admin-hub.schemas";
 
 // Load every page's text set so the registry is complete in the admin.
 import.meta.glob("/src/content/page-copy/*.ts", { eager: true });
+import "@/content/site";
 
 type Bi = { ar?: string; en?: string };
 
 const PAGE_LABELS: Record<string, string> = {
   index: "الرئيسية — Home",
+  footer: "تذييل الموقع — Footer",
+  fund: "الصندوق — Fund",
+  site: "بيانات عامة للموقع — Site-wide details",
   about: "عن الأسرة — About",
   contact: "تواصل — Contact",
   contribute: "المساهمة — Contribute",

@@ -4,6 +4,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
+import { copy } from "@/content/page-copy/fund";
 
 export const Route = createFileRoute("/fund")({
   head: () => ({
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/fund")({
 });
 
 function FundPage() {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const isAr = lang === "ar";
   const Arrow = isAr ? ArrowLeft : ArrowRight;
 
@@ -37,37 +38,29 @@ function FundPage() {
     {
       to: "/fund-certificates",
       icon: FileCheck2,
-      title: isAr ? "الشهادات و الاثباتات" : "Certificates & Attestations",
-      body: isAr
-        ? "الترخيص الرسمي وشهادات التسجيل والإثباتات النظامية المعتمدة للصندوق."
-        : "The official licence, registration certificates, and statutory attestations of the fund.",
+      title: t(copy.text1),
+      body: t(copy.text2),
     },
     {
       to: "/fund-financials",
       icon: Wallet,
-      title: isAr
-        ? "القوائم المالية والموازنة والحسابات"
-        : "Financial Statements, Budget & Accounts",
-      body: isAr
-        ? "القوائم المالية السنوية، والموازنة التقديرية، وكشوف الحسابات التاريخية للصندوق."
-        : "Annual financial statements, the approved budget, and historical account statements.",
+      title: t(copy.text3),
+      body: t(copy.text4),
     },
   ];
 
   return (
     <div>
       <PageHeader
-        eyebrow={isAr ? "الشأن المالي" : "Financial affairs"}
-        title={isAr ? "صندوق التنمية العائلية" : "Family Development Fund"}
+        eyebrow={t(copy.text5)}
+        title={t(copy.text6)}
         subtitle={
-          isAr
-            ? "الوعاء المالي المرخّص للأسرة: توثيق نظامي معلن، وقوائم مالية وموازنة تُعرض على مجلس الأسرة."
-            : "The family's licensed financial vehicle: published statutory documentation, financial statements, and a budget presented to the Family Council."
+          t(copy.text7)
         }
       />
 
       <section className="container-page py-12">
-        <Eyebrow rule>{isAr ? "الأقسام" : "Sections"}</Eyebrow>
+        <Eyebrow rule>{t(copy.text8)}</Eyebrow>
         <div className="mt-6 grid gap-6 md:grid-cols-2">
           {cards.map((c) => {
             const Icon = c.icon;
@@ -83,7 +76,7 @@ function FundPage() {
                 </h2>
                 <Prose className="mt-2 text-sm text-muted-foreground">{c.body}</Prose>
                 <span className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-bronze dark:text-gold">
-                  {isAr ? "استعراض" : "View"}
+                  {t(copy.text9)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
               </Link>
