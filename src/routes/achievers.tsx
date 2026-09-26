@@ -134,8 +134,10 @@ const F = {
 const sar = (n: string): BiText => ({ ar: `${n} ريال`, en: `SAR ${n}` });
 
 const SPONSOR_ROWS = [
-  { year: "1445", participants: 17, honoured: 5, branches: br(4, 3), prize: sar("6000"), fields: [F.sci, F.pro], sponsor: "عادل بن سعد بن علي بن صالح" },
   { year: "1444", participants: 19, honoured: 7, branches: br(4, 3), prize: sar("8000"), fields: [F.sci, F.pro], sponsor: "ماهر بن أحمد بن إبراهيم" },
+  { year: "1445", participants: 17, honoured: 5, branches: br(4, 3), prize: sar("6000"), fields: [F.sci, F.pro], sponsor: "عادل بن سعد بن علي بن صالح" },
+  { year: "1446", participants: 15, honoured: 4, branches: br(3, 3), prize: sar("5000"), fields: [F.sci], sponsor: "عادل بن سعد بن علي بن صالح" },
+  { year: "1447", participants: 18, honoured: 6, branches: br(3, 3), prize: sar("7000"), fields: [F.sci, F.pro, F.prize], sponsor: "عادل بن سعد بن علي بن صالح" },
 ];
 
 function AchieversPage() {
