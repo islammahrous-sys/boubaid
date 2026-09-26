@@ -14,6 +14,18 @@ export type CommitteeArchiveItem = {
   external_url: string | null;
 };
 
+/**
+ * Built-in 1448 activities per committee. Add entries here (or upload
+ * COMM-1448-PLAN-<committee> records in the CMS) to extend a committee's list.
+ */
+const planned1448: Record<string, { ar: string; en: string }[]> = {
+  "activities-initiatives": [
+    { ar: "مسابقة رمضان الثقافية", en: "Ramadan Cultural Quiz" },
+    { ar: "الأعمال التطوعية", en: "Volunteer Work" },
+  ],
+  "finance-investment": [{ ar: "ساعات التطوع", en: "Volunteer Hours" }],
+};
+
 function itemHref(item: CommitteeArchiveItem) {
   return item.file_url || item.file_path || item.external_url || null;
 }
@@ -61,7 +73,17 @@ export function CommitteeYearGrid({
                 </p>
               </>
             ) : null}
-            {items.length === 0 ? (
+            {kind === "PLAN" && planned1448[committee.id] ? (
+              <ul className="mt-3 space-y-2">
+                {planned1448[committee.id].map((activity) => (
+                  <li key={activity.ar} className="flex items-center gap-2 text-[13px] text-foreground">
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-bronze dark:bg-gold" aria-hidden="true" />
+                    {t(activity)}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {items.length === 0 && !(kind === "PLAN" && planned1448[committee.id]) ? (
               <p className="mt-3 text-[13px] text-muted-foreground">
                 {kind === "PLAN"
                   ? t({
