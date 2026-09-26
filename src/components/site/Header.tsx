@@ -313,13 +313,13 @@ export function Header() {
                                   {typeof child.label === "string" ? child.label : t(child.label)}
                                 </Link>
                                 {child.children && child.children.length > 0 ? (
-                                  <ul className="mt-1 space-y-0.5 ps-3">
+                                  <ul className="mt-1 space-y-1">
                                     {child.children.map((sub) => (
                                       <li key={sub.id ?? sub.to}>
                                         <Link
                                           {...navLinkProps(sub.to)}
                                           onClick={() => setOpenDropdown(null)}
-                                          className="block rounded-md px-3 py-1.5 text-[12.5px] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                                          className="block rounded-md px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                                         >
                                           {typeof sub.label === "string" ? sub.label : t(sub.label)}
                                         </Link>
@@ -592,7 +592,7 @@ export function Header() {
                                         : t(child.label)}
                                     </Link>
                                     {child.children && child.children.length > 0 ? (
-                                      <ul className="mt-1 ms-3 space-y-1 border-s border-border/70 ps-3">
+                                      <ul className="mt-1 space-y-1">
                                         {child.children.map((sub) => (
                                           <li key={sub.id ?? sub.to}>
                                             <Link
@@ -677,7 +677,7 @@ export function Header() {
                                         {t(child.label)}
                                       </Link>
                                       {child.children && child.children.length > 0 ? (
-                                        <ul className="mt-1 ms-3 space-y-1 border-s border-border/70 ps-3">
+                                        <ul className="mt-1 space-y-1">
                                           {child.children.map((sub) => (
                                             <li key={sub.id ?? sub.to}>
                                               <Link
