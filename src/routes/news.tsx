@@ -18,6 +18,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { copy } from "@/content/page-copy/news";
 
 /** How many "more news" stories are shown per page, after the pinned lead story. */
 const NEWS_PAGE_SIZE = 9;
@@ -62,17 +63,7 @@ function NewsLayout() {
   return <NewsPage />;
 }
 
-const copy = {
-  masthead: { ar: "المركز الإعلامي", en: "Media Centre" } as BiText,
-  issuedBy: { ar: "تصدر عن", en: "Issued by" } as BiText,
-  filterAll: { ar: "الكل", en: "All" } as BiText,
-  filterFund: { ar: "شؤون الصندوق", en: "Fund Affairs" } as BiText,
-  filterFamily: { ar: "شؤون الأسرة", en: "Family" } as BiText,
-  lead: { ar: "الخبر الرئيسي", en: "Lead story" } as BiText,
-  more: { ar: "أخبار أخرى", en: "More news" } as BiText,
-  readOn: { ar: "تتمة الخبر", en: "Continue reading" } as BiText,
-  empty: { ar: "لا توجد أخبار في هذا القسم.", en: "No news in this section." } as BiText,
-};
+
 
 function NewsPage() {
   const { t, lang } = useLang();

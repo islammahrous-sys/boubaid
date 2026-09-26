@@ -3,6 +3,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
+import { copy } from "@/content/page-copy/archivevideoplayer";
 
 /**
  * Native first-party player for the Archive's film clips.
@@ -16,14 +17,7 @@ import { cn } from "@/lib/utils";
 
 const SOUND_EVENT = "alboabid:archive-video-unmuted";
 
-const copy = {
-  soundOn: { ar: "تشغيل الصوت", en: "Turn Sound On" } as BiText,
-  soundOff: { ar: "كتم الصوت", en: "Mute" } as BiText,
-  unsupported: {
-    ar: "لا يدعم متصفحك تشغيل هذا المقطع.",
-    en: "Your browser cannot play this clip.",
-  } as BiText,
-};
+
 
 export function ArchiveVideoPlayer({
   src,

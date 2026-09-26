@@ -3,6 +3,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { Eyebrow } from "@/components/site/Editorial";
 import { downloadFile } from "@/lib/download";
+import { copy } from "@/content/page-copy/collateralslibrary";
 
 /**
  * «المواد التعريفية» / Collaterals — the official collateral documents supplied
@@ -28,25 +29,7 @@ export interface CollateralRecord {
   previewUrl: string | null;
 }
 
-const copy = {
-  title: { ar: "المواد التعريفية", en: "Collaterals" } as BiText,
-  intro: {
-    ar: "المواد التعريفية الرسمية المرفقة بحزمة الهوية البصرية، ويُحمَّل كل مستند بصيغته الأصلية القابلة للتحرير.",
-    en: "The official collateral documents supplied with the visual identity package; every document downloads in its original editable format.",
-  } as BiText,
-  view: { ar: "عرض", en: "View" } as BiText,
-  open: { ar: "فتح المستند", en: "Open document" } as BiText,
-  originalNote: {
-    ar: "يُفتح المستند بصيغته الأصلية القابلة للتحرير، ويُنزَّل كما هو دون أي تعديل.",
-    en: "The document opens in its original editable format and downloads unchanged.",
-  } as BiText,
-  download: { ar: "تحميل", en: "Download" } as BiText,
-  previewTitle: { ar: "معاينة المستند", en: "Document preview" } as BiText,
-  previewNote: {
-    ar: "المعاينة صورة للصفحة الأولى من المستند؛ ويُنزَّل الملف الأصلي بصيغته القابلة للتحرير.",
-    en: "The preview is an image of the document's first page; the original editable file is downloaded.",
-  } as BiText,
-};
+
 
 const KIND_LABEL: Record<string, BiText> = {
   DOCX: { ar: "مستند نصي", en: "Word" },
