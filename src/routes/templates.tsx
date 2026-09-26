@@ -333,8 +333,9 @@ function VisualIdentityLibrary({
     assetsTitle: string;
     paletteTitle: string;
     committeeChartsTitle: string;
-    fundChartsTitle: string;
+    fundChartsTitle: { primary: string; secondary: string };
     lang: string;
+    rtl: boolean;
     view: string;
     open: string;
     download: string;
