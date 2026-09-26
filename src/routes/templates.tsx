@@ -125,6 +125,10 @@ const copy = {
     ar: "Edttable Committees Organization charts",
     en: "Edttable Committees Organization charts",
   } as BiText,
+  fundChartsTitle: {
+    ar: "الهيكل التنظيمي لمجلس أمناء الصندوق - نسخة قابلة للتحرير",
+    en: "Editable Fund_Board_of_Trustees_Org_Chart",
+  } as BiText,
   view: { ar: "عرض الملف", en: "View Document" } as BiText,
   open: { ar: "فتح الملف", en: "Open File" } as BiText,
   download: { ar: "تحميل الملف", en: "Download File" } as BiText,
@@ -346,6 +350,12 @@ function VisualIdentityLibrary({
   const committeeEditableRecords = records.filter(
     (r) => r.item.reference?.startsWith("COMM-ORG-PPTX-") && r.href,
   );
+  // Only the file matching the page language is shown.
+  const fundEditableRecords = records.filter(
+    (r) =>
+      r.item.reference === (labels.lang === "en" ? "FUND-ORG-PPTX-EN" : "FUND-ORG-PPTX-AR") &&
+      r.href,
+  );
 
   return (
     <div className="mt-8 space-y-10">
@@ -398,6 +408,23 @@ function VisualIdentityLibrary({
           </h3>
           <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {committeeEditableRecords.map((record) => (
+              <VisualIdentityCard
+                key={record.item.id}
+                record={record}
+                compact
+                labels={labels}
+                onView={onView}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {fundEditableRecords.length > 0 ? (
+        <div>
+          <h3 className="text-[15px] font-semibold text-foreground">{labels.fundChartsTitle}</h3>
+          <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {fundEditableRecords.map((record) => (
               <VisualIdentityCard
                 key={record.item.id}
                 record={record}
