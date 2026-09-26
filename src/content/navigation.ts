@@ -79,11 +79,6 @@ export const primaryNav: NavItem[] = [
     label: { ar: "الخدمات", en: "Services" },
     short: { ar: "الخدمات", en: "Services" },
   },
-  {
-    to: "/initiatives",
-    label: { ar: "المشاريع", en: "Projects" },
-    short: { ar: "المشاريع", en: "Projects" },
-  },
   // "Archive" (/library) lives in the "More" menu below — four inline items is
   // the most the header fits alongside the action cluster at the `xl` width in
   // English. `secondaryNav` picks it up automatically from `navGroups`.
@@ -97,8 +92,11 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
       { to: "/about", label: { ar: "التاريخ والجذور", en: "History and Roots" } },
       {
         to: "/achievers",
-        label: { ar: "سجل المتميزين", en: "Roll of Honour" },
-        short: { ar: "المتميزون", en: "Honours" },
+        label: {
+          ar: "جائزة آل بوعبيد للتفوق العلمي والتميز",
+          en: "Al Bu Obaid Award for Academic Excellence and Distinction",
+        },
+        short: { ar: "الجائزة", en: "Award" },
       },
     ],
   },
@@ -134,16 +132,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         ],
       },
       {
-        to: "/initiatives",
-        label: { ar: "المشاريع", en: "Projects" },
-        short: { ar: "المشاريع", en: "Projects" },
-      },
-      {
-        to: "/programs",
-        label: { ar: "البرامج", en: "Programs" },
-        short: { ar: "البرامج", en: "Programs" },
-      },
-      {
         to: "/competitions",
         label: { ar: "المسابقات و الجوائز", en: "Competitions & Awards" },
         short: { ar: "المسابقات", en: "Awards" },
@@ -158,7 +146,11 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         label: { ar: "مجموعات المتحف المصورة", en: "Museum Photo Collections" },
         short: { ar: "المتحف", en: "Museum" },
       },
-      { to: "/news", label: { ar: "الأخبار", en: "News" } },
+      { to: "/news", label: { ar: "المركز الإعلامي", en: "Media Centre" } },
+      {
+        to: "/ahsa-family-councils",
+        label: { ar: "مجالس أسر الأحساء", en: "Al-Ahsa Family Councils" },
+      },
       { to: "/events", label: { ar: "الفعاليات واللقاءات", en: "Events & Gatherings" } },
     ],
   },
