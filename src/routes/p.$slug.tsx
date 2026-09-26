@@ -1,3 +1,4 @@
+import { ContentNotFound } from "@/components/site/ContentNotFound";
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { formatDualDate } from "@/lib/dates";
 import { useState, useRef } from "react";
@@ -153,6 +154,7 @@ export const Route = createFileRoute("/p/$slug")({
     };
   },
   component: DynamicCmsPageComponent,
+  notFoundComponent: () => <ContentNotFound kind="page" />,
 });
 
 function DynamicCmsPageComponent() {

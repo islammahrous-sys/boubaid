@@ -1,3 +1,4 @@
+import { ContentNotFound } from "@/components/site/ContentNotFound";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Link2, Clock, Share2, Check } from "lucide-react";
@@ -43,6 +44,7 @@ export const Route = createFileRoute("/news/$slug")({
     };
   },
   component: NewsDetail,
+  notFoundComponent: () => <ContentNotFound kind="news" />,
 });
 
 const copy = {

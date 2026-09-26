@@ -15,6 +15,8 @@ export const Route = createFileRoute("/ahsa-family-councils")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/ahsa-family-councils") },
       { name: "twitter:card", content: "summary_large_image" },
+      // Placeholder page: keep out of search results until content is added.
+      { name: "robots", content: "noindex" },
     ],
     links: [{ rel: "canonical", href: getCanonicalUrl("/ahsa-family-councils") }],
   }),
