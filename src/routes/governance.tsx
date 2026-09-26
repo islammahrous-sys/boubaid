@@ -100,6 +100,41 @@ const railSections: RailSection[] = [
   { id: "board", label: { ar: "مجلس الأمناء", en: "Board of Trustees" } },
 ];
 
+function BoardChartFigure({ title, href, className = "" }: { title: string; href: string; className?: string }) {
+  const { t, lang } = useLang();
+  const rtl = lang === "ar";
+  return (
+    <figure className={`overflow-hidden rounded-md border border-border bg-card ${className}`}>
+      <figcaption
+        lang={rtl ? "ar" : "en"}
+        dir={rtl ? "rtl" : "ltr"}
+        className="break-words border-b border-border p-4 text-[15px] font-semibold text-foreground"
+      >
+        {title}
+      </figcaption>
+      <button
+        type="button"
+        onClick={() => openMediaViewer({ src: href, kind: "image", title })}
+        className="block w-full overflow-x-auto bg-muted/30 p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-4"
+        aria-label={rtl ? "عرض المخطط بالحجم الكامل" : "Open chart full size"}
+      >
+        <img
+          key={href}
+          src={href}
+          alt={title}
+          width={1920}
+          height={1350}
+          loading="lazy"
+          className="mx-auto block h-auto w-full min-w-[640px] max-w-5xl object-contain sm:min-w-0"
+        />
+      </button>
+      <p className="border-t border-border p-3 text-[12px] text-muted-foreground">
+        {rtl ? "اضغط على المخطط لعرضه بالحجم الكامل." : "Tap the chart to view it full size."}
+      </p>
+    </figure>
+  );
+}
+
 function GovernancePage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
@@ -112,10 +147,6 @@ function GovernancePage() {
     1: siteGovernance.chairman_name,
     2: siteGovernance.vice_chairman_name,
   };
-  const boardChartHref = new URL(
-    rtl ? boardChartAr.url : boardChartEn.url,
-    "https://alboabid-heritage-hub.lovable.app",
-  ).toString();
 
   return (
     <>
@@ -236,65 +267,29 @@ function GovernancePage() {
             </div>
           </div>
 
-          {/* الهيكل التنظيمي لمجلس أمناء الصندوق — language-specific source image */}
-          <figure className="mt-10 overflow-hidden rounded-md border border-border bg-card">
-            <figcaption className="flex flex-col gap-1 border-b border-border p-4">
-              {(rtl
-                ? [
-                    { text: "الهيكل التنظيمي لمجلس أمناء الصندوق", lang: "ar", dir: "rtl" },
-                    { text: "Organizational Chart of the Fund's Board of Trustees", lang: "en", dir: "ltr" },
-                  ]
-                : [
-                    { text: "Organizational Chart of the Fund's Board of Trustees", lang: "en", dir: "ltr" },
-                    { text: "الهيكل التنظيمي لمجلس أمناء الصندوق", lang: "ar", dir: "rtl" },
-                  ]
-              ).map((line, i) => (
-                <span
-                  key={line.lang}
-                  lang={line.lang}
-                  dir={line.dir}
-                  className={
-                    i === 0
-                      ? "break-words text-[15px] font-semibold text-foreground"
-                      : "break-words text-[13px] font-medium text-muted-foreground"
-                  }
-                >
-                  {line.text}
-                </span>
-              ))}
-            </figcaption>
-            <button
-              type="button"
-              onClick={() =>
-                openMediaViewer({
-                  src: boardChartHref,
-                  kind: "image",
-                  title: rtl
-                    ? "الهيكل التنظيمي لمجلس امناء الصندوق"
-                    : "Organizational Chart of the Fund's Board of Trustees",
-                })
-              }
-              className="block w-full overflow-x-auto bg-muted/30 p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-4"
-              aria-label={rtl ? "عرض المخطط بالحجم الكامل" : "Open chart full size"}
-            >
-              <img
-                key={boardChartHref}
-                src={boardChartHref}
-                alt={
-                  rtl
-                    ? "الهيكل التنظيمي لمجلس امناء الصندوق"
-                    : "Organizational Chart of the Fund's Board of Trustees"
-                }
-                width={1920}
-                height={1350}
-                loading="lazy"
-                className="mx-auto block h-auto w-full min-w-[640px] max-w-5xl object-contain sm:min-w-0"
-              />
-            </button>
-            <p className="border-t border-border p-3 text-[12px] text-muted-foreground">
-              {rtl ? "اضغط على المخطط لعرضه بالحجم الكامل." : "Tap the chart to view it full size."}
-            </p>
-          </figure>
+          {/* الهيكل التنظيمي لمجلس أمناء الصندوق — language-specific source images */}
+          <BoardChartFigure
+            className="mt-10"
+            title={
+              rtl
+                ? "الهيكل التنظيمي لمجلس أمناء الصندوق"
+                : "Organizational Chart of the Fund's Board of Trustees"
+            }
+            href={
+              new URL(rtl ? boardChartAr.url : boardChartEn.url, "https://alboabid-heritage-hub.lovable.app").toString()
+            }
+          />
+          <BoardChartFigure
+            className="mt-6"
+            title={
+              rtl
+                ? "الهيكل التنظيمي لمجلس أمناء الصندوق — النسخة الإنجليزية"
+                : "Organizational Chart of the Fund's Board of Trustees — The Arabic version"
+            }
+            href={
+              new URL(rtl ? boardChartEn.url : boardChartAr.url, "https://alboabid-heritage-hub.lovable.app").toString()
+            }
+          />
         </section>
 
         <Ornament className="mt-16" />
