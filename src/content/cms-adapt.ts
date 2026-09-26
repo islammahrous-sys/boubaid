@@ -53,7 +53,7 @@ export function mergeNews(dbRows: NewsRow[], staticItems: NewsItem[]): NewsItem[
 
 export type InitiativeItem = {
   slug: string;
-  /** "project" for المشاريع, "program" for البرامج, "competition" for المسابقات و الجوائز. */
+  /** Public initiatives use project/program; competition is retained only for legacy row typing. */
   kind?: "project" | "program" | "competition";
   title: BiText;
   /**
@@ -86,9 +86,7 @@ export function mergeInitiatives(
   dbRows: InitiativeRow[],
   staticItems: InitiativeItem[],
 ): InitiativeItem[] {
-  // البرامج (kind = "program") and المسابقات و الجوائز (kind = "competition")
-  // live in the same table but have their own pages (/programs, /competitions);
-  // المشاريع pages must not list them.
+  // Programmes and retired legacy competition rows must not appear as projects.
   const dbItems = dbRows
     .filter((r) => r.kind !== "program" && r.kind !== "competition")
     .map(mapInitiativeRow);

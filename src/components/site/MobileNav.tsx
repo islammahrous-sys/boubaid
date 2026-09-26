@@ -13,7 +13,12 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { siteMeta } from "@/content/site";
-import { navGroups, isRouteActive, navLinkProps } from "@/content/navigation";
+import {
+  navGroups,
+  isRouteActive,
+  navLinkProps,
+  withoutRetiredNavigation,
+} from "@/content/navigation";
 import { getPublicNavigation } from "@/lib/cms.functions";
 import { PalmGlyph, CompassGlyph, BookGlyph, SealGlyph } from "@/components/site/Glyphs";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
@@ -49,7 +54,7 @@ export function MobileNav() {
     queryFn: () => getPublicNavigation(),
     staleTime: 5 * 60 * 1000,
   });
-  const liveHeaderItems = liveNav?.header ?? [];
+  const liveHeaderItems = withoutRetiredNavigation(liveNav?.header ?? []);
   const usingLiveNav = liveHeaderItems.length > 0;
 
   const ChevronIcon = lang === "ar" ? ChevronLeft : ChevronRight;

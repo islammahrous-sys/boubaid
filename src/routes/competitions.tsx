@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-/** The Competitions & Awards page was removed; old links/bookmarks land on the home page instead of a 404. */
+/** Legacy address only: the retired standalone section has no page content. */
 export const Route = createFileRoute("/competitions")({
   beforeLoad: () => {
     throw redirect({ to: "/", statusCode: 301 });

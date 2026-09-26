@@ -13,6 +13,7 @@ import {
   isNavItemActive,
   type NavItem,
   navLinkProps,
+  withoutRetiredNavigation,
 } from "@/content/navigation";
 import { getPublicNavigation, getPublicSiteSettings } from "@/lib/cms.functions";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -47,7 +48,7 @@ export function Header() {
     queryFn: () => getPublicNavigation(),
     staleTime: 5 * 60 * 1000,
   });
-  const liveHeaderItems = liveNav?.header ?? [];
+  const liveHeaderItems = withoutRetiredNavigation(liveNav?.header ?? []);
   const usingLiveNav = liveHeaderItems.length > 0;
   const navPrimary = usingLiveNav
     ? liveHeaderItems.slice(0, HEADER_PRIMARY_COUNT)
