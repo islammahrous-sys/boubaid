@@ -490,7 +490,7 @@ function LibraryPage() {
         <section className="mb-12 border-b border-border pb-12" aria-labelledby="committee-archive-1448">
           <Eyebrow rule>{t({ ar: "الأرشيف", en: "Archive" })}</Eyebrow>
           <h2 id="committee-archive-1448" className="mt-6 text-xl font-semibold text-foreground">
-            {t({ ar: "١. ١٤٤٨ هـ", en: "1. 1448 AH" })}
+            {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
           </h2>
           <CommitteeYearGrid
             rows={committeeArchive as CommitteeArchiveItem[]}
@@ -498,8 +498,8 @@ function LibraryPage() {
           />
 
           {[
-            { year: 1445, label: { ar: "٢. ١٤٤٥ هـ", en: "2. 1445 AH" } },
-            { year: 1444, label: { ar: "٣. ١٤٤٤ هـ", en: "3. 1444 AH" } },
+            { year: 1445, label: { ar: "١٤٤٥ هـ", en: "1445 AH" } },
+            { year: 1444, label: { ar: "١٤٤٤ هـ", en: "1444 AH" } },
           ].map(({ year, label }) => (
             <div key={year} className="mt-10" aria-labelledby={`committee-archive-${year}`}>
               <h2
