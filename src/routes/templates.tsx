@@ -152,6 +152,20 @@ function isPaletteRecord(reference: string | null | undefined) {
   return reference === "VIFC-COLOUR-PALETTE-01" || reference === "VIFC-TYPOGRAPHY-SYSTEM-01";
 }
 
+function fundChartCardTitle(reference: string | null, rtl: boolean, fallback: string) {
+  if (reference === "FUND-ORG-PPTX-EN") {
+    return rtl
+      ? "الهيكل التنظيمي لمجلس أمناء الصندوق — النسخة الإنجليزية"
+      : "Organizational Chart of the Fund's Board of Trustees — The English version";
+  }
+  if (reference === "FUND-ORG-PPTX-AR") {
+    return rtl
+      ? "الهيكل التنظيمي لمجلس أمناء الصندوق — النسخة العربية"
+      : "Organizational Chart of the Fund's Board of Trustees — The Arabic version";
+  }
+  return fallback;
+}
+
 function viewerKind(kind: string | null | undefined, href: string | null): MediaViewerKind | null {
   if (isPdfRecord(kind, href)) return "pdf";
   if (isImageRecord(kind, href)) return "image";
@@ -182,7 +196,11 @@ function TemplatesPage() {
     .map((item) => ({
       item,
       href: item.file_url || item.external_url || item.file_path || null,
-      title: (rtl ? item.title_ar : item.title_en) || item.title_ar,
+      title: fundChartCardTitle(
+        item.reference,
+        rtl,
+        (rtl ? item.title_ar : item.title_en) || item.title_ar,
+      ),
       description: (rtl ? item.description_ar : item.description_en) || null,
     }))
     .filter((r) => r.href);
