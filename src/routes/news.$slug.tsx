@@ -166,7 +166,7 @@ function NewsDetail() {
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-border py-4">
           <span className="label-caps text-muted-foreground">{t(copy.share)}</span>
           <a
-            href={`https://wa.me/?text=${shareText}%20${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+            href={`https://wa.me/?text=${shareText}%20${encodeURIComponent(getCanonicalUrl(`/news/${item.slug}`))}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 transition-colors hover:underline font-semibold"
@@ -175,7 +175,7 @@ function NewsDetail() {
             WhatsApp
           </a>
           <a
-            href={`https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+            href={`https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(getCanonicalUrl(`/news/${item.slug}`))}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-foreground transition-colors hover:text-bronze dark:hover:text-gold font-medium"
