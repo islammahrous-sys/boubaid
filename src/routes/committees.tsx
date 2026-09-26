@@ -15,8 +15,8 @@ import {
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedLibrary } from "@/lib/cms.functions";
 import { downloadFile } from "@/lib/download";
-import masterChartAr from "@/assets/committee-charts-1445/master-ar.png.asset.json";
-import masterChartEn from "@/assets/committee-charts-1445/master-en.png.asset.json";
+import masterChartAr from "@/assets/committee-charts-current/master-ar.png.asset.json";
+import masterChartEn from "@/assets/committee-charts-current/master-en.png.asset.json";
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
