@@ -8,7 +8,7 @@
 
 ## In progress
 
-- [x] Remove the 1445/1444 committee sections and move the 1448 committee archive beneath the Archive page heading.
+- [x] Restore the complete 1445 and 1444 committee sections, preserving their numbered structure and ordering 1445 before 1444; keep the 1448 archive under Archive.
 - Repair and verify every user-facing View action for documents and media locally and on the published website.
 - Rename and restructure the directory into family-member services and establishment services.
 - Connect service documents to existing admin upload and view-only viewer flows.
