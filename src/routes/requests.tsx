@@ -557,7 +557,7 @@ const requests: RequestEntry[] = [
   {
     id: "initiative-participation",
     group: "participation",
-    to: "/committees#hq-project",
+    to: "/committees",
     Icon: Sparkles,
     name: { ar: "طلب الانضمام إلى مشروع أو مبادرة", en: "Initiative participation request" },
     desc: {
