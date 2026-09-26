@@ -122,8 +122,8 @@ const copy = {
   assetsTitle: { ar: "أصول الهوية البصرية", en: "Visual Identity Assets" } as BiText,
   paletteTitle: { ar: "الألوان والطباعة", en: "Colour and Typography" } as BiText,
   committeeChartsTitle: {
-    ar: "Edttable Committees Organization charts",
-    en: "Edttable Committees Organization charts",
+    ar: "المخططات التنظيمية للجان - نسخة قابلة للتحرير",
+    en: "Editable Committees Organization Charts",
   } as BiText,
   fundChartsTitle: {
     ar: "الهيكل التنظيمي لمجلس أمناء الصندوق - نسخة قابلة للتحرير",
@@ -354,11 +354,8 @@ function VisualIdentityLibrary({
   const committeeEditableRecords = records.filter(
     (r) => r.item.reference?.startsWith("COMM-ORG-PPTX-") && r.href,
   );
-  // Only the file matching the page language is shown.
   const fundEditableRecords = records.filter(
-    (r) =>
-      r.item.reference === (labels.lang === "en" ? "FUND-ORG-PPTX-EN" : "FUND-ORG-PPTX-AR") &&
-      r.href,
+    (r) => r.item.reference?.startsWith("FUND-ORG-PPTX-") && r.href,
   );
 
   return (
