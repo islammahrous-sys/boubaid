@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Eye, FileText } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { committees, siteMeta } from "@/content/site";
+import { committeeDocuments } from "@/content/committee-documents";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { Eyebrow, Ornament } from "@/components/site/Editorial";
@@ -12,6 +14,9 @@ import {
 } from "@/components/site/CommitteeYearGrid";
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedLibrary } from "@/lib/cms.functions";
+import { downloadFile } from "@/lib/download";
+import masterChartAr from "@/assets/committee-charts-1445/master-ar.png.asset.json";
+import masterChartEn from "@/assets/committee-charts-1445/master-en.png.asset.json";
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
@@ -62,6 +67,13 @@ const copy = {
     en: "Six executive committees issue from the board, each with a defined remit and a chair answerable to the board.",
   } as BiText,
 
+  masterChartTitle: {
+    ar: "الهيكل التنظيمي للجان مجلس أسرة آل بوعبيد",
+    en: "Organisational Chart of the Al Bu Obaid Family Council Committees",
+  } as BiText,
+  viewChart: { ar: "عرض المخطط", en: "View chart" } as BiText,
+  downloadChart: { ar: "تحميل المخطط", en: "Download chart" } as BiText,
+
   docsEyebrow: { ar: "الوثائق النظامية", en: "Constitutional documents" } as BiText,
   docsNote: {
     ar: "النسخ الموقعة مودعة لدى الأمانة العامة، وجميع نسخها الرقمية منشورة في صفحة الشهادات والإثباتات بصندوق التنمية العائلية.",
@@ -71,12 +83,37 @@ const copy = {
     ar: "الانتقال إلى الشهادات والإثباتات",
     en: "Go to Certificates & Attestations",
   } as BiText,
-
+  viewDoc: { ar: "عرض الوثيقة", en: "View document" } as BiText,
 };
+
+const years: { id: string; year: number; eyebrow: BiText; title: BiText; note: BiText }[] = [
+  {
+    id: "y1445",
+    year: 1445,
+    eyebrow: { ar: "ثانياً", en: "Article II" },
+    title: { ar: "١٤٤٥ هـ", en: "1445 AH" },
+    note: {
+      ar: "الهيكل التنظيمي للجان، والخطابات الرسمية وخطط اللجان التنفيذية لعام ١٤٤٥ هـ.",
+      en: "The committees' organisational chart, official letters and standing-committee plans for 1445 AH.",
+    },
+  },
+  {
+    id: "y1444",
+    year: 1444,
+    eyebrow: { ar: "ثالثاً", en: "Article III" },
+    title: { ar: "١٤٤٤ هـ", en: "1444 AH" },
+    note: {
+      ar: "خطط اللجان التنفيذية والخطابات الرسمية لعام ١٤٤٤ هـ.",
+      en: "Plans of the standing committees and official letters for 1444 AH.",
+    },
+  },
+];
 
 const railSections: RailSection[] = [
   { id: "committees-list", label: { ar: "اللجان", en: "Committees" } },
   { id: "y1448", label: { ar: "١٤٤٨ هـ", en: "1448 AH" } },
+  { id: "y1445", label: { ar: "١٤٤٥ هـ", en: "1445 AH" } },
+  { id: "y1444", label: { ar: "١٤٤٤ هـ", en: "1444 AH" } },
 ];
 
 function CommitteesPage() {
@@ -85,6 +122,7 @@ function CommitteesPage() {
   const Arrow = rtl ? ArrowLeft : ArrowRight;
   const { charts } = Route.useLoaderData();
   const chartRecords = charts as CommitteeArchiveItem[];
+  const masterHref = lang === "en" ? masterChartEn.url : masterChartAr.url;
 
   return (
     <>
@@ -173,6 +211,73 @@ function CommitteesPage() {
           <CommitteeYearGrid rows={chartRecords} kind="PLAN" />
         </section>
 
+        {years.map((year) => {
+          const documents = committeeDocuments.filter((document) => document.year === year.year);
+
+          return (
+            <section
+              key={year.id}
+              id={year.id}
+              className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12"
+            >
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-16">
+                <div>
+                  <Eyebrow>{t(year.eyebrow)}</Eyebrow>
+                  <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
+                    {t(year.title)}
+                  </h2>
+                </div>
+                <div>
+                  <p className="measure text-[13px] leading-relaxed text-muted-foreground">
+                    {t(year.note)}
+                  </p>
+
+                  {year.year === 1445 ? (
+                    <CommitteeChartCard
+                      href={masterHref}
+                      title={t(copy.masterChartTitle)}
+                      viewLabel={t(copy.viewChart)}
+                      downloadLabel={t(copy.downloadChart)}
+                    />
+                  ) : null}
+
+                  <ul className="mt-6 border-t border-border">
+                    {documents.map((document) => (
+                      <li
+                        key={document.id}
+                        className="flex items-center justify-between gap-4 border-b border-border py-3.5 transition-colors hover:bg-secondary/30"
+                      >
+                        <span className="flex min-w-0 items-center gap-3">
+                          <FileText
+                            className="h-4 w-4 shrink-0 text-bronze/70 dark:text-gold/60"
+                            aria-hidden="true"
+                          />
+                          <span className="truncate text-[14px] font-medium text-foreground">
+                            {t(document.title)}
+                          </span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            openMediaViewer({
+                              src: `/api/public/committee-doc?id=${document.id}`,
+                              kind: "pdf",
+                              title: t(document.title),
+                            })
+                          }
+                          className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                        >
+                          {t(copy.viewDoc)}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          );
+        })}
+
         <Ornament className="mt-16" />
 
         {/* ── الوثائق النظامية ──────────────────────────────── */}
@@ -192,5 +297,56 @@ function CommitteesPage() {
         </section>
       </div>
     </>
+  );
+}
+
+function CommitteeChartCard({
+  href,
+  title,
+  viewLabel,
+  downloadLabel,
+}: {
+  href: string;
+  title: string;
+  viewLabel: string;
+  downloadLabel: string;
+}) {
+  return (
+    <figure className="mt-6 overflow-hidden rounded-md border border-border bg-card">
+      <button
+        type="button"
+        onClick={() => openMediaViewer({ src: href, kind: "image", title })}
+        className="flex w-full items-center justify-center bg-muted/30 p-3 transition-colors hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-4"
+        aria-label={`${viewLabel} — ${title}`}
+      >
+        <img
+          src={href}
+          alt={title}
+          loading="lazy"
+          className="block aspect-video w-full object-contain"
+        />
+      </button>
+      <figcaption className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4">
+        <span className="break-words text-[13px] font-medium text-foreground">{title}</span>
+        <span className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <button
+            type="button"
+            onClick={() => openMediaViewer({ src: href, kind: "image", title })}
+            className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+          >
+            <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+            {viewLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => void downloadFile(href, title)}
+            className="inline-flex items-center gap-2 border-b border-transparent pb-0.5 text-[13px] font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+          >
+            <Download className="h-3.5 w-3.5" aria-hidden="true" />
+            {downloadLabel}
+          </button>
+        </span>
+      </figcaption>
+    </figure>
   );
 }
