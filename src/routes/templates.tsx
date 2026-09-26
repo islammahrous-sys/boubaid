@@ -263,8 +263,12 @@ function TemplatesPage() {
                 assetsTitle: t(copy.assetsTitle),
                 paletteTitle: t(copy.paletteTitle),
                 committeeChartsTitle: t(copy.committeeChartsTitle),
-                fundChartsTitle: t(copy.fundChartsTitle),
+                fundChartsTitle: {
+                  primary: rtl ? copy.fundChartsTitleAr : copy.fundChartsTitleEn,
+                  secondary: rtl ? copy.fundChartsTitleEn : copy.fundChartsTitleAr,
+                },
                 lang,
+                rtl,
                 view: t(copy.view),
                 open: t(copy.open),
                 download: t(copy.download),
