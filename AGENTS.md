@@ -10,3 +10,5 @@
 > the editor, so keep the branch in a working state.
 
 <!-- LOVABLE:END -->
+
+- Reuse `CommitteeYearGrid` for CMS-driven 1448 committee plan/archive records so both public placements follow the same reference and file-action rules.
