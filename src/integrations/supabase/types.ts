@@ -2074,15 +2074,17 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_path: string | null
           branch_slug: string | null
+          city: string | null
           created_at: string
           display_name: string | null
+          education_level: string | null
           email: string | null
           full_name_ar: string | null
           full_name_en: string | null
           id: string
-          lineage_notes: string | null
           phone: string | null
           show_in_directory: boolean
           status: Database["public"]["Enums"]["user_status"] | null
@@ -2090,15 +2092,17 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          address?: string | null
           avatar_path?: string | null
           branch_slug?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
+          education_level?: string | null
           email?: string | null
           full_name_ar?: string | null
           full_name_en?: string | null
           id: string
-          lineage_notes?: string | null
           phone?: string | null
           show_in_directory?: boolean
           status?: Database["public"]["Enums"]["user_status"] | null
@@ -2106,15 +2110,17 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          address?: string | null
           avatar_path?: string | null
           branch_slug?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
+          education_level?: string | null
           email?: string | null
           full_name_ar?: string | null
           full_name_en?: string | null
           id?: string
-          lineage_notes?: string | null
           phone?: string | null
           show_in_directory?: boolean
           status?: Database["public"]["Enums"]["user_status"] | null
