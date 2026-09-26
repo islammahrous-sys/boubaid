@@ -11,7 +11,7 @@ import {
   OfficialPlateSection,
   VisualGenealogySection,
 } from "@/components/site/FamilyTreeSections";
-import { getPublicFamilyTreeData } from "@/lib/cms.functions";
+import { getPublicFamilyStats } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 
 const searchSchema = z.object({
@@ -24,11 +24,13 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/family-tree")({
   validateSearch: (search: z.input<typeof searchSchema>) => searchSchema.parse(search),
   loader: async () => {
-    const treeData = await getPublicFamilyTreeData();
-    return { treeData };
+    // Only the member count is needed here (the interactive tree loads its own
+    // data), so avoid shipping the full tree in the page HTML.
+    const stats = await getPublicFamilyStats();
+    return { memberCount: stats?.total ?? 550 };
   },
   head: ({ loaderData }) => {
-    const n = (loaderData?.treeData?.members?.length ?? 550).toLocaleString("ar-EG");
+    const n = (loaderData?.memberCount ?? 550).toLocaleString("ar-EG");
     return {
       meta: [
         { title: "المشجرة التفاعلية | آل بوعبيد" },

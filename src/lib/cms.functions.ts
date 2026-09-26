@@ -667,7 +667,7 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
       return rows;
     };
 
-    const [membersRes, branchesRes, allRelationships] = await Promise.all([
+    const [membersRes, branchesRes, allRelationships, privacyRes] = await Promise.all([
       supabaseAdmin
         .from("family_members")
         .select("*")
@@ -679,6 +679,10 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
         .limit(2000),
       supabase.from("branches").select("*").order("sort_order", { ascending: true }),
       fetchAllRelationships(),
+      // Read all privacy flags in one small query instead of a 550-id IN list.
+      supabaseAdmin
+        .from("family_member_privacy")
+        .select("member_id, show_biography, show_dob, show_relationships"),
     ]);
 
     const members = membersRes.data ?? [];
@@ -695,13 +699,7 @@ export const getPublicFamilyTreeData = createServerFn({ method: "GET" }).handler
     let redacted = members;
     const hideRelationshipsFor = new Set<string>();
     if (members.length > 0) {
-      const { data: privacyRows } = await supabaseAdmin
-        .from("family_member_privacy")
-        .select("member_id, show_biography, show_dob, show_relationships")
-        .in(
-          "member_id",
-          members.map((m) => m.id),
-        );
+      const privacyRows = privacyRes.data;
       const rows = privacyRows ?? [];
       const hideBioFor = new Set(
         rows.filter((p) => p.show_biography === false).map((p) => p.member_id),

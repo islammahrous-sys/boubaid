@@ -74,7 +74,7 @@ const copy = {
   title: { ar: "المبادرات القائمة والمخططة", en: "Current & Planned Initiatives" } as BiText,
   subtitle: {
     ar: "برامج تنموية واجتماعية تنفذها اللجان التنفيذية، إلى جانب مشروع المقر الدائم الذي يمثل أكبر التزام رأسمالي للصندوق.",
-    en: "Development and social programmes delivered by the standing committees, alongside the permanent headquarters — the organisation's largest capital commitment.",
+    en: "Development and social programmes delivered by the executive committees, alongside the permanent headquarters — the organisation's largest capital commitment.",
   } as BiText,
 
   metaActive: { ar: "برامج جارية", en: "Active" } as BiText,

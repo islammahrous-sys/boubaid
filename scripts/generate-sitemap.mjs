@@ -104,7 +104,11 @@ async function main() {
       .select("slug, updated_at, published_at, created_at")
       .eq("status", "published")
       .is("deleted_at", null),
-    supabase.from("initiatives").select("slug, updated_at, created_at").eq("is_published", true),
+    supabase
+      .from("initiatives")
+      .select("slug, updated_at, created_at")
+      .eq("is_published", true)
+      .neq("kind", "competition"),
     supabase
       .from("content_pages")
       .select("slug, updated_at, published_at, no_index, visibility")
@@ -169,7 +173,6 @@ async function main() {
       changefreq: "weekly",
       priority: "0.8",
     },
-    { loc: `${SITE_URL}/ahsa-family-councils`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/news`, lastmod: newsListLastmod, changefreq: "daily", priority: "0.8" },
     { loc: `${SITE_URL}/library`, changefreq: "monthly", priority: "0.7" },
     { loc: `${SITE_URL}/directory`, changefreq: "weekly", priority: "0.7" },
