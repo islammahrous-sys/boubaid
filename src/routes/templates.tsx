@@ -265,6 +265,8 @@ function TemplatesPage() {
                 assetsTitle: t(copy.assetsTitle),
                 paletteTitle: t(copy.paletteTitle),
                 committeeChartsTitle: t(copy.committeeChartsTitle),
+                fundChartsTitle: t(copy.fundChartsTitle),
+                lang,
                 view: t(copy.view),
                 open: t(copy.open),
                 download: t(copy.download),
@@ -329,6 +331,8 @@ function VisualIdentityLibrary({
     assetsTitle: string;
     paletteTitle: string;
     committeeChartsTitle: string;
+    fundChartsTitle: string;
+    lang: string;
     view: string;
     open: string;
     download: string;
