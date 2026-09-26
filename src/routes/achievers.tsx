@@ -491,7 +491,7 @@ function AchieversPage() {
                 <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.participants, 0)}</td>
                 <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.honoured, 0)}</td>
                 <td className="px-3 py-3" />
-                <td className="nums px-3 py-3">{rtl ? "14000 ريال" : "SAR 14,000"}</td>
+                <td className="nums px-3 py-3">{rtl ? "26000 ريال" : "SAR 26,000"}</td>
                 <td className="px-3 py-3" />
                 <td className="px-3 py-3" />
               </tr>

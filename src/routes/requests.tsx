@@ -677,7 +677,16 @@ function RequestsHubPage() {
 
   const myApprovals = approvals.filter((a) => a.allow(roles));
   const { request: requestedForm } = Route.useSearch();
-  const [activeForm, setActiveForm] = useState<CouncilRequestType | null>(requestedForm ?? null);
+  // Committee-nomination links lead to the committee requests section, never auto-open a form.
+  const autoOpen = requestedForm && requestedForm !== "committee_nomination" ? requestedForm : null;
+  const [activeForm, setActiveForm] = useState<CouncilRequestType | null>(autoOpen);
+  useEffect(() => {
+    if (requestedForm !== "committee_nomination") return;
+    const id = window.setTimeout(() => {
+      document.getElementById("committee-requests")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 300);
+    return () => window.clearTimeout(id);
+  }, [requestedForm]);
 
   return (
     <>
