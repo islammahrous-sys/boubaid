@@ -8,6 +8,7 @@
 
 ## In progress
 
+- [ ] Remove the 1445/1444 committee sections and move the 1448 committee archive beneath the Archive page heading.
 - Repair and verify every user-facing View action for documents and media locally and on the published website.
 - Rename and restructure the directory into family-member services and establishment services.
 - Connect service documents to existing admin upload and view-only viewer flows.
