@@ -23,9 +23,9 @@ import {
   updateMyNotificationPreferences,
   type NotificationPreferences,
 } from "@/lib/account.functions";
+import { EDUCATION_LEVELS, PROFILE_CITIES } from "@/lib/account.schemas";
 import { getCategoryForType, type NotificationCategory } from "@/lib/notifications.types";
 import { MembershipRequestModal } from "@/components/account/MembershipRequestModal";
-import { getMemberBankAccount, getMyContributions } from "@/lib/contributions.functions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -238,7 +238,7 @@ function AccountPage() {
   });
 
   const [activeTab, setActiveTab] = useState(() =>
-    searchTab && ["profile", "card", "treasury", "notifications", "security"].includes(searchTab)
+    searchTab && ["profile", "card", "notifications", "security"].includes(searchTab)
       ? searchTab
       : "profile",
   );
@@ -246,7 +246,7 @@ function AccountPage() {
   useEffect(() => {
     if (
       searchTab &&
-      ["profile", "card", "treasury", "notifications", "security"].includes(searchTab)
+      ["profile", "card", "notifications", "security"].includes(searchTab)
     ) {
       setActiveTab(searchTab);
     }
@@ -369,8 +369,6 @@ function AccountPage() {
     }
   };
 
-  const fetchBankAccount = useServerFn(getMemberBankAccount);
-  const fetchMyContributions = useServerFn(getMyContributions);
 
   const isApprovedMember =
     data?.request?.status === "approved" ||
@@ -384,19 +382,6 @@ function AccountPage() {
     Boolean(authContextRoles?.includes("treasurer")) ||
     Boolean(isAdmin);
 
-  const { data: bankAccount, isLoading: bankLoading } = useQuery({
-    queryKey: ["member-bank-account"],
-    queryFn: () => fetchBankAccount(),
-    enabled: isApprovedMember,
-    staleTime: 1000 * 60 * 10,
-  });
-
-  const { data: myContributions, isLoading: contribsLoading } = useQuery({
-    queryKey: ["my-contributions"],
-    queryFn: () => fetchMyContributions(),
-    enabled: !!user,
-    staleTime: 1000 * 60 * 2,
-  });
 
   /**
    * Notification links come from the `notifications.link` column, which is
@@ -436,7 +421,9 @@ function AccountPage() {
     full_name_en: authProfile?.full_name_en ?? (user?.user_metadata?.full_name_en as string) ?? "",
     branch_slug: "",
     phone: "",
-    lineage_notes: "",
+    education_level: "",
+    city: "",
+    address: "",
     avatar_path: authProfile?.avatar_path ?? "",
     show_in_directory: false,
   }));
@@ -472,7 +459,9 @@ function AccountPage() {
       full_name_en: data.profile.full_name_en ?? "",
       branch_slug: resolveBranchId(data.profile.branch_slug),
       phone: data.profile.phone ?? "",
-      lineage_notes: data.profile.lineage_notes ?? "",
+      education_level: data.profile.education_level ?? "",
+      city: data.profile.city ?? "",
+      address: data.profile.address ?? "",
       avatar_path: data.profile.avatar_path ?? "",
       show_in_directory: !!data.profile.show_in_directory,
     });
@@ -503,7 +492,7 @@ function AccountPage() {
     if (form.full_name_ar.trim()) score += 25;
     if (form.branch_slug) score += 25;
     if (form.phone.trim()) score += 25;
-    if (effectiveAvatar || form.lineage_notes.trim()) score += 25;
+    if (effectiveAvatar || form.city || form.education_level) score += 25;
     return score;
   }, [form, effectiveAvatar]);
 
@@ -654,7 +643,7 @@ function AccountPage() {
           full_name_en: payload?.full_name_en ?? form.full_name_en ?? "",
           phone: payload?.phone ?? form.phone ?? "",
           branch_slug: payload?.branch_slug ?? form.branch_slug ?? "",
-          father_lineage: payload?.father_lineage ?? form.lineage_notes ?? "",
+          father_lineage: payload?.father_lineage ?? "",
           notes: payload?.notes ? payload.notes.trim() : null,
         },
       }),
@@ -915,17 +904,6 @@ function AccountPage() {
                 </Button>
               )}
               <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 border-border hover:bg-secondary"
-              >
-                <Link to="/contribute">
-                  <CreditCard className="w-4 h-4 text-gold" />
-                  {isAr ? "المساهمة في الخزينة" : "Family Fund"}
-                </Link>
-              </Button>
-              <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
@@ -1117,13 +1095,6 @@ function AccountPage() {
               {isAr ? "بطاقة العضوية" : "Digital ID"}
             </TabsTrigger>
             <TabsTrigger
-              value="treasury"
-              className="shrink-0 text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground"
-            >
-              <CreditCard className="w-3.5 h-3.5" />
-              {isAr ? "الخزينة والاشتراك" : "Treasury & Dues"}
-            </TabsTrigger>
-            <TabsTrigger
               value="notifications"
               className="shrink-0 relative text-xs sm:text-sm py-2 px-3 gap-1.5 data-[state=active]:bg-secondary data-[state=active]:text-foreground"
             >
@@ -1173,26 +1144,6 @@ function AccountPage() {
                 <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab("treasury")}
-                className="p-3.5 rounded-2xl border border-border bg-card hover:bg-secondary/30 transition-all flex items-center justify-between group shadow-sm text-start"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gold/10 text-gold flex items-center justify-center">
-                    <Wallet className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-foreground block">
-                      {isAr ? "صندوق الأسرة والخزينة" : "Family Fund & Dues"}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">
-                      {isAr ? "الاشتراكات والحساب البنكي" : "Dues & Bank Info"}
-                    </span>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-gold transition-colors" />
-              </button>
 
               <Link
                 to="/directory"
@@ -1425,26 +1376,51 @@ function AccountPage() {
                           </div>
                         </div>
 
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs font-semibold">{isAr ? "المستوى التعليمي" : "Education Level"}</Label>
+                              <span className="text-[10px] text-muted-foreground">{isAr ? "اختياري" : "Optional"}</span>
+                            </div>
+                            <select
+                              value={form.education_level}
+                              onChange={(e) => setForm({ ...form, education_level: e.target.value })}
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <option value="">{isAr ? "— اختر —" : "— Select —"}</option>
+                              {EDUCATION_LEVELS.map((o) => (
+                                <option key={o.value} value={o.value}>{isAr ? o.ar : o.en}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs font-semibold">{isAr ? "المدينة" : "City"}</Label>
+                              <span className="text-[10px] text-muted-foreground">{isAr ? "اختياري" : "Optional"}</span>
+                            </div>
+                            <select
+                              value={form.city}
+                              onChange={(e) => setForm({ ...form, city: e.target.value })}
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <option value="">{isAr ? "— اختر —" : "— Select —"}</option>
+                              {PROFILE_CITIES.map((o) => (
+                                <option key={o.value} value={o.value}>{isAr ? o.ar : o.en}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <Label className="text-xs font-semibold">
-                              {isAr
-                                ? "سلسلة النسب والملاحظات العائلية"
-                                : "Lineage & Ancestral Notes"}
-                            </Label>
-                            <span className="text-[10px] text-muted-foreground">
-                              {isAr ? "اختياري" : "Optional"}
-                            </span>
+                            <Label className="text-xs font-semibold">{isAr ? "العنوان" : "Address"}</Label>
+                            <span className="text-[10px] text-muted-foreground">{isAr ? "اختياري" : "Optional"}</span>
                           </div>
                           <Textarea
-                            rows={3}
-                            value={form.lineage_notes}
-                            onChange={(e) => setForm({ ...form, lineage_notes: e.target.value })}
-                            placeholder={
-                              isAr
-                                ? "مثال: ابن فلان بن فلان، من أهالي المبرز / الصالحية..."
-                                : "Ancestral details..."
-                            }
+                            rows={2}
+                            maxLength={300}
+                            value={form.address}
+                            onChange={(e) => setForm({ ...form, address: e.target.value })}
                           />
                         </div>
 
@@ -2089,317 +2065,6 @@ function AccountPage() {
             </div>
           </TabsContent>
 
-          {/* ──────────────── TAB 3: Treasury & Dues ────────────────── */}
-          <TabsContent value="treasury" className="space-y-6">
-            {/* Top Cards: Bank Account Details + Contribution Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Bank Card */}
-              <Card className="border-border bg-card rounded-2xl">
-                <CardHeader>
-                  <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-gold" />
-                    {isAr ? "الحساب البنكي الرسمي المعتمد" : "Official Bank Particulars"}
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    {isAr
-                      ? "الحساب البنكي الرسمي لصندوق التنمية العائلية (آل بوعبيد) الخاضع للإشراف المالي والترخيص."
-                      : "Official licensed bank account of Al-Boabid Family Development Fund."}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 text-xs">
-                  {isApprovedMember ? (
-                    bankLoading ? (
-                      <div className="p-8 flex items-center justify-center">
-                        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-                      </div>
-                    ) : bankAccount ? (
-                      <div className="p-4 rounded-xl border border-border bg-secondary/30 space-y-2.5">
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">
-                            {isAr ? "اسم الحساب:" : "Account Name:"}
-                          </span>
-                          <span className="font-bold text-foreground">
-                            {isAr
-                              ? bankAccount.beneficiary_name_ar ||
-                                "صندوق التنمية العائلية (آل بوعبيد)"
-                              : bankAccount.beneficiary_name_en || "Al-Boabid Family Fund"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">{isAr ? "البنك:" : "Bank:"}</span>
-                          <span className="font-semibold text-foreground">
-                            {isAr
-                              ? bankAccount.bank_name_ar || "مصرف الإنماء"
-                              : bankAccount.bank_name_en || "Alinma Bank"}
-                          </span>
-                        </div>
-                        {bankAccount.accountNumber && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">
-                              {isAr ? "رقم الحساب:" : "Account Number:"}
-                            </span>
-                            <span className="font-mono font-medium text-foreground">
-                              {bankAccount.accountNumber}
-                            </span>
-                          </div>
-                        )}
-                        <div className="pt-2 border-t border-border/50">
-                          <span className="text-muted-foreground block text-[11px] mb-1">
-                            {isAr ? "رقم الآيبان الدولي (IBAN):" : "IBAN:"}
-                          </span>
-                          <div className="flex items-center justify-between bg-background p-2.5 rounded-lg border border-border font-mono text-xs">
-                            <span
-                              className={cn(
-                                "tracking-wide",
-                                !bankAccount.iban &&
-                                  "text-muted-foreground font-normal text-[11px]",
-                              )}
-                            >
-                              {bankAccount.iban
-                                ? bankAccount.iban.match(/.{1,4}/g)?.join(" ") || bankAccount.iban
-                                : isAr
-                                  ? "قيد الاعتماد من أمانة الصندوق"
-                                  : "Pending official verification"}
-                            </span>
-                            {bankAccount.iban ? (
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="w-7 h-7 hover:bg-muted"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(bankAccount.iban);
-                                  setCopiedIban(true);
-                                  toast.success(isAr ? "تم نسخ الآيبان بنجاح" : "IBAN copied");
-                                  setTimeout(() => setCopiedIban(false), 2500);
-                                }}
-                              >
-                                {copiedIban ? (
-                                  <Check className="w-3.5 h-3.5 text-emerald-500" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
-                                )}
-                              </Button>
-                            ) : null}
-                          </div>
-                        </div>
-                        {bankAccount.notes && (
-                          <p className="text-[10px] text-muted-foreground pt-1 leading-relaxed">
-                            {bankAccount.notes}
-                          </p>
-                        )}
-                      </div>
-                    ) : null
-                  ) : (
-                    <div className="p-4 rounded-xl border border-border bg-amber-500/10 text-amber-800 dark:text-amber-300 space-y-2">
-                      <p className="font-medium text-xs leading-relaxed">
-                        {isAr
-                          ? "بيانات الحساب البنكي تظهر تلقائياً بعد اعتماد العضوية الرسمية في الأسرة."
-                          : "Official bank particulars will appear once membership is verified."}
-                      </p>
-                    </div>
-                  )}
-
-                  <Button asChild className="w-full h-9 text-xs font-bold gap-1.5 rounded-xl">
-                    <Link to="/contribute">
-                      <FileCheck className="w-4 h-4" />
-                      {isAr ? "تسجيل اشتراك أو مساهمة جديدة" : "Record New Contribution"}
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Personal Contributions Stats */}
-              <Card className="border-border bg-card rounded-2xl">
-                <CardHeader>
-                  <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-                    <Wallet className="w-4 h-4 text-primary" />
-                    {isAr ? "ملخص مساهماتي واشتراكاتي" : "My Contributions Summary"}
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    {isAr
-                      ? "إجمالي المبالغ والاشتراكات المعتمدة في سجل الخزينة."
-                      : "Total verified payments and registered dues."}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {contribsLoading ? (
-                    <div className="p-8 flex items-center justify-center">
-                      <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="p-3.5 rounded-xl border border-border bg-emerald-500/5 dark:bg-emerald-500/10">
-                          <span className="text-[11px] text-muted-foreground block mb-1">
-                            {isAr ? "إجمالي المساهمات المعتمدة" : "Total Verified"}
-                          </span>
-                          <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                            {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US", {
-                              style: "currency",
-                              currency: "SAR",
-                              maximumFractionDigits: 0,
-                            }).format(
-                              (myContributions ?? [])
-                                .filter((c) => c.status === "verified")
-                                .reduce((acc, curr) => acc + (curr.amount || 0), 0),
-                            )}
-                          </span>
-                        </div>
-
-                        <div className="p-3.5 rounded-xl border border-border bg-secondary/30">
-                          <span className="text-[11px] text-muted-foreground block mb-1">
-                            {isAr ? "عدد المعاملات" : "Transactions"}
-                          </span>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xl font-bold font-mono text-foreground">
-                              {(myContributions ?? []).length}
-                            </span>
-                            {(myContributions ?? []).some((c) => c.status === "pending") && (
-                              <Badge
-                                variant="outline"
-                                className="text-[10px] text-amber-600 border-amber-500/30"
-                              >
-                                {
-                                  (myContributions ?? []).filter((c) => c.status === "pending")
-                                    .length
-                                }{" "}
-                                {isAr ? "قيد المراجعة" : "pending"}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-secondary/20 border border-border text-xs text-muted-foreground space-y-1">
-                        <p className="font-bold text-foreground">
-                          {isAr ? "حوكمة وتوثيق الصندوق" : "Fund Governance"}
-                        </p>
-                        <p className="text-[11px] leading-relaxed">
-                          {isAr
-                            ? "تخضع جميع المساهمات والاشتراكات للتدقيق الدوري والتوثيق من مجلس أمناء الصندوق والجمعية العمومية."
-                            : "All contributions are audited and verified under the board of trustees oversight."}
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Bottom Card: Personal Contribution History Table */}
-            <Card className="border-border bg-card rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-                    <History className="w-4 h-4 text-gold" />
-                    {isAr ? "سجل مساهماتي السابقة" : "Contribution History"}
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    {isAr
-                      ? "جميع التحويلات والاشتراكات المسجلة باسمك مع حالة الاعتماد من الخزينة."
-                      : "Detailed list of your submitted payments and their verification status."}
-                  </CardDescription>
-                </div>
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className="text-xs font-bold gap-1 rounded-xl"
-                >
-                  <Link to="/contribute">
-                    <FileCheck className="w-3.5 h-3.5" />
-                    {isAr ? "تسجيل مساهمة" : "New Contribution"}
-                  </Link>
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {contribsLoading ? (
-                  <div className="p-8 flex items-center justify-center">
-                    <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-                  </div>
-                ) : (myContributions ?? []).length === 0 ? (
-                  <div className="text-center py-10 border border-dashed border-border rounded-xl">
-                    <Wallet className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
-                    <p className="text-xs text-muted-foreground">
-                      {isAr
-                        ? "لم تقم بتسجيل أي مساهمات سابقة حتى الآن."
-                        : "No contribution records found."}
-                    </p>
-                    <Button asChild size="sm" className="mt-3 text-xs font-bold rounded-xl">
-                      <Link to="/contribute">
-                        {isAr ? "تسجيل أول مساهمة" : "Record First Contribution"}
-                      </Link>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="divide-y divide-border border border-border rounded-xl overflow-hidden">
-                    {(myContributions ?? []).map((c) => (
-                      <div
-                        key={c.id}
-                        className="p-4 bg-card hover:bg-muted/10 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm font-mono text-foreground">
-                              {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US", {
-                                style: "currency",
-                                currency: "SAR",
-                                maximumFractionDigits: 0,
-                              }).format(c.amount)}
-                            </span>
-                            <span className="text-muted-foreground font-medium">·</span>
-                            <span className="font-medium text-foreground">
-                              {c.purpose || (isAr ? "اشتراك عام" : "General contribution")}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                            <span>{formatDualDate(c.created_at, isAr ? "ar" : "en", "short")}</span>
-                            {c.reference && (
-                              <span>
-                                {isAr ? "مرجع:" : "Ref:"}{" "}
-                                <span className="font-mono">{c.reference}</span>
-                              </span>
-                            )}
-                          </div>
-                          {c.review_note && (
-                            <p className="text-[11px] text-muted-foreground bg-muted/40 p-2 rounded-lg mt-1.5">
-                              <span className="font-bold text-foreground">
-                                {isAr ? "ملاحظة الخزينة:" : "Treasury Note:"}
-                              </span>{" "}
-                              {c.review_note}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2 self-start sm:self-center">
-                          {c.status === "verified" ? (
-                            <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 gap-1 text-[11px]">
-                              <CheckCircle2 className="w-3 h-3" />
-                              {isAr ? "معتمدة" : "Verified"}
-                            </Badge>
-                          ) : c.status === "pending" ? (
-                            <Badge
-                              variant="outline"
-                              className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 gap-1 text-[11px]"
-                            >
-                              <Clock className="w-3 h-3 animate-pulse" />
-                              {isAr ? "قيد المراجعة" : "Pending Review"}
-                            </Badge>
-                          ) : (
-                            <Badge variant="destructive" className="gap-1 text-[11px]">
-                              <XCircle className="w-3 h-3" />
-                              {isAr ? "مرفوضة" : "Rejected"}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           {/* ──────────────── TAB: Notifications & Preferences ─────────── */}
           <TabsContent value="notifications" className="space-y-6 max-w-4xl mx-auto">
             {/* Notification Center Card */}
@@ -3039,7 +2704,6 @@ function AccountPage() {
           full_name_en: form.full_name_en,
           branch_slug: form.branch_slug,
           phone: form.phone,
-          father_lineage: form.lineage_notes,
         }}
         branches={branches}
         onSubmit={async (data) => {
@@ -3050,7 +2714,6 @@ function AccountPage() {
             full_name_en: data.full_name_en,
             branch_slug: data.branch_slug,
             phone: data.phone,
-            lineage_notes: data.father_lineage,
           }));
           await apply.mutateAsync(data);
         }}

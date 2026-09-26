@@ -91,7 +91,9 @@ export type AccountSnapshot = {
     branch_slug: string | null;
     phone: string | null;
     email: string | null;
-    lineage_notes: string | null;
+    education_level: string | null;
+    city: string | null;
+    address: string | null;
     avatar_path: string | null;
     show_in_directory: boolean;
   } | null;
@@ -113,7 +115,7 @@ export const getMyAccount = createServerFn({ method: "GET" })
       supabase
         .from("profiles")
         .select(
-          "id, full_name_ar, full_name_en, branch_slug, phone, email, lineage_notes, avatar_path, show_in_directory",
+          "id, full_name_ar, full_name_en, branch_slug, phone, email, education_level, city, address, avatar_path, show_in_directory",
         )
         .eq("id", userId)
         .maybeSingle(),
@@ -172,7 +174,9 @@ export const updateMyProfile = createServerFn({ method: "POST" })
         full_name_en: data.full_name_en || null,
         branch_slug: data.branch_slug || null,
         phone: data.phone || null,
-        lineage_notes: data.lineage_notes || null,
+        education_level: data.education_level || null,
+        city: data.city || null,
+        address: data.address || null,
         avatar_path: data.avatar_path || null,
         show_in_directory: data.show_in_directory,
       },

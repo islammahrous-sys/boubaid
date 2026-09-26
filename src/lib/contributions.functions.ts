@@ -235,64 +235,6 @@ const DEFAULT_TREASURY_CONFIG: TreasuryConfig = {
   },
 };
 
-/**
- * The fund's bank account — for signed-in, approved members only.
- * Reads dynamically from `site_settings` (`treasury_config`) with environment fallback.
- */
-export const getMemberBankAccount = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<MemberBankAccount> => {
-    const { supabase, userId } = context;
-
-    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-    const roleList = (roles ?? []).map((r) => r.role as string);
-    const allowed = ["member", "admin", "super_admin", "editor", "treasurer", "content_manager"];
-    if (!roleList.some((r) => allowed.includes(r))) return null;
-
-    // Check site_settings first
-    try {
-      const { data: setting } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "treasury_config")
-        .maybeSingle();
-
-      const bank = (setting?.value as any)?.bank_account;
-      if (bank && bank.iban) {
-        return {
-          bankName: bank.bank_name_ar
-            ? `${bank.bank_name_ar} | ${bank.bank_name_en || bank.bank_name_ar}`
-            : bank.bank_name_en || "مصرف الإنماء | Alinma Bank",
-          beneficiaryName: bank.beneficiary_name_ar
-            ? `${bank.beneficiary_name_ar} | ${bank.beneficiary_name_en || bank.beneficiary_name_ar}`
-            : bank.beneficiary_name_en || "صندوق التنمية العائلية (آل بوعبيد)",
-          accountNumber: bank.account_number,
-          iban: bank.iban,
-          notes: bank.notes_ar || bank.notes_en || "",
-          bank_name_ar: bank.bank_name_ar,
-          bank_name_en: bank.bank_name_en,
-          beneficiary_name_ar: bank.beneficiary_name_ar,
-          beneficiary_name_en: bank.beneficiary_name_en,
-        };
-      }
-    } catch (err) {
-      console.warn("[contributions] site_settings treasury_config read fallback", err);
-    }
-
-    const env = (key: string, fallback: string) =>
-      (typeof process !== "undefined" && process.env?.[key]) || fallback;
-
-    return {
-      bankName: env("SITE_BANK_NAME", "مصرف الإنماء | Alinma Bank"),
-      beneficiaryName: env(
-        "SITE_BANK_BENEFICIARY",
-        "صندوق التنمية العائلية (آل بوعبيد) | Al-Boabid Family Development Fund",
-      ),
-      accountNumber: env("SITE_BANK_ACCOUNT_NUMBER", ""),
-      iban: env("SITE_BANK_IBAN", ""),
-    };
-  });
-
 export type PublicTreasuryConfig = {
   tiers: TreasuryConfig["tiers"];
   fundPurposes: TreasuryConfig["fund_purposes"];
@@ -478,22 +420,6 @@ export const createManualContribution = createServerFn({ method: "POST" })
     }
 
     return { ok: true as const, contribution: inserted };
-  });
-
-export const getMyContributions = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<ContributionRow[]> => {
-    const { data, error } = await context.supabase
-      .from("contributions")
-      .select(COLS)
-      .eq("user_id", context.userId)
-      .order("created_at", { ascending: false })
-      .limit(100);
-    if (error) {
-      console.error("[contributions] own read failed", error.code, error.message);
-      return [];
-    }
-    return (data ?? []) as ContributionRow[];
   });
 
 export type TreasuryOverview = {

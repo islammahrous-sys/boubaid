@@ -8,7 +8,6 @@ export type DirectoryMember = {
   branch_slug: string | null;
   phone: string | null;
   email: string | null;
-  lineage_notes: string | null;
 };
 
 /**
@@ -28,7 +27,7 @@ export const getMemberDirectory = createServerFn({ method: "GET" })
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, full_name_ar, full_name_en, branch_slug, phone, email, lineage_notes")
+      .select("id, full_name_ar, full_name_en, branch_slug, phone, email")
       .eq("show_in_directory", true)
       .order("full_name_ar", { ascending: true })
       .limit(500);

@@ -46,12 +46,33 @@ const avatarPathField = z
   .optional()
   .or(z.literal(""));
 
+export const EDUCATION_LEVELS = [
+  { value: "phd", ar: "دكتوراه", en: "PhD" },
+  { value: "masters", ar: "ماجستير", en: "Master's" },
+  { value: "university", ar: "جامعي", en: "University" },
+  { value: "intermediate", ar: "متوسط", en: "Intermediate" },
+  { value: "high_school", ar: "ثانوية عامة", en: "High School" },
+  { value: "below_high_school", ar: "أقل من ثانوية عامة", en: "Below High School" },
+] as const;
+
+export const PROFILE_CITIES = [
+  { value: "al_khobar", ar: "الخبر", en: "Al Khobar" },
+  { value: "dammam", ar: "الدمام", en: "Dammam" },
+  { value: "al_ahsa", ar: "الأحساء", en: "Al Ahsa" },
+  { value: "al_jubail", ar: "الجبيل", en: "Al Jubail" },
+] as const;
+
+const optionalEnum = (values: readonly { value: string }[]) =>
+  z.enum(values.map((v) => v.value) as [string, ...string[]]).optional().or(z.literal(""));
+
 export const profileUpdateSchema = z.object({
   full_name_ar: z.string().trim().min(2).max(120),
   full_name_en: z.string().trim().max(120).optional().or(z.literal("")),
   branch_slug: branchSlugField,
   phone: phoneField,
-  lineage_notes: z.string().trim().max(1000).optional().or(z.literal("")),
+  education_level: optionalEnum(EDUCATION_LEVELS),
+  city: optionalEnum(PROFILE_CITIES),
+  address: z.string().trim().max(300).optional().or(z.literal("")),
   avatar_path: avatarPathField,
   show_in_directory: z.boolean().default(false),
 });
