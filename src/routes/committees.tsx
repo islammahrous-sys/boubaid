@@ -11,13 +11,8 @@ import { Eyebrow, Ornament } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedLibrary } from "@/lib/cms.functions";
 import { downloadFile } from "@/lib/download";
-import englishMasterChart from "@/assets/committee-charts-en/E-_Master_Org_Map.PNG.asset.json";
-import englishDevelopmentChart from "@/assets/committee-charts-en/Slide2-2.PNG.asset.json";
-import englishHeadquartersChart from "@/assets/committee-charts-en/Slide3-2.PNG.asset.json";
-import englishFinanceChart from "@/assets/committee-charts-en/Slide4-2.PNG.asset.json";
-import englishCommunicationChart from "@/assets/committee-charts-en/Slide5-2.PNG.asset.json";
-import englishActivitiesChart from "@/assets/committee-charts-en/Slide6-2.PNG.asset.json";
-import englishMediaChart from "@/assets/committee-charts-en/Slide7-2.PNG.asset.json";
+import masterChartAr from "@/assets/committee-charts-1445/master-ar.png.asset.json";
+import masterChartEn from "@/assets/committee-charts-1445/master-en.png.asset.json";
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
@@ -91,51 +86,45 @@ const copy = {
 
 const years: { id: string; year: number; eyebrow: BiText; title: BiText; note: BiText }[] = [
   {
-    id: "y1444",
-    year: 1444,
-    eyebrow: { ar: "أولاً", en: "Article I" },
-    title: { ar: "عام ١٤٤٤هـ", en: "Year 1444H" },
-    note: {
-      ar: "خطط اللجان التنفيذية والخطابات الرسمية لعام ١٤٤٤هـ.",
-      en: "Plans of the standing committees and official letters for 1444H.",
-    },
-  },
-  {
     id: "y1445",
     year: 1445,
     eyebrow: { ar: "ثانياً", en: "Article II" },
-    title: { ar: "عام ١٤٤٥هـ", en: "Year 1445H" },
+    title: { ar: "١٤٤٥ هـ", en: "1445 AH" },
     note: {
-      ar: "الخطابات الرسمية وخطط اللجان التنفيذية لعام ١٤٤٥هـ.",
-      en: "Official letters and plans of the standing committees for 1445H.",
+      ar: "الهيكل التنظيمي للجان، والخطابات الرسمية وخطط اللجان التنفيذية لعام ١٤٤٥ هـ.",
+      en: "The committees' organisational chart, official letters and standing-committee plans for 1445 AH.",
+    },
+  },
+  {
+    id: "y1444",
+    year: 1444,
+    eyebrow: { ar: "ثالثاً", en: "Article III" },
+    title: { ar: "١٤٤٤ هـ", en: "1444 AH" },
+    note: {
+      ar: "خطط اللجان التنفيذية والخطابات الرسمية لعام ١٤٤٤ هـ.",
+      en: "Plans of the standing committees and official letters for 1444 AH.",
     },
   },
 ];
 
 const railSections: RailSection[] = [
-  { id: "org-chart", label: { ar: "الهيكل التنظيمي", en: "Org chart" } },
   { id: "committees-list", label: { ar: "اللجان", en: "Committees" } },
-  { id: "y1444", label: { ar: "عام ١٤٤٤", en: "Year 1444" } },
-  { id: "y1445", label: { ar: "عام ١٤٤٥", en: "Year 1445" } },
+  { id: "y1448", label: { ar: "١٤٤٨ هـ", en: "1448 AH" } },
+  { id: "y1445", label: { ar: "١٤٤٥ هـ", en: "1445 AH" } },
+  { id: "y1444", label: { ar: "١٤٤٤ هـ", en: "1444 AH" } },
+  { id: "archive", label: { ar: "الأرشيف", en: "Archive" } },
 ];
 
-const committeeChartRefs: Record<string, string> = {
-  "development-followup": "COMM-ORG-02",
-  "hq-affairs": "COMM-ORG-03",
-  "finance-investment": "COMM-ORG-04",
-  "family-communication": "COMM-ORG-05",
-  "activities-initiatives": "COMM-ORG-06",
-  "media-support": "COMM-ORG-07",
-};
-
-const englishCommitteeCharts: Record<string, string> = {
-  "development-followup": englishDevelopmentChart.url,
-  "hq-affairs": englishHeadquartersChart.url,
-  "finance-investment": englishFinanceChart.url,
-  "family-communication": englishCommunicationChart.url,
-  "activities-initiatives": englishActivitiesChart.url,
-  "media-support": englishMediaChart.url,
-};
+/**
+ * 1448H uploads are managed from Admin → Library (collection "committee_charts")
+ * using the reference convention:
+ *   COMM-1448-PLAN-<committee-id>-<n>   → Committees → 1448H planned activities
+ *   COMM-1448-ARCH-<committee-id>-<n>   → Archive → 1448H
+ */
+function itemsFor(rows: CommitteeChart[], kind: "PLAN" | "ARCH", committeeId: string) {
+  const prefix = `COMM-1448-${kind}-${committeeId}`.toUpperCase();
+  return rows.filter((r) => (r.reference ?? "").toUpperCase().startsWith(prefix));
+}
 
 type CommitteeChart = {
   id: string;
@@ -157,12 +146,7 @@ function CommitteesPage() {
   const Arrow = rtl ? ArrowLeft : ArrowRight;
   const { charts } = Route.useLoaderData();
   const chartRecords = charts as CommitteeChart[];
-  const masterChart = chartRecords.find((chart) => chart.reference === "COMM-ORG-MASTER-01");
-  const chartsByRef = Object.fromEntries(
-    chartRecords
-      .filter((chart) => chart.reference)
-      .map((chart) => [chart.reference as string, chart]),
-  );
+  const masterHref = lang === "en" ? masterChartEn.url : masterChartAr.url;
 
   return (
     <>
@@ -180,21 +164,8 @@ function CommitteesPage() {
       <SectionRail sections={railSections} className="print-hide" />
 
       <div className="container-page py-14 md:py-16">
-        {masterChart ? (
-          <section id="org-chart" className="scroll-mt-28 reveal-on-scroll">
-            <Eyebrow rule>{t(copy.chartsEyebrow)}</Eyebrow>
-            <CommitteeChartCard
-              chart={masterChart}
-              hrefOverride={lang === "en" ? englishMasterChart.url : undefined}
-              title={t(copy.masterChartTitle)}
-              labels={{ view: t(copy.viewChart), download: t(copy.downloadChart) }}
-              featured
-            />
-          </section>
-        ) : null}
-
         {/* ── اللجان التنفيذية ──────────────────────────────── */}
-        <section id="committees-list" className="scroll-mt-28 reveal-on-scroll mt-16">
+        <section id="committees-list" className="scroll-mt-28 reveal-on-scroll">
           <Eyebrow rule>{t(copy.listTitle)}</Eyebrow>
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.listNote)}
@@ -222,16 +193,6 @@ function CommitteesPage() {
                     </span>
                     <span className="text-foreground">{t(c.lead)}</span>
                   </dd>
-                  {chartsByRef[committeeChartRefs[c.id]] ? (
-                    <dd className="mt-5">
-                      <CommitteeChartCard
-                        chart={chartsByRef[committeeChartRefs[c.id]]}
-                        hrefOverride={lang === "en" ? englishCommitteeCharts[c.id] : undefined}
-                        title={t(c.name)}
-                        labels={{ view: t(copy.viewChart), download: t(copy.downloadChart) }}
-                      />
-                    </dd>
-                  ) : null}
                 </div>
               </div>
             ))}
@@ -246,6 +207,32 @@ function CommitteesPage() {
             {t({ ar: "رشّح نفسك لعضوية إحدى اللجان", en: "Nominate yourself for a committee" })}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
+        </section>
+
+        {/* ── ١٤٤٨ هـ ─────────────────────────────────────────── */}
+        <section
+          id="y1448"
+          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12"
+        >
+          <Eyebrow>{t({ ar: "أولاً", en: "Article I" })}</Eyebrow>
+          <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
+            {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
+          </h2>
+          <div className="mt-6 rounded-md border border-bronze/40 bg-secondary/40 px-6 py-12 text-center dark:border-gold/40">
+            <p className="label-caps text-bronze dark:text-gold">
+              {t({ ar: "مجلس أسرة آل بوعبيد", en: "Al Bu Obaid Family Council" })}
+            </p>
+            <p className="mt-4 text-4xl font-bold leading-tight text-foreground md:text-6xl">
+              {t({ ar: "انتظرونا قريباً", en: "Coming Soon" })}
+            </p>
+            <p className="measure mx-auto mt-4 text-[14px] leading-relaxed text-muted-foreground">
+              {t({
+                ar: "ستُنشر هنا الأنشطة المخطط لها لكل لجنة من لجان مجلس الأسرة لعام ١٤٤٨ هـ.",
+                en: "The planned activities of each Family Council committee for 1448 AH will be published here.",
+              })}
+            </p>
+          </div>
+          <CommitteeYearGrid rows={chartRecords} kind="PLAN" />
         </section>
 
         {/* ── عام ١٤٤٤ / عام ١٤٤٥ ───────────────────────────── */}
@@ -266,6 +253,17 @@ function CommitteesPage() {
                 <p className="measure text-[13px] leading-relaxed text-muted-foreground">
                   {t(y.note)}
                 </p>
+                {y.year === 1445 ? (
+                  <div className="mt-6">
+                    <CommitteeChartCard
+                      chart={{ id: "master-1445", reference: null, title_ar: t(copy.masterChartTitle), title_en: null, file_path: null, external_url: null }}
+                      hrefOverride={masterHref}
+                      title={t(copy.masterChartTitle)}
+                      labels={{ view: t(copy.viewChart), download: t(copy.downloadChart) }}
+                      featured
+                    />
+                  </div>
+                ) : null}
                 {(() => {
                   const docs = committeeDocuments.filter((d) => d.year === y.year);
                   if (docs.length === 0) return null;
@@ -307,6 +305,26 @@ function CommitteesPage() {
             </div>
           </section>
         ))}
+
+        {/* ── الأرشيف ───────────────────────────────────────────── */}
+        <section id="archive" className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12">
+          <Eyebrow rule>{t({ ar: "الأرشيف", en: "Archive" })}</Eyebrow>
+          <h3 className="mt-6 text-lg font-semibold text-foreground">
+            {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
+          </h3>
+          <CommitteeYearGrid rows={chartRecords} kind="ARCH" />
+          {years.map((y) => (
+            <div key={y.id} className="mt-8 border-t border-border pt-6">
+              <h3 className="text-lg font-semibold text-foreground">{t(y.title)}</h3>
+              <a
+                href={`#${y.id}`}
+                className="mt-2 inline-block border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze dark:border-gold dark:text-gold"
+              >
+                {t({ ar: "عرض المحتوى المؤرشف", en: "View archived content" })}
+              </a>
+            </div>
+          ))}
+        </section>
 
         <Ornament className="mt-16" />
 
@@ -390,5 +408,64 @@ function CommitteeChartCard({
         </span>
       </figcaption>
     </figure>
+  );
+}
+
+function CommitteeYearGrid({ rows, kind }: { rows: CommitteeChart[]; kind: "PLAN" | "ARCH" }) {
+  const { t } = useLang();
+  return (
+    <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {committees.map((c) => {
+        const items = itemsFor(rows, kind, c.id);
+        return (
+          <div key={c.id} className="rounded-md border border-border bg-card p-5">
+            <h4 className="text-[15px] font-semibold text-foreground">{t(c.name)}</h4>
+            {items.length === 0 ? (
+              <p className="mt-3 text-[13px] text-muted-foreground">
+                {kind === "PLAN"
+                  ? t({ ar: "ستُضاف الأنشطة المخطط لها قريباً.", en: "Planned activities will be added soon." })
+                  : t({ ar: "لا توجد مواد مؤرشفة بعد.", en: "No archived materials yet." })}
+              </p>
+            ) : (
+              <ul className="mt-3 space-y-2">
+                {items.map((item) => {
+                  const href = chartHref(item);
+                  const title = t({ ar: item.title_ar, en: item.title_en || item.title_ar });
+                  const isImg = href ? /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(href) : false;
+                  const isPdf = href ? /\.pdf(\?|$)/i.test(href) : false;
+                  return (
+                    <li key={item.id} className="flex items-center justify-between gap-3 text-[13px]">
+                      <span className="flex min-w-0 items-center gap-2">
+                        <FileText className="h-4 w-4 shrink-0 text-bronze/70 dark:text-gold/60" aria-hidden="true" />
+                        <span className="truncate text-foreground">{title}</span>
+                      </span>
+                      {href ? (
+                        isImg || isPdf ? (
+                          <button
+                            type="button"
+                            onClick={() => openMediaViewer({ src: href, kind: isImg ? "image" : "pdf", title })}
+                            className="shrink-0 border-b border-bronze pb-0.5 font-medium text-bronze dark:border-gold dark:text-gold"
+                          >
+                            {t({ ar: "عرض", en: "View" })}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => void downloadFile(href, title)}
+                            className="shrink-0 border-b border-bronze pb-0.5 font-medium text-bronze dark:border-gold dark:text-gold"
+                          >
+                            {t({ ar: "تحميل", en: "Download" })}
+                          </button>
+                        )
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 }
