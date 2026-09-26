@@ -45,12 +45,12 @@ export const Route = createFileRoute("/committees")({
       { title: "اللجان | آل بوعبيد" },
       {
         name: "description",
-        content: `اللجان التنفيذية في صندوق التنمية العائلية (آل بوعبيد) وفق ترخيص NCNP رقم ${siteMeta.ncnpLicense}.`,
+        content: `لجان مجلس أسرة آل بوعبيد في صندوق التنمية العائلية (آل بوعبيد) وفق ترخيص NCNP رقم ${siteMeta.ncnpLicense}.`,
       },
       { property: "og:title", content: "اللجان — آل بوعبيد" },
       {
         property: "og:description",
-        content: "اللجان التنفيذية التابعة لمجلس أسرة آل بوعبيد.",
+        content: "لجان مجلس أسرة آل بوعبيد.",
       },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/committees") },
@@ -74,7 +74,6 @@ const copy = {
   metaRegistered: { ar: "تاريخ الإشهار", en: "Registered" } as BiText,
 
   chairLabel: { ar: "رئيس اللجنة", en: "Chair" } as BiText,
-  listTitle: { ar: "اللجان التنفيذية", en: "The Standing Committees" } as BiText,
   listNote: {
     ar: "تنبثق عن مجلس الأمناء ست لجان تنفيذية تمثل الفروع السبعة، لكل منها اختصاص محدد ورئيس مسؤول أمام المجلس.",
     en: "Six executive committees issue from the board, each with a defined remit and a chair answerable to the board.",
@@ -106,7 +105,7 @@ const years: { id: string; year: number; eyebrow: BiText; title: BiText; note: B
     eyebrow: { ar: "ثانياً", en: "Article II" },
     title: { ar: "١٤٤٥ هـ", en: "1445 AH" },
     note: {
-      ar: "الهيكل التنظيمي للجان، والخطابات الرسمية وخطط اللجان التنفيذية لعام ١٤٤٥ هـ.",
+      ar: "الهيكل التنظيمي للجان، والخطابات الرسمية وخطط اللجان لعام ١٤٤٥ هـ.",
       en: "The committees' organisational chart, official letters and standing-committee plans for 1445 AH.",
     },
   },
@@ -116,7 +115,7 @@ const years: { id: string; year: number; eyebrow: BiText; title: BiText; note: B
     eyebrow: { ar: "ثالثاً", en: "Article III" },
     title: { ar: "١٤٤٤ هـ", en: "1444 AH" },
     note: {
-      ar: "خطط اللجان التنفيذية والخطابات الرسمية لعام ١٤٤٤ هـ.",
+      ar: "خطط اللجان والخطابات الرسمية لعام ١٤٤٤ هـ.",
       en: "Plans of the standing committees and official letters for 1444 AH.",
     },
   },
