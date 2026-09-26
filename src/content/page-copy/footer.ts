@@ -16,4 +16,7 @@ export const copy = registerCopy("footer", {
   text13: { ar: "اشتراك", en: "Subscribe" },
   text14: { ar: "جميع الحقوق محفوظة", en: "All rights reserved" },
   text15: { ar: "إلى الأعلى", en: "Back to top" },
+  whatsappLabel: { ar: "قناة واتساب", en: "WhatsApp" },
+  websiteLabel: { ar: "الموقع الرسمي", en: "Website" },
+  emailLabel: { ar: "البريد", en: "Email" },
 });

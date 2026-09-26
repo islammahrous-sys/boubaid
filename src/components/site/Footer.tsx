@@ -127,16 +127,16 @@ export function Footer() {
 
   const channels = [
     {
-      label: { ar: "قناة واتساب", en: "WhatsApp" },
+      label: copy.whatsappLabel,
       href: contactWhatsapp,
       icon: MessageCircle,
     },
     {
-      label: { ar: "الموقع الرسمي", en: "Website" },
+      label: copy.websiteLabel,
       href: `https://${siteMeta.domain}`,
       icon: Globe,
     },
-    { label: { ar: "البريد", en: "Email" }, href: `mailto:${contactEmail}`, icon: Mail },
+    { label: copy.emailLabel, href: `mailto:${contactEmail}`, icon: Mail },
   ];
 
   // Official social channels. Live overrides from `site_contact` win; only
