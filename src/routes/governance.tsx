@@ -238,10 +238,30 @@ function GovernancePage() {
 
           {/* الهيكل التنظيمي لمجلس أمناء الصندوق — language-specific source image */}
           <figure className="mt-10 overflow-hidden rounded-md border border-border bg-card">
-            <figcaption className="border-b border-border p-4 text-[15px] font-semibold text-foreground">
-              {rtl
-                ? "الهيكل التنظيمي لمجلس امناء الصندوق"
-                : "Organizational Chart of the Fund's Board of Trustees"}
+            <figcaption className="flex flex-col gap-1 border-b border-border p-4">
+              {(rtl
+                ? [
+                    { text: "الهيكل التنظيمي لمجلس أمناء الصندوق", lang: "ar", dir: "rtl" },
+                    { text: "Organizational Chart of the Fund's Board of Trustees", lang: "en", dir: "ltr" },
+                  ]
+                : [
+                    { text: "Organizational Chart of the Fund's Board of Trustees", lang: "en", dir: "ltr" },
+                    { text: "الهيكل التنظيمي لمجلس أمناء الصندوق", lang: "ar", dir: "rtl" },
+                  ]
+              ).map((line, i) => (
+                <span
+                  key={line.lang}
+                  lang={line.lang}
+                  dir={line.dir}
+                  className={
+                    i === 0
+                      ? "break-words text-[15px] font-semibold text-foreground"
+                      : "break-words text-[13px] font-medium text-muted-foreground"
+                  }
+                >
+                  {line.text}
+                </span>
+              ))}
             </figcaption>
             <button
               type="button"
