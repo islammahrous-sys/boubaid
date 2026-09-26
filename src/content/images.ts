@@ -116,7 +116,7 @@ export const pageImages = {
     committees: {
       src: "/images/governance_council.png",
       caption: {
-        ar: "أعمال اللجان التنفيذية الست المنبثقة عن مجلس الأمناء والإشراف على المشاريع.",
+        ar: "أعمال لجان مجلس الأسرة الست المنبثقة عن مجلس الأمناء والإشراف على المشاريع.",
         en: "The six executive committees issuing from the board of trustees supervising projects at work.",
       },
     } satisfies Figure,

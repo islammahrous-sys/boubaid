@@ -699,7 +699,7 @@ export const committees = [
       en: "Development and Follow-up Committee",
     } as BiText,
     desc: {
-      ar: "تتابع أعمال اللجان التنفيذية ومؤشرات التقدم، وترفع التوصيات التطويرية إلى رئيس مجلس الأسرة.",
+      ar: "تتابع أعمال لجان مجلس الأسرة ومؤشرات التقدم، وترفع التوصيات التطويرية إلى رئيس مجلس الأسرة.",
       en: "Follows up on executive committee work and progress indicators, and submits development recommendations to the Council Chair.",
     } as BiText,
     lead: {

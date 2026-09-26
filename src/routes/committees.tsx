@@ -2,18 +2,20 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Download, Eye, FileText } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
-import { committees, siteMeta } from "@/content/site";
+import { hqProject, siteMeta } from "@/content/site";
 import { committeeDocuments } from "@/content/committee-documents";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { Eyebrow, Ornament } from "@/components/site/Editorial";
+import { HqProjectVideo } from "@/components/site/HqProjectVideo";
 import {
   CommitteeYearGrid,
   type CommitteeArchiveItem,
 } from "@/components/site/CommitteeYearGrid";
 import { getCanonicalUrl } from "@/lib/seo";
-import { getPublishedLibrary } from "@/lib/cms.functions";
+import { getPublishedInitiatives, getPublishedLibrary } from "@/lib/cms.functions";
+import { mapInitiativeRow } from "@/content/cms-adapt";
 import { downloadFile } from "@/lib/download";
 import masterChartAr from "@/assets/committee-charts-current/master-ar.png.asset.json";
 import masterChartEn from "@/assets/committee-charts-current/master-en.png.asset.json";
@@ -26,11 +28,16 @@ function publicAssetUrl(path: string) {
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
-    const rows = await getPublishedLibrary();
+    const [rows, initiatives] = await Promise.all([
+      getPublishedLibrary(),
+      getPublishedInitiatives().catch(() => []),
+    ]);
+    const hqRow = initiatives.find((r) => r.slug === "permanent-hq");
     return {
       charts: rows
         .filter((row) => row.collection === "committee_charts" && row.is_published)
         .sort((a, b) => a.sort_order - b.sort_order),
+      hq: hqRow ? mapInitiativeRow(hqRow) : null,
     };
   },
   head: () => ({
@@ -38,12 +45,12 @@ export const Route = createFileRoute("/committees")({
       { title: "اللجان | آل بوعبيد" },
       {
         name: "description",
-        content: `اللجان التنفيذية في صندوق التنمية العائلية (آل بوعبيد) وفق ترخيص NCNP رقم ${siteMeta.ncnpLicense}.`,
+        content: `لجان مجلس أسرة آل بوعبيد في صندوق التنمية العائلية (آل بوعبيد) وفق ترخيص NCNP رقم ${siteMeta.ncnpLicense}.`,
       },
       { property: "og:title", content: "اللجان — آل بوعبيد" },
       {
         property: "og:description",
-        content: "اللجان التنفيذية التابعة لمجلس أسرة آل بوعبيد.",
+        content: "لجان مجلس أسرة آل بوعبيد.",
       },
       { property: "og:type", content: "article" },
       { property: "og:url", content: getCanonicalUrl("/committees") },
@@ -67,7 +74,6 @@ const copy = {
   metaRegistered: { ar: "تاريخ الإشهار", en: "Registered" } as BiText,
 
   chairLabel: { ar: "رئيس اللجنة", en: "Chair" } as BiText,
-  listTitle: { ar: "اللجان التنفيذية", en: "The Standing Committees" } as BiText,
   listNote: {
     ar: "تنبثق عن مجلس الأمناء ست لجان تنفيذية تمثل الفروع السبعة، لكل منها اختصاص محدد ورئيس مسؤول أمام المجلس.",
     en: "Six executive committees issue from the board, each with a defined remit and a chair answerable to the board.",
@@ -99,7 +105,7 @@ const years: { id: string; year: number; eyebrow: BiText; title: BiText; note: B
     eyebrow: { ar: "ثانياً", en: "Article II" },
     title: { ar: "١٤٤٥ هـ", en: "1445 AH" },
     note: {
-      ar: "الهيكل التنظيمي للجان، والخطابات الرسمية وخطط اللجان التنفيذية لعام ١٤٤٥ هـ.",
+      ar: "الهيكل التنظيمي للجان، والخطابات الرسمية وخطط اللجان لعام ١٤٤٥ هـ.",
       en: "The committees' organisational chart, official letters and standing-committee plans for 1445 AH.",
     },
   },
@@ -109,15 +115,15 @@ const years: { id: string; year: number; eyebrow: BiText; title: BiText; note: B
     eyebrow: { ar: "ثالثاً", en: "Article III" },
     title: { ar: "١٤٤٤ هـ", en: "1444 AH" },
     note: {
-      ar: "خطط اللجان التنفيذية والخطابات الرسمية لعام ١٤٤٤ هـ.",
+      ar: "خطط اللجان والخطابات الرسمية لعام ١٤٤٤ هـ.",
       en: "Plans of the standing committees and official letters for 1444 AH.",
     },
   },
 ];
 
 const railSections: RailSection[] = [
-  { id: "committees-list", label: { ar: "اللجان", en: "Committees" } },
   { id: "y1448", label: { ar: "١٤٤٨ هـ", en: "1448 AH" } },
+  { id: "hq-project", label: { ar: "مشروع المقر", en: "HQ Project" } },
   { id: "y1445", label: { ar: "١٤٤٥ هـ", en: "1445 AH" } },
   { id: "y1444", label: { ar: "١٤٤٤ هـ", en: "1444 AH" } },
 ];
@@ -126,8 +132,10 @@ function CommitteesPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
-  const { charts } = Route.useLoaderData();
+  const { charts, hq } = Route.useLoaderData();
   const chartRecords = charts as CommitteeArchiveItem[];
+  const hqTitle = hq?.title ?? hqProject.title;
+  const hqSummary = hq?.summary && (hq.summary.ar || hq.summary.en) ? hq.summary : hqProject.fundingModel;
   const masterHref = publicAssetUrl(lang === "en" ? masterChartEn.url : masterChartAr.url);
 
   return (
@@ -146,56 +154,8 @@ function CommitteesPage() {
       <SectionRail sections={railSections} className="print-hide" />
 
       <div className="container-page py-14 md:py-16">
-        {/* ── اللجان التنفيذية ──────────────────────────────── */}
-        <section id="committees-list" className="scroll-mt-28 reveal-on-scroll">
-          <Eyebrow rule>{t(copy.listTitle)}</Eyebrow>
-          <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
-            {t(copy.listNote)}
-          </p>
-          <dl className="mt-6 border-t border-border">
-            {committees.map((c, i) => (
-              <div
-                key={c.id}
-                className="grid grid-cols-[2.5rem_1fr] gap-x-5 border-b border-border py-5 transition-colors hover:bg-secondary/30"
-              >
-                <span
-                  className="nums font-mono text-sm text-bronze/70 dark:text-gold/60"
-                  aria-hidden="true"
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <dt className="text-[15px] font-semibold text-foreground">{t(c.name)}</dt>
-                  <dd className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                    {t(c.desc)}
-                  </dd>
-                  <dd className="mt-2.5 text-[13px]">
-                    <span className="label-caps me-2 text-muted-foreground">
-                      {t(copy.chairLabel)}
-                    </span>
-                    <span className="text-foreground">{t(c.lead)}</span>
-                  </dd>
-                </div>
-              </div>
-            ))}
-          </dl>
-
-          {/* "رشح نفسك" — nomination is submitted through the Requests Hub. */}
-          <Link
-            to="/requests"
-            search={{ request: "committee_nomination" }}
-            className="mt-6 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-          >
-            {t({ ar: "رشّح نفسك لعضوية إحدى اللجان", en: "Nominate yourself for a committee" })}
-            <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-          </Link>
-        </section>
-
         {/* ── ١٤٤٨ هـ ─────────────────────────────────────────── */}
-        <section
-          id="y1448"
-          className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-12"
-        >
+        <section id="y1448" className="scroll-mt-28 reveal-on-scroll">
           <Eyebrow>{t({ ar: "أولاً", en: "Article I" })}</Eyebrow>
           <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
             {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
@@ -215,6 +175,66 @@ function CommitteesPage() {
             </p>
           </div>
           <CommitteeYearGrid rows={chartRecords} kind="PLAN" />
+
+          {/* مشروع مقر مجلس الأسرة — under لجنة شؤون مقر مجلس الأسرة */}
+          <article
+            id="hq-project"
+            className="scroll-mt-28 mt-10 rounded-md border border-border bg-card p-5 md:p-8"
+          >
+            <p className="label-caps text-bronze dark:text-gold">
+              {t({ ar: "لجنة شؤون مقر مجلس الأسرة", en: "Family Council Headquarters Affairs Committee" })}
+            </p>
+            <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
+              {t(hqTitle)}
+            </h3>
+            <div className="mt-6 grid gap-8 lg:grid-cols-2">
+              <HqProjectVideo label={t(hqTitle)} className="aspect-[4/3] w-full" />
+              <div>
+                <dl className="space-y-3 text-[14px]">
+                  <div>
+                    <dt className="label-caps text-muted-foreground">{t({ ar: "الموقع", en: "Location" })}</dt>
+                    <dd className="mt-1 text-foreground">{t(hqProject.location)}</dd>
+                  </div>
+                  <div>
+                    <dt className="label-caps text-muted-foreground">{t({ ar: "المرحلة", en: "Stage" })}</dt>
+                    <dd className="mt-1 text-foreground">{t(hqProject.status)}</dd>
+                  </div>
+                  <div>
+                    <dt className="label-caps text-muted-foreground">{t({ ar: "التمويل", en: "Funding" })}</dt>
+                    <dd className="mt-1 leading-relaxed text-muted-foreground">{t(hqSummary)}</dd>
+                  </div>
+                </dl>
+                <div className="mt-5">
+                  <div className="flex items-baseline justify-between">
+                    <span className="label-caps text-muted-foreground">
+                      {t({ ar: "نسبة الإنجاز", en: "Completion" })}
+                    </span>
+                    <span className="nums font-mono text-xl text-foreground">{hqProject.progress}%</span>
+                  </div>
+                  <div className="mt-2 h-1.5 w-full bg-border" role="progressbar" aria-valuenow={hqProject.progress} aria-valuemin={0} aria-valuemax={100}>
+                    <div className="h-full bg-bronze dark:bg-gold" style={{ width: `${hqProject.progress}%` }} />
+                  </div>
+                </div>
+                <Link
+                  to="/contribute"
+                  search={{ purpose: "hq_project" }}
+                  className="mt-6 inline-flex items-center gap-2 border border-ink bg-ink px-4 py-2.5 text-xs font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+                >
+                  {t({ ar: "ننتظر دعمك", en: "We await your support" })}
+                  <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+          </article>
+
+          <Link
+            to="/requests"
+            search={{ request: "committee_nomination" }}
+            className="mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+          >
+            {t({ ar: "رشّح نفسك لعضوية إحدى اللجان", en: "Nominate yourself for a committee" })}
+            <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
         </section>
 
         {years.map((year) => {

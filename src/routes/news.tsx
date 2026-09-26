@@ -29,19 +29,20 @@ export const Route = createFileRoute("/news")({
   },
   head: ({ matches, match }) => ({
     meta: [
-      { title: "الأخبار والبيانات الرسمية | آل بوعبيد" },
+      { title: "المركز الإعلامي | آل بوعبيد" },
       {
         name: "description",
         content:
           "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها ومبادراتها.",
       },
-      { property: "og:title", content: "أخبار آل بوعبيد" },
+      { property: "og:title", content: "المركز الإعلامي — آل بوعبيد" },
       {
         property: "og:description",
         content:
           "أخبار وبيانات صندوق التنمية العائلية (آل بوعبيد) بالأحساء ومستجدات فعالياتها ومبادراتها.",
       },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: getCanonicalUrl("/news") },
     ],
     links:
@@ -62,7 +63,7 @@ function NewsLayout() {
 }
 
 const copy = {
-  masthead: { ar: "نشرة الأسرة", en: "The Family Bulletin" } as BiText,
+  masthead: { ar: "المركز الإعلامي", en: "Media Centre" } as BiText,
   issuedBy: { ar: "تصدر عن", en: "Issued by" } as BiText,
   filterAll: { ar: "الكل", en: "All" } as BiText,
   filterFund: { ar: "شؤون الصندوق", en: "Fund Affairs" } as BiText,

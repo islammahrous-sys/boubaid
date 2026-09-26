@@ -33,6 +33,7 @@ import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as CommitteesRouteImport } from './routes/committees'
 import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AhsaFamilyCouncilsRouteImport } from './routes/ahsa-family-councils'
 import { Route as AchieversRouteImport } from './routes/achievers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -169,6 +170,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AhsaFamilyCouncilsRoute = AhsaFamilyCouncilsRouteImport.update({
+  id: '/ahsa-family-councils',
+  path: '/ahsa-family-councils',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AchieversRoute = AchieversRouteImport.update({
   id: '/achievers',
   path: '/achievers',
@@ -248,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/ahsa-family-councils': typeof AhsaFamilyCouncilsRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/committees': typeof CommitteesRoute
@@ -288,6 +295,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/ahsa-family-councils': typeof AhsaFamilyCouncilsRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/committees': typeof CommitteesRoute
@@ -330,6 +338,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/achievers': typeof AchieversRoute
+  '/ahsa-family-councils': typeof AhsaFamilyCouncilsRoute
   '/auth': typeof AuthRoute
   '/branches': typeof BranchesRoute
   '/committees': typeof CommitteesRoute
@@ -372,6 +381,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/achievers'
+    | '/ahsa-family-councils'
     | '/auth'
     | '/branches'
     | '/committees'
@@ -412,6 +422,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/achievers'
+    | '/ahsa-family-councils'
     | '/auth'
     | '/branches'
     | '/committees'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/achievers'
+    | '/ahsa-family-councils'
     | '/auth'
     | '/branches'
     | '/committees'
@@ -495,6 +507,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AchieversRoute: typeof AchieversRoute
+  AhsaFamilyCouncilsRoute: typeof AhsaFamilyCouncilsRoute
   AuthRoute: typeof AuthRoute
   BranchesRoute: typeof BranchesRoute
   CommitteesRoute: typeof CommitteesRoute
@@ -695,6 +708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ahsa-family-councils': {
+      id: '/ahsa-family-councils'
+      path: '/ahsa-family-councils'
+      fullPath: '/ahsa-family-councils'
+      preLoaderRoute: typeof AhsaFamilyCouncilsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/achievers': {
       id: '/achievers'
       path: '/achievers'
@@ -858,6 +878,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AchieversRoute: AchieversRoute,
+  AhsaFamilyCouncilsRoute: AhsaFamilyCouncilsRoute,
   AuthRoute: AuthRoute,
   BranchesRoute: BranchesRoute,
   CommitteesRoute: CommitteesRoute,

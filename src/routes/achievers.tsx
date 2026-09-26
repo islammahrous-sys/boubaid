@@ -43,13 +43,13 @@ export const Route = createFileRoute("/achievers")({
   },
   head: () => ({
     meta: [
-      { title: "سجل المتميزين | آل بوعبيد" },
+      { title: "جائزة آل بوعبيد للتفوق العلمي والتميز" },
       {
         name: "description",
         content:
           "كفاءات ومتميزو أسرة آل بوعبيد من أبنائها وبناتها في الطب والأكاديميا والهندسة والخدمة العامة.",
       },
-      { property: "og:title", content: "سجل المتميزين — آل بوعبيد" },
+      { property: "og:title", content: "جائزة آل بوعبيد للتفوق العلمي والتميز" },
       {
         property: "og:description",
         content:
@@ -65,11 +65,14 @@ export const Route = createFileRoute("/achievers")({
 });
 
 const copy = {
-  eyebrow: { ar: "سجل التميز", en: "Roll of honour" } as BiText,
-  title: { ar: "سجل الشرف", en: "Roll of Honor" } as BiText,
+  eyebrow: { ar: "سجل التميز", en: "Award" } as BiText,
+  title: {
+    ar: "جائزة آل بوعبيد للتفوق العلمي والتميز",
+    en: "Al Bu Obaid Award for Academic Excellence and Distinction",
+  } as BiText,
   subtitle: {
-    ar: "يقيّد هذا السجل أصحاب التحصيل العلمي والمهني من أبناء وبنات الفروع السبعة. ويُحدَّث سنوياً عند حفل التكريم بالملتقى العام.",
-    en: "This register records the academic and professional achievements of the sons and daughters of the seven branches. It is updated each year at the honours ceremony of the general assembly.",
+    ar: "جائزة تمنح للمميزين من أفراد الأسرة ذكوراً وإناثًا بمختلف مراحلهم الدراسية أو من هم على رأس العمل، في المجالات التالية:",
+    en: "An award granted to distinguished family members, male and female, at every stage of study or in employment, in the following fields:",
   } as BiText,
 
   metaEntries: { ar: "عدد المقيدين", en: "Entries" } as BiText,
@@ -87,13 +90,55 @@ const copy = {
   competencies: { ar: "كفاءات افراد الاسرة", en: "Family Members’ Competencies" } as BiText,
   excellence: { ar: "جائزة التميز", en: "Excellence Award" } as BiText,
 
-  nominateTitle: { ar: "الترشيح لسجل المتميزين", en: "Nominations" } as BiText,
+  nominateTitle: { ar: "الترشح لجائزة التميز", en: "Excellence Award Application" } as BiText,
   nominateBody: {
     ar: "يُفتح باب الترشح لجائزة التفوق العلمي والتميز المهني لأبناء وبنات الأسرة. ويجري القيد بعد اعتماد أمانة المجلس واللجان المختصة.",
     en: "Nominations for academic and professional distinction are open to family members. Additions are confirmed following approval by the Secretariat and relevant committees.",
   } as BiText,
   nominateCta: { ar: "تقديم ترشيح جديد", en: "Submit a nomination" } as BiText,
 };
+
+const AWARD_FIELDS: { text: BiText; sub?: BiText[] }[] = [
+  { text: { ar: "حفظ القرآن الكريم كاملاً بشهادة معتمدة من جهة رسمية أو إجازة حفظ", en: "Memorising the entire Holy Qur'an, with a certificate from an official body or an ijazah" } },
+  {
+    text: { ar: "التميز العلمي وهو على النحو التالي:", en: "Academic excellence, as follows:" },
+    sub: [
+      { ar: "الدراسات العليا: الدكتوراه والماجستير", en: "Postgraduate studies: doctorate and master's" },
+      { ar: "التخرج من المرحلة الجامعية بمعدل تراكمي 4.75 فما فوق", en: "University graduation with a cumulative GPA of 4.75 or above" },
+    ],
+  },
+  { text: { ar: "الحصول على نسبة 90% في اختبار القدرات – الثالث ثانوي: الحصول على 90% في اختبار التحصيلي", en: "Scoring 90% in the Qudurat aptitude test – Grade 12: scoring 90% in the Tahsili achievement test" } },
+  { text: { ar: "الحصول على جائزة محلية أو دولية في أي مجال علمي أو مهاري أو مهني", en: "Winning a local or international award in any academic, skills or professional field" } },
+  { text: { ar: "الحصول على شهادة مهنية معتمدة", en: "Obtaining an accredited professional certificate" } },
+];
+
+const SPONSOR_HEAD: BiText[] = [
+  { ar: "العام", en: "Year" },
+  { ar: "عدد المشاركين", en: "Participants" },
+  { ar: "المكرمين", en: "Honoured" },
+  { ar: "فروع المسابقة", en: "Competition branches" },
+  { ar: "قيمة الجوائز", en: "Prize value" },
+  { ar: "فروع الفائزين", en: "Winners' fields" },
+  { ar: "الرعاة والداعمين", en: "Sponsors & supporters" },
+];
+
+const br = (main: number, sub: number): BiText[] => [
+  { ar: `${main} فروع رئيسة`, en: `${main} main branches` },
+  { ar: `${sub} فروع فرعية`, en: `${sub} sub-branches` },
+];
+const F = {
+  sci: { ar: "تميز علمي", en: "Academic distinction" },
+  pro: { ar: "تميز مهني", en: "Professional distinction" },
+  prize: { ar: "حصول على جائزة", en: "Award received" },
+};
+const sar = (n: string): BiText => ({ ar: `${n} ريال`, en: `SAR ${n}` });
+
+const SPONSOR_ROWS = [
+  { year: "1444", participants: 19, honoured: 7, branches: br(4, 3), prize: sar("8000"), fields: [F.sci, F.pro], sponsor: "ماهر بن أحمد بن إبراهيم" },
+  { year: "1445", participants: 17, honoured: 5, branches: br(4, 3), prize: sar("6000"), fields: [F.sci, F.pro], sponsor: "عادل بن سعد بن علي بن صالح" },
+  { year: "1446", participants: 15, honoured: 4, branches: br(3, 3), prize: sar("5000"), fields: [F.sci], sponsor: "عادل بن سعد بن علي بن صالح" },
+  { year: "1447", participants: 18, honoured: 6, branches: br(3, 3), prize: sar("7000"), fields: [F.sci, F.pro, F.prize], sponsor: "عادل بن سعد بن علي بن صالح" },
+];
 
 function AchieversPage() {
   const { t, lang } = useLang();
@@ -192,7 +237,7 @@ function AchieversPage() {
       else groups.set(year, [person]);
     }
     return [...groups.entries()]
-      .sort((a, b) => (a[0] === "" ? 1 : b[0] === "" ? -1 : Number(a[0]) - Number(b[0])))
+      .sort((a, b) => (a[0] === "" ? 1 : b[0] === "" ? -1 : Number(b[0]) - Number(a[0])))
       .map(([year, people]) => ({
         year,
         people: [...people].sort((a, b) => a.sortOrder - b.sortOrder),
@@ -257,6 +302,35 @@ function AchieversPage() {
       />
 
       <div className="container-page py-12 md:py-16 space-y-16">
+        <section aria-labelledby="award-fields-title">
+          <h2 id="award-fields-title" className="sr-only">
+            {rtl ? "مجالات الجائزة" : "Award fields"}
+          </h2>
+          <ol className="grid gap-3 md:grid-cols-2">
+            {AWARD_FIELDS.map((f, i) => (
+              <li key={i} className="rounded-md border border-border bg-card p-5">
+                <span className="nums font-mono text-xs text-bronze dark:text-gold">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <p className="mt-2 text-[15px] leading-relaxed text-foreground">{t(f.text)}</p>
+                {f.sub ? (
+                  <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-muted-foreground">
+                    {f.sub.map((x, j) => (
+                      <li key={j}>{t(x)}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+          <p className="measure mt-6 border-s-2 border-bronze ps-4 text-[15px] leading-relaxed text-foreground dark:border-gold">
+            {t({
+              ar: "يُقيّد هذا السجل أصحاب التحصيل العلمي والمهني من أبناء وبنات الفروع السبعة. ويُحدَّث سنوياً عند حفل التكريم بالملتقى العام.",
+              en: "This register records the academic and professional achievers among the sons and daughters of the seven branches, and is updated annually at the honours ceremony of the general assembly.",
+            })}
+          </p>
+        </section>
+
         <section aria-labelledby="competencies-title">
           <Eyebrow>{rtl ? "القسم الأول" : "Section One"}</Eyebrow>
           <h2
@@ -322,6 +396,18 @@ function AchieversPage() {
             </figcaption>
           </figure>
           <div className="mt-8 space-y-12">
+            {!yearGroups.some((g) => g.year === "1448") ? (
+              <section aria-labelledby="award-year-1448">
+                <div className="flex items-center gap-4 border-b border-ink/25 pb-3 dark:border-ivory/20">
+                  <h3 id="award-year-1448" className="nums text-xl font-bold text-bronze dark:text-gold">
+                    {rtl ? "عام 1448هـ" : "Year 1448 AH"}
+                  </h3>
+                </div>
+                <p className="py-5 text-sm text-muted-foreground">
+                  {rtl ? "تُعلن أسماء المكرمين لعام 1448هـ بعد حفل التكريم." : "The 1448 AH honourees will be announced after the ceremony."}
+                </p>
+              </section>
+            ) : null}
             {yearGroups.map(({ year, people }) => (
               <section key={year} aria-labelledby={`award-year-${year}`}>
                 <div className="flex items-center gap-4 border-b border-ink/25 pb-3 dark:border-ivory/20">
@@ -366,6 +452,48 @@ function AchieversPage() {
           </div>
         </section>
       </div>
+
+      <section aria-labelledby="sponsors-title" className="container-page pb-16">
+        <Eyebrow>{rtl ? "جائزة التميز" : "Excellence Award"}</Eyebrow>
+        <h2 id="sponsors-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">
+          {rtl ? "الرعاة والداعمون" : "Supporters & Sponsors"}
+        </h2>
+        <div className="mt-6 overflow-x-auto rounded-md border border-border">
+          <table className="w-full min-w-[760px] border-collapse text-sm">
+            <thead className="bg-secondary/60 text-foreground">
+              <tr>
+                {SPONSOR_HEAD.map((h) => (
+                  <th key={h.en} scope="col" className="border-b border-border px-3 py-3 text-start font-semibold">
+                    {t(h)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {SPONSOR_ROWS.map((r) => (
+                <tr key={r.year} className="border-b border-border align-top">
+                  <th scope="row" className="nums bg-secondary/30 px-3 py-3 text-start font-semibold">{r.year}</th>
+                  <td className="nums px-3 py-3">{r.participants}</td>
+                  <td className="nums px-3 py-3">{r.honoured}</td>
+                  <td className="px-3 py-3">{r.branches.map((b) => <div key={b.en}>{t(b)}</div>)}</td>
+                  <td className="nums px-3 py-3">{t(r.prize)}</td>
+                  <td className="px-3 py-3">{r.fields.map((b) => <div key={b.en}>{t(b)}</div>)}</td>
+                  <td className="px-3 py-3">{r.sponsor}</td>
+                </tr>
+              ))}
+              <tr className="bg-secondary/50 font-semibold">
+                <th scope="row" className="px-3 py-3 text-start">{rtl ? "المجموع" : "Total"}</th>
+                <td className="nums px-3 py-3">69</td>
+                <td className="nums px-3 py-3">22</td>
+                <td className="px-3 py-3" />
+                <td className="nums px-3 py-3">{rtl ? "26000 ريال" : "SAR 26,000"}</td>
+                <td className="px-3 py-3" />
+                <td className="px-3 py-3" />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       {/* ── Achiever Detail Dialog Modal ──────────────────────── */}
       <Dialog open={!!activeAchiever} onOpenChange={(open) => !open && setActiveAchiever(null)}>
@@ -439,6 +567,7 @@ function AchieversPage() {
               the site follows one submission, review and tracking path. */}
           <Link
             to="/requests"
+            search={{ request: "excellence_award_application" }}
             className="inline-flex shrink-0 items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold cursor-pointer"
           >
             <Sparkles className="h-4 w-4 text-gold dark:text-ink" />
