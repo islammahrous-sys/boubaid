@@ -470,7 +470,7 @@ const requests: RequestEntry[] = [
       en: "Committee membership nomination request",
     },
     desc: {
-      ar: "التقدم بترشيح نفسك لعضوية إحدى اللجان التنفيذية مع بيان المؤهلات وأسباب الترشيح.",
+      ar: "التقدم بترشيح نفسك لعضوية إحدى لجان مجلس الأسرة مع بيان المؤهلات وأسباب الترشيح.",
       en: "Nominate yourself for membership of one of the standing committees, stating your qualifications.",
     },
   },

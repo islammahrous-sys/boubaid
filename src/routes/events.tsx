@@ -52,7 +52,7 @@ const copy = {
   eyebrow: { ar: "التقويم", en: "Calendar" } as BiText,
   title: { ar: "الفعاليات واللقاءات القادمة", en: "Upcoming Events & Gatherings" } as BiText,
   subtitle: {
-    ar: "اللقاءات والمناسبات التي تنظمها الأمانة العامة واللجان التنفيذية. سجّل حضورك من خلال البطاقة الخاصة بكل فعالية.",
+    ar: "اللقاءات والمناسبات التي تنظمها الأمانة العامة ولجان مجلس الأسرة. سجّل حضورك من خلال البطاقة الخاصة بكل فعالية.",
     en: "Gatherings and occasions organised by the secretariat and the standing committees. Register your attendance from each event's card.",
   } as BiText,
   metaCount: { ar: "فعاليات قادمة", en: "Upcoming" } as BiText,

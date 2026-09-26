@@ -77,7 +77,7 @@ const copy = {
   holderLabel: { ar: "شاغل المنصب", en: "Holder" } as BiText,
   foundersEyebrow: { ar: "الأعضاء المؤسسون", en: "Founding members" } as BiText,
   foundersNote: {
-    ar: `يتولى الأعضاء المؤسسون الستة قيادة اللجان التنفيذية الست، ويُشترط في المدير التنفيذي للصندوق حاملاً درجة البكالوريوس مع خبرة إدارية تتجاوز 16 عاماً. ${ceoRequirement.ar}`,
+    ar: `يتولى الأعضاء المؤسسون الستة قيادة لجان مجلس الأسرة الست، ويُشترط في المدير التنفيذي للصندوق حاملاً درجة البكالوريوس مع خبرة إدارية تتجاوز 16 عاماً. ${ceoRequirement.ar}`,
     en: `The six founding members lead the six executive committees. The bylaws require the fund's Chief Executive to hold a bachelor's degree with over 16 years of administrative experience.`,
   } as BiText,
 
