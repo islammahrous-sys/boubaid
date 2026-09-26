@@ -1,5 +1,6 @@
 import type { BiText } from "@/i18n/LanguageProvider";
 import { registerCopy } from "@/i18n/editable-copy";
+import { ceoRequirement } from "@/content/site";
 
 export const copy = registerCopy("governance", {
   eyebrow: { ar: "الإطار النظامي", en: "Constitution" } as BiText,

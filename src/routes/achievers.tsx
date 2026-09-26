@@ -109,8 +109,31 @@ const SPONSOR_ROWS = [
   { year: "1447", participants: 18, honoured: 6, branches: br(3, 3), prize: sar("7000"), fields: [F.sci, F.pro, F.prize], sponsor: "عادل بن سعد بن علي بن صالح" },
 ];
 
+type SponsorRow = {
+  year: string;
+  participants: number;
+  honoured: number;
+  branches: BiText[];
+  prize: BiText;
+  fields: BiText[];
+  sponsor: string;
+};
+export const DEFAULT_SPONSOR_ROWS: SponsorRow[] = SPONSOR_ROWS;
+
 function AchieversPage() {
   const { t, lang } = useLang();
+  const { data: siteSettings } = useQuery({
+    queryKey: ["public_site_settings"],
+    queryFn: () => getPublicSiteSettings(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const sponsorCfg = (siteSettings as Record<string, any> | undefined)?.award_sponsors;
+  const sponsorRows: SponsorRow[] =
+    Array.isArray(sponsorCfg?.rows) && sponsorCfg.rows.length ? sponsorCfg.rows : SPONSOR_ROWS;
+  const sponsorTotal: BiText | null =
+    sponsorCfg?.total_ar || sponsorCfg?.total_en
+      ? { ar: sponsorCfg.total_ar || "", en: sponsorCfg.total_en || "" }
+      : null;
   const { achievers } = Route.useLoaderData();
   const [activeAchiever, setActiveAchiever] = useState<any | null>(null);
   const [nominationOpen, setNominationOpen] = useState(false);
@@ -444,23 +467,23 @@ function AchieversPage() {
               </tr>
             </thead>
             <tbody>
-              {SPONSOR_ROWS.map((r) => (
+              {sponsorRows.map((r) => (
                 <tr key={r.year} className="border-b border-border align-top">
                   <th scope="row" className="nums bg-secondary/30 px-3 py-3 text-start font-semibold">{r.year}</th>
                   <td className="nums px-3 py-3">{r.participants}</td>
                   <td className="nums px-3 py-3">{r.honoured}</td>
-                  <td className="px-3 py-3">{r.branches.map((b) => <div key={b.en}>{t(b)}</div>)}</td>
+                  <td className="px-3 py-3">{(r.branches ?? []).map((b) => <div key={b.en}>{t(b)}</div>)}</td>
                   <td className="nums px-3 py-3">{t(r.prize)}</td>
-                  <td className="px-3 py-3">{r.fields.map((b) => <div key={b.en}>{t(b)}</div>)}</td>
+                  <td className="px-3 py-3">{(r.fields ?? []).map((b) => <div key={b.en}>{t(b)}</div>)}</td>
                   <td className="px-3 py-3">{r.sponsor}</td>
                 </tr>
               ))}
               <tr className="bg-secondary/50 font-semibold">
                 <th scope="row" className="px-3 py-3 text-start">{rtl ? "المجموع" : "Total"}</th>
-                <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.participants, 0)}</td>
-                <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.honoured, 0)}</td>
+                <td className="nums px-3 py-3">{sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}</td>
+                <td className="nums px-3 py-3">{sponsorRows.reduce((n, r) => n + Number(r.honoured || 0), 0)}</td>
                 <td className="px-3 py-3" />
-                <td className="nums px-3 py-3">{rtl ? "26000 ريال" : "SAR 26,000"}</td>
+                <td className="nums px-3 py-3">{sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}</td>
                 <td className="px-3 py-3" />
                 <td className="px-3 py-3" />
               </tr>

@@ -1,4 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getPublicSiteSettings } from "@/lib/cms.functions";
+import { copyId } from "@/i18n/editable-copy";
 
 export type Lang = "ar" | "en";
 
@@ -43,6 +46,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   }, [lang]);
 
+  // Admin overrides for registered page copy (site_settings key `page_texts`).
+  const { data: settings } = useQuery({
+    queryKey: ["public_site_settings"],
+    queryFn: () => getPublicSiteSettings(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const overrides = (settings as Record<string, any> | undefined)?.page_texts as
+    | Record<string, { ar?: string; en?: string }>
+    | undefined;
+
   const value = useMemo<Ctx>(
     () => ({
       lang,
@@ -55,9 +68,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           // ignore storage failures
         }
       },
-      t: ({ ar, en }) => (lang === "ar" ? ar : en),
+      t: (entry) => {
+        const id = overrides ? copyId(entry as object) : undefined;
+        const o = id ? overrides?.[id]?.[lang] : undefined;
+        if (typeof o === "string" && o.trim()) return o as never;
+        return lang === "ar" ? entry.ar : entry.en;
+      },
     }),
-    [lang],
+    [lang, overrides],
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
