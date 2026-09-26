@@ -234,6 +234,7 @@ function AccountPage() {
   } = useQuery({
     queryKey: ["account"],
     queryFn: () => fetchAccount(),
+    enabled: !!user,
     refetchOnMount: true,
   });
 
@@ -262,6 +263,7 @@ function AccountPage() {
   } = useQuery({
     queryKey: ["my-notifications"],
     queryFn: () => fetchNotifications(),
+    enabled: !!user,
     refetchInterval: 60_000,
     staleTime: 1000 * 30,
   });
@@ -299,6 +301,7 @@ function AccountPage() {
   const { data: prefsData, isLoading: prefsLoading } = useQuery({
     queryKey: ["my-notification-preferences"],
     queryFn: () => fetchPreferencesFn(),
+    enabled: !!user,
     staleTime: 1000 * 60 * 5,
   });
 

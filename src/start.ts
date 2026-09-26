@@ -52,7 +52,28 @@ const securityHeadersMiddleware = createMiddleware().server(async ({ next }) => 
   return res;
 });
 
+// Protected server fns throw a raw Response (401/403). Across the RPC boundary
+// that surfaces as "Error: [object Response]" and can blank the screen, so
+// convert it into a normal Error carrying the HTTP status.
+const responseErrorMiddleware = createMiddleware({ type: "function" }).client(
+  async ({ next }) => {
+    try {
+      return await next();
+    } catch (error) {
+      if (error instanceof Response) {
+        const text = await error.text().catch(() => "");
+        const err = new Error(text || `Request failed (${error.status})`) as Error & {
+          status: number;
+        };
+        err.status = error.status;
+        throw err;
+      }
+      throw error;
+    }
+  },
+);
+
 export const startInstance = createStart(() => ({
-  functionMiddleware: [attachSupabaseAuth],
+  functionMiddleware: [responseErrorMiddleware, attachSupabaseAuth],
   requestMiddleware: [errorMiddleware, csrfMiddleware, securityHeadersMiddleware],
 }));
