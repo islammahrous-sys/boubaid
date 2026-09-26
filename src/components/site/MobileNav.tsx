@@ -198,7 +198,7 @@ export function MobileNav() {
                                         </Link>
                                       </DrawerClose>
                                       {child.children && child.children.length > 0 ? (
-                                        <ul className="mt-1 ms-3 space-y-1 border-s border-border/70 ps-3">
+                                        <ul className="mt-1 space-y-1">
                                           {child.children.map((sub) => (
                                             <li key={sub.id ?? sub.to}>
                                               <DrawerClose asChild>

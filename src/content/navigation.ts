@@ -132,11 +132,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         ],
       },
       {
-        to: "/competitions",
-        label: { ar: "المسابقات و الجوائز", en: "Competitions & Awards" },
-        short: { ar: "المسابقات", en: "Awards" },
-      },
-      {
         to: "/library",
         label: { ar: "الأرشيف والمكتبة الرقمية", en: "Archive & Digital Library" },
         short: { ar: "الأرشيف", en: "Archive" },

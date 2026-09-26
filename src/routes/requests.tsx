@@ -539,8 +539,8 @@ const requests: RequestEntry[] = [
     Icon: Trophy,
     name: { ar: "طلب المشاركة في مسابقة", en: "Competition entry request" },
     desc: {
-      ar: "التسجيل في إحدى مسابقات الأسرة المعلنة في صفحة المسابقات والجوائز.",
-      en: "Enter one of the family competitions announced on the competitions and awards page.",
+      ar: "التسجيل في إحدى مسابقات الأسرة المعلنة ضمن أنشطة لجان مجلس الأسرة.",
+      en: "Enter one of the family competitions announced within the Family Council committees' activities.",
     },
   },
   {
