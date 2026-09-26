@@ -170,7 +170,6 @@ async function main() {
       priority: "0.8",
     },
     { loc: `${SITE_URL}/ahsa-family-councils`, changefreq: "monthly", priority: "0.6" },
-    { loc: `${SITE_URL}/competitions`, changefreq: "weekly", priority: "0.8" },
     { loc: `${SITE_URL}/news`, lastmod: newsListLastmod, changefreq: "daily", priority: "0.8" },
     { loc: `${SITE_URL}/library`, changefreq: "monthly", priority: "0.7" },
     { loc: `${SITE_URL}/directory`, changefreq: "weekly", priority: "0.7" },
