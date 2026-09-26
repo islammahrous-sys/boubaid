@@ -15,6 +15,9 @@ import { Eyebrow, Prose, Ornament } from "@/components/site/Editorial";
 import { Seal } from "@/components/site/Seal";
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublicSiteSettings } from "@/lib/cms.functions";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
+import boardChartAr from "@/assets/fund-board/chart-ar.png.asset.json";
+import boardChartEn from "@/assets/fund-board/chart-en.png.asset.json";
 
 export const Route = createFileRoute("/governance")({
   loader: () => getPublicSiteSettings(),
@@ -109,6 +112,10 @@ function GovernancePage() {
     1: siteGovernance.chairman_name,
     2: siteGovernance.vice_chairman_name,
   };
+  const boardChartHref = new URL(
+    rtl ? boardChartAr.url : boardChartEn.url,
+    "https://alboabid-heritage-hub.lovable.app",
+  ).toString();
 
   return (
     <>
@@ -228,6 +235,46 @@ function GovernancePage() {
               </div>
             </div>
           </div>
+
+          {/* الهيكل التنظيمي لمجلس أمناء الصندوق — language-specific source image */}
+          <figure className="mt-10 overflow-hidden rounded-md border border-border bg-card">
+            <figcaption className="border-b border-border p-4 text-[15px] font-semibold text-foreground">
+              {rtl
+                ? "الهيكل التنظيمي لمجلس امناء الصندوق"
+                : "Organizational Chart of the Fund's Board of Trustees"}
+            </figcaption>
+            <button
+              type="button"
+              onClick={() =>
+                openMediaViewer({
+                  src: boardChartHref,
+                  kind: "image",
+                  title: rtl
+                    ? "الهيكل التنظيمي لمجلس امناء الصندوق"
+                    : "Organizational Chart of the Fund's Board of Trustees",
+                })
+              }
+              className="block w-full overflow-x-auto bg-muted/30 p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-4"
+              aria-label={rtl ? "عرض المخطط بالحجم الكامل" : "Open chart full size"}
+            >
+              <img
+                key={boardChartHref}
+                src={boardChartHref}
+                alt={
+                  rtl
+                    ? "الهيكل التنظيمي لمجلس امناء الصندوق"
+                    : "Organizational Chart of the Fund's Board of Trustees"
+                }
+                width={1920}
+                height={1350}
+                loading="lazy"
+                className="mx-auto block h-auto w-full min-w-[640px] max-w-5xl object-contain sm:min-w-0"
+              />
+            </button>
+            <p className="border-t border-border p-3 text-[12px] text-muted-foreground">
+              {rtl ? "اضغط على المخطط لعرضه بالحجم الكامل." : "Tap the chart to view it full size."}
+            </p>
+          </figure>
         </section>
 
         <Ornament className="mt-16" />

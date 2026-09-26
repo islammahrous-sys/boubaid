@@ -78,7 +78,7 @@ const copy = {
   metaEntries: { ar: "عدد المقيدين", en: "Entries" } as BiText,
   metaFields: { ar: "الأعوام", en: "Years" } as BiText,
   metaUpdated: { ar: "آخر تحديث", en: "Last updated" } as BiText,
-  metaUpdatedValue: { ar: "١٤٤٧ هـ", en: "1447 AH" } as BiText,
+  metaUpdatedValue: { ar: "١٤٤٨ هـ", en: "1448 AH" } as BiText,
 
   empty: {
     ar: "لا توجد سجلات مضافة في هذا القسم حالياً.",
@@ -134,10 +134,8 @@ const F = {
 const sar = (n: string): BiText => ({ ar: `${n} ريال`, en: `SAR ${n}` });
 
 const SPONSOR_ROWS = [
-  { year: "1444", participants: 19, honoured: 7, branches: br(4, 3), prize: sar("8000"), fields: [F.sci, F.pro], sponsor: "ماهر بن أحمد بن إبراهيم" },
   { year: "1445", participants: 17, honoured: 5, branches: br(4, 3), prize: sar("6000"), fields: [F.sci, F.pro], sponsor: "عادل بن سعد بن علي بن صالح" },
-  { year: "1446", participants: 15, honoured: 4, branches: br(3, 3), prize: sar("5000"), fields: [F.sci], sponsor: "عادل بن سعد بن علي بن صالح" },
-  { year: "1447", participants: 18, honoured: 6, branches: br(3, 3), prize: sar("7000"), fields: [F.sci, F.pro, F.prize], sponsor: "عادل بن سعد بن علي بن صالح" },
+  { year: "1444", participants: 19, honoured: 7, branches: br(4, 3), prize: sar("8000"), fields: [F.sci, F.pro], sponsor: "ماهر بن أحمد بن إبراهيم" },
 ];
 
 function AchieversPage() {
@@ -236,8 +234,11 @@ function AchieversPage() {
       if (bucket) bucket.push(person);
       else groups.set(year, [person]);
     }
+    // Only these award years are shown, newest first.
+    const ALLOWED = ["1448", "1445", "1444"];
     return [...groups.entries()]
-      .sort((a, b) => (a[0] === "" ? 1 : b[0] === "" ? -1 : Number(b[0]) - Number(a[0])))
+      .filter(([year]) => ALLOWED.includes(year))
+      .sort((a, b) => ALLOWED.indexOf(a[0]) - ALLOWED.indexOf(b[0]))
       .map(([year, people]) => ({
         year,
         people: [...people].sort((a, b) => a.sortOrder - b.sortOrder),
@@ -291,7 +292,6 @@ function AchieversPage() {
         variant="plate"
         eyebrow={t(copy.eyebrow)}
         title={t(copy.title)}
-        subtitle={t(copy.subtitle)}
         image={pageImages.achievers.header.src}
         imageCaption={t(pageImages.achievers.header.caption)}
         meta={[
@@ -306,6 +306,9 @@ function AchieversPage() {
           <h2 id="award-fields-title" className="sr-only">
             {rtl ? "مجالات الجائزة" : "Award fields"}
           </h2>
+          <p className="measure mb-5 text-[16px] font-medium leading-relaxed text-foreground">
+            {t(copy.subtitle)}
+          </p>
           <ol className="grid gap-3 md:grid-cols-2">
             {AWARD_FIELDS.map((f, i) => (
               <li key={i} className="rounded-md border border-border bg-card p-5">
@@ -483,10 +486,10 @@ function AchieversPage() {
               ))}
               <tr className="bg-secondary/50 font-semibold">
                 <th scope="row" className="px-3 py-3 text-start">{rtl ? "المجموع" : "Total"}</th>
-                <td className="nums px-3 py-3">69</td>
-                <td className="nums px-3 py-3">22</td>
+                <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.participants, 0)}</td>
+                <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.honoured, 0)}</td>
                 <td className="px-3 py-3" />
-                <td className="nums px-3 py-3">{rtl ? "26000 ريال" : "SAR 26,000"}</td>
+                <td className="nums px-3 py-3">{rtl ? "14000 ريال" : "SAR 14,000"}</td>
                 <td className="px-3 py-3" />
                 <td className="px-3 py-3" />
               </tr>
