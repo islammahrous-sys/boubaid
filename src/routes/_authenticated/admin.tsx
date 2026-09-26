@@ -1216,7 +1216,10 @@ function MasterAdminPage() {
                   onSaveSettings={(data) =>
                     runMutation(
                       () => saveSettingMut({ data }),
-                      () => queryClient.invalidateQueries({ queryKey: ["site-settings-data"] }),
+                      () => {
+                        queryClient.invalidateQueries({ queryKey: ["site-settings-data"] });
+                        queryClient.invalidateQueries({ queryKey: ["public_site_settings"] });
+                      },
                     )
                   }
                 />
@@ -1638,7 +1641,10 @@ function MasterAdminPage() {
                   onSaveSetting={(data) =>
                     runMutation(
                       () => saveSettingMut({ data }),
-                      () => queryClient.invalidateQueries({ queryKey: ["site-settings-data"] }),
+                      () => {
+                        queryClient.invalidateQueries({ queryKey: ["site-settings-data"] });
+                        queryClient.invalidateQueries({ queryKey: ["public_site_settings"] });
+                      },
                     )
                   }
                 />
