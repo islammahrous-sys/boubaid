@@ -78,7 +78,7 @@ const copy = {
   metaEntries: { ar: "عدد المقيدين", en: "Entries" } as BiText,
   metaFields: { ar: "الأعوام", en: "Years" } as BiText,
   metaUpdated: { ar: "آخر تحديث", en: "Last updated" } as BiText,
-  metaUpdatedValue: { ar: "١٤٤٧ هـ", en: "1447 AH" } as BiText,
+  metaUpdatedValue: { ar: "١٤٤٨ هـ", en: "1448 AH" } as BiText,
 
   empty: {
     ar: "لا توجد سجلات مضافة في هذا القسم حالياً.",
@@ -486,10 +486,10 @@ function AchieversPage() {
               ))}
               <tr className="bg-secondary/50 font-semibold">
                 <th scope="row" className="px-3 py-3 text-start">{rtl ? "المجموع" : "Total"}</th>
-                <td className="nums px-3 py-3">69</td>
-                <td className="nums px-3 py-3">22</td>
+                <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.participants, 0)}</td>
+                <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.honoured, 0)}</td>
                 <td className="px-3 py-3" />
-                <td className="nums px-3 py-3">{rtl ? "26000 ريال" : "SAR 26,000"}</td>
+                <td className="nums px-3 py-3">{rtl ? "14000 ريال" : "SAR 14,000"}</td>
                 <td className="px-3 py-3" />
                 <td className="px-3 py-3" />
               </tr>

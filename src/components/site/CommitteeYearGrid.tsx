@@ -41,8 +41,26 @@ export function CommitteeYearGrid({
       {committees.map((committee) => {
         const items = itemsFor(rows, kind, committee.id);
         return (
-          <div key={committee.id} className="rounded-md border border-border bg-card p-5">
+          <div key={committee.id} id={kind === "PLAN" ? `committee-${committee.id}` : undefined} className="flex flex-col scroll-mt-28 rounded-md border border-border bg-card p-5">
             <h3 className="text-[15px] font-semibold text-foreground">{t(committee.name)}</h3>
+            {kind === "PLAN" ? (
+              <>
+                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                  {t(committee.desc)}
+                </p>
+                {committee.id === "hq-affairs" ? (
+                  <a
+                    href="#hq-project"
+                    className="mt-2 inline-block border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze dark:border-gold dark:text-gold"
+                  >
+                    {t({ ar: "مشروع المقر الدائم للأسرة", en: "Permanent Family Headquarters Project" })}
+                  </a>
+                ) : null}
+                <p className="label-caps mt-4 border-t border-border pt-3 text-bronze dark:text-gold">
+                  {t({ ar: "الأنشطة المخطط لها ١٤٤٨ هـ", en: "Planned activities 1448 AH" })}
+                </p>
+              </>
+            ) : null}
             {items.length === 0 ? (
               <p className="mt-3 text-[13px] text-muted-foreground">
                 {kind === "PLAN"
