@@ -129,9 +129,9 @@
 - [ ] Redeploy Vercel copy — waiting on owner.
 
 ## Update brief (26 Sep 2026) — pasted-2
-- [ ] Remove «اللجان التنفيذية» heading/nav; remove Programs page+links; remove Projects page+links; move HQ project into Committees → 1448 → لجنة شؤون مقر مجلس الأسرة; Home HQ link points there.
-- [ ] Archive: years 1448 → 1445 → 1444; add «الوثائق والمخطوطات» category.
-- [ ] Roll of Honour renamed «جائزة آل بوعبيد للتفوق العلمي والتميز», exact intro/categories, years 1448/1445/1444, Supporters & Sponsors table.
-- [ ] Requests Hub: ترشيح كفاءات الأسرة, الترشح لجائزة التميز, الانضمام إلى مجالس أسر الأحساء.
-- [ ] News → المركز الإعلامي; new page مجالس أسر الأحساء under More.
-- [ ] Home: HQ Diamond/Platinum/Golden tiers; «قالوا عن الأسرة» empty-ready section.
+- [x] Remove «اللجان التنفيذية» heading/nav; remove Programs page+links; remove Projects page+links; move HQ project into Committees → 1448 → لجنة شؤون مقر مجلس الأسرة; Home HQ link points there.
+- [x] Archive: years 1448 → 1445 → 1444; add «الوثائق والمخطوطات» category.
+- [x] Roll of Honour renamed «جائزة آل بوعبيد للتفوق العلمي والتميز», exact intro/categories, years 1448/1445/1444, Supporters & Sponsors table.
+- [x] Requests Hub: ترشيح كفاءات الأسرة, الترشح لجائزة التميز, الانضمام إلى مجالس أسر الأحساء.
+- [x] News → المركز الإعلامي; new page مجالس أسر الأحساء under More.
+- [x] Home: HQ Diamond/Platinum/Golden tiers; «قالوا عن الأسرة» empty-ready section.
