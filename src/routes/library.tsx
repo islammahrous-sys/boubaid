@@ -24,6 +24,8 @@ import {
   type CommitteeArchiveItem,
 } from "@/components/site/CommitteeYearGrid";
 import { Eyebrow } from "@/components/site/Editorial";
+import { committeeDocuments } from "@/content/committee-documents";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import {
   getPublishedGalleries,
   getPublishedArchiveFolders,
@@ -488,12 +490,53 @@ function LibraryPage() {
         <section className="mb-12 border-b border-border pb-12" aria-labelledby="committee-archive-1448">
           <Eyebrow rule>{t({ ar: "الأرشيف", en: "Archive" })}</Eyebrow>
           <h2 id="committee-archive-1448" className="mt-6 text-xl font-semibold text-foreground">
-            {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
+            {t({ ar: "١. ١٤٤٨ هـ", en: "1. 1448 AH" })}
           </h2>
           <CommitteeYearGrid
             rows={committeeArchive as CommitteeArchiveItem[]}
             kind="ARCH"
           />
+
+          {[
+            { year: 1445, label: { ar: "٢. ١٤٤٥ هـ", en: "2. 1445 AH" } },
+            { year: 1444, label: { ar: "٣. ١٤٤٤ هـ", en: "3. 1444 AH" } },
+          ].map(({ year, label }) => (
+            <div key={year} className="mt-10" aria-labelledby={`committee-archive-${year}`}>
+              <h2
+                id={`committee-archive-${year}`}
+                className="text-xl font-semibold text-foreground"
+              >
+                {t(label)}
+              </h2>
+              <ul className="mt-4 border-t border-border">
+                {committeeDocuments
+                  .filter((d) => d.year === year)
+                  .map((d) => (
+                    <li
+                      key={d.id}
+                      className="flex items-center justify-between gap-4 border-b border-border py-3"
+                    >
+                      <span className="min-w-0 break-words text-[14px] text-foreground">
+                        {t(d.title)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openMediaViewer({
+                            src: `/api/public/committee-doc?id=${d.id}`,
+                            kind: "pdf",
+                            title: t(d.title),
+                          })
+                        }
+                        className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+                      >
+                        {t({ ar: "عرض الوثيقة", en: "View document" })}
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ))}
         </section>
 
         {/* ── Archive sections ─────────────────────────────────── */}
