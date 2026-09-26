@@ -16,7 +16,12 @@ import { useQuery } from "@tanstack/react-query";
 import { formatDualYear } from "@/lib/dates";
 import { useLang } from "@/i18n/LanguageProvider";
 import { siteMeta } from "@/content/site";
-import { primaryNav, secondaryNav, buildFooterColumns } from "@/content/navigation";
+import {
+  primaryNav,
+  secondaryNav,
+  buildFooterColumns,
+  withoutRetiredNavigation,
+} from "@/content/navigation";
 import { subscribeToNewsletter } from "@/lib/forms.functions";
 import { getPublicSiteSettings, getPublicNavigation } from "@/lib/cms.functions";
 import { newsletterSchema } from "@/lib/forms.schemas";
@@ -64,8 +69,8 @@ export function Footer() {
     queryFn: () => getPublicNavigation(),
     staleTime: 5 * 60 * 1000,
   });
-  const liveFooterItems = liveNav?.footer ?? [];
-  const liveHeaderItems = liveNav?.header ?? [];
+  const liveFooterItems = withoutRetiredNavigation(liveNav?.footer ?? []);
+  const liveHeaderItems = withoutRetiredNavigation(liveNav?.header ?? []);
   const footerColumns = liveFooterItems.length
     ? buildFooterColumns(liveFooterItems)
     : liveHeaderItems.length

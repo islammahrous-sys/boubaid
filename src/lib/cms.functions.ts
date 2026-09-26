@@ -1033,6 +1033,17 @@ export const getPublicNavigation = createServerFn({ method: "GET" }).handler(asy
     >();
 
     for (const item of itemsRes.data ?? []) {
+      const englishLabel = (item.label_en ?? "").trim().toLowerCase();
+      const arabicLabel = item.label_ar.replace(/\s+/g, "");
+      const path = item.url.split(/[?#]/)[0];
+      if (
+        path === "/competitions" ||
+        englishLabel === "competitions & awards" ||
+        englishLabel === "competitions and awards" ||
+        arabicLabel === "المسابقاتوالجوائز"
+      ) {
+        continue;
+      }
       const list = itemsByMenu.get(item.menu_id) ?? [];
       list.push(item);
       itemsByMenu.set(item.menu_id, list);

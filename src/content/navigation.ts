@@ -18,6 +18,25 @@ export type NavItem = {
   children?: NavItem[];
 };
 
+/** Retired standalone destination that must never be restored from CMS navigation. */
+export function withoutRetiredNavigation<T extends NavItem>(items: T[]): T[] {
+  return items
+    .filter((item) => {
+      const english = item.label.en.trim().toLowerCase();
+      const arabic = item.label.ar.replace(/\s+/g, "");
+      return (
+        item.to.split(/[?#]/)[0] !== "/competitions" &&
+        english !== "competitions & awards" &&
+        english !== "competitions and awards" &&
+        arabic !== "المسابقاتوالجوائز"
+      );
+    })
+    .map((item) => ({
+      ...item,
+      ...(item.children ? { children: withoutRetiredNavigation(item.children) } : {}),
+    }));
+}
+
 /** Top-level routes, shown in the desktop header bar. */
 export const primaryNav: NavItem[] = [
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, short: { ar: "الرئيسية", en: "Home" } },
