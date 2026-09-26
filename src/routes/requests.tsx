@@ -486,6 +486,39 @@ const requests: RequestEntry[] = [
     },
   },
   {
+    id: "family-competencies",
+    group: "participation",
+    form: "family_competencies_nomination",
+    Icon: Users,
+    name: { ar: "ترشيح كفاءات الأسرة", en: "Family Competencies Nomination" },
+    desc: {
+      ar: "ترشيح أحد أفراد الأسرة من أصحاب الكفاءات العلمية أو المهنية لإدراجه في قسم كفاءات الأسرة.",
+      en: "Nominate a family member with academic or professional competencies for the Family Competencies section.",
+    },
+  },
+  {
+    id: "excellence-award",
+    group: "participation",
+    form: "excellence_award_application",
+    Icon: Trophy,
+    name: { ar: "الترشح لجائزة التميز", en: "Excellence Award Application" },
+    desc: {
+      ar: "التقدم لجائزة آل بوعبيد للتفوق العلمي والتميز وفق مجالات الجائزة المعتمدة.",
+      en: "Apply for the Al Bu Obaid Award for Academic Excellence and Distinction in its approved categories.",
+    },
+  },
+  {
+    id: "ahsa-councils-join",
+    group: "participation",
+    form: "ahsa_family_councils_join",
+    Icon: HeartHandshake,
+    name: { ar: "الانضمام إلى مجالس أسر الأحساء", en: "Join the Al-Ahsa Family Councils" },
+    desc: {
+      ar: "طلب الانضمام أو المشاركة في مجالس أسر الأحساء.",
+      en: "Request to join or take part in the Al-Ahsa Family Councils.",
+    },
+  },
+  {
     id: "youth-program",
     group: "participation",
     form: "youth_program_enrolment",
@@ -524,7 +557,7 @@ const requests: RequestEntry[] = [
   {
     id: "initiative-participation",
     group: "participation",
-    to: "/initiatives",
+    to: "/committees#hq-project",
     Icon: Sparkles,
     name: { ar: "طلب الانضمام إلى مشروع أو مبادرة", en: "Initiative participation request" },
     desc: {

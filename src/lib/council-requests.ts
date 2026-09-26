@@ -147,6 +147,23 @@ export const COUNCIL_REQUESTS = {
   committee_family_communication: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[3]),
   committee_activities_initiatives: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[4]),
   committee_media_support_services: committeeRequest(COMMITTEE_REQUEST_DESTINATIONS[5]),
+  family_competencies_nomination: {
+    title: { ar: "ترشيح كفاءات الأسرة", en: "Family Competencies Nomination" },
+    topic: { ar: "اسم المرشّح ومجال الكفاءة", en: "Nominee name and field of competency" },
+    details: { ar: "المؤهلات والخبرات وأسباب الترشيح", en: "Qualifications, experience and reasons" },
+    allowAttachments: true,
+  },
+  excellence_award_application: {
+    title: { ar: "الترشح لجائزة التميز", en: "Excellence Award Application" },
+    topic: { ar: "اسم المتقدم ومجال الجائزة", en: "Applicant name and award category" },
+    details: { ar: "تفاصيل الإنجاز والشهادات", en: "Achievement details and certificates" },
+    allowAttachments: true,
+  },
+  ahsa_family_councils_join: {
+    title: { ar: "الانضمام إلى مجالس أسر الأحساء", en: "Join the Al-Ahsa Family Councils" },
+    topic: { ar: "اسم المجلس أو الأسرة", en: "Council or family name" },
+    details: { ar: "تفاصيل طلب الانضمام", en: "Details of the joining request" },
+  },
   service_establishment: {
     title: { ar: "طلب إضافة خدمة – منشآت", en: "Add a service request – Establishments" },
     topic: { ar: "اسم المنشأة والخدمة", en: "Establishment and service name" },

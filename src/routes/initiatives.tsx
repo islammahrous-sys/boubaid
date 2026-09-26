@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, redirect, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -24,6 +24,13 @@ import {
 const PAGE_SIZE = 20;
 
 export const Route = createFileRoute("/initiatives")({
+  // The standalone Projects page was retired: the headquarters project now
+  // lives under Committees → 1448. Individual detail pages still resolve.
+  beforeLoad: ({ location }) => {
+    if (location.pathname === "/initiatives" || location.pathname === "/initiatives/") {
+      throw redirect({ to: "/committees", hash: "hq-project", statusCode: 301 });
+    }
+  },
   loader: async () => {
     const rows = await getPublishedInitiatives();
     return { initiatives: mergeInitiatives(rows, staticInitiatives) };
