@@ -20,6 +20,11 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { ArchiveVideoPlayer } from "@/components/site/ArchiveVideoPlayer";
 import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
 import {
+  CommitteeYearGrid,
+  type CommitteeArchiveItem,
+} from "@/components/site/CommitteeYearGrid";
+import { Eyebrow } from "@/components/site/Editorial";
+import {
   getPublishedGalleries,
   getPublishedArchiveFolders,
   getPublishedArchiveVideos,
@@ -101,7 +106,16 @@ export const Route = createFileRoute("/library")({
       ...libraryVideos,
     ];
 
-    return { collections, folders, videos };
+    const committeeArchive = library
+      .filter(
+        (item) =>
+          item.collection === "committee_charts" &&
+          item.is_published &&
+          (item.reference ?? "").toUpperCase().startsWith("COMM-1448-ARCH-"),
+      )
+      .sort((a, b) => a.sort_order - b.sort_order);
+
+    return { collections, folders, videos, committeeArchive };
   },
   head: ({ matches, match }) => ({
     meta: [
@@ -379,7 +393,7 @@ function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: st
 
 function LibraryPage() {
   const { t, lang } = useLang();
-  const { collections, folders, videos } = Route.useLoaderData();
+  const { collections, folders, videos, committeeArchive } = Route.useLoaderData();
   const searchParams = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
@@ -471,6 +485,17 @@ function LibraryPage() {
       />
 
       <div className="container-page py-10 pb-20">
+        <section className="mb-12 border-b border-border pb-12" aria-labelledby="committee-archive-1448">
+          <Eyebrow rule>{t({ ar: "الأرشيف", en: "Archive" })}</Eyebrow>
+          <h2 id="committee-archive-1448" className="mt-6 text-xl font-semibold text-foreground">
+            {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
+          </h2>
+          <CommitteeYearGrid
+            rows={committeeArchive as CommitteeArchiveItem[]}
+            kind="ARCH"
+          />
+        </section>
+
         {/* ── Archive sections ─────────────────────────────────── */}
         <div className="mb-6 flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:items-center lg:justify-between">
           <div
