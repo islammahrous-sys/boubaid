@@ -234,8 +234,8 @@ function AchieversPage() {
       if (bucket) bucket.push(person);
       else groups.set(year, [person]);
     }
-    // Only these award years are shown, newest first.
-    const ALLOWED = ["1448", "1445", "1444"];
+    // Keep every supplied award cohort visible in descending Hijri-year order.
+    const ALLOWED = ["1448", "1447", "1446", "1445", "1444"];
     return [...groups.entries()]
       .filter(([year]) => ALLOWED.includes(year))
       .sort((a, b) => ALLOWED.indexOf(a[0]) - ALLOWED.indexOf(b[0]))
@@ -423,8 +423,8 @@ function AchieversPage() {
                         ? "بدون سنة محددة"
                         : "Year not specified"
                       : rtl
-                        ? `عام ${year}${year === "1446" ? "" : "هـ"}`
-                        : `Year ${year}${year === "1446" ? "" : " AH"}`}
+                        ? `عام ${year}هـ`
+                        : `Year ${year} AH`}
                   </h3>
                   <span className="nums text-xs text-muted-foreground">{people.length}</span>
                 </div>
