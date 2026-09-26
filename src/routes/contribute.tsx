@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { CopyButton } from "@/components/site/CopyButton";
 import { getCanonicalUrl } from "@/lib/seo";
+import { copy } from "@/content/page-copy/contribute";
 
 export const Route = createFileRoute("/contribute")({
   head: () => ({
@@ -29,15 +30,7 @@ export const Route = createFileRoute("/contribute")({
   component: ContributePage,
 });
 
-const copy = {
-  eyebrow: { ar: "الاشتراكات والمساهمات", en: "Subscriptions & contributions" } as BiText,
-  title: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" } as BiText,
-  subtitle: {
-    ar: "بيانات الحساب البنكي المعتمد لصندوق التنمية العائلية، لاستخدام أفراد الأسرة عند الاشتراك أو المساهمة.",
-    en: "The approved bank account details of the Family Development Fund, for family members subscribing or contributing.",
-  } as BiText,
-  sectionTitle: { ar: "بيانات الحساب البنكي", en: "Bank account details" } as BiText,
-};
+
 
 /** Values are transcribed exactly from the fund's official bank record. */
 const bank: { label: BiText; value: string; mono?: boolean; copy?: boolean }[] = [

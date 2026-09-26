@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
 import { getPublicGalleryBySlug } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
+import { copy } from "@/content/page-copy/library-museum-slug";
 
 const PAGE_SIZE = 24;
 
@@ -36,14 +37,7 @@ export const Route = createFileRoute("/library/museum/$slug")({
   component: MuseumCollectionPage,
 });
 
-const copy = {
-  back: { ar: "المكتبة الرقمية", en: "Digital Library" } as BiText,
-  empty: {
-    ar: "لا توجد صور منشورة في هذه المجموعة بعد.",
-    en: "No published images yet.",
-  } as BiText,
-  loadMore: { ar: "عرض المزيد من الصور", en: "Load more images" } as BiText,
-};
+
 
 function MuseumCollectionPage() {
   const { t, lang } = useLang();

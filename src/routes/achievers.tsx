@@ -18,7 +18,9 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { branches } from "@/content/site";
-import { getPublishedAchievers } from "@/lib/cms.functions";
+import { getPublishedAchievers, getPublicSiteSettings } from "@/lib/cms.functions";
+import { useQuery } from "@tanstack/react-query";
+import { SPONSOR_HEAD, SPONSOR_ROWS, type SponsorRow } from "@/content/award-sponsors";
 import { submitAchieverNomination } from "@/lib/forms.functions";
 import { mapAchieverRow } from "@/content/cms-adapt";
 import { pageImages } from "@/content/images";
@@ -32,6 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getCanonicalUrl } from "@/lib/seo";
+import { copy } from "@/content/page-copy/achievers";
 
 const EXCELLENCE_CEREMONY_IMAGE =
   "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/excellence-award-ceremony.jpg";
@@ -64,39 +67,7 @@ export const Route = createFileRoute("/achievers")({
   component: AchieversPage,
 });
 
-const copy = {
-  eyebrow: { ar: "سجل التميز", en: "Award" } as BiText,
-  title: {
-    ar: "جائزة آل بوعبيد للتفوق العلمي والتميز",
-    en: "Al Bu Obaid Award for Academic Excellence and Distinction",
-  } as BiText,
-  subtitle: {
-    ar: "جائزة تمنح للمميزين من أفراد الأسرة ذكوراً وإناثًا بمختلف مراحلهم الدراسية أو من هم على رأس العمل، في المجالات التالية:",
-    en: "An award granted to distinguished family members, male and female, at every stage of study or in employment, in the following fields:",
-  } as BiText,
 
-  metaEntries: { ar: "عدد المقيدين", en: "Entries" } as BiText,
-  metaFields: { ar: "الأعوام", en: "Years" } as BiText,
-  metaUpdated: { ar: "آخر تحديث", en: "Last updated" } as BiText,
-  metaUpdatedValue: { ar: "١٤٤٨ هـ", en: "1448 AH" } as BiText,
-
-  empty: {
-    ar: "لا توجد سجلات مضافة في هذا القسم حالياً.",
-    en: "No records have been added to this section yet.",
-  } as BiText,
-
-  colName: { ar: "الاسم", en: "Name" } as BiText,
-  colAchievement: { ar: "التميز", en: "Distinction" } as BiText,
-  competencies: { ar: "كفاءات افراد الاسرة", en: "Family Members’ Competencies" } as BiText,
-  excellence: { ar: "جائزة التميز", en: "Excellence Award" } as BiText,
-
-  nominateTitle: { ar: "الترشح لجائزة التميز", en: "Excellence Award Application" } as BiText,
-  nominateBody: {
-    ar: "يُفتح باب الترشح لجائزة التفوق العلمي والتميز المهني لأبناء وبنات الأسرة. ويجري القيد بعد اعتماد أمانة المجلس واللجان المختصة.",
-    en: "Nominations for academic and professional distinction are open to family members. Additions are confirmed following approval by the Secretariat and relevant committees.",
-  } as BiText,
-  nominateCta: { ar: "تقديم ترشيح جديد", en: "Submit a nomination" } as BiText,
-};
 
 const AWARD_FIELDS: { text: BiText; sub?: BiText[] }[] = [
   { text: { ar: "حفظ القرآن الكريم كاملاً بشهادة معتمدة من جهة رسمية أو إجازة حفظ", en: "Memorising the entire Holy Qur'an, with a certificate from an official body or an ijazah" } },
@@ -112,36 +83,20 @@ const AWARD_FIELDS: { text: BiText; sub?: BiText[] }[] = [
   { text: { ar: "الحصول على شهادة مهنية معتمدة", en: "Obtaining an accredited professional certificate" } },
 ];
 
-const SPONSOR_HEAD: BiText[] = [
-  { ar: "العام", en: "Year" },
-  { ar: "عدد المشاركين", en: "Participants" },
-  { ar: "المكرمين", en: "Honoured" },
-  { ar: "فروع المسابقة", en: "Competition branches" },
-  { ar: "قيمة الجوائز", en: "Prize value" },
-  { ar: "فروع الفائزين", en: "Winners' fields" },
-  { ar: "الرعاة والداعمين", en: "Sponsors & supporters" },
-];
-
-const br = (main: number, sub: number): BiText[] => [
-  { ar: `${main} فروع رئيسة`, en: `${main} main branches` },
-  { ar: `${sub} فروع فرعية`, en: `${sub} sub-branches` },
-];
-const F = {
-  sci: { ar: "تميز علمي", en: "Academic distinction" },
-  pro: { ar: "تميز مهني", en: "Professional distinction" },
-  prize: { ar: "حصول على جائزة", en: "Award received" },
-};
-const sar = (n: string): BiText => ({ ar: `${n} ريال`, en: `SAR ${n}` });
-
-const SPONSOR_ROWS = [
-  { year: "1444", participants: 19, honoured: 7, branches: br(4, 3), prize: sar("8000"), fields: [F.sci, F.pro], sponsor: "ماهر بن أحمد بن إبراهيم" },
-  { year: "1445", participants: 17, honoured: 5, branches: br(4, 3), prize: sar("6000"), fields: [F.sci, F.pro], sponsor: "عادل بن سعد بن علي بن صالح" },
-  { year: "1446", participants: 15, honoured: 4, branches: br(3, 3), prize: sar("5000"), fields: [F.sci], sponsor: "عادل بن سعد بن علي بن صالح" },
-  { year: "1447", participants: 18, honoured: 6, branches: br(3, 3), prize: sar("7000"), fields: [F.sci, F.pro, F.prize], sponsor: "عادل بن سعد بن علي بن صالح" },
-];
-
 function AchieversPage() {
   const { t, lang } = useLang();
+  const { data: siteSettings } = useQuery({
+    queryKey: ["public_site_settings"],
+    queryFn: () => getPublicSiteSettings(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const sponsorCfg = (siteSettings as Record<string, any> | undefined)?.award_sponsors;
+  const sponsorRows: SponsorRow[] =
+    Array.isArray(sponsorCfg?.rows) && sponsorCfg.rows.length ? sponsorCfg.rows : SPONSOR_ROWS;
+  const sponsorTotal: BiText | null =
+    sponsorCfg?.total_ar || sponsorCfg?.total_en
+      ? { ar: sponsorCfg.total_ar || "", en: sponsorCfg.total_en || "" }
+      : null;
   const { achievers } = Route.useLoaderData();
   const [activeAchiever, setActiveAchiever] = useState<any | null>(null);
   const [nominationOpen, setNominationOpen] = useState(false);
@@ -475,23 +430,23 @@ function AchieversPage() {
               </tr>
             </thead>
             <tbody>
-              {SPONSOR_ROWS.map((r) => (
+              {sponsorRows.map((r) => (
                 <tr key={r.year} className="border-b border-border align-top">
                   <th scope="row" className="nums bg-secondary/30 px-3 py-3 text-start font-semibold">{r.year}</th>
                   <td className="nums px-3 py-3">{r.participants}</td>
                   <td className="nums px-3 py-3">{r.honoured}</td>
-                  <td className="px-3 py-3">{r.branches.map((b) => <div key={b.en}>{t(b)}</div>)}</td>
+                  <td className="px-3 py-3">{(r.branches ?? []).map((b) => <div key={b.en}>{t(b)}</div>)}</td>
                   <td className="nums px-3 py-3">{t(r.prize)}</td>
-                  <td className="px-3 py-3">{r.fields.map((b) => <div key={b.en}>{t(b)}</div>)}</td>
+                  <td className="px-3 py-3">{(r.fields ?? []).map((b) => <div key={b.en}>{t(b)}</div>)}</td>
                   <td className="px-3 py-3">{r.sponsor}</td>
                 </tr>
               ))}
               <tr className="bg-secondary/50 font-semibold">
                 <th scope="row" className="px-3 py-3 text-start">{rtl ? "المجموع" : "Total"}</th>
-                <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.participants, 0)}</td>
-                <td className="nums px-3 py-3">{SPONSOR_ROWS.reduce((n, r) => n + r.honoured, 0)}</td>
+                <td className="nums px-3 py-3">{sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}</td>
+                <td className="nums px-3 py-3">{sponsorRows.reduce((n, r) => n + Number(r.honoured || 0), 0)}</td>
                 <td className="px-3 py-3" />
-                <td className="nums px-3 py-3">{rtl ? "26000 ريال" : "SAR 26,000"}</td>
+                <td className="nums px-3 py-3">{sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}</td>
                 <td className="px-3 py-3" />
                 <td className="px-3 py-3" />
               </tr>

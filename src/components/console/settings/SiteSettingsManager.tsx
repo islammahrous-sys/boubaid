@@ -8,6 +8,8 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { Settings, Globe, Shield, Palette, Phone, Search, Save, Users, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import type { SiteSettingInput } from "@/lib/admin-hub.schemas";
+import { PageTextsManager } from "./PageTextsManager";
+import { SponsorsManager } from "./SponsorsManager";
 
 export function SiteSettingsManager({
   settings,
@@ -167,7 +169,7 @@ export function SiteSettingsManager({
 
       <div className="border border-border rounded-xl bg-card p-6">
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid grid-cols-5 w-full mb-6">
+          <TabsList className="flex flex-wrap h-auto w-full mb-6 gap-1">
             <TabsTrigger value="general" className="text-xs gap-1.5">
               <Globe className="w-3.5 h-3.5" />
               {isAr ? "الهوية والترخيص" : "Identity & License"}
@@ -183,6 +185,14 @@ export function SiteSettingsManager({
             <TabsTrigger value="seo" className="text-xs gap-1.5">
               <Search className="w-3.5 h-3.5" />
               {isAr ? "محركات البحث (SEO)" : "SEO & Meta"}
+            </TabsTrigger>
+            <TabsTrigger value="texts" className="text-xs gap-1.5">
+              <Palette className="w-3.5 h-3.5" />
+              {isAr ? "نصوص الصفحات" : "Page texts"}
+            </TabsTrigger>
+            <TabsTrigger value="sponsors" className="text-xs gap-1.5">
+              <Users className="w-3.5 h-3.5" />
+              {isAr ? "جدول رعاة الجائزة" : "Award sponsors"}
             </TabsTrigger>
             <TabsTrigger value="security" className="text-xs gap-1.5">
               <Shield className="w-3.5 h-3.5" />
@@ -469,6 +479,13 @@ export function SiteSettingsManager({
                     : "Save SEO Settings"}
               </Button>
             </div>
+          </TabsContent>
+
+          <TabsContent value="texts">
+            <PageTextsManager settings={settings} onSaveSetting={onSaveSetting} isAr={isAr} />
+          </TabsContent>
+          <TabsContent value="sponsors">
+            <SponsorsManager settings={settings} onSaveSetting={onSaveSetting} isAr={isAr} />
           </TabsContent>
 
           {/* Security */}
