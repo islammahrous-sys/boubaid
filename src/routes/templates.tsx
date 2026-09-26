@@ -125,10 +125,8 @@ const copy = {
     ar: "المخططات التنظيمية للجان - نسخة قابلة للتحرير",
     en: "Editable Committees Organization Charts",
   } as BiText,
-  fundChartsTitle: {
-    ar: "الهيكل التنظيمي لمجلس أمناء الصندوق - نسخة قابلة للتحرير",
-    en: "Editable Fund_Board_of_Trustees_Org_Chart",
-  } as BiText,
+  fundChartsTitleAr: "الهيكل التنظيمي لمجلس أمناء الصندوق — نسخة قابلة للتحرير",
+  fundChartsTitleEn: "Organizational Chart of the Fund's Board of Trustees — Editable",
   view: { ar: "عرض الملف", en: "View Document" } as BiText,
   open: { ar: "فتح الملف", en: "Open File" } as BiText,
   download: { ar: "تحميل الملف", en: "Download File" } as BiText,
