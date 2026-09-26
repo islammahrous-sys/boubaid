@@ -39,6 +39,11 @@ const PAGE_LABELS: Record<string, string> = {
   dna: "الحمض النووي — DNA",
   requests: "مركز الطلبات — Requests",
   templates: "الهوية البصرية — Visual Identity",
+  archivevideoplayer: "مشغّل فيديو الأرشيف — Archive video player",
+  collateralslibrary: "مكتبة المطبوعات — Collaterals library",
+  councilrequestform: "نموذج طلبات المجلس — Council request form",
+  editabletemplateslibrary: "القوالب القابلة للتعديل — Editable templates",
+  establishmentsdirectory: "دليل المنشآت — Establishments directory",
 };
 
 export function PageTextsManager({

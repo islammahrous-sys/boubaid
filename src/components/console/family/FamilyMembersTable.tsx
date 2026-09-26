@@ -197,13 +197,42 @@ export function FamilyMembersTable({
 
   const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Simplified for server pagination
 
-  // Demographic Statistics
+  // Demographic Statistics — counted live so the cards are correct even when
+  // the dashboard overview hasn't been loaded in this session.
+  const { data: liveStats } = useQuery({
+    queryKey: ["family-members-demographics"],
+    staleTime: 1000 * 60 * 3,
+    queryFn: async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const base = () =>
+        supabase
+          .from("family_members")
+          .select("id", { count: "exact", head: true })
+          .is("deleted_at", null);
+      const [all, living, deceased, males, females] = await Promise.all([
+        base(),
+        base().eq("is_living", true),
+        base().eq("is_living", false),
+        base().eq("gender", "male"),
+        base().eq("gender", "female"),
+      ]);
+      return {
+        total: all.count ?? 0,
+        living: living.count ?? 0,
+        deceased: deceased.count ?? 0,
+        males: males.count ?? 0,
+        females: females.count ?? 0,
+      };
+    },
+  });
+  const pick = (live: number | undefined, init: number | undefined) =>
+    live ?? (init ? init : undefined) ?? 0;
   const stats = {
-    total: initialStats?.total ?? totalItems,
-    living: initialStats?.living ?? 0,
-    deceased: initialStats?.deceased ?? 0,
-    males: initialStats?.males ?? 0,
-    females: initialStats?.females ?? 0,
+    total: pick(liveStats?.total, initialStats?.total) || totalItems,
+    living: pick(liveStats?.living, initialStats?.living),
+    deceased: pick(liveStats?.deceased, initialStats?.deceased),
+    males: pick(liveStats?.males, initialStats?.males),
+    females: pick(liveStats?.females, initialStats?.females),
   };
 
   // Filtering
