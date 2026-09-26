@@ -127,7 +127,8 @@ function ContactPage() {
   const contactEmail = siteContact.email || siteMeta.contact.email;
   const contactWhatsapp = siteContact.whatsapp || siteMeta.contact.whatsapp;
   const addressText = siteGeneral.national_address || t(siteMeta.nationalAddress.full);
-  const hoursText = t(copy.hoursValue);
+  const hoursText =
+    (lang === "ar" ? siteContact.hours_ar : siteContact.hours_en) || t(copy.hoursValue);
 
   const fieldClass =
     "w-full border border-input bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-bronze focus:ring-2 focus:ring-bronze/20 dark:focus:border-gold dark:focus:ring-gold/20";
