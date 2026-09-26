@@ -12,3 +12,6 @@
 <!-- LOVABLE:END -->
 
 - Reuse `CommitteeYearGrid` for CMS-driven 1448 committee plan/archive records so both public placements follow the same reference and file-action rules.
+
+- Page static text lives in `src/content/page-copy/*.ts` wrapped with `registerCopy(page, …)`; admin overrides are stored in site_settings `page_texts` and applied inside `t()` — keeps every page text editable without touching call sites.
+- Award sponsors table defaults live in `src/content/award-sponsors.ts`; admin overrides in site_settings `award_sponsors`.
