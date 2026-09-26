@@ -15,8 +15,14 @@ import {
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedLibrary } from "@/lib/cms.functions";
 import { downloadFile } from "@/lib/download";
-import masterChartAr from "@/assets/committee-charts-1445/master-ar.png.asset.json";
-import masterChartEn from "@/assets/committee-charts-1445/master-en.png.asset.json";
+import masterChartAr from "@/assets/committee-charts-current/master-ar.png.asset.json";
+import masterChartEn from "@/assets/committee-charts-current/master-en.png.asset.json";
+
+const LOVABLE_ASSET_ORIGIN = "https://alboabid-heritage-hub.lovable.app";
+
+function publicAssetUrl(path: string) {
+  return new URL(path, LOVABLE_ASSET_ORIGIN).toString();
+}
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
@@ -122,7 +128,7 @@ function CommitteesPage() {
   const Arrow = rtl ? ArrowLeft : ArrowRight;
   const { charts } = Route.useLoaderData();
   const chartRecords = charts as CommitteeArchiveItem[];
-  const masterHref = lang === "en" ? masterChartEn.url : masterChartAr.url;
+  const masterHref = publicAssetUrl(lang === "en" ? masterChartEn.url : masterChartAr.url);
 
   return (
     <>
