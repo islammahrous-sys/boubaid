@@ -67,6 +67,19 @@ export function SiteSettingsManager({
     getVal("site_contact", "salla", "https://albouabidfamily.com/القسط-الشهري/c1360847582"),
   );
 
+  const [youtubeUrl, setYoutubeUrl] = useState(
+    getVal("site_contact", "youtube", "https://youtube.com/@albouabidfamily"),
+  );
+  const [snapchatUrl, setSnapchatUrl] = useState(
+    getVal("site_contact", "snapchat", "https://www.snapchat.com/add/alboubaidsa"),
+  );
+  const [hoursAr, setHoursAr] = useState(
+    getVal("site_contact", "hours_ar", "الأحد إلى الخميس، ٤:٠٠ — ٨:٠٠ مساءً بتوقيت المملكة."),
+  );
+  const [hoursEn, setHoursEn] = useState(
+    getVal("site_contact", "hours_en", "Sunday to Thursday, 4:00 — 8:00 pm Saudi time."),
+  );
+
   // Governance & Board
   const [deanName, setDeanName] = useState(
     getVal("site_governance", "dean_name", "الأستاذ سعد بن عبدالرحمن بن علي بوعبيد"),
@@ -112,6 +125,10 @@ export function SiteSettingsManager({
     setXUrl(getVal("site_contact", "x", xUrl));
     setInstagramUrl(getVal("site_contact", "instagram", instagramUrl));
     setSallaUrl(getVal("site_contact", "salla", sallaUrl));
+    setYoutubeUrl(getVal("site_contact", "youtube", youtubeUrl));
+    setSnapchatUrl(getVal("site_contact", "snapchat", snapchatUrl));
+    setHoursAr(getVal("site_contact", "hours_ar", hoursAr));
+    setHoursEn(getVal("site_contact", "hours_en", hoursEn));
     setDeanName(getVal("site_governance", "dean_name", deanName));
     setChairmanName(getVal("site_governance", "chairman_name", chairmanName));
     setViceChairmanName(getVal("site_governance", "vice_chairman_name", viceChairmanName));
@@ -304,6 +321,32 @@ export function SiteSettingsManager({
               </div>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">YouTube</Label>
+                <Input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Snapchat</Label>
+                <Input value={snapchatUrl} onChange={(e) => setSnapchatUrl(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">
+                  {isAr ? "أوقات العمل (بالعربية)" : "Office hours (Arabic)"}
+                </Label>
+                <Input dir="rtl" value={hoursAr} onChange={(e) => setHoursAr(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">
+                  {isAr ? "أوقات العمل (بالإنجليزية)" : "Office hours (English)"}
+                </Label>
+                <Input dir="ltr" value={hoursEn} onChange={(e) => setHoursEn(e.target.value)} />
+              </div>
+            </div>
+
             <div className="flex justify-end pt-3">
               <Button
                 size="sm"
@@ -318,6 +361,10 @@ export function SiteSettingsManager({
                     x: xUrl,
                     instagram: instagramUrl,
                     salla: sallaUrl,
+                    youtube: youtubeUrl,
+                    snapchat: snapchatUrl,
+                    hours_ar: hoursAr,
+                    hours_en: hoursEn,
                   })
                 }
               >
