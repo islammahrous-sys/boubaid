@@ -198,6 +198,10 @@ export const updateMyAvatar = createServerFn({ method: "POST" })
     z.object({ avatar_path: z.string().trim().min(1).max(500) }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    if (!data.avatar_path.startsWith(`${context.userId}/`)) {
+      return { ok: false as const, error: "invalid_avatar_path" };
+    }
+
     const { error } = await context.supabase
       .from("profiles")
       .update({ avatar_path: data.avatar_path })
