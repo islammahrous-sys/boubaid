@@ -15,6 +15,7 @@ import {
   getMyAccount,
   submitMembershipRequest,
   updateMyProfile,
+  updateMyAvatar,
   getMyNotifications,
   markMyNotificationRead,
   markAllMyNotificationsRead,
@@ -217,6 +218,7 @@ function AccountPage() {
 
   const fetchAccount = useServerFn(getMyAccount);
   const saveProfile = useServerFn(updateMyProfile);
+  const saveAvatar = useServerFn(updateMyAvatar);
   const requestMembership = useServerFn(submitMembershipRequest);
   const fetchNotifications = useServerFn(getMyNotifications);
   const markNotifReadFn = useServerFn(markMyNotificationRead);
@@ -595,12 +597,21 @@ function AccountPage() {
 
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(storagePath);
-      setForm((prev) => ({ ...prev, avatar_path: urlData.publicUrl }));
+      const result = await saveAvatar({ data: { avatar_path: storagePath } });
+      if (!result.ok) {
+        await supabase.storage.from("avatars").remove([storagePath]);
+        throw new Error("avatar_profile_update_failed");
+      }
+
+      setForm((prev) => ({ ...prev, avatar_path: storagePath }));
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["account"] }),
+        refreshProfile(),
+      ]);
       toast.success(
         isAr
-          ? "تم اختيار الصورة بنجاح. احفظ التغييرات لتثبيتها."
-          : "Avatar updated. Save changes to persist.",
+          ? "تم رفع الصورة الشخصية وحفظها بنجاح."
+          : "Profile photo uploaded and saved.",
       );
     } catch (err: unknown) {
       console.error("Avatar upload failed:", err);

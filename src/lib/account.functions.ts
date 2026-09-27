@@ -190,6 +190,31 @@ export const updateMyProfile = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+/** Persist a newly uploaded avatar immediately. Photo selection is a complete
+ * action of its own, so it must not depend on a second profile-form submit. */
+export const updateMyAvatar = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) =>
+    z.object({ avatar_path: z.string().trim().min(1).max(500) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    if (!data.avatar_path.startsWith(`${context.userId}/`)) {
+      return { ok: false as const, error: "invalid_avatar_path" };
+    }
+
+    const { error } = await context.supabase
+      .from("profiles")
+      .update({ avatar_path: data.avatar_path })
+      .eq("id", context.userId);
+
+    if (error) {
+      console.error("[account] avatar update failed", error.code, error.message);
+      return { ok: false as const, error: "update_failed" };
+    }
+
+    return { ok: true as const };
+  });
+
 export const getMemberVerification = createServerFn({ method: "GET" })
   .validator((input: unknown) =>
     z
