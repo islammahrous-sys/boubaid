@@ -192,10 +192,13 @@ function AchieversPage() {
       else groups.set(year, [person]);
     }
     // Keep every supplied award cohort visible in descending Hijri-year order.
-    const ALLOWED = ["1448", "1447", "1446", "1445", "1444"];
+    // Other years stay visible too; records without a year come last.
     return [...groups.entries()]
-      .filter(([year]) => ALLOWED.includes(year))
-      .sort((a, b) => ALLOWED.indexOf(a[0]) - ALLOWED.indexOf(b[0]))
+      .sort((a, b) => {
+        if (!a[0]) return 1;
+        if (!b[0]) return -1;
+        return Number(b[0]) - Number(a[0]);
+      })
       .map(([year, people]) => ({
         year,
         people: [...people].sort((a, b) => a.sortOrder - b.sortOrder),
