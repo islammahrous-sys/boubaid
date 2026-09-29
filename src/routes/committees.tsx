@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { hqProject, siteMeta } from "@/content/site";
-import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { Eyebrow, Ornament } from "@/components/site/Editorial";
@@ -15,12 +14,6 @@ import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedInitiatives, getPublishedLibrary } from "@/lib/cms.functions";
 import { mapInitiativeRow } from "@/content/cms-adapt";
 import { copy } from "@/content/page-copy/committees";
-
-const LOVABLE_ASSET_ORIGIN = "https://alboabid-heritage-hub.lovable.app";
-
-function publicAssetUrl(path: string) {
-  return new URL(path, LOVABLE_ASSET_ORIGIN).toString();
-}
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
