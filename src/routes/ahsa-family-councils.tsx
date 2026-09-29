@@ -38,8 +38,8 @@ function AhsaCouncilsPage() {
           <div className="mt-6 rounded-md border border-dashed border-border bg-card px-6 py-10 text-center">
             <p className="text-sm leading-relaxed text-muted-foreground">
               {t({
-                ar: "ستُنشر هنا معلومات مجالس أسر الأحساء قريباً.",
-                en: "Information about the Al-Ahsa Family Councils will be published here soon.",
+                ar: "تنسق أمانة مجلس الأسرة مع مجالس أسر الأحساء المعتمدة لتعزيز أواصر التعاون والعمل الأهلي المشترك وتبادل المبادرات الاجتماعية.",
+                en: "The Family Council Secretariat coordinates with accredited Al-Ahsa family councils to enhance mutual cooperation and exchange social initiatives.",
               })}
             </p>
           </div>

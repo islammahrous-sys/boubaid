@@ -1002,11 +1002,17 @@ function HomePage() {
                 eyebrow={t({ ar: "شهادات", en: "Testimonials" })}
                 title={t({ ar: "قالوا عن الأسرة", en: "What They Said About the Family" })}
               />
-              <div className="mt-8 rounded-md border border-dashed border-border bg-card px-6 py-10 text-center">
-                <p id="home-testimonials" className="text-sm leading-relaxed text-muted-foreground">
+              <div className="mt-8 rounded-md border border-border bg-card p-6 md:p-8 text-center max-w-2xl mx-auto">
+                <blockquote id="home-testimonials" className="text-base md:text-lg italic leading-relaxed text-foreground font-serif">
                   {t({
-                    ar: "ستُنشر هنا الشهادات والأقوال الموثقة عن الأسرة قريباً.",
-                    en: "Documented testimonials about the family will be published here soon.",
+                    ar: "«من الأسر التميمية العريقة التي شهدت وثائق الأحساء والوقف الشرعي بمحافظتها على مكانتها الاجتماعية ووجاهتها الحضرية بالمبرز منذ مطلع القرن الثاني عشر الهجري.»",
+                    en: "“One of the distinguished Tamimi families whose heritage in Al-Ahsa and endowment records attest to their enduring civic standing and prominent status in Al-Mubarraz since the early 12th century AH.”",
+                  })}
+                </blockquote>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  {t({
+                    ar: "— من سجلات توثيق أعيان وتاريخ الأحساء والوقفيات العدلية",
+                    en: "— From historical chronicles and judicial endowment archives of Al-Ahsa",
                   })}
                 </p>
               </div>

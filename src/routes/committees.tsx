@@ -130,13 +130,13 @@ function CommitteesPage() {
             <p className="label-caps text-bronze dark:text-gold">
               {t({ ar: "مجلس أسرة آل بوعبيد", en: "Al Bu Obaid Family Council" })}
             </p>
-            <p className="mt-4 text-4xl font-bold leading-tight text-foreground md:text-6xl">
-              {t({ ar: "انتظرونا قريباً", en: "Coming Soon" })}
+            <p className="mt-4 text-3xl font-bold leading-tight text-foreground md:text-5xl">
+              {t({ ar: "خطة أنشطة اللجان لعام ١٤٤٨ هـ", en: "Committee Annual Plan 1448 AH" })}
             </p>
             <p className="measure mx-auto mt-4 text-[14px] leading-relaxed text-muted-foreground">
               {t({
-                ar: "ستُنشر هنا الأنشطة المخطط لها لكل لجنة من لجان مجلس الأسرة لعام ١٤٤٨ هـ.",
-                en: "The planned activities of each Family Council committee for 1448 AH will be published here.",
+                ar: "البرامج والمبادرات المعتمدة لكل لجنة من لجان مجلس الأسرة وفق الجدول الزمني لعام ١٤٤٨ هـ.",
+                en: "Approved programs and initiatives for each Family Council committee according to the schedule for 1448 AH.",
               })}
             </p>
           </div>

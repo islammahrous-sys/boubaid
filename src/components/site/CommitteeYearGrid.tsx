@@ -87,8 +87,8 @@ export function CommitteeYearGrid({
               <p className="mt-3 text-[13px] text-muted-foreground">
                 {kind === "PLAN"
                   ? t({
-                      ar: "ستُضاف الأنشطة المخطط لها قريباً.",
-                      en: "Planned activities will be added soon.",
+                      ar: "تُحدّث الأنشطة وفق الجدول الزمني المعتمد للجنة.",
+                      en: "Activities are updated according to the committee's approved schedule.",
                     })
                   : t({ ar: "لا توجد مواد مؤرشفة بعد.", en: "No archived materials yet." })}
               </p>
