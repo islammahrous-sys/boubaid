@@ -710,7 +710,7 @@ function RequestsHubPage() {
               >
                 <h2 className="flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-foreground">
                   <span
-                    className={`req-tone req-tone-${g} inline-block h-3 w-3 rounded-full bg-[var(--req-band)]`}
+                    className={`req-tone-${g} inline-block h-3 w-3 rounded-full bg-[var(--req-band)]`}
                     aria-hidden="true"
                   />
                   {t(groupTitles[g])}
