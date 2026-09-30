@@ -165,33 +165,35 @@ function CommitteesPage() {
           </article>
 
           {/* ١٤٤٥ هـ — organisational map and documents, nested under 1448 */}
-          <div id="y1445" className="scroll-mt-28 mt-10 rounded-md border border-border bg-card p-5 md:p-8">
+          <div id="y1445" className="scroll-mt-28 mt-10 overflow-hidden rounded-md border border-border bg-card md:p-8">
+            <div className="px-4 pt-5 md:px-0 md:pt-0">
             <p className="label-caps text-bronze dark:text-gold">
               {t({ ar: "الخريطة التنظيمية ١٤٤٥ هـ", en: "1445 AH Organizational Map" })}
             </p>
             <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
               {t({ ar: "١٤٤٥ هـ", en: "1445 AH" })}
             </h3>
-            <figure className="mt-6">
+            </div>
+            <figure className="mt-5 md:mt-6">
               <button
                 type="button"
                 onClick={() =>
                   openMediaViewer({ src: map1445.url, kind: "image", title: t(map1445Title) })
                 }
-                className="block w-full overflow-hidden rounded border border-border bg-background"
+                className="block aspect-video w-full overflow-hidden border-y border-border bg-background md:rounded md:border"
                 aria-label={t({ ar: "تكبير الخريطة التنظيمية", en: "Enlarge organizational map" })}
               >
                 <img
                   key={map1445.url}
                   src={map1445.url}
                   alt={t(map1445Title)}
-                  className="mx-auto h-auto max-h-[80vh] w-full max-w-full object-contain"
+                  className="h-full w-full object-contain"
                   width={1280}
                   height={720}
                   decoding="async"
                 />
               </button>
-              <div className="mt-3 flex flex-wrap gap-4 text-[13px] font-medium">
+              <div className="mt-3 flex flex-wrap gap-4 px-4 text-[13px] font-medium md:px-0">
                 <button
                   type="button"
                   onClick={() =>
@@ -210,7 +212,7 @@ function CommitteesPage() {
                 </a>
               </div>
             </figure>
-            <ul className="mt-6 border-t border-border">
+            <ul className="mt-6 border-t border-border px-4 md:px-0">
               {committeeDocuments
                 .filter((d) => d.year === 1445)
                 .map((d) => (
