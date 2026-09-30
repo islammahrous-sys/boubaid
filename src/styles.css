@@ -1112,3 +1112,27 @@ blockquote {
     transform: none !important;
   }
 }
+
+/* ── Requests Hub category tones (official council palette) ── */
+.req-tone {
+  --req-body: color-mix(in oklab, var(--req-band) 9%, #f6efe4);
+  --req-text: #3f2518;
+  --req-muted: #5e4332;
+  background: var(--req-body);
+  border-color: color-mix(in oklab, var(--req-band) 45%, transparent);
+  color: var(--req-text);
+}
+.dark .req-tone {
+  --req-body: color-mix(in oklab, var(--req-band) 14%, #1f1712);
+  --req-text: #f6efe4;
+  --req-muted: #e3c9a8;
+  --req-link: var(--req-link-dark, #e3c9a8);
+}
+.req-tone-membership { --req-band: #6b3f2a; --req-link: #6b3f2a; --req-on-band: #f6efe4; }
+.req-tone-committee_requests { --req-band: #3e5a3f; --req-link: #2e4a2f; --req-on-band: #f6efe4; --req-link-dark: #a7c3a8; }
+.req-tone-services { --req-band: #b87333; --req-link: #7a4621; --req-on-band: #ffffff; --req-link-dark: #f3c9a3; }
+.req-tone-tree { --req-band: #c99a72; --req-link: #6b3f2a; --req-on-band: #3f2518; }
+.req-tone-fund { --req-band: #d4af37; --req-link: #6b4f10; --req-on-band: #3f2518; --req-link-dark: #f6e6a1; }
+.req-tone-participation { --req-band: #6f8796; --req-link: #3f5561; --req-on-band: #ffffff; --req-link-dark: #c4d2da; }
+.req-tone-announcements { --req-band: #e3c9a8; --req-link: #6b3f2a; --req-on-band: #3f2518; }
+.req-tone-general { --req-band: #a7b8c2; --req-link: #2e4a2f; --req-on-band: #3f2518; --req-link-dark: #c4d2da; }
