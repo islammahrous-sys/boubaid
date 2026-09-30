@@ -2,6 +2,7 @@
 
 ## Done
 
+- [x] Replace the generic illustrated fallback profile image with a distinct Saudi heritage portrait across the website.
 - [x] Translate the editable committee-chart heading on the Arabic Visual Identity page and show both Arabic and English editable Fund Board charts on both language pages.
 - [x] Remove the standalone Competitions & Awards menu item, page content, CMS records, and content-manager option; keep a legacy home redirect and preserve the Excellence Award and 1448 committee activities.
 - [x] Rebuild the Roll of Honor with an empty Family Members’ Competencies section and exactly 22 Excellence Award recipients grouped by 1444–1447 AH; keep all Projects unchanged.
