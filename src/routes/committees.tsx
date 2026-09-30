@@ -14,6 +14,10 @@ import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedInitiatives, getPublishedLibrary } from "@/lib/cms.functions";
 import { mapInitiativeRow } from "@/content/cms-adapt";
 import { copy } from "@/content/page-copy/committees";
+import { committeeDocuments } from "@/content/committee-documents";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
+import map1445Ar from "@/assets/committee-charts-1445/master-ar.png.asset.json";
+import map1445En from "@/assets/committee-charts-1445/master-en.png.asset.json";
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
@@ -55,6 +59,7 @@ export const Route = createFileRoute("/committees")({
 const railSections: RailSection[] = [
   { id: "y1448", label: { ar: "١٤٤٨ هـ", en: "1448 AH" } },
   { id: "hq-project", label: { ar: "مشروع المقر", en: "HQ Project" } },
+  { id: "y1445", label: { ar: "١٤٤٥ هـ", en: "1445 AH" } },
 ];
 
 function CommitteesPage() {
@@ -65,6 +70,8 @@ function CommitteesPage() {
   const chartRecords = charts as CommitteeArchiveItem[];
   const hqTitle = hq?.title ?? hqProject.title;
   const hqSummary = hq?.summary && (hq.summary.ar || hq.summary.en) ? hq.summary : hqProject.fundingModel;
+  const map1445 = rtl ? map1445Ar : map1445En;
+  const map1445Title = { ar: "الخريطة التنظيمية للجان ١٤٤٥ هـ", en: "Committees Organizational Map 1445 AH" };
 
   return (
     <>
@@ -154,6 +161,75 @@ function CommitteesPage() {
               </div>
             </div>
           </article>
+
+          {/* ١٤٤٥ هـ — organisational map and documents, nested under 1448 */}
+          <div id="y1445" className="scroll-mt-28 mt-10 rounded-md border border-border bg-card p-5 md:p-8">
+            <p className="label-caps text-bronze dark:text-gold">
+              {t({ ar: "الخريطة التنظيمية ١٤٤٥ هـ", en: "1445 AH Organizational Map" })}
+            </p>
+            <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
+              {t({ ar: "١٤٤٥ هـ", en: "1445 AH" })}
+            </h3>
+            <figure className="mt-6">
+              <button
+                type="button"
+                onClick={() =>
+                  openMediaViewer({ src: map1445.url, kind: "image", title: t(map1445Title) })
+                }
+                className="block w-full overflow-hidden rounded border border-border bg-background"
+                aria-label={t({ ar: "تكبير الخريطة التنظيمية", en: "Enlarge organizational map" })}
+              >
+                <img
+                  key={map1445.url}
+                  src={map1445.url}
+                  alt={t(map1445Title)}
+                  className="mx-auto h-auto max-h-[80vh] w-full max-w-full object-contain"
+                  loading="lazy"
+                />
+              </button>
+              <div className="mt-3 flex flex-wrap gap-4 text-[13px] font-medium">
+                <button
+                  type="button"
+                  onClick={() =>
+                    openMediaViewer({ src: map1445.url, kind: "image", title: t(map1445Title) })
+                  }
+                  className="border-b border-bronze pb-0.5 text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+                >
+                  {t({ ar: "عرض وتكبير", en: "View / enlarge" })}
+                </button>
+                <a
+                  href={map1445.url}
+                  download={map1445.original_filename}
+                  className="border-b border-bronze pb-0.5 text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+                >
+                  {t({ ar: "تنزيل", en: "Download" })}
+                </a>
+              </div>
+            </figure>
+            <ul className="mt-6 border-t border-border">
+              {committeeDocuments
+                .filter((d) => d.year === 1445)
+                .map((d) => (
+                  <li key={d.id} className="flex items-center justify-between gap-4 border-b border-border py-3">
+                    <span className="min-w-0 break-words text-[14px] text-foreground">{t(d.title)}</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openMediaViewer({
+                          src: `/api/public/committee-doc?id=${d.id}`,
+                          kind: "pdf",
+                          title: t(d.title),
+                        })
+                      }
+                      className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+                    >
+                      {t({ ar: "عرض الوثيقة", en: "View document" })}
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          </div>
+
 
           <Link
             to="/requests"
