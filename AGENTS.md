@@ -18,3 +18,5 @@
 - Profile avatar uploads persist immediately through a dedicated authenticated server function; do not require a second profile-form save.
 
 - Member-card PNG, PDF, and print outputs use one shared front/back landscape sheet so every format stays visually consistent and one-page.
+
+- Organizational map images (e.g. 1445 committee maps) live as plain files in public/images/ — Lovable asset CDN links break on non-Lovable hosts like Vercel.
