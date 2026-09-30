@@ -2,10 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Maximize2 } from "lucide-react";
 import { z } from "zod";
 import { useLang, type BiText } from "@/i18n/LanguageProvider";
-import { officialCharts, officialChartsPdf } from "@/content/tree/charts";
 import { Eyebrow } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
-import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import {
   ElectronicFamilyTreeSection,
   OfficialPlateSection,
@@ -99,63 +97,8 @@ function FamilyTreePage() {
       <OfficialPlateSection />
       <VisualGenealogySection />
 
-      {/* ── The 12 official verified branch charts ──────────────────────────── */}
-      <section className="reveal-on-scroll container-page mt-4 border-t border-border pt-10">
-        <Eyebrow>{t({ ar: "المشجرات الرسمية المعتمدة", en: "Official verified charts" })}</Eyebrow>
-        <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
-          {t({
-            ar: "المشجرات الاثنتا عشرة المعتمدة من لجنة التوثيق، وهي المرجع الذي بُنيت عليه بيانات المشجرة الإلكترونية. تُنشر للمراجعة والتوثيق ولا تُعد صيغة نهائية.",
-            en: "The twelve committee-verified charts that the electronic tree is built from. Published for review and documentation; not a final edition.",
-          })}
-        </p>
-
-        <button
-          type="button"
-          onClick={() =>
-            openMediaViewer({
-              src: officialChartsPdf,
-              kind: "pdf",
-              title: t({ ar: "المشجرات الرسمية المعتمدة", en: "Official verified charts" }),
-            })
-          }
-          className="label-caps mt-5 inline-flex items-center gap-2 border border-border bg-card px-4 py-2 text-xs text-foreground transition-colors hover:border-foreground"
-        >
-          {t({ ar: "عرض الملف الكامل (PDF)", en: "View full file (PDF)" })}
-        </button>
-
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {officialCharts.map((c) => (
-            <li key={c.chart} className="border border-border bg-card">
-              <button
-                type="button"
-                onClick={() => openMediaViewer({ src: c.image, kind: "image", title: c.titleAr })}
-                className="block w-full text-start"
-              >
-                <img
-                  src={c.image}
-                  alt={c.titleAr}
-                  loading="lazy"
-                  className="aspect-4/3 w-full bg-white object-contain"
-                />
-                <div className="border-t border-border p-3">
-                  <p className="label-caps text-bronze dark:text-gold">
-                    <span className="nums">
-                      {t({ ar: `مشجرة ${c.chart}`, en: `Chart ${c.chart}` })}
-                    </span>
-                  </p>
-                  <p className="mt-1 text-[13px] leading-relaxed text-foreground">{c.titleAr}</p>
-                  <p className="nums mt-1 text-xs text-muted-foreground">
-                    {t({ ar: `${c.people} اسمًا موثقًا`, en: `${c.people} documented names` })}
-                  </p>
-                </div>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
-
       {/* ── Official Tree Artwork & Lineage Documents ───────────────────────── */}
-      <section className="reveal-on-scroll container-page mt-16 border-t border-border pt-10 pb-16">
+      <section className="reveal-on-scroll container-page mt-4 border-t border-border pt-10 pb-16">
         <Eyebrow>
           {t({ ar: "وثائق النسب والمشجرة الرسمية", en: "Lineage Documents & Official Tree" })}
         </Eyebrow>
