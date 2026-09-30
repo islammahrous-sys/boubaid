@@ -2,6 +2,7 @@
 
 ## Done
 
+- [x] Apply the Requests Hub category palette and branded card layout to “Awaiting My Approval”; make official logos reliable in Arabic and English.
 - [x] Replace the generic illustrated fallback profile image with a distinct Saudi heritage portrait across the website.
 - [x] Translate the editable committee-chart heading on the Arabic Visual Identity page and show both Arabic and English editable Fund Board charts on both language pages.
 - [x] Remove the standalone Competitions & Awards menu item, page content, CMS records, and content-manager option; keep a legacy home redirect and preserve the Excellence Award and 1448 committee activities.
