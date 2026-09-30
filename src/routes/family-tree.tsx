@@ -2,10 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Maximize2 } from "lucide-react";
 import { z } from "zod";
 import { useLang, type BiText } from "@/i18n/LanguageProvider";
-import { officialCharts, officialChartsPdf } from "@/content/tree/charts";
 import { Eyebrow } from "@/components/site/Editorial";
 import { DocumentShowcase } from "@/components/site/DocumentShowcase";
-import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import {
   ElectronicFamilyTreeSection,
   OfficialPlateSection,
