@@ -140,3 +140,4 @@
 - [x] Requests Hub: ترشيح كفاءات الأسرة, الترشح لجائزة التميز, الانضمام إلى مجالس أسر الأحساء.
 - [x] News → المركز الإعلامي; new page مجالس أسر الأحساء under More.
 - [x] Home: HQ Diamond/Platinum/Golden tiers; «قالوا عن الأسرة» empty-ready section.
+- [x] New default avatar (v3) applied; AI-generated original, no copyright restrictions.
