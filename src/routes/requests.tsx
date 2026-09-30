@@ -53,6 +53,10 @@ import {
   TEMPLATE_REQUESTS,
 } from "@/lib/council-requests";
 import { copy } from "@/content/page-copy/requests";
+import logoBrown from "@/assets/brand-logos/logo-brown.png.asset.json";
+import logoCream from "@/assets/brand-logos/logo-cream.png.asset.json";
+import logoInk from "@/assets/brand-logos/logo-ink.png.asset.json";
+import logoWhite from "@/assets/brand-logos/logo-white.png.asset.json";
 
 export const Route = createFileRoute("/requests")({
   /**
@@ -124,6 +128,18 @@ const groupOrder: RequestGroup[] = [
   "announcements",
   "general",
 ];
+
+/** Logo variant with the strongest contrast against each category's colour band. */
+const bandLogo: Record<RequestGroup, string> = {
+  membership: logoCream.url,
+  committee_requests: logoCream.url,
+  services: logoWhite.url,
+  tree: logoInk.url,
+  fund: logoInk.url,
+  participation: logoWhite.url,
+  announcements: logoBrown.url,
+  general: logoInk.url,
+};
 
 type RequestEntry = {
   id: string;
@@ -692,7 +708,11 @@ function RequestsHubPage() {
                 id={g === "committee_requests" ? "committee-requests" : undefined}
                 className="mt-10 scroll-mt-28"
               >
-                <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-bronze dark:text-gold">
+                <h2 className="flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-foreground">
+                  <span
+                    className={`req-tone req-tone-${g} inline-block h-3 w-3 rounded-full bg-[var(--req-band)]`}
+                    aria-hidden="true"
+                  />
                   {t(groupTitles[g])}
                 </h2>
                 {g === "committee_requests" ? (
@@ -703,30 +723,41 @@ function RequestsHubPage() {
                 <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {items.map((r) => {
                     const Icon = r.Icon;
+                    const linkCls =
+                      "mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 rounded-md bg-[var(--req-band)] px-3.5 py-2 text-[13px] font-semibold text-[var(--req-on-band)] shadow-sm transition-opacity hover:opacity-90";
                     return (
                       <li
                         key={r.id}
-                        className="flex flex-col border border-border bg-card p-5 transition-colors hover:border-bronze dark:hover:border-gold rounded-md"
+                        className={`req-tone req-tone-${g} flex flex-col overflow-hidden rounded-xl border shadow-sm transition-shadow hover:shadow-md`}
                       >
-                        <span className="inline-flex h-9 w-9 items-center justify-center rounded border border-border bg-secondary/50 text-bronze dark:text-gold">
-                          <Icon className="h-4.5 w-4.5" aria-hidden="true" />
-                        </span>
-                        <h3 className="mt-4 text-[15px] font-semibold text-foreground">
+                        <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
+                          <img
+                            src={bandLogo[g]}
+                            alt={t({ ar: "شعار مجلس أسرة آل بوعبيد", en: "Al Bu Obaid Family Council logo" })}
+                            className="h-12 w-auto object-contain"
+                            loading="lazy"
+                          />
+                          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--req-on-band)]/30 text-[var(--req-on-band)]">
+                            <Icon className="h-4.5 w-4.5" aria-hidden="true" />
+                          </span>
+                        </div>
+                        <div className="flex flex-1 flex-col p-5">
+                        <h3 className="text-[15px] font-semibold text-[var(--req-text)]">
                           {t(r.name)}
                         </h3>
-                        <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted-foreground">
+                        <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--req-muted)]">
                           {t(r.desc)}
                         </p>
                         {r.templateCode ? (
                           <Link
                             to="/templates"
-                            className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-bronze underline-offset-4 hover:underline dark:text-gold"
+                            className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-[var(--req-link)] underline-offset-4 hover:underline"
                           >
                             {r.templateCode}
                           </Link>
                         ) : null}
                         {r.requiresAuth && !user ? (
-                          <p className="mt-3 text-[11.5px] text-muted-foreground">
+                          <p className="mt-3 text-[11.5px] text-[var(--req-muted)]">
                             {t(copy.signInNote)}
                           </p>
                         ) : null}
@@ -735,7 +766,7 @@ function RequestsHubPage() {
                             type="button"
                             id={r.id}
                             onClick={() => setActiveForm(r.form!)}
-                            className="mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                            className={linkCls}
                           >
                             {t(copy.action)}
                             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
@@ -743,12 +774,13 @@ function RequestsHubPage() {
                         ) : (
                           <Link
                             to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
-                            className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                            className={linkCls}
                           >
                             {t(copy.action)}
                             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                           </Link>
                         )}
+                        </div>
                       </li>
                     );
                   })}
