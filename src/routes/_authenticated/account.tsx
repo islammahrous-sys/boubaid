@@ -98,6 +98,8 @@ import {
   Maximize2,
   ChevronRight,
   Settings,
+  ImageDown,
+  FileDown,
 } from "lucide-react";
 
 interface AccountSearch {
