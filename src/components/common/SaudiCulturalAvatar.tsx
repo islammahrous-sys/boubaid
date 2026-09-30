@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import defaultSaudiAvatar from "@/assets/default-saudi-avatar-v2.jpg";
 
 interface SaudiCulturalAvatarProps {
   src?: string | null;
@@ -8,7 +9,7 @@ interface SaudiCulturalAvatarProps {
   className?: string;
 }
 
-const DEFAULT_SAUDI_AVATAR = "/images/avatars/default-saudi-avatar.jpg";
+const DEFAULT_SAUDI_AVATAR = defaultSaudiAvatar;
 
 export function SaudiCulturalAvatar({
   src,
@@ -62,6 +63,9 @@ export function SaudiCulturalAvatar({
         key={resolvedSrc || "default"}
         src={finalSrc}
         alt={alt}
+        width={1024}
+        height={1024}
+        loading="lazy"
         className="w-full h-full object-cover transform transition-transform duration-300 hover:scale-105"
         onError={() => {
           if (!hasError && resolvedSrc) {
