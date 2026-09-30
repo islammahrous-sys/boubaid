@@ -16,8 +16,10 @@ import { mapInitiativeRow } from "@/content/cms-adapt";
 import { copy } from "@/content/page-copy/committees";
 import { committeeDocuments } from "@/content/committee-documents";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
-import map1445Ar from "@/assets/committee-charts-1445/master-ar.png.asset.json";
-import map1445En from "@/assets/committee-charts-1445/master-en.png.asset.json";
+// 1445 org maps are served as plain static files from public/ so they render
+// on every host (Lovable, Vercel, custom domains) — not only Lovable's asset CDN.
+const map1445Ar = { url: "/images/committee-charts-1445/org-map-1445-ar.png", original_filename: "org-map-1445-ar.png" };
+const map1445En = { url: "/images/committee-charts-1445/org-map-1445-en.png", original_filename: "org-map-1445-en.png" };
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
@@ -184,7 +186,9 @@ function CommitteesPage() {
                   src={map1445.url}
                   alt={t(map1445Title)}
                   className="mx-auto h-auto max-h-[80vh] w-full max-w-full object-contain"
-                  loading="lazy"
+                  width={1280}
+                  height={720}
+                  decoding="async"
                 />
               </button>
               <div className="mt-3 flex flex-wrap gap-4 text-[13px] font-medium">
