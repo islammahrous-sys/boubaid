@@ -10,6 +10,8 @@
 
 ## In progress
 
+- [x] Repair the family-card PNG export, make PNG/PDF/Print a single landscape sheet with both faces, and align the card with the official heritage palette.
+
 - [x] Replace the displayed Arabic and English committee organisation maps with the newly supplied PNG files; retain language-specific display and View/Download actions.
 - [x] Restore the complete 1445 and 1444 committee sections, preserving their numbered structure and ordering 1445 before 1444; keep the 1448 archive under Archive.
 - Repair and verify every user-facing View action for documents and media locally and on the published website.

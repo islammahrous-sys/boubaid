@@ -543,12 +543,6 @@ function AccountPage() {
     setTimeout(() => setCopiedMemberCode(false), 2500);
   };
 
-  const handlePrintCard = () => {
-    if (typeof window !== "undefined") {
-      window.print();
-    }
-  };
-
   const [cardFlipped, setCardFlipped] = useState(false);
   const [cardExporting, setCardExporting] = useState(false);
   const cardIssuedDate = useMemo(() => {
@@ -560,7 +554,7 @@ function AccountPage() {
     });
   }, [user?.created_at, isAr]);
 
-  const handleExportCard = async (format: "png" | "pdf") => {
+  const handleExportCard = async (format: "png" | "pdf" | "print") => {
     if (typeof window === "undefined") return;
     setCardExporting(true);
     try {
@@ -576,8 +570,10 @@ function AccountPage() {
         avatarUrl: effectiveAvatar || null,
         verifyUrl: `${window.location.origin}/verify?id=${memberCode}`,
       };
-      await (format === "png" ? mod.exportCardPng(data) : mod.exportCardPdf(data));
-      toast.success(isAr ? "تم حفظ البطاقة بنجاح" : "Card saved");
+      if (format === "png") await mod.exportCardPng(data);
+      else if (format === "pdf") await mod.exportCardPdf(data);
+      else await mod.printCard(data);
+      if (format !== "print") toast.success(isAr ? "تم حفظ البطاقة بنجاح" : "Card saved");
     } catch (err) {
       console.error("[card-export]", err);
       toast.error(isAr ? "تعذر حفظ البطاقة، حاول مجدداً" : "Could not save the card. Try again.");
@@ -1755,19 +1751,17 @@ function AccountPage() {
               >
               <div
                 aria-hidden={cardFlipped}
-                className="printable-card relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink p-4 sm:p-6 md:p-7 text-ivory shadow-2xl [backface-visibility:hidden]"
+                className="printable-card relative overflow-hidden rounded-2xl border-2 border-ink/70 bg-paper p-4 sm:p-6 md:p-7 text-ink shadow-xl [backface-visibility:hidden]"
               >
                 <img
                   src="/logo-mark-gold.svg"
                   alt=""
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 w-2/3 -translate-x-1/2 -translate-y-1/2 opacity-[0.06]"
+                    className="pointer-events-none absolute left-1/2 top-1/2 w-2/3 -translate-x-1/2 -translate-y-1/2 opacity-[0.09]"
                 />
-                {/* Background Pattern Watermark */}
-                <div className="absolute inset-0 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
                 {/* Card Header */}
-                <div className="relative flex items-center justify-between border-b border-ivory/15 pb-4">
+                <div className="relative flex items-center justify-between border-b border-bronze/30 pb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gold/20 border border-gold/40 flex items-center justify-center text-gold">
                       <Building className="w-5 h-5" />
@@ -1776,10 +1770,10 @@ function AccountPage() {
                       <h3 className="text-sm font-bold tracking-wide font-naskh text-gold">
                         {isAr ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
                       </h3>
-                      <p className="text-[10px] text-ivory/60">
+                      <p className="text-[10px] text-muted-foreground">
                         {isAr
-                          ? "صندوق التنمية العائلية · بطاقة العضوية الرقمية"
-                          : "Family Development Fund · Digital ID"}
+                          ? "بطاقة العضوية الرسمية"
+                          : "Official Membership Card"}
                       </p>
                     </div>
                   </div>
@@ -1793,7 +1787,7 @@ function AccountPage() {
                   {!statusKnown ? (
                     <span className="inline-block h-5 w-20 rounded-full bg-ivory/20 animate-pulse" />
                   ) : isApproved ? (
-                    <Badge className="bg-gold text-ink font-bold text-[10px] border-0">
+                    <Badge className="bg-emerald text-ivory font-bold text-[10px] border-0">
                       {isAr ? "عضو معتمد" : "Verified"}
                     </Badge>
                   ) : isPending ? (
@@ -1832,25 +1826,25 @@ function AccountPage() {
                       src={effectiveAvatar}
                       alt={form.full_name_ar}
                       size="xl"
-                      className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-gold/60 shrink-0 shadow-lg"
+                      className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-ink/60 shrink-0 shadow-lg"
                     />
 
                     <div>
-                      <span className="text-[10px] text-ivory/50 block mb-0.5">
+                      <span className="text-[10px] text-muted-foreground block mb-0.5">
                         {isAr ? "اسم العضو" : "Member Name"}
                       </span>
-                      <h4 className="text-lg sm:text-xl font-bold font-naskh text-ivory">
+                      <h4 className="text-lg sm:text-xl font-bold font-naskh text-ink">
                         {form.full_name_ar || (isAr ? "عضو أسرة آل بوعبيد" : "Family Member")}
                       </h4>
                       {form.full_name_en && (
-                        <p className="text-xs text-ivory/60 font-mono mt-0.5">
+                        <p className="text-xs text-muted-foreground font-mono mt-0.5">
                           {form.full_name_en}
                         </p>
                       )}
 
                       <div className="mt-3 flex items-center gap-4 text-xs">
                         <div>
-                          <span className="text-[9px] text-ivory/40 block">
+                          <span className="text-[9px] text-muted-foreground block">
                             {isAr ? "الفرع" : "Branch"}
                           </span>
                           <span className="font-semibold text-gold">
@@ -1862,10 +1856,10 @@ function AccountPage() {
                           </span>
                         </div>
                         <div>
-                          <span className="text-[9px] text-ivory/40 block">
+                          <span className="text-[9px] text-muted-foreground block">
                             {isAr ? "رقم العضوية" : "Member ID"}
                           </span>
-                          <span className="font-mono text-ivory/80">{memberCode}</span>
+                          <span className="font-mono text-ink/80">{memberCode}</span>
                         </div>
                       </div>
                     </div>
@@ -1933,7 +1927,7 @@ function AccountPage() {
                 </div>
 
                 {/* Card Footer */}
-                <div className="relative pt-3 border-t border-ivory/15 flex items-center justify-between text-[10px] text-ivory/50 font-mono">
+                <div className="relative pt-3 border-t border-bronze/30 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
                   <span>
                     {isAr ? "تاريخ الإصدار" : "Issued"}: {cardIssuedDate}
                   </span>
@@ -1944,12 +1938,12 @@ function AccountPage() {
               {/* Back face */}
               <div
                 aria-hidden={!cardFlipped}
-                className="absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink text-ivory shadow-2xl [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col"
+                className="absolute inset-0 overflow-hidden rounded-2xl border-2 border-ink/70 bg-paper text-ink shadow-xl [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col"
               >
-                <div className="bg-gold py-2.5 text-center text-sm font-bold text-ink">
+                <div className="bg-ink py-2.5 text-center text-sm font-bold text-paper">
                   {isAr ? "شروط العضوية" : "Membership terms"}
                 </div>
-                <ul className="flex-1 space-y-2 overflow-auto p-4 sm:p-6 text-[11px] sm:text-xs leading-relaxed text-ivory/85">
+                <ul className="flex-1 space-y-2 overflow-auto p-4 sm:p-6 text-[11px] sm:text-xs leading-relaxed text-ink/85">
                   {(isAr
                     ? [
                         "هذه البطاقة شخصية وتخص حاملها المسجّل في سجل أسرة آل بوعبيد.",
@@ -1970,7 +1964,7 @@ function AccountPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="border-t border-ivory/15 px-4 py-3 text-center text-[10px] text-ivory/60">
+                <div className="border-t border-bronze/30 px-4 py-3 text-center text-[10px] text-muted-foreground">
                   <p className="font-semibold text-gold">
                     {isAr ? "الأمانة العامة لمجلس أسرة آل بوعبيد" : "General Secretariat, Al Bu Obaid Family Council"}
                   </p>
@@ -2079,7 +2073,8 @@ function AccountPage() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={handlePrintCard}
+                    disabled={cardExporting}
+                    onClick={() => handleExportCard("print")}
                     className="h-9 text-xs font-semibold gap-1.5 rounded-xl border-border bg-card hover:bg-secondary"
                   >
                     <Printer className="w-3.5 h-3.5 text-foreground" />
