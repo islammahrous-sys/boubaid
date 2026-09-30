@@ -98,6 +98,8 @@ import {
   Maximize2,
   ChevronRight,
   Settings,
+  ImageDown,
+  FileDown,
 } from "lucide-react";
 
 interface AccountSearch {
@@ -544,6 +546,43 @@ function AccountPage() {
   const handlePrintCard = () => {
     if (typeof window !== "undefined") {
       window.print();
+    }
+  };
+
+  const [cardFlipped, setCardFlipped] = useState(false);
+  const [cardExporting, setCardExporting] = useState(false);
+  const cardIssuedDate = useMemo(() => {
+    const d = new Date(user?.created_at ?? Date.now());
+    return d.toLocaleDateString(isAr ? "ar-SA-u-ca-gregory" : "en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }, [user?.created_at, isAr]);
+
+  const handleExportCard = async (format: "png" | "pdf") => {
+    if (typeof window === "undefined") return;
+    setCardExporting(true);
+    try {
+      const mod = await import("@/lib/member-card-export");
+      const branch = branches.find((b) => b.id === form.branch_slug)?.name;
+      const data = {
+        lang: (isAr ? "ar" : "en") as "ar" | "en",
+        nameAr: form.full_name_ar || "عضو أسرة آل بوعبيد",
+        nameEn: form.full_name_en || undefined,
+        branch: branch ? t(branch) : isAr ? "غير محدد" : "Unassigned",
+        memberCode,
+        issued: cardIssuedDate,
+        avatarUrl: effectiveAvatar || null,
+        verifyUrl: `${window.location.origin}/verify?id=${memberCode}`,
+      };
+      await (format === "png" ? mod.exportCardPng(data) : mod.exportCardPdf(data));
+      toast.success(isAr ? "تم حفظ البطاقة بنجاح" : "Card saved");
+    } catch (err) {
+      console.error("[card-export]", err);
+      toast.error(isAr ? "تعذر حفظ البطاقة، حاول مجدداً" : "Could not save the card. Try again.");
+    } finally {
+      setCardExporting(false);
     }
   };
 
@@ -1706,8 +1745,24 @@ function AccountPage() {
           {/* ──────────────── TAB 2: Digital ID Card ───────────────── */}
           <TabsContent value="card" className="space-y-6">
             <div className="max-w-xl mx-auto space-y-6">
-              {/* Gold & Emerald Digital Card */}
-              <div className="printable-card relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink p-4 sm:p-6 md:p-7 text-ivory shadow-2xl">
+              {/* Gold & Emerald Digital Card — flips to show the back face */}
+              <div className="[perspective:1400px]">
+              <div
+                className={cn(
+                  "relative transition-transform duration-700 [transform-style:preserve-3d]",
+                  cardFlipped && "[transform:rotateY(180deg)]",
+                )}
+              >
+              <div
+                aria-hidden={cardFlipped}
+                className="printable-card relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink p-4 sm:p-6 md:p-7 text-ivory shadow-2xl [backface-visibility:hidden]"
+              >
+                <img
+                  src="/logo-mark-gold.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-1/2 top-1/2 w-2/3 -translate-x-1/2 -translate-y-1/2 opacity-[0.06]"
+                />
                 {/* Background Pattern Watermark */}
                 <div className="absolute inset-0 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
@@ -1879,14 +1934,90 @@ function AccountPage() {
 
                 {/* Card Footer */}
                 <div className="relative pt-3 border-t border-ivory/15 flex items-center justify-between text-[10px] text-ivory/50 font-mono">
-                  <span>NCNP LIC. #1200758400</span>
-                  <span>SAUDI ARABIA · AL-AHSA</span>
+                  <span>
+                    {isAr ? "تاريخ الإصدار" : "Issued"}: {cardIssuedDate}
+                  </span>
+                  <span>NCNP LIC. #1200758400 · AL-AHSA</span>
                 </div>
+              </div>
+
+              {/* Back face */}
+              <div
+                aria-hidden={!cardFlipped}
+                className="absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gold/50 bg-gradient-to-br from-ink via-stone-900 to-ink text-ivory shadow-2xl [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col"
+              >
+                <div className="bg-gold py-2.5 text-center text-sm font-bold text-ink">
+                  {isAr ? "شروط العضوية" : "Membership terms"}
+                </div>
+                <ul className="flex-1 space-y-2 overflow-auto p-4 sm:p-6 text-[11px] sm:text-xs leading-relaxed text-ivory/85">
+                  {(isAr
+                    ? [
+                        "هذه البطاقة شخصية وتخص حاملها المسجّل في سجل أسرة آل بوعبيد.",
+                        "تثبت العضوية فقط عند مسح رمز التحقق ومطابقته مع السجل الرسمي.",
+                        "تبقى البطاقة ملكاً لمجلس الأسرة ويحق له إيقافها أو إلغاؤها.",
+                        "عند فقدان البطاقة أو تغيّر البيانات يرجى إبلاغ الأمانة العامة.",
+                      ]
+                    : [
+                        "This card is personal to the member registered with the Al Bu Obaid family.",
+                        "Membership is proven only by scanning the QR code against the official record.",
+                        "The card remains the property of the Family Council and may be suspended.",
+                        "Report a lost card or changed details to the General Secretariat.",
+                      ]
+                  ).map((term) => (
+                    <li key={term} className="flex gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                      {term}
+                    </li>
+                  ))}
+                </ul>
+                <div className="border-t border-ivory/15 px-4 py-3 text-center text-[10px] text-ivory/60">
+                  <p className="font-semibold text-gold">
+                    {isAr ? "الأمانة العامة لمجلس أسرة آل بوعبيد" : "General Secretariat, Al Bu Obaid Family Council"}
+                  </p>
+                  <p className="font-mono mt-0.5">NCNP License #1200758400 · Saudi Arabia · Al-Ahsa</p>
+                </div>
+              </div>
+              </div>
+              </div>
+
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCardFlipped((v) => !v)}
+                  className="h-8 text-xs gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-gold" />
+                  {cardFlipped
+                    ? isAr ? "عرض الوجه الأمامي" : "Show front"
+                    : isAr ? "قلب البطاقة" : "Flip card"}
+                </Button>
               </div>
 
               {/* Digital Card Quick Actions Toolbar (Full features for approved members) */}
               {isApproved ? (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={cardExporting}
+                    onClick={() => handleExportCard("png")}
+                    className="h-9 text-xs font-semibold gap-1.5 rounded-xl"
+                  >
+                    <ImageDown className="w-3.5 h-3.5" />
+                    {isAr ? "حفظ كصورة PNG" : "Save PNG"}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={cardExporting}
+                    onClick={() => handleExportCard("pdf")}
+                    className="h-9 text-xs font-semibold gap-1.5 rounded-xl"
+                  >
+                    <FileDown className="w-3.5 h-3.5" />
+                    {isAr ? "حفظ كملف PDF" : "Save PDF"}
+                  </Button>
                   <Button
                     type="button"
                     variant="outline"
