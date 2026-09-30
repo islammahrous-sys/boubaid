@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import defaultSaudiAvatar from "@/assets/default-saudi-avatar-v2.jpg";
+import defaultSaudiAvatar from "@/assets/default-saudi-avatar-v3.jpg";
 
 interface SaudiCulturalAvatarProps {
   src?: string | null;
