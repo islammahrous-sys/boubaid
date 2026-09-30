@@ -2,6 +2,7 @@
 
 ## Done
 
+- [x] Fix mobile content overflow, replace the award table with complete phone cards, and align the five-item mobile navigation with the desktop hierarchy.
 - [x] Apply the Requests Hub category palette and branded card layout to “Awaiting My Approval”; make official logos reliable in Arabic and English.
 - [x] Replace the generic illustrated fallback profile image with a distinct Saudi heritage portrait across the website.
 - [x] Translate the editable committee-chart heading on the Arabic Visual Identity page and show both Arabic and English editable Fund Board charts on both language pages.

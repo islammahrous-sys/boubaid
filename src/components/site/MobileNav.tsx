@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ShoppingBag,
+  BriefcaseBusiness,
 } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -30,15 +31,16 @@ import {
   DrawerTrigger,
   DrawerClose,
 } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-/** Five most-used destinations. Heritage glyphs earn their place here —
- *  a thumb-reachable tab bar with identity, not just generic UI. */
+/** Matches the desktop's primary information hierarchy. Secondary destinations
+ *  such as Archive and Store live in the organised More panel. */
 const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?: string }> }[] = [
   { to: "/", label: { ar: "الرئيسية", en: "Home" }, Icon: PalmGlyph },
   { to: "/family-tree", label: { ar: "المشجرة", en: "Tree" }, Icon: CompassGlyph },
-  { to: "/library", label: { ar: "الأرشيف", en: "Archive" }, Icon: BookGlyph },
   { to: "/committees", label: { ar: "اللجان", en: "Committees" }, Icon: SealGlyph },
+  { to: "/directory", label: { ar: "الخدمات", en: "Services" }, Icon: BriefcaseBusiness },
 ];
 
 export function MobileNav() {
@@ -61,7 +63,7 @@ export function MobileNav() {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden">
-      <nav className="flex h-16 items-stretch justify-around px-1" aria-label="Quick navigation">
+      <nav className="grid h-16 grid-cols-5 items-stretch px-1" aria-label={t({ ar: "التنقل السريع", en: "Quick navigation" })}>
         {tabs.map((item) => {
           const Icon = item.Icon;
           const active = isRouteActive(pathname, item.to);
@@ -71,39 +73,29 @@ export function MobileNav() {
               to={item.to}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-1 border-t-2 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
+                "flex min-w-0 flex-col items-center justify-center gap-1 border-t-2 px-0.5 transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
                 active
                   ? "border-bronze text-foreground dark:border-gold font-semibold"
                   : "border-transparent text-muted-foreground",
               )}
             >
               <Icon className="h-5 w-5" aria-hidden="true" />
-              <span className={cn("text-[11px]", active && "font-semibold")}>{t(item.label)}</span>
+              <span className={cn("w-full truncate text-center text-[10px] sm:text-[11px]", active && "font-semibold")}>{t(item.label)}</span>
             </Link>
           );
         })}
 
-        <a
-          href={siteMeta.frameStoreUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={cn(
-            "relative flex flex-1 flex-col items-center justify-center gap-1 border-t-2 border-transparent text-muted-foreground transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96]",
-          )}
-        >
-          <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-          <span className="text-[11px]">{lang === "ar" ? "المتجر" : "Store"}</span>
-        </a>
-
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <button
+            <Button
               type="button"
-              className="flex flex-1 flex-col items-center justify-center gap-1 border-t-2 border-transparent text-muted-foreground transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.96] cursor-pointer"
+              variant="ghost"
+              className="h-full min-w-0 flex-col gap-1 rounded-none border-t-2 border-transparent px-0.5 text-muted-foreground shadow-none active:scale-[0.96]"
+              aria-label={lang === "ar" ? "فتح قائمة المزيد" : "Open more menu"}
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
-              <span className="text-[11px]">{lang === "ar" ? "المزيد" : "More"}</span>
-            </button>
+              <span className="w-full truncate text-center text-[10px] sm:text-[11px]">{lang === "ar" ? "المزيد" : "More"}</span>
+            </Button>
           </DrawerTrigger>
 
           <DrawerContent className="max-h-[85vh] border-t border-border bg-background">
@@ -115,7 +107,7 @@ export function MobileNav() {
 
             <div className="overflow-y-auto px-4 pt-4 pb-10">
               {/* Quick Actions Strip */}
-              <div className="grid grid-cols-2 gap-2 mb-6">
+              <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <DrawerClose asChild>
                   <Link
                     to={user ? "/account" : "/auth"}
@@ -158,6 +150,31 @@ export function MobileNav() {
                     </span>
                   </Link>
                 </DrawerClose>
+
+                <DrawerClose asChild>
+                  <Link
+                    to="/library"
+                    onClick={() => setOpen(false)}
+                    className="flex flex-col items-center justify-center gap-1.5 rounded border border-border bg-card p-3 text-center transition-all duration-200 active:scale-95 hover:border-bronze dark:hover:border-gold"
+                  >
+                    <BookGlyph className="h-5 w-5 text-bronze dark:text-gold" />
+                    <span className="line-clamp-1 text-[11px] font-bold text-foreground">
+                      {lang === "ar" ? "الأرشيف" : "Archive"}
+                    </span>
+                  </Link>
+                </DrawerClose>
+
+                <a
+                  href={siteMeta.frameStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center justify-center gap-1.5 rounded border border-border bg-card p-3 text-center transition-all duration-200 active:scale-95 hover:border-bronze dark:hover:border-gold"
+                >
+                  <ShoppingBag className="h-5 w-5 text-bronze dark:text-gold" />
+                  <span className="line-clamp-1 text-[11px] font-bold text-foreground">
+                    {lang === "ar" ? "المتجر" : "Store"}
+                  </span>
+                </a>
               </div>
 
               {usingLiveNav ? (
