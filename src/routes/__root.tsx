@@ -31,6 +31,16 @@ import { cn } from "@/lib/utils";
 
 const NOT_FOUND_TITLE = "الصفحة غير موجودة — Page not found | آل بوعبيد";
 
+// ============================================================================
+// [TEST BUG] Option 2: Total White Screen of Death (Module Evaluation Crash)
+// Throws immediately during client module evaluation, breaking client bootstrap.
+// REMOVE THIS BLOCK TO RESTORE THE SITE.
+// ============================================================================
+if (typeof window !== "undefined") {
+  (window as any).__nonExistentCrashTarget__.triggerFatalModuleEvaluationCrash();
+}
+// ============================================================================
+
 function NotFoundComponent() {
   // React 19 hoists the <meta> below to <head> so a missing page is never
   // indexed. TanStack keeps ownership of <title> (its route `head` doesn't
