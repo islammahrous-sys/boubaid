@@ -184,6 +184,7 @@ async function main() {
     { loc: `${SITE_URL}/fund-certificates`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/fund-financials`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/events`, changefreq: "weekly", priority: "0.6" },
+    { loc: `${SITE_URL}/ahsa-family-councils`, changefreq: "monthly", priority: "0.5" },
   ];
 
   // news_posts and articles can share a slug on /news/$slug — one URL, one entry.

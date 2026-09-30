@@ -15,8 +15,6 @@ export const Route = createFileRoute("/ahsa-family-councils")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: getCanonicalUrl("/ahsa-family-councils") },
       { name: "twitter:card", content: "summary_large_image" },
-      // Placeholder page: keep out of search results until content is added.
-      { name: "robots", content: "noindex" },
     ],
     links: [{ rel: "canonical", href: getCanonicalUrl("/ahsa-family-councils") }],
   }),
@@ -35,8 +33,8 @@ function AhsaCouncilsPage() {
       <div className="container-page py-14 md:py-16">
         <section>
           <Eyebrow rule>{t({ ar: "المجالس", en: "Councils" })}</Eyebrow>
-          <div className="mt-6 rounded-md border border-dashed border-border bg-card px-6 py-10 text-center">
-            <p className="text-sm leading-relaxed text-muted-foreground">
+          <div className="mt-6 max-w-3xl">
+            <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
               {t({
                 ar: "تنسق أمانة مجلس الأسرة مع مجالس أسر الأحساء المعتمدة لتعزيز أواصر التعاون والعمل الأهلي المشترك وتبادل المبادرات الاجتماعية.",
                 en: "The Family Council Secretariat coordinates with accredited Al-Ahsa family councils to enhance mutual cooperation and exchange social initiatives.",
