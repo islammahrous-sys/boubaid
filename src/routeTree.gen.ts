@@ -9,179 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AchieversRouteImport } from './routes/achievers'
-import { Route as AhsaFamilyCouncilsRouteImport } from './routes/ahsa-family-councils'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as BranchesRouteImport } from './routes/branches'
-import { Route as CommitteesRouteImport } from './routes/committees'
-import { Route as CompetitionsRouteImport } from './routes/competitions'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as ContributeRouteImport } from './routes/contribute'
-import { Route as DirectoryRouteImport } from './routes/directory'
-import { Route as DnaRouteImport } from './routes/dna'
-import { Route as EventsRouteImport } from './routes/events'
-import { Route as FamilyTreeRouteImport } from './routes/family-tree'
-import { Route as FoundationRouteImport } from './routes/foundation'
-import { Route as FundRouteImport } from './routes/fund'
-import { Route as FundCertificatesRouteImport } from './routes/fund-certificates'
-import { Route as FundFinancialsRouteImport } from './routes/fund-financials'
-import { Route as GovernanceRouteImport } from './routes/governance'
-import { Route as InitiativesRouteImport } from './routes/initiatives'
-import { Route as LibraryRouteImport } from './routes/library'
-import { Route as NewsRouteImport } from './routes/news'
-import { Route as OfficialFamilyTreeRouteImport } from './routes/official-family-tree'
-import { Route as ProgramsRouteImport } from './routes/programs'
-import { Route as RequestsRouteImport } from './routes/requests'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as VerifyRouteImport } from './routes/verify'
-import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedContentRouteImport } from './routes/_authenticated/content'
-import { Route as AuthenticatedTreasuryRouteImport } from './routes/_authenticated/treasury'
-import { Route as InitiativesSlugRouteImport } from './routes/initiatives.$slug'
-import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RequestsRouteImport } from './routes/requests'
+import { Route as ProgramsRouteImport } from './routes/programs'
+import { Route as OfficialFamilyTreeRouteImport } from './routes/official-family-tree'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as LibraryRouteImport } from './routes/library'
+import { Route as InitiativesRouteImport } from './routes/initiatives'
+import { Route as GovernanceRouteImport } from './routes/governance'
+import { Route as FundFinancialsRouteImport } from './routes/fund-financials'
+import { Route as FundCertificatesRouteImport } from './routes/fund-certificates'
+import { Route as FundRouteImport } from './routes/fund'
+import { Route as FoundationRouteImport } from './routes/foundation'
+import { Route as FamilyTreeRouteImport } from './routes/family-tree'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as DnaRouteImport } from './routes/dna'
+import { Route as DirectoryRouteImport } from './routes/directory'
+import { Route as ContributeRouteImport } from './routes/contribute'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompetitionsRouteImport } from './routes/competitions'
+import { Route as CommitteesRouteImport } from './routes/committees'
+import { Route as BranchesRouteImport } from './routes/branches'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AhsaFamilyCouncilsRouteImport } from './routes/ahsa-family-councils'
+import { Route as AchieversRouteImport } from './routes/achievers'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
-import { Route as ApiPublicCommitteeDocRouteImport } from './routes/api/public/committee-doc'
-import { Route as ApiPublicFundDocRouteImport } from './routes/api/public/fund-doc'
-import { Route as ApiPublicSiteVisitRouteImport } from './routes/api/public/site-visit'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as InitiativesSlugRouteImport } from './routes/initiatives.$slug'
+import { Route as AuthenticatedTreasuryRouteImport } from './routes/_authenticated/treasury'
+import { Route as AuthenticatedContentRouteImport } from './routes/_authenticated/content'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as LibraryMuseumSlugRouteImport } from './routes/library.museum.$slug'
+import { Route as ApiPublicSiteVisitRouteImport } from './routes/api/public/site-visit'
+import { Route as ApiPublicFundDocRouteImport } from './routes/api/public/fund-doc'
+import { Route as ApiPublicCommitteeDocRouteImport } from './routes/api/public/committee-doc'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AchieversRoute = AchieversRouteImport.update({
-  id: '/achievers',
-  path: '/achievers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AhsaFamilyCouncilsRoute = AhsaFamilyCouncilsRouteImport.update({
-  id: '/ahsa-family-councils',
-  path: '/ahsa-family-councils',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BranchesRoute = BranchesRouteImport.update({
-  id: '/branches',
-  path: '/branches',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommitteesRoute = CommitteesRouteImport.update({
-  id: '/committees',
-  path: '/committees',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompetitionsRoute = CompetitionsRouteImport.update({
-  id: '/competitions',
-  path: '/competitions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContributeRoute = ContributeRouteImport.update({
-  id: '/contribute',
-  path: '/contribute',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DirectoryRoute = DirectoryRouteImport.update({
-  id: '/directory',
-  path: '/directory',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DnaRoute = DnaRouteImport.update({
-  id: '/dna',
-  path: '/dna',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EventsRoute = EventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FamilyTreeRoute = FamilyTreeRouteImport.update({
-  id: '/family-tree',
-  path: '/family-tree',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FoundationRoute = FoundationRouteImport.update({
-  id: '/foundation',
-  path: '/foundation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FundRoute = FundRouteImport.update({
-  id: '/fund',
-  path: '/fund',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FundCertificatesRoute = FundCertificatesRouteImport.update({
-  id: '/fund-certificates',
-  path: '/fund-certificates',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FundFinancialsRoute = FundFinancialsRouteImport.update({
-  id: '/fund-financials',
-  path: '/fund-financials',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GovernanceRoute = GovernanceRouteImport.update({
-  id: '/governance',
-  path: '/governance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InitiativesRoute = InitiativesRouteImport.update({
-  id: '/initiatives',
-  path: '/initiatives',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LibraryRoute = LibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OfficialFamilyTreeRoute = OfficialFamilyTreeRouteImport.update({
-  id: '/official-family-tree',
-  path: '/official-family-tree',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProgramsRoute = ProgramsRouteImport.update({
-  id: '/programs',
-  path: '/programs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RequestsRoute = RequestsRouteImport.update({
-  id: '/requests',
-  path: '/requests',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TemplatesRoute = TemplatesRouteImport.update({
@@ -189,19 +60,158 @@ const TemplatesRoute = TemplatesRouteImport.update({
   path: '/templates',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VerifyRoute = VerifyRouteImport.update({
-  id: '/verify',
-  path: '/verify',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const RequestsRoute = RequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const ProgramsRoute = ProgramsRouteImport.update({
+  id: '/programs',
+  path: '/programs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfficialFamilyTreeRoute = OfficialFamilyTreeRouteImport.update({
+  id: '/official-family-tree',
+  path: '/official-family-tree',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InitiativesRoute = InitiativesRouteImport.update({
+  id: '/initiatives',
+  path: '/initiatives',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GovernanceRoute = GovernanceRouteImport.update({
+  id: '/governance',
+  path: '/governance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundFinancialsRoute = FundFinancialsRouteImport.update({
+  id: '/fund-financials',
+  path: '/fund-financials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundCertificatesRoute = FundCertificatesRouteImport.update({
+  id: '/fund-certificates',
+  path: '/fund-certificates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FundRoute = FundRouteImport.update({
+  id: '/fund',
+  path: '/fund',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FoundationRoute = FoundationRouteImport.update({
+  id: '/foundation',
+  path: '/foundation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FamilyTreeRoute = FamilyTreeRouteImport.update({
+  id: '/family-tree',
+  path: '/family-tree',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DnaRoute = DnaRouteImport.update({
+  id: '/dna',
+  path: '/dna',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DirectoryRoute = DirectoryRouteImport.update({
+  id: '/directory',
+  path: '/directory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContributeRoute = ContributeRouteImport.update({
+  id: '/contribute',
+  path: '/contribute',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommitteesRoute = CommitteesRouteImport.update({
+  id: '/committees',
+  path: '/committees',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BranchesRoute = BranchesRouteImport.update({
+  id: '/branches',
+  path: '/branches',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AhsaFamilyCouncilsRoute = AhsaFamilyCouncilsRouteImport.update({
+  id: '/ahsa-family-councils',
+  path: '/ahsa-family-councils',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AchieversRoute = AchieversRouteImport.update({
+  id: '/achievers',
+  path: '/achievers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PSlugRoute = PSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NewsRoute,
+} as any)
+const InitiativesSlugRoute = InitiativesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => InitiativesRoute,
+} as any)
+const AuthenticatedTreasuryRoute = AuthenticatedTreasuryRouteImport.update({
+  id: '/treasury',
+  path: '/treasury',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedContentRoute = AuthenticatedContentRouteImport.update({
@@ -209,29 +219,24 @@ const AuthenticatedContentRoute = AuthenticatedContentRouteImport.update({
   path: '/content',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTreasuryRoute = AuthenticatedTreasuryRouteImport.update({
-  id: '/treasury',
-  path: '/treasury',
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const InitiativesSlugRoute = InitiativesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => InitiativesRoute,
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const NewsSlugRoute = NewsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => NewsRoute,
+const LibraryMuseumSlugRoute = LibraryMuseumSlugRouteImport.update({
+  id: '/museum/$slug',
+  path: '/museum/$slug',
+  getParentRoute: () => LibraryRoute,
 } as any)
-const PSlugRoute = PSlugRouteImport.update({
-  id: '/p/$slug',
-  path: '/p/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicCommitteeDocRoute = ApiPublicCommitteeDocRouteImport.update({
-  id: '/api/public/committee-doc',
-  path: '/api/public/committee-doc',
+const ApiPublicSiteVisitRoute = ApiPublicSiteVisitRouteImport.update({
+  id: '/api/public/site-visit',
+  path: '/api/public/site-visit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicFundDocRoute = ApiPublicFundDocRouteImport.update({
@@ -239,15 +244,10 @@ const ApiPublicFundDocRoute = ApiPublicFundDocRouteImport.update({
   path: '/api/public/fund-doc',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicSiteVisitRoute = ApiPublicSiteVisitRouteImport.update({
-  id: '/api/public/site-visit',
-  path: '/api/public/site-visit',
+const ApiPublicCommitteeDocRoute = ApiPublicCommitteeDocRouteImport.update({
+  id: '/api/public/committee-doc',
+  path: '/api/public/committee-doc',
   getParentRoute: () => rootRouteImport,
-} as any)
-const LibraryMuseumSlugRoute = LibraryMuseumSlugRouteImport.update({
-  id: '/museum/$slug',
-  path: '/museum/$slug',
-  getParentRoute: () => LibraryRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -540,193 +540,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/achievers': {
-      id: '/achievers'
-      path: '/achievers'
-      fullPath: '/achievers'
-      preLoaderRoute: typeof AchieversRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ahsa-family-councils': {
-      id: '/ahsa-family-councils'
-      path: '/ahsa-family-councils'
-      fullPath: '/ahsa-family-councils'
-      preLoaderRoute: typeof AhsaFamilyCouncilsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/branches': {
-      id: '/branches'
-      path: '/branches'
-      fullPath: '/branches'
-      preLoaderRoute: typeof BranchesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/committees': {
-      id: '/committees'
-      path: '/committees'
-      fullPath: '/committees'
-      preLoaderRoute: typeof CommitteesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/competitions': {
-      id: '/competitions'
-      path: '/competitions'
-      fullPath: '/competitions'
-      preLoaderRoute: typeof CompetitionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contribute': {
-      id: '/contribute'
-      path: '/contribute'
-      fullPath: '/contribute'
-      preLoaderRoute: typeof ContributeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/directory': {
-      id: '/directory'
-      path: '/directory'
-      fullPath: '/directory'
-      preLoaderRoute: typeof DirectoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dna': {
-      id: '/dna'
-      path: '/dna'
-      fullPath: '/dna'
-      preLoaderRoute: typeof DnaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/events': {
-      id: '/events'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof EventsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/family-tree': {
-      id: '/family-tree'
-      path: '/family-tree'
-      fullPath: '/family-tree'
-      preLoaderRoute: typeof FamilyTreeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/foundation': {
-      id: '/foundation'
-      path: '/foundation'
-      fullPath: '/foundation'
-      preLoaderRoute: typeof FoundationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fund': {
-      id: '/fund'
-      path: '/fund'
-      fullPath: '/fund'
-      preLoaderRoute: typeof FundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fund-certificates': {
-      id: '/fund-certificates'
-      path: '/fund-certificates'
-      fullPath: '/fund-certificates'
-      preLoaderRoute: typeof FundCertificatesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fund-financials': {
-      id: '/fund-financials'
-      path: '/fund-financials'
-      fullPath: '/fund-financials'
-      preLoaderRoute: typeof FundFinancialsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/governance': {
-      id: '/governance'
-      path: '/governance'
-      fullPath: '/governance'
-      preLoaderRoute: typeof GovernanceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/initiatives': {
-      id: '/initiatives'
-      path: '/initiatives'
-      fullPath: '/initiatives'
-      preLoaderRoute: typeof InitiativesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/library': {
-      id: '/library'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof LibraryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/official-family-tree': {
-      id: '/official-family-tree'
-      path: '/official-family-tree'
-      fullPath: '/official-family-tree'
-      preLoaderRoute: typeof OfficialFamilyTreeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/programs': {
-      id: '/programs'
-      path: '/programs'
-      fullPath: '/programs'
-      preLoaderRoute: typeof ProgramsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/requests': {
-      id: '/requests'
-      path: '/requests'
-      fullPath: '/requests'
-      preLoaderRoute: typeof RequestsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/templates': {
@@ -736,25 +554,221 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/verify': {
-      id: '/verify'
-      path: '/verify'
-      fullPath: '/verify'
-      preLoaderRoute: typeof VerifyRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/account': {
-      id: '/_authenticated/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AuthenticatedAccountRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/requests': {
+      id: '/requests'
+      path: '/requests'
+      fullPath: '/requests'
+      preLoaderRoute: typeof RequestsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+    '/programs': {
+      id: '/programs'
+      path: '/programs'
+      fullPath: '/programs'
+      preLoaderRoute: typeof ProgramsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/official-family-tree': {
+      id: '/official-family-tree'
+      path: '/official-family-tree'
+      fullPath: '/official-family-tree'
+      preLoaderRoute: typeof OfficialFamilyTreeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/initiatives': {
+      id: '/initiatives'
+      path: '/initiatives'
+      fullPath: '/initiatives'
+      preLoaderRoute: typeof InitiativesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/governance': {
+      id: '/governance'
+      path: '/governance'
+      fullPath: '/governance'
+      preLoaderRoute: typeof GovernanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fund-financials': {
+      id: '/fund-financials'
+      path: '/fund-financials'
+      fullPath: '/fund-financials'
+      preLoaderRoute: typeof FundFinancialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fund-certificates': {
+      id: '/fund-certificates'
+      path: '/fund-certificates'
+      fullPath: '/fund-certificates'
+      preLoaderRoute: typeof FundCertificatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fund': {
+      id: '/fund'
+      path: '/fund'
+      fullPath: '/fund'
+      preLoaderRoute: typeof FundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/foundation': {
+      id: '/foundation'
+      path: '/foundation'
+      fullPath: '/foundation'
+      preLoaderRoute: typeof FoundationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/family-tree': {
+      id: '/family-tree'
+      path: '/family-tree'
+      fullPath: '/family-tree'
+      preLoaderRoute: typeof FamilyTreeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dna': {
+      id: '/dna'
+      path: '/dna'
+      fullPath: '/dna'
+      preLoaderRoute: typeof DnaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/directory': {
+      id: '/directory'
+      path: '/directory'
+      fullPath: '/directory'
+      preLoaderRoute: typeof DirectoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contribute': {
+      id: '/contribute'
+      path: '/contribute'
+      fullPath: '/contribute'
+      preLoaderRoute: typeof ContributeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions': {
+      id: '/competitions'
+      path: '/competitions'
+      fullPath: '/competitions'
+      preLoaderRoute: typeof CompetitionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/committees': {
+      id: '/committees'
+      path: '/committees'
+      fullPath: '/committees'
+      preLoaderRoute: typeof CommitteesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/branches': {
+      id: '/branches'
+      path: '/branches'
+      fullPath: '/branches'
+      preLoaderRoute: typeof BranchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ahsa-family-councils': {
+      id: '/ahsa-family-councils'
+      path: '/ahsa-family-councils'
+      fullPath: '/ahsa-family-councils'
+      preLoaderRoute: typeof AhsaFamilyCouncilsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/achievers': {
+      id: '/achievers'
+      path: '/achievers'
+      fullPath: '/achievers'
+      preLoaderRoute: typeof AchieversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p/$slug': {
+      id: '/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof NewsRoute
+    }
+    '/initiatives/$slug': {
+      id: '/initiatives/$slug'
+      path: '/$slug'
+      fullPath: '/initiatives/$slug'
+      preLoaderRoute: typeof InitiativesSlugRouteImport
+      parentRoute: typeof InitiativesRoute
+    }
+    '/_authenticated/treasury': {
+      id: '/_authenticated/treasury'
+      path: '/treasury'
+      fullPath: '/treasury'
+      preLoaderRoute: typeof AuthenticatedTreasuryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/content': {
@@ -764,39 +778,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContentRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/treasury': {
-      id: '/_authenticated/treasury'
-      path: '/treasury'
-      fullPath: '/treasury'
-      preLoaderRoute: typeof AuthenticatedTreasuryRouteImport
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/initiatives/$slug': {
-      id: '/initiatives/$slug'
-      path: '/$slug'
-      fullPath: '/initiatives/$slug'
-      preLoaderRoute: typeof InitiativesSlugRouteImport
-      parentRoute: typeof InitiativesRoute
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/news/$slug': {
-      id: '/news/$slug'
-      path: '/$slug'
-      fullPath: '/news/$slug'
-      preLoaderRoute: typeof NewsSlugRouteImport
-      parentRoute: typeof NewsRoute
+    '/library/museum/$slug': {
+      id: '/library/museum/$slug'
+      path: '/museum/$slug'
+      fullPath: '/library/museum/$slug'
+      preLoaderRoute: typeof LibraryMuseumSlugRouteImport
+      parentRoute: typeof LibraryRoute
     }
-    '/p/$slug': {
-      id: '/p/$slug'
-      path: '/p/$slug'
-      fullPath: '/p/$slug'
-      preLoaderRoute: typeof PSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/committee-doc': {
-      id: '/api/public/committee-doc'
-      path: '/api/public/committee-doc'
-      fullPath: '/api/public/committee-doc'
-      preLoaderRoute: typeof ApiPublicCommitteeDocRouteImport
+    '/api/public/site-visit': {
+      id: '/api/public/site-visit'
+      path: '/api/public/site-visit'
+      fullPath: '/api/public/site-visit'
+      preLoaderRoute: typeof ApiPublicSiteVisitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/fund-doc': {
@@ -806,19 +813,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicFundDocRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/site-visit': {
-      id: '/api/public/site-visit'
-      path: '/api/public/site-visit'
-      fullPath: '/api/public/site-visit'
-      preLoaderRoute: typeof ApiPublicSiteVisitRouteImport
+    '/api/public/committee-doc': {
+      id: '/api/public/committee-doc'
+      path: '/api/public/committee-doc'
+      fullPath: '/api/public/committee-doc'
+      preLoaderRoute: typeof ApiPublicCommitteeDocRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/library/museum/$slug': {
-      id: '/library/museum/$slug'
-      path: '/museum/$slug'
-      fullPath: '/library/museum/$slug'
-      preLoaderRoute: typeof LibraryMuseumSlugRouteImport
-      parentRoute: typeof LibraryRoute
     }
   }
 }
