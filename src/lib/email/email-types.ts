@@ -27,8 +27,10 @@ export type EmailCategory =
 export type EmailTemplateKey =
   | "auth_welcome"
   | "auth_verify_email"
+  | "auth_email_verification"
   | "auth_password_reset"
   | "auth_password_changed"
+  | "auth_email_changed"
   | "auth_new_login"
   | "auth_security_alert"
   | "auth_account_activated"

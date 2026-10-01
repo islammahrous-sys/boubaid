@@ -213,6 +213,51 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     },
   },
 
+  auth_email_changed: {
+    key: "auth_email_changed",
+    category: "auth",
+    defaultPriority: "CRITICAL",
+    nameAr: "تغيير عنوان البريد الإلكتروني",
+    nameEn: "Email Address Changed",
+    subjectAr: () => "إشعار أمني: تم تغيير عنوان البريد الإلكتروني — آل بوعبيد",
+    subjectEn: () => "Security Alert: Email Address Changed — Al Bu Obaid Family Council",
+    renderBody: (vars, lang) => {
+      const isAr = lang === "ar";
+      const actionUrl = getUrl("/account");
+      return {
+        title: isAr ? "تغيير البريد الإلكتروني" : "Email Address Changed",
+        preheader: isAr ? "تم تحديث عنوان البريد الإلكتروني المرتبط بحسابك" : "The email address associated with your account was updated",
+        badgeText: isAr ? "أمان الحساب" : "Security Alert",
+        contentHtml: `
+          ${renderGreeting(vars.user_name, lang)}
+          ${renderTitle(isAr ? "تم تحديث البريد الإلكتروني بنجاح" : "Email Address Successfully Changed")}
+          ${renderParagraph(
+            isAr
+              ? "نحيطكم علماً بأنه تم تعديل عنوان البريد الإلكتروني المرتبط بحسابكم في بوابة أسرة آل بوعبيد."
+              : "This is to notify you that the email address associated with your family portal account has been updated."
+          )}
+          ${renderInformationCard(
+            renderDetailsTable([
+              ...(vars.old_email ? [{ label: isAr ? "البريد السابق" : "Previous Email", value: vars.old_email }] : []),
+              { label: isAr ? "البريد الجديد" : "New Email", value: vars.new_email || vars.user_email || "" },
+              { label: isAr ? "التاريخ والوقت" : "Timestamp", value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US") },
+            ], lang)
+          )}
+          ${renderAlertBox(
+            isAr
+              ? "إذا لم تكن أنت من أجرى هذا التغيير، يرجى المسارعة إلى استعادة حسابك والتواصل فوراً مع الدعم الفني لحماية بياناتك."
+              : "If you did not make this change, please recover your account immediately and contact technical support.",
+            "critical",
+            isAr ? "تنبيه أمني هام" : "Important Security Alert"
+          )}
+          ${renderActionButton(actionUrl, isAr ? "مراجعة أمان الحساب" : "Review Account Security", lang)}
+        `,
+        actionUrl,
+        actionLabel: isAr ? "مراجعة أمان الحساب" : "Review Account Security",
+      };
+    },
+  },
+
   auth_new_login: {
     key: "auth_new_login",
     category: "auth",
@@ -2448,6 +2493,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     },
   },
 };
+
+// Alias auth_verify_email to auth_email_verification
+EMAIL_TEMPLATE_CATALOG.auth_verify_email = EMAIL_TEMPLATE_CATALOG.auth_email_verification;
 
 /**
  * Renders a full email payload (HTML and plain text) for any catalog template key.

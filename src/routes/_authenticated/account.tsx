@@ -24,6 +24,7 @@ import {
   updateMyNotificationPreferences,
   type NotificationPreferences,
 } from "@/lib/account.functions";
+import { requestPasswordReset } from "@/lib/email/auth-email.functions";
 import { EDUCATION_LEVELS, PROFILE_CITIES } from "@/lib/account.schemas";
 import { getCategoryForType, type NotificationCategory } from "@/lib/notifications.types";
 import { MembershipRequestModal } from "@/components/account/MembershipRequestModal";
@@ -750,10 +751,14 @@ function AccountPage() {
   const handlePasswordReset = async () => {
     if (!user?.email) return;
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: window.location.origin + "/reset-password",
+      const result = await requestPasswordReset({
+        data: {
+          email: user.email,
+          redirectTo: window.location.origin + "/reset-password",
+          locale: isAr ? "ar" : "en",
+        },
       });
-      if (error) throw error;
+      if (!result.ok) throw new Error(result.error || "Failed");
       toast.success(
         isAr
           ? "تم إرسال رابط تعيين كلمة المرور إلى بريدك الإلكتروني."

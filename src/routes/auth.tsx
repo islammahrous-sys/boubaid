@@ -14,6 +14,10 @@ import {
 } from "@/components/site/TurnstileWidget";
 import { verifyTurnstile } from "@/lib/turnstile.functions";
 import { translateAuthError } from "@/lib/text";
+import {
+  requestPasswordReset,
+  signUpWithBrandedVerification,
+} from "@/lib/email/auth-email.functions";
 import authManuscript from "@/assets/auth-manuscript.jpg";
 
 /** Where a member lands after signing in when no destination was requested. */
@@ -120,10 +124,21 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "forgot") {
-        const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-          redirectTo: `${window.location.origin}/reset-password`,
+        const result = await requestPasswordReset({
+          data: {
+            email: email.trim().toLowerCase(),
+            redirectTo: `${window.location.origin}/reset-password`,
+            locale: lang === "en" ? "en" : "ar",
+            turnstileToken: turnstileToken || undefined,
+          },
         });
-        if (error) throw error;
+        if (!result.ok) {
+          toast.error(
+            label("تعذر إرسال رابط إعادة التعيين. يرجى المحاولة لاحقاً.", "Failed to send reset link. Please try again later.")
+          );
+          setBusy(false);
+          return;
+        }
         setResetSent(true);
         toast.success(
           label(
@@ -159,32 +174,34 @@ function AuthPage() {
             return;
           }
         }
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim().toLowerCase(),
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth`,
-            data: { full_name_ar: fullName.trim() },
+        const result = await signUpWithBrandedVerification({
+          data: {
+            email: email.trim().toLowerCase(),
+            password,
+            fullName: fullName.trim(),
+            redirectTo: `${window.location.origin}/auth`,
+            locale: lang === "en" ? "en" : "ar",
+            turnstileToken: turnstileToken || undefined,
           },
         });
-        if (error) throw error;
-        // With email confirmation required (the current project setting)
-        // Supabase returns no session and the member has to click the link.
-        // If confirmation is ever switched off, sign-up returns a live session
-        // and telling them to check an inbox that will stay empty is wrong.
-        if (data.session) {
-          navigatingRef.current = true;
-          try {
-            await navigate({ to: destination as any, replace: true });
-          } catch {
-            window.location.replace(destination);
+        if (!result.ok) {
+          if (result.error === "user_already_registered") {
+            toast.error(
+              label(
+                "هذا البريد الإلكتروني مسجل مسبقاً. يرجى تسجيل الدخول.",
+                "This email address is already registered. Please sign in.",
+              ),
+            );
+          } else {
+            toast.error(result.error || label("تعذر إنشاء الحساب.", "Failed to create account."));
           }
+          setBusy(false);
           return;
         }
         toast.success(
           label(
-            "تم إنشاء الحساب. تحقق من بريدك لتأكيد العنوان.",
-            "Account created. Check your inbox to confirm your address.",
+            "تم إنشاء الحساب بنجاح. أرسلنا رسالة تأكيد رسمية إلى بريدك الإلكتروني.",
+            "Account created successfully. A verification link has been sent to your email.",
           ),
         );
         setPassword("");

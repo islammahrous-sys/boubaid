@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { translateAuthError } from "@/lib/text";
+import { notifyPasswordChanged } from "@/lib/email/auth-email.functions";
 
 export const Route = createFileRoute("/reset-password")({
   ssr: false,
@@ -110,6 +111,13 @@ function ResetPasswordPage() {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       setDone(true);
+      // Dispatch official branded security alert via centralized email notification
+      void notifyPasswordChanged({
+        data: {
+          locale: lang === "en" ? "en" : "ar",
+          clientInfo: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+        },
+      }).catch((err) => console.warn("[reset-password] notifyPasswordChanged warning:", err));
       toast.success(label("تم تحديث كلمة المرور بنجاح.", "Password updated successfully."));
       redirectTimer.current = window.setTimeout(() => {
         redirectTimer.current = null;

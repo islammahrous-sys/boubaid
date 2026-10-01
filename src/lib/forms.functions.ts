@@ -92,6 +92,33 @@ export const submitContactMessage = createServerFn({ method: "POST" })
       return { ok: false, error: "insert_failed" };
     }
 
+    // Dispatch branded acknowledgment email to the sender
+    try {
+      const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
+      const isEn = data.locale === "en";
+      const stamp = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+      const msgRef = `ABF-MSG-${stamp}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+
+      void enqueueNotificationEmail({
+        recipientEmail: data.email.toLowerCase(),
+        recipientName: data.name,
+        emailType: "request_submitted",
+        category: "requests",
+        priority: "NORMAL",
+        language: isEn ? "en" : "ar",
+        variables: {
+          user_name: data.name,
+          request_number: msgRef,
+          request_title: data.subject || (isEn ? "General Inquiry" : "استفسار وتواصل عام"),
+          request_type: "contact",
+          request_type_label: isEn ? "Contact Message" : "رسالة تواصل مع المجلس",
+          date: new Date().toLocaleDateString(isEn ? "en-US" : "ar-SA"),
+        },
+      }).catch((err) => console.error("[contact] confirmation email failed:", err));
+    } catch (e) {
+      console.warn("[contact] enqueue confirmation email warning:", e);
+    }
+
     return { ok: true };
   });
 

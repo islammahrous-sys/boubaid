@@ -44,4 +44,65 @@ export const copy = registerCopy("requests", {
     en: "Choose the relevant committee so your request reaches the correct review path directly.",
   } as BiText,
   signInNote: { ar: "يتطلب تسجيل الدخول", en: "Requires sign-in" } as BiText,
+  trackTitle: {
+    ar: "تتبع حالة الطلب برقم المعاملة",
+    en: "Track Request by Reference Number",
+  } as BiText,
+  trackSubtitle: {
+    ar: "أدخل رقم الطلب المعطى لك عند التقديم للاطلاع على مرحلة الاعتماد الحالية.",
+    en: "Enter the reference number given upon submission to view its current approval stage.",
+  } as BiText,
+  trackPlaceholder: {
+    ar: "مثال: ABF-REQ-261001-A7K2D",
+    en: "e.g. ABF-REQ-261001-A7K2D",
+  } as BiText,
+  trackButton: {
+    ar: "استعلام عن الحالة",
+    en: "Check Status",
+  } as BiText,
+  trackSearching: {
+    ar: "جارٍ التحقق…",
+    en: "Checking…",
+  } as BiText,
+  trackNotFound: {
+    ar: "لم يتم العثور على معاملة مطابقة لهذا الرقم. يرجى التحقق من الرقم والمحاولة مرة أخرى.",
+    en: "No request found matching this reference number. Please verify and try again.",
+  } as BiText,
+  myRecentRequests: {
+    ar: "الطلبات المسجلة بحسابك",
+    en: "Requests on Your Account",
+  } as BiText,
+  noRequestsYet: {
+    ar: "لا توجد طلبات مسجلة بحسابك حالياً.",
+    en: "No requests found on your account yet.",
+  } as BiText,
+  statusNew: {
+    ar: "جديد — قيد الانتظار للمراجعة",
+    en: "New — Pending Review",
+  } as BiText,
+  statusReview: {
+    ar: "قيد المراجعة والدراسة من اللجنة",
+    en: "Under Review by Committee",
+  } as BiText,
+  statusApproved: {
+    ar: "معتمد ومقبول رسمياً",
+    en: "Officially Approved",
+  } as BiText,
+  statusRejected: {
+    ar: "تمت المراجعة والاعتذار",
+    en: "Reviewed & Declined",
+  } as BiText,
+  statusCompleted: {
+    ar: "مكتمل ومنجز بالكامل",
+    en: "Completed & Executed",
+  } as BiText,
+  dateSubmitted: {
+    ar: "تاريخ التقديم",
+    en: "Submission Date",
+  } as BiText,
+  referenceLabel: {
+    ar: "رقم المعاملة",
+    en: "Reference No.",
+  } as BiText,
 });
+

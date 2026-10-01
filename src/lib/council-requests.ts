@@ -597,6 +597,94 @@ export const COUNCIL_REQUESTS = {
     topic: { ar: "نوع الطلب (إصدار / تجديد)", en: "Request type (issue / renewal)" },
     details: { ar: "بيانات مقدم الطلب", en: "Applicant details" },
   },
+  membership_verification: {
+    title: { ar: "طلب توثيق العضوية", en: "Membership verification request" },
+    desc: {
+      ar: "تقديم طلب اعتماد العضوية للأمانة العامة وإصدار بطاقة العضوية الرسمية.",
+      en: "Ask the secretariat to verify your membership and issue your official family card.",
+    },
+    topic: { ar: "الاسم الكامل والفرع المطلوب توثيقه", en: "Full name and branch to verify" },
+    details: { ar: "بيانات النسب والتفاصيل الإضافية", en: "Lineage details and additional information" },
+    fields: [
+      personField("الفرع العائلي", "Family branch", "branch_line"),
+      personField("عمود النسب حتى الجد الأكبر", "Lineage to eldest ancestor", "father_lineage"),
+      personField("المدينة ومقر الإقامة", "City and residence", "city"),
+      {
+        name: "national_id",
+        label: { ar: "رقم الهوية الوطنية (اختياري)", en: "National ID (optional)" },
+        maxLength: 20,
+      },
+    ],
+    allowAttachments: true,
+  },
+  fund_contribution: {
+    title: { ar: "الاشتراك والمساهمة", en: "Subscription & contribution" },
+    desc: {
+      ar: "تسجيل اشتراك أو مساهمة في صندوق التنمية العائلية وإرفاق إشعار السداد للمراجعة.",
+      en: "Register a subscription or contribution to the family development fund and attach your payment notice for review.",
+    },
+    topic: { ar: "نوع المساهمة أو الاشتراك", en: "Contribution or subscription type" },
+    details: { ar: "تفاصيل المساهمة أو ملاحظات السداد", en: "Contribution details or payment notes" },
+    fields: [
+      personField("المبلغ (ريال سعودي)", "Amount (SAR)", "amount"),
+      personField("اسم البنك المحول منه", "Bank name", "bank_name"),
+      dateField("تاريخ التحويل", "Transfer date", "transfer_date"),
+    ],
+    allowAttachments: true,
+  },
+  family_tree_frame: {
+    title: { ar: "طلب لوحة شجرة العائلة", en: "Family tree frame order" },
+    desc: {
+      ar: "طلب اللوحة الرسمية المصورة لشجرة العائلة وتحديد المقاس وموقع التسليم.",
+      en: "Order the official illustrated family tree frame with size and delivery details.",
+    },
+    topic: { ar: "المقاس المطلوب للوحة", en: "Requested frame size" },
+    details: { ar: "عنوان التوصيل وأية ملاحظات خاصة", en: "Delivery address and notes" },
+    fields: [
+      personField("المقاس المطلوب (كبير جداري / متوسط / مكتبي)", "Frame size (Large wall / Medium / Desk)", "frame_size"),
+      personField("مدينة التوصيل", "Delivery city", "city"),
+      personField("العدد المطلوب", "Quantity", "quantity"),
+    ],
+    allowAttachments: false,
+  },
+  event_attendance: {
+    title: { ar: "طلب تسجيل حضور فعالية", en: "Event attendance registration" },
+    desc: {
+      ar: "تسجيل الحضور في إحدى فعاليات الأسرة المعلنة وتحديد عدد المرافقين.",
+      en: "Register attendance at an announced family event with guest count.",
+    },
+    topic: { ar: "اسم الفعالية المراد حضورها", en: "Event name" },
+    details: { ar: "ملاحظات أو استفسارات حول الحضور", en: "Notes or inquiries regarding attendance" },
+    fields: [
+      personField("عدد الحاضرين والمرافقين", "Number of attendees / guests", "attendees_count"),
+      dateField("تاريخ الفعالية التقريبي", "Approximate event date", "attendance_date"),
+    ],
+    allowAttachments: false,
+  },
+  initiative_participation: {
+    title: { ar: "طلب الانضمام إلى مشروع أو مبادرة", en: "Initiative participation request" },
+    desc: {
+      ar: "التقدم للمشاركة في إحدى مبادرات الأسرة أو مشاريعها القائمة.",
+      en: "Apply to take part in one of the family's active initiatives or projects.",
+    },
+    topic: { ar: "المبادرة أو المشروع المستهدف", en: "Target initiative or project" },
+    details: { ar: "طبيعة المشاركة والخبرات والمقترحات", en: "Nature of participation, skills, and proposals" },
+    fields: [
+      personField("اسم المبادرة أو نوع المشروع", "Initiative name or project type", "initiative_name"),
+      personField("الدور المقترح للمشاركة", "Proposed role", "role_proposed"),
+    ],
+    allowAttachments: true,
+  },
+  general_inquiry: {
+    title: { ar: "استفسار أو طلب عام", en: "General inquiry or request" },
+    desc: {
+      ar: "إرسال استفسار أو طلب إلى الأمانة العامة لمجلس الأسرة عبر صندوق الوارد.",
+      en: "Send the secretariat any inquiry or request not covered by specific forms.",
+    },
+    topic: { ar: "موضوع الاستفسار أو الطلب", en: "Subject of the inquiry or request" },
+    details: { ar: "نص الاستفسار وتفاصيل الطلب", en: "Inquiry text and details" },
+    allowAttachments: true,
+  },
 } satisfies Record<string, CouncilRequestDef>;
 
 export type CouncilRequestTypeKey = keyof typeof COUNCIL_REQUESTS;

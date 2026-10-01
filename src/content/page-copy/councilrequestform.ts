@@ -36,4 +36,53 @@ export const copy = registerCopy("councilrequestform", {
     ar: "نوع الملف غير مدعوم. المسموح: PDF أو صورة.",
     en: "Unsupported file type. Allowed: PDF or image.",
   } as BiText,
+  successTitle: {
+    ar: "تم تقديم الطلب بنجاح",
+    en: "Request Submitted Successfully",
+  } as BiText,
+  successSubtitle: {
+    ar: "تم تسجيل طلبكم رسمياً وإحالته إلى مسار الاعتماد لدى أمانة المجلس واللجنة المعنية.",
+    en: "Your request has been officially recorded and forwarded to the council secretariat and committee review path.",
+  } as BiText,
+  refLabel: {
+    ar: "رقم المعاملة / الطلب",
+    en: "Reference / Request Number",
+  } as BiText,
+  copyRef: {
+    ar: "نسخ الرقم",
+    en: "Copy Number",
+  } as BiText,
+  copiedRef: {
+    ar: "تم نسخ رقم المعاملة بنجاح",
+    en: "Reference number copied",
+  } as BiText,
+  workflowTitle: {
+    ar: "مراحل مسار الاعتماد",
+    en: "Approval Process Stages",
+  } as BiText,
+  stage1: {
+    ar: "تم الاستلام وتسجيل المعاملة",
+    en: "Received & Registered",
+  } as BiText,
+  stage2: {
+    ar: "المراجعة والتدقيق من اللجنة المختصة",
+    en: "Committee Review & Verification",
+  } as BiText,
+  stage3: {
+    ar: "قرار الاعتماد أو الاعتذار والإشعار",
+    en: "Approval Decision & Official Notification",
+  } as BiText,
+  stage4: {
+    ar: "التنفيذ والإنجاز النهائي",
+    en: "Execution & Final Completion",
+  } as BiText,
+  emailNotice: {
+    ar: "تم إرسال إشعار تأكيد إلى بريدك الإلكتروني يتضمن رقم المرجع وتفاصيل الطلب.",
+    en: "A confirmation email containing your reference number and request details has been sent to your address.",
+  } as BiText,
+  close: {
+    ar: "إغلاق",
+    en: "Close",
+  } as BiText,
 });
+
