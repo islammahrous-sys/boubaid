@@ -845,6 +845,107 @@ export type Database = {
           },
         ]
       }
+      email_logs: {
+        Row: {
+          attempts: number
+          category: string
+          clicked_at: string | null
+          created_at: string
+          delivered_at: string | null
+          email_type: string
+          error_message: string | null
+          failed_at: string | null
+          html_body: string | null
+          id: string
+          idempotency_key: string | null
+          language: string
+          max_attempts: number
+          notification_id: string | null
+          opened_at: string | null
+          payload: Json
+          priority: string
+          provider: string
+          provider_message_id: string | null
+          recipient_email: string
+          recipient_name: string | null
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          subject: string
+          text_body: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          category?: string
+          clicked_at?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          email_type: string
+          error_message?: string | null
+          failed_at?: string | null
+          html_body?: string | null
+          id?: string
+          idempotency_key?: string | null
+          language?: string
+          max_attempts?: number
+          notification_id?: string | null
+          opened_at?: string | null
+          payload?: Json
+          priority?: string
+          provider?: string
+          provider_message_id?: string | null
+          recipient_email: string
+          recipient_name?: string | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          subject: string
+          text_body?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          category?: string
+          clicked_at?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          email_type?: string
+          error_message?: string | null
+          failed_at?: string | null
+          html_body?: string | null
+          id?: string
+          idempotency_key?: string | null
+          language?: string
+          max_attempts?: number
+          notification_id?: string | null
+          opened_at?: string | null
+          payload?: Json
+          priority?: string
+          provider?: string
+          provider_message_id?: string | null
+          recipient_email?: string
+          recipient_name?: string | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          text_body?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_registrations: {
         Row: {
           attendees_count: number
@@ -1889,6 +1990,63 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_email_templates: {
+        Row: {
+          available_variables: Json
+          body_template_ar: string | null
+          body_template_en: string | null
+          category: string
+          created_at: string
+          default_priority: string
+          description_ar: string | null
+          description_en: string | null
+          id: string
+          is_active: boolean
+          name_ar: string
+          name_en: string
+          subject_template_ar: string
+          subject_template_en: string
+          template_key: string
+          updated_at: string
+        }
+        Insert: {
+          available_variables?: Json
+          body_template_ar?: string | null
+          body_template_en?: string | null
+          category: string
+          created_at?: string
+          default_priority?: string
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          is_active?: boolean
+          name_ar: string
+          name_en: string
+          subject_template_ar: string
+          subject_template_en: string
+          template_key: string
+          updated_at?: string
+        }
+        Update: {
+          available_variables?: Json
+          body_template_ar?: string | null
+          body_template_en?: string | null
+          category?: string
+          created_at?: string
+          default_priority?: string
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          is_active?: boolean
+          name_ar?: string
+          name_en?: string
+          subject_template_ar?: string
+          subject_template_en?: string
+          template_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           articles_news: boolean
@@ -2269,6 +2427,8 @@ export type Database = {
     }
     Functions: {
       family_public_stats: { Args: never; Returns: Json }
+      get_email_runtime_config: { Args: never; Returns: Json }
+      get_email_statistics: { Args: never; Returns: Json }
       record_site_visit: { Args: { p_visit_key: string }; Returns: number }
       replace_content_page_sections: {
         Args: { p_page_id: string; p_sections: Json }

@@ -271,6 +271,10 @@ export async function notifyAdminsOnMembershipRequest(request: {
  * Trigger: Membership request is reviewed (approved/rejected).
  * Audience: The member who requested membership.
  */
+/**
+ * Trigger: Membership request is reviewed (approved/rejected).
+ * Audience: The member who requested membership.
+ */
 export async function notifyMemberOnMembershipDecision(
   userId: string,
   status: "approved" | "rejected",
@@ -289,6 +293,38 @@ export async function notifyMemberOnMembershipDecision(
     type: "membership",
     link: "/account",
   });
+
+  // Dispatch professional email notification
+  try {
+    const { enqueueNotificationEmail } = await import("./email/notification-queue.server");
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("email, full_name_ar, full_name_en, branch_slug")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profile?.email) {
+      void enqueueNotificationEmail({
+        userId,
+        recipientEmail: profile.email,
+        recipientName: profile.full_name_ar || profile.full_name_en,
+        emailType: isApproved ? "membership_approved" : "membership_rejected",
+        category: "membership",
+        priority: "HIGH",
+        variables: {
+          user_name: profile.full_name_ar || profile.full_name_en || "",
+          full_name: profile.full_name_ar || profile.full_name_en || "",
+          branch_name: profile.branch_slug || "",
+          membership_number: `ABF-MBR-${userId.slice(0, 8).toUpperCase()}`,
+          rejection_reason: reviewNote || "",
+          action_url: "/account",
+        },
+        idempotencyKey: `email-mbr-dec-${userId}-${status}`,
+      }).catch((err) => console.error("[notifications.server] Email enqueue failed:", err));
+    }
+  } catch (err) {
+    console.warn("[notifications.server] Email dispatch error:", err);
+  }
 }
 
 /**
@@ -337,6 +373,39 @@ export async function notifyMemberOnRoleAssignment(
     type: "role_change",
     link: "/account",
   });
+
+  // Email notification on role granting
+  if (isGranted) {
+    try {
+      const { enqueueNotificationEmail } = await import("./email/notification-queue.server");
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("email, full_name_ar, full_name_en")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (profile?.email) {
+        void enqueueNotificationEmail({
+          userId,
+          recipientEmail: profile.email,
+          recipientName: profile.full_name_ar || profile.full_name_en,
+          emailType: "system_notification",
+          category: "system",
+          priority: "HIGH",
+          variables: {
+            title: `تم منحكم صلاحية جديدة: ${nameAr}`,
+            user_name: profile.full_name_ar || profile.full_name_en || "",
+            message: `تم اعتماد إسناد دور (${nameAr}) إلى حسابكم في منصة مجلس أسرة آل بوعبيد.`,
+            action_url: "/account",
+            action_label: "فتح الملف الشخصي",
+          },
+          idempotencyKey: `email-role-${userId}-${role}-${action}`,
+        }).catch((err) => console.error("[notifications.server] Email enqueue failed:", err));
+      }
+    } catch (err) {
+      console.warn("[notifications.server] Email role error:", err);
+    }
+  }
 }
 
 /**
@@ -388,6 +457,37 @@ export async function notifyMemberOnContributionDecision(
     type: "financial",
     link: "/account",
   });
+
+  // Dispatch professional email notification
+  try {
+    const { enqueueNotificationEmail } = await import("./email/notification-queue.server");
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("email, full_name_ar, full_name_en")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profile?.email) {
+      void enqueueNotificationEmail({
+        userId,
+        recipientEmail: profile.email,
+        recipientName: profile.full_name_ar || profile.full_name_en,
+        emailType: isVerified ? "fund_contribution_confirmed" : "fund_contribution_rejected",
+        category: "fund",
+        priority: "HIGH",
+        variables: {
+          user_name: profile.full_name_ar || profile.full_name_en || "",
+          amount: String(amount),
+          currency,
+          reason: reviewNote || "",
+          action_url: "/account",
+        },
+        idempotencyKey: `email-contrib-${userId}-${status}-${amount}`,
+      }).catch((err) => console.error("[notifications.server] Contribution email enqueue failed:", err));
+    }
+  } catch (err) {
+    console.warn("[notifications.server] Contribution email error:", err);
+  }
 }
 
 /**

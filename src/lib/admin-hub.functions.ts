@@ -1520,9 +1520,56 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
       .from("inquiries")
       .update({ status: data.status, assigned_to: data.assigned_to })
       .eq("id", data.id)
-      .select("id");
+      .select("id, name, email, subject, status, request_metadata, created_at");
     if (error) throw new Error(error.message);
     assertRowsAffected(updated, "inquiries", data.id);
+
+    const row = updated[0];
+    if (row && row.email) {
+      try {
+        const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
+        const metadata = (row.request_metadata || {}) as Record<string, any>;
+        const refNumber = metadata.reference || `REQ-${row.id.slice(0, 8).toUpperCase()}`;
+        const title = row.subject || metadata.title || "طلب مجلس الأسرة";
+
+        let templateKey: import("@/lib/email/email-types").EmailTemplateKey = "request_status_changed";
+        if (data.status === "resolved") {
+          templateKey = "request_completed";
+        } else if (data.status === "in_progress") {
+          templateKey = "request_under_review";
+        }
+
+        const statusMapAr: Record<string, string> = {
+          new: "جديد",
+          open: "مفتوح قيد المعالجة",
+          in_progress: "قيد الدراسة والمتابعة",
+          resolved: "مكتمل ومنجز",
+          spam: "غير ملائم",
+        };
+
+        const statusLabel = statusMapAr[data.status] || data.status;
+
+        void enqueueNotificationEmail({
+          emailType: templateKey,
+          recipientEmail: row.email,
+          recipientName: row.name || undefined,
+          variables: {
+            user_name: row.name || "عضو الأسرة الكريمة",
+            request_number: refNumber,
+            request_title: title,
+            status_label: statusLabel,
+            new_status: statusLabel,
+            committee_name: metadata.committee_name || "أمانة المجلس",
+            action_url: "/requests",
+          },
+          idempotencyKey: `inquiry-status-${row.id}-${data.status}`,
+          priority: "HIGH",
+        }).catch((err) => console.error("[admin-hub] Failed to enqueue request status email:", err));
+      } catch (enqueueErr) {
+        console.warn("[admin-hub] Email dispatch error:", enqueueErr);
+      }
+    }
+
     return { ok: true };
   });
 
@@ -1557,6 +1604,38 @@ export const addInquiryNote = createServerFn({ method: "POST" })
       .single();
 
     if (error) throw new Error(error.message);
+
+    try {
+      const { data: inquiry } = await supabase
+        .from("inquiries")
+        .select("id, name, email, subject, request_metadata")
+        .eq("id", data.inquiry_id)
+        .maybeSingle();
+
+      if (inquiry && inquiry.email) {
+        const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
+        const metadata = (inquiry.request_metadata || {}) as Record<string, any>;
+        const refNumber = metadata.reference || `REQ-${inquiry.id.slice(0, 8).toUpperCase()}`;
+
+        void enqueueNotificationEmail({
+          emailType: "request_comment_added",
+          recipientEmail: inquiry.email,
+          recipientName: inquiry.name || undefined,
+          variables: {
+            user_name: inquiry.name || "عضو الأسرة الكريمة",
+            request_number: refNumber,
+            request_title: inquiry.subject || "طلب مجلس الأسرة",
+            comment: data.note,
+            action_url: "/requests",
+          },
+          idempotencyKey: `inquiry-note-${note.id}`,
+          priority: "HIGH",
+        }).catch((err) => console.error("[admin-hub] Failed to enqueue inquiry note email:", err));
+      }
+    } catch (err) {
+      console.warn("[admin-hub] Failed to send inquiry note email notification:", err);
+    }
+
     return { ok: true, note };
   });
 

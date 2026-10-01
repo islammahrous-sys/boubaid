@@ -393,6 +393,25 @@ export const submitMembershipRequest = createServerFn({ method: "POST" })
         branch: data.branch_slug,
         userId,
       }).catch((err) => console.error("[account] notifyAdminsOnMembershipRequest failed:", err));
+
+      const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
+      void enqueueNotificationEmail({
+        userId,
+        recipientEmail: email,
+        recipientName: data.full_name_ar,
+        emailType: "membership_application_received",
+        category: "membership",
+        priority: "HIGH",
+        variables: {
+          user_name: data.full_name_ar,
+          applicant_name: data.full_name_ar,
+          branch_name: data.branch_slug || "",
+          request_number: `ABF-MBR-${userId.slice(0, 8).toUpperCase()}`,
+          date: new Date().toLocaleDateString("ar-SA"),
+          action_url: "/account",
+        },
+        idempotencyKey: `email-mbr-app-${userId}-${new Date().toISOString().slice(0, 10)}`,
+      }).catch((err) => console.error("[account] membership application email failed:", err));
     } catch (err) {
       console.warn("[account] notification trigger failed:", err);
     }

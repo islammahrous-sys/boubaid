@@ -31,6 +31,7 @@ import {
   AlertTriangle,
   BookUser,
   Building2,
+  Mail,
 } from "lucide-react";
 import type { ComponentType } from "react";
 
@@ -346,6 +347,14 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         description_en: "Platform identity, contact details, and policies",
         icon: Sliders,
       },
+      {
+        id: "email_notifications",
+        label_ar: "مركز البريد والإشعارات",
+        label_en: "Email & Notifications",
+        description_ar: "سجل الرسائل المرسلة، فحص التسليم، قوالب البريد، وإعادة المحاولة",
+        description_en: "Delivery logs, delivery status, 70 email templates, and retries",
+        icon: Mail,
+      },
     ],
   },
 ];
@@ -438,6 +447,9 @@ export const preloadAdminManager = (tabId: string) => {
       break;
     case "site_settings":
       void import("@/components/console/settings/SiteSettingsManager");
+      break;
+    case "email_notifications":
+      void import("@/components/console/notifications/AdminNotificationCenter");
       break;
   }
 };

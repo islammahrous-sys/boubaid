@@ -469,5 +469,42 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
       return { ok: false, error: "insert_failed" };
     }
 
+    // Dispatch official email notification to applicant
+    if (data.email) {
+      try {
+        const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
+        const isEn = data.locale === "en";
+        void enqueueNotificationEmail({
+          recipientEmail: data.email,
+          recipientName: data.full_name,
+          emailType: "request_submitted",
+          category: "requests",
+          priority: "HIGH",
+          language: isEn ? "en" : "ar",
+          variables: {
+            user_name: data.full_name,
+            request_number: referenceNumber,
+            request_title: data.topic,
+            request_type: data.type,
+            request_type_label: def.title[isEn ? "en" : "ar"],
+            committee_name: committeeMeta
+              ? isEn
+                ? committeeMeta.name_en || committeeMeta.name_ar
+                : committeeMeta.name_ar
+              : isEn
+                ? "General Secretariat"
+                : "أمانة المجلس العام",
+            action_url: "/requests",
+            submission_date: new Date().toLocaleDateString(isEn ? "en-US" : "ar-SA"),
+          },
+          idempotencyKey: `req-submit-ack-${referenceNumber}`,
+        }).catch((emailErr) => {
+          console.warn(`[council_request_${data.type}] confirmation email failed:`, emailErr);
+        });
+      } catch (err) {
+        console.warn(`[council_request_${data.type}] email queue import failed:`, err);
+      }
+    }
+
     return { ok: true, reference: referenceNumber };
   });

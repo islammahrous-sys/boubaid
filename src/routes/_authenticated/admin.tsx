@@ -219,6 +219,11 @@ const DnaStudiesManager = lazy(() =>
     default: m.DnaStudiesManager,
   })),
 );
+const AdminNotificationCenter = lazy(() =>
+  import("@/components/console/notifications/AdminNotificationCenter").then((m) => ({
+    default: m.AdminNotificationCenter,
+  })),
+);
 
 type AdminSearch = {
   domain?: string;
@@ -1649,6 +1654,10 @@ function MasterAdminPage() {
                   }
                 />
               ))}
+
+            {activeDomainId === "system" && activeTabId === "email_notifications" && (
+              <AdminNotificationCenter />
+            )}
           </div>
         </Suspense>
 
