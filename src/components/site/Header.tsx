@@ -215,7 +215,7 @@ export function Header() {
             )}
             aria-hidden="true"
           />
-          <span className="flex min-w-0 flex-col leading-tight xl:hidden 2xl:flex">
+          <span className="flex min-w-0 flex-col leading-tight xl:hidden min-[2100px]:flex">
             <span
               className={cn(
                 "truncate font-brand font-bold text-foreground transition-[color,font-size] duration-500 group-hover:text-bronze dark:group-hover:text-gold",
@@ -448,13 +448,13 @@ export function Header() {
             type="button"
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
-            className="hidden 2xl:inline-flex items-center gap-1.5 border border-border/60 bg-secondary/40 h-8 sm:h-9 px-2.5 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer rounded-md shrink-0"
+            className="hidden min-[2100px]:inline-flex items-center gap-1.5 border border-border/60 bg-secondary/40 h-8 sm:h-9 px-2.5 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer rounded-md shrink-0"
             aria-label={lang === "ar" ? "بحث في المنظومة (Ctrl+K)" : "Search portal (Ctrl+K)"}
             title="Ctrl + K"
           >
             <Search className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="hidden 2xl:inline">{lang === "ar" ? "بحث..." : "Search..."}</span>
-            <kbd className="hidden 2xl:inline ms-1 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
+            <span className="hidden min-[2100px]:inline">{lang === "ar" ? "بحث..." : "Search..."}</span>
+            <kbd className="hidden min-[2100px]:inline ms-1 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
               ⌘K
             </kbd>
           </button>
@@ -464,7 +464,7 @@ export function Header() {
             type="button"
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
-            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary 2xl:hidden cursor-pointer rounded-md shrink-0"
+            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary min-[2100px]:hidden cursor-pointer rounded-md shrink-0"
             aria-label={lang === "ar" ? "بحث" : "Search"}
           >
             <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -489,7 +489,7 @@ export function Header() {
           {canReviewTreasury ? (
             <Link
               to="/treasury"
-              className="hidden items-center gap-1.5 border border-border h-8 sm:h-9 px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md 2xl:inline-flex whitespace-nowrap shrink-0"
+              className="hidden items-center gap-1.5 border border-border h-8 sm:h-9 px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md min-[2100px]:inline-flex whitespace-nowrap shrink-0"
             >
               {lang === "ar" ? "الخزينة" : "Treasury"}
             </Link>
@@ -518,7 +518,7 @@ export function Header() {
             ) : (
               <UserRound className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             )}
-            <span className={user ? "hidden 2xl:inline" : "hidden xl:inline"}>
+            <span className={user ? "hidden min-[2100px]:inline" : "hidden xl:inline"}>
               {user
                 ? lang === "ar"
                   ? "حسابي"
@@ -531,7 +531,7 @@ export function Header() {
 
           <Link
             to="/contribute"
-            className="hidden items-center border border-gold bg-gold h-9 px-4 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md 2xl:inline-flex whitespace-nowrap shrink-0"
+            className="hidden items-center border border-gold bg-gold h-9 px-4 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md min-[2100px]:inline-flex whitespace-nowrap shrink-0"
           >
             {lang === "ar" ? "الاشتراك" : "Subscribe"}
           </Link>
