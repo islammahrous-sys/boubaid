@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
@@ -214,6 +215,8 @@ export function AdminConsoleLayout({
   // the app having frozen. This drives an immediate full-screen overlay
   // instead, so the sign-out click gets feedback the instant it happens.
   const [signingOut, setSigningOut] = useState(false);
+  const consoleNavigate = useNavigate();
+  const consoleQueryClient = useQueryClient();
   const [notifActiveTab, setNotifActiveTab] = useState<"alerts" | "tasks">("alerts");
   const [broadcastForm, setBroadcastForm] = useState({
     title_ar: "",
@@ -672,15 +675,15 @@ export function AdminConsoleLayout({
     );
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     if (signingOut) return;
     setSigningOut(true);
-    void signOut();
-    // No `finally` resetting this: a successful sign-out unmounts this
-    // component via the auth-state redirect (see routes/_authenticated/route.tsx),
-    // and a failed one already falls back to a local session clear inside
-    // signOut() itself, which redirects the same way -- there's no path
-    // back to an authenticated view left to un-block.
+    // Leave the protected console first so its queries never refetch against
+    // a cleared session (401 → generic error page), then end the session.
+    await consoleQueryClient.cancelQueries();
+    await consoleNavigate({ to: "/", replace: true });
+    await signOut();
+    consoleQueryClient.clear();
   };
 
   return (

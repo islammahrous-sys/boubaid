@@ -215,7 +215,7 @@ export function Header() {
             )}
             aria-hidden="true"
           />
-          <span className="flex min-w-0 flex-col leading-tight lg:hidden xl:flex">
+          <span className="flex min-w-0 flex-col leading-tight xl:hidden 2xl:flex">
             <span
               className={cn(
                 "truncate font-brand font-bold text-foreground transition-[color,font-size] duration-500 group-hover:text-bronze dark:group-hover:text-gold",
@@ -230,7 +230,7 @@ export function Header() {
         </Link>
 
         <nav
-          className="relative hidden min-w-0 flex-1 items-center justify-center gap-1 lg:flex lg:mx-1 xl:gap-1.5 xl:mx-3 2xl:mx-4"
+          className="relative hidden min-w-0 flex-1 items-center justify-center gap-1 xl:flex xl:gap-1.5 xl:mx-3 2xl:mx-4"
           aria-label="Primary"
         >
           {navPrimary.map((n) => {
@@ -497,7 +497,16 @@ export function Header() {
 
           <Link
             to={user ? "/account" : "/auth"}
-            className="hidden items-center gap-2 border border-border h-9 px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md 2xl:inline-flex whitespace-nowrap shrink-0"
+            aria-label={
+              user
+                ? lang === "ar"
+                  ? "حسابي"
+                  : "My account"
+                : lang === "ar"
+                  ? "تسجيل الدخول"
+                  : "Sign in"
+            }
+            className="hidden items-center gap-2 border border-primary/40 bg-secondary/40 h-9 px-2.5 2xl:px-3 text-[13px] font-semibold text-foreground transition-colors hover:bg-secondary rounded-md lg:inline-flex whitespace-nowrap shrink-0"
           >
             {user ? (
               <SaudiCulturalAvatar
@@ -509,14 +518,14 @@ export function Header() {
             ) : (
               <UserRound className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             )}
-            <span>
+            <span className={user ? "hidden 2xl:inline" : "hidden xl:inline"}>
               {user
                 ? lang === "ar"
                   ? "حسابي"
                   : "My account"
                 : lang === "ar"
-                  ? "دخول الأعضاء"
-                  : "Member sign-in"}
+                  ? "تسجيل الدخول"
+                  : "Sign in"}
             </span>
           </Link>
 
@@ -540,7 +549,7 @@ export function Header() {
                   : "Open menu"
             }
             aria-expanded={open}
-            className="hidden md:grid lg:hidden h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary cursor-pointer rounded-md shrink-0"
+            className="hidden md:grid xl:hidden h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary cursor-pointer rounded-md shrink-0"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -549,7 +558,7 @@ export function Header() {
       </div>
 
       {open ? (
-        <div className="max-h-[80vh] overflow-y-auto border-t border-border bg-background text-foreground lg:hidden animate-in slide-in-from-top-2 duration-200">
+        <div className="max-h-[80vh] overflow-y-auto border-t border-border bg-background text-foreground xl:hidden animate-in slide-in-from-top-2 duration-200">
           <nav className="container-page py-6" aria-label="Mobile">
             {usingLiveNav ? (
               <div className="menu-in mb-6 last:mb-0">
