@@ -421,7 +421,64 @@ function AchieversPage() {
         <h2 id="sponsors-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">
           {rtl ? "الرعاة والداعمون" : "Supporters & Sponsors"}
         </h2>
-        <div className="mt-6 overflow-x-auto rounded-md border border-border">
+        <div className="mt-6 space-y-3 sm:hidden">
+          {sponsorRows.map((r) => (
+            <article key={r.year} className="overflow-hidden rounded-md border border-border bg-card">
+              <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-secondary/60 px-4 py-3">
+                <h3 className="nums text-lg font-bold text-foreground">
+                  {rtl ? `عام ${r.year}هـ` : `Year ${r.year} AH`}
+                </h3>
+                <span className="text-xs font-semibold text-bronze dark:text-gold">
+                  {t(r.prize)}
+                </span>
+              </header>
+              <dl className="grid grid-cols-2 gap-px bg-border text-sm">
+                <div className="min-w-0 bg-card p-3">
+                  <dt className="text-xs text-muted-foreground">{t(SPONSOR_HEAD[1])}</dt>
+                  <dd className="nums mt-1 font-semibold text-foreground">{r.participants}</dd>
+                </div>
+                <div className="min-w-0 bg-card p-3">
+                  <dt className="text-xs text-muted-foreground">{t(SPONSOR_HEAD[2])}</dt>
+                  <dd className="nums mt-1 font-semibold text-foreground">{r.honoured}</dd>
+                </div>
+                <div className="min-w-0 bg-card p-3">
+                  <dt className="text-xs text-muted-foreground">{t(SPONSOR_HEAD[3])}</dt>
+                  <dd className="mt-1 leading-relaxed text-foreground">
+                    {(r.branches ?? []).map((branch) => <div key={branch.en}>{t(branch)}</div>)}
+                  </dd>
+                </div>
+                <div className="min-w-0 bg-card p-3">
+                  <dt className="text-xs text-muted-foreground">{t(SPONSOR_HEAD[5])}</dt>
+                  <dd className="mt-1 leading-relaxed text-foreground">
+                    {(r.fields ?? []).map((field) => <div key={field.en}>{t(field)}</div>)}
+                  </dd>
+                </div>
+                <div className="col-span-2 min-w-0 bg-card p-3">
+                  <dt className="text-xs text-muted-foreground">{t(SPONSOR_HEAD[6])}</dt>
+                  <dd className="mt-1 break-words font-medium text-foreground">{r.sponsor}</dd>
+                </div>
+              </dl>
+            </article>
+          ))}
+          <div className="grid grid-cols-3 gap-px overflow-hidden rounded-md border border-border bg-border text-center">
+            <div className="bg-secondary/60 p-3">
+              <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
+              <div className="nums mt-1 text-base font-bold text-foreground">{sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}</div>
+              <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[1])}</div>
+            </div>
+            <div className="bg-secondary/60 p-3">
+              <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
+              <div className="nums mt-1 text-base font-bold text-foreground">{sponsorRows.reduce((n, r) => n + Number(r.honoured || 0), 0)}</div>
+              <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[2])}</div>
+            </div>
+            <div className="bg-secondary/60 p-3">
+              <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
+              <div className="nums mt-1 text-sm font-bold text-foreground">{sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}</div>
+              <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[4])}</div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 hidden overflow-x-auto rounded-md border border-border sm:block">
           <table className="w-full min-w-[760px] border-collapse text-sm">
             <thead className="bg-secondary/60 text-foreground">
               <tr>

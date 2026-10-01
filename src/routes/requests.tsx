@@ -125,6 +125,18 @@ const groupOrder: RequestGroup[] = [
   "general",
 ];
 
+/** Logo variant with the strongest contrast against each category's colour band. */
+const bandLogo: Record<RequestGroup, string> = {
+  membership: "/logo-mark-cream.svg",
+  committee_requests: "/logo-mark-cream.svg",
+  services: "/logo-mark-cream.svg",
+  tree: "/logo-mark-brown.svg",
+  fund: "/logo-mark-brown.svg",
+  participation: "/logo-mark-cream.svg",
+  announcements: "/logo-mark-brown.svg",
+  general: "/logo-mark-brown.svg",
+};
+
 type RequestEntry = {
   id: string;
   group: RequestGroup;
@@ -558,6 +570,7 @@ const requests: RequestEntry[] = [
 
 type ApprovalEntry = {
   id: string;
+  group: RequestGroup;
   name: BiText;
   desc: BiText;
   /** Either an in-console tab or a standalone review route. */
@@ -571,6 +584,7 @@ const isAdmin = (roles: string[]) => roles.includes("admin") || roles.includes("
 const approvals: ApprovalEntry[] = [
   {
     id: "ap-membership",
+    group: "membership",
     name: { ar: "طلبات توثيق العضوية", en: "Membership verification requests" },
     desc: {
       ar: "مراجعة طلبات العضوية وإسناد الأدوار في شاشة المستخدمين والتوثيق.",
@@ -581,6 +595,7 @@ const approvals: ApprovalEntry[] = [
   },
   {
     id: "ap-contributions",
+    group: "fund",
     name: { ar: "المساهمات والاشتراكات", en: "Contributions & subscriptions" },
     desc: {
       ar: "اعتماد أو رفض إشعارات السداد في شاشة الخزينة.",
@@ -591,6 +606,7 @@ const approvals: ApprovalEntry[] = [
   },
   {
     id: "ap-directory",
+    group: "services",
     name: { ar: "طلبات إدراج الأعمال", en: "Business listing requests" },
     desc: {
       ar: "مراجعة المنشآت المقدَّمة قبل نشرها في دليل الأعمال.",
@@ -601,6 +617,7 @@ const approvals: ApprovalEntry[] = [
   },
   {
     id: "ap-achievers",
+    group: "participation",
     name: { ar: "ترشيحات سجل المتميزين", en: "Roll of Honour nominations" },
     desc: {
       ar: "اعتماد الترشيحات قبل إضافتها إلى لوحة الشرف.",
@@ -611,6 +628,7 @@ const approvals: ApprovalEntry[] = [
   },
   {
     id: "ap-inquiries",
+    group: "general",
     name: { ar: "الرسائل والاستفسارات", en: "Messages & inquiries" },
     desc: {
       ar: "معالجة رسائل التواصل وطلبات اللوحات في صندوق الوارد.",
@@ -692,7 +710,11 @@ function RequestsHubPage() {
                 id={g === "committee_requests" ? "committee-requests" : undefined}
                 className="mt-10 scroll-mt-28"
               >
-                <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-bronze dark:text-gold">
+                <h2 className="flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-foreground">
+                  <span
+                    className={`req-tone-${g} inline-block h-3 w-3 rounded-full bg-[var(--req-band)]`}
+                    aria-hidden="true"
+                  />
                   {t(groupTitles[g])}
                 </h2>
                 {g === "committee_requests" ? (
@@ -703,30 +725,41 @@ function RequestsHubPage() {
                 <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {items.map((r) => {
                     const Icon = r.Icon;
+                    const linkCls =
+                      "mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 rounded-md bg-[var(--req-band)] px-3.5 py-2 text-[13px] font-semibold text-[var(--req-on-band)] shadow-sm transition-opacity hover:opacity-90";
                     return (
                       <li
                         key={r.id}
-                        className="flex flex-col border border-border bg-card p-5 transition-colors hover:border-bronze dark:hover:border-gold rounded-md"
+                        className={`req-tone req-tone-${g} flex flex-col overflow-hidden rounded-xl border shadow-sm transition-shadow hover:shadow-md`}
                       >
-                        <span className="inline-flex h-9 w-9 items-center justify-center rounded border border-border bg-secondary/50 text-bronze dark:text-gold">
-                          <Icon className="h-4.5 w-4.5" aria-hidden="true" />
-                        </span>
-                        <h3 className="mt-4 text-[15px] font-semibold text-foreground">
+                        <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
+                          <img
+                            src={bandLogo[g]}
+                            alt={t({ ar: "شعار مجلس أسرة آل بوعبيد", en: "Al Bu Obaid Family Council logo" })}
+                            className="h-12 w-auto object-contain"
+                            loading="lazy"
+                          />
+                          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--req-on-band)]/30 text-[var(--req-on-band)]">
+                            <Icon className="h-4.5 w-4.5" aria-hidden="true" />
+                          </span>
+                        </div>
+                        <div className="flex flex-1 flex-col p-5">
+                        <h3 className="text-[15px] font-semibold text-[var(--req-text)]">
                           {t(r.name)}
                         </h3>
-                        <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted-foreground">
+                        <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--req-muted)]">
                           {t(r.desc)}
                         </p>
                         {r.templateCode ? (
                           <Link
                             to="/templates"
-                            className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-bronze underline-offset-4 hover:underline dark:text-gold"
+                            className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-[var(--req-link)] underline-offset-4 hover:underline"
                           >
                             {r.templateCode}
                           </Link>
                         ) : null}
                         {r.requiresAuth && !user ? (
-                          <p className="mt-3 text-[11.5px] text-muted-foreground">
+                          <p className="mt-3 text-[11.5px] text-[var(--req-muted)]">
                             {t(copy.signInNote)}
                           </p>
                         ) : null}
@@ -735,7 +768,7 @@ function RequestsHubPage() {
                             type="button"
                             id={r.id}
                             onClick={() => setActiveForm(r.form!)}
-                            className="mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                            className={linkCls}
                           >
                             {t(copy.action)}
                             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
@@ -743,12 +776,13 @@ function RequestsHubPage() {
                         ) : (
                           <Link
                             to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
-                            className="mt-4 inline-flex items-center gap-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                            className={linkCls}
                           >
                             {t(copy.action)}
                             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                           </Link>
                         )}
+                        </div>
                       </li>
                     );
                   })}
@@ -789,35 +823,48 @@ function RequestsHubPage() {
               {t(copy.approvalsNote)}
             </p>
             <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-              {myApprovals.map((a) => (
-                <li key={a.id} className="border border-border bg-card p-5 rounded-md">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded border border-border bg-secondary/50 text-bronze dark:text-gold">
-                    <ShieldCheck className="h-4.5 w-4.5" aria-hidden="true" />
-                  </span>
-                  <h3 className="mt-4 text-[15px] font-semibold text-foreground">{t(a.name)}</h3>
-                  <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                    {t(a.desc)}
-                  </p>
-                  {a.route ? (
-                    <Link
-                      to={a.route}
-                      className="mt-4 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                    >
-                      {lang === "ar" ? "فتح شاشة المراجعة" : "Open review screen"}
-                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/admin"
-                      search={{ domain: a.admin!.domain, tab: a.admin!.tab }}
-                      className="mt-4 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                    >
-                      {lang === "ar" ? "فتح شاشة المراجعة" : "Open review screen"}
-                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                    </Link>
-                  )}
-                </li>
-              ))}
+              {myApprovals.map((a) => {
+                const reviewLinkClass =
+                  "mt-4 inline-flex items-center gap-2 self-start rounded-md bg-[var(--req-band)] px-3.5 py-2 text-[13px] font-semibold text-[var(--req-on-band)] shadow-sm transition-opacity hover:opacity-90";
+                return (
+                  <li
+                    key={a.id}
+                    className={`req-tone req-tone-${a.group} flex flex-col overflow-hidden rounded-xl border shadow-sm transition-shadow hover:shadow-md`}
+                  >
+                    <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
+                      <img
+                        src={bandLogo[a.group]}
+                        alt={t({ ar: "شعار مجلس أسرة آل بوعبيد", en: "Al Bu Obaid Family Council logo" })}
+                        className="h-12 w-auto max-w-[75%] object-contain"
+                      />
+                      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--req-on-band)]/30 text-[var(--req-on-band)]">
+                        <ShieldCheck className="h-4.5 w-4.5" aria-hidden="true" />
+                      </span>
+                    </div>
+                    <div className="flex flex-1 flex-col p-5">
+                      <h3 className="text-[15px] font-semibold text-[var(--req-text)]">{t(a.name)}</h3>
+                      <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--req-muted)]">
+                        {t(a.desc)}
+                      </p>
+                      {a.route ? (
+                        <Link to={a.route} className={reviewLinkClass}>
+                          {lang === "ar" ? "فتح شاشة المراجعة" : "Open review screen"}
+                          <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                        </Link>
+                      ) : a.admin ? (
+                        <Link
+                          to="/admin"
+                          search={{ domain: a.admin.domain, tab: a.admin.tab }}
+                          className={reviewLinkClass}
+                        >
+                          {lang === "ar" ? "فتح شاشة المراجعة" : "Open review screen"}
+                          <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                        </Link>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ) : null}

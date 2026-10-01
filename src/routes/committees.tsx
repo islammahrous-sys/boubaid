@@ -14,6 +14,12 @@ import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedInitiatives, getPublishedLibrary } from "@/lib/cms.functions";
 import { mapInitiativeRow } from "@/content/cms-adapt";
 import { copy } from "@/content/page-copy/committees";
+import { committeeDocuments } from "@/content/committee-documents";
+import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
+// 1445 org maps are served as plain static files from public/ so they render
+// on every host (Lovable, Vercel, custom domains) — not only Lovable's asset CDN.
+const map1445Ar = { url: "/images/committee-charts-1445/org-map-1445-ar.png", original_filename: "org-map-1445-ar.png" };
+const map1445En = { url: "/images/committee-charts-1445/org-map-1445-en.png", original_filename: "org-map-1445-en.png" };
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
@@ -55,6 +61,7 @@ export const Route = createFileRoute("/committees")({
 const railSections: RailSection[] = [
   { id: "y1448", label: { ar: "١٤٤٨ هـ", en: "1448 AH" } },
   { id: "hq-project", label: { ar: "مشروع المقر", en: "HQ Project" } },
+  { id: "y1445", label: { ar: "١٤٤٥ هـ", en: "1445 AH" } },
 ];
 
 function CommitteesPage() {
@@ -65,6 +72,8 @@ function CommitteesPage() {
   const chartRecords = charts as CommitteeArchiveItem[];
   const hqTitle = hq?.title ?? hqProject.title;
   const hqSummary = hq?.summary && (hq.summary.ar || hq.summary.en) ? hq.summary : hqProject.fundingModel;
+  const map1445 = rtl ? map1445Ar : map1445En;
+  const map1445Title = { ar: "الخريطة التنظيمية للجان ١٤٤٥ هـ", en: "Committees Organizational Map 1445 AH" };
 
   return (
     <>
@@ -154,6 +163,79 @@ function CommitteesPage() {
               </div>
             </div>
           </article>
+
+          {/* ١٤٤٥ هـ — organisational map and documents, nested under 1448 */}
+          <div id="y1445" className="scroll-mt-28 mt-10 overflow-hidden rounded-md border border-border bg-card md:p-8">
+            <div className="px-4 pt-5 md:px-0 md:pt-0">
+            <p className="label-caps text-bronze dark:text-gold">
+              {t({ ar: "الخريطة التنظيمية ١٤٤٥ هـ", en: "1445 AH Organizational Map" })}
+            </p>
+            <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
+              {t({ ar: "١٤٤٥ هـ", en: "1445 AH" })}
+            </h3>
+            </div>
+            <figure className="mt-5 md:mt-6">
+              <button
+                type="button"
+                onClick={() =>
+                  openMediaViewer({ src: map1445.url, kind: "image", title: t(map1445Title) })
+                }
+                className="block aspect-video w-full overflow-hidden border-y border-border bg-background md:rounded md:border"
+                aria-label={t({ ar: "تكبير الخريطة التنظيمية", en: "Enlarge organizational map" })}
+              >
+                <img
+                  key={map1445.url}
+                  src={map1445.url}
+                  alt={t(map1445Title)}
+                  className="h-full w-full object-contain"
+                  width={1280}
+                  height={720}
+                  decoding="async"
+                />
+              </button>
+              <div className="mt-3 flex flex-wrap gap-4 px-4 text-[13px] font-medium md:px-0">
+                <button
+                  type="button"
+                  onClick={() =>
+                    openMediaViewer({ src: map1445.url, kind: "image", title: t(map1445Title) })
+                  }
+                  className="border-b border-bronze pb-0.5 text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+                >
+                  {t({ ar: "عرض وتكبير", en: "View / enlarge" })}
+                </button>
+                <a
+                  href={map1445.url}
+                  download={map1445.original_filename}
+                  className="border-b border-bronze pb-0.5 text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+                >
+                  {t({ ar: "تنزيل", en: "Download" })}
+                </a>
+              </div>
+            </figure>
+            <ul className="mt-6 border-t border-border px-4 md:px-0">
+              {committeeDocuments
+                .filter((d) => d.year === 1445)
+                .map((d) => (
+                  <li key={d.id} className="flex items-center justify-between gap-4 border-b border-border py-3">
+                    <span className="min-w-0 break-words text-[14px] text-foreground">{t(d.title)}</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openMediaViewer({
+                          src: `/api/public/committee-doc?id=${d.id}`,
+                          kind: "pdf",
+                          title: t(d.title),
+                        })
+                      }
+                      className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+                    >
+                      {t({ ar: "عرض الوثيقة", en: "View document" })}
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          </div>
+
 
           <Link
             to="/requests"

@@ -446,7 +446,6 @@ function LibraryPage() {
           />
 
           {[
-            { year: 1445, label: { ar: "١٤٤٥ هـ", en: "1445 AH" } },
             { year: 1444, label: { ar: "١٤٤٤ هـ", en: "1444 AH" } },
           ].map(({ year, label }) => (
             <div key={year} className="mt-10" aria-labelledby={`committee-archive-${year}`}>

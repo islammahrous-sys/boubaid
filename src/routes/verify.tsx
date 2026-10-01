@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { QrScanner } from "@/components/site/QrScanner";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
@@ -45,6 +46,7 @@ function VerifyPage() {
   const { lang, t } = useLang();
   const isAr = lang === "ar";
   const { id } = Route.useSearch();
+  const navigate = useNavigate();
 
   const fetchVerification = useServerFn(getMemberVerification);
 
@@ -85,8 +87,12 @@ function VerifyPage() {
           </p>
         </div>
 
+        <div className="no-print rounded-2xl border border-border bg-card p-4">
+          <QrScanner onCode={(code) => navigate({ to: "/verify", search: { id: code } })} />
+        </div>
+
         {/* Verification Certificate Card */}
-        {isLoading ? (
+        {!id ? null : isLoading ? (
           <Card className="border-border bg-card p-12 text-center rounded-3xl animate-pulse">
             <QrCode className="w-12 h-12 text-gold mx-auto mb-3 animate-spin" />
             <p className="text-sm font-semibold text-foreground">

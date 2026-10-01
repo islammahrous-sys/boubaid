@@ -16,3 +16,7 @@
 - Page static text lives in `src/content/page-copy/*.ts` wrapped with `registerCopy(page, …)`; admin overrides are stored in site_settings `page_texts` and applied inside `t()` — keeps every page text editable without touching call sites.
 - Award sponsors table defaults live in `src/content/award-sponsors.ts`; admin overrides in site_settings `award_sponsors`.
 - Profile avatar uploads persist immediately through a dedicated authenticated server function; do not require a second profile-form save.
+
+- Member-card PNG, PDF, and print outputs use one shared front/back landscape sheet so every format stays visually consistent and one-page.
+
+- Organizational map images (e.g. 1445 committee maps) live as plain files in public/images/ — Lovable asset CDN links break on non-Lovable hosts like Vercel.

@@ -2,6 +2,9 @@
 
 ## Done
 
+- [x] Fix mobile content overflow, replace the award table with complete phone cards, and align the five-item mobile navigation with the desktop hierarchy.
+- [x] Apply the Requests Hub category palette and branded card layout to “Awaiting My Approval”; make official logos reliable in Arabic and English.
+- [x] Replace the generic illustrated fallback profile image with a distinct Saudi heritage portrait across the website.
 - [x] Translate the editable committee-chart heading on the Arabic Visual Identity page and show both Arabic and English editable Fund Board charts on both language pages.
 - [x] Remove the standalone Competitions & Awards menu item, page content, CMS records, and content-manager option; keep a legacy home redirect and preserve the Excellence Award and 1448 committee activities.
 - [x] Rebuild the Roll of Honor with an empty Family Members’ Competencies section and exactly 22 Excellence Award recipients grouped by 1444–1447 AH; keep all Projects unchanged.
@@ -9,6 +12,8 @@
 - Kept current navigation sequence unchanged.
 
 ## In progress
+
+- [x] Repair the family-card PNG export, make PNG/PDF/Print a single landscape sheet with both faces, and align the card with the official heritage palette.
 
 - [x] Replace the displayed Arabic and English committee organisation maps with the newly supplied PNG files; retain language-specific display and View/Download actions.
 - [x] Restore the complete 1445 and 1444 committee sections, preserving their numbered structure and ordering 1445 before 1444; keep the 1448 archive under Archive.
@@ -137,3 +142,4 @@
 - [x] Requests Hub: ترشيح كفاءات الأسرة, الترشح لجائزة التميز, الانضمام إلى مجالس أسر الأحساء.
 - [x] News → المركز الإعلامي; new page مجالس أسر الأحساء under More.
 - [x] Home: HQ Diamond/Platinum/Golden tiers; «قالوا عن الأسرة» empty-ready section.
+- [x] New default avatar (v3) applied; AI-generated original, no copyright restrictions.
