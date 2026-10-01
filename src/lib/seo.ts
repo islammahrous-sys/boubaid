@@ -1,5 +1,5 @@
 
-const DEFAULT_BASE_URL = "https://alboabid-heritage-hub.lovable.app";
+const DEFAULT_BASE_URL = "https://www.boubaid.com";
 
 export function getBaseUrl(): string {
   const envUrl =

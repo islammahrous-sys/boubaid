@@ -30,7 +30,7 @@ const DEFAULT_SUPABASE_PUBLISHABLE_KEY =
 const SITE_URL = (
   process.env.VITE_SITE_URL ||
   process.env.SITE_URL ||
-  "https://alboabid-heritage-hub.lovable.app"
+  "https://www.boubaid.com"
 ).replace(/\/+$/, "");
 
 function getSupabase() {

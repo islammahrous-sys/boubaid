@@ -390,10 +390,10 @@ export const historySections: HistorySection[] = [
       {
         kind: "source",
         text: {
-          ar: "(المصدر: (آل بوعبيد) — الأحساء، البوابة الرسمية لأسرة آل بوعبيد، على الرابط: https://alboabid-heritage-hub.lovable.app)",
-          en: "(Source: Al Bu Obaid — Al-Ahsa, the official portal of the Al Bu Obaid family: https://alboabid-heritage-hub.lovable.app)",
+          ar: "(المصدر: (آل بوعبيد) — الأحساء، البوابة الرسمية لأسرة آل بوعبيد، على الرابط: https://www.boubaid.com)",
+          en: "(Source: Al Bu Obaid — Al-Ahsa, the official portal of the Al Bu Obaid family: https://www.boubaid.com)",
         },
-        url: "https://alboabid-heritage-hub.lovable.app",
+        url: "https://www.boubaid.com",
       },
       {
         kind: "figure",

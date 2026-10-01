@@ -226,7 +226,7 @@ function GovernancePage() {
                 : "Organizational Chart of the Fund's Board of Trustees"
             }
             href={
-              new URL(rtl ? boardChartAr.url : boardChartEn.url, "https://alboabid-heritage-hub.lovable.app").toString()
+              new URL(rtl ? boardChartAr.url : boardChartEn.url, "https://www.boubaid.com").toString()
             }
           />
         </section>
