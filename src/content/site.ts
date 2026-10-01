@@ -57,7 +57,7 @@ export const siteMeta = registerCopy("site", {
       en: "Building 7959, Al Sudfa Street, Al Hizam Adh Dhahabi Dist. 3411, Postal Code 36422, Al Mubarraz, Kingdom of Saudi Arabia (Short Address: FMDF7959)",
     } as BiText,
   },
-  domain: "albouabidfamily.com",
+  domain: "boubaid.com",
   /** Official family-tree frames catalog on the external store. */
   frameStoreUrl:
     "https://albouabidfamily.com/%D8%B4%D8%AC%D8%B1%D8%A9-%D8%A7%D9%84%D8%A3%D8%B3%D8%B1%D8%A9/c1284478939",

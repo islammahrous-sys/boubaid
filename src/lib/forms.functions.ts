@@ -208,7 +208,7 @@ export const submitAchieverNomination = createServerFn({ method: "POST" })
 
     const { error } = await supabase.from("inquiries").insert({
       name: data.nominator_name,
-      email: data.nominator_email || "nomination@albouabidfamily.com",
+      email: data.nominator_email || "nomination@boubaid.com",
       subject: `ترشيح لسجل المتميزين: ${data.nominee_name}`,
       message: formattedMessage,
       source: "achiever_nomination",
@@ -453,7 +453,7 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
 
     const { error } = await supabase.from("inquiries").insert({
       name: data.full_name,
-      email: data.email || "requests@albouabidfamily.com",
+      email: data.email || "requests@boubaid.com",
       phone: data.phone,
       subject: def.templateCode
         ? `${def.title.ar} [${def.templateCode}] — ${referenceNumber}: ${data.topic}`
