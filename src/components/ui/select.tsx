@@ -6,7 +6,24 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const Select = SelectPrimitive.Root;
+const Select = ({
+  value,
+  defaultValue,
+  onValueChange,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>) => {
+  // Prevent React warning "Select is changing from uncontrolled to controlled"
+  // when value is initially undefined or switching in controlled components:
+  const isControlled = value !== undefined || (onValueChange !== undefined && defaultValue === undefined);
+  return (
+    <SelectPrimitive.Root
+      value={isControlled ? (value ?? "") : undefined}
+      defaultValue={defaultValue}
+      onValueChange={onValueChange}
+      {...props}
+    />
+  );
+};
 
 const SelectGroup = SelectPrimitive.Group;
 

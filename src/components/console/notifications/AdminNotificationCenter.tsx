@@ -319,10 +319,25 @@ export function AdminNotificationCenter() {
 
   const totalPages = Math.ceil((logsData?.count ?? 0) / pageSize) || 1;
 
+  const totalEnqueuedCount = stats?.total ?? stats?.total_emails ?? 0;
   const deliveredPercentage =
-    stats && stats.total_emails > 0
-      ? Math.round(((stats.delivered + stats.sent) / stats.total_emails) * 100)
+    totalEnqueuedCount > 0
+      ? Math.round((((stats?.delivered ?? 0) + (stats?.sent ?? 0)) / totalEnqueuedCount) * 100)
       : 100;
+
+  const formatDateTime = (dateStr?: string | null): string => {
+    if (!dateStr) return "—";
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return "—";
+      return d.toLocaleString(isAr ? "ar-SA" : "en-US", {
+        dateStyle: "short",
+        timeStyle: "short",
+      });
+    } catch {
+      return "—";
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -381,10 +396,10 @@ export function AdminNotificationCenter() {
             </div>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                {stats?.total_emails.toLocaleString() ?? "0"}
+                {totalEnqueuedCount.toLocaleString()}
               </span>
               <span className="text-[11px] text-muted-foreground">
-                {isAr ? `(آخر 24 ساعة: ${stats?.last_24_hours ?? 0})` : `(24h: ${stats?.last_24_hours ?? 0})`}
+                {isAr ? `(عاجل: ${stats?.critical_count ?? 0})` : `(Critical: ${stats?.critical_count ?? 0})`}
               </span>
             </div>
           </CardContent>
@@ -650,10 +665,7 @@ export function AdminNotificationCenter() {
                       </TableCell>
 
                       <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                        {new Date(log.created_at).toLocaleString(isAr ? "ar-SA" : "en-US", {
-                          dateStyle: "short",
-                          timeStyle: "short",
-                        })}
+                        {formatDateTime(log.created_at)}
                       </TableCell>
 
                       <TableCell className="text-end">
@@ -1077,12 +1089,12 @@ export function AdminNotificationCenter() {
 
                       <div>
                         <span className="text-muted-foreground block">{isAr ? "وقت الإرسال:" : "Sent At:"}</span>
-                        <span>{inspectedLog.sent_at ? new Date(inspectedLog.sent_at).toLocaleString() : "—"}</span>
+                        <span>{formatDateTime(inspectedLog.sent_at)}</span>
                       </div>
 
                       <div>
                         <span className="text-muted-foreground block">{isAr ? "وقت التسليم:" : "Delivered At:"}</span>
-                        <span>{inspectedLog.delivered_at ? new Date(inspectedLog.delivered_at).toLocaleString() : "—"}</span>
+                        <span>{formatDateTime(inspectedLog.delivered_at)}</span>
                       </div>
 
                       <div>
