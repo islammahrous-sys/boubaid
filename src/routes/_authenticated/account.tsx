@@ -735,14 +735,16 @@ function AccountPage() {
   });
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    // Drop every cached account/notification payload -- otherwise the next
-    // person to sign in on this browser is briefly shown the previous
-    // member's profile, digital ID and notifications from the cache before
-    // their own queries resolve.
+    // Leave the protected page *before* clearing the session: otherwise the
+    // account queries refetch against a dead session, throw 401s and the
+    // route renders the generic error page mid-transition.
+    await queryClient.cancelQueries();
+    await navigate({ to: "/", replace: true });
+    const { error } = await supabase.auth.signOut();
+    if (error) await supabase.auth.signOut({ scope: "local" });
+    // Drop every cached account/notification payload so no stale member data remains.
     queryClient.clear();
     toast.success(isAr ? "تم تسجيل الخروج بنجاح." : "Signed out successfully.");
-    await navigate({ to: "/" });
   };
 
   const handlePasswordReset = async () => {

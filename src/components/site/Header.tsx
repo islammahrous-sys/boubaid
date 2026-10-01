@@ -497,7 +497,16 @@ export function Header() {
 
           <Link
             to={user ? "/account" : "/auth"}
-            className="hidden items-center gap-2 border border-border h-9 px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md 2xl:inline-flex whitespace-nowrap shrink-0"
+            aria-label={
+              user
+                ? lang === "ar"
+                  ? "حسابي"
+                  : "My account"
+                : lang === "ar"
+                  ? "تسجيل الدخول"
+                  : "Sign in"
+            }
+            className="hidden items-center gap-2 border border-primary/40 bg-secondary/40 h-9 px-2.5 2xl:px-3 text-[13px] font-semibold text-foreground transition-colors hover:bg-secondary rounded-md lg:inline-flex whitespace-nowrap shrink-0"
           >
             {user ? (
               <SaudiCulturalAvatar
@@ -509,14 +518,14 @@ export function Header() {
             ) : (
               <UserRound className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             )}
-            <span>
+            <span className={user ? "hidden 2xl:inline" : "hidden xl:inline"}>
               {user
                 ? lang === "ar"
                   ? "حسابي"
                   : "My account"
                 : lang === "ar"
-                  ? "دخول الأعضاء"
-                  : "Member sign-in"}
+                  ? "تسجيل الدخول"
+                  : "Sign in"}
             </span>
           </Link>
 
