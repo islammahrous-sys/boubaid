@@ -215,7 +215,7 @@ export function Header() {
             )}
             aria-hidden="true"
           />
-          <span className="flex min-w-0 flex-col leading-tight lg:hidden xl:flex">
+          <span className="flex min-w-0 flex-col leading-tight lg:hidden 2xl:flex">
             <span
               className={cn(
                 "truncate font-brand font-bold text-foreground transition-[color,font-size] duration-500 group-hover:text-bronze dark:group-hover:text-gold",
