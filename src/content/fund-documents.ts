@@ -1,4 +1,6 @@
 import type { BiText } from "@/i18n/LanguageProvider";
+import type { LibraryRow } from "@/lib/cms.functions";
+import { isHidden, replacedId, rowHref } from "@/content/library-overrides";
 
 import nationalAddress from "@/assets/docs/national-address.pdf.asset.json";
 import bylaws from "@/assets/docs/bylaws-current.pdf.asset.json";
@@ -129,3 +131,82 @@ export const fundDocumentGroups: { id: FundDocumentGroup; title: BiText }[] = [
   },
   { id: "banking", title: { ar: "التفويضات البنكية", en: "Banking authorisations" } },
 ];
+
+/** A fund document ready to render: built-in or CMS-managed. */
+export interface ResolvedFundDocument {
+  id: string;
+  group: FundDocumentGroup;
+  title: BiText;
+  note: BiText;
+  year: number;
+  kind: string;
+  preview?: string;
+  isNew?: boolean;
+  /** Address the viewer opens. */
+  src: string;
+}
+
+const FUND_GROUPS = new Set<string>(["statutory", "governance", "banking"]);
+
+/**
+ * Built-in documents merged with the library collection `fund_documents`
+ * (Admin → Archive & library). For a new record, Kind selects the group
+ * (statutory / governance / banking) and Year is the Hijri year; a record can
+ * also replace or withdraw a built-in document (see content/library-overrides.ts).
+ */
+export function resolveFundDocuments(rows: LibraryRow[] | undefined): ResolvedFundDocument[] {
+  const cms = (rows ?? []).filter((r) => r.collection === "fund_documents" && r.is_published);
+  const replaced = new Map<string, LibraryRow>();
+  for (const r of cms) {
+    const id = replacedId(r);
+    if (id) replaced.set(id, r);
+  }
+
+  const out: ResolvedFundDocument[] = [];
+  for (const d of fundDocuments) {
+    const builtInSrc = `/api/public/fund-doc?id=${encodeURIComponent(d.id)}`;
+    const override = replaced.get(d.id);
+    if (override) {
+      if (isHidden(override)) continue;
+      out.push({
+        id: d.id,
+        group: d.group,
+        title: { ar: override.title_ar, en: override.title_en || override.title_ar },
+        note:
+          override.description_ar || override.description_en
+            ? {
+                ar: override.description_ar || override.description_en || "",
+                en: override.description_en || override.description_ar || "",
+              }
+            : d.note,
+        year: override.year ?? d.year,
+        kind: d.kind,
+        preview: d.preview,
+        isNew: d.isNew,
+        src: rowHref(override) ?? builtInSrc,
+      });
+      continue;
+    }
+    out.push({ ...d, src: builtInSrc });
+  }
+
+  for (const r of [...cms].sort((a, b) => a.sort_order - b.sort_order)) {
+    if (replacedId(r) || isHidden(r)) continue;
+    const href = rowHref(r);
+    const group = (r.kind ?? "").trim().toLowerCase();
+    if (!href || !FUND_GROUPS.has(group) || !r.year) continue;
+    out.push({
+      id: r.id,
+      group: group as FundDocumentGroup,
+      title: { ar: r.title_ar, en: r.title_en || r.title_ar },
+      note: {
+        ar: r.description_ar || "",
+        en: r.description_en || r.description_ar || "",
+      },
+      year: r.year,
+      kind: "PDF",
+      src: href,
+    });
+  }
+  return out;
+}

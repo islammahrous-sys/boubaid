@@ -466,7 +466,7 @@ export function Header() {
             type="button"
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
-            className="grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary min-[2100px]:hidden cursor-pointer rounded-md shrink-0"
+            className="tap-target grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary min-[2100px]:hidden cursor-pointer rounded-md shrink-0 [--tap-size:2.5rem]"
             aria-label={lang === "ar" ? "بحث" : "Search"}
           >
             <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -477,7 +477,7 @@ export function Header() {
               href={siteMeta.frameStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary rounded-md shrink-0"
+              className="tap-target grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary rounded-md shrink-0 [--tap-size:2.5rem]"
               aria-label={lang === "ar" ? "متجر شجرة العائلة" : "Family tree store"}
               title={lang === "ar" ? "متجر شجرة العائلة" : "Family tree store"}
             >
@@ -551,7 +551,7 @@ export function Header() {
                   : "Open menu"
             }
             aria-expanded={open}
-            className="hidden md:grid xl:hidden h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary cursor-pointer rounded-md shrink-0"
+            className="tap-target hidden md:grid xl:hidden h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary cursor-pointer rounded-md shrink-0 [--tap-size:2.5rem]"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

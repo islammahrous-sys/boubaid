@@ -563,7 +563,7 @@ function VisualIdentityCard({
             type="button"
             onClick={handleOpen}
             aria-label={`${primaryAction} — ${record.title}`}
-            className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+            className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
             <Eye className="h-3.5 w-3.5" aria-hidden="true" />
             {primaryAction}

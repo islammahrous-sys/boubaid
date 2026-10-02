@@ -11,6 +11,8 @@ import type { SiteSettingInput } from "@/lib/admin-hub.schemas";
 // Load every page's text set so the registry is complete in the admin.
 import.meta.glob("/src/content/page-copy/*.ts", { eager: true });
 import "@/content/site";
+import "@/content/council-address";
+import "@/content/history-source";
 
 type Bi = { ar?: string; en?: string };
 
@@ -19,6 +21,9 @@ const PAGE_LABELS: Record<string, string> = {
   footer: "تذييل الموقع — Footer",
   fund: "الصندوق — Fund",
   site: "بيانات عامة للموقع — Site-wide details",
+  "council-address": "كلمة مجلس الأسرة (الرئيسية) — Council address",
+  history: "التاريخ والجذور (عن الأسرة) — History & roots (About)",
+  "vision-mission": "الرؤية والرسالة والقيم — Vision, mission & values",
   about: "عن الأسرة — About",
   contact: "تواصل — Contact",
   contribute: "المساهمة — Contribute",
@@ -45,6 +50,17 @@ const PAGE_LABELS: Record<string, string> = {
   editabletemplateslibrary: "القوالب القابلة للتعديل — Editable templates",
   establishmentsdirectory: "دليل المنشآت — Establishments directory",
 };
+
+/** Labels a registry page; `<page>-inline` holds texts that used to be written
+ *  directly in that page's component, so it is shown as "more texts". */
+function pageLabel(key: string): string {
+  if (PAGE_LABELS[key]) return PAGE_LABELS[key];
+  if (key.endsWith("-inline")) {
+    const base = key.slice(0, -"-inline".length);
+    return `${PAGE_LABELS[base] ?? base} — نصوص إضافية / more texts`;
+  }
+  return key;
+}
 
 export function PageTextsManager({
   settings,
@@ -110,7 +126,7 @@ export function PageTextsManager({
         >
           {pages.map((p) => (
             <option key={p} value={p}>
-              {PAGE_LABELS[p] ?? p}
+              {pageLabel(p)}
             </option>
           ))}
         </select>

@@ -11,7 +11,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { ConfirmProvider } from "@/hooks/useConfirm";
 import { AdminConsoleLayout } from "@/components/console/layout/AdminConsoleLayout";
 import { AdminTabSkeleton } from "@/components/console/layout/AdminTabSkeleton";
-import { ADMIN_DOMAINS } from "@/components/console/layout/AdminNavigation";
+import {
+  ADMIN_DOMAINS,
+  consoleRolesFor,
+  defaultConsoleLocation,
+} from "@/components/console/layout/AdminNavigation";
 import {
   getDashboardOverview,
   getFamilyHubData,
@@ -31,6 +35,8 @@ import {
   upsertEvent,
   getAnnouncementsData,
   upsertAnnouncement,
+  getCouncilCommitteesData,
+  upsertCouncilCommittee,
   getMediaAssetsData,
   registerMediaAsset,
   upsertGallery,
@@ -145,6 +151,11 @@ const ArticlesManager = lazy(() =>
 const EventsManager = lazy(() =>
   import("@/components/console/events/EventsManager").then((m) => ({ default: m.EventsManager })),
 );
+const CouncilCommitteesManager = lazy(() =>
+  import("@/components/console/committees/CouncilCommitteesManager").then((m) => ({
+    default: m.CouncilCommitteesManager,
+  })),
+);
 const AnnouncementsManager = lazy(() =>
   import("@/components/console/announcements/AnnouncementsManager").then((m) => ({
     default: m.AnnouncementsManager,
@@ -254,16 +265,23 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function MasterAdminPage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
-  const { canAccessConsole, loading: authLoading } = useAuth();
+  const { canAccessConsole, loading: authLoading, roles } = useAuth();
   const queryClient = useQueryClient();
   const searchParams = useSearch({ from: "/_authenticated/admin" });
   const navigate = useNavigate({ from: Route.fullPath });
 
-  const activeDomainId = searchParams.domain || "dashboard";
+  // Land each role on a section it can actually use (editors on Content,
+  // treasurers on Treasury, ...) instead of an admin-only dashboard.
+  const consoleRoles = consoleRolesFor(roles);
+  const canManageFamily = ["admin", "super_admin", "family_manager"].some((r) =>
+    consoleRoles.includes(r as never),
+  );
+  const landing = defaultConsoleLocation(consoleRoles);
+  const activeDomainId = searchParams.domain || landing.domain;
   const activeTabId =
     searchParams.tab ||
-    (activeDomainId === "dashboard"
-      ? "overview"
+    (activeDomainId === landing.domain
+      ? landing.tab
       : ADMIN_DOMAINS.find((d) => d.id === activeDomainId)?.tabs[0]?.id || "overview");
 
   // Backward-compatibility: seamlessly redirect any legacy /community/verification link or bookmark
@@ -292,6 +310,7 @@ function MasterAdminPage() {
   const fetchArticles = useServerFn(getArticlesData);
   const fetchEvents = useServerFn(getEventsData);
   const fetchAnnouncements = useServerFn(getAnnouncementsData);
+  const fetchCommittees = useServerFn(getCouncilCommitteesData);
   const fetchMedia = useServerFn(getMediaAssetsData);
   const fetchInquiries = useServerFn(getInquiriesData);
   const fetchUsers = useServerFn(getUsersAndRolesData);
@@ -323,6 +342,7 @@ function MasterAdminPage() {
   const updateRegMut = useServerFn(updateEventRegistrationStatus);
   const delRegMut = useServerFn(deleteEventRegistration);
   const saveAnnMut = useServerFn(upsertAnnouncement);
+  const saveCommitteeMut = useServerFn(upsertCouncilCommittee);
   const broadcastNotifMut = useServerFn(broadcastNotification);
   const markNotifReadMut = useServerFn(markNotificationRead);
   const markAllNotifsReadMut = useServerFn(markAllNotificationsRead);
@@ -384,8 +404,11 @@ function MasterAdminPage() {
   } = useQuery({
     queryKey: ["family-hub-data"],
     queryFn: () => fetchFamily(),
+    // The family hub is gated to admin / super_admin / family_manager, so
+    // editors (who can still open the events tab) must not fire it.
     enabled:
       canAccessConsole &&
+      canManageFamily &&
       (activeDomainId === "family" || (activeDomainId === "content" && activeTabId === "events")),
     ...queryConfig,
   });
@@ -431,6 +454,17 @@ function MasterAdminPage() {
     queryKey: ["announcements-data"],
     queryFn: () => fetchAnnouncements(),
     enabled: canAccessConsole && activeDomainId === "content" && activeTabId === "announcements",
+    ...queryConfig,
+  });
+
+  const {
+    data: committeesData,
+    isLoading: committeesLoading,
+    error: committeesError,
+  } = useQuery({
+    queryKey: ["council-committees-data"],
+    queryFn: () => fetchCommittees(),
+    enabled: canAccessConsole && activeDomainId === "community" && activeTabId === "committees",
     ...queryConfig,
   });
 
@@ -610,6 +644,9 @@ function MasterAdminPage() {
     void queryClient.invalidateQueries({ queryKey: ["events-data"] });
     void queryClient.invalidateQueries({ queryKey: ["admin-overview"] });
   };
+  const refreshCommittees = () => {
+    void queryClient.invalidateQueries({ queryKey: ["council-committees-data"] });
+  };
   const refreshAnnouncements = () => {
     void queryClient.invalidateQueries({ queryKey: ["announcements-data"] });
   };
@@ -741,6 +778,7 @@ function MasterAdminPage() {
       "content:pages": pagesError,
       "content:articles": articlesError,
       "content:announcements": announcementsError,
+      "community:committees": committeesError,
       "content:events": eventsError,
       "content:navigation": navigationError,
       "content:dna": dnaError,
@@ -767,6 +805,7 @@ function MasterAdminPage() {
     pagesError,
     articlesError,
     announcementsError,
+    committeesError,
     eventsError,
     navigationError,
     dnaError,
@@ -807,6 +846,8 @@ function MasterAdminPage() {
         return Boolean(articlesData);
       case "content:announcements":
         return Boolean(announcementsData);
+      case "community:committees":
+        return Boolean(committeesData);
       case "content:events":
         return Boolean(eventsData);
       case "content:navigation":
@@ -846,6 +887,7 @@ function MasterAdminPage() {
     pagesData,
     articlesData,
     announcementsData,
+    committeesData,
     eventsData,
     navigationData,
     dnaData,
@@ -1255,6 +1297,19 @@ function MasterAdminPage() {
                   articles={(articlesData?.articles ?? []) as any}
                   categories={(articlesData?.categories ?? []) as any}
                   onSaveArticle={(data) => runMutation(() => saveArtMut({ data }), refreshArticles)}
+                />
+              ))}
+
+            {activeDomainId === "community" &&
+              activeTabId === "committees" &&
+              (committeesLoading && !committeesData ? (
+                <AdminTabSkeleton type="table" cardCount={2} />
+              ) : (
+                <CouncilCommitteesManager
+                  committees={(committeesData ?? []) as any}
+                  onSave={(data) =>
+                    runMutation(() => saveCommitteeMut({ data }), refreshCommittees)
+                  }
                 />
               ))}
 

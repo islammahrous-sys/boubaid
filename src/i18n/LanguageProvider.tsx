@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { useQuery } from "@tanstack/react-query";
 import { getPublicSiteSettings } from "@/lib/cms.functions";
 import { copyId } from "@/i18n/editable-copy";
+import { setPageImageOverrides } from "@/content/images";
 
 export type Lang = "ar" | "en";
 
@@ -27,7 +28,14 @@ function readInitialLang(): Lang {
   return "ar";
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider({
+  children,
+  initialSettings,
+}: {
+  children: ReactNode;
+  /** Public site settings already loaded by the root route (SSR-safe seed). */
+  initialSettings?: Record<string, any>;
+}) {
   const [lang, setLangState] = useState<Lang>(readInitialLang);
 
   useEffect(() => {
@@ -51,7 +59,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     queryKey: ["public_site_settings"],
     queryFn: () => getPublicSiteSettings(),
     staleTime: 5 * 60 * 1000,
+    initialData: initialSettings,
   });
+  // Admin-replaced page figures (site_settings key `page_images`). Applied
+  // during render, before any page reads `pageImages.*.src`, so SSR and the
+  // first client paint already show the admin's choice.
+  setPageImageOverrides((settings as Record<string, any> | undefined)?.page_images);
   const overrides = (settings as Record<string, any> | undefined)?.page_texts as
     Record<string, { ar?: string; en?: string }> | undefined;
 

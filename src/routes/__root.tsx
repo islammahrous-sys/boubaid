@@ -28,6 +28,7 @@ import { GlobalMediaViewer } from "@/components/site/GlobalMediaViewer";
 
 import { Toaster } from "@/components/ui/sonner";
 import { getCanonicalUrl } from "@/lib/seo";
+import { getPublicSiteSettings } from "@/lib/cms.functions";
 import { cn } from "@/lib/utils";
 
 const NOT_FOUND_TITLE = "الصفحة غير موجودة — Page not found | آل بوعبيد";
@@ -111,6 +112,12 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // The public site settings (page-text overrides, SEO, page images, contact
+  // details) are loaded once here so that SSR renders the admin's values on the
+  // first paint and every route's `head()` can read the saved SEO. The same
+  // object seeds the react-query cache in LanguageProvider.
+  loader: () => getPublicSiteSettings(),
+  staleTime: 5 * 60 * 1000,
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -317,6 +324,7 @@ function useRecoveryHashRedirect(pathname: string) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const siteSettings = Route.useLoaderData();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   useRecoveryHashRedirect(pathname);
   const isConsole =
@@ -328,7 +336,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <LanguageProvider>
+          <LanguageProvider initialSettings={siteSettings}>
             <div
               className={`flex min-h-screen w-full flex-col overflow-x-clip ${isConsole ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"}`}
             >
@@ -336,7 +344,10 @@ function RootComponent() {
               <a href="#main" className="skip-link">
                 تخطَّ إلى المحتوى — Skip to content
               </a>
-              <div className={cn(isConsole && "hidden")}>
+              {/* `contents` (not a block box) so the sticky Header's containing
+                  block is the whole page column; wrapped in a box that is only
+                  as tall as the ticker + header, it would scroll away at once. */}
+              <div className={isConsole ? "hidden" : "contents"}>
                 <AnnouncementTicker />
                 <Header />
               </div>

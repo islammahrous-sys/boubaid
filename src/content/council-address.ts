@@ -1,10 +1,11 @@
+import { registerCopy } from "@/i18n/editable-copy";
 import type { BiText } from "@/i18n/LanguageProvider";
 
 /**
  * "كلمة مجلس الأسرة" — the Council Chairman's address, transcribed from the
  * official letter approved by the Board of Trustees.
  */
-export const councilAddress = {
+export const councilAddress = registerCopy("council-address", {
   eyebrow: { ar: "كلمة مجلس الأسرة", en: "Family Council address" } as BiText,
   title: {
     ar: "رسالة من القلب: إلى أجيالنا الحالية وصُنّاع المستقبل",
@@ -69,10 +70,10 @@ export const councilAddress = {
     en: "Dean of the Family Council Saad bin Abdulrahman bin Ali Bu Obaid",
   } as BiText,
   secondSignerRole: { ar: "عميد مجلس الأسرة", en: "Dean of the Family Council" } as BiText,
-};
+});
 
 /** "الرؤية والرسالة والقيم المؤسسية" — as approved by the Board of Trustees. */
-export const visionMission = {
+export const visionMission = registerCopy("vision-mission", {
   eyebrow: { ar: "الهوية المؤسسية", en: "Institutional identity" } as BiText,
   title: {
     ar: "الرؤية والرسالة والقيم المؤسسية",
@@ -123,4 +124,4 @@ export const visionMission = {
       } as BiText,
     },
   ],
-};
+});

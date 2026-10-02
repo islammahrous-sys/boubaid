@@ -11,7 +11,8 @@ import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedInitiatives, getPublishedLibrary } from "@/lib/cms.functions";
 import { mapInitiativeRow } from "@/content/cms-adapt";
 import { copy } from "@/content/page-copy/committees";
-import { committeeDocuments } from "@/content/committee-documents";
+import { resolveCommitteeDocuments } from "@/content/committee-documents";
+import { formatDualHijriYear } from "@/lib/dates";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 // 1445 org maps are served as plain static files from public/ so they render
 // on every host (Lovable, Vercel, custom domains) — not only Lovable's asset CDN.
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/committees")({
       charts: rows
         .filter((row) => row.collection === "committee_charts" && row.is_published)
         .sort((a, b) => a.sort_order - b.sort_order),
+      documents: resolveCommitteeDocuments(rows),
       hq: hqRow ? mapInitiativeRow(hqRow) : null,
     };
   },
@@ -69,7 +71,11 @@ function CommitteesPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   const Arrow = rtl ? ArrowLeft : ArrowRight;
-  const { charts, hq } = Route.useLoaderData();
+  const { charts, hq, documents } = Route.useLoaderData();
+  // Work years that only exist in the CMS (e.g. a future year) get their own list.
+  const extraYears = [...new Set(documents.map((d) => d.year))]
+    .filter((y) => ![1444, 1445, 1448].includes(y))
+    .sort((a, b) => b - a);
   const chartRecords = charts as CommitteeArchiveItem[];
   const hqTitle = hq?.title ?? hqProject.title;
   const hqSummary =
@@ -241,7 +247,7 @@ function CommitteesPage() {
               </div>
             </figure>
             <ul className="mt-6 border-t border-border px-4 md:px-0">
-              {committeeDocuments
+              {documents
                 .filter((d) => d.year === 1445)
                 .map((d) => (
                   <li
@@ -255,7 +261,7 @@ function CommitteesPage() {
                       type="button"
                       onClick={() =>
                         openMediaViewer({
-                          src: `/api/public/committee-doc?id=${d.id}`,
+                          src: d.src,
                           kind: "pdf",
                           title: t(d.title),
                         })
@@ -269,10 +275,46 @@ function CommitteesPage() {
             </ul>
           </div>
 
+          {/* Work years added through the CMS (committee_documents) */}
+          {extraYears.map((year) => (
+            <div
+              key={year}
+              id={`y${year}`}
+              className="scroll-mt-28 mt-10 overflow-hidden rounded-md border border-border bg-card px-4 py-5 md:p-8"
+            >
+              <h3 className="text-xl font-semibold leading-tight text-foreground md:text-2xl">
+                {formatDualHijriYear(year, lang)}
+              </h3>
+              <ul className="mt-5 border-t border-border">
+                {documents
+                  .filter((d) => d.year === year)
+                  .map((d) => (
+                    <li
+                      key={d.id}
+                      className="flex items-center justify-between gap-4 border-b border-border py-3"
+                    >
+                      <span className="min-w-0 break-words text-[14px] text-foreground">
+                        {t(d.title)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openMediaViewer({ src: d.src, kind: "pdf", title: t(d.title) })
+                        }
+                        className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+                      >
+                        {t({ ar: "عرض الوثيقة", en: "View document" })}
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ))}
+
           <Link
             to="/requests"
             hash="committee-requests"
-            className="mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+            className="tap-target-y mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
             {t({ ar: "رشّح نفسك لعضوية إحدى اللجان", en: "Nominate yourself for a committee" })}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
@@ -290,7 +332,7 @@ function CommitteesPage() {
 
           <Link
             to="/fund-certificates"
-            className="mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+            className="tap-target-y mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
             {t(copy.archiveCta)}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />

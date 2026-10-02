@@ -38,7 +38,7 @@ export function ThemeToggle({ tone = "default" }: ThemeToggleProps) {
       aria-label={label}
       title={label}
       className={cn(
-        "grid h-8 w-8 shrink-0 place-items-center border transition-[color,background-color,border-color,transform] duration-150 ease-out active:scale-[0.95]",
+        "tap-target grid h-8 w-8 shrink-0 place-items-center border transition-[color,background-color,border-color,transform] duration-150 ease-out active:scale-[0.95] [--tap-size:2.5rem]",
         isInk
           ? "border-ivory/25 bg-ink/60 text-ivory/80 hover:bg-ivory/10 hover:text-ivory"
           : "border-border text-muted-foreground hover:bg-secondary hover:text-foreground",

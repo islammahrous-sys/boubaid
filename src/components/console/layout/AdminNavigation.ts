@@ -35,7 +35,17 @@ import {
 } from "lucide-react";
 import type { ComponentType } from "react";
 
-export type AdminRole = "admin" | "super_admin" | "editor" | "treasurer";
+/**
+ * Console roles. These mirror the database helpers the RLS policies use, so a
+ * tab is only offered to someone whose server calls (and RLS) will accept it:
+ *   editor         -> private.can_edit_content  (editor, content_manager)
+ *   treasurer      -> private.can_treasury
+ *   family_manager -> private.can_manage_family
+ * admin / super_admin satisfy all of them.
+ */
+export type AdminRole = "admin" | "super_admin" | "editor" | "treasurer" | "family_manager";
+
+const ADMINS: AdminRole[] = ["admin", "super_admin"];
 
 export type AdminSubTab = {
   id: string;
@@ -68,6 +78,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     description_ar: "المؤشرات التشغيلية والمهام المعلقة",
     description_en: "KPIs and pending tasks",
     icon: LayoutDashboard,
+    roles: ADMINS,
     tabs: [
       {
         id: "overview",
@@ -86,7 +97,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     description_ar: "سجلات الأفراد، شجرة النسب، والفروع",
     description_en: "Member records, genealogy tree, and branches",
     icon: Users,
-    roles: ["admin", "super_admin", "editor"],
+    roles: [...ADMINS, "family_manager"],
     tabs: [
       {
         id: "members",
@@ -211,6 +222,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         description_ar: "ترتيب وتفعيل الأقسام الظاهرة في واجهة الموقع",
         description_en: "Manage home page hero sections and widgets",
         icon: Globe,
+        roles: ADMINS,
       },
       {
         id: "navigation",
@@ -227,6 +239,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         description_ar: "نتائج الفحوصات الجينية والتحورات السلالية",
         description_en: "Genetic analysis and haplogroup results",
         icon: Dna,
+        roles: ADMINS,
       },
     ],
   },
@@ -256,6 +269,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         description_ar: "منشآت وشركات أبناء الأسرة ومشاريعهم التجارية",
         description_en: "Family member businesses and ventures",
         icon: Building2,
+        roles: ADMINS,
       },
       {
         id: "services",
@@ -264,6 +278,16 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         description_ar: "إدارة الخدمات في التصنيفين ورفع وثائقها",
         description_en: "Manage both service categories and upload their documents",
         icon: Layers,
+        roles: ADMINS,
+      },
+      {
+        id: "committees",
+        label_ar: "لجان المجلس ووجهات الطلبات",
+        label_en: "Committees & Request Routing",
+        description_ar: "أسماء اللجان وترتيبها واستقبالها للطلبات في مركز الطلبات",
+        description_en: "Committee names, order and whether they accept Requests Hub requests",
+        icon: Users,
+        roles: ADMINS,
       },
     ],
   },
@@ -275,7 +299,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     description_en: "Contributions, initiatives, and honor roll",
     icon: Landmark,
     badgeKey: "pendingReceipts",
-    roles: ["admin", "super_admin", "treasurer"],
+    roles: [...ADMINS, "treasurer", "editor"],
     tabs: [
       {
         id: "treasury_ledger",
@@ -285,6 +309,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         description_en: "Audit bank receipts and contribution payments",
         icon: Landmark,
         badgeKey: "pendingReceipts",
+        roles: [...ADMINS, "treasurer"],
       },
       {
         id: "initiatives",
@@ -359,6 +384,34 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
   },
 ];
 
+/** Maps the account's database roles onto the console roles used above. */
+export function consoleRolesFor(roles: readonly string[] | undefined | null): AdminRole[] {
+  const has = (r: string) => !!roles?.includes(r);
+  const list: AdminRole[] = [];
+  if (has("super_admin")) list.push("super_admin");
+  if (has("admin")) list.push("admin");
+  if (has("treasurer")) list.push("treasurer");
+  if (has("editor") || has("content_manager")) list.push("editor");
+  if (has("family_manager")) list.push("family_manager");
+  return list;
+}
+
+const allowed = (needed: AdminRole[] | undefined, mine: AdminRole[]) =>
+  !needed || needed.some((r) => mine.includes(r));
+
+/** First domain/tab a given set of console roles may open (the landing page). */
+export function defaultConsoleLocation(mine: AdminRole[]): { domain: string; tab: string } {
+  if (mine.includes("admin") || mine.includes("super_admin")) {
+    return { domain: "dashboard", tab: "overview" };
+  }
+  for (const dom of ADMIN_DOMAINS) {
+    if (!allowed(dom.roles, mine)) continue;
+    const tab = dom.tabs.find((t) => allowed(t.roles, mine));
+    if (tab) return { domain: dom.id, tab: tab.id };
+  }
+  return { domain: "dashboard", tab: "overview" };
+}
+
 /**
  * Preloads the chunk for an admin tab's manager component so that when the
  * user clicks or touches a sidebar button, the chunk is already cached and
@@ -425,6 +478,9 @@ export const preloadAdminManager = (tabId: string) => {
       break;
     case "services":
       void import("@/components/console/services/ServicesManager");
+      break;
+    case "committees":
+      void import("@/components/console/committees/CouncilCommitteesManager");
       break;
     case "treasury_ledger":
       void import("@/components/console/treasury/TreasuryManager");

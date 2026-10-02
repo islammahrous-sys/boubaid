@@ -106,4 +106,29 @@ export const copy = registerCopy("index", {
     ar: "تواصل مع لجان مجلس الأسرة",
     en: "Contact Family Council Committees",
   } as BiText,
+  // ── Previously inline in routes/index.tsx; now editable from the CMS ──
+  storyCta: { ar: "قصة الأسرة", en: "Our Story" } as BiText,
+  supporterLevels: { ar: "مستويات الداعمين", en: "Supporter levels" } as BiText,
+  tierDiamond: { ar: "الماسي", en: "Diamond" } as BiText,
+  tierPlatinum: { ar: "البلاتيني", en: "Platinum" } as BiText,
+  tierGolden: { ar: "الذهبي", en: "Golden" } as BiText,
+  hqProjectLink: {
+    ar: "مشروع مقر مجلس الأسرة",
+    en: "Family Council Headquarters Project",
+  } as BiText,
+  testimonialsEyebrow: { ar: "شهادات", en: "Testimonials" } as BiText,
+  testimonialsTitle: { ar: "قالوا عن الأسرة", en: "What They Said About the Family" } as BiText,
+  testimonialQuote: {
+    ar: "«من الأسر التميمية العريقة التي شهدت وثائق الأحساء والوقف الشرعي بمحافظتها على مكانتها الاجتماعية ووجاهتها الحضرية بالمبرز منذ مطلع القرن الثاني عشر الهجري.»",
+    en: "“One of the distinguished Tamimi families whose heritage in Al-Ahsa and endowment records attest to their enduring civic standing and prominent status in Al-Mubarraz since the early 12th century AH.”",
+  } as BiText,
+  testimonialSource: {
+    ar: "— من سجلات توثيق أعيان وتاريخ الأحساء والوقفيات العدلية",
+    en: "— From historical chronicles and judicial endowment archives of Al-Ahsa",
+  } as BiText,
+  statusActive: { ar: "جارية", en: "Active" } as BiText,
+  statusCompleted: { ar: "منتهية", en: "Completed" } as BiText,
+  statusPlanned: { ar: "قادمة", en: "Planned" } as BiText,
+  statBranches: { ar: "فروع عائلية", en: "Family Branches" } as BiText,
+  statMembers: { ar: "فرد موثق", en: "Documented Members" } as BiText,
 });

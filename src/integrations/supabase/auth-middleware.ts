@@ -223,6 +223,7 @@ export const requireFamilyManagementAuth = createMiddleware({ type: "function" }
     return next();
   });
 
+/** Mirrors `private.can_treasury` in the DB (admin, super_admin, treasurer). */
 export const requireTreasuryAuth = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {

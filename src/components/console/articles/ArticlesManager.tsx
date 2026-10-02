@@ -422,6 +422,18 @@ export function ArticlesManager({
 
   return (
     <div className="space-y-4">
+      {/* Older news items live in the secretariat content console (news_posts).
+          The public Media Center shows both lists together, so point editors at it. */}
+      <p className="rounded-xl border border-border bg-muted/30 px-3.5 py-2.5 text-[11px] leading-relaxed text-muted-foreground">
+        {isAr
+          ? "هذه القائمة هي المقالات الحالية. الأخبار المنشورة سابقاً من منصة المحتوى تظهر في المركز الإعلامي بجانبها، وتُعدَّل من "
+          : "These are the current articles. News posted earlier from the content console appears beside them in the Media Center and is edited in the "}
+        <a href="/content" className="font-semibold text-primary underline">
+          {isAr ? "منصة المحتوى" : "content console"}
+        </a>
+        .
+      </p>
+
       {/* 1. SUMMARY STATS BANNER */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-3.5 rounded-2xl border border-border bg-card">

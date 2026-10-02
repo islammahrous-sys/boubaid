@@ -197,12 +197,12 @@ export function Footer() {
                 <p className="label-caps mb-3 border-b border-ivory/15 pb-2 text-gold/80">
                   {t(column.title)}
                 </p>
-                <ul className="space-y-2.5">
+                <ul className="space-y-0 sm:space-y-2.5">
                   {column.items.map((n) => (
                     <li key={`${column.key}-${n.to}-${n.label.ar}`}>
                       <Link
                         to={n.to}
-                        className="text-[13px] text-ivory/65 transition-colors hover:text-gold"
+                        className="inline-block py-2.5 text-[13px] text-ivory/65 transition-colors hover:text-gold sm:py-0"
                       >
                         {t(n.label)}
                       </Link>
@@ -229,7 +229,7 @@ export function Footer() {
             </p>
             <p className="flex items-center gap-2.5">
               <Mail className="h-4 w-4 shrink-0 text-gold/70" aria-hidden="true" />
-              <a href={`mailto:${contactEmail}`} className="hover:text-gold">
+              <a href={`mailto:${contactEmail}`} className="tap-target-y hover:text-gold">
                 {contactEmail}
               </a>
             </p>
@@ -272,7 +272,7 @@ export function Footer() {
                     href={c.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-[13px] text-ivory/60 transition-colors hover:text-gold"
+                    className="tap-target-y inline-flex items-center gap-2 text-[13px] text-ivory/60 transition-colors hover:text-gold"
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
                     {t(c.label)}
@@ -315,7 +315,7 @@ export function Footer() {
             type="button"
             suppressHydrationWarning
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="inline-flex items-center gap-1.5 text-xs text-ivory/50 transition-colors hover:text-gold"
+            className="tap-target-y inline-flex items-center gap-1.5 text-xs text-ivory/50 transition-colors hover:text-gold"
           >
             {t(copy.text15)}
             <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />

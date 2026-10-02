@@ -47,7 +47,7 @@ function AhsaCouncilsPage() {
           <Link
             to="/requests"
             search={{ request: "ahsa_family_councils_join" }}
-            className="mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
+            className="tap-target-y mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
           >
             {t({ ar: "الانضمام إلى مجالس أسر الأحساء", en: "Join the Al-Ahsa Family Councils" })}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />

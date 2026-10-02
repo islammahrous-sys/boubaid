@@ -415,14 +415,14 @@ function HomePage() {
 
     // Vision/mission is a required section: if a saved console configuration
     // predates it, insert it right after the council address.
-    if (!ordered.some((s) => s.id === "vision_mission")) {
+    if (!rawList.some((s) => s.id === "vision_mission")) {
       const anchor = ordered.findIndex((s) => s.id === "about_dean" || s.id === "opening");
       const section: SectionConfig = { id: "vision_mission", enabled: true, order: 0 };
       ordered.splice(anchor >= 0 ? anchor + 1 : ordered.length, 0, section);
     }
 
     // The family tree follows vision & mission, whatever the saved order.
-    if (!ordered.some((s) => s.id === "family_tree_home")) {
+    if (!rawList.some((s) => s.id === "family_tree_home")) {
       const anchor = ordered.findIndex((s) => s.id === "vision_mission");
       const section: SectionConfig = { id: "family_tree_home", enabled: true, order: 0 };
       ordered.splice(anchor >= 0 ? anchor + 1 : 0, 0, section);
@@ -431,10 +431,19 @@ function HomePage() {
     return ordered;
   })();
 
+  // While the metrics request is in flight, `null` renders as a skeleton bar
+  // rather than a dash, so the band reads as "loading" and keeps its height.
+  const metricsPending = metricsState === "loading";
   const visitValue = homeMetrics?.visits
     ? homeMetrics.visits.toLocaleString(lang === "ar" ? "ar-EG" : "en-US")
-    : "—";
-  const todayValue = homeMetrics?.now ? formatDualDate(homeMetrics.now, lang, "short") : "—";
+    : metricsPending
+      ? null
+      : "—";
+  const todayValue = homeMetrics?.now
+    ? formatDualDate(homeMetrics.now, lang, "short")
+    : metricsPending
+      ? null
+      : "—";
   const weather = homeMetrics?.weather ?? null;
   const numberLocale = lang === "ar" ? "ar-EG" : "en-US";
   const deg = (value: number) => `${Math.round(value).toLocaleString(numberLocale)}°C`;
@@ -479,7 +488,7 @@ function HomePage() {
                   />
                 </div>
 
-                <p className="mx-auto mt-4 max-w-3xl text-balance text-sm leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:mt-6 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-1000 motion-safe:delay-700">
+                <p className="mx-auto mt-4 max-w-3xl text-balance text-sm leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:mt-6 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700 motion-safe:delay-150">
                   {sec.subtitle_ar && rtl
                     ? sec.subtitle_ar
                     : sec.subtitle_en && !rtl
@@ -487,7 +496,7 @@ function HomePage() {
                       : t(copy.standfirst)}
                 </p>
 
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:mt-8 sm:gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-1000 motion-safe:delay-1000">
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:mt-8 sm:gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-700 motion-safe:delay-300">
                   <Link
                     to={sec.cta_url || "/family-tree"}
                     className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-bold text-ink shadow-[0_10px_40px_-10px_rgba(237,167,70,0.6)] transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.03] hover:shadow-[0_15px_50px_-10px_rgba(237,167,70,0.8)] active:scale-[0.98]"
@@ -508,7 +517,7 @@ function HomePage() {
                     to="/about"
                     className="inline-flex items-center gap-2 border border-ivory/40 bg-ivory/5 px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-medium text-ivory backdrop-blur-md transition-[color,background-color,border-color,transform] duration-300 ease-out hover:border-gold/70 hover:bg-ivory/10 hover:text-gold active:scale-[0.98]"
                   >
-                    <span>{lang === "ar" ? "قصة الأسرة" : "Our Story"}</span>
+                    <span>{t(copy.storyCta)}</span>
                   </Link>
                 </div>
 
@@ -560,7 +569,7 @@ function HomePage() {
                       { label: copy.quickArchive, link: "/library", icon: Archive },
                     ] as {
                       label: BiText;
-                      value?: string;
+                      value?: string | null;
                       detail?: string | null;
                       retry?: boolean;
                       mono?: boolean;
@@ -611,6 +620,13 @@ function HomePage() {
                             )}
                           >
                             {item.value}
+                          </dd>
+                        ) : item.value === null ? (
+                          <dd className="mt-1 sm:mt-2" aria-busy="true">
+                            <span
+                              aria-hidden="true"
+                              className="block h-3 w-16 animate-pulse rounded-sm bg-ivory/20 sm:h-3.5 sm:w-20"
+                            />
                           </dd>
                         ) : null}
                         {item.detail ? (
@@ -865,7 +881,7 @@ function HomePage() {
 
               <Link
                 to={sec.cta_url || "/branches"}
-                className="mt-7 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                className="tap-target-y mt-7 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
                 {sec.cta_label_ar && rtl
                   ? sec.cta_label_ar
@@ -945,15 +961,9 @@ function HomePage() {
 
                   {/* Supporter recognition levels */}
                   <div className="mt-7 border-t border-border pt-5">
-                    <p className="label-caps text-muted-foreground">
-                      {t({ ar: "مستويات الداعمين", en: "Supporter levels" })}
-                    </p>
+                    <p className="label-caps text-muted-foreground">{t(copy.supporterLevels)}</p>
                     <ol className="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
-                      {[
-                        { ar: "الماسي", en: "Diamond" },
-                        { ar: "البلاتيني", en: "Platinum" },
-                        { ar: "الذهبي", en: "Golden" },
-                      ].map((tier, i) => (
+                      {[copy.tierDiamond, copy.tierPlatinum, copy.tierGolden].map((tier, i) => (
                         <li
                           key={tier.en}
                           className="rounded-md border border-bronze/40 bg-secondary/40 px-2 py-4 text-center dark:border-gold/40"
@@ -981,12 +991,9 @@ function HomePage() {
                     <Link
                       to="/committees"
                       hash="hq-project"
-                      className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                      className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                     >
-                      {t({
-                        ar: "مشروع مقر مجلس الأسرة",
-                        en: "Family Council Headquarters Project",
-                      })}
+                      {t(copy.hqProjectLink)}
                       <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                     </Link>
                   </div>
@@ -995,7 +1002,7 @@ function HomePage() {
                     href={siteMeta.contact.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+                    className="tap-target-y mt-4 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
                   >
                     <ExternalLink className="h-3 w-3" aria-hidden="true" />
                     {t(copy.hqLocationLink)}
@@ -1010,25 +1017,17 @@ function HomePage() {
             >
               <div className="container-page py-16 md:py-20">
                 <SectionHeading
-                  eyebrow={t({ ar: "شهادات", en: "Testimonials" })}
-                  title={t({ ar: "قالوا عن الأسرة", en: "What They Said About the Family" })}
+                  eyebrow={t(copy.testimonialsEyebrow)}
+                  title={t(copy.testimonialsTitle)}
                 />
                 <div className="mt-8 rounded-md border border-border bg-card p-6 md:p-8 text-center max-w-2xl mx-auto">
                   <blockquote
                     id="home-testimonials"
                     className="text-base md:text-lg italic leading-relaxed text-foreground font-serif"
                   >
-                    {t({
-                      ar: "«من الأسر التميمية العريقة التي شهدت وثائق الأحساء والوقف الشرعي بمحافظتها على مكانتها الاجتماعية ووجاهتها الحضرية بالمبرز منذ مطلع القرن الثاني عشر الهجري.»",
-                      en: "“One of the distinguished Tamimi families whose heritage in Al-Ahsa and endowment records attest to their enduring civic standing and prominent status in Al-Mubarraz since the early 12th century AH.”",
-                    })}
+                    {t(copy.testimonialQuote)}
                   </blockquote>
-                  <p className="mt-3 text-xs text-muted-foreground">
-                    {t({
-                      ar: "— من سجلات توثيق أعيان وتاريخ الأحساء والوقفيات العدلية",
-                      en: "— From historical chronicles and judicial endowment archives of Al-Ahsa",
-                    })}
-                  </p>
+                  <p className="mt-3 text-xs text-muted-foreground">{t(copy.testimonialSource)}</p>
                 </div>
               </div>
             </section>
@@ -1066,7 +1065,7 @@ function HomePage() {
               />
               <Link
                 to={sec.cta_url || "/news"}
-                className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
                 {sec.cta_label_ar && rtl
                   ? sec.cta_label_ar
@@ -1159,7 +1158,7 @@ function HomePage() {
                 />
                 <Link
                   to={sec.cta_url || "/achievers"}
-                  className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                  className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
                   {sec.cta_label_ar && rtl
                     ? sec.cta_label_ar
@@ -1221,7 +1220,7 @@ function HomePage() {
               />
               <Link
                 to={sec.cta_url || "/initiatives"}
-                className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
                 {sec.cta_label_ar && rtl
                   ? sec.cta_label_ar
@@ -1257,17 +1256,13 @@ function HomePage() {
                             : "pending"
                       }
                     >
-                      {init.status === "ongoing"
-                        ? rtl
-                          ? "جارية"
-                          : "Active"
-                        : init.status === "completed"
-                          ? rtl
-                            ? "منتهية"
-                            : "Completed"
-                          : rtl
-                            ? "قادمة"
-                            : "Planned"}
+                      {t(
+                        init.status === "ongoing"
+                          ? copy.statusActive
+                          : init.status === "completed"
+                            ? copy.statusCompleted
+                            : copy.statusPlanned,
+                      )}
                     </Status>
                   </div>
                   <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -1327,7 +1322,7 @@ function HomePage() {
                   <div className="mt-6 flex flex-wrap items-center gap-x-7 gap-y-3">
                     <Link
                       to={sec.cta_url || "/dna"}
-                      className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                      className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                     >
                       {sec.cta_label_ar && rtl
                         ? sec.cta_label_ar
@@ -1357,10 +1352,10 @@ function HomePage() {
 
       case "family_stats": {
         const statItems: { value: string; label: BiText }[] = [
-          { value: String(branches.length), label: { ar: "فروع عائلية", en: "Family Branches" } },
+          { value: String(branches.length), label: copy.statBranches },
           {
             value: totalDocumentedMembers.toLocaleString(lang === "ar" ? "ar-EG" : "en-US"),
-            label: { ar: "فرد موثق", en: "Documented Members" },
+            label: copy.statMembers,
           },
           { value: siteMeta.ncnpLicense, label: copy.licence },
           { value: t(siteMeta.foundedHijriLabel), label: copy.registered },
@@ -1532,7 +1527,7 @@ function HomePage() {
                 />
                 <Link
                   to={sec.cta_url || "/events"}
-                  className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                  className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
                   {sec.cta_label_ar && rtl
                     ? sec.cta_label_ar
@@ -1618,7 +1613,7 @@ function HomePage() {
               {sec.cta_url ? (
                 <Link
                   to={sec.cta_url}
-                  className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                  className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
                   {sec.cta_label_ar && rtl
                     ? sec.cta_label_ar

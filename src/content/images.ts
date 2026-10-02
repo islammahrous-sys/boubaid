@@ -206,6 +206,45 @@ export const pageImages = {
   },
 } as const;
 
+/* ── Admin-replaceable page figures ─────────────────────────────────────────
+ * Each figure above keeps its code default, but its `src` is read through a
+ * getter so the console (Platform settings → Page images, stored as the
+ * `page_images` site setting: { "<id>": "<url>" }) can swap any of them
+ * without a deploy. Callers keep reading `pageImages.about.header.src`. */
+
+export type PageImageEntry = { id: string; defaultSrc: string; caption: BiText };
+
+const pageImageOverrides: Record<string, string> = {};
+export const pageImageRegistry: PageImageEntry[] = [];
+
+function registerPageImages(node: unknown, path: string) {
+  if (!node || typeof node !== "object") return;
+  const fig = node as { src?: unknown; caption?: unknown };
+  if (typeof fig.src === "string" && fig.caption && typeof fig.caption === "object") {
+    const original = fig.src;
+    pageImageRegistry.push({ id: path, defaultSrc: original, caption: fig.caption as BiText });
+    Object.defineProperty(fig, "src", {
+      enumerable: true,
+      configurable: true,
+      get: () => pageImageOverrides[path] || original,
+    });
+    return;
+  }
+  for (const [key, child] of Object.entries(node)) {
+    registerPageImages(child, path ? `${path}.${key}` : key);
+  }
+}
+registerPageImages(pageImages, "");
+
+/** Replace the active overrides (called whenever the public settings load). */
+export function setPageImageOverrides(map: Record<string, unknown> | null | undefined) {
+  for (const key of Object.keys(pageImageOverrides)) delete pageImageOverrides[key];
+  if (!map || typeof map !== "object") return;
+  for (const [id, url] of Object.entries(map)) {
+    if (typeof url === "string" && url.trim()) pageImageOverrides[id] = url.trim();
+  }
+}
+
 /**
  * Portraits of branch patriarchs, where one exists.
  *

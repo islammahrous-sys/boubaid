@@ -2,6 +2,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { RoutePending } from "@/components/site/RoutePending";
+import { installSeoOverrides } from "@/lib/seo-overrides";
 
 export const getRouter = () => {
   const queryClient = new QueryClient({
@@ -38,6 +39,9 @@ export const getRouter = () => {
     defaultPendingMinMs: 0,
     defaultPendingComponent: RoutePending,
   });
+
+  // Layer the admin-managed SEO settings over every static route's `head()`.
+  installSeoOverrides(router as never);
 
   return router;
 };

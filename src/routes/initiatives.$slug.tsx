@@ -363,7 +363,7 @@ function InitiativeDetail() {
 
         <Link
           to="/initiatives"
-          className="mt-10 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+          className="tap-target-y mt-10 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
         >
           <BackArrow className="h-3.5 w-3.5" aria-hidden="true" />
           {t(copy.back)}

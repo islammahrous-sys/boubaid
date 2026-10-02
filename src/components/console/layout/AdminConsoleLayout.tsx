@@ -89,6 +89,7 @@ import {
   type AdminDomainGroup,
   type AdminSubTab,
   type AdminRole,
+  consoleRolesFor,
 } from "./AdminNavigation";
 import { AdminCommandPalette, type SearchableItem } from "./AdminCommandPalette";
 import { useConfirm } from "@/hooks/useConfirm";
@@ -229,14 +230,10 @@ export function AdminConsoleLayout({
 
   // 4. Role Evaluation for Gated Navigation
   const userRoles = useMemo(() => {
-    const list: AdminRole[] = [];
-    if (isSuperAdmin) list.push("super_admin");
-    if (isAdmin) list.push("admin");
-    if (roles?.includes("treasurer")) list.push("treasurer");
-    if (roles?.includes("editor") || roles?.includes("content_manager")) list.push("editor");
+    const list: AdminRole[] = consoleRolesFor(roles);
     if (list.length === 0) list.push("admin"); // fallback
     return list;
-  }, [isSuperAdmin, isAdmin, roles]);
+  }, [roles]);
 
   // Resolve user avatar image URL
   const avatarUrl = useMemo(() => {

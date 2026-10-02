@@ -106,7 +106,14 @@ export function LibraryItemsManager({
       // `kind` means something different per collection (see the label logic
       // below) — default it to a sensible starting value for whichever
       // collection this new item was opened in, not always the document format.
-      kind: collection === "recordings" ? "" : collection === "photographs" ? "" : "PDF",
+      kind:
+        collection === "recordings" ||
+        collection === "photographs" ||
+        collection === "committee_documents"
+          ? ""
+          : collection === "fund_documents"
+            ? "statutory"
+            : "PDF",
       reference: "",
       file_path: "",
       external_url: "",
@@ -206,6 +213,12 @@ export function LibraryItemsManager({
               </SelectItem>
               <SelectItem value="committee_charts">
                 {isAr ? "المخططات التنظيمية للجان" : "Committee org charts"}
+              </SelectItem>
+              <SelectItem value="committee_documents">
+                {isAr ? "خطابات وخطط اللجان (حسب السنة)" : "Committee letters & plans (by year)"}
+              </SelectItem>
+              <SelectItem value="fund_documents">
+                {isAr ? "شهادات وإثباتات الصندوق" : "Fund certificates & attestations"}
               </SelectItem>
               <SelectItem value="videos">{isAr ? "الفيديوهات" : "Videos"}</SelectItem>
               <SelectItem value="financials">
@@ -368,6 +381,14 @@ export function LibraryItemsManager({
                     <SelectItem value="committee_charts">
                       {isAr ? "المخططات التنظيمية للجان" : "Committee org charts"}
                     </SelectItem>
+                    <SelectItem value="committee_documents">
+                      {isAr
+                        ? "خطابات وخطط اللجان (حسب السنة)"
+                        : "Committee letters & plans (by year)"}
+                    </SelectItem>
+                    <SelectItem value="fund_documents">
+                      {isAr ? "شهادات وإثباتات الصندوق" : "Fund certificates & attestations"}
+                    </SelectItem>
                     <SelectItem value="videos">
                       {isAr ? "الفيديوهات (Videos)" : "Videos"}
                     </SelectItem>
@@ -389,6 +410,18 @@ export function LibraryItemsManager({
               </div>
             </div>
 
+            {(form.collection === "committee_documents" ||
+              form.collection === "fund_documents") && (
+              <p className="rounded-md border border-border bg-muted/30 p-2.5 text-[11px] leading-relaxed text-muted-foreground">
+                {form.collection === "committee_documents"
+                  ? isAr
+                    ? "تظهر الوثيقة تحت سنة العمل الهجرية المحددة في خانة السنة (صفحة اللجان والأرشيف). لاستبدال وثيقة مدمجة اكتب في المرجع: replace:<رمز الوثيقة> مثل replace:letter-1-1444، وللإخفاء اكتب hidden في خانة النوع."
+                    : "The document appears under the Hijri work year in the Year field (Committees and Archive pages). To replace a built-in document set Reference to replace:<document id>, e.g. replace:letter-1-1444; to withdraw it also set Kind to hidden."
+                  : isAr
+                    ? "تظهر الوثيقة في صفحة الشهادات والإثباتات ضمن المجموعة المحددة في خانة النوع، والسنة هجرية. لاستبدال وثيقة مدمجة اكتب في المرجع: replace:<رمز الوثيقة> مثل replace:bylaws، وللإخفاء اكتب hidden في خانة النوع."
+                    : "The document appears on the Certificates page in the group named in Kind, with a Hijri year. To replace a built-in document set Reference to replace:<document id>, e.g. replace:bylaws; to withdraw it also set Kind to hidden."}
+              </p>
+            )}
             <div className="space-y-1">
               <Label className="text-xs">{isAr ? "العنوان بالعربية *" : "Title (AR) *"}</Label>
               <Input
@@ -434,9 +467,17 @@ export function LibraryItemsManager({
                       ? isAr
                         ? "تصنيف الصورة"
                         : "Category"
-                      : isAr
-                        ? "النوع والامتداد"
-                        : "Kind / Format"}
+                      : form.collection === "fund_documents"
+                        ? isAr
+                          ? "المجموعة (statutory / governance / banking) أو hidden"
+                          : "Group (statutory / governance / banking) or hidden"
+                        : form.collection === "committee_documents"
+                          ? isAr
+                            ? "اتركه فارغاً، أو اكتب hidden لإخفاء وثيقة مدمجة"
+                            : "Leave empty, or type hidden to withdraw a built-in document"
+                          : isAr
+                            ? "النوع والامتداد"
+                            : "Kind / Format"}
                 </Label>
                 <Input
                   value={form.kind ?? ""}

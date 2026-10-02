@@ -1,3 +1,4 @@
+import { registerCopy } from "@/i18n/editable-copy";
 import type { BiText } from "@/i18n/LanguageProvider";
 
 /**
@@ -44,7 +45,7 @@ export type HistorySection = {
   blocks: HistoryBlock[];
 };
 
-export const historySections: HistorySection[] = [
+export const historySections: HistorySection[] = registerCopy("history", [
   {
     id: "depth",
     label: { ar: "العمق التاريخي", en: "Historical depth" },
@@ -1308,4 +1309,4 @@ export const historySections: HistorySection[] = [
       },
     ],
   },
-];
+]);

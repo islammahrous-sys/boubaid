@@ -340,7 +340,7 @@ function ContactPage() {
               </p>
               <p className="nums mt-0.5 font-mono text-[13px] text-muted-foreground">
                 {t({ ar: "الرقم الوطني الموحد", en: "Unified National No." })}{" "}
-                {siteMeta.unifiedNationalNumber}
+                {siteGeneral.unified_number || siteMeta.unifiedNationalNumber}
               </p>
             </div>
 

@@ -21,7 +21,7 @@ import { ArchiveVideoPlayer } from "@/components/site/ArchiveVideoPlayer";
 import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
 import { CommitteeYearGrid, type CommitteeArchiveItem } from "@/components/site/CommitteeYearGrid";
 import { Eyebrow } from "@/components/site/Editorial";
-import { committeeDocuments } from "@/content/committee-documents";
+import { resolveCommitteeDocuments } from "@/content/committee-documents";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import {
   getPublishedGalleries,
@@ -115,7 +115,13 @@ export const Route = createFileRoute("/library")({
       )
       .sort((a, b) => a.sort_order - b.sort_order);
 
-    return { collections, folders, videos, committeeArchive };
+    return {
+      collections,
+      folders,
+      videos,
+      committeeArchive,
+      committeeDocs: resolveCommitteeDocuments(library),
+    };
   },
   head: ({ matches, match }) => ({
     meta: [
@@ -338,7 +344,7 @@ function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: st
 
 function LibraryPage() {
   const { t, lang } = useLang();
-  const { collections, folders, videos, committeeArchive } = Route.useLoaderData();
+  const { collections, folders, videos, committeeArchive, committeeDocs } = Route.useLoaderData();
   const searchParams = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
@@ -449,7 +455,7 @@ function LibraryPage() {
                 {t(label)}
               </h2>
               <ul className="mt-4 border-t border-border">
-                {committeeDocuments
+                {committeeDocs
                   .filter((d) => d.year === year)
                   .map((d) => (
                     <li
@@ -463,7 +469,7 @@ function LibraryPage() {
                         type="button"
                         onClick={() =>
                           openMediaViewer({
-                            src: `/api/public/committee-doc?id=${d.id}`,
+                            src: d.src,
                             kind: "pdf",
                             title: t(d.title),
                           })
@@ -614,7 +620,7 @@ function LibraryPage() {
           <Link
             to="/requests"
             search={{ request: "archive_contribution" }}
-            className="mt-5 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+            className="tap-target-y mt-5 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
             {t(copy.depositCta)}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />

@@ -602,9 +602,14 @@
               : `M ${sx} ${sy} C ${(sx + tx) / 2} ${sy}, ${(sx + tx) / 2} ${ty}, ${tx} ${ty}`;
           }
 
+          /** Latest layout, kept so the camera can fit the final positions
+           *  instead of whatever the in-flight transitions have reached. */
+          let layoutNodes = [];
+
           function update(source) {
             const data = layout();
             const nodes = data.descendants();
+            layoutNodes = nodes;
             const links = nodes.slice(1);
 
             const node = g.selectAll("g.node").data(nodes, (d) => d.id || (d.id = ++uid));
@@ -734,26 +739,42 @@
           }
 
           /* ── Camera ──────────────────────────────────────── */
+          /** Space the search bar (top) and the control cluster (bottom) cover. */
+          const INSET_TOP = 64,
+            INSET_BOTTOM = 72;
+
           function fitToView(pad) {
-            const bounds = g.node().getBBox();
-            if (!bounds.width || !bounds.height) return;
-            const padding = pad ?? 40;
-            const k = Math.min(
-              (width - padding * 2) / bounds.width,
-              (height - padding * 2 - 70) / bounds.height,
-              1.1,
-            );
+            if (!layoutNodes.length) return;
+            /** Measured from the layout targets, not getBBox(): this runs while
+             *  nodes are still mid-transition, which made the fit zoom in too far
+             *  (cropping branches) or out too far, depending on timing. Margins
+             *  cover the pill plus the hidden-children dot beside/below it. */
+            const halfW = NODE_W / 2 + 18;
+            const halfH = NODE_H / 2 + (vertical ? 18 : 4);
+            let x0 = Infinity,
+              x1 = -Infinity,
+              y0 = Infinity,
+              y1 = -Infinity;
+            layoutNodes.forEach((d) => {
+              x0 = Math.min(x0, px(d) - halfW);
+              x1 = Math.max(x1, px(d) + halfW);
+              y0 = Math.min(y0, py(d) - halfH);
+              y1 = Math.max(y1, py(d) + halfH);
+            });
+            const padX = pad ?? 28;
+            const availH = height - INSET_TOP - INSET_BOTTOM;
+            const k = Math.min((width - padX * 2) / (x1 - x0), availH / (y1 - y0), 1.1);
             /** Never shrink past legibility — panning beats unreadable text. */
             const scale = Math.min(Math.max(vertical ? 0.62 : 0.5, k), 1.1);
-            const cx = bounds.x + bounds.width / 2;
-            const cy = bounds.y + bounds.height / 2;
+            const cx = (x0 + x1) / 2;
+            const cy = (y0 + y1) / 2;
             svg
               .transition()
               .duration(600)
               .call(
                 zoom.transform,
                 d3.zoomIdentity
-                  .translate(width / 2 - cx * scale, (height + 40) / 2 - cy * scale)
+                  .translate(width / 2 - cx * scale, INSET_TOP + availH / 2 - cy * scale)
                   .scale(scale),
               );
           }

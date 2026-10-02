@@ -5,11 +5,23 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Settings, Globe, Shield, Palette, Phone, Search, Save, Users, Share2 } from "lucide-react";
+import {
+  Settings,
+  Globe,
+  Shield,
+  Palette,
+  Search,
+  Save,
+  Users,
+  Share2,
+  Image as ImageIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { SiteSettingInput } from "@/lib/admin-hub.schemas";
 import { PageTextsManager } from "./PageTextsManager";
 import { SponsorsManager } from "./SponsorsManager";
+import { SeoManager } from "./SeoManager";
+import { PageImagesManager } from "./PageImagesManager";
 
 export function SiteSettingsManager({
   settings,
@@ -29,15 +41,6 @@ export function SiteSettingsManager({
   };
 
   // General & License
-  const [generalNameAr, setGeneralNameAr] = useState(
-    getVal("site_general", "name_ar", "صندوق التنمية العائلية (آل بوعبيد)"),
-  );
-  const [generalNameEn, setGeneralNameEn] = useState(
-    getVal("site_general", "name_en", "Al-Boabid Family Development Fund"),
-  );
-  const [taglineAr, setTaglineAr] = useState(
-    getVal("site_general", "tagline_ar", "أسرة عريقة، جذور تميمية، وحضور مؤسسي معاصر."),
-  );
   const [licenseNumber, setLicenseNumber] = useState(
     getVal("site_general", "license", "1200758400"),
   );
@@ -58,17 +61,10 @@ export function SiteSettingsManager({
   const [whatsappUrl, setWhatsappUrl] = useState(
     getVal("site_contact", "whatsapp", "https://chat.whatsapp.com/albouabidfamily"),
   );
-  const [telegramUrl, setTelegramUrl] = useState(
-    getVal("site_contact", "telegram", "https://t.me/albouabidfamily"),
-  );
   const [xUrl, setXUrl] = useState(getVal("site_contact", "x", "https://x.com/albouabidfamily"));
   const [instagramUrl, setInstagramUrl] = useState(
     getVal("site_contact", "instagram", "https://instagram.com/albouabidfamily"),
   );
-  const [sallaUrl, setSallaUrl] = useState(
-    getVal("site_contact", "salla", "https://albouabidfamily.com/القسط-الشهري/c1360847582"),
-  );
-
   const [youtubeUrl, setYoutubeUrl] = useState(
     getVal("site_contact", "youtube", "https://youtube.com/@albouabidfamily"),
   );
@@ -93,18 +89,6 @@ export function SiteSettingsManager({
     getVal("site_governance", "vice_chairman_name", "الأستاذ حسين بن عبدالله بن حسين بوعبيد"),
   );
 
-  // SEO
-  const [seoTitleAr, setSeoTitleAr] = useState(
-    getVal("site_seo", "title_ar", "بوابة أسرة آل بوعبيد الرسمية — صندوق التنمية العائلية"),
-  );
-  const [seoDescAr, setSeoDescAr] = useState(
-    getVal(
-      "site_seo",
-      "desc_ar",
-      "المنصة الرسمية المعتمدة لأسرة آل بوعبيد — شجرة الأنساب، التراث، المبادرات، وسجل الخزينة.",
-    ),
-  );
-
   // `settings` loads asynchronously (a TanStack Query fetch) — this component
   // can easily mount before it resolves, and useState's initializer only ever
   // runs once, on that first (empty) render. Re-derive every field the moment
@@ -114,19 +98,14 @@ export function SiteSettingsManager({
   useEffect(() => {
     if (hydratedRef.current || settings.length === 0) return;
     hydratedRef.current = true;
-    setGeneralNameAr(getVal("site_general", "name_ar", generalNameAr));
-    setGeneralNameEn(getVal("site_general", "name_en", generalNameEn));
-    setTaglineAr(getVal("site_general", "tagline_ar", taglineAr));
     setLicenseNumber(getVal("site_general", "license", licenseNumber));
     setUnifiedNumber(getVal("site_general", "unified_number", unifiedNumber));
     setNationalAddress(getVal("site_general", "national_address", nationalAddress));
     setContactEmail(getVal("site_contact", "email", contactEmail));
     setContactPhone(getVal("site_contact", "phone", contactPhone));
     setWhatsappUrl(getVal("site_contact", "whatsapp", whatsappUrl));
-    setTelegramUrl(getVal("site_contact", "telegram", telegramUrl));
     setXUrl(getVal("site_contact", "x", xUrl));
     setInstagramUrl(getVal("site_contact", "instagram", instagramUrl));
-    setSallaUrl(getVal("site_contact", "salla", sallaUrl));
     setYoutubeUrl(getVal("site_contact", "youtube", youtubeUrl));
     setSnapchatUrl(getVal("site_contact", "snapchat", snapchatUrl));
     setHoursAr(getVal("site_contact", "hours_ar", hoursAr));
@@ -134,8 +113,6 @@ export function SiteSettingsManager({
     setDeanName(getVal("site_governance", "dean_name", deanName));
     setChairmanName(getVal("site_governance", "chairman_name", chairmanName));
     setViceChairmanName(getVal("site_governance", "vice_chairman_name", viceChairmanName));
-    setSeoTitleAr(getVal("site_seo", "title_ar", seoTitleAr));
-    setSeoDescAr(getVal("site_seo", "desc_ar", seoDescAr));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings]);
 
@@ -186,6 +163,10 @@ export function SiteSettingsManager({
               <Search className="w-3.5 h-3.5" />
               {isAr ? "محركات البحث (SEO)" : "SEO & Meta"}
             </TabsTrigger>
+            <TabsTrigger value="images" className="text-xs gap-1.5">
+              <ImageIcon className="w-3.5 h-3.5" />
+              {isAr ? "صور الصفحات" : "Page images"}
+            </TabsTrigger>
             <TabsTrigger value="texts" className="text-xs gap-1.5">
               <Palette className="w-3.5 h-3.5" />
               {isAr ? "نصوص الصفحات" : "Page texts"}
@@ -202,27 +183,11 @@ export function SiteSettingsManager({
 
           {/* General & License */}
           <TabsContent value="general" className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">
-                  {isAr ? "اسم الكيان / الصندوق (بالعربية) *" : "Entity Name (AR) *"}
-                </Label>
-                <Input value={generalNameAr} onChange={(e) => setGeneralNameAr(e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">
-                  {isAr ? "اسم الكيان (EN)" : "Entity Name (EN)"}
-                </Label>
-                <Input value={generalNameEn} onChange={(e) => setGeneralNameEn(e.target.value)} />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">
-                {isAr ? "الشعار اللفظي الرسمي (Tagline)" : "Official Tagline"}
-              </Label>
-              <Input value={taglineAr} onChange={(e) => setTaglineAr(e.target.value)} />
-            </div>
+            <p className="rounded-lg border border-border bg-muted/30 p-3 text-xs leading-relaxed text-muted-foreground">
+              {isAr
+                ? "اسم الكيان والشعار اللفظي يُعدَّلان من «نصوص الصفحات ← بيانات عامة للموقع» ليظهرا بالعربية والإنجليزية في كل مكان."
+                : "The entity name and tagline are edited under “Page texts → Site-wide details”, so they update in Arabic and English everywhere."}
+            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -253,9 +218,6 @@ export function SiteSettingsManager({
                 className="text-xs gap-1.5"
                 onClick={() =>
                   handleSaveCategory("general", "site_general", {
-                    name_ar: generalNameAr,
-                    name_en: generalNameEn,
-                    tagline_ar: taglineAr,
                     license: licenseNumber,
                     unified_number: unifiedNumber,
                     national_address: nationalAddress,
@@ -302,12 +264,6 @@ export function SiteSettingsManager({
                 </Label>
                 <Input value={whatsappUrl} onChange={(e) => setWhatsappUrl(e.target.value)} />
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">
-                  {isAr ? "قناة التليجرام الرسمية" : "Telegram Channel"}
-                </Label>
-                <Input value={telegramUrl} onChange={(e) => setTelegramUrl(e.target.value)} />
-              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -322,12 +278,6 @@ export function SiteSettingsManager({
                   {isAr ? "حساب إنستغرام" : "Instagram"}
                 </Label>
                 <Input value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">
-                  {isAr ? "رابط متجر سلة للاشتراكات" : "Salla Store URL"}
-                </Label>
-                <Input value={sallaUrl} onChange={(e) => setSallaUrl(e.target.value)} />
               </div>
             </div>
 
@@ -367,10 +317,8 @@ export function SiteSettingsManager({
                     email: contactEmail,
                     phone: contactPhone,
                     whatsapp: whatsappUrl,
-                    telegram: telegramUrl,
                     x: xUrl,
                     instagram: instagramUrl,
-                    salla: sallaUrl,
                     youtube: youtubeUrl,
                     snapchat: snapchatUrl,
                     hours_ar: hoursAr,
@@ -443,42 +391,12 @@ export function SiteSettingsManager({
           </TabsContent>
 
           {/* SEO */}
-          <TabsContent value="seo" className="space-y-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">
-                {isAr ? "العنوان الافتراضي لمحركات البحث" : "Default SEO Title"}
-              </Label>
-              <Input value={seoTitleAr} onChange={(e) => setSeoTitleAr(e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">
-                {isAr ? "الوصف الافتراضي (Meta Description)" : "Default Meta Description"}
-              </Label>
-              <Textarea rows={3} value={seoDescAr} onChange={(e) => setSeoDescAr(e.target.value)} />
-            </div>
+          <TabsContent value="seo">
+            <SeoManager settings={settings} onSaveSetting={onSaveSetting} isAr={isAr} />
+          </TabsContent>
 
-            <div className="flex justify-end pt-3">
-              <Button
-                size="sm"
-                disabled={loading}
-                className="text-xs gap-1.5"
-                onClick={() =>
-                  handleSaveCategory("seo", "site_seo", {
-                    title_ar: seoTitleAr,
-                    desc_ar: seoDescAr,
-                  })
-                }
-              >
-                <Save className="w-3.5 h-3.5" />
-                {loading
-                  ? isAr
-                    ? "جاري الحفظ..."
-                    : "Saving..."
-                  : isAr
-                    ? "حفظ إعدادات SEO"
-                    : "Save SEO Settings"}
-              </Button>
-            </div>
+          <TabsContent value="images">
+            <PageImagesManager settings={settings} onSaveSetting={onSaveSetting} isAr={isAr} />
           </TabsContent>
 
           <TabsContent value="texts">

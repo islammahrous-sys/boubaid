@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import {
   requireAdminAuth,
   requireTreasuryAuth,
+  requireEditorAuth,
+  requireSupabaseAuth,
   requireFamilyManagementAuth,
 } from "@/integrations/supabase/auth-middleware";
 import {
@@ -14,6 +16,7 @@ import {
   articleInputSchema,
   eventInputSchema,
   announcementInputSchema,
+  councilCommitteeInputSchema,
   mediaAssetInputSchema,
   galleryInputSchema,
   documentInputSchema,
@@ -591,7 +594,7 @@ export const deleteFamilyMember = createServerFn({ method: "POST" })
   });
 
 export const upsertFamilyBranch = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => familyBranchInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -654,7 +657,7 @@ export const deleteFamilyRelationship = createServerFn({ method: "POST" })
   });
 
 export const upsertPlace = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => placeInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -682,7 +685,7 @@ export const upsertFamilyHistory = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getCmsPagesData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
 
@@ -707,7 +710,7 @@ export const getCmsPagesData = createServerFn({ method: "GET" })
   });
 
 export const upsertCmsPage = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => contentPageInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -800,7 +803,7 @@ export const upsertCmsPage = createServerFn({ method: "POST" })
   });
 
 export const deleteCmsPage = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -837,7 +840,7 @@ export const deleteCmsPage = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getArticlesData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
 
@@ -859,7 +862,7 @@ export const getArticlesData = createServerFn({ method: "GET" })
   });
 
 export const upsertArticle = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => articleInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -947,7 +950,7 @@ export const upsertArticle = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getEventsData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
 
@@ -963,7 +966,7 @@ export const getEventsData = createServerFn({ method: "GET" })
   });
 
 export const upsertEvent = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => eventInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -1017,7 +1020,7 @@ export const upsertEvent = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getAnnouncementsData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     const res = await supabase
@@ -1028,7 +1031,7 @@ export const getAnnouncementsData = createServerFn({ method: "GET" })
   });
 
 export const upsertAnnouncement = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => announcementInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -1065,7 +1068,7 @@ export const upsertAnnouncement = createServerFn({ method: "POST" })
   });
 
 export const getMediaAssetsData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     const [mediaRes, galleriesRes, galleryMediaRes, docsRes] = await Promise.all([
@@ -1084,7 +1087,7 @@ export const getMediaAssetsData = createServerFn({ method: "GET" })
   });
 
 export const registerMediaAsset = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => mediaAssetInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -1127,7 +1130,7 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
   });
 
 export const upsertGallery = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => galleryInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -1249,7 +1252,7 @@ export const upsertDocument = createServerFn({ method: "POST" })
   });
 
 export const deleteGallery = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -1299,7 +1302,7 @@ export const deleteGallery = createServerFn({ method: "POST" })
   });
 
 export const upsertGalleryMedia = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => galleryMediaInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -1313,7 +1316,7 @@ export const upsertGalleryMedia = createServerFn({ method: "POST" })
   });
 
 export const deleteGalleryMedia = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -1368,7 +1371,7 @@ export const deleteGalleryMedia = createServerFn({ method: "POST" })
   });
 
 export const updateSortOrder = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => sortOrderUpdateSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -1387,7 +1390,7 @@ export const updateSortOrder = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getInquiriesData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     // The public contact form (src/lib/forms.functions.ts) writes to `contact_messages`,
@@ -1430,7 +1433,7 @@ export const getInquiriesData = createServerFn({ method: "GET" })
   });
 
 export const getInquiriesPaginated = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => paginationSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -1510,7 +1513,7 @@ export const getInquiriesPaginated = createServerFn({ method: "POST" })
   });
 
 export const updateInquiryStatus = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => inquiryStatusUpdateSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -1597,7 +1600,7 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
   });
 
 export const getRequestAttachmentSignedUrl = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ path: z.string().min(1) }).parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -1630,7 +1633,7 @@ export const updateContactMessageStatus = createServerFn({ method: "POST" })
   });
 
 export const addInquiryNote = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => inquiryNoteInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2102,7 +2105,7 @@ export const reviewMembershipRequest = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getTreasuryManagementData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireTreasuryAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     const [contribsRes, configRes] = await Promise.all([
@@ -2154,7 +2157,7 @@ export const getTreasuryManagementData = createServerFn({ method: "GET" })
   });
 
 export const getTreasuryContributionsPaginated = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireTreasuryAuth])
   .validator((d: unknown) => paginationSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -2195,7 +2198,7 @@ export const getTreasuryContributionsPaginated = createServerFn({ method: "POST"
   });
 
 export const reviewTreasuryContribution = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireTreasuryAuth])
   .validator((d: unknown) => treasuryContributionReviewSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2245,7 +2248,7 @@ export const reviewTreasuryContribution = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getInitiativesManagementData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     const [initiativesRes, registrationsRes] = await Promise.all([
@@ -2263,7 +2266,7 @@ export const getInitiativesManagementData = createServerFn({ method: "GET" })
   });
 
 export const upsertInitiative = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => initiativeInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2309,7 +2312,7 @@ export const upsertInitiative = createServerFn({ method: "POST" })
   });
 
 export const deleteInitiative = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2336,7 +2339,7 @@ export const deleteInitiative = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getAchieversManagementData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     const { data, error } = await supabase
@@ -2350,7 +2353,7 @@ export const getAchieversManagementData = createServerFn({ method: "GET" })
   });
 
 export const upsertAchiever = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => achieverInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2382,7 +2385,7 @@ export const upsertAchiever = createServerFn({ method: "POST" })
   });
 
 export const deleteAchiever = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2409,7 +2412,7 @@ export const deleteAchiever = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getLibraryManagementData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     const { data, error } = await supabase
@@ -2422,7 +2425,7 @@ export const getLibraryManagementData = createServerFn({ method: "GET" })
   });
 
 export const upsertLibraryItem = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => libraryItemInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2453,7 +2456,7 @@ export const upsertLibraryItem = createServerFn({ method: "POST" })
   });
 
 export const deleteLibraryItem = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2480,7 +2483,7 @@ export const deleteLibraryItem = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getNavigationManagementData = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
     const [menusRes, itemsRes] = await Promise.all([
@@ -2494,7 +2497,7 @@ export const getNavigationManagementData = createServerFn({ method: "GET" })
   });
 
 export const upsertNavigationMenu = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => navigationMenuInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2517,7 +2520,7 @@ export const upsertNavigationMenu = createServerFn({ method: "POST" })
   });
 
 export const upsertNavigationItem = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => navigationItemInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2540,7 +2543,7 @@ export const upsertNavigationItem = createServerFn({ method: "POST" })
   });
 
 export const deleteNavigationItem = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2567,7 +2570,7 @@ export const deleteNavigationItem = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const updateEventRegistrationStatus = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => eventRegistrationUpdateSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2591,7 +2594,7 @@ export const updateEventRegistrationStatus = createServerFn({ method: "POST" })
   });
 
 export const deleteEventRegistration = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2614,7 +2617,7 @@ export const deleteEventRegistration = createServerFn({ method: "POST" })
   });
 
 export const updateInitiativeRegistrationStatus = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => initiativeRegistrationUpdateSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2638,7 +2641,7 @@ export const updateInitiativeRegistrationStatus = createServerFn({ method: "POST
   });
 
 export const deleteInitiativeRegistration = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2726,7 +2729,7 @@ export const bulkFamilyMembersAction = createServerFn({ method: "POST" })
   });
 
 export const bulkArticlesAction = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireEditorAuth])
   .validator((d: unknown) => bulkArticlesActionSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2852,7 +2855,7 @@ export const saveDnaStudiesData = createServerFn({ method: "POST" })
  * ========================================================================= */
 
 export const getAdminNotificationsList = createServerFn({ method: "GET" })
-  .middleware([requireAdminAuth])
+  .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, session } = context;
     const userId = context.userId || session?.user?.id || (context.claims?.sub as string);
@@ -2876,7 +2879,7 @@ export const getAdminNotificationsList = createServerFn({ method: "GET" })
   });
 
 export const markNotificationRead = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireSupabaseAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2893,7 +2896,7 @@ export const markNotificationRead = createServerFn({ method: "POST" })
   });
 
 export const markAllNotificationsRead = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, session } = context;
     const userId = context.userId || session?.user?.id || (context.claims?.sub as string);
@@ -2909,7 +2912,7 @@ export const markAllNotificationsRead = createServerFn({ method: "POST" })
   });
 
 export const deleteNotification = createServerFn({ method: "POST" })
-  .middleware([requireAdminAuth])
+  .middleware([requireSupabaseAuth])
   .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, session } = context;
@@ -2923,4 +2926,41 @@ export const deleteNotification = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+export const getCouncilCommitteesData = createServerFn({ method: "GET" })
+  .middleware([requireAdminAuth])
+  .handler(async ({ context }) => {
+    const { supabase } = context;
+    const res = await supabase
+      .from("council_committees")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    return unwrapRows(res, "لجان المجلس / council committees");
+  });
+
+/** Committees are tied to request types defined in code, so they are only edited. */
+export const upsertCouncilCommittee = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => councilCommitteeInputSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, session } = context;
+    const { id, ...patch } = data;
+    const { data: row, error } = await supabase
+      .from("council_committees")
+      .update({ ...patch, updated_at: new Date().toISOString() } as never)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({
+      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
+      action: "update",
+      entity_type: "council_committees",
+      entity_id: id,
+      after_data: row,
+    });
+
+    return { ok: true, committee: row };
   });

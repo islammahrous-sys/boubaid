@@ -22,7 +22,7 @@ export function LanguageSwitcher({ tone = "default" }: LanguageSwitcherProps) {
         onClick={() => setLang("ar")}
         aria-pressed={lang === "ar"}
         className={cn(
-          "px-2.5 py-1.5 leading-none transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96]",
+          "tap-target-y px-2.5 py-1.5 leading-none transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96] [--tap-size:2.5rem]",
           lang === "ar"
             ? isInk
               ? "bg-gold font-semibold text-ink shadow-sm"
@@ -41,7 +41,7 @@ export function LanguageSwitcher({ tone = "default" }: LanguageSwitcherProps) {
         onClick={() => setLang("en")}
         aria-pressed={lang === "en"}
         className={cn(
-          "px-2.5 py-1.5 leading-none transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96]",
+          "tap-target-y px-2.5 py-1.5 leading-none transition-[color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96] [--tap-size:2.5rem]",
           lang === "en"
             ? isInk
               ? "bg-gold font-semibold text-ink shadow-sm"

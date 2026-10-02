@@ -1,4 +1,6 @@
 import type { BiText } from "@/i18n/LanguageProvider";
+import type { LibraryRow } from "@/lib/cms.functions";
+import { isHidden, replacedId, rowHref } from "@/content/library-overrides";
 
 import letter1 from "@/assets/docs/الخطاب_1.pdf.asset.json";
 import letter2 from "@/assets/docs/الخطاب_2.pdf.asset.json";
@@ -147,3 +149,68 @@ export const committeeDocuments: CommitteeDocument[] = [
     href: planHq1445.url,
   },
 ];
+
+/** A document ready to render: built-in or CMS-managed. */
+export interface ResolvedCommitteeDocument {
+  id: string;
+  year: number;
+  title: BiText;
+  kind: string;
+  /** Address the viewer opens. */
+  src: string;
+}
+
+/**
+ * Built-in committee documents merged with the library collection
+ * `committee_documents` (Admin → Archive & library). New records appear under
+ * their Hijri work year; a record can replace or withdraw a built-in one (see
+ * content/library-overrides.ts).
+ */
+export function resolveCommitteeDocuments(
+  rows: LibraryRow[] | undefined,
+): ResolvedCommitteeDocument[] {
+  const cms = (rows ?? []).filter((r) => r.collection === "committee_documents" && r.is_published);
+  const replaced = new Map<string, LibraryRow>();
+  for (const r of cms) {
+    const id = replacedId(r);
+    if (id) replaced.set(id, r);
+  }
+
+  const out: ResolvedCommitteeDocument[] = [];
+  for (const d of committeeDocuments) {
+    const override = replaced.get(d.id);
+    if (override) {
+      if (isHidden(override)) continue;
+      const href = rowHref(override);
+      out.push({
+        id: d.id,
+        year: override.year ?? d.year,
+        title: { ar: override.title_ar, en: override.title_en || override.title_ar },
+        kind: d.kind,
+        src: href ?? `/api/public/committee-doc?id=${d.id}`,
+      });
+      continue;
+    }
+    out.push({
+      id: d.id,
+      year: d.year,
+      title: d.title,
+      kind: d.kind,
+      src: `/api/public/committee-doc?id=${d.id}`,
+    });
+  }
+
+  for (const r of [...cms].sort((a, b) => a.sort_order - b.sort_order)) {
+    if (replacedId(r) || isHidden(r) || !r.year) continue;
+    const href = rowHref(r);
+    if (!href) continue;
+    out.push({
+      id: r.id,
+      year: r.year,
+      title: { ar: r.title_ar, en: r.title_en || r.title_ar },
+      kind: "PDF",
+      src: href,
+    });
+  }
+  return out;
+}

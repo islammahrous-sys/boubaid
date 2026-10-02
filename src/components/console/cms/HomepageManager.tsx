@@ -81,25 +81,29 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
     subtitle_en: "A message of unity, compassion, and shared heritage across generations.",
   },
   {
-    id: "seven_branches",
-    name_ar: "الفروع السبعة للأسرة",
-    name_en: "The Seven Family Branches",
+    id: "vision_mission",
+    name_ar: "الرؤية والرسالة والقيم",
+    name_en: "Vision, Mission & Values",
     enabled: true,
     order: 3,
-    title_ar: "الفروع السبعة الكريمة",
-    title_en: "The Seven Noble Branches",
-    subtitle_ar: "امتدادات الأسرة وتفرعاتها التاريخية الموثقة في سجلات المجلس.",
-    subtitle_en: "Documented historical lineage branches under the family council.",
-    cta_label_ar: "استعراض كافة الفروع",
-    cta_label_en: "View All Branches",
-    cta_url: "/branches",
+    title_ar: "الرؤية والرسالة والقيم المؤسسية",
+    title_en: "Vision, Mission & Core Values",
+  },
+  {
+    id: "family_tree_home",
+    name_ar: "المشجرة الإلكترونية واللوحة الرسمية",
+    name_en: "Electronic Family Tree & Official Plate",
+    enabled: true,
+    order: 4,
+    title_ar: "الفروع امتداد الجذور",
+    title_en: "The Branches Extend the Roots",
   },
   {
     id: "initiatives_hq",
     name_ar: "المبادرات والمقر الدائم",
     name_en: "Initiatives & Permanent HQ",
     enabled: true,
-    order: 4,
+    order: 5,
     title_ar: "مشروع المقر الدائم والمبادرات",
     title_en: "Flagship Permanent HQ & Initiatives",
     subtitle_ar: "مشاريع تنموية، صناديق تكافلية، ومقر جامع للمناسبات واللقاءات.",
@@ -113,7 +117,7 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
     name_ar: "أحدث الأخبار والمقالات",
     name_en: "Latest News & Articles",
     enabled: true,
-    order: 5,
+    order: 6,
     title_ar: "المركز الإعلامي وأخبار المجلس",
     title_en: "Media Center & Council News",
     subtitle_ar: "تغطية شاملة للمناسبات، القرارات، والإنجازات الأسرية.",
@@ -123,67 +127,11 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
     cta_url: "/news",
   },
   {
-    id: "family_achievers",
-    name_ar: "سجل التميز وكفاءات الأسرة",
-    name_en: "Family Achievers Roll of Honour",
-    enabled: true,
-    order: 6,
-    title_ar: "من كفاءات الأسرة",
-    title_en: "Among the Family's Achievers",
-    subtitle_ar: "أبرز الأعلام والكفاءات الموثقة في سجل تميز الأسرة.",
-    subtitle_en: "Distinguished family members recognised in the roll of honour.",
-    cta_label_ar: "السجل كاملاً",
-    cta_label_en: "The Full Roll",
-    cta_url: "/achievers",
-  },
-  {
-    id: "poem_proposal",
-    name_ar: "مقترح شاعر",
-    name_en: "Poet's Proposal",
-    enabled: true,
-    order: 7,
-    title_ar: "مقترح شاعر",
-    title_en: "Poet's Proposal",
-    subtitle_ar: "مساحة مخصصة لقصيدة الأسرة — يُدرج النص هنا عند اعتماده.",
-    subtitle_en: "A reserved space for the family poem — the text is inserted once approved.",
-    cta_label_ar: "",
-    cta_label_en: "",
-    cta_url: "",
-  },
-  {
-    id: "dna_preview",
-    name_ar: "دراسة الحمض النووي والسلالة الوراثية",
-    name_en: "DNA & Genetic Lineage Study",
-    enabled: true,
-    order: 8,
-    title_ar: "دراسة علمية للسلالة الوراثية",
-    title_en: "Scientific Genetic Lineage Study",
-    subtitle_ar: "نتائج تحليل الحمض النووي وربطها بالسلالة التحورية للأسرة.",
-    subtitle_en: "DNA analysis results linking the family to its parent haplogroup.",
-    cta_label_ar: "نتائج الدراسة الكاملة",
-    cta_label_en: "Full Study Results",
-    cta_url: "/dna",
-  },
-  {
-    id: "upcoming_events",
-    name_ar: "الفعاليات واللقاءات القادمة",
-    name_en: "Upcoming Events & Gatherings",
-    enabled: true,
-    order: 9,
-    title_ar: "الفعاليات والاجتماعات العائلية",
-    title_en: "Family Events & Council Meetings",
-    subtitle_ar: "جدول اللقاءات الدورية، مجالس الأعياد، وورش العمل.",
-    subtitle_en: "Calendar of regular gatherings, Eid assemblies, and workshops.",
-    cta_label_ar: "سجل الفعاليات",
-    cta_label_en: "All Events",
-    cta_url: "/events",
-  },
-  {
     id: "heritage_gallery",
     name_ar: "الأرشيف والصور التراثية",
     name_en: "Heritage & Photo Archive",
     enabled: true,
-    order: 10,
+    order: 7,
     title_ar: "معرض التراث والوثائق التاريخية",
     title_en: "Historic Heritage & Archive Gallery",
     subtitle_ar: "مقتنيات نادرة، صور تاريخية، ومخطوطات توثق مسيرة الأسرة.",
@@ -197,7 +145,7 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
     name_ar: "قنوات التواصل وصندوق المقترحات",
     name_en: "Contact & Secretariat Inquiries",
     enabled: true,
-    order: 11,
+    order: 8,
     title_ar: "تواصل مع لجان مجلس الأسرة",
     title_en: "Contact the Family Council Committees",
     subtitle_ar: "اختر اللجنة المختصة وقدّم طلبك مباشرة ليصل إلى مسار المتابعة المناسب.",
@@ -217,6 +165,49 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
 // entirely, in case a future section genuinely can't be wired up yet.
 const UNIMPLEMENTED_SECTION_IDS = new Set<string>([]);
 
+/**
+ * Sections the public home page no longer renders. A saved configuration may
+ * still list them (their records stay in the database), but offering a toggle
+ * for something that cannot appear would be a dead control, so they are
+ * dropped from the manager. Keep in sync with RETIRED_HOME_SECTIONS in
+ * routes/index.tsx.
+ */
+const RETIRED_SECTION_IDS = new Set([
+  "seven_branches",
+  "branches",
+  "dna_preview",
+  "dna",
+  "family_achievers",
+  "achievers",
+  "upcoming_events",
+  "events",
+  "poem_proposal",
+  "initiatives_list",
+  "programmes",
+]);
+
+/** Sections the home page always carries; if a saved configuration predates
+ *  them they are added back (enabled) beside their neighbour so the admin can
+ *  now see, reorder and hide them. */
+const REQUIRED_SECTIONS: { id: string; after: string }[] = [
+  { id: "vision_mission", after: "about_dean" },
+  { id: "family_tree_home", after: "vision_mission" },
+];
+
+function normalizeSections(saved: HomepageSectionConfig[]): HomepageSectionConfig[] {
+  const list = [...saved]
+    .filter((s) => !RETIRED_SECTION_IDS.has(s.id))
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  for (const req of REQUIRED_SECTIONS) {
+    if (list.some((s) => s.id === req.id)) continue;
+    const def = DEFAULT_HOMEPAGE_SECTIONS.find((d) => d.id === req.id);
+    if (!def) continue;
+    const anchor = list.findIndex((s) => s.id === req.after);
+    list.splice(anchor >= 0 ? anchor + 1 : list.length, 0, { ...def, enabled: true });
+  }
+  return list.map((s, i) => ({ ...s, order: i + 1 }));
+}
+
 export function HomepageManager({
   initialSettings,
   onSaveSettings,
@@ -231,7 +222,7 @@ export function HomepageManager({
   const savedConfig = useMemo(() => {
     const found = (initialSettings ?? []).find((s) => s.key === "homepage_sections_config");
     if (found?.value?.sections && Array.isArray(found.value.sections)) {
-      return found.value.sections as HomepageSectionConfig[];
+      return normalizeSections(found.value.sections as HomepageSectionConfig[]);
     }
     return DEFAULT_HOMEPAGE_SECTIONS;
   }, [initialSettings]);

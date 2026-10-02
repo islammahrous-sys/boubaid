@@ -6,11 +6,13 @@ import { MediaViewerDialog } from "@/components/site/MediaViewerDialog";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
-import { fundDocuments, fundDocumentGroups } from "@/content/fund-documents";
+import { fundDocumentGroups, resolveFundDocuments } from "@/content/fund-documents";
+import { getPublishedLibrary } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 import { formatDualHijriYear } from "@/lib/dates";
 
 export const Route = createFileRoute("/fund-certificates")({
+  loader: async () => ({ documents: resolveFundDocuments(await getPublishedLibrary()) }),
   head: () => ({
     meta: [
       { title: "الشهادات والإثباتات | صندوق التنمية العائلية" },
@@ -35,7 +37,8 @@ export const Route = createFileRoute("/fund-certificates")({
 function FundCertificatesPage() {
   const { lang, t } = useLang();
   const isAr = lang === "ar";
-  const [viewing, setViewing] = useState<{ id: string; title: string } | null>(null);
+  const { documents } = Route.useLoaderData();
+  const [viewing, setViewing] = useState<{ src: string; title: string } | null>(null);
 
   return (
     <div>
@@ -60,7 +63,7 @@ function FundCertificatesPage() {
 
       <section className="container-page py-12">
         {fundDocumentGroups.map((group) => {
-          const docs = fundDocuments.filter((d) => d.group === group.id);
+          const docs = documents.filter((d) => d.group === group.id);
           if (docs.length === 0) return null;
 
           return (
@@ -107,7 +110,7 @@ function FundCertificatesPage() {
 
                       <button
                         type="button"
-                        onClick={() => setViewing({ id: doc.id, title: t(doc.title) })}
+                        onClick={() => setViewing({ src: doc.src, title: t(doc.title) })}
                         className="mt-3 inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
                       >
                         <Eye className="h-3.5 w-3.5" aria-hidden="true" />
@@ -147,7 +150,7 @@ function FundCertificatesPage() {
         open={!!viewing}
         onClose={() => setViewing(null)}
         kind="pdf"
-        src={viewing ? `/api/public/fund-doc?id=${encodeURIComponent(viewing.id)}` : null}
+        src={viewing ? viewing.src : null}
         title={viewing?.title}
       />
     </div>

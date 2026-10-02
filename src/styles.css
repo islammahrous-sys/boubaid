@@ -810,6 +810,36 @@ html[dir="rtl"] .reveal-rule {
   display: none;
 }
 
+/* Touch hit area. Grows the tappable region of a small control to 44px
+   (or `--tap-size`) without changing its drawn size or the layout around it.
+   `tap-target-y` expands vertically only, for segmented controls whose
+   neighbours sit edge to edge. Not for elements that are already absolutely
+   positioned or clip their overflow. */
+@utility tap-target {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--tap-size, 2.75rem));
+    height: max(100%, var(--tap-size, 2.75rem));
+    transform: translate(-50%, -50%);
+  }
+}
+@utility tap-target-y {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: max(100%, var(--tap-size, 2.75rem));
+    transform: translateY(-50%);
+  }
+}
+
 @utility active-scale {
   transition: transform var(--dur-quick) var(--ease-editorial);
 }
@@ -1128,11 +1158,48 @@ blockquote {
   --req-muted: #e3c9a8;
   --req-link: var(--req-link-dark, #e3c9a8);
 }
-.req-tone-membership { --req-band: #6b3f2a; --req-link: #6b3f2a; --req-on-band: #f6efe4; }
-.req-tone-committee_requests { --req-band: #3e5a3f; --req-link: #2e4a2f; --req-on-band: #f6efe4; --req-link-dark: #a7c3a8; }
-.req-tone-services { --req-band: #b87333; --req-link: #7a4621; --req-on-band: #ffffff; --req-link-dark: #f3c9a3; }
-.req-tone-tree { --req-band: #c99a72; --req-link: #6b3f2a; --req-on-band: #3f2518; }
-.req-tone-fund { --req-band: #d4af37; --req-link: #6b4f10; --req-on-band: #3f2518; --req-link-dark: #f6e6a1; }
-.req-tone-participation { --req-band: #6f8796; --req-link: #3f5561; --req-on-band: #ffffff; --req-link-dark: #c4d2da; }
-.req-tone-announcements { --req-band: #e3c9a8; --req-link: #6b3f2a; --req-on-band: #3f2518; }
-.req-tone-general { --req-band: #a7b8c2; --req-link: #2e4a2f; --req-on-band: #3f2518; --req-link-dark: #c4d2da; }
+.req-tone-membership {
+  --req-band: #6b3f2a;
+  --req-link: #6b3f2a;
+  --req-on-band: #f6efe4;
+}
+.req-tone-committee_requests {
+  --req-band: #3e5a3f;
+  --req-link: #2e4a2f;
+  --req-on-band: #f6efe4;
+  --req-link-dark: #a7c3a8;
+}
+.req-tone-services {
+  --req-band: #b87333;
+  --req-link: #7a4621;
+  --req-on-band: #ffffff;
+  --req-link-dark: #f3c9a3;
+}
+.req-tone-tree {
+  --req-band: #c99a72;
+  --req-link: #6b3f2a;
+  --req-on-band: #3f2518;
+}
+.req-tone-fund {
+  --req-band: #d4af37;
+  --req-link: #6b4f10;
+  --req-on-band: #3f2518;
+  --req-link-dark: #f6e6a1;
+}
+.req-tone-participation {
+  --req-band: #6f8796;
+  --req-link: #3f5561;
+  --req-on-band: #ffffff;
+  --req-link-dark: #c4d2da;
+}
+.req-tone-announcements {
+  --req-band: #e3c9a8;
+  --req-link: #6b3f2a;
+  --req-on-band: #3f2518;
+}
+.req-tone-general {
+  --req-band: #a7b8c2;
+  --req-link: #2e4a2f;
+  --req-on-band: #3f2518;
+  --req-link-dark: #c4d2da;
+}

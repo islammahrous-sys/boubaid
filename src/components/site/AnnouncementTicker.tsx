@@ -146,7 +146,7 @@ export function AnnouncementTicker() {
 
           <button
             onClick={() => setDismissed(true)}
-            className="p-1 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+            className="tap-target p-1 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
             aria-label={isAr ? "إغلاق شريط الإعلانات" : "Dismiss announcement"}
           >
             <X className="w-3.5 h-3.5" />

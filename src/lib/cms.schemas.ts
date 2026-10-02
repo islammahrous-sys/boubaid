@@ -113,6 +113,8 @@ export const libraryInputSchema = z.object({
       "visual_identity",
       "collaterals",
       "committee_charts",
+      "committee_documents",
+      "fund_documents",
       "videos",
       "financials",
     ])

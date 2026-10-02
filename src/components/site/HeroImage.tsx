@@ -259,13 +259,19 @@ export function HeroImage({
                   aria-selected={isActive}
                   aria-label={rtl ? `عرض ${title}` : `View ${title}`}
                   onClick={() => goToSlide(idx)}
-                  className={cn(
-                    "h-2 rounded-full transition-[width,background-color,box-shadow,transform] duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
-                    isActive
-                      ? "w-7 bg-gold shadow-[0_0_10px_rgba(237,167,70,0.8)]"
-                      : "w-2 bg-ivory/30 hover:bg-ivory/60 active:scale-95",
-                  )}
-                />
+                  // The visible dot is the inner span; the button around it is the
+                  // touch target (40px tall, dot width + 8px either side).
+                  className="group flex h-10 items-center px-1 focus-visible:outline-none"
+                >
+                  <span
+                    className={cn(
+                      "block h-2 rounded-full transition-[width,background-color,box-shadow,transform] duration-300 ease-out group-focus-visible:ring-2 group-focus-visible:ring-gold",
+                      isActive
+                        ? "w-7 bg-gold shadow-[0_0_10px_rgba(237,167,70,0.8)]"
+                        : "w-2 bg-ivory/30 group-hover:bg-ivory/60 group-active:scale-95",
+                    )}
+                  />
+                </button>
               );
             })}
           </div>

@@ -477,6 +477,8 @@ export const libraryItemInputSchema = z.object({
       "visual_identity",
       "collaterals",
       "committee_charts",
+      "committee_documents",
+      "fund_documents",
       "videos",
       "financials",
     ])
@@ -640,3 +642,15 @@ export const sortOrderUpdateSchema = z.object({
     .max(1000),
 });
 export type SortOrderUpdateInput = z.infer<typeof sortOrderUpdateSchema>;
+
+// Council committees (Requests Hub destinations): edited, never created/deleted.
+export const councilCommitteeInputSchema = z.object({
+  id: z.string().uuid(),
+  name_ar: z.string().trim().min(2, "اسم اللجنة بالعربية مطلوب").max(200),
+  name_en: z.string().trim().max(200).optional().nullable(),
+  description_ar: z.string().trim().max(2000).optional().nullable(),
+  description_en: z.string().trim().max(2000).optional().nullable(),
+  is_active: z.boolean().default(true),
+  sort_order: z.number().int().min(0).max(9999).default(0),
+});
+export type CouncilCommitteeInput = z.infer<typeof councilCommitteeInputSchema>;

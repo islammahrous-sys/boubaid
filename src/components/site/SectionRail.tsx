@@ -11,8 +11,12 @@ export interface RailSection {
 
 /**
  * In-page wayfinding for the long documentary pages. Two presentations of the
- * same state: a hairline vertical rail alongside the text on wide screens, and
- * a scrollable chip row pinned under the masthead on narrow ones.
+ * same state: a hairline vertical rail alongside the text on very wide screens,
+ * and a scrollable chip row pinned under the masthead everywhere else.
+ *
+ * The rail lives in the outer margin, so it only fits once the viewport is
+ * wider than the page container (88rem) plus the rail itself (~14rem a side).
+ * Below that it would sit on top of the content, hence 1880px rather than `xl`.
  *
  * Position is observed rather than computed from scroll offsets, so it stays
  * correct as plates load and reveal animations settle the layout.
@@ -66,7 +70,7 @@ export function SectionRail({
       <nav
         aria-label={t({ ar: "أقسام الصفحة", en: "Sections on this page" })}
         className={cn(
-          "no-scrollbar sticky top-14 z-30 -mx-4 overflow-x-auto border-b border-border bg-background/92 px-4 py-2 backdrop-blur xl:hidden",
+          "no-scrollbar sticky top-14 z-30 -mx-4 overflow-x-auto border-b border-border bg-background/92 px-4 py-2 backdrop-blur sm:top-16 md:top-18 min-[1880px]:hidden",
           className,
         )}
       >
@@ -94,7 +98,7 @@ export function SectionRail({
       {/* Wide screens: fixed hairline rail in the outer margin */}
       <nav
         aria-label={t({ ar: "أقسام الصفحة", en: "Sections on this page" })}
-        className="fixed top-1/2 z-30 hidden -translate-y-1/2 xl:block ltr:left-6 rtl:right-6"
+        className="fixed top-1/2 z-30 hidden -translate-y-1/2 min-[1880px]:block ltr:left-6 rtl:right-6"
       >
         <ul className="space-y-1">
           {sections.map((s) => {
