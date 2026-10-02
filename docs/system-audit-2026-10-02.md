@@ -58,4 +58,8 @@ Not done: live exploitation, browser E2E, load tests. The findings below come fr
 
 Fixed and deployed (main 6a88055 and follow-ups; migrations 20261002114428, 20261002114725 applied to prod): H1–H4, H5 (code side), M1, M2, M3 (partly: server-side throttling only, no Turnstile widget on those forms), M4, M6, M7 (CSP Report-Only plus headers via vercel.json), FK index. Extra bug found while testing: contact form with a blank subject failed in the admin-notification trigger, now fixed.
 
-Still manual: rotate the service-role key (H5), set `CRON_SECRET` in Vercel (queue route returns 503 until then), enable leaked-password protection, js-yaml (H6: `npm audit fix` rewrites about 1,000 lockfile lines, so do it as its own PR), repo-wide prettier/CRLF cleanup (churn conflicts with Lovable sync), RLS initplan performance lints.
+Follow-up (same day): lint now passes (`eslint .` clean, `tsc` clean); js-yaml bumped to 4.3.2 in `package-lock.json` and `bun.lock` (`npm audit`: 0 vulnerabilities); Turnstile added to the council request form and made mandatory on the currently-unused nomination and business-listing endpoints; all 94 `auth_rls_initplan` policies rewritten (migration 20261002120345, advisor clean).
+
+Left as-is by design: `multiple_permissive_policies` (45, INFO-level tuning of overlapping admin/public read policies; merging them risks access regressions), `unused_index` (46, expected at this data size), newsletter form (rate-limited, no widget in the footer).
+
+Still manual (dashboard / secrets): rotate the service-role key (H5), set `CRON_SECRET` in Vercel, enable leaked-password protection in Supabase Auth.
