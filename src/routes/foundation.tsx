@@ -7,6 +7,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
  */
 export const Route = createFileRoute("/foundation")({
   beforeLoad: () => {
-    throw redirect({ to: "/committees", replace: true });
+    throw redirect({ to: "/committees", statusCode: 301 });
   },
 });

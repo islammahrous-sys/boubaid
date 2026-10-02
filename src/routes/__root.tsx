@@ -114,6 +114,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
+      { name: "google-site-verification", content: "DWwzm2a7Wo2nqqcNQg5OQc83BuKjRKENcU9F-jnFsF4" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية" },
       {
@@ -184,6 +185,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         // site's primary language — it is not optional decoration.
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": `${getCanonicalUrl("/")}#organization`,
+              name: "آل بوعبيد — صندوق التنمية العائلية",
+              alternateName: ["Al Bu Obaid Family Council", "Al Buobaid Family Development Fund", "مجلس أسرة آل بوعبيد"],
+              url: getCanonicalUrl("/"),
+              logo: getCanonicalUrl("/favicon.png"),
+              address: { "@type": "PostalAddress", addressRegion: "الأحساء", addressCountry: "SA" },
+            },
+            {
+              "@type": "WebSite",
+              "@id": `${getCanonicalUrl("/")}#website`,
+              name: "آل بوعبيد — Al Bu Obaid",
+              url: getCanonicalUrl("/"),
+              inLanguage: ["ar", "en"],
+              publisher: { "@id": `${getCanonicalUrl("/")}#organization` },
+            },
+          ],
+        }),
       },
     ],
   }),
