@@ -12,6 +12,7 @@ import { parseLineageList } from "@/lib/text";
 import { getCanonicalUrl } from "@/lib/seo";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { copy } from "@/content/page-copy/branches";
+import { inl } from "@/content/page-copy/branches-inline";
 
 export const Route = createFileRoute("/branches")({
   loader: async () => {
@@ -114,7 +115,7 @@ function BranchesPage() {
         title={t(copy.title)}
         subtitle={t(copy.subtitle(nf(totalMembers, "ar"), nf(totalMembers, "en")))}
         meta={[
-          { label: t(copy.metaBranches), value: rtl ? "سبعة" : "Seven" },
+          { label: t(copy.metaBranches), value: t(inl.t_f92a2d84) },
           { label: t(copy.metaMembers), value: nf(totalMembers, lang), mono: true },
           { label: t(copy.metaSeat), value: t(copy.metaSeatValue) },
         ]}
@@ -137,7 +138,7 @@ function BranchesPage() {
                     scope="col"
                     className="label-caps w-10 py-2.5 text-start text-muted-foreground"
                   >
-                    <span className="sr-only">{rtl ? "الرقم" : "No."}</span>
+                    <span className="sr-only">{t(inl.t_de3d384a)}</span>
                   </th>
                   <th scope="col" className="label-caps py-2.5 text-start text-muted-foreground">
                     {t(copy.colBranch)}
@@ -409,11 +410,7 @@ function BranchesPage() {
             </div>
           ) : null}
           <div className="mt-4 flex justify-between items-center text-xs text-muted-foreground">
-            <span>
-              {rtl
-                ? "حقوق اللوحة محفوظة لمجلس أسرة آل بوعبيد"
-                : "Copyright © Al Bu Obaid Family Council"}
-            </span>
+            <span>{t(inl.t_f05616f7)}</span>
             {activePoster ? (
               <a
                 href={activePoster.url}
@@ -421,7 +418,7 @@ function BranchesPage() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-bronze dark:text-gold hover:underline font-semibold"
               >
-                {rtl ? "فتح في نافذة مستقلة" : "Open in new window"}
+                {t(inl.t_11cb866d)}
                 <Arrow className="h-3 w-3" />
               </a>
             ) : null}

@@ -33,6 +33,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/library";
+import { inl } from "@/content/page-copy/library-inline";
 
 /**
  * Archive (/library).
@@ -440,13 +441,13 @@ function LibraryPage() {
           className="mb-12 border-b border-border pb-12"
           aria-labelledby="committee-archive-1448"
         >
-          <Eyebrow rule>{t({ ar: "الأرشيف", en: "Archive" })}</Eyebrow>
+          <Eyebrow rule>{t(inl.t_0e0bb33d)}</Eyebrow>
           <h2 id="committee-archive-1448" className="mt-6 text-xl font-semibold text-foreground">
-            {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
+            {t(inl.t_2132f4cb)}
           </h2>
           <CommitteeYearGrid rows={committeeArchive as CommitteeArchiveItem[]} kind="ARCH" />
 
-          {[{ year: 1444, label: { ar: "١٤٤٤ هـ", en: "1444 AH" } }].map(({ year, label }) => (
+          {[{ year: 1444, label: inl.t_ad92c9cf }].map(({ year, label }) => (
             <div key={year} className="mt-10" aria-labelledby={`committee-archive-${year}`}>
               <h2
                 id={`committee-archive-${year}`}
@@ -476,7 +477,7 @@ function LibraryPage() {
                         }
                         className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
                       >
-                        {t({ ar: "عرض الوثيقة", en: "View document" })}
+                        {t(inl.t_5e7c8b48)}
                       </button>
                     </li>
                   ))}

@@ -73,6 +73,7 @@ import { formatDualDate } from "@/lib/dates";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { inl } from "@/content/page-copy/requests-inline";
 
 export const Route = createFileRoute("/requests")({
   /**
@@ -119,17 +120,14 @@ type RequestGroup =
   | "general";
 
 const groupTitles: Record<RequestGroup, BiText> = {
-  membership: { ar: "العضوية والاشتراك", en: "Membership & subscription" },
-  committee_requests: {
-    ar: "طلبات لجان مجلس الأسرة",
-    en: "Family Council Committee Requests",
-  },
-  services: { ar: "الخدمات ودليل الأعمال", en: "Services & business directory" },
-  tree: { ar: "شجرة العائلة والأرشيف والتراث", en: "Family tree, archive & heritage" },
-  fund: { ar: "صندوق التنمية والدعم", en: "Development fund & support" },
-  participation: { ar: "المشاركة واللجان والبرامج", en: "Participation, committees & programmes" },
-  announcements: { ar: "الإعلانات والمناسبات", en: "Announcements & occasions" },
-  general: { ar: "طلبات عامة", en: "General requests" },
+  membership: inl.t_d63a2e6a,
+  committee_requests: inl.t_7bbf4196,
+  services: inl.t_00ee2c37,
+  tree: inl.t_8dd1a46a,
+  fund: inl.t_71add7e5,
+  participation: inl.t_96b311a7,
+  announcements: inl.t_1f24e1df,
+  general: inl.t_34015107,
 };
 
 const groupOrder: RequestGroup[] = [
@@ -187,33 +185,24 @@ const requests: RequestEntry[] = [
     group: "membership",
     form: "membership_verification",
     Icon: BadgeCheck,
-    name: { ar: "طلب توثيق العضوية", en: "Membership verification request" },
-    desc: {
-      ar: "تقديم طلب اعتماد العضوية للأمانة العامة وإصدار بطاقة العضوية الرسمية.",
-      en: "Ask the secretariat to verify your membership and issue your official family card.",
-    },
+    name: inl.t_8a980f66,
+    desc: inl.t_2b1b2539,
   },
   {
     id: "membership-card",
     group: "membership",
     form: "membership_card",
     Icon: CreditCard,
-    name: { ar: "طلب إصدار أو تجديد بطاقة العضوية", en: "Membership card issue or renewal" },
-    desc: {
-      ar: "طلب إصدار بطاقة عضوية جديدة أو تجديد بطاقة قائمة بعد توثيق العضوية.",
-      en: "Request a new membership card, or renew an existing one after verification.",
-    },
+    name: inl.t_0b324e14,
+    desc: inl.t_6059f864,
   },
   {
     id: "contribution",
     group: "membership",
     form: "fund_contribution",
     Icon: Banknote,
-    name: { ar: "الاشتراك والمساهمة", en: "Subscription & contribution" },
-    desc: {
-      ar: "تسجيل اشتراك أو مساهمة في صندوق التنمية العائلية وإرفاق إشعار السداد للمراجعة.",
-      en: "Register a subscription or contribution to the family development fund and attach your payment notice for review.",
-    },
+    name: inl.t_b8f9bdc1,
+    desc: inl.t_63d8e837,
   },
 
   ...COMMITTEE_REQUEST_DESTINATIONS.map((committee): RequestEntry => ({
@@ -230,102 +219,72 @@ const requests: RequestEntry[] = [
     group: "services",
     form: "business_listing_new",
     Icon: Briefcase,
-    name: { ar: "إدراج نشاط تجاري في الدليل", en: "Business directory listing" },
-    desc: {
-      ar: "طلب إضافة منشأة أو نشاط تجاري لأحد أبناء الأسرة إلى دليل الأعمال.",
-      en: "Request that a family member's business be added to the family business directory.",
-    },
+    name: inl.t_76decf7d,
+    desc: inl.t_82a18b99,
   },
   {
     id: "directory-update",
     group: "services",
     form: "business_listing_update",
     Icon: PencilLine,
-    name: { ar: "طلب تحديث بيانات الدليل التجاري", en: "Business listing update request" },
-    desc: {
-      ar: "طلب تعديل بيانات منشأة مدرجة في دليل الأعمال: الوصف أو التواصل أو الموقع.",
-      en: "Ask for a listed business entry to be updated: description, contact details, or website.",
-    },
+    name: inl.t_1023e9f5,
+    desc: inl.t_47a4daa3,
   },
   {
     id: "service-establishment",
     group: "services",
     form: "service_establishment",
     Icon: Store,
-    name: { ar: "طلب اضافة خدمة – منشأت", en: "Add a service request – Establishments" },
-    desc: {
-      ar: "طلب إضافة خدمة تقدمها منشأة من منشآت الأسرة إلى قائمة خدمات المنشآت.",
-      en: "Request that a service offered by a family establishment be added to the establishment services list.",
-    },
+    name: inl.t_12858ee2,
+    desc: inl.t_f807f699,
   },
   {
     id: "service-family",
     group: "services",
     form: "service_family",
     Icon: HandHeart,
-    name: {
-      ar: "طلب اضافة خدمة – افراد العائلة",
-      en: "Add a service request – Family members",
-    },
-    desc: {
-      ar: "طلب إضافة خدمة يقدمها أحد أفراد الأسرة إلى قائمة خدمات أفراد الأسرة.",
-      en: "Request that a service offered by a family member be added to the family member services list.",
-    },
+    name: inl.t_0c2f876d,
+    desc: inl.t_2c3bb6d0,
   },
   {
     id: "legal-consultancy",
     group: "services",
     form: "legal_consultancy",
     Icon: Scale,
-    name: { ar: "طلب استشارة قانونية", en: "Legal consultancy request" },
-    desc: {
-      ar: "طلب استشارة قانونية أو تحكيم عبر خدمة الاستشارات القانونية المدرجة في دليل الخدمات.",
-      en: "Request legal consultancy or arbitration through the listed legal services provider.",
-    },
+    name: inl.t_d2bc3783,
+    desc: inl.t_8d784a05,
   },
   {
     id: "accounting-service",
     group: "services",
     form: "accounting_service",
     Icon: Calculator,
-    name: { ar: "طلب خدمة محاسبية", en: "Accounting service request" },
-    desc: {
-      ar: "طلب خدمة محاسبية أو مراجعة مالية عبر الخدمة المحاسبية المدرجة في دليل الخدمات.",
-      en: "Request accounting or bookkeeping work through the listed accounting service.",
-    },
+    name: inl.t_98f13776,
+    desc: inl.t_c9ee1393,
   },
   {
     id: "website-design",
     group: "services",
     form: "website_design",
     Icon: Globe,
-    name: { ar: "طلب تصميم موقع إلكتروني", en: "Website design request" },
-    desc: {
-      ar: "طلب تصميم موقع إلكتروني أو استشارة مؤسسية عبر خدمة المنشآت المدرجة.",
-      en: "Request website design or business consultancy through the listed establishment service.",
-    },
+    name: inl.t_51f12b37,
+    desc: inl.t_daba8870,
   },
   {
     id: "bisht-purchase",
     group: "services",
     form: "bisht_purchase",
     Icon: Shirt,
-    name: { ar: "طلب شراء بشت", en: "Bisht purchase enquiry" },
-    desc: {
-      ar: "الاستفسار عن أنواع البشوت ومقاساتها لدى العبادل للبشوت وطلب الشراء.",
-      en: "Enquire about types and sizes from Al-Abadel Bisht and place an order.",
-    },
+    name: inl.t_2e0841b0,
+    desc: inl.t_92111368,
   },
   {
     id: "oud-purchase",
     group: "services",
     form: "oud_purchase",
     Icon: Flower2,
-    name: { ar: "طلب شراء عود", en: "Oud purchase enquiry" },
-    desc: {
-      ar: "الاستفسار عن أنواع العود وكمياته لدى العبادل للعود وطلب الشراء.",
-      en: "Enquire about types and quantities from Al-Abadel Oud and place an order.",
-    },
+    name: inl.t_e79957b0,
+    desc: inl.t_db2290b7,
   },
 
   {
@@ -333,80 +292,56 @@ const requests: RequestEntry[] = [
     group: "tree",
     form: "family_tree_frame",
     Icon: Frame,
-    name: { ar: "طلب لوحة شجرة العائلة", en: "Family tree frame order" },
-    desc: {
-      ar: "الاطلاع على مقاسات اللوحة الرسمية المصورة لشجرة العائلة وطلب النسخة المناسبة.",
-      en: "See the sizes of the Official Illustrated Family Tree and order the one you want.",
-    },
+    name: inl.t_fb6bdb1d,
+    desc: inl.t_c9ad9ef9,
   },
   {
     id: "digital-tree",
     group: "tree",
     form: "digital_family_tree",
     Icon: Network,
-    name: { ar: "طلب شجرة عائلة رقمية", en: "Digital family tree request" },
-    desc: {
-      ar: "طلب إعداد شجرة عائلة إلكترونية أو رقمية لفرع أو أسرة محددة.",
-      en: "Request an electronic or digital family tree for a specific branch or household.",
-    },
+    name: inl.t_c34ca41b,
+    desc: inl.t_e8be24cd,
   },
   {
     id: "tree-correction",
     group: "tree",
     form: "tree_data_correction",
     Icon: GitBranch,
-    name: {
-      ar: "طلب تصحيح أو إضافة بيانات في شجرة العائلة",
-      en: "Family tree data correction or addition",
-    },
-    desc: {
-      ar: "الإبلاغ عن خطأ في بيانات أحد الأفراد أو طلب إضافة مولود أو زواج أو وفاة إلى الشجرة.",
-      en: "Report an error in a member's record, or ask for a birth, marriage, or death to be added.",
-    },
+    name: inl.t_d39996e3,
+    desc: inl.t_db0d2c1d,
   },
   {
     id: "archive-contribution",
     group: "tree",
     form: "archive_contribution",
     Icon: Images,
-    name: { ar: "طلب إضافة صور إلى الأرشيف", en: "Archive photo contribution" },
-    desc: {
-      ar: "إتاحة صور عائلية أو وثائق للأمانة العامة لإضافتها إلى مجلدات الأرشيف المناسبة.",
-      en: "Offer family photographs or documents so the secretariat can add them to the right archive folder.",
-    },
+    name: inl.t_8e5051ca,
+    desc: inl.t_05408b6e,
   },
   {
     id: "library-submission",
     group: "tree",
     form: "library_submission",
     Icon: BookOpen,
-    name: { ar: "طلب إضافة مادة إلى المكتبة الرقمية", en: "Digital library submission" },
-    desc: {
-      ar: "ترشيح وثيقة أو مخطوطة أو تسجيل صوتي لإضافته إلى المكتبة الرقمية للأسرة.",
-      en: "Submit a document, manuscript, or recording for inclusion in the family digital library.",
-    },
+    name: inl.t_0c152b7a,
+    desc: inl.t_87595996,
   },
   {
     id: "museum-visit",
     group: "tree",
     form: "museum_visit",
     Icon: Landmark,
-    name: { ar: "طلب زيارة المتحف", en: "Museum visit request" },
-    desc: {
-      ar: "طلب تنسيق زيارة لمجموعة المتحف العائلي وتحديد الموعد وعدد الزوار.",
-      en: "Ask to arrange a visit to the family museum collection, with a date and party size.",
-    },
+    name: inl.t_b5d15301,
+    desc: inl.t_e540201e,
   },
   {
     id: "dna-participation",
     group: "tree",
     form: "dna_participation",
     Icon: Dna,
-    name: { ar: "طلب المشاركة في الدراسة الجينية", en: "Genetic study participation request" },
-    desc: {
-      ar: "التقدم للمشاركة في الدراسة الجينية لتوثيق النسب عبر الفروع.",
-      en: "Apply to take part in the genetic study documenting lineage across the branches.",
-    },
+    name: inl.t_b4897956,
+    desc: inl.t_4c6e110e,
   },
 
   {
@@ -414,33 +349,24 @@ const requests: RequestEntry[] = [
     group: "fund",
     form: "fund_attestation",
     Icon: FileBadge,
-    name: { ar: "طلب شهادة أو إثبات من الصندوق", en: "Fund certificate or attestation request" },
-    desc: {
-      ar: "طلب شهادة أو إثبات رسمي من صندوق التنمية العائلية لغرض محدد.",
-      en: "Request an official certificate or attestation from the family development fund.",
-    },
+    name: inl.t_9bb407c1,
+    desc: inl.t_53395850,
   },
   {
     id: "financial-statements",
     group: "fund",
     form: "financial_statement_copy",
     Icon: FileText,
-    name: { ar: "طلب نسخة من القوائم المالية", en: "Financial statement copy request" },
-    desc: {
-      ar: "طلب نسخة من القوائم المالية المعتمدة لسنة مالية محددة.",
-      en: "Request a copy of the approved financial statements for a given financial year.",
-    },
+    name: inl.t_0a7f18b5,
+    desc: inl.t_d22cfcd1,
   },
   {
     id: "social-assistance",
     group: "fund",
     form: "social_assistance",
     Icon: HeartHandshake,
-    name: { ar: "طلب دعم أو مساعدة اجتماعية", en: "Social assistance request" },
-    desc: {
-      ar: "التقدم بطلب دعم عبر برنامج التكافل والدعم الاجتماعي، ويُعالج الطلب بسرّية.",
-      en: "Apply for support through the social solidarity programme; requests are handled confidentially.",
-    },
+    name: inl.t_5b0fc131,
+    desc: inl.t_a0547cbb,
   },
 
   {
@@ -448,105 +374,72 @@ const requests: RequestEntry[] = [
     group: "participation",
     form: "committee_nomination",
     Icon: Users,
-    name: {
-      ar: "طلب ترشيح عضوية في احد اللجان",
-      en: "Committee membership nomination request",
-    },
-    desc: {
-      ar: "التقدم بترشيح نفسك لعضوية إحدى لجان مجلس الأسرة مع بيان المؤهلات وأسباب الترشيح.",
-      en: "Nominate yourself for membership of one of the standing committees, stating your qualifications.",
-    },
+    name: inl.t_930b7b2c,
+    desc: inl.t_73310b90,
   },
   {
     id: "achiever",
     group: "participation",
     form: "achiever_nomination",
     Icon: Award,
-    name: { ar: "الترشيح لسجل المتميزين", en: "Roll of Honour nomination" },
-    desc: {
-      ar: "ترشيح أحد أفراد الأسرة لتوثيق إنجاز علمي أو مهني في سجل المتميزين.",
-      en: "Nominate a family member so an academic or professional achievement is recorded in the Roll of Honour.",
-    },
+    name: inl.t_c83df14a,
+    desc: inl.t_57a3747f,
   },
   {
     id: "family-competencies",
     group: "participation",
     form: "family_competencies_nomination",
     Icon: Users,
-    name: { ar: "ترشيح كفاءات الأسرة", en: "Family Competencies Nomination" },
-    desc: {
-      ar: "ترشيح أحد أفراد الأسرة من أصحاب الكفاءات العلمية أو المهنية لإدراجه في قسم كفاءات الأسرة.",
-      en: "Nominate a family member with academic or professional competencies for the Family Competencies section.",
-    },
+    name: inl.t_90f0e3d6,
+    desc: inl.t_440601a0,
   },
   {
     id: "excellence-award",
     group: "participation",
     form: "excellence_award_application",
     Icon: Trophy,
-    name: { ar: "الترشح لجائزة التميز", en: "Excellence Award Application" },
-    desc: {
-      ar: "التقدم لجائزة آل بوعبيد للتفوق العلمي والتميز وفق مجالات الجائزة المعتمدة.",
-      en: "Apply for the Al Bu Obaid Award for Academic Excellence and Distinction in its approved categories.",
-    },
+    name: inl.t_f43136e0,
+    desc: inl.t_6ec89112,
   },
   {
     id: "ahsa-councils-join",
     group: "participation",
     form: "ahsa_family_councils_join",
     Icon: HeartHandshake,
-    name: { ar: "الانضمام إلى مجالس أسر الأحساء", en: "Join the Al-Ahsa Family Councils" },
-    desc: {
-      ar: "طلب الانضمام أو المشاركة في مجالس أسر الأحساء.",
-      en: "Request to join or take part in the Al-Ahsa Family Councils.",
-    },
+    name: inl.t_851a6386,
+    desc: inl.t_5010eeca,
   },
   {
     id: "youth-program",
     group: "participation",
     form: "youth_program_enrolment",
     Icon: GraduationCap,
-    name: {
-      ar: "طلب الاشتراك في برنامج تطوير مهارات الشباب",
-      en: "Youth skills programme enrolment",
-    },
-    desc: {
-      ar: "تسجيل الرغبة في الانضمام إلى برامج تطوير مهارات الشباب وورشها التدريبية.",
-      en: "Register your interest in the youth skills development programmes and workshops.",
-    },
+    name: inl.t_d0d09466,
+    desc: inl.t_f5d5bd8a,
   },
   {
     id: "competition-entry",
     group: "participation",
     form: "competition_entry",
     Icon: Trophy,
-    name: { ar: "طلب المشاركة في مسابقة", en: "Competition entry request" },
-    desc: {
-      ar: "التسجيل في إحدى مسابقات الأسرة المعلنة ضمن أنشطة لجان مجلس الأسرة.",
-      en: "Enter one of the family competitions announced within the Family Council committees' activities.",
-    },
+    name: inl.t_f6364880,
+    desc: inl.t_3e8de27d,
   },
   {
     id: "event-attendance",
     group: "participation",
     form: "event_attendance",
     Icon: CalendarDays,
-    name: { ar: "طلب تسجيل حضور فعالية", en: "Event attendance registration" },
-    desc: {
-      ar: "تسجيل الحضور في إحدى فعاليات الأسرة المعلنة وتحديد عدد المرافقين.",
-      en: "Register your attendance at an announced family event and state the number of guests.",
-    },
+    name: inl.t_82e8839d,
+    desc: inl.t_419829df,
   },
   {
     id: "initiative-participation",
     group: "participation",
     form: "initiative_participation",
     Icon: Sparkles,
-    name: { ar: "طلب الانضمام إلى مشروع أو مبادرة", en: "Initiative participation request" },
-    desc: {
-      ar: "التقدم للمشاركة في إحدى مبادرات الأسرة أو مشاريعها القائمة.",
-      en: "Apply to take part in one of the family's active initiatives or projects.",
-    },
+    name: inl.t_a863f942,
+    desc: inl.t_4fba5117,
   },
 
   /**
@@ -571,11 +464,8 @@ const requests: RequestEntry[] = [
     group: "general",
     form: "general_inquiry",
     Icon: Mail,
-    name: { ar: "استفسار أو طلب عام", en: "General inquiry or request" },
-    desc: {
-      ar: "إرسال استفسار أو طلب لا يشمله ما سبق إلى الأمانة العامة عبر صندوق الوارد.",
-      en: "Send the secretariat any inquiry or request not covered above; it lands in the official inbox.",
-    },
+    name: inl.t_2535ec14,
+    desc: inl.t_88cd0626,
   },
 ];
 
@@ -596,64 +486,49 @@ const approvals: ApprovalEntry[] = [
   {
     id: "ap-membership",
     group: "membership",
-    name: { ar: "طلبات توثيق العضوية", en: "Membership verification requests" },
-    desc: {
-      ar: "مراجعة طلبات العضوية وإسناد الأدوار في شاشة المستخدمين والتوثيق.",
-      en: "Review membership requests and role assignments in User Accounts & Verification.",
-    },
+    name: inl.t_f4d79be6,
+    desc: inl.t_90861988,
     admin: { domain: "system", tab: "users" },
     allow: isAdmin,
   },
   {
     id: "ap-contributions",
     group: "fund",
-    name: { ar: "المساهمات والاشتراكات", en: "Contributions & subscriptions" },
-    desc: {
-      ar: "اعتماد أو رفض إشعارات السداد في شاشة الخزينة.",
-      en: "Approve or decline payment notices in the treasury screen.",
-    },
+    name: inl.t_704198a5,
+    desc: inl.t_3403d9c8,
     route: "/treasury",
     allow: (roles) => isAdmin(roles) || roles.includes("treasurer"),
   },
   {
     id: "ap-directory",
     group: "services",
-    name: { ar: "طلبات إدراج الأعمال", en: "Business listing requests" },
-    desc: {
-      ar: "مراجعة المنشآت المقدَّمة قبل نشرها في دليل الأعمال.",
-      en: "Review submitted businesses before they appear in the directory.",
-    },
+    name: inl.t_74f6facc,
+    desc: inl.t_eb16d7ce,
     admin: { domain: "community", tab: "directory" },
     allow: isAdmin,
   },
   {
     id: "ap-achievers",
     group: "participation",
-    name: { ar: "ترشيحات سجل المتميزين", en: "Roll of Honour nominations" },
-    desc: {
-      ar: "اعتماد الترشيحات قبل إضافتها إلى لوحة الشرف.",
-      en: "Approve nominations before they join the Roll of Honour.",
-    },
+    name: inl.t_1600ce22,
+    desc: inl.t_fcd2b124,
     admin: { domain: "community", tab: "achievers" },
     allow: isAdmin,
   },
   {
     id: "ap-inquiries",
     group: "general",
-    name: { ar: "الرسائل والاستفسارات", en: "Messages & inquiries" },
-    desc: {
-      ar: "معالجة رسائل التواصل وطلبات اللوحات في صندوق الوارد.",
-      en: "Handle contact messages and frame orders in the inbox.",
-    },
+    name: inl.t_3962f0d5,
+    desc: inl.t_b29ea01d,
     admin: { domain: "community", tab: "inquiries" },
     allow: isAdmin,
   },
 ];
 
 const railSections: RailSection[] = [
-  { id: "submit", label: { ar: "تقديم طلب", en: "Submit" } },
-  { id: "mine", label: { ar: "طلباتي", en: "My requests" } },
-  { id: "approvals", label: { ar: "الاعتماد", en: "Approvals" } },
+  { id: "submit", label: inl.t_d3b6d1b9 },
+  { id: "mine", label: inl.t_0bd69562 },
+  { id: "approvals", label: inl.t_3bd71d6a },
 ];
 
 function RequestsHubPage() {
@@ -717,7 +592,7 @@ function RequestsHubPage() {
   const copyRefToClipboard = (ref: string) => {
     navigator.clipboard.writeText(ref);
     setCopiedTrackRef(true);
-    toast.success(lang === "ar" ? "تم نسخ رقم المعاملة" : "Reference copied");
+    toast.success(t(inl.t_028c6abd));
     setTimeout(() => setCopiedTrackRef(false), 2000);
   };
 
@@ -867,10 +742,7 @@ function RequestsHubPage() {
                         <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
                           <img
                             src={bandLogo[g]}
-                            alt={t({
-                              ar: "شعار مجلس أسرة آل بوعبيد",
-                              en: "Al Bu Obaid Family Council logo",
-                            })}
+                            alt={t(inl.t_0a08ec6f)}
                             className="h-12 w-auto object-contain"
                             loading="lazy"
                           />
@@ -1007,7 +879,7 @@ function RequestsHubPage() {
                             type="button"
                             onClick={() => copyRefToClipboard(trackedResult.request!.reference)}
                             className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors"
-                            title={rtl ? "نسخ" : "Copy"}
+                            title={t(inl.t_ffe8c95d)}
                           >
                             {copiedTrackRef ? (
                               <Check className="h-4 w-4 text-emerald-600" />
@@ -1023,7 +895,7 @@ function RequestsHubPage() {
                     <div className="grid gap-4 sm:grid-cols-2 text-xs">
                       <div>
                         <span className="text-muted-foreground block text-[11px] mb-1">
-                          {rtl ? "موضوع الطلب" : "Subject"}
+                          {t(inl.t_c8429046)}
                         </span>
                         <span className="font-semibold text-foreground text-sm">
                           {rtl
@@ -1037,7 +909,7 @@ function RequestsHubPage() {
                         trackedResult.request.committee_name_en) && (
                         <div>
                           <span className="text-muted-foreground block text-[11px] mb-1">
-                            {rtl ? "اللجنة المختصة" : "Responsible Committee"}
+                            {t(inl.t_4449482e)}
                           </span>
                           <span className="font-semibold text-foreground text-sm">
                             {rtl
@@ -1060,14 +932,12 @@ function RequestsHubPage() {
                     {/* Timeline stages */}
                     <div className="pt-3 border-t border-border/40">
                       <span className="text-[11px] font-medium text-muted-foreground block mb-3">
-                        {rtl ? "مراحل الاعتماد والمعالجة" : "Approval & Processing Stages"}
+                        {t(inl.t_f1c045d2)}
                       </span>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                         <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
                           <CheckCircle2 className="h-4 w-4 shrink-0" />
-                          <span className="font-medium text-[11.5px]">
-                            {rtl ? "1. استلام الطلب" : "1. Received"}
-                          </span>
+                          <span className="font-medium text-[11.5px]">{t(inl.t_a496f8c0)}</span>
                         </div>
                         <div
                           className={`flex items-center gap-2 p-2 rounded-lg ${
@@ -1095,9 +965,7 @@ function RequestsHubPage() {
                           ) : (
                             <Clock className="h-4 w-4 shrink-0 animate-pulse" />
                           )}
-                          <span className="font-medium text-[11.5px]">
-                            {rtl ? "2. المراجعة الأولية" : "2. Initial Review"}
-                          </span>
+                          <span className="font-medium text-[11.5px]">{t(inl.t_0c0bd091)}</span>
                         </div>
                         <div
                           className={`flex items-center gap-2 p-2 rounded-lg ${
@@ -1125,12 +993,8 @@ function RequestsHubPage() {
                           )}
                           <span className="font-medium text-[11.5px]">
                             {trackedResult.request.status === "rejected"
-                              ? rtl
-                                ? "3. اعتذار"
-                                : "3. Declined"
-                              : rtl
-                                ? "3. اعتماد اللجنة"
-                                : "3. Committee Approval"}
+                              ? t(inl.t_adf4aa12)
+                              : t(inl.t_d9f032c0)}
                           </span>
                         </div>
                         <div
@@ -1149,9 +1013,7 @@ function RequestsHubPage() {
                           ) : (
                             <div className="h-4 w-4 rounded-full border border-current shrink-0" />
                           )}
-                          <span className="font-medium text-[11.5px]">
-                            {rtl ? "4. التنفيذ النهائي" : "4. Completed"}
-                          </span>
+                          <span className="font-medium text-[11.5px]">{t(inl.t_74a04d37)}</span>
                         </div>
                       </div>
                     </div>
@@ -1215,7 +1077,7 @@ function RequestsHubPage() {
                           className="font-bold text-primary hover:underline flex items-center gap-1"
                         >
                           <Search className="h-3 w-3" />
-                          {rtl ? "متابعة الحالة" : "Track"}
+                          {t(inl.t_8c775a6c)}
                         </button>
                       </div>
                     </div>
@@ -1260,10 +1122,7 @@ function RequestsHubPage() {
                     <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
                       <img
                         src={bandLogo[a.group]}
-                        alt={t({
-                          ar: "شعار مجلس أسرة آل بوعبيد",
-                          en: "Al Bu Obaid Family Council logo",
-                        })}
+                        alt={t(inl.t_0a08ec6f)}
                         className="h-12 w-auto max-w-[75%] object-contain"
                       />
                       <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--req-on-band)]/30 text-[var(--req-on-band)]">
@@ -1279,7 +1138,7 @@ function RequestsHubPage() {
                       </p>
                       {a.route ? (
                         <Link to={a.route} className={reviewLinkClass}>
-                          {lang === "ar" ? "فتح شاشة المراجعة" : "Open review screen"}
+                          {t(inl.t_f62d4b93)}
                           <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                         </Link>
                       ) : a.admin ? (
@@ -1288,7 +1147,7 @@ function RequestsHubPage() {
                           search={{ domain: a.admin.domain, tab: a.admin.tab }}
                           className={reviewLinkClass}
                         >
-                          {lang === "ar" ? "فتح شاشة المراجعة" : "Open review screen"}
+                          {t(inl.t_f62d4b93)}
                           <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                         </Link>
                       ) : null}

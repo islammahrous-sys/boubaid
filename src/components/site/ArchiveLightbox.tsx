@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { inl } from "@/content/page-copy/archivelightbox-inline";
 
 export interface ArchiveLightboxItem {
   id: string;
@@ -23,7 +24,7 @@ export function ArchiveLightbox({
   onClose: () => void;
   onNavigate: (nextIndex: number) => void;
 }) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const rtl = lang === "ar";
   const open = index !== null;
   const current = index !== null ? items[index] : null;
@@ -132,7 +133,7 @@ export function ArchiveLightbox({
                 type="button"
                 onClick={goNext}
                 className="absolute end-2 top-1/2 z-20 grid h-10 w-10 sm:h-11 sm:w-11 -translate-y-1/2 place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-xs transition-colors cursor-pointer active:scale-95"
-                aria-label={rtl ? "التالي" : "Next"}
+                aria-label={t(inl.t_1c525961)}
               >
                 {rtl ? (
                   <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />

@@ -3,11 +3,12 @@ import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import { inl } from "@/content/page-copy/pdfcanvasviewer-inline";
 
 type PdfDocument = import("pdfjs-dist").PDFDocumentProxy;
 
 export function PdfCanvasViewer({ src, title }: { src: string; title: string }) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<{ cancel: () => void } | null>(null);
   const [document, setDocument] = useState<PdfDocument | null>(null);
@@ -138,7 +139,7 @@ export function PdfCanvasViewer({ src, title }: { src: string; title: string }) 
           type="button"
           variant="outline"
           size="icon"
-          aria-label={lang === "ar" ? "الصفحة التالية" : "Next page"}
+          aria-label={t(inl.t_d42a12c8)}
           disabled={pageNumber >= document.numPages}
           onClick={() => setPageNumber((page) => Math.min(document.numPages, page + 1))}
         >

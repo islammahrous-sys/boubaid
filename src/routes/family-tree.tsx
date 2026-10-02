@@ -12,6 +12,7 @@ import {
 import { getPublicFamilyStats } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/family-tree";
+import { inl } from "@/content/page-copy/family-tree-inline";
 
 const searchSchema = z.object({
   branch: z.string().optional(),
@@ -97,14 +98,9 @@ function FamilyTreePage() {
 
       {/* ── Official Tree Artwork & Lineage Documents ───────────────────────── */}
       <section className="reveal-on-scroll container-page mt-4 border-t border-border pt-10 pb-16">
-        <Eyebrow>
-          {t({ ar: "وثائق النسب والمشجرة الرسمية", en: "Lineage Documents & Official Tree" })}
-        </Eyebrow>
+        <Eyebrow>{t(inl.t_616c96c2)}</Eyebrow>
         <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
-          {t({
-            ar: "اللوحة الرسمية المعتمدة لشجرة أسرة آل بوعبيد (مسجلة الملكية الفكرية)، والتقارير الجينية الموثقة.",
-            en: "The official IP-registered pictorial family tree plate and documented genetic reports.",
-          })}
+          {t(inl.t_1817cb82)}
         </p>
         <DocumentShowcase
           refs={["IP-Registered", "Genealogy Archive"]}

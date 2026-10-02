@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
+import { inl } from "@/content/page-copy/qrscanner-inline";
 
 /**
  * Camera QR scanner for event check-ins. Reads a member card's QR and returns
  * the member code (the `id` from a /verify?id=… URL, or a raw ABO- code).
  */
 export function QrScanner({ onCode }: { onCode: (code: string) => void }) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const isAr = lang === "ar";
   const videoRef = useRef<HTMLVideoElement>(null);
   const [active, setActive] = useState(false);
@@ -102,7 +103,7 @@ export function QrScanner({ onCode }: { onCode: (code: string) => void }) {
           className="gap-2 text-xs font-semibold"
         >
           <Camera className="h-4 w-4" />
-          {isAr ? "مسح بطاقة عضو بالكاميرا" : "Scan a member card"}
+          {t(inl.t_a313b90d)}
         </Button>
       )}
       {error && <p className="text-xs text-destructive">{error}</p>}

@@ -4,6 +4,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
+import { inl } from "@/content/page-copy/ahsa-family-councils-inline";
 
 export const Route = createFileRoute("/ahsa-family-councils")({
   head: () => ({
@@ -29,19 +30,13 @@ function AhsaCouncilsPage() {
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
   return (
     <>
-      <PageHeader
-        eyebrow={t({ ar: "الشراكات الأسرية", en: "Family partnerships" })}
-        title={t({ ar: "مجالس أسر الأحساء", en: "Al-Ahsa Family Councils" })}
-      />
+      <PageHeader eyebrow={t(inl.t_6a4948f2)} title={t(inl.t_a7e0e1eb)} />
       <div className="container-page py-14 md:py-16">
         <section>
-          <Eyebrow rule>{t({ ar: "المجالس", en: "Councils" })}</Eyebrow>
+          <Eyebrow rule>{t(inl.t_2c3a3d5a)}</Eyebrow>
           <div className="mt-6 max-w-3xl">
             <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
-              {t({
-                ar: "تنسق أمانة مجلس الأسرة مع مجالس أسر الأحساء المعتمدة لتعزيز أواصر التعاون والعمل الأهلي المشترك وتبادل المبادرات الاجتماعية.",
-                en: "The Family Council Secretariat coordinates with accredited Al-Ahsa family councils to enhance mutual cooperation and exchange social initiatives.",
-              })}
+              {t(inl.t_9ce31333)}
             </p>
           </div>
           <Link
@@ -49,7 +44,7 @@ function AhsaCouncilsPage() {
             search={{ request: "ahsa_family_councils_join" }}
             className="tap-target-y mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
           >
-            {t({ ar: "الانضمام إلى مجالس أسر الأحساء", en: "Join the Al-Ahsa Family Councils" })}
+            {t(inl.t_851a6386)}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </section>

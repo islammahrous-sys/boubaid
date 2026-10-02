@@ -32,6 +32,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Rule } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
+import { inl } from "@/content/page-copy/p-slug-inline";
 
 /**
  * Some block types (BlockRegistry.tsx) embed data from other public tables
@@ -159,7 +160,7 @@ export const Route = createFileRoute("/p/$slug")({
 
 function DynamicCmsPageComponent() {
   const { page, sections } = Route.useLoaderData();
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const isAr = lang === "ar";
   const title = isAr ? page.title_ar : page.title_en || page.title_ar;
 
@@ -790,7 +791,7 @@ function ContactFormBlock({ title, isAr }: { title?: string; isAr: boolean }) {
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const sendContact = useServerFn(submitContactMessage);
-  const { lang } = useLang();
+  const { lang, t } = useLang();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -890,7 +891,7 @@ function ContactFormBlock({ title, isAr }: { title?: string; isAr: boolean }) {
           disabled={submitting}
           className="w-full border border-primary bg-primary text-primary-foreground rounded-lg px-6 py-2.5 text-sm font-bold transition-colors hover:bg-primary/90 disabled:opacity-60"
         >
-          {submitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
+          {submitting ? t(inl.t_4da3eb17) : t(inl.t_ca691bb0)}
         </button>
       </form>
     </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
+import { inl } from "@/content/page-copy/copybutton-inline";
 
 /**
  * Copy affordance for the details people actually need to transfer by hand —
@@ -30,13 +31,13 @@ export function CopyButton({
     }
   };
 
-  const copyLabel = label ?? t({ ar: "نسخ", en: "Copy" });
+  const copyLabel = label ?? t(inl.t_ffe8c95d);
 
   return (
     <button
       type="button"
       onClick={copy}
-      aria-label={copied ? t({ ar: "تم النسخ", en: "Copied" }) : copyLabel}
+      aria-label={copied ? t(inl.t_6cf4d226) : copyLabel}
       className={cn(
         "inline-flex min-h-9 items-center gap-1.5 border border-border px-2.5 py-1 text-xs font-medium transition-colors duration-150",
         copied
@@ -50,7 +51,7 @@ export function CopyButton({
       ) : (
         <Copy className="h-3.5 w-3.5" aria-hidden="true" />
       )}
-      <span aria-live="polite">{copied ? t({ ar: "تم النسخ", en: "Copied" }) : copyLabel}</span>
+      <span aria-live="polite">{copied ? t(inl.t_6cf4d226) : copyLabel}</span>
     </button>
   );
 }

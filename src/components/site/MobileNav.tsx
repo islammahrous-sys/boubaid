@@ -33,14 +33,15 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { inl } from "@/content/page-copy/mobilenav-inline";
 
 /** Matches the desktop's primary information hierarchy. Secondary destinations
  *  such as Archive and Store live in the organised More panel. */
 const tabs: { to: string; label: BiText; Icon: React.ComponentType<{ className?: string }> }[] = [
-  { to: "/", label: { ar: "الرئيسية", en: "Home" }, Icon: PalmGlyph },
-  { to: "/family-tree", label: { ar: "المشجرة", en: "Tree" }, Icon: CompassGlyph },
-  { to: "/committees", label: { ar: "اللجان", en: "Committees" }, Icon: SealGlyph },
-  { to: "/directory", label: { ar: "الخدمات", en: "Services" }, Icon: BriefcaseBusiness },
+  { to: "/", label: inl.t_c2133d37, Icon: PalmGlyph },
+  { to: "/family-tree", label: inl.t_023f074e, Icon: CompassGlyph },
+  { to: "/committees", label: inl.t_464b7f6d, Icon: SealGlyph },
+  { to: "/directory", label: inl.t_52b6b6e5, Icon: BriefcaseBusiness },
 ];
 
 export function MobileNav() {
@@ -63,10 +64,7 @@ export function MobileNav() {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden">
-      <nav
-        className="grid h-16 grid-cols-5 items-stretch px-1"
-        aria-label={t({ ar: "التنقل السريع", en: "Quick navigation" })}
-      >
+      <nav className="grid h-16 grid-cols-5 items-stretch px-1" aria-label={t(inl.t_c24bed2a)}>
         {tabs.map((item) => {
           const Icon = item.Icon;
           const active = isRouteActive(pathname, item.to);
@@ -101,11 +99,11 @@ export function MobileNav() {
               type="button"
               variant="ghost"
               className="h-full min-w-0 flex-col gap-1 rounded-none border-t-2 border-transparent px-0.5 text-muted-foreground shadow-none active:scale-[0.96]"
-              aria-label={lang === "ar" ? "فتح قائمة المزيد" : "Open more menu"}
+              aria-label={t(inl.t_a7c2e5b5)}
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
               <span className="w-full truncate text-center text-[10px] sm:text-[11px]">
-                {lang === "ar" ? "المزيد" : "More"}
+                {t(inl.t_e3e60439)}
               </span>
             </Button>
           </DrawerTrigger>
@@ -113,7 +111,7 @@ export function MobileNav() {
           <DrawerContent className="max-h-[85vh] border-t border-border bg-background">
             <DrawerHeader className="border-b border-border pb-3 text-start">
               <DrawerTitle className="font-naskh text-lg font-bold text-foreground">
-                {lang === "ar" ? "بوابة أسرة آل بوعبيد" : "Al Bu Obaid Portal"}
+                {t(inl.t_4b314583)}
               </DrawerTitle>
             </DrawerHeader>
 
@@ -140,13 +138,7 @@ export function MobileNav() {
                       <UserRound className="h-5 w-5 text-bronze dark:text-gold" />
                     )}
                     <span className="text-[11px] font-bold text-foreground line-clamp-1">
-                      {user
-                        ? lang === "ar"
-                          ? "حسابي"
-                          : "Account"
-                        : lang === "ar"
-                          ? "دخول"
-                          : "Sign in"}
+                      {user ? t(inl.t_40d4acb5) : t(inl.t_8aafe200)}
                     </span>
                   </Link>
                 </DrawerClose>
@@ -158,7 +150,7 @@ export function MobileNav() {
                   >
                     <HeartHandshake className="h-5 w-5 text-bronze dark:text-gold" />
                     <span className="text-[11px] font-bold text-foreground line-clamp-1">
-                      {lang === "ar" ? "المساهمة" : "Contribute"}
+                      {t(inl.t_11d85479)}
                     </span>
                   </Link>
                 </DrawerClose>
@@ -171,7 +163,7 @@ export function MobileNav() {
                   >
                     <BookGlyph className="h-5 w-5 text-bronze dark:text-gold" />
                     <span className="line-clamp-1 text-[11px] font-bold text-foreground">
-                      {lang === "ar" ? "الأرشيف" : "Archive"}
+                      {t(inl.t_0e0bb33d)}
                     </span>
                   </Link>
                 </DrawerClose>
@@ -184,7 +176,7 @@ export function MobileNav() {
                 >
                   <ShoppingBag className="h-5 w-5 text-bronze dark:text-gold" />
                   <span className="line-clamp-1 text-[11px] font-bold text-foreground">
-                    {lang === "ar" ? "المتجر" : "Store"}
+                    {t(inl.t_262a9ac2)}
                   </span>
                 </a>
               </div>

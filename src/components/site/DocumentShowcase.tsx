@@ -7,6 +7,7 @@ import { libraryItems } from "@/content/site";
 import { fundDocuments } from "@/content/fund-documents";
 import { cn } from "@/lib/utils";
 import { formatDualHijriYear } from "@/lib/dates";
+import { inl } from "@/content/page-copy/documentshowcase-inline";
 
 /**
  * Reference aliases used by editorial pages (Contact / About) mapped onto the
@@ -75,12 +76,7 @@ export function DocumentShowcase({
   if (docs.length === 0) return null;
 
   const handleUnavailable = () => {
-    toast(
-      t({
-        ar: "الملف الأصلي محفوظ في أرشيف الأمانة العامة ويخضع لضوابط الاطلاع الرسمية.",
-        en: "Original document is archived with the Secretariat under standard access procedures.",
-      }),
-    );
+    toast(t(inl.t_f5a83b92));
   };
 
   return (
@@ -138,7 +134,7 @@ export function DocumentShowcase({
                       ) : (
                         <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                       )}
-                      {t({ ar: "عرض الوثيقة", en: "View document" })}
+                      {t(inl.t_5e7c8b48)}
                     </button>
                   ) : (
                     <button
@@ -147,7 +143,7 @@ export function DocumentShowcase({
                       className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                     >
                       <FileText className="h-3.5 w-3.5" aria-hidden="true" />
-                      {t({ ar: "طلب نسخة", en: "Request copy" })}
+                      {t(inl.t_43caeaac)}
                     </button>
                   )}
                 </div>
@@ -203,7 +199,7 @@ export function DocumentShowcase({
                       ) : (
                         <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                       )}
-                      {t({ ar: "عرض", en: "View" })}
+                      {t(inl.t_c47895fb)}
                     </button>
                   ) : (
                     <button
@@ -212,7 +208,7 @@ export function DocumentShowcase({
                       className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                     >
                       <FileText className="h-3.5 w-3.5" aria-hidden="true" />
-                      {t({ ar: "PDF (طلب الأمانة)", en: "PDF (request)" })}
+                      {t(inl.t_cc57468f)}
                     </button>
                   )}
                 </div>

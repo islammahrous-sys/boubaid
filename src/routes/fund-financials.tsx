@@ -8,6 +8,7 @@ import { getPublishedLibrary } from "@/lib/cms.functions";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { downloadFile } from "@/lib/download";
 import { formatDualYear, formatDualYearRange } from "@/lib/dates";
+import { inl } from "@/content/page-copy/fund-financials-inline";
 
 export const Route = createFileRoute("/fund-financials")({
   loader: async () => {
@@ -58,7 +59,7 @@ function periodLabel(title: string, year: number | null, lang: "ar" | "en"): str
 }
 
 function FundFinancialsPage() {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const { statements } = Route.useLoaderData();
   const isAr = lang === "ar";
 
@@ -68,10 +69,7 @@ function FundFinancialsPage() {
   const whatsappHref = `https://wa.me/${COUNCIL_WHATSAPP}?text=${encodeURIComponent(inquiryMessage)}`;
 
   /** Not yet issued: kept as an announced, file-less entry. */
-  const upcoming = {
-    ar: "القوائم المالية بداية من عام 2026",
-    en: "Financial statements from 2026 onward",
-  };
+  const upcoming = inl.t_2f0f9843;
 
   return (
     <div>
@@ -187,11 +185,7 @@ function FundFinancialsPage() {
           </Link>
         </div>
 
-        <Prose className="mt-6 text-xs text-muted-foreground">
-          {isAr
-            ? "تُحوَّل طلبات الاستعلام المالي إلى رئيس مجلس الأسرة د. خالد بوعبيد للاعتماد قبل تزويد مقدّم الطلب بالبيانات."
-            : "Financial inquiries are routed to the Family Council President, Dr. Khaled Bu Obaid, for approval before any figures are released."}
-        </Prose>
+        <Prose className="mt-6 text-xs text-muted-foreground">{t(inl.t_6c22913c)}</Prose>
       </section>
     </div>
   );

@@ -22,6 +22,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
+import { inl } from "@/content/page-copy/globalsearchmodal-inline";
 
 export function GlobalSearchModal({
   open,
@@ -30,7 +31,7 @@ export function GlobalSearchModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const isAr = lang === "ar";
   const navigate = useNavigate();
 
@@ -240,7 +241,7 @@ export function GlobalSearchModal({
 
         {/* 6. Branches */}
         {results.branches.length > 0 && (
-          <CommandGroup heading={isAr ? "فروع الأسرة السبعة" : "Family Branches"}>
+          <CommandGroup heading={t(inl.t_c8db7e63)}>
             {results.branches.map((b) => (
               <CommandItem
                 key={b.id}

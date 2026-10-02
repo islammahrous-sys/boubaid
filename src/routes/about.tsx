@@ -15,6 +15,7 @@ import { pageImages } from "@/content/images";
 import { getPublicFamilyHistory } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/about";
+import { inl } from "@/content/page-copy/about-inline";
 
 export const Route = createFileRoute("/about")({
   loader: () => getPublicFamilyHistory(),
@@ -46,7 +47,7 @@ export const Route = createFileRoute("/about")({
  */
 const railSections: RailSection[] = [
   ...historySections.map((s) => ({ id: s.id, label: s.label })),
-  { id: "chain", label: { ar: "عمود النسب", en: "Chain of descent" } },
+  { id: "chain", label: inl.t_35e79b4e },
 ];
 
 function AboutPage() {
@@ -101,9 +102,7 @@ function AboutPage() {
             </div>
 
             <dl className="border-t border-border pt-5 text-[13px]">
-              <dt className="label-caps text-muted-foreground">
-                {rtl ? "الكيان الرسمي" : "Registered entity"}
-              </dt>
+              <dt className="label-caps text-muted-foreground">{t(inl.t_1f3eafc6)}</dt>
               <dd className="mt-1.5 leading-relaxed text-foreground">{t(siteMeta.officialName)}</dd>
               <dd className="nums mt-1 font-mono text-bronze dark:text-gold">
                 {siteMeta.ncnpLicense}
@@ -185,13 +184,9 @@ function AboutPage() {
           className="container-page scroll-mt-28 py-16 md:py-20 reveal-on-scroll border-t border-border"
         >
           <SectionHeading
-            eyebrow={rtl ? "المحطات والشواهد" : "Milestones & Records"}
-            title={rtl ? "المحطات التاريخية والوقائع الموثقة" : "Documented Historical Milestones"}
-            subtitle={
-              rtl
-                ? "سجل زمني يوثق أبرز المحطات والوثائق التاريخية المحفوظة لأسرة آل بوعبيد عبر العصور."
-                : "Chronological register documenting key historical milestones and preserved family records."
-            }
+            eyebrow={t(inl.t_16176c56)}
+            title={t(inl.t_edbe22de)}
+            subtitle={t(inl.t_10533dee)}
           />
 
           <div className="mt-12 space-y-8 relative before:absolute before:inset-0 before:start-4 before:w-0.5 before:bg-border md:before:start-1/2">

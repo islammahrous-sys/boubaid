@@ -64,6 +64,7 @@ import type { PublicEventRow } from "@/lib/events-public.functions";
 import { mergeNews, mergeInitiatives, mapAchieverRow } from "@/content/cms-adapt";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/index";
+import { inl } from "@/content/page-copy/index-inline";
 
 type PublicGalleryPreviewItem = {
   id: string;
@@ -483,7 +484,7 @@ function HomePage() {
                 <div className="mx-auto flex w-full flex-col items-center justify-center motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                   <img
                     src="/logo-mark-gold.svg"
-                    alt={rtl ? "شعار مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council mark"}
+                    alt={t(inl.t_fbfc687f)}
                     className="h-auto w-[clamp(9rem,36vw,13rem)] shrink-0 object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] sm:w-[clamp(11rem,25vw,15rem)] lg:w-[17rem]"
                   />
                 </div>
@@ -506,9 +507,7 @@ function HomePage() {
                         ? sec.cta_label_ar
                         : sec.cta_label_en && !rtl
                           ? sec.cta_label_en
-                          : lang === "ar"
-                            ? "تصفح مشجرة النسب"
-                            : "Explore Family Tree"}
+                          : t(inl.t_dceea135)}
                     </span>
                     <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
                   </Link>
@@ -1368,18 +1367,14 @@ function HomePage() {
                   ? sec.badge_ar
                   : sec.badge_en && !rtl
                     ? sec.badge_en
-                    : rtl
-                      ? "أرقام ومنجزات"
-                      : "Numbers & Achievements"
+                    : t(inl.t_279322fd)
               }
               title={
                 sec.title_ar && rtl
                   ? sec.title_ar
                   : sec.title_en && !rtl
                     ? sec.title_en
-                    : rtl
-                      ? "الأسرة في أرقام ومنجزات"
-                      : "The Family in Numbers"
+                    : t(inl.t_881212c1)
               }
               subtitle={
                 sec.subtitle_ar && rtl
@@ -1412,18 +1407,14 @@ function HomePage() {
                   ? sec.badge_ar
                   : sec.badge_en && !rtl
                     ? sec.badge_en
-                    : rtl
-                      ? "الشجرة التفاعلية"
-                      : "Interactive Tree"}
+                    : t(inl.t_2fb3840b)}
               </Eyebrow>
               <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
                 {sec.title_ar && rtl
                   ? sec.title_ar
                   : sec.title_en && !rtl
                     ? sec.title_en
-                    : rtl
-                      ? "شجرة العائلة الرقمية التفاعلية"
-                      : "Interactive Digital Family Tree"}
+                    : t(inl.t_d858321e)}
               </h2>
               {(sec.subtitle_ar || sec.subtitle_en) && (
                 <p className="measure mx-auto mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -1438,9 +1429,7 @@ function HomePage() {
                   ? sec.cta_label_ar
                   : sec.cta_label_en && !rtl
                     ? sec.cta_label_en
-                    : rtl
-                      ? "فتح الشجرة التفاعلية"
-                      : "Open Tree Canvas"}
+                    : t(inl.t_5090b82d)}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -1504,18 +1493,14 @@ function HomePage() {
                       ? sec.badge_ar
                       : sec.badge_en && !rtl
                         ? sec.badge_en
-                        : rtl
-                          ? "التقويم"
-                          : "Calendar"
+                        : t(inl.t_b5065b03)
                   }
                   title={
                     sec.title_ar && rtl
                       ? sec.title_ar
                       : sec.title_en && !rtl
                         ? sec.title_en
-                        : rtl
-                          ? "الفعاليات والاجتماعات العائلية"
-                          : "Family Events & Council Meetings"
+                        : t(inl.t_c6f2e4b6)
                   }
                   subtitle={
                     sec.subtitle_ar && rtl
@@ -1533,9 +1518,7 @@ function HomePage() {
                     ? sec.cta_label_ar
                     : sec.cta_label_en && !rtl
                       ? sec.cta_label_en
-                      : rtl
-                        ? "سجل الفعاليات"
-                        : "View all events"}
+                      : t(inl.t_cecded4a)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
@@ -1589,9 +1572,7 @@ function HomePage() {
                     ? sec.badge_ar
                     : sec.badge_en && !rtl
                       ? sec.badge_en
-                      : rtl
-                        ? "الأرشيف"
-                        : "Archive"
+                      : t(inl.t_0e0bb33d)
                 }
                 title={
                   sec.title_ar && rtl
@@ -1619,9 +1600,7 @@ function HomePage() {
                     ? sec.cta_label_ar
                     : sec.cta_label_en && !rtl
                       ? sec.cta_label_en
-                      : rtl
-                        ? "المزيد"
-                        : "More"}
+                      : t(inl.t_e3e60439)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               ) : null}

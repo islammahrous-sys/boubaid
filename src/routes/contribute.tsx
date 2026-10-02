@@ -7,6 +7,7 @@ import { Eyebrow } from "@/components/site/Editorial";
 import { CopyButton } from "@/components/site/CopyButton";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/contribute";
+import { inl } from "@/content/page-copy/contribute-inline";
 
 export const Route = createFileRoute("/contribute")({
   head: () => ({
@@ -32,28 +33,25 @@ export const Route = createFileRoute("/contribute")({
 
 /** Values are transcribed exactly from the fund's official bank record. */
 const bank: { label: BiText; value: string; mono?: boolean; copy?: boolean }[] = [
-  { label: { ar: "اسم البنك", en: "Bank name" }, value: "بنك البلاد — Bank Albilad" },
+  { label: inl.t_5bd3ce0b, value: "بنك البلاد — Bank Albilad" },
   {
-    label: { ar: "اسم الحساب", en: "Account name" },
+    label: inl.t_2d5a1294,
     value: "صندوق التنمية العائلية — Family Development Fund",
   },
   {
-    label: {
-      ar: "رقم العميل / الهوية / السجل",
-      en: "Customer ID / National ID / CR number",
-    },
+    label: inl.t_4a27396d,
     value: "7001473102",
     mono: true,
     copy: true,
   },
   {
-    label: { ar: "رقم الحساب", en: "Account number" },
+    label: inl.t_5d70aa49,
     value: "999146092730006",
     mono: true,
     copy: true,
   },
   {
-    label: { ar: "رقم الآيبان", en: "IBAN number" },
+    label: inl.t_39d195d6,
     value: "SA1915000999146092730006",
     mono: true,
     copy: true,
@@ -71,11 +69,11 @@ function ContributePage() {
         subtitle={t(copy.subtitle)}
         meta={[
           {
-            label: t({ ar: "البنك", en: "Bank" }),
-            value: t({ ar: "بنك البلاد", en: "Bank Albilad" }),
+            label: t(inl.t_80fbdcaf),
+            value: t(inl.t_5b9d31f2),
           },
           {
-            label: t({ ar: "رقم الآيبان", en: "IBAN" }),
+            label: t(inl.t_2f3fb2d5),
             value: "SA1915000999146092730006",
             mono: true,
           },
@@ -115,10 +113,7 @@ function ContributePage() {
               className="mt-0.5 h-4 w-4 shrink-0 text-bronze dark:text-gold"
               aria-hidden="true"
             />
-            {t({
-              ar: "يُرجى التحقق من مطابقة اسم الحساب ورقم الآيبان قبل أي تحويل.",
-              en: "Please verify the account name and IBAN match before making any transfer.",
-            })}
+            {t(inl.t_34bf31bf)}
           </p>
         </section>
       </div>

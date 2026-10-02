@@ -12,6 +12,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { inl } from "@/content/page-copy/servicecatalogue-inline";
 
 /**
  * Service catalogue for one of the two categories of
@@ -37,10 +38,7 @@ export function ServiceCatalogue({
 
   if (items.length === 0) return null;
 
-  const heading =
-    category === "family"
-      ? { ar: "خدمات أفراد الأسرة", en: "Services for Family Members" }
-      : { ar: "خدمات المنشآت", en: "Services for Establishments" };
+  const heading = category === "family" ? inl.t_3e83ce6f : inl.t_19fc1d8d;
 
   return (
     <section aria-labelledby={`services-${category}`} className="space-y-4">
@@ -56,7 +54,7 @@ export function ServiceCatalogue({
           search={{ request: category === "family" ? "service_family" : "service_establishment" }}
           className="ms-auto border-b border-bronze pb-0.5 text-[12.5px] font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
         >
-          {isAr ? "سجّل خدمتك" : "Register your service"}
+          {t(inl.t_ec475806)}
         </Link>
       </div>
 
@@ -89,7 +87,7 @@ export function ServiceCatalogue({
                   <span className="mt-auto inline-flex items-center gap-1.5 pt-1 text-[11px] font-medium text-primary">
                     <FileText className="h-3.5 w-3.5" aria-hidden="true" />
                     <span className="nums">{service.documents.length}</span>
-                    <span>{isAr ? "وثيقة" : "documents"}</span>
+                    <span>{t(inl.t_1260a420)}</span>
                   </span>
                 ) : null}
               </button>
@@ -109,25 +107,14 @@ export function ServiceCatalogue({
                 <DialogDescription className="text-xs leading-relaxed">
                   {(isAr
                     ? active.description_ar
-                    : active.description_en || active.description_ar) ||
-                    t({
-                      ar: "لمزيد من التفاصيل حول هذه الخدمة، يُرجى التواصل مع أمانة مجلس الأسرة.",
-                      en: "For further details about this service, please contact the Family Council secretariat.",
-                    })}
+                    : active.description_en || active.description_ar) || t(inl.t_d6efcc71)}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-2">
-                <p className="text-xs font-bold text-foreground">
-                  {t({ ar: "الوثائق المرتبطة", en: "Related documents" })}
-                </p>
+                <p className="text-xs font-bold text-foreground">{t(inl.t_5801bca6)}</p>
                 {active.documents.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">
-                    {t({
-                      ar: "لا توجد وثائق منشورة لهذه الخدمة في الوقت الحالي.",
-                      en: "No documents have been published for this service yet.",
-                    })}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t(inl.t_f240ee05)}</p>
                 ) : (
                   <ul className="space-y-2">
                     {active.documents.map((doc) => (
@@ -160,7 +147,7 @@ export function ServiceCatalogue({
                           }
                         >
                           <FileText className="h-3.5 w-3.5" aria-hidden="true" />
-                          {t({ ar: "عرض", en: "View" })}
+                          {t(inl.t_c47895fb)}
                         </Button>
                       </li>
                     ))}

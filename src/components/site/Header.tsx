@@ -22,6 +22,7 @@ import { GlobalSearchModal } from "./GlobalSearchModal";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { cn } from "@/lib/utils";
+import { inl } from "@/content/page-copy/header-inline";
 
 /** Top-bar links shown inline before the rest fold into "More". Kept to four so
  *  the English labels ("Lineage & History", "Services"…) plus the right-hand
@@ -170,7 +171,7 @@ export function Header() {
         <div className="container-header flex items-center justify-center gap-2 sm:gap-2.5 py-1.5 text-center text-xs min-w-0">
           <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-2.5 sm:px-3 py-0.5 text-[10px] sm:text-[11px] font-medium text-amber-900 dark:text-gold">
             <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" aria-hidden="true" />
-            {lang === "ar" ? "كيان أهلي مرخص" : "Licensed Nonprofit"}
+            {t(inl.t_02518b8c)}
           </span>
           <span className="h-3.5 w-px bg-border shrink-0" aria-hidden="true" />
           <span className="truncate text-[10px] sm:text-[11px] text-muted-foreground min-w-0">
@@ -224,7 +225,7 @@ export function Header() {
                   : "text-base sm:text-lg rtl:text-base sm:rtl:text-xl md:text-xl 2xl:text-2xl",
               )}
             >
-              {lang === "ar" ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
+              {t(inl.t_07e2a46b)}
             </span>
           </span>
         </Link>
@@ -275,7 +276,7 @@ export function Header() {
                       aria-label={
                         typeof n.label === "string"
                           ? n.label
-                          : `${t(n.label)} — ${lang === "ar" ? "القائمة الفرعية" : "submenu"}`
+                          : `${t(n.label)} — ${t(inl.t_619c3dd1)}`
                       }
                       className="cursor-pointer p-0.5"
                     >
@@ -377,7 +378,7 @@ export function Header() {
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
-              {lang === "ar" ? "المزيد" : "More"}
+              {t(inl.t_e3e60439)}
               <ChevronDown
                 className={cn(
                   "h-3.5 w-3.5 transition-transform duration-300",
@@ -449,13 +450,11 @@ export function Header() {
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
             className="hidden min-[2100px]:inline-flex items-center gap-1.5 border border-border/60 bg-secondary/40 h-8 sm:h-9 px-2.5 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer rounded-md shrink-0"
-            aria-label={lang === "ar" ? "بحث في المنظومة (Ctrl+K)" : "Search portal (Ctrl+K)"}
+            aria-label={t(inl.t_0768bd9e)}
             title="Ctrl + K"
           >
             <Search className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="hidden min-[2100px]:inline">
-              {lang === "ar" ? "بحث..." : "Search..."}
-            </span>
+            <span className="hidden min-[2100px]:inline">{t(inl.t_7ef1fce0)}</span>
             <kbd className="hidden min-[2100px]:inline ms-1 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
               ⌘K
             </kbd>
@@ -467,7 +466,7 @@ export function Header() {
             suppressHydrationWarning
             onClick={() => setSearchOpen(true)}
             className="tap-target grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary min-[2100px]:hidden cursor-pointer rounded-md shrink-0 [--tap-size:2.5rem]"
-            aria-label={lang === "ar" ? "بحث" : "Search"}
+            aria-label={t(inl.t_d5d7bb61)}
           >
             <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
@@ -478,8 +477,8 @@ export function Header() {
               target="_blank"
               rel="noopener noreferrer"
               className="tap-target grid h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary rounded-md shrink-0 [--tap-size:2.5rem]"
-              aria-label={lang === "ar" ? "متجر شجرة العائلة" : "Family tree store"}
-              title={lang === "ar" ? "متجر شجرة العائلة" : "Family tree store"}
+              aria-label={t(inl.t_9c76836f)}
+              title={t(inl.t_9c76836f)}
             >
               <ShoppingBag className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
             </a>
@@ -493,21 +492,13 @@ export function Header() {
               to="/treasury"
               className="hidden items-center gap-1.5 border border-border h-8 sm:h-9 px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md min-[2100px]:inline-flex whitespace-nowrap shrink-0"
             >
-              {lang === "ar" ? "الخزينة" : "Treasury"}
+              {t(inl.t_b3f688b6)}
             </Link>
           ) : null}
 
           <Link
             to={user ? "/account" : "/auth"}
-            aria-label={
-              user
-                ? lang === "ar"
-                  ? "حسابي"
-                  : "My account"
-                : lang === "ar"
-                  ? "تسجيل الدخول"
-                  : "Sign in"
-            }
+            aria-label={user ? t(inl.t_9658eb71) : t(inl.t_ebee3f50)}
             className="hidden items-center gap-2 border border-primary/40 bg-secondary/40 h-9 px-2.5 2xl:px-3 text-[13px] font-semibold text-foreground transition-colors hover:bg-secondary rounded-md lg:inline-flex whitespace-nowrap shrink-0"
           >
             {user ? (
@@ -521,13 +512,7 @@ export function Header() {
               <UserRound className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             )}
             <span className={user ? "hidden min-[2100px]:inline" : "hidden xl:inline"}>
-              {user
-                ? lang === "ar"
-                  ? "حسابي"
-                  : "My account"
-                : lang === "ar"
-                  ? "تسجيل الدخول"
-                  : "Sign in"}
+              {user ? t(inl.t_9658eb71) : t(inl.t_ebee3f50)}
             </span>
           </Link>
 
@@ -535,21 +520,13 @@ export function Header() {
             to="/contribute"
             className="hidden items-center border border-gold bg-gold h-9 px-4 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md min-[2100px]:inline-flex whitespace-nowrap shrink-0"
           >
-            {lang === "ar" ? "الاشتراك" : "Subscribe"}
+            {t(inl.t_61f0b078)}
           </Link>
 
           {/* Tablet Hamburger Menu Button (Mobile phones use bottom bar) */}
           <button
             type="button"
-            aria-label={
-              open
-                ? lang === "ar"
-                  ? "إغلاق القائمة"
-                  : "Close menu"
-                : lang === "ar"
-                  ? "فتح القائمة"
-                  : "Open menu"
-            }
+            aria-label={open ? t(inl.t_1ef1fc5e) : t(inl.t_d74f57d4)}
             aria-expanded={open}
             className="tap-target hidden md:grid xl:hidden h-8 w-8 sm:h-9 sm:w-9 place-items-center border border-border text-foreground transition-colors hover:bg-secondary cursor-pointer rounded-md shrink-0 [--tap-size:2.5rem]"
             onClick={() => setOpen((v) => !v)}
@@ -648,9 +625,7 @@ export function Header() {
               <>
                 {/* Primary Quick Links */}
                 <div className="mb-6 border-b border-border/60 pb-4">
-                  <p className="label-caps mb-2 text-bronze">
-                    {lang === "ar" ? "الروابط الرئيسية" : "Main Navigation"}
-                  </p>
+                  <p className="label-caps mb-2 text-bronze">{t(inl.t_e9db4aa5)}</p>
                   <ul className="space-y-1">
                     {primaryNav.map((n, ii) => {
                       const hasChildren = Boolean(n.children && n.children.length > 0);
@@ -773,7 +748,7 @@ export function Header() {
               onClick={() => setOpen(false)}
               className="menu-in active-scale mt-4 block border border-gold bg-gold px-4 py-3.5 text-center text-sm font-bold text-ink transition-colors hover:bg-transparent hover:text-bronze dark:hover:text-gold"
             >
-              {lang === "ar" ? "الاشتراك والمساهمة" : "Subscribe & Contribute"}
+              {t(inl.t_c330a77d)}
             </Link>
           </nav>
         </div>

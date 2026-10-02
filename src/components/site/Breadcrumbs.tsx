@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
+import { inl } from "@/content/page-copy/breadcrumbs-inline";
 
 export interface Crumb {
   label: BiText;
@@ -19,10 +20,7 @@ export function Breadcrumbs({ items, className }: { items: Crumb[]; className?: 
   const Chevron = lang === "ar" ? ChevronLeft : ChevronRight;
 
   return (
-    <nav
-      aria-label={t({ ar: "مسار التنقل", en: "Breadcrumb" })}
-      className={cn("min-w-0", className)}
-    >
+    <nav aria-label={t(inl.t_7c743343)} className={cn("min-w-0", className)}>
       <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
         {items.map((item, i) => {
           const isLast = i === items.length - 1;

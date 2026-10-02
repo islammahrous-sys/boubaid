@@ -10,6 +10,7 @@ import { fundDocumentGroups, resolveFundDocuments } from "@/content/fund-documen
 import { getPublishedLibrary } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 import { formatDualHijriYear } from "@/lib/dates";
+import { inl } from "@/content/page-copy/fund-certificates-inline";
 
 export const Route = createFileRoute("/fund-certificates")({
   loader: async () => ({ documents: resolveFundDocuments(await getPublishedLibrary()) }),
@@ -43,18 +44,14 @@ function FundCertificatesPage() {
   return (
     <div>
       <PageHeader
-        eyebrow={isAr ? "صندوق التنمية العائلية" : "Family Development Fund"}
-        title={isAr ? "الشهادات و الاثباتات" : "Certificates & Attestations"}
-        subtitle={
-          isAr
-            ? "المرجع الرسمي الواحد لجميع شهادات الصندوق ووثائقه النظامية المعتمدة من مجلس الأسرة."
-            : "The single official reference for all the fund's certificates and statutory documents approved by the Family Council."
-        }
+        eyebrow={t(inl.t_48860493)}
+        title={t(inl.t_27ea86d5)}
+        subtitle={t(inl.t_638f6140)}
         meta={[
-          { label: isAr ? "رقم الترخيص" : "Licence no.", value: siteMeta.ncnpLicense, mono: true },
-          { label: isAr ? "جهة الإصدار" : "Issued by", value: t(siteMeta.ncnpAuthority) },
+          { label: t(inl.t_d7a60932), value: siteMeta.ncnpLicense, mono: true },
+          { label: t(inl.t_72e06534), value: t(siteMeta.ncnpAuthority) },
           {
-            label: isAr ? "تاريخ الإشهار" : "Registered",
+            label: t(inl.t_076a4f5a),
             value: `${t(siteMeta.foundedHijriLabel)} · ${t(siteMeta.foundedGregorianLabel)}`,
             mono: true,
           },
@@ -97,7 +94,7 @@ function FundCertificatesPage() {
                         <h3 className="text-sm font-semibold text-foreground">{t(doc.title)}</h3>
                         {doc.isNew ? (
                           <span className="label-caps border border-bronze/40 px-1.5 py-0.5 text-[10px] text-bronze dark:border-gold/40 dark:text-gold">
-                            {isAr ? "جديد" : "New"}
+                            {t(inl.t_ae58750b)}
                           </span>
                         ) : null}
                       </div>
@@ -114,7 +111,7 @@ function FundCertificatesPage() {
                         className="mt-3 inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
                       >
                         <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                        {isAr ? "عرض الوثيقة" : "View document"}
+                        {t(inl.t_5e7c8b48)}
                       </button>
                     </div>
                   </li>

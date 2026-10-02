@@ -16,6 +16,7 @@ import { siteMeta } from "@/content/site";
 import { getPublicSiteSettings } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/contact";
+import { inl } from "@/content/page-copy/contact-inline";
 
 export const Route = createFileRoute("/contact")({
   loader: () => getPublicSiteSettings(),
@@ -188,7 +189,7 @@ function ContactPage() {
                   onChange={(e) => setSelectedSubject(e.target.value)}
                 >
                   <option value="" disabled>
-                    {lang === "ar" ? "-- اختر موضوع المراسلة --" : "-- Select Subject --"}
+                    {t(inl.t_53b54432)}
                   </option>
                   {copy.subjects.map((s) => (
                     <option key={s.en} value={s.en}>
@@ -249,7 +250,7 @@ function ContactPage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-xs font-semibold text-bronze dark:text-gold hover:underline"
                   >
-                    {lang === "ar" ? "عرض الموقع على خرائط Google" : "View on Google Maps"}
+                    {t(inl.t_c4cafe4f)}
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </dd>
@@ -312,13 +313,13 @@ function ContactPage() {
                   </div>
                   <div>
                     <a
-                      href={`https://wa.me/${contactPhone.replace(/\D/g, "")}?text=${encodeURIComponent(lang === "ar" ? "السلام عليكم ورحمة الله، أود الاستفسار من أمانة المجلس." : "Peace be upon you, I have an enquiry for the council.")}`}
+                      href={`https://wa.me/${contactPhone.replace(/\D/g, "")}?text=${encodeURIComponent(t(inl.t_069e6a26))}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-sm bg-emerald-600/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600/20 transition-colors"
                     >
                       <MessageCircle className="w-3.5 h-3.5" />
-                      {lang === "ar" ? "محادثة فورية مع الأمانة العامة" : "Chat on WhatsApp"}
+                      {t(inl.t_ca182321)}
                     </a>
                   </div>
                 </dd>
@@ -331,23 +332,18 @@ function ContactPage() {
             </div>
 
             <div className="mt-8 border-t border-border pt-6">
-              <p className="label-caps mb-2 text-muted-foreground">
-                {t({ ar: "الكيان الرسمي", en: "Registered entity" })}
-              </p>
+              <p className="label-caps mb-2 text-muted-foreground">{t(inl.t_1f3eafc6)}</p>
               <p className="text-sm leading-relaxed text-foreground">{t(siteMeta.officialName)}</p>
               <p className="nums mt-1 font-mono text-[13px] text-bronze dark:text-gold">
-                {t({ ar: "ترخيص NCNP", en: "NCNP Lic." })} {siteMeta.ncnpLicense}
+                {t(inl.t_1a458fc3)} {siteMeta.ncnpLicense}
               </p>
               <p className="nums mt-0.5 font-mono text-[13px] text-muted-foreground">
-                {t({ ar: "الرقم الوطني الموحد", en: "Unified National No." })}{" "}
-                {siteGeneral.unified_number || siteMeta.unifiedNationalNumber}
+                {t(inl.t_0d3be1d0)} {siteGeneral.unified_number || siteMeta.unifiedNationalNumber}
               </p>
             </div>
 
             <div className="mt-8 border-t border-border pt-6">
-              <p className="label-caps mb-3 text-muted-foreground">
-                {t({ ar: "الوثائق والتراخيص المكانية", en: "Location & Registration Documents" })}
-              </p>
+              <p className="label-caps mb-3 text-muted-foreground">{t(inl.t_dae0916e)}</p>
               <DocumentShowcase refs={["Saudi Post", "Lic. 1200758400"]} variant="list" />
             </div>
           </aside>

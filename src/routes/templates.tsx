@@ -25,6 +25,7 @@ import { downloadFile } from "@/lib/download";
 import { AiDocumentPrompts } from "@/components/site/AiDocumentPrompts";
 import { CollateralsLibrary, type CollateralRecord } from "@/components/site/CollateralsLibrary";
 import { copy } from "@/content/page-copy/templates";
+import { inl } from "@/content/page-copy/templates-inline";
 
 const COLLATERAL_DISPLAY_ORDER: Record<string, number> = {
   "COLL-001": 10,
@@ -264,11 +265,11 @@ function TemplatesPage() {
                 open: t(copy.open),
                 download: t(copy.download),
                 preview: t(copy.preview),
-                file: rtl ? "ملف" : "File",
-                image: rtl ? "صورة" : "Image",
-                document: rtl ? "مستند" : "PDF",
-                font: rtl ? "خط" : "Font",
-                styles: rtl ? "أنماط" : "CSS",
+                file: t(inl.t_b1b794d1),
+                image: t(inl.t_95af43cf),
+                document: t(inl.t_5ffb3096),
+                font: t(inl.t_698de4a1),
+                styles: t(inl.t_6441cd5c),
                 showReference: !rtl,
               }}
               onView={(src, title, kind) => setAssetViewer({ src, title, kind })}

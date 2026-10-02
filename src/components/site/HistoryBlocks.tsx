@@ -3,6 +3,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import { Prose, Pullquote } from "@/components/site/Editorial";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import type { HistoryBlock } from "@/content/history-source";
+import { inl } from "@/content/page-copy/historyblocks-inline";
 
 /**
  * Renders the transcribed source document blocks with the site's existing
@@ -109,7 +110,7 @@ export function HistoryBlocks({ blocks }: { blocks: HistoryBlock[] }) {
                     openMediaViewer({ src: block.src, kind: "image", title: t(block.caption) })
                   }
                   className="group relative block w-full border border-border bg-card p-3 transition-colors hover:border-foreground"
-                  aria-label={rtl ? "تكبير الصورة" : "Enlarge image"}
+                  aria-label={t(inl.t_b2d94934)}
                 >
                   <img
                     src={block.src}
@@ -124,7 +125,7 @@ export function HistoryBlocks({ blocks }: { blocks: HistoryBlock[] }) {
                   />
                   <span className="pointer-events-none absolute end-4 top-4 inline-flex items-center gap-1.5 border border-border bg-background/90 px-2 py-1 text-[11px] font-semibold text-foreground opacity-0 transition-opacity group-hover:opacity-100">
                     <Maximize2 className="h-3 w-3" aria-hidden="true" />
-                    {rtl ? "عرض بالحجم الكامل" : "View full size"}
+                    {t(inl.t_a0a792d8)}
                   </span>
                 </button>
                 <figcaption className="mt-3 border-t border-border pt-3 text-center text-[13px] font-semibold leading-relaxed text-foreground">
@@ -175,9 +176,7 @@ export function HistoryBlocks({ blocks }: { blocks: HistoryBlock[] }) {
                   </table>
                 </div>
                 <p className="mt-2 text-[12px] text-muted-foreground md:hidden">
-                  {rtl
-                    ? "اسحب الجدول أفقياً لعرض جميع الأعمدة."
-                    : "Scroll the table horizontally to see all columns."}
+                  {t(inl.t_1f640bc6)}
                 </p>
               </div>
             );

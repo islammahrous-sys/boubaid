@@ -23,6 +23,7 @@ import {
   Sparkles,
   Printer,
 } from "lucide-react";
+import { inl } from "@/content/page-copy/verify-inline";
 
 const searchSchema = z.object({
   id: z.string().optional().default(""),
@@ -76,16 +77,10 @@ function VerifyPage() {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            {isAr ? "منظومة التوثيق الرقمي المعتمدة" : "Official Verification System"}
+            {t(inl.t_bab803ce)}
           </div>
-          <h1 className="text-2xl font-bold font-naskh text-foreground">
-            {isAr ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            {isAr
-              ? "صندوق التنمية العائلية · ترخيص المركز الوطني لتنمية القطاع غير الربحي رقم 1200758400"
-              : "Family Development Fund · NCNP License #1200758400"}
-          </p>
+          <h1 className="text-2xl font-bold font-naskh text-foreground">{t(inl.t_07e2a46b)}</h1>
+          <p className="text-xs text-muted-foreground">{t(inl.t_9134218c)}</p>
         </div>
 
         <div className="no-print rounded-2xl border border-border bg-card p-4">
@@ -96,9 +91,7 @@ function VerifyPage() {
         {!id ? null : isLoading ? (
           <Card className="border-border bg-card p-12 text-center rounded-3xl animate-pulse">
             <QrCode className="w-12 h-12 text-gold mx-auto mb-3 animate-spin" />
-            <p className="text-sm font-semibold text-foreground">
-              {isAr ? "جاري التحقق من السجل العائلي الرسمي..." : "Verifying official record..."}
-            </p>
+            <p className="text-sm font-semibold text-foreground">{t(inl.t_c4e7d225)}</p>
           </Card>
         ) : isVerified ? (
           <div className="print-certificate relative overflow-hidden rounded-3xl border-2 border-gold/50 bg-gradient-to-b from-card via-card/95 to-background shadow-2xl p-6 sm:p-8 space-y-6">
@@ -109,12 +102,8 @@ function VerifyPage() {
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-foreground">
-                    {isAr ? "شهادة عضوية رقمية موثقة" : "Official Digital Member Certificate"}
-                  </h2>
-                  <p className="text-[11px] text-emerald-500 font-semibold">
-                    {isAr ? "سجل نظامي معتمد ونشط" : "Verified & Active Member Record"}
-                  </p>
+                  <h2 className="text-sm font-bold text-foreground">{t(inl.t_7d198118)}</h2>
+                  <p className="text-[11px] text-emerald-500 font-semibold">{t(inl.t_b76b522b)}</p>
                 </div>
               </div>
 
@@ -143,7 +132,7 @@ function VerifyPage() {
                 <div className="grid grid-cols-2 gap-3 pt-2 text-xs">
                   <div className="p-2.5 rounded-xl bg-secondary/40 border border-border">
                     <span className="text-[10px] text-muted-foreground block mb-0.5">
-                      {isAr ? "الفرع العائلي" : "Family Branch"}
+                      {t(inl.t_2b061d8a)}
                     </span>
                     <span className="font-bold text-gold flex items-center gap-1 justify-center sm:justify-start">
                       <GitBranch className="w-3.5 h-3.5" />
@@ -153,7 +142,7 @@ function VerifyPage() {
 
                   <div className="p-2.5 rounded-xl bg-secondary/40 border border-border">
                     <span className="text-[10px] text-muted-foreground block mb-0.5">
-                      {isAr ? "رقم العضوية" : "Member Code"}
+                      {t(inl.t_8581c532)}
                     </span>
                     <span className="font-mono font-bold text-foreground">
                       {member.member_code}
@@ -166,18 +155,16 @@ function VerifyPage() {
             {/* Official Certification Meta */}
             <div className="p-4 rounded-2xl bg-secondary/30 border border-border space-y-2 text-xs">
               <div className="flex items-center justify-between text-muted-foreground">
-                <span>{isAr ? "الجهة المصدرة:" : "Issuing Authority:"}</span>
-                <span className="font-bold text-foreground">
-                  {isAr ? "أمانة مجلس أسرة آل بوعبيد" : "General Secretariat"}
-                </span>
+                <span>{t(inl.t_1c4c862c)}</span>
+                <span className="font-bold text-foreground">{t(inl.t_105a5ebd)}</span>
               </div>
               <div className="flex items-center justify-between text-muted-foreground">
-                <span>{isAr ? "الترخيص الحكومي:" : "Gov. License:"}</span>
+                <span>{t(inl.t_4915b1f7)}</span>
                 <span className="font-mono text-foreground">NCNP-1200758400</span>
               </div>
               <div className="flex items-center justify-between text-muted-foreground">
-                <span>{isAr ? "الموقع الجغرافي:" : "Location:"}</span>
-                <span>{isAr ? "المملكة العربية السعودية · الأحساء" : "Saudi Arabia, Al-Ahsa"}</span>
+                <span>{t(inl.t_fb2fca84)}</span>
+                <span>{t(inl.t_d1556f71)}</span>
               </div>
             </div>
 
@@ -190,7 +177,7 @@ function VerifyPage() {
                 className="gap-2 text-xs font-semibold border-gold/40 hover:bg-gold/10"
               >
                 <Printer className="w-3.5 h-3.5 text-gold" />
-                {isAr ? "طباعة / حفظ شهادة العضوية" : "Print / Save Certificate"}
+                {t(inl.t_ddcdca2d)}
               </Button>
             </div>
 
@@ -198,9 +185,7 @@ function VerifyPage() {
             <div className="text-center pt-1">
               <p className="text-[11px] text-muted-foreground flex items-center justify-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                {isAr
-                  ? "تمت مطابقة هذا الباركود المشفر مع قاعدة البيانات السحابية الرسمية."
-                  : "Cryptographically verified against the official cloud database."}
+                {t(inl.t_abc40af5)}
               </p>
             </div>
           </div>
@@ -211,13 +196,9 @@ function VerifyPage() {
               <ShieldAlert className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h2 className="text-base font-bold text-foreground">
-                {isAr ? "تعذر التحقق من رمز العضوية" : "Verification Failed"}
-              </h2>
+              <h2 className="text-base font-bold text-foreground">{t(inl.t_87c5926e)}</h2>
               <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                {isAr
-                  ? "الرمز المدخل غير مسجل أو غير مكتمل التوثيق في سجلات أمانة الأسرة الرسمية."
-                  : "The scanned code is invalid or not registered in official records."}
+                {t(inl.t_690cdee5)}
               </p>
             </div>
           </Card>
@@ -228,7 +209,7 @@ function VerifyPage() {
           <Button asChild variant="outline" className="text-xs gap-1.5 rounded-xl border-border">
             <Link to="/">
               <ArrowRight className="w-3.5 h-3.5" />
-              {isAr ? "العودة إلى البوابة الرئيسية" : "Back to Home"}
+              {t(inl.t_c3ba4b9e)}
             </Link>
           </Button>
         </div>

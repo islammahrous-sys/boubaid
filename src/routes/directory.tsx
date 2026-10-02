@@ -49,6 +49,7 @@ import { Eyebrow } from "@/components/site/Editorial";
 import { getCanonicalUrl } from "@/lib/seo";
 import QRCode from "qrcode";
 import { copy } from "@/content/page-copy/directory";
+import { inl } from "@/content/page-copy/directory-inline";
 
 export const Route = createFileRoute("/directory")({
   loader: async () => {
@@ -292,15 +293,13 @@ function DirectoryPage() {
   const handleCopyBizInfo = (b: BusinessItem) => {
     const text = `${t(b.name)}\n${t(b.category)} - ${t(b.city)}\n${t(copy.labelContact)}: ${b.contact}${b.website ? `\n${t(copy.visit)}: ${b.website}` : ""}`;
     navigator.clipboard.writeText(text);
-    toast.success(
-      isAr ? "تم نسخ بيانات المنشأة للحافظة" : "Business contact info copied to clipboard",
-    );
+    toast.success(t(inl.t_397a5063));
   };
 
   const handleShareBiz = (b: BusinessItem) => {
     const shareData = {
       title: t(b.name),
-      text: `${t(b.name)} - ${t(b.category)} | ${isAr ? "دليل أعمال أسرة آل بوعبيد" : "Al Bu Obaid Directory"}`,
+      text: `${t(b.name)} - ${t(b.category)} | ${t(inl.t_18f3dba4)}`,
       url: window.location.href,
     };
     if (navigator.share) {

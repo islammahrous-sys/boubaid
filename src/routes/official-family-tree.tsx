@@ -8,6 +8,7 @@ import { siteMeta } from "@/content/site";
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublicSiteSettings } from "@/lib/cms.functions";
 import { copy } from "@/content/page-copy/official-family-tree";
+import { inl } from "@/content/page-copy/official-family-tree-inline";
 
 /** Bundled fallback used only if the managed media record is unavailable. */
 const FALLBACK_PLATE = "/images/family_tree_official_artwork.jpg";
@@ -60,17 +61,17 @@ function OfficialFamilyTreePage() {
         subtitle={t(copy.subtitle)}
         meta={[
           {
-            label: isAr ? "الإصدار" : "Edition",
-            value: isAr ? "الأول ١٤٤٧هـ" : "First 1447H",
+            label: t(inl.t_05dd125b),
+            value: t(inl.t_c49d1e60),
             mono: true,
           },
           {
-            label: isAr ? "التوصيل" : "Delivery",
-            value: isAr ? "مؤطر وجاهز" : "Framed & ready",
+            label: t(inl.t_9f0aa08e),
+            value: t(inl.t_f258e00e),
           },
           {
-            label: isAr ? "مقاس خاص" : "Custom size",
-            value: isAr ? "متاح" : "Available",
+            label: t(inl.t_df17112f),
+            value: t(inl.t_d4bc22a3),
           },
         ]}
       />
@@ -102,7 +103,7 @@ function OfficialFamilyTreePage() {
               className="inline-flex shrink-0 items-center justify-center gap-2 border border-gold bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md"
             >
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              {isAr ? "الشراء الآن" : "Buy now"}
+              {t(inl.t_4274ddfd)}
             </a>
           </div>
         </div>
@@ -138,11 +139,7 @@ function OfficialFamilyTreePage() {
           >
             <img
               src={plateSrc}
-              alt={
-                isAr
-                  ? "اللوحة الرسمية المصورة لشجرة العائلة لأسرة آل بوعبيد"
-                  : "The official illustrated family tree of the Al Bu Obaid family"
-              }
+              alt={t(inl.t_84ce44b7)}
               className="mx-auto h-auto max-h-[36rem] w-auto object-contain"
               loading="lazy"
             />

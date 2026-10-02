@@ -14,6 +14,7 @@ import { copy } from "@/content/page-copy/committees";
 import { resolveCommitteeDocuments } from "@/content/committee-documents";
 import { formatDualHijriYear } from "@/lib/dates";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
+import { inl } from "@/content/page-copy/committees-inline";
 // 1445 org maps are served as plain static files from public/ so they render
 // on every host (Lovable, Vercel, custom domains) — not only Lovable's asset CDN.
 const map1445Ar = {
@@ -62,9 +63,9 @@ export const Route = createFileRoute("/committees")({
 });
 
 const railSections: RailSection[] = [
-  { id: "y1448", label: { ar: "١٤٤٨ هـ", en: "1448 AH" } },
-  { id: "hq-project", label: { ar: "مشروع المقر", en: "HQ Project" } },
-  { id: "y1445", label: { ar: "١٤٤٥ هـ", en: "1445 AH" } },
+  { id: "y1448", label: inl.t_2132f4cb },
+  { id: "hq-project", label: inl.t_d1d83844 },
+  { id: "y1445", label: inl.t_bb4bc4cb },
 ];
 
 function CommitteesPage() {
@@ -81,10 +82,7 @@ function CommitteesPage() {
   const hqSummary =
     hq?.summary && (hq.summary.ar || hq.summary.en) ? hq.summary : hqProject.fundingModel;
   const map1445 = rtl ? map1445Ar : map1445En;
-  const map1445Title = {
-    ar: "الخريطة التنظيمية للجان ١٤٤٥ هـ",
-    en: "Committees Organizational Map 1445 AH",
-  };
+  const map1445Title = inl.t_3905ae6f;
 
   return (
     <>
@@ -104,22 +102,17 @@ function CommitteesPage() {
       <div className="container-page py-14 md:py-16">
         {/* ── ١٤٤٨ هـ ─────────────────────────────────────────── */}
         <section id="y1448" className="scroll-mt-28 reveal-on-scroll">
-          <Eyebrow>{t({ ar: "أولاً", en: "Article I" })}</Eyebrow>
+          <Eyebrow>{t(inl.t_8de613f0)}</Eyebrow>
           <h2 className="mt-3 text-xl leading-tight text-foreground md:text-2xl">
-            {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
+            {t(inl.t_2132f4cb)}
           </h2>
           <div className="mt-6 rounded-md border border-bronze/40 bg-secondary/40 px-6 py-12 text-center dark:border-gold/40">
-            <p className="label-caps text-bronze dark:text-gold">
-              {t({ ar: "مجلس أسرة آل بوعبيد", en: "Al Bu Obaid Family Council" })}
-            </p>
+            <p className="label-caps text-bronze dark:text-gold">{t(inl.t_07e2a46b)}</p>
             <p className="mt-4 text-3xl font-bold leading-tight text-foreground md:text-5xl">
-              {t({ ar: "خطة أنشطة اللجان لعام ١٤٤٨ هـ", en: "Committee Annual Plan 1448 AH" })}
+              {t(inl.t_fd4542bb)}
             </p>
             <p className="measure mx-auto mt-4 text-[14px] leading-relaxed text-muted-foreground">
-              {t({
-                ar: "البرامج والمبادرات المعتمدة لكل لجنة من لجان مجلس الأسرة وفق الجدول الزمني لعام ١٤٤٨ هـ.",
-                en: "Approved programs and initiatives for each Family Council committee according to the schedule for 1448 AH.",
-              })}
+              {t(inl.t_7b9c9c88)}
             </p>
           </div>
           <CommitteeYearGrid rows={chartRecords} kind="PLAN" />
@@ -129,12 +122,7 @@ function CommitteesPage() {
             id="hq-project"
             className="scroll-mt-28 mt-10 rounded-md border border-border bg-card p-5 md:p-8"
           >
-            <p className="label-caps text-bronze dark:text-gold">
-              {t({
-                ar: "لجنة شؤون مقر مجلس الأسرة",
-                en: "Family Council Headquarters Affairs Committee",
-              })}
-            </p>
+            <p className="label-caps text-bronze dark:text-gold">{t(inl.t_33e0d7be)}</p>
             <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
               {t(hqTitle)}
             </h3>
@@ -143,29 +131,21 @@ function CommitteesPage() {
               <div>
                 <dl className="space-y-3 text-[14px]">
                   <div>
-                    <dt className="label-caps text-muted-foreground">
-                      {t({ ar: "الموقع", en: "Location" })}
-                    </dt>
+                    <dt className="label-caps text-muted-foreground">{t(inl.t_dacda436)}</dt>
                     <dd className="mt-1 text-foreground">{t(hqProject.location)}</dd>
                   </div>
                   <div>
-                    <dt className="label-caps text-muted-foreground">
-                      {t({ ar: "المرحلة", en: "Stage" })}
-                    </dt>
+                    <dt className="label-caps text-muted-foreground">{t(inl.t_ab38a45b)}</dt>
                     <dd className="mt-1 text-foreground">{t(hqProject.status)}</dd>
                   </div>
                   <div>
-                    <dt className="label-caps text-muted-foreground">
-                      {t({ ar: "التمويل", en: "Funding" })}
-                    </dt>
+                    <dt className="label-caps text-muted-foreground">{t(inl.t_9a95969e)}</dt>
                     <dd className="mt-1 leading-relaxed text-muted-foreground">{t(hqSummary)}</dd>
                   </div>
                 </dl>
                 <div className="mt-5">
                   <div className="flex items-baseline justify-between">
-                    <span className="label-caps text-muted-foreground">
-                      {t({ ar: "نسبة الإنجاز", en: "Completion" })}
-                    </span>
+                    <span className="label-caps text-muted-foreground">{t(inl.t_abadc0e9)}</span>
                     <span className="nums font-mono text-xl text-foreground">
                       {hqProject.progress}%
                     </span>
@@ -188,7 +168,7 @@ function CommitteesPage() {
                   search={{ purpose: "hq_project" }}
                   className="mt-6 inline-flex items-center gap-2 border border-ink bg-ink px-4 py-2.5 text-xs font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
                 >
-                  {t({ ar: "ننتظر دعمك", en: "We await your support" })}
+                  {t(inl.t_ac8caaf4)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
@@ -201,11 +181,9 @@ function CommitteesPage() {
             className="scroll-mt-28 mt-10 overflow-hidden rounded-md border border-border bg-card md:p-8"
           >
             <div className="px-4 pt-5 md:px-0 md:pt-0">
-              <p className="label-caps text-bronze dark:text-gold">
-                {t({ ar: "الخريطة التنظيمية ١٤٤٥ هـ", en: "1445 AH Organizational Map" })}
-              </p>
+              <p className="label-caps text-bronze dark:text-gold">{t(inl.t_dfa17c47)}</p>
               <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
-                {t({ ar: "١٤٤٥ هـ", en: "1445 AH" })}
+                {t(inl.t_bb4bc4cb)}
               </h3>
             </div>
             <figure className="mt-5 md:mt-6">
@@ -215,7 +193,7 @@ function CommitteesPage() {
                   openMediaViewer({ src: map1445.url, kind: "image", title: t(map1445Title) })
                 }
                 className="block aspect-video w-full overflow-hidden border-y border-border bg-background md:rounded md:border"
-                aria-label={t({ ar: "تكبير الخريطة التنظيمية", en: "Enlarge organizational map" })}
+                aria-label={t(inl.t_421eb17d)}
               >
                 <img
                   key={map1445.url}
@@ -235,14 +213,14 @@ function CommitteesPage() {
                   }
                   className="border-b border-bronze pb-0.5 text-bronze hover:text-foreground dark:border-gold dark:text-gold"
                 >
-                  {t({ ar: "عرض وتكبير", en: "View / enlarge" })}
+                  {t(inl.t_fc80dbee)}
                 </button>
                 <a
                   href={map1445.url}
                   download={map1445.original_filename}
                   className="border-b border-bronze pb-0.5 text-bronze hover:text-foreground dark:border-gold dark:text-gold"
                 >
-                  {t({ ar: "تنزيل", en: "Download" })}
+                  {t(inl.t_d4fa2651)}
                 </a>
               </div>
             </figure>
@@ -268,7 +246,7 @@ function CommitteesPage() {
                       }
                       className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
                     >
-                      {t({ ar: "عرض الوثيقة", en: "View document" })}
+                      {t(inl.t_5e7c8b48)}
                     </button>
                   </li>
                 ))}
@@ -303,7 +281,7 @@ function CommitteesPage() {
                         }
                         className="shrink-0 border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze hover:text-foreground dark:border-gold dark:text-gold"
                       >
-                        {t({ ar: "عرض الوثيقة", en: "View document" })}
+                        {t(inl.t_5e7c8b48)}
                       </button>
                     </li>
                   ))}
@@ -316,7 +294,7 @@ function CommitteesPage() {
             hash="committee-requests"
             className="tap-target-y mt-8 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
           >
-            {t({ ar: "رشّح نفسك لعضوية إحدى اللجان", en: "Nominate yourself for a committee" })}
+            {t(inl.t_960f1a7e)}
             <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </section>

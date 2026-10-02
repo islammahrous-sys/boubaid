@@ -16,6 +16,7 @@ import { formatContentDate } from "@/lib/text";
 import { formatDualHijriYear } from "@/lib/dates";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/news-slug";
+import { inl } from "@/content/page-copy/news-slug-inline";
 
 export const Route = createFileRoute("/news/$slug")({
   loader: async ({ params }) => {
@@ -76,7 +77,7 @@ function NewsDetail() {
       toast.success(t(copy.copied));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error(rtl ? "تعذر نسخ الرابط" : "Failed to copy link");
+      toast.error(t(inl.t_4b393e5f));
     }
   };
 
@@ -178,7 +179,7 @@ function NewsDetail() {
             ) : (
               <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
             )}
-            {copied ? (rtl ? "تم النسخ" : "Copied") : t(copy.copyLink)}
+            {copied ? t(inl.t_6cf4d226) : t(copy.copyLink)}
           </button>
         </div>
 
@@ -212,7 +213,7 @@ function NewsDetail() {
         {/* Continue reading */}
         {prev || next ? (
           <nav
-            aria-label={t({ ar: "متابعة القراءة", en: "Continue reading" })}
+            aria-label={t(inl.t_af4f8578)}
             className="reveal-on-scroll mt-12 grid gap-px border-t border-border sm:grid-cols-2"
           >
             {[

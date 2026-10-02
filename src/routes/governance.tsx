@@ -19,6 +19,7 @@ import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import boardChartAr from "@/assets/fund-board/chart-ar.png.asset.json";
 import boardChartEn from "@/assets/fund-board/chart-en.png.asset.json";
 import { copy } from "@/content/page-copy/governance";
+import { inl } from "@/content/page-copy/governance-inline";
 
 export const Route = createFileRoute("/governance")({
   loader: () => getPublicSiteSettings(),
@@ -44,8 +45,8 @@ export const Route = createFileRoute("/governance")({
 });
 
 const railSections: RailSection[] = [
-  { id: "mandate", label: { ar: "الغرض والاختصاص", en: "Purpose & remit" } },
-  { id: "board", label: { ar: "مجلس الأمناء", en: "Board of Trustees" } },
+  { id: "mandate", label: inl.t_023027f8 },
+  { id: "board", label: inl.t_14f8ec2c },
 ];
 
 function BoardChartFigure({
@@ -72,7 +73,7 @@ function BoardChartFigure({
         type="button"
         onClick={() => openMediaViewer({ src: href, kind: "image", title })}
         className="block w-full overflow-x-auto bg-muted/30 p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-4"
-        aria-label={rtl ? "عرض المخطط بالحجم الكامل" : "Open chart full size"}
+        aria-label={t(inl.t_a9d15d4f)}
       >
         <img
           key={href}
@@ -85,7 +86,7 @@ function BoardChartFigure({
         />
       </button>
       <p className="border-t border-border p-3 text-[12px] text-muted-foreground">
-        {rtl ? "اضغط على المخطط لعرضه بالحجم الكامل." : "Tap the chart to view it full size."}
+        {t(inl.t_696002a3)}
       </p>
     </figure>
   );
@@ -132,13 +133,9 @@ function GovernancePage() {
             </h2>
             <Seal
               className="mt-8 hidden h-28 w-28 text-bronze/70 lg:block dark:text-gold/60"
-              ringText={
-                rtl
-                  ? "المركز الوطني لتنمية القطاع غير الربحي"
-                  : "NATIONAL CENTER FOR NONPROFIT SECTOR"
-              }
+              ringText={t(inl.t_d1f1355b)}
               centerLine1={siteMeta.ncnpLicense}
-              centerLine2={rtl ? "مرخص رسمياً" : "REGISTERED"}
+              centerLine2={t(inl.t_efd48093)}
             />
           </div>
           <Prose>
@@ -226,11 +223,7 @@ function GovernancePage() {
           {/* الهيكل التنظيمي لمجلس أمناء الصندوق — language-specific source images */}
           <BoardChartFigure
             className="mt-10"
-            title={
-              rtl
-                ? "الهيكل التنظيمي لمجلس أمناء الصندوق"
-                : "Organizational Chart of the Fund's Board of Trustees"
-            }
+            title={t(inl.t_203448fe)}
             href={new URL(
               rtl ? boardChartAr.url : boardChartEn.url,
               "https://www.boubaid.com",

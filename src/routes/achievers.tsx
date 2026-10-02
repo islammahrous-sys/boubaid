@@ -35,6 +35,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/achievers";
+import { inl } from "@/content/page-copy/achievers-inline";
 
 const EXCELLENCE_CEREMONY_IMAGE =
   "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/excellence-award-ceremony.jpg";
@@ -69,41 +70,20 @@ export const Route = createFileRoute("/achievers")({
 
 const AWARD_FIELDS: { text: BiText; sub?: BiText[] }[] = [
   {
-    text: {
-      ar: "حفظ القرآن الكريم كاملاً بشهادة معتمدة من جهة رسمية أو إجازة حفظ",
-      en: "Memorising the entire Holy Qur'an, with a certificate from an official body or an ijazah",
-    },
+    text: inl.t_aca790ab,
   },
   {
-    text: { ar: "التميز العلمي وهو على النحو التالي:", en: "Academic excellence, as follows:" },
-    sub: [
-      {
-        ar: "الدراسات العليا: الدكتوراه والماجستير",
-        en: "Postgraduate studies: doctorate and master's",
-      },
-      {
-        ar: "التخرج من المرحلة الجامعية بمعدل تراكمي 4.75 فما فوق",
-        en: "University graduation with a cumulative GPA of 4.75 or above",
-      },
-    ],
+    text: inl.t_18cbdc1c,
+    sub: [inl.t_7f2f3dac, inl.t_8391ef3a],
   },
   {
-    text: {
-      ar: "الحصول على نسبة 90% في اختبار القدرات – الثالث ثانوي: الحصول على 90% في اختبار التحصيلي",
-      en: "Scoring 90% in the Qudurat aptitude test – Grade 12: scoring 90% in the Tahsili achievement test",
-    },
+    text: inl.t_88b71f2c,
   },
   {
-    text: {
-      ar: "الحصول على جائزة محلية أو دولية في أي مجال علمي أو مهاري أو مهني",
-      en: "Winning a local or international award in any academic, skills or professional field",
-    },
+    text: inl.t_0d9f8155,
   },
   {
-    text: {
-      ar: "الحصول على شهادة مهنية معتمدة",
-      en: "Obtaining an accredited professional certificate",
-    },
+    text: inl.t_fd1213d6,
   },
 ];
 
@@ -238,7 +218,7 @@ function AchieversPage() {
       !formData.nominator_name ||
       !formData.nominator_phone
     ) {
-      toast.error(rtl ? "يرجى تعبئة الحقول المطلوبة" : "Please fill in required fields");
+      toast.error(t(inl.t_65336d17));
       return;
     }
 
@@ -255,16 +235,12 @@ function AchieversPage() {
       if (res.ok) {
         setSubmittedSuccess(true);
         setAttachments([]);
-        toast.success(
-          rtl ? "تم إرسال الترشيح بنجاح إلى أمانة المجلس" : "Nomination submitted successfully",
-        );
+        toast.success(t(inl.t_acfb7a19));
       } else {
-        toast.error(
-          rtl ? "تعذر إرسال الترشيح، يرجى المحاولة لاحقاً" : "Failed to submit nomination",
-        );
+        toast.error(t(inl.t_00c9cbaf));
       }
     } catch {
-      toast.error(rtl ? "حدث خطأ أثناء الإرسال" : "An error occurred");
+      toast.error(t(inl.t_686f770d));
     } finally {
       setIsSubmitting(false);
     }
@@ -288,7 +264,7 @@ function AchieversPage() {
       <div className="container-page py-12 md:py-16 space-y-16">
         <section aria-labelledby="award-fields-title">
           <h2 id="award-fields-title" className="sr-only">
-            {rtl ? "مجالات الجائزة" : "Award fields"}
+            {t(inl.t_5b6c2723)}
           </h2>
           <p className="measure mb-5 text-[16px] font-medium leading-relaxed text-foreground">
             {t(copy.subtitle)}
@@ -311,15 +287,12 @@ function AchieversPage() {
             ))}
           </ol>
           <p className="measure mt-6 border-s-2 border-bronze ps-4 text-[15px] leading-relaxed text-foreground dark:border-gold">
-            {t({
-              ar: "يُقيّد هذا السجل أصحاب التحصيل العلمي والمهني من أبناء وبنات الفروع السبعة. ويُحدَّث سنوياً عند حفل التكريم بالملتقى العام.",
-              en: "This register records the academic and professional achievers among the sons and daughters of the seven branches, and is updated annually at the honours ceremony of the general assembly.",
-            })}
+            {t(inl.t_db5b70ef)}
           </p>
         </section>
 
         <section aria-labelledby="competencies-title">
-          <Eyebrow>{rtl ? "القسم الأول" : "Section One"}</Eyebrow>
+          <Eyebrow>{t(inl.t_b2a930b0)}</Eyebrow>
           <h2
             id="competencies-title"
             className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl"
@@ -357,7 +330,7 @@ function AchieversPage() {
         </section>
 
         <section aria-labelledby="excellence-title">
-          <Eyebrow>{rtl ? "القسم الثاني" : "Section Two"}</Eyebrow>
+          <Eyebrow>{t(inl.t_a1cbbe31)}</Eyebrow>
           <h2
             id="excellence-title"
             className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl"
@@ -367,11 +340,7 @@ function AchieversPage() {
           <figure className="mt-6">
             <img
               src={EXCELLENCE_CEREMONY_IMAGE}
-              alt={
-                rtl
-                  ? "تكريم أحد الفائزين بجائزة التميز في مجلس أسرة آل بوعبيد"
-                  : "An Excellence Award recipient being honoured at the Al Bu Obaid Family Council"
-              }
+              alt={t(inl.t_32f27a01)}
               width={1920}
               height={1280}
               loading="lazy"
@@ -379,7 +348,7 @@ function AchieversPage() {
               className="w-full rounded-md border border-border object-contain"
             />
             <figcaption className="mt-2 text-xs text-muted-foreground">
-              {rtl ? "من حفل تكريم جائزة التميز" : "From the Excellence Award ceremony"}
+              {t(inl.t_86fbd95c)}
             </figcaption>
           </figure>
           <div className="mt-8 space-y-12">
@@ -390,14 +359,10 @@ function AchieversPage() {
                     id="award-year-1448"
                     className="nums text-xl font-bold text-bronze dark:text-gold"
                   >
-                    {rtl ? "عام 1448هـ" : "Year 1448 AH"}
+                    {t(inl.t_5f14880e)}
                   </h3>
                 </div>
-                <p className="py-5 text-sm text-muted-foreground">
-                  {rtl
-                    ? "تُعلن أسماء المكرمين لعام 1448هـ بعد حفل التكريم."
-                    : "The 1448 AH honourees will be announced after the ceremony."}
-                </p>
+                <p className="py-5 text-sm text-muted-foreground">{t(inl.t_82666bc6)}</p>
               </section>
             ) : null}
             {yearGroups.map(({ year, people }) => (
@@ -407,13 +372,7 @@ function AchieversPage() {
                     id={`award-year-${year}`}
                     className="nums text-xl font-bold text-bronze dark:text-gold"
                   >
-                    {year === ""
-                      ? rtl
-                        ? "بدون سنة محددة"
-                        : "Year not specified"
-                      : rtl
-                        ? `عام ${year}هـ`
-                        : `Year ${year} AH`}
+                    {year === "" ? t(inl.t_cc7a9654) : rtl ? `عام ${year}هـ` : `Year ${year} AH`}
                   </h3>
                   <span className="nums text-xs text-muted-foreground">{people.length}</span>
                 </div>
@@ -446,12 +405,12 @@ function AchieversPage() {
       </div>
 
       <section aria-labelledby="sponsors-title" className="container-page pb-16">
-        <Eyebrow>{rtl ? "جائزة التميز" : "Excellence Award"}</Eyebrow>
+        <Eyebrow>{t(inl.t_c1bce362)}</Eyebrow>
         <h2
           id="sponsors-title"
           className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl"
         >
-          {rtl ? "الرعاة والداعمون" : "Supporters & Sponsors"}
+          {t(inl.t_62428037)}
         </h2>
         <div className="mt-6 space-y-3 sm:hidden">
           {sponsorRows.map((r) => (
@@ -501,23 +460,23 @@ function AchieversPage() {
           ))}
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-md border border-border bg-border text-center">
             <div className="bg-secondary/60 p-3">
-              <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
+              <div className="text-[11px] text-muted-foreground">{t(inl.t_10e1e00c)}</div>
               <div className="nums mt-1 text-base font-bold text-foreground">
                 {sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}
               </div>
               <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[1])}</div>
             </div>
             <div className="bg-secondary/60 p-3">
-              <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
+              <div className="text-[11px] text-muted-foreground">{t(inl.t_10e1e00c)}</div>
               <div className="nums mt-1 text-base font-bold text-foreground">
                 {sponsorRows.reduce((n, r) => n + Number(r.honoured || 0), 0)}
               </div>
               <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[2])}</div>
             </div>
             <div className="bg-secondary/60 p-3">
-              <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
+              <div className="text-[11px] text-muted-foreground">{t(inl.t_10e1e00c)}</div>
               <div className="nums mt-1 text-sm font-bold text-foreground">
-                {sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}
+                {sponsorTotal ? t(sponsorTotal) : t(inl.t_7f87301d)}
               </div>
               <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[4])}</div>
             </div>
@@ -565,7 +524,7 @@ function AchieversPage() {
               ))}
               <tr className="bg-secondary/50 font-semibold">
                 <th scope="row" className="px-3 py-3 text-start">
-                  {rtl ? "المجموع" : "Total"}
+                  {t(inl.t_1558b9f4)}
                 </th>
                 <td className="nums px-3 py-3">
                   {sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}
@@ -575,7 +534,7 @@ function AchieversPage() {
                 </td>
                 <td className="px-3 py-3" />
                 <td className="nums px-3 py-3">
-                  {sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}
+                  {sponsorTotal ? t(sponsorTotal) : t(inl.t_7f87301d)}
                 </td>
                 <td className="px-3 py-3" />
                 <td className="px-3 py-3" />
@@ -618,7 +577,7 @@ function AchieversPage() {
               <div className="mt-6 border-t border-border pt-4 space-y-3">
                 <div>
                   <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                    {rtl ? "التميز والإنجاز" : "Distinction & Recognition"}
+                    {t(inl.t_42553b11)}
                   </h4>
                   <p className="text-sm leading-relaxed text-foreground bg-secondary/40 p-3.5 rounded-md border border-border">
                     {t(activeAchiever.achievement)}
@@ -632,7 +591,7 @@ function AchieversPage() {
                   onClick={() => setActiveAchiever(null)}
                   className="text-xs"
                 >
-                  {rtl ? "إغلاق" : "Close"}
+                  {t(inl.t_21250b81)}
                 </Button>
               </div>
             </div>

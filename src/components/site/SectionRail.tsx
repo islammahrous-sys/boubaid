@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
+import { inl } from "@/content/page-copy/sectionrail-inline";
 
 export interface RailSection {
   /** The `id` of the section element on the page. */
@@ -68,7 +69,7 @@ export function SectionRail({
     <>
       {/* Mobile / tablet: pinned chip row */}
       <nav
-        aria-label={t({ ar: "أقسام الصفحة", en: "Sections on this page" })}
+        aria-label={t(inl.t_f971d2a8)}
         className={cn(
           "no-scrollbar sticky top-14 z-30 -mx-4 overflow-x-auto border-b border-border bg-background/92 px-4 py-2 backdrop-blur sm:top-16 md:top-18 min-[1880px]:hidden",
           className,
@@ -97,7 +98,7 @@ export function SectionRail({
 
       {/* Wide screens: fixed hairline rail in the outer margin */}
       <nav
-        aria-label={t({ ar: "أقسام الصفحة", en: "Sections on this page" })}
+        aria-label={t(inl.t_f971d2a8)}
         className="fixed top-1/2 z-30 hidden -translate-y-1/2 min-[1880px]:block ltr:left-6 rtl:right-6"
       >
         <ul className="space-y-1">

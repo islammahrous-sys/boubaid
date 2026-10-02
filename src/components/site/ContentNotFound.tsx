@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useLang } from "@/i18n/LanguageProvider";
+import { inl } from "@/content/page-copy/contentnotfound-inline";
 
 /** Contextual "this item no longer exists" screen for slug-based pages. */
 export function ContentNotFound({ kind }: { kind: "news" | "page" }) {
@@ -8,27 +9,14 @@ export function ContentNotFound({ kind }: { kind: "news" | "page" }) {
   return (
     <main className="container mx-auto max-w-2xl px-6 py-24 text-center">
       <h1 className="mb-4 text-3xl font-semibold text-foreground">
-        {t(
-          isNews
-            ? { ar: "هذا الخبر غير متاح", en: "This article is no longer available" }
-            : { ar: "هذه الصفحة غير متاحة", en: "This page is no longer available" },
-        )}
+        {t(isNews ? inl.t_d52c0478 : inl.t_d1fbd711)}
       </h1>
-      <p className="mb-8 text-muted-foreground">
-        {t({
-          ar: "ربما نُقل أو أُزيل. يمكنك تصفح المحتوى المتاح من الرابط أدناه.",
-          en: "It may have been moved or removed. You can browse the available content below.",
-        })}
-      </p>
+      <p className="mb-8 text-muted-foreground">{t(inl.t_3377fd40)}</p>
       <Link
         to={isNews ? "/news" : "/"}
         className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90"
       >
-        {t(
-          isNews
-            ? { ar: "العودة إلى المركز الإعلامي", en: "Back to the Media Center" }
-            : { ar: "العودة إلى الرئيسية", en: "Back to home" },
-        )}
+        {t(isNews ? inl.t_ce7f04dc : inl.t_bca93df5)}
       </Link>
     </main>
   );

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/i18n/LanguageProvider";
+import { inl } from "@/content/page-copy/hqprojectvideo-inline";
 
 /** Web-optimised (fast-start) copy served from /public so playback begins immediately. */
 const HQ_VIDEO_SRC = "/media/hq-project.mp4";
@@ -21,7 +22,7 @@ export interface HqProjectVideoProps {
  * control), and the visitor keeps full mute/unmute control afterwards.
  */
 export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const rtl = lang === "ar";
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
@@ -133,7 +134,7 @@ export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
         ) : (
           <Volume2 className="h-4 w-4" aria-hidden="true" />
         )}
-        <span>{muted ? (rtl ? "تشغيل الصوت" : "Sound on") : rtl ? "كتم الصوت" : "Sound off"}</span>
+        <span>{muted ? t(inl.t_15e4f98a) : t(inl.t_ac3b32d5)}</span>
       </button>
     </div>
   );

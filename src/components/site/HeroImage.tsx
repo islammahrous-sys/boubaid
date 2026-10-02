@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/i18n/LanguageProvider";
+import { inl } from "@/content/page-copy/heroimage-inline";
 
 export interface HeroSlide {
   src: string;
@@ -62,7 +63,7 @@ export function HeroImage({
   children,
   className,
 }: HeroImageProps) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const rtl = lang === "ar";
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -238,7 +239,7 @@ export function HeroImage({
         <div
           className="absolute inset-x-0 bottom-24 sm:bottom-28 z-20 mx-auto flex items-center justify-center gap-2 pointer-events-auto"
           role="tablist"
-          aria-label={rtl ? "التحكم في صور الواجهة" : "Hero slides control"}
+          aria-label={t(inl.t_7c264f79)}
         >
           <div
             className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-ink/70 px-3 py-1.5 backdrop-blur-md shadow-lg shadow-black/40"

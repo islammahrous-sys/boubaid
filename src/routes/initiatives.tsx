@@ -20,6 +20,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { copy } from "@/content/page-copy/initiatives";
+import { inl } from "@/content/page-copy/initiatives-inline";
 
 /** How many programmes are shown per page in the schedule table. */
 const PAGE_SIZE = 20;
@@ -156,9 +157,7 @@ function InitiativesPage() {
               </div>
 
               <div className="mt-6 border-t border-border pt-5">
-                <p className="label-caps mb-2 text-muted-foreground">
-                  {rtl ? "تكلفة البناء والتمويل" : "Construction cost & funding"}
-                </p>
+                <p className="label-caps mb-2 text-muted-foreground">{t(inl.t_c8caa056)}</p>
                 <Prose className="text-[13px]">
                   <p>{t(hqFunding)}</p>
                 </Prose>
@@ -168,7 +167,7 @@ function InitiativesPage() {
                     search={{ initiative: liveHq?.slug || "hq", purpose: "hq_project" }}
                     className="inline-flex items-center gap-2 border border-ink bg-ink px-4 py-2.5 text-xs font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
                   >
-                    <span>{rtl ? "ننتظر دعمك" : "We await your support"}</span>
+                    <span>{t(inl.t_ac8caaf4)}</span>
                     <Arrow className="w-3.5 h-3.5" />
                   </Link>
                 </div>

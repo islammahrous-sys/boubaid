@@ -6,6 +6,7 @@ import { Eyebrow } from "@/components/site/Editorial";
 import { MediaViewerDialog, type MediaViewerKind } from "@/components/site/MediaViewerDialog";
 import { downloadFile } from "@/lib/download";
 import { copy } from "@/content/page-copy/editabletemplateslibrary";
+import { inl } from "@/content/page-copy/editabletemplateslibrary-inline";
 
 /**
  * «قوالب المناسبات القابلة للتحرير يدويًا» — Occasions Manual Editable Templates.
@@ -175,7 +176,7 @@ export function EditableTemplatesLibrary({
                   <div className="flex items-center gap-2">
                     <KindIcon kind={r.kind} />
                     <span className="nums font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
-                      {rtl ? "مستند مرجعي" : "PDF"}
+                      {t(inl.t_04c5be2a)}
                     </span>
                   </div>
                   <h4 className="mt-3 break-words text-[15px] font-semibold leading-snug text-foreground">

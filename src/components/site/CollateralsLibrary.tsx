@@ -4,6 +4,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { Eyebrow } from "@/components/site/Editorial";
 import { downloadFile } from "@/lib/download";
 import { copy } from "@/content/page-copy/collateralslibrary";
+import { inl } from "@/content/page-copy/collateralslibrary-inline";
 
 /**
  * «المواد التعريفية» / Collaterals — the official collateral documents supplied
@@ -30,9 +31,9 @@ export interface CollateralRecord {
 }
 
 const KIND_LABEL: Record<string, BiText> = {
-  DOCX: { ar: "مستند نصي", en: "Word" },
-  PPTX: { ar: "عرض تقديمي", en: "PowerPoint" },
-  XLSX: { ar: "جدول بيانات", en: "Excel" },
+  DOCX: inl.t_b1a5cd06,
+  PPTX: inl.t_2e80c8b0,
+  XLSX: inl.t_c4c89894,
 };
 
 /**

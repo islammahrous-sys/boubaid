@@ -13,6 +13,7 @@ import { getPublicDnaStudiesData } from "@/lib/cms.functions";
 import type { DnaStudiesDataInput } from "@/lib/admin-hub.schemas";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/dna";
+import { inl } from "@/content/page-copy/dna-inline";
 
 export const Route = createFileRoute("/dna")({
   loader: async () => {
@@ -42,12 +43,12 @@ export const Route = createFileRoute("/dna")({
 });
 
 const railSections: RailSection[] = [
-  { id: "overview", label: { ar: "الخلاصة", en: "Overview" } },
-  { id: "clade", label: { ar: "السلالة", en: "Haplogroup" } },
-  { id: "timeline", label: { ar: "التسلسل الزمني", en: "Timeline" } },
-  { id: "distribution", label: { ar: "الانتشار", en: "Distribution" } },
-  { id: "method", label: { ar: "المنهجية", en: "Method" } },
-  { id: "dna-sources", label: { ar: "المصادر", en: "Sources" } },
+  { id: "overview", label: inl.t_32fcb0f7 },
+  { id: "clade", label: inl.t_be70c578 },
+  { id: "timeline", label: inl.t_3d705611 },
+  { id: "distribution", label: inl.t_8cb1b3f3 },
+  { id: "method", label: inl.t_2a0ae3e6 },
+  { id: "dna-sources", label: inl.t_7183b0f2 },
 ];
 
 /** Renders an Arabic TMRCA label ("١٦٥٠ سنة") in English ("1650 years"). */
@@ -471,14 +472,9 @@ function DnaPage() {
           id="method"
           className="scroll-mt-28 reveal-on-scroll mt-16 border-t border-border pt-10"
         >
-          <Eyebrow>
-            {t({ ar: "الوثائق والأرشيف الجيني", en: "Genomic & Lineage Archives" })}
-          </Eyebrow>
+          <Eyebrow>{t(inl.t_2665274d)}</Eyebrow>
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
-            {t({
-              ar: "الوثائق العلمية والتقارير الجينية المعتمدة، بما في ذلك لوحات الشجرة الجينية المصورة وثيقة النسب.",
-              en: "Approved scientific documents and genetic reports, including illustrated haplogroup charts and lineage documentation.",
-            })}
+            {t(inl.t_2f3524b2)}
           </p>
           <DocumentShowcase
             refs={["Genealogy Archive", "DNA Archive", "IP-Registered"]}

@@ -32,6 +32,7 @@ import {
   ArrowRight,
   ArrowLeft,
 } from "lucide-react";
+import { inl } from "@/content/page-copy/councilrequestform-inline";
 
 /**
  * Shared submission form for every Requests Hub request type. All of them
@@ -232,7 +233,7 @@ export function CouncilRequestForm({
                   ) : (
                     <Copy className="h-3.5 w-3.5" />
                   )}
-                  {copied ? (isAr ? "تم النسخ" : "Copied") : t(copy.copyRef)}
+                  {copied ? t(inl.t_6cf4d226) : t(copy.copyRef)}
                 </Button>
               </div>
             </div>

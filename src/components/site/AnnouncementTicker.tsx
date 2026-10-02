@@ -14,9 +14,10 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@tanstack/react-router";
+import { inl } from "@/content/page-copy/announcementticker-inline";
 
 export function AnnouncementTicker() {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const isAr = lang === "ar";
   const [dismissed, setDismissed] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -147,7 +148,7 @@ export function AnnouncementTicker() {
           <button
             onClick={() => setDismissed(true)}
             className="tap-target p-1 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
-            aria-label={isAr ? "إغلاق شريط الإعلانات" : "Dismiss announcement"}
+            aria-label={t(inl.t_c1896902)}
           >
             <X className="w-3.5 h-3.5" />
           </button>

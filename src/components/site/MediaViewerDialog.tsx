@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { PdfCanvasViewer } from "@/components/site/PdfCanvasViewer";
 import { useLang } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
+import { inl } from "@/content/page-copy/mediaviewerdialog-inline";
 
 export type MediaViewerKind = "pdf" | "image" | "video";
 
@@ -46,7 +47,7 @@ export function MediaViewerDialog({
 
   if (!open || !src || typeof document === "undefined") return null;
 
-  const closeLabel = t({ ar: "إغلاق العارض", en: "Close viewer" });
+  const closeLabel = t(inl.t_6a1b9996);
 
   return createPortal(
     <div
@@ -65,7 +66,7 @@ export function MediaViewerDialog({
           className="inline-flex items-center gap-1.5 border border-ivory/30 px-3 py-1.5 text-xs font-medium text-ivory transition-colors hover:bg-ivory/10"
         >
           <X className="h-3.5 w-3.5" aria-hidden="true" />
-          {t({ ar: "إغلاق", en: "Close" })}
+          {t(inl.t_21250b81)}
         </button>
       </div>
 

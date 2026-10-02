@@ -4,6 +4,7 @@ import { useLang, type BiText } from "@/i18n/LanguageProvider";
 import { Eyebrow } from "@/components/site/Editorial";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { historyMedia } from "@/content/history-source";
+import { inl } from "@/content/page-copy/familytreesections-inline";
 
 /**
  * The three canonical family-tree presentations — the electronic (interactive)
@@ -16,44 +17,23 @@ export const OFFICIAL_FAMILY_TREE_IMAGE =
   "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/family-tree-plate-1447.jpg";
 
 export const treeCopy = {
-  treeTitle: { ar: "الفروع امتداد الجذور", en: "The Branches Extend the Roots" } as BiText,
-  electronicEyebrow: { ar: "المشجرة الإلكترونية", en: "Electronic family tree" } as BiText,
-  fullscreen: { ar: "فتح بملء الشاشة", en: "Open full screen" } as BiText,
-  privacyLabel: { ar: "الخصوصية", en: "Privacy" } as BiText,
-  privacyBody: {
-    ar: "لا تُنشر أرقام الهويات الوطنية ولا تواريخ الميلاد ولا بيانات التواصل الشخصية في المشجرة العامة. وتتاح التفاصيل الكاملة لأبناء الأسرة عبر الأمانة العامة.",
-    en: "National ID numbers, dates of birth, and personal contact details are not published in the public tree. Full records are available to family members through the secretariat.",
-  } as BiText,
+  treeTitle: inl.t_9cbacbf8 as BiText,
+  electronicEyebrow: inl.t_685f8080 as BiText,
+  fullscreen: inl.t_520b9e0f as BiText,
+  privacyLabel: inl.t_44baa431 as BiText,
+  privacyBody: inl.t_a698c52d as BiText,
 
-  artworkEyebrow: { ar: "الإصدار الأول — ١٤٤٧هـ", en: "First Edition — 1447 AH" } as BiText,
-  artworkTitle: {
-    ar: "اللوحة الرسمية المصورة لشجرة العائلة",
-    en: "Official Illustrated Family Tree",
-  } as BiText,
-  artworkBody: {
-    ar: "أُخرجت الأسرة هذه اللوحة الجدارية بتكلفة استثمارية بلغت 14,948 ريالاً سعودياً، وسُجلت حقوق ملكيتها الفكرية رسمياً لتكون مرجعاً بصرياً حصرياً يربط الجيل الناشئ بجذوره التميمية.",
-    en: "The family commissioned this wall plate at an investment cost of SAR 14,948, and formally registered its intellectual-property rights to serve as an exclusive visual reference linking the rising generation to its Tamimi roots.",
-  } as BiText,
-  artworkOpen: { ar: "فتح اللوحة كاملة", en: "Open the full plate" } as BiText,
-  artworkFull: { ar: "عرض الصورة بالحجم الكامل", en: "View full-size image" } as BiText,
-  artworkCaption: {
-    ar: "اضغط على اللوحة لتكبيرها، أو افتح النسخة الأصلية عالية الدقة.",
-    en: "Click the plate to enlarge it, or open the original high-resolution copy.",
-  } as BiText,
+  artworkEyebrow: inl.t_d134d09b as BiText,
+  artworkTitle: inl.t_86ef60e9 as BiText,
+  artworkBody: inl.t_382dbcce as BiText,
+  artworkOpen: inl.t_20a7b57a as BiText,
+  artworkFull: inl.t_e68a2cbe as BiText,
+  artworkCaption: inl.t_c2f24010 as BiText,
 
-  visualEyebrow: { ar: "الدليل البصري", en: "Visual genealogy" } as BiText,
-  visualTitle: {
-    ar: "شجرة آل بوعبيد البصرية — من الجذور إلى الأفق الرقمي",
-    en: "Al Bu Obaid Visual Genealogy — from roots to the digital horizon",
-  } as BiText,
-  visualBody: {
-    ar: "يوضح هذا المخطط البصري كيف تتشابك الجذور النسبية التقليدية مع الأسس الرقمية المعاصرة لتوثيق شجرة الأسرة، مما يجعل الإرث القبلي مرجعاً حياً يُحَدَّث ويُتداول بين الأجيال.",
-    en: "This visual diagram shows how traditional genealogical roots intertwine with contemporary digital foundations for documenting the family tree, turning tribal heritage into a living reference that is updated and shared across generations.",
-  } as BiText,
-  visualCaption: {
-    ar: "الدليل البصري لشجرة أسرة آل بوعبيد: إرث ينمو من الجذور إلى الأفق الرقمي.",
-    en: "Visual guide to the Al Bu Obaid family tree: a heritage growing from its roots to the digital horizon.",
-  } as BiText,
+  visualEyebrow: inl.t_57e6e837 as BiText,
+  visualTitle: inl.t_d40a037f as BiText,
+  visualBody: inl.t_d1c66380 as BiText,
+  visualCaption: inl.t_f5cb3156 as BiText,
 };
 
 /**
@@ -159,11 +139,7 @@ export function OfficialPlateSection() {
         >
           <img
             src={OFFICIAL_FAMILY_TREE_IMAGE}
-            alt={
-              rtl
-                ? "اللوحة الرسمية المصورة لشجرة العائلة لأسرة آل بوعبيد"
-                : "The official illustrated family tree of the Al Bu Obaid family"
-            }
+            alt={t(inl.t_84ce44b7)}
             width={1344}
             height={1920}
             decoding="async"
@@ -235,11 +211,7 @@ export function VisualGenealogySection() {
           >
             <img
               src={historyMedia.visualGenealogy}
-              alt={
-                rtl
-                  ? "الدليل البصري لشجرة أسرة آل بوعبيد: إرث ينمو من الجذور إلى الأفق الرقمي"
-                  : "Visual guide to the Al Bu Obaid family tree: a heritage growing from its roots to the digital horizon"
-              }
+              alt={t(inl.t_bb8f2050)}
               decoding="async"
               loading="lazy"
               className="mx-auto h-auto w-full object-contain"

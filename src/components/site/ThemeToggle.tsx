@@ -3,6 +3,7 @@ import { useTheme } from "@/lib/ThemeProvider";
 import { useLang } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { inl } from "@/content/page-copy/themetoggle-inline";
 
 export interface ThemeToggleProps {
   /** Matches `LanguageSwitcher`'s tone convention — "ink" for placement on
@@ -13,7 +14,7 @@ export interface ThemeToggleProps {
 export function ThemeToggle({ tone = "default" }: ThemeToggleProps) {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { lang } = useLang();
+  const { lang, t } = useLang();
 
   useEffect(() => {
     setMounted(true);
@@ -26,9 +27,7 @@ export function ThemeToggle({ tone = "default" }: ThemeToggleProps) {
     ? lang === "ar"
       ? "التبديل إلى الوضع الفاتح"
       : "Switch to light mode"
-    : lang === "ar"
-      ? "التبديل إلى الوضع الداكن"
-      : "Switch to dark mode";
+    : t(inl.t_acf22999);
 
   return (
     <button

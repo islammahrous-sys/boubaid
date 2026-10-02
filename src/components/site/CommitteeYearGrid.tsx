@@ -3,6 +3,7 @@ import { committees } from "@/content/site";
 import { useLang } from "@/i18n/LanguageProvider";
 import { downloadFile } from "@/lib/download";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
+import { inl } from "@/content/page-copy/committeeyeargrid-inline";
 
 export type CommitteeArchiveItem = {
   id: string;
@@ -19,11 +20,8 @@ export type CommitteeArchiveItem = {
  * COMM-1448-PLAN-<committee> records in the CMS) to extend a committee's list.
  */
 const planned1448: Record<string, { ar: string; en: string }[]> = {
-  "activities-initiatives": [
-    { ar: "مسابقة رمضان الثقافية", en: "Ramadan Cultural Quiz" },
-    { ar: "الأعمال التطوعية", en: "Volunteer Work" },
-  ],
-  "finance-investment": [{ ar: "ساعات التطوع", en: "Volunteer Hours" }],
+  "activities-initiatives": [inl.t_2b8d6ac1, inl.t_c1732587],
+  "finance-investment": [inl.t_d170f0ca],
 };
 
 function itemHref(item: CommitteeArchiveItem) {
@@ -65,14 +63,11 @@ export function CommitteeYearGrid({
                     href="#hq-project"
                     className="mt-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze dark:border-gold dark:text-gold"
                   >
-                    {t({
-                      ar: "مشروع المقر الدائم للأسرة",
-                      en: "Permanent Family Headquarters Project",
-                    })}
+                    {t(inl.t_9560802a)}
                   </a>
                 ) : null}
                 <p className="label-caps mt-4 border-t border-border pt-3 text-bronze dark:text-gold">
-                  {t({ ar: "الأنشطة المخطط لها ١٤٤٨ هـ", en: "Planned activities 1448 AH" })}
+                  {t(inl.t_9bd0a74d)}
                 </p>
               </>
             ) : null}
@@ -94,12 +89,7 @@ export function CommitteeYearGrid({
             ) : null}
             {items.length === 0 && !(kind === "PLAN" && planned1448[committee.id]) ? (
               <p className="mt-3 text-[13px] text-muted-foreground">
-                {kind === "PLAN"
-                  ? t({
-                      ar: "تُحدّث الأنشطة وفق الجدول الزمني المعتمد للجنة.",
-                      en: "Activities are updated according to the committee's approved schedule.",
-                    })
-                  : t({ ar: "لا توجد مواد مؤرشفة بعد.", en: "No archived materials yet." })}
+                {kind === "PLAN" ? t(inl.t_6715c119) : t(inl.t_a3f57888)}
               </p>
             ) : (
               <ul className="mt-3 space-y-2">
@@ -134,7 +124,7 @@ export function CommitteeYearGrid({
                             }
                             className="shrink-0 border-b border-bronze pb-0.5 font-medium text-bronze dark:border-gold dark:text-gold"
                           >
-                            {t({ ar: "عرض", en: "View" })}
+                            {t(inl.t_c47895fb)}
                           </button>
                         ) : (
                           <button
@@ -142,7 +132,7 @@ export function CommitteeYearGrid({
                             onClick={() => void downloadFile(href, title)}
                             className="shrink-0 border-b border-bronze pb-0.5 font-medium text-bronze dark:border-gold dark:text-gold"
                           >
-                            {t({ ar: "تحميل", en: "Download" })}
+                            {t(inl.t_ee037f30)}
                           </button>
                         )
                       ) : null}
