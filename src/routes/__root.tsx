@@ -114,6 +114,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
+      { name: "google-site-verification", content: "DWwzm2a7Wo2nqqcNQg5OQc83BuKjRKENcU9F-jnFsF4" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "آل بوعبيد — صندوق التنمية العائلية | البوابة الرسمية" },
       {
