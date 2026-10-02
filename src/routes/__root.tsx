@@ -115,41 +115,56 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "آل بوعبيد — صندوق التنمية العائلية | البوابة الرسمية" },
+      { title: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية" },
       {
         name: "description",
         content:
-          "الموقع الرسمي لأسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund.",
+          "الموقع الرسمي لمجلس أسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund.",
       },
-      { name: "author", content: "Al Bu Obaid Family" },
-      { property: "og:site_name", content: "آل بوعبيد — Al Bu Obaid" },
+      { name: "author", content: "مجلس أسرة آل بوعبيد — Al Bu Obaid Family" },
+      { property: "og:site_name", content: "مجلس أسرة آل بوعبيد — Al Bu Obaid" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         property: "og:title",
-        content: "صندوق التنمية العائلية (آل بوعبيد) — البوابة الرسمية | Al Bu Obaid Family",
+        content: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية",
       },
       {
         name: "twitter:title",
-        content: "صندوق التنمية العائلية (آل بوعبيد) — البوابة الرسمية | Al Bu Obaid Family",
+        content: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية",
       },
       {
         property: "og:description",
         content:
-          "الموقع الرسمي لأسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund.",
+          "الموقع الرسمي لمجلس أسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund.",
       },
       {
         name: "twitter:description",
         content:
-          "الموقع الرسمي لأسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund.",
+          "الموقع الرسمي لمجلس أسرة آل بوعبيد وصندوق التنمية العائلية — أسرة من فرع العبادل من بني تميم، مقرها الأحساء. Official website of the Al Bu Obaid family and its Family Development Fund.",
       },
       {
         property: "og:image",
-        content: getCanonicalUrl("/images/family_majlis.png"),
+        content: getCanonicalUrl("/images/og-share.jpg"),
+      },
+      {
+        property: "og:image:secure_url",
+        content: getCanonicalUrl("/images/og-share.jpg"),
+      },
+      { property: "og:image:type", content: "image/jpeg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content: "شعار مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم",
       },
       {
         name: "twitter:image",
-        content: getCanonicalUrl("/images/family_majlis.png"),
+        content: getCanonicalUrl("/images/og-share.jpg"),
+      },
+      {
+        name: "twitter:image:alt",
+        content: "شعار مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم",
       },
       { name: "theme-color", content: "#121614" },
       { name: "mobile-web-app-capable", content: "yes" },

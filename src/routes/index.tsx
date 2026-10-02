@@ -213,24 +213,45 @@ export const Route = createFileRoute("/")({
       familyStats,
     };
   },
-  head: () => ({
-    meta: [
-      { title: "آل بوعبيد — صندوق التنمية العائلية | البوابة الرسمية" },
-      {
-        name: "description",
-        content: `البوابة الرسمية لصندوق التنمية العائلية (آل بوعبيد) من بني تميم بالأحساء — النسب والفروع والمبادرات (ترخيص NCNP ${siteMeta.ncnpLicense}).`,
-      },
-      { property: "og:title", content: "صندوق التنمية العائلية (آل بوعبيد) — الأحساء" },
-      {
-        property: "og:description",
-        content:
-          "البوابة الرسمية لأسرة آل بوعبيد وصندوق التنمية العائلية — من العبادل من بني تميم، ومقرها المبرز بالأحساء.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: getCanonicalUrl("/") },
-    ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/") }],
-  }),
+  head: () => {
+    const pageTitle = "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية";
+    const pageDesc = `البوابة الرسمية لمجلس أسرة آل بوعبيد وصندوق التنمية العائلية — من العبادل من بني تميم بالأحساء: شجرة العائلة والنسب، الأرشيف والتراث، المبادرات، وخدمات أفراد الأسرة (ترخيص NCNP ${siteMeta.ncnpLicense}).`;
+    const shareImageUrl = getCanonicalUrl("/images/og-share.jpg");
+
+    return {
+      meta: [
+        { title: pageTitle },
+        { name: "description", content: pageDesc },
+        // Open Graph / Social Sharing (WhatsApp, Facebook, LinkedIn)
+        { property: "og:site_name", content: "مجلس أسرة آل بوعبيد" },
+        { property: "og:title", content: pageTitle },
+        { property: "og:description", content: pageDesc },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: getCanonicalUrl("/") },
+        { property: "og:image", content: shareImageUrl },
+        { property: "og:image:secure_url", content: shareImageUrl },
+        { property: "og:image:type", content: "image/jpeg" },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        {
+          property: "og:image:alt",
+          content: "شعار مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم",
+        },
+        { property: "og:locale", content: "ar_SA" },
+        { property: "og:locale:alternate", content: "en_US" },
+        // Twitter / X Large Summary Card
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: pageTitle },
+        { name: "twitter:description", content: pageDesc },
+        { name: "twitter:image", content: shareImageUrl },
+        {
+          name: "twitter:image:alt",
+          content: "شعار مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم",
+        },
+      ],
+      links: [{ rel: "canonical", href: getCanonicalUrl("/") }],
+    };
+  },
   component: HomePage,
 });
 
