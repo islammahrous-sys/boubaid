@@ -169,8 +169,10 @@ export const submitAchieverNomination = createServerFn({ method: "POST" })
     const blocked = await guardPublicSubmission({
       scope: "nomination",
       honeypot: data.website_url_check,
-      // The nomination form doesn't render a Turnstile widget, so `turnstile`
-      // is intentionally omitted — see the note on subscribeToNewsletter.
+      // No UI currently renders this form. Verification is mandatory so the
+      // endpoint stays closed to direct calls until a form with a
+      // TurnstileWidget (and a token) is wired up.
+      turnstile: { token: data.turnstile_token },
       max: 5,
       windowMs: 30 * 60 * 1000,
     });
@@ -261,7 +263,8 @@ export const submitBusinessListing = createServerFn({ method: "POST" })
     const blocked = await guardPublicSubmission({
       scope: "business_submission",
       honeypot: data.website_url_check,
-      // No Turnstile widget on this form — `turnstile` intentionally omitted.
+      // No UI currently renders this form; see the nomination note above.
+      turnstile: { token: data.turnstile_token },
       max: 3,
       windowMs: 60 * 60 * 1000,
     });
@@ -331,6 +334,7 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     const blocked = await guardPublicSubmission({
       scope: `council_request_${data.type}`,
       honeypot: data.website_url_check,
+      turnstile: { token: data.turnstile_token },
       max: 4,
       windowMs: 60 * 60 * 1000,
     });

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
+import { TurnstileWidget, type TurnstileWidgetHandle } from "@/components/site/TurnstileWidget";
 import { submitCouncilRequest } from "@/lib/forms.functions";
 import type { CouncilRequestType } from "@/lib/forms.schemas";
 import {
@@ -78,6 +79,8 @@ export function CouncilRequestForm({
 }) {
   const { t, lang, dir } = useLang();
   const { user, profile } = useAuth();
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const isAr = lang === "ar";
   const [sending, setSending] = useState(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
@@ -155,9 +158,12 @@ export function CouncilRequestForm({
           locale: lang,
           user_id: user?.id ?? null,
           website_url_check: String(fd.get("website_url_check") ?? ""),
+          turnstile_token: turnstileToken || undefined,
         },
       });
       if (result.ok) {
+        setTurnstileToken("");
+        turnstileRef.current?.reset();
         if (result.reference) {
           setSubmittedRef(result.reference);
         } else {
@@ -167,6 +173,9 @@ export function CouncilRequestForm({
         }
       } else {
         toast.error(t(result.error === "rate_limited" ? copy.rateLimited : copy.failure));
+        // Tokens are single-use; get a fresh one for the retry.
+        setTurnstileToken("");
+        turnstileRef.current?.reset();
       }
     } catch {
       toast.error(t(copy.failure));
@@ -433,6 +442,8 @@ export function CouncilRequestForm({
                 </Label>
                 <Input id="cr-link" name="link" type="url" maxLength={500} />
               </div>
+
+              <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
 
               <Button
                 type="submit"

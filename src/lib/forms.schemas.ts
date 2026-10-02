@@ -84,6 +84,7 @@ export const achieverNominationSchema = z.object({
     .or(z.literal("")),
   notes: z.string().trim().max(500).optional(),
   website_url_check: honeypotSchema,
+  turnstile_token: z.string().max(2048).optional(),
 });
 
 export type AchieverNominationInput = z.infer<typeof achieverNominationSchema>;
@@ -102,6 +103,7 @@ export const businessSubmissionSchema = z.object({
   description_ar: z.string().trim().min(10, "وصف النشاط مطلوب").max(600),
   description_en: z.string().trim().max(600).optional(),
   website_url_check: honeypotSchema,
+  turnstile_token: z.string().max(2048).optional(),
 });
 
 export type BusinessSubmissionInput = z.infer<typeof businessSubmissionSchema>;
@@ -159,6 +161,7 @@ export const councilRequestSchema = z.object({
     .default([]),
   locale: localeSchema,
   website_url_check: honeypotSchema,
+  turnstile_token: z.string().max(2048).optional(),
 });
 
 export type CouncilRequestInput = z.infer<typeof councilRequestSchema>;
