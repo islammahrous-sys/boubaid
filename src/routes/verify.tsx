@@ -37,6 +37,7 @@ export const Route = createFileRoute("/verify")({
         name: "description",
         content: "خدمة التحقق الإلكتروني الرسمي من بطاقات العضوية المعتمدة لأسرة آل بوعبيد.",
       },
+      { name: "robots", content: "noindex, follow" },
     ],
   }),
   component: VerifyPage,
