@@ -35,9 +35,20 @@ import {
   Store,
   Trophy,
   Users,
+  Search,
+  Loader2,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  XCircle,
+  Copy,
+  Check,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
@@ -53,6 +64,11 @@ import {
   TEMPLATE_REQUESTS,
 } from "@/lib/council-requests";
 import { copy } from "@/content/page-copy/requests";
+import { trackCouncilRequest, getMyCouncilRequests, type TrackedRequestResult } from "@/lib/forms.functions";
+import { formatDualDate } from "@/lib/dates";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/requests")({
   /**
@@ -169,14 +185,13 @@ const requests: RequestEntry[] = [
   {
     id: "membership",
     group: "membership",
-    to: "/account",
+    form: "membership_verification",
     Icon: BadgeCheck,
     name: { ar: "طلب توثيق العضوية", en: "Membership verification request" },
     desc: {
       ar: "تقديم طلب اعتماد العضوية للأمانة العامة وإصدار بطاقة العضوية الرسمية.",
       en: "Ask the secretariat to verify your membership and issue your official family card.",
     },
-    requiresAuth: true,
   },
   {
     id: "membership-card",
@@ -192,7 +207,7 @@ const requests: RequestEntry[] = [
   {
     id: "contribution",
     group: "membership",
-    to: "/contribute",
+    form: "fund_contribution",
     Icon: Banknote,
     name: { ar: "الاشتراك والمساهمة", en: "Subscription & contribution" },
     desc: {
@@ -318,7 +333,7 @@ const requests: RequestEntry[] = [
   {
     id: "frame",
     group: "tree",
-    to: "/official-family-tree",
+    form: "family_tree_frame",
     Icon: Frame,
     name: { ar: "طلب لوحة شجرة العائلة", en: "Family tree frame order" },
     desc: {
@@ -516,7 +531,7 @@ const requests: RequestEntry[] = [
   {
     id: "event-attendance",
     group: "participation",
-    to: "/events",
+    form: "event_attendance",
     Icon: CalendarDays,
     name: { ar: "طلب تسجيل حضور فعالية", en: "Event attendance registration" },
     desc: {
@@ -527,7 +542,7 @@ const requests: RequestEntry[] = [
   {
     id: "initiative-participation",
     group: "participation",
-    to: "/committees",
+    form: "initiative_participation",
     Icon: Sparkles,
     name: { ar: "طلب الانضمام إلى مشروع أو مبادرة", en: "Initiative participation request" },
     desc: {
@@ -558,7 +573,7 @@ const requests: RequestEntry[] = [
   {
     id: "inquiry",
     group: "general",
-    to: "/contact",
+    form: "general_inquiry",
     Icon: Mail,
     name: { ar: "استفسار أو طلب عام", en: "General inquiry or request" },
     desc: {
@@ -664,6 +679,98 @@ function RequestsHubPage() {
     return () => window.clearTimeout(id);
   }, [requestedForm]);
 
+  // Request Tracker state
+  const [trackRefInput, setTrackRefInput] = useState("");
+  const [isSearchingTrack, setIsSearchingTrack] = useState(false);
+  const [trackedResult, setTrackedResult] = useState<TrackedRequestResult | null>(null);
+  const [trackedSearched, setTrackedSearched] = useState(false);
+  const [copiedTrackRef, setCopiedTrackRef] = useState(false);
+
+  const trackServerFn = useServerFn(trackCouncilRequest);
+  const getMyRequestsServerFn = useServerFn(getMyCouncilRequests);
+
+  const { data: myRequestsData, isLoading: isLoadingMyRequests } = useQuery({
+    queryKey: ["my-council-requests", user?.id],
+    queryFn: () => getMyRequestsServerFn(),
+    enabled: !!user,
+  });
+
+  const handleTrackSubmit = async (e?: React.FormEvent, overrideRef?: string) => {
+    if (e) e.preventDefault();
+    const clean = (overrideRef ?? trackRefInput).trim();
+    if (!clean) return;
+    if (overrideRef) setTrackRefInput(overrideRef);
+    setIsSearchingTrack(true);
+    setTrackedSearched(true);
+    try {
+      const res = await trackServerFn({ data: { reference: clean } });
+      setTrackedResult(res);
+      if (!res.ok) {
+        toast.error(t(copy.trackNotFound));
+      }
+    } catch {
+      setTrackedResult({ ok: false, error: "not_found" });
+      toast.error(t(copy.trackNotFound));
+    } finally {
+      setIsSearchingTrack(false);
+    }
+  };
+
+  const copyRefToClipboard = (ref: string) => {
+    navigator.clipboard.writeText(ref);
+    setCopiedTrackRef(true);
+    toast.success(lang === "ar" ? "تم نسخ رقم المعاملة" : "Reference copied");
+    setTimeout(() => setCopiedTrackRef(false), 2000);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "new":
+        return (
+          <Badge variant="outline" className="border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-400 gap-1.5 py-1 px-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+            {t(copy.statusNew)}
+          </Badge>
+        );
+      case "open":
+      case "in_progress":
+        return (
+          <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400 gap-1.5 py-1 px-3">
+            <Clock className="h-3.5 w-3.5" />
+            {t(copy.statusReview)}
+          </Badge>
+        );
+      case "approved":
+        return (
+          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 gap-1.5 py-1 px-3">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            {t(copy.statusApproved)}
+          </Badge>
+        );
+      case "rejected":
+        return (
+          <Badge variant="outline" className="border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400 gap-1.5 py-1 px-3">
+            <XCircle className="h-3.5 w-3.5" />
+            {t(copy.statusRejected)}
+          </Badge>
+        );
+      case "resolved":
+      case "completed":
+        return (
+          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 gap-1.5 py-1 px-3">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            {t(copy.statusCompleted)}
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="outline" className="text-muted-foreground py-1 px-3">
+            {status}
+          </Badge>
+        );
+    }
+  };
+
   return (
     <>
       <PageHeader eyebrow={t(copy.eyebrow)} title={t(copy.title)} subtitle={t(copy.subtitle)} />
@@ -730,7 +837,19 @@ function RequestsHubPage() {
                     return (
                       <li
                         key={r.id}
-                        className={`req-tone req-tone-${g} flex flex-col overflow-hidden rounded-xl border shadow-sm transition-shadow hover:shadow-md`}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={t(r.name)}
+                        onClick={() => {
+                          if (r.form) setActiveForm(r.form);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            if (r.form) setActiveForm(r.form);
+                          }
+                        }}
+                        className={`req-tone req-tone-${g} group flex flex-col overflow-hidden rounded-xl border shadow-sm transition-all hover:shadow-md hover:border-bronze/50 dark:hover:border-gold/50 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-bronze`}
                       >
                         <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
                           <img
@@ -744,44 +863,49 @@ function RequestsHubPage() {
                           </span>
                         </div>
                         <div className="flex flex-1 flex-col p-5">
-                        <h3 className="text-[15px] font-semibold text-[var(--req-text)]">
-                          {t(r.name)}
-                        </h3>
-                        <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--req-muted)]">
-                          {t(r.desc)}
-                        </p>
-                        {r.templateCode ? (
-                          <Link
-                            to="/templates"
-                            className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-[var(--req-link)] underline-offset-4 hover:underline"
-                          >
-                            {r.templateCode}
-                          </Link>
-                        ) : null}
-                        {r.requiresAuth && !user ? (
-                          <p className="mt-3 text-[11.5px] text-[var(--req-muted)]">
-                            {t(copy.signInNote)}
+                          <h3 className="text-[15px] font-semibold text-[var(--req-text)]">
+                            {t(r.name)}
+                          </h3>
+                          <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--req-muted)]">
+                            {t(r.desc)}
                           </p>
-                        ) : null}
-                        {r.form ? (
-                          <button
-                            type="button"
-                            id={r.id}
-                            onClick={() => setActiveForm(r.form!)}
-                            className={linkCls}
-                          >
-                            {t(copy.action)}
-                            <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                          </button>
-                        ) : (
-                          <Link
-                            to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
-                            className={linkCls}
-                          >
-                            {t(copy.action)}
-                            <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                          </Link>
-                        )}
+                          {r.templateCode ? (
+                            <Link
+                              to="/templates"
+                              onClick={(e) => e.stopPropagation()}
+                              className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-[var(--req-link)] underline-offset-4 hover:underline"
+                            >
+                              {r.templateCode}
+                            </Link>
+                          ) : null}
+                          {r.requiresAuth && !user ? (
+                            <p className="mt-3 text-[11.5px] text-[var(--req-muted)]">
+                              {t(copy.signInNote)}
+                            </p>
+                          ) : null}
+                          {r.form ? (
+                            <button
+                              type="button"
+                              id={r.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveForm(r.form!);
+                              }}
+                              className={linkCls}
+                            >
+                              {t(copy.action)}
+                              <Arrow className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden="true" />
+                            </button>
+                          ) : (
+                            <Link
+                              to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
+                              onClick={(e) => e.stopPropagation()}
+                              className={linkCls}
+                            >
+                              {t(copy.action)}
+                              <Arrow className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden="true" />
+                            </Link>
+                          )}
                         </div>
                       </li>
                     );
@@ -803,13 +927,268 @@ function RequestsHubPage() {
           <p className="measure mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {t(copy.mineNote)}
           </p>
-          <Link
-            to={user ? "/account" : "/auth"}
-            className="mt-6 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-          >
-            <ClipboardList className="h-4 w-4" aria-hidden="true" />
-            {user ? t(copy.mineCta) : t(copy.signInCta)}
-          </Link>
+
+          {/* تتبع الطلب برقم المعاملة */}
+          <div className="mt-8 rounded-2xl border border-border/80 bg-card/60 p-6 md:p-8 backdrop-blur-xs shadow-xs">
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Search className="h-4.5 w-4.5 text-bronze dark:text-gold" />
+              {t(copy.trackTitle)}
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t(copy.trackSubtitle)}
+            </p>
+
+            <form onSubmit={handleTrackSubmit} className="mt-5 flex flex-col sm:flex-row gap-2.5 max-w-xl">
+              <Input
+                type="text"
+                value={trackRefInput}
+                onChange={(e) => setTrackRefInput(e.target.value)}
+                placeholder={t(copy.trackPlaceholder)}
+                className="font-mono text-sm uppercase bg-background"
+                disabled={isSearchingTrack}
+              />
+              <Button
+                type="submit"
+                disabled={isSearchingTrack || !trackRefInput.trim()}
+                className="gap-2 shrink-0 font-bold"
+              >
+                {isSearchingTrack ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {t(copy.trackSearching)}
+                  </>
+                ) : (
+                  <>
+                    <Search className="h-4 w-4" />
+                    {t(copy.trackButton)}
+                  </>
+                )}
+              </Button>
+            </form>
+
+            {/* نتيجة التتبع */}
+            {trackedSearched && (
+              <div className="mt-6 border-t border-border/60 pt-6">
+                {trackedResult?.ok && trackedResult.request ? (
+                  <div className="rounded-xl border border-bronze/20 bg-bronze/5 dark:bg-bronze/10 p-5 space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/40 pb-4">
+                      <div>
+                        <span className="text-[11px] font-medium text-muted-foreground block">
+                          {t(copy.referenceLabel)}
+                        </span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="font-mono text-base font-bold text-foreground">
+                            {trackedResult.request.reference}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => copyRefToClipboard(trackedResult.request!.reference)}
+                            className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors"
+                            title={rtl ? "نسخ" : "Copy"}
+                          >
+                            {copiedTrackRef ? (
+                              <Check className="h-4 w-4 text-emerald-600" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                      <div>{getStatusBadge(trackedResult.request.status)}</div>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2 text-xs">
+                      <div>
+                        <span className="text-muted-foreground block text-[11px] mb-1">
+                          {rtl ? "موضوع الطلب" : "Subject"}
+                        </span>
+                        <span className="font-semibold text-foreground text-sm">
+                          {rtl
+                            ? trackedResult.request.title || trackedResult.request.topic
+                            : trackedResult.request.title_en ||
+                              trackedResult.request.title ||
+                              trackedResult.request.topic}
+                        </span>
+                      </div>
+                      {(trackedResult.request.committee_name_ar ||
+                        trackedResult.request.committee_name_en) && (
+                        <div>
+                          <span className="text-muted-foreground block text-[11px] mb-1">
+                            {rtl ? "اللجنة المختصة" : "Responsible Committee"}
+                          </span>
+                          <span className="font-semibold text-foreground text-sm">
+                            {rtl
+                              ? trackedResult.request.committee_name_ar
+                              : trackedResult.request.committee_name_en ||
+                                trackedResult.request.committee_name_ar}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-muted-foreground block text-[11px] mb-1">
+                          {t(copy.dateSubmitted)}
+                        </span>
+                        <span className="font-mono text-foreground">
+                          {formatDualDate(trackedResult.request.created_at, lang, "short")}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Timeline stages */}
+                    <div className="pt-3 border-t border-border/40">
+                      <span className="text-[11px] font-medium text-muted-foreground block mb-3">
+                        {rtl ? "مراحل الاعتماد والمعالجة" : "Approval & Processing Stages"}
+                      </span>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                        <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                          <CheckCircle2 className="h-4 w-4 shrink-0" />
+                          <span className="font-medium text-[11.5px]">{rtl ? "1. استلام الطلب" : "1. Received"}</span>
+                        </div>
+                        <div
+                          className={`flex items-center gap-2 p-2 rounded-lg ${
+                            ["open", "in_progress", "approved", "rejected", "resolved", "completed"].includes(
+                              trackedResult.request.status,
+                            )
+                              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                              : "bg-blue-500/10 text-blue-700 dark:text-blue-400 font-semibold"
+                          }`}
+                        >
+                          {["open", "in_progress", "approved", "rejected", "resolved", "completed"].includes(
+                            trackedResult.request.status,
+                          ) ? (
+                            <CheckCircle2 className="h-4 w-4 shrink-0" />
+                          ) : (
+                            <Clock className="h-4 w-4 shrink-0 animate-pulse" />
+                          )}
+                          <span className="font-medium text-[11.5px]">{rtl ? "2. المراجعة الأولية" : "2. Initial Review"}</span>
+                        </div>
+                        <div
+                          className={`flex items-center gap-2 p-2 rounded-lg ${
+                            trackedResult.request.status === "rejected"
+                              ? "bg-red-500/10 text-red-700 dark:text-red-400"
+                              : ["approved", "resolved", "completed"].includes(trackedResult.request.status)
+                              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                              : ["open", "in_progress"].includes(trackedResult.request.status)
+                              ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 font-semibold"
+                              : "bg-muted/40 text-muted-foreground"
+                          }`}
+                        >
+                          {trackedResult.request.status === "rejected" ? (
+                            <XCircle className="h-4 w-4 shrink-0" />
+                          ) : ["approved", "resolved", "completed"].includes(trackedResult.request.status) ? (
+                            <CheckCircle2 className="h-4 w-4 shrink-0" />
+                          ) : ["open", "in_progress"].includes(trackedResult.request.status) ? (
+                            <Clock className="h-4 w-4 shrink-0 animate-pulse" />
+                          ) : (
+                            <div className="h-4 w-4 rounded-full border border-current shrink-0" />
+                          )}
+                          <span className="font-medium text-[11.5px]">
+                            {trackedResult.request.status === "rejected"
+                              ? (rtl ? "3. اعتذار" : "3. Declined")
+                              : (rtl ? "3. اعتماد اللجنة" : "3. Committee Approval")}
+                          </span>
+                        </div>
+                        <div
+                          className={`flex items-center gap-2 p-2 rounded-lg ${
+                            ["resolved", "completed"].includes(trackedResult.request.status)
+                              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                              : trackedResult.request.status === "approved"
+                              ? "bg-blue-500/10 text-blue-700 dark:text-blue-400 font-semibold"
+                              : "bg-muted/40 text-muted-foreground"
+                          }`}
+                        >
+                          {["resolved", "completed"].includes(trackedResult.request.status) ? (
+                            <CheckCircle2 className="h-4 w-4 shrink-0" />
+                          ) : trackedResult.request.status === "approved" ? (
+                            <Clock className="h-4 w-4 shrink-0 animate-pulse" />
+                          ) : (
+                            <div className="h-4 w-4 rounded-full border border-current shrink-0" />
+                          )}
+                          <span className="font-medium text-[11.5px]">{rtl ? "4. التنفيذ النهائي" : "4. Completed"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 p-4 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-xs">
+                    <AlertCircle className="h-5 w-5 shrink-0" />
+                    <span>{t(copy.trackNotFound)}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* طلبات المستخدم المسجل */}
+          {user && (
+            <div className="mt-10">
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4">
+                <ClipboardList className="h-4 w-4 text-bronze dark:text-gold" />
+                {t(copy.myRecentRequests)}
+              </h3>
+
+              {isLoadingMyRequests ? (
+                <div className="flex items-center justify-center p-8 text-muted-foreground text-xs gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{t(copy.trackSearching)}</span>
+                </div>
+              ) : myRequestsData?.requests && myRequestsData.requests.length > 0 ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {myRequestsData.requests.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-4 rounded-xl border border-border bg-card/60 flex flex-col justify-between gap-3 text-xs"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <span className="font-mono text-[11px] font-bold text-bronze dark:text-gold">
+                            {item.reference}
+                          </span>
+                          <h4 className="font-semibold text-foreground mt-1 line-clamp-1">
+                            {item.subject}
+                          </h4>
+                          {(item.committee_name_ar || item.committee_name_en) && (
+                            <span className="text-[11px] text-muted-foreground block mt-0.5">
+                              {rtl ? item.committee_name_ar : (item.committee_name_en || item.committee_name_ar)}
+                            </span>
+                          )}
+                        </div>
+                        <div>{getStatusBadge(item.status)}</div>
+                      </div>
+
+                      <div className="flex items-center justify-between border-t border-border/40 pt-2 text-[11px] text-muted-foreground">
+                        <span className="font-mono">
+                          {formatDualDate(item.created_at, lang, "short")}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleTrackSubmit(undefined, item.reference)}
+                          className="font-bold text-primary hover:underline flex items-center gap-1"
+                        >
+                          <Search className="h-3 w-3" />
+                          {rtl ? "متابعة الحالة" : "Track"}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground italic">
+                  {t(copy.noRequestsYet)}
+                </p>
+              )}
+            </div>
+          )}
+
+          <div className="mt-8">
+            <Link
+              to={user ? "/account" : "/auth"}
+              className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+            >
+              <ClipboardList className="h-4 w-4" aria-hidden="true" />
+              {user ? t(copy.mineCta) : t(copy.signInCta)}
+            </Link>
+          </div>
         </section>
 
         {/* ── الاعتماد ───────────────────────────────────────── */}

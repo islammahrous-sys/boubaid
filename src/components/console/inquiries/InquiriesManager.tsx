@@ -35,19 +35,39 @@ import {
   Activity,
   Loader2,
   Trash2,
+  XCircle,
+  Paperclip,
+  FileText,
+  ExternalLink,
+  Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getInquiriesPaginated } from "@/lib/admin-hub.functions";
+import { getInquiriesPaginated, getRequestAttachmentSignedUrl } from "@/lib/admin-hub.functions";
 import { cn } from "@/lib/utils";
 import { COMMITTEE_REQUEST_DESTINATIONS } from "@/lib/council-requests";
+
+type RequestAttachment = {
+  path: string;
+  name?: string;
+  type?: string;
+  size?: number;
+};
 
 type RequestMetadata = {
   reference?: string;
   committee_slug?: string;
   committee_name_ar?: string;
   committee_name_en?: string;
+  user_id?: string | null;
+  request_type?: string;
+  topic?: string;
+  request_title_ar?: string;
+  request_title_en?: string;
+  attachments?: (string | RequestAttachment)[];
+  attachments_count?: number;
+  [key: string]: any;
 };
 
 export type InquiryRow = {
@@ -90,8 +110,18 @@ export function InquiriesManager({
   totalCount: number;
   onUpdateStatus: (
     id: string,
-    status: "new" | "open" | "in_progress" | "resolved" | "spam" | "read" | "archived",
+    status:
+      | "new"
+      | "open"
+      | "in_progress"
+      | "approved"
+      | "rejected"
+      | "resolved"
+      | "spam"
+      | "read"
+      | "archived",
     sourceTable: "inquiries" | "contact_messages",
+    reviewNote?: string,
   ) => Promise<void>;
   onAddNote: (inquiryId: string, note: string) => Promise<void>;
   onDelete: (id: string, sourceTable: "inquiries" | "contact_messages") => Promise<void>;
@@ -106,6 +136,59 @@ export function InquiriesManager({
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryRow | null>(null);
   const [newNote, setNewNote] = useState("");
   const [submittingNote, setSubmittingNote] = useState(false);
+
+  const [openingAttachment, setOpeningAttachment] = useState<string | null>(null);
+  const [decisionMode, setDecisionMode] = useState<"approve" | "reject" | null>(null);
+  const [decisionNote, setDecisionNote] = useState("");
+  const [isSubmittingDecision, setIsSubmittingDecision] = useState(false);
+
+  const getAttachmentSignedUrlFn = useServerFn(getRequestAttachmentSignedUrl);
+
+  const handleOpenAttachment = async (rawPath: string) => {
+    let cleanPath = rawPath.split(" — ")[0].trim();
+    if (cleanPath.startsWith("documents-private/")) {
+      cleanPath = cleanPath.slice("documents-private/".length);
+    }
+    setOpeningAttachment(rawPath);
+    try {
+      const res = await getAttachmentSignedUrlFn({ data: { path: cleanPath } });
+      if (res.ok && res.url) {
+        window.open(res.url, "_blank", "noopener,noreferrer");
+      } else {
+        toast.error(isAr ? "تعذر فتح المرفق أو انتهت صلاحية الرابط" : "Failed to load attachment");
+      }
+    } catch {
+      toast.error(isAr ? "تعذر فتح المرفق" : "Failed to open attachment");
+    } finally {
+      setOpeningAttachment(null);
+    }
+  };
+
+  const handleExecuteDecision = async () => {
+    if (!selectedInquiry || !decisionMode) return;
+    setIsSubmittingDecision(true);
+    const targetStatus = decisionMode === "approve" ? "approved" : "rejected";
+    try {
+      await onUpdateStatus(
+        selectedInquiry.id,
+        targetStatus,
+        selectedInquiry.source_table,
+        decisionNote.trim() || undefined,
+      );
+      setSelectedInquiry((prev) => (prev ? { ...prev, status: targetStatus } : null));
+      setDecisionMode(null);
+      setDecisionNote("");
+      toast.success(
+        targetStatus === "approved"
+          ? (isAr ? "تم اعتماد الطلب بنجاح وإرسال إشعار للمستفيد" : "Request approved successfully")
+          : (isAr ? "تم تسجيل الاعتذار وإرسال إشعار للمستفيد" : "Request declined and notification sent"),
+      );
+    } catch {
+      toast.error(isAr ? "حدث خطأ أثناء تحديث حالة الطلب" : "Error updating request status");
+    } finally {
+      setIsSubmittingDecision(false);
+    }
+  };
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
@@ -164,6 +247,20 @@ export function InquiriesManager({
           <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium text-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             {isAr ? "تم الرد" : "Resolved"}
+          </span>
+        );
+      case "approved":
+        return (
+          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            {isAr ? "معتمد ومقبول" : "Approved"}
+          </span>
+        );
+      case "rejected":
+        return (
+          <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400 font-medium text-xs">
+            <XCircle className="w-3.5 h-3.5" />
+            {isAr ? "معتذر عنه / مرفوض" : "Declined"}
           </span>
         );
       case "spam":
@@ -390,6 +487,40 @@ export function InquiriesManager({
             <button
               onClick={() => {
                 setCurrentPage(1);
+                setStatusFilter("approved");
+              }}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "approved"
+                  ? "text-emerald-600 font-bold"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {isAr ? "معتمدة ومقبولة" : "Approved"}
+              {statusFilter === "approved" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full" />
+              )}
+            </button>
+            <button
+              onClick={() => {
+                setCurrentPage(1);
+                setStatusFilter("rejected");
+              }}
+              className={cn(
+                "py-2.5 px-1 relative whitespace-nowrap transition-colors",
+                statusFilter === "rejected"
+                  ? "text-red-600 font-bold"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {isAr ? "معتذر عنها" : "Declined"}
+              {statusFilter === "rejected" && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-600 rounded-t-full" />
+              )}
+            </button>
+            <button
+              onClick={() => {
+                setCurrentPage(1);
                 setStatusFilter("resolved");
               }}
               className={cn(
@@ -399,7 +530,7 @@ export function InquiriesManager({
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {isAr ? "مغلقة" : "Resolved"}{" "}
+              {isAr ? "مغلقة / منجزة" : "Resolved"}{" "}
               <span className="text-[10px] font-mono opacity-60 ml-1">({resolvedCount})</span>
               {statusFilter === "resolved" && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
@@ -589,6 +720,12 @@ export function InquiriesManager({
                           <SelectItem value="in_progress" className="text-xs">
                             {isAr ? "قيد المتابعة" : "In Progress"}
                           </SelectItem>
+                          <SelectItem value="approved" className="text-xs font-semibold text-emerald-600">
+                            {isAr ? "معتمد ومقبول" : "Approved"}
+                          </SelectItem>
+                          <SelectItem value="rejected" className="text-xs font-semibold text-red-600">
+                            {isAr ? "معتذر عنه / مرفوض" : "Declined"}
+                          </SelectItem>
                           <SelectItem value="resolved" className="text-xs">
                             {isAr ? "تم الرد والإنهاء" : "Resolved"}
                           </SelectItem>
@@ -665,6 +802,213 @@ export function InquiriesManager({
                     {formatDualDateTime(selectedInquiry.created_at, isAr ? "ar" : "en")}
                   </span>
                 </div>
+
+                {/* Official Attachments */}
+                {selectedInquiry.request_metadata?.attachments &&
+                  Array.isArray(selectedInquiry.request_metadata.attachments) &&
+                  selectedInquiry.request_metadata.attachments.length > 0 && (
+                    <div className="space-y-2 pt-2">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground flex items-center gap-1.5 mb-2">
+                        <Paperclip className="w-3.5 h-3.5 text-primary" />
+                        {isAr ? "المرفقات والوثائق الداعمة للطلب" : "Official Attachments"}
+                        <span className="font-mono text-[10px] text-muted-foreground">
+                          ({selectedInquiry.request_metadata.attachments.length})
+                        </span>
+                      </span>
+                      <div className="space-y-2">
+                        {selectedInquiry.request_metadata.attachments.map((att, idx) => {
+                          const rawStr = typeof att === "string" ? att : att.path;
+                          const displayName =
+                            typeof att === "string"
+                              ? att.split(" — ")[1] || att.split("/").pop() || (isAr ? `مرفق ${idx + 1}` : `Attachment ${idx + 1}`)
+                              : att.name || (isAr ? `مرفق ${idx + 1}` : `Attachment ${idx + 1}`);
+                          const isOpening = openingAttachment === rawStr;
+                          return (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between p-3 rounded-xl border border-border bg-card/60 text-xs"
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0 pe-2">
+                                <FileText className="w-4 h-4 text-primary shrink-0" />
+                                <span className="font-medium text-foreground truncate block">
+                                  {displayName}
+                                </span>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={isOpening}
+                                onClick={() => handleOpenAttachment(rawStr)}
+                                className="h-7 text-[11px] gap-1 shrink-0 font-bold"
+                              >
+                                {isOpening ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  <ExternalLink className="w-3 h-3" />
+                                )}
+                                {isAr ? "عرض المرفق" : "View"}
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Decision / Approval Workflow Section */}
+                {selectedInquiry.source_table === "inquiries" && (
+                  <div className="p-4 rounded-xl border border-border bg-muted/15 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
+                        {isAr ? "مسار الاعتماد والقرار" : "Approval Decision Pipeline"}
+                      </span>
+                      {getStatusDisplay(selectedInquiry.status)}
+                    </div>
+
+                    {decisionMode ? (
+                      <div className="space-y-3 pt-2">
+                        <div
+                          className={cn(
+                            "p-3 rounded-lg border text-xs leading-relaxed",
+                            decisionMode === "approve"
+                              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-800 dark:text-emerald-300"
+                              : "bg-red-500/10 border-red-500/20 text-red-800 dark:text-red-300",
+                          )}
+                        >
+                          <span className="font-bold block mb-1">
+                            {decisionMode === "approve"
+                              ? (isAr ? "تأكيد اعتماد وقبول الطلب" : "Confirm Request Approval")
+                              : (isAr ? "تأكيد الاعتذار عن قبول الطلب" : "Confirm Request Decline")}
+                          </span>
+                          <p className="text-[11px] opacity-90">
+                            {decisionMode === "approve"
+                              ? (isAr
+                                  ? "سيتم اعتماد الطلب رسمياً وإرسال إشعار بريدي فوري للمستفيد. يمكنك كتابة توجيه أو ملاحظة:"
+                                  : "The request will be approved and the applicant notified. Optional note:")
+                              : (isAr
+                                  ? "سيتم تسجيل الاعتذار وإرسال إشعار بريدي للمستفيد. يرجى توضيح سبب الاعتذار:"
+                                  : "The request will be declined and the applicant notified. Please state reason:")}
+                          </p>
+                        </div>
+
+                        <Textarea
+                          rows={2}
+                          value={decisionNote}
+                          onChange={(e) => setDecisionNote(e.target.value)}
+                          placeholder={
+                            decisionMode === "approve"
+                              ? (isAr ? "ملاحظة أو توجيه إداري (اختياري)..." : "Optional review note...")
+                              : (isAr ? "سبب الاعتذار للمستفيد..." : "Reason for decline...")
+                          }
+                          className="text-xs resize-none bg-background rounded-lg"
+                        />
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            disabled={isSubmittingDecision}
+                            onClick={handleExecuteDecision}
+                            className={cn(
+                              "text-xs font-bold flex-1 h-8 text-white",
+                              decisionMode === "approve"
+                                ? "bg-emerald-600 hover:bg-emerald-700"
+                                : "bg-red-600 hover:bg-red-700",
+                            )}
+                          >
+                            {isSubmittingDecision ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin me-1.5" />
+                            ) : decisionMode === "approve" ? (
+                              <CheckCircle2 className="w-3.5 h-3.5 me-1.5" />
+                            ) : (
+                              <XCircle className="w-3.5 h-3.5 me-1.5" />
+                            )}
+                            {decisionMode === "approve"
+                              ? (isAr ? "تأكيد الاعتماد والإشعار" : "Confirm Approval")
+                              : (isAr ? "تأكيد الاعتذار والإشعار" : "Confirm Decline")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={isSubmittingDecision}
+                            onClick={() => {
+                              setDecisionMode(null);
+                              setDecisionNote("");
+                            }}
+                            className="text-xs h-8"
+                          >
+                            {isAr ? "إلغاء" : "Cancel"}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="pt-1 space-y-2">
+                        {selectedInquiry.status !== "approved" && selectedInquiry.status !== "rejected" ? (
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setDecisionMode("approve");
+                                setDecisionNote("");
+                              }}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 gap-1.5 shadow-xs"
+                            >
+                              <CheckCircle2 className="w-4 h-4" />
+                              {isAr ? "اعتماد الطلب" : "Approve"}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setDecisionMode("reject");
+                                setDecisionNote("");
+                              }}
+                              className="border-red-500/30 text-red-600 hover:bg-red-500/10 font-bold text-xs h-9 gap-1.5"
+                            >
+                              <XCircle className="w-4 h-4" />
+                              {isAr ? "اعتذار / رفض" : "Decline"}
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between p-2.5 rounded-lg border bg-background text-xs">
+                            <span className="text-muted-foreground text-[11px]">
+                              {selectedInquiry.status === "approved"
+                                ? (isAr ? "تم اعتماد الطلب رسمياً" : "Request is officially approved")
+                                : (isAr ? "تم الاعتذار عن هذا الطلب" : "Request has been declined")}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 text-[11px] font-bold text-primary"
+                              onClick={() => {
+                                setDecisionMode(selectedInquiry.status === "approved" ? "reject" : "approve");
+                              }}
+                            >
+                              {selectedInquiry.status === "approved"
+                                ? (isAr ? "تغيير للاعتذار" : "Change to Decline")
+                                : (isAr ? "تغيير للاعتماد" : "Change to Approve")}
+                            </Button>
+                          </div>
+                        )}
+
+                        {selectedInquiry.status === "new" && (
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            className="w-full text-xs h-8 font-medium gap-1.5"
+                            onClick={async () => {
+                              await onUpdateStatus(selectedInquiry.id, "in_progress", selectedInquiry.source_table);
+                              setSelectedInquiry((prev) => (prev ? { ...prev, status: "in_progress" } : null));
+                              toast.success(isAr ? "تم نقل الطلب إلى قيد المراجعة" : "Moved to In Progress");
+                            }}
+                          >
+                            <Clock className="w-3.5 h-3.5" />
+                            {isAr ? "نقل إلى قيد المراجعة والدراسة" : "Move to In Progress"}
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Internal Notes Section */}
                 {selectedInquiry.source_table === "inquiries" ? (

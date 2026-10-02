@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   contactMessageSchema,
   newsletterSchema,
@@ -412,16 +414,6 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     // Unique, quotable reference number for the submission.
     const stamp = new Date().toISOString().slice(2, 10).replace(/-/g, "");
     const referenceNumber = `ABF-REQ-${stamp}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
-    const requestMetadata: Record<string, string> = {
-      reference: referenceNumber,
-      request_type: data.type,
-    };
-    if (def.templateCode) requestMetadata.template_code = def.templateCode;
-    if (committeeMeta) {
-      requestMetadata.committee_slug = committeeMeta.slug;
-      requestMetadata.committee_name_ar = committeeMeta.name_ar;
-      if (committeeMeta.name_en) requestMetadata.committee_name_en = committeeMeta.name_en;
-    }
 
     // Supporting photographs or documents live in the private documents bucket.
     const storedAttachments: string[] = [];
@@ -458,6 +450,26 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
       }
     }
 
+    const requestMetadata: Record<string, any> = {
+      reference: referenceNumber,
+      request_type: data.type,
+      request_title_ar: def.title.ar,
+      request_title_en: def.title.en,
+      applicant_name: data.full_name,
+      applicant_phone: data.phone,
+      applicant_email: data.email || null,
+      applicant_branch: data.branch || null,
+      attachments_count: storedAttachments.length,
+      attachments: storedAttachments,
+    };
+    if (data.user_id) requestMetadata.user_id = data.user_id;
+    if (def.templateCode) requestMetadata.template_code = def.templateCode;
+    if (committeeMeta) {
+      requestMetadata.committee_slug = committeeMeta.slug;
+      requestMetadata.committee_name_ar = committeeMeta.name_ar;
+      if (committeeMeta.name_en) requestMetadata.committee_name_en = committeeMeta.name_en;
+    }
+
     const message = [
       `رقم الطلب: ${referenceNumber}`,
       templateLine,
@@ -484,7 +496,7 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
       phone: data.phone,
       subject: def.templateCode
         ? `${def.title.ar} [${def.templateCode}] — ${referenceNumber}: ${data.topic}`
-        : `${def.title.ar}: ${data.topic}`,
+        : `${def.title.ar} — ${referenceNumber}: ${data.topic}`,
       message,
       source: data.type,
       status: "new",
@@ -535,3 +547,110 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
 
     return { ok: true, reference: referenceNumber };
   });
+
+export type TrackedRequestResult = {
+  ok: boolean;
+  request?: {
+    reference: string;
+    topic: string;
+    title: string;
+    title_en?: string;
+    status: string;
+    created_at: string;
+    committee_name_ar?: string;
+    committee_name_en?: string;
+  };
+  error?: string;
+};
+
+/**
+ * Public request status tracking by Reference Number.
+ */
+export const trackCouncilRequest = createServerFn({ method: "POST" })
+  .validator((input: unknown) =>
+    z
+      .object({
+        reference: z.string().trim().min(3).max(60),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data }): Promise<TrackedRequestResult> => {
+    const clean = data.reference.trim();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: rows, error } = await supabaseAdmin
+      .from("inquiries")
+      .select("id, name, subject, status, source, created_at, request_metadata")
+      .or(`request_metadata->>reference.eq.${clean},subject.ilike.%${clean}%`)
+      .limit(1);
+
+    if (error || !rows || rows.length === 0) {
+      return { ok: false, error: "not_found" };
+    }
+
+    const item = rows[0];
+    const meta = (item.request_metadata ?? {}) as Record<string, any>;
+
+    return {
+      ok: true,
+      request: {
+        reference: meta.reference || clean,
+        topic: item.subject || "طلب معتمد",
+        title: meta.request_title_ar || item.subject || "طلب مجلس الأسرة",
+        title_en: meta.request_title_en,
+        status: item.status,
+        created_at: item.created_at,
+        committee_name_ar: meta.committee_name_ar,
+        committee_name_en: meta.committee_name_en,
+      },
+    };
+  });
+
+/**
+ * Fetch authenticated user's submitted council requests.
+ */
+export const getMyCouncilRequests = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { claims, userId } = context;
+    const email = (claims.email ?? "").toLowerCase().trim();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    let query = supabaseAdmin
+      .from("inquiries")
+      .select("id, name, subject, status, source, created_at, request_metadata")
+      .order("created_at", { ascending: false })
+      .limit(30);
+
+    if (email && userId) {
+      query = query.or(`email.eq.${email},request_metadata->>user_id.eq.${userId}`);
+    } else if (email) {
+      query = query.eq("email", email);
+    } else if (userId) {
+      query = query.contains("request_metadata", { user_id: userId });
+    }
+
+    const { data: rows, error } = await query;
+    if (error) {
+      console.error("[getMyCouncilRequests] query failed:", error);
+      return { ok: false, requests: [] };
+    }
+
+    const sanitized = (rows ?? []).map((r) => {
+      const meta = (r.request_metadata ?? {}) as Record<string, any>;
+      return {
+        id: r.id,
+        reference: meta.reference || `REQ-${r.id.slice(0, 8).toUpperCase()}`,
+        subject: r.subject || "طلب مجلس الأسرة",
+        status: r.status,
+        source: r.source,
+        created_at: r.created_at,
+        committee_slug: meta.committee_slug,
+        committee_name_ar: meta.committee_name_ar,
+        committee_name_en: meta.committee_name_en,
+      };
+    });
+
+    return { ok: true, requests: sanitized };
+  });
+

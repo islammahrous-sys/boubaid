@@ -1524,26 +1524,41 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     assertRowsAffected(updated, "inquiries", data.id);
 
+    // If review_note provided during approval/rejection, record in internal notes
+    if (data.review_note && data.review_note.trim()) {
+      await supabase.from("inquiry_notes").insert({
+        inquiry_id: data.id,
+        note: data.review_note.trim(),
+        author_id: context.userId,
+      });
+    }
+
     const row = updated[0];
     if (row && row.email) {
       try {
         const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
         const metadata = (row.request_metadata || {}) as Record<string, any>;
         const refNumber = metadata.reference || `REQ-${row.id.slice(0, 8).toUpperCase()}`;
-        const title = row.subject || metadata.title || "طلب مجلس الأسرة";
+        const title = row.subject || metadata.request_title_ar || metadata.title || "طلب مجلس الأسرة";
 
         let templateKey: import("@/lib/email/email-types").EmailTemplateKey = "request_status_changed";
-        if (data.status === "resolved") {
+        if (data.status === "approved") {
+          templateKey = "request_approved";
+        } else if (data.status === "rejected") {
+          templateKey = "request_rejected";
+        } else if (data.status === "resolved") {
           templateKey = "request_completed";
         } else if (data.status === "in_progress") {
           templateKey = "request_under_review";
         }
 
         const statusMapAr: Record<string, string> = {
-          new: "جديد",
+          new: "جديد قيد الانتظار",
           open: "مفتوح قيد المعالجة",
-          in_progress: "قيد الدراسة والمتابعة",
-          resolved: "مكتمل ومنجز",
+          in_progress: "قيد الدراسة والمراجعة",
+          approved: "معتمد ومقبول رسمياً",
+          rejected: "معتذر عنه / غير معتمد",
+          resolved: "مكتمل ومنجز بالكامل",
           spam: "غير ملائم",
         };
 
@@ -1559,10 +1574,12 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
             request_title: title,
             status_label: statusLabel,
             new_status: statusLabel,
-            committee_name: metadata.committee_name || "أمانة المجلس",
+            committee_name: metadata.committee_name_ar || metadata.committee_name || "أمانة المجلس",
+            rejection_reason: data.review_note || "",
+            review_note: data.review_note || "",
             action_url: "/requests",
           },
-          idempotencyKey: `inquiry-status-${row.id}-${data.status}`,
+          idempotencyKey: `inquiry-status-${row.id}-${data.status}-${Date.now()}`,
           priority: "HIGH",
         }).catch((err) => console.error("[admin-hub] Failed to enqueue request status email:", err));
       } catch (enqueueErr) {
@@ -1571,6 +1588,21 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
     }
 
     return { ok: true };
+  });
+
+export const getRequestAttachmentSignedUrl = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ path: z.string().min(1) }).parse(d))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const cleanPath = data.path.replace(/^documents-private\//, "").split(" — ")[0].trim();
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from("documents-private")
+      .createSignedUrl(cleanPath, 60 * 60);
+    if (error || !signed?.signedUrl) {
+      throw new Error(error?.message || "failed_to_sign_url");
+    }
+    return { ok: true, url: signed.signedUrl };
   });
 
 export const updateContactMessageStatus = createServerFn({ method: "POST" })

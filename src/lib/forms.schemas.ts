@@ -130,6 +130,7 @@ export const councilRequestSchema = z.object({
     .optional()
     .or(z.literal("")),
   branch: z.string().trim().max(120).optional().or(z.literal("")),
+  user_id: z.string().uuid().optional().nullable(),
   /** Committee requested, or the service/establishment name for service requests. */
   topic: z.string().trim().min(2, "هذا الحقل مطلوب").max(160),
   /** Qualifications, or the service description. */

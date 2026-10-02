@@ -86,6 +86,12 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
       }
 
       const actionLink = linkData.properties.action_link;
+      const hashedToken = linkData.properties.hashed_token;
+
+      // Construct direct, seamless reset URL on official domain to avoid external redirect bounces
+      const directResetUrl = hashedToken
+        ? `${redirectTo}${redirectTo.includes("?") ? "&" : "?"}token_hash=${encodeURIComponent(hashedToken)}&type=recovery`
+        : actionLink;
 
       // Lookup recipient name from profiles table for personalized greeting
       const { data: profile } = await supabaseAdmin
@@ -112,8 +118,8 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
         language: locale,
         variables: {
           user_name: recipientName,
-          reset_url: actionLink,
-          action_url: actionLink,
+          reset_url: directResetUrl,
+          action_url: directResetUrl,
         },
         bypassPreferences: true,
       });
@@ -172,9 +178,14 @@ export const signUpWithBrandedVerification = createServerFn({ method: "POST" })
       }
 
       const actionLink = linkData?.properties?.action_link;
+      const hashedToken = linkData?.properties?.hashed_token;
       const userId = linkData?.user?.id;
 
-      if (actionLink) {
+      const directVerifyUrl = hashedToken
+        ? `${redirectTo}${redirectTo.includes("?") ? "&" : "?"}token_hash=${encodeURIComponent(hashedToken)}&type=signup`
+        : actionLink;
+
+      if (directVerifyUrl) {
         const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
         await enqueueNotificationEmail({
           userId,
@@ -186,8 +197,8 @@ export const signUpWithBrandedVerification = createServerFn({ method: "POST" })
           language: locale,
           variables: {
             user_name: fullName,
-            verification_url: actionLink,
-            action_url: actionLink,
+            verification_url: directVerifyUrl,
+            action_url: directVerifyUrl,
           },
           bypassPreferences: true,
         });

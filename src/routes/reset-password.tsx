@@ -61,14 +61,40 @@ function ResetPasswordPage() {
     const hashParams = new URLSearchParams(
       typeof window !== "undefined" ? window.location.hash.slice(1) : "",
     );
-    const err = hashParams.get("error_code") || (hashParams.get("error") ? "access_denied" : null);
+    const searchParams = new URLSearchParams(
+      typeof window !== "undefined" ? window.location.search : "",
+    );
+    const err =
+      hashParams.get("error_code") ||
+      searchParams.get("error_code") ||
+      (hashParams.get("error") || searchParams.get("error") ? "access_denied" : null);
     if (err) {
       setErrorCode(err);
       setChecking(false);
       // Drop the noisy error payload from the URL bar.
       if (typeof window !== "undefined") {
-        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        window.history.replaceState(null, "", window.location.pathname);
       }
+    }
+
+    const tokenHash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+    if (tokenHash && type === "recovery") {
+      void supabase.auth
+        .verifyOtp({ token_hash: tokenHash, type: "recovery" })
+        .then(({ data, error: otpError }) => {
+          if (!active) return;
+          if (otpError) {
+            setErrorCode(otpError.code || otpError.message);
+            setChecking(false);
+          } else if (data.session) {
+            setReady(true);
+            setChecking(false);
+            if (typeof window !== "undefined") {
+              window.history.replaceState(null, "", window.location.pathname);
+            }
+          }
+        });
     }
 
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {

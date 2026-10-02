@@ -1399,14 +1399,14 @@ function MasterAdminPage() {
                   inProgressCount={inquiryCounts.inProgressCount}
                   resolvedCount={inquiryCounts.resolvedCount}
                   totalCount={inquiryCounts.totalCount}
-                  onUpdateStatus={(id, status, sourceTable) =>
+                  onUpdateStatus={(id, status, sourceTable, reviewNote) =>
                     sourceTable === "contact_messages"
                       ? runMutation(
                           () => updateContactStatusMut({ data: { id, status: status as any } }),
                           refreshInquiries,
                         )
                       : runMutation(
-                          () => updateInqStatusMut({ data: { id, status: status as any } }),
+                          () => updateInqStatusMut({ data: { id, status: status as any, review_note: reviewNote } }),
                           refreshInquiries,
                         )
                   }

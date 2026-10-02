@@ -97,6 +97,41 @@ function AuthPage() {
     if (checkedSessionRef.current) return;
     checkedSessionRef.current = true;
 
+    // Handle incoming verification links directly (e.g. ?token_hash=...&type=signup)
+    const searchParams = new URLSearchParams(
+      typeof window !== "undefined" ? window.location.search : "",
+    );
+    const tokenHash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+
+    if (tokenHash && (type === "signup" || type === "email")) {
+      void supabase.auth
+        .verifyOtp({ token_hash: tokenHash, type: type === "signup" ? "signup" : "email" })
+        .then(({ data, error }) => {
+          if (error) {
+            toast.error(
+              label(
+                "تعذر تأكيد البريد الإلكتروني. قد يكون الرابط قد انتهت صلاحيته.",
+                "Email verification failed or link has expired.",
+              ),
+            );
+          } else if (data.session && !navigatingRef.current) {
+            toast.success(
+              label(
+                "تم تأكيد بريدك الإلكتروني بنجاح ومرحباً بك!",
+                "Your email has been verified successfully! Welcome!",
+              ),
+            );
+            if (typeof window !== "undefined") {
+              window.history.replaceState(null, "", window.location.pathname);
+            }
+            navigatingRef.current = true;
+            void navigate({ to: destination as any, replace: true });
+          }
+        });
+      return;
+    }
+
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session && !navigatingRef.current) {
         navigatingRef.current = true;
