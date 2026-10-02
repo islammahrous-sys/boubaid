@@ -54,9 +54,9 @@ export const joinInitiative = createServerFn({ method: "POST" })
 
     // This handler writes with the service-role client, so RLS is not a second
     // line of defence here — throttle before doing anything else.
-    const { isPublicSubmissionRateLimited, getRequestIp } =
+    const { checkPublicSubmissionRateLimit, getRequestIp } =
       await import("./public-forms-rate-limit.server");
-    if (isPublicSubmissionRateLimited("initiative_join", { max: 6 })) {
+    if (await checkPublicSubmissionRateLimit("initiative_join", { max: 6 })) {
       console.warn("[initiatives-public] rate limited");
       return { ok: false, error: "rate_limited" };
     }

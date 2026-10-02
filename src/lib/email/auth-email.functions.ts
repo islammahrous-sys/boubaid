@@ -58,20 +58,21 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
     const isAr = locale === "ar";
 
     try {
-      // Optional Turnstile verification if configured and token provided
-      if (data.turnstileToken) {
-        const { verifyTurnstileToken } = await import("@/lib/turnstile.server");
-        const { getRequestIp } = await import("@/lib/public-forms-rate-limit.server");
-        const verification = await verifyTurnstileToken(data.turnstileToken, getRequestIp());
-        if (!verification.ok) {
-          return { ok: false, error: "turnstile_failed" };
-        }
+      const { guardAuthEmail, resolveSafeRedirect } = await import("./auth-guard.server");
+      const guard = await guardAuthEmail({
+        scope: "auth_reset",
+        email,
+        turnstileToken: data.turnstileToken,
+      });
+      if (!guard.ok) {
+        // Throttled / failed-bot-check callers get the same uniform answer as
+        // unknown addresses, except for the explicit bot-check error the UI handles.
+        return guard.error === "turnstile_failed" ? { ok: false, error: "turnstile_failed" } : { ok: true };
       }
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-      const siteUrl = process.env.VITE_SITE_URL || "https://www.boubaid.com";
-      const redirectTo = data.redirectTo || `${siteUrl}/reset-password`;
+      const redirectTo = resolveSafeRedirect(data.redirectTo, "/reset-password");
 
       const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
         type: "recovery",
@@ -144,20 +145,17 @@ export const signUpWithBrandedVerification = createServerFn({ method: "POST" })
     const locale = data.locale || "ar";
 
     try {
-      // Optional Turnstile verification
-      if (data.turnstileToken) {
-        const { verifyTurnstileToken } = await import("@/lib/turnstile.server");
-        const { getRequestIp } = await import("@/lib/public-forms-rate-limit.server");
-        const verification = await verifyTurnstileToken(data.turnstileToken, getRequestIp());
-        if (!verification.ok) {
-          return { ok: false, error: "turnstile_failed" };
-        }
-      }
+      const { guardAuthEmail, resolveSafeRedirect } = await import("./auth-guard.server");
+      const guard = await guardAuthEmail({
+        scope: "auth_signup",
+        email,
+        turnstileToken: data.turnstileToken,
+      });
+      if (!guard.ok) return { ok: false, error: guard.error };
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-      const siteUrl = process.env.VITE_SITE_URL || "https://www.boubaid.com";
-      const redirectTo = data.redirectTo || `${siteUrl}/auth`;
+      const redirectTo = resolveSafeRedirect(data.redirectTo, "/auth");
 
       const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
         type: "signup",
@@ -342,25 +340,32 @@ export const notifyEmailChanged = createServerFn({ method: "POST" })
  * Dispatches an official welcome email to a new member.
  */
 export const sendWelcomeEmail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((input: unknown) => welcomeEmailSchema.parse(input))
-  .handler(async ({ data }): Promise<AuthEmailResult> => {
+  .handler(async ({ data, context }): Promise<AuthEmailResult> => {
     const locale = data.locale || "ar";
     const isAr = locale === "ar";
+    const { userId, claims } = context;
 
     try {
-      let email = data.email;
+      // The recipient is always the signed-in user's own address. Caller-supplied
+      // `email` / `userId` are ignored, otherwise this endpoint is an open relay.
+      const email = claims.email;
       let name = data.fullName;
 
-      if (data.userId) {
+      const { checkKeyRateLimit } = await import("@/lib/public-forms-rate-limit.server");
+      if (await checkKeyRateLimit("auth_welcome", userId, { max: 2, windowMs: 24 * 60 * 60 * 1000 })) {
+        return { ok: false, error: "rate_limited" };
+      }
+
+      {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data: profile } = await supabaseAdmin
           .from("profiles")
-          .select("email, full_name_ar, full_name_en")
-          .eq("id", data.userId)
+          .select("full_name_ar, full_name_en")
+          .eq("id", userId)
           .maybeSingle();
-
         if (profile) {
-          email = email || profile.email || undefined;
           name = name || (isAr ? profile.full_name_ar : profile.full_name_en) || profile.full_name_ar || undefined;
         }
       }
@@ -371,7 +376,7 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
 
       const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
       await enqueueNotificationEmail({
-        userId: data.userId,
+        userId,
         recipientEmail: email,
         recipientName,
         emailType: "auth_welcome",

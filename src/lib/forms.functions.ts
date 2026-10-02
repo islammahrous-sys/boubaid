@@ -43,10 +43,10 @@ async function guardPublicSubmission(options: {
   // Bot tripped the honeypot — report success without writing anything.
   if (options.honeypot && options.honeypot.length > 0) return { ok: true };
 
-  const { isPublicSubmissionRateLimited, getRequestIp } =
+  const { checkPublicSubmissionRateLimit, getRequestIp } =
     await import("./public-forms-rate-limit.server");
   if (
-    isPublicSubmissionRateLimited(options.scope, {
+    await checkPublicSubmissionRateLimit(options.scope, {
       max: options.max,
       windowMs: options.windowMs,
     })
@@ -78,8 +78,9 @@ export const submitContactMessage = createServerFn({ method: "POST" })
     });
     if (blocked) return blocked;
 
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const supabase = createPublicServerClient();
+    // Service-role: anon INSERT on this table is revoked so the public key can
+    // not bypass the guard above by posting to PostgREST directly.
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
 
     const { error } = await supabase.from("contact_messages").insert({
       name: data.name,
@@ -138,8 +139,9 @@ export const subscribeToNewsletter = createServerFn({ method: "POST" })
     });
     if (blocked) return blocked;
 
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const supabase = createPublicServerClient();
+    // Service-role: anon INSERT on this table is revoked so the public key can
+    // not bypass the guard above by posting to PostgREST directly.
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
 
     const { error } = await supabase.from("newsletter_subscribers").insert({
       email: data.email.toLowerCase(),
@@ -174,8 +176,9 @@ export const submitAchieverNomination = createServerFn({ method: "POST" })
     });
     if (blocked) return blocked;
 
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const supabase = createPublicServerClient();
+    // Service-role: anon INSERT on this table is revoked so the public key can
+    // not bypass the guard above by posting to PostgREST directly.
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
 
     // Store any attached certificates in the private `nomination-docs` bucket
     // (server-side, service-role) and reference their paths in the message.
@@ -333,8 +336,9 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     });
     if (blocked) return blocked;
 
-    const { createPublicServerClient } = await import("./supabase-public.server");
-    const supabase = createPublicServerClient();
+    // Service-role: anon INSERT on this table is revoked so the public key can
+    // not bypass the guard above by posting to PostgREST directly.
+    const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
 
     const { COUNCIL_REQUESTS, COMMITTEE_REQUEST_DESTINATIONS } = await import(
       "./council-requests"

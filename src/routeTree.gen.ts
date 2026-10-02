@@ -47,6 +47,7 @@ import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
 import { Route as ApiPublicCommitteeDocRouteImport } from './routes/api/public/committee-doc'
 import { Route as ApiPublicFundDocRouteImport } from './routes/api/public/fund-doc'
+import { Route as ApiPublicProcessEmailQueueRouteImport } from './routes/api/public/process-email-queue'
 import { Route as ApiPublicSiteVisitRouteImport } from './routes/api/public/site-visit'
 import { Route as LibraryMuseumSlugRouteImport } from './routes/library.museum.$slug'
 
@@ -239,6 +240,12 @@ const ApiPublicFundDocRoute = ApiPublicFundDocRouteImport.update({
   path: '/api/public/fund-doc',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicProcessEmailQueueRoute =
+  ApiPublicProcessEmailQueueRouteImport.update({
+    id: '/api/public/process-email-queue',
+    path: '/api/public/process-email-queue',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicSiteVisitRoute = ApiPublicSiteVisitRouteImport.update({
   id: '/api/public/site-visit',
   path: '/api/public/site-visit',
@@ -288,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/p/$slug': typeof PSlugRoute
   '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
+  '/api/public/process-email-queue': typeof ApiPublicProcessEmailQueueRoute
   '/api/public/site-visit': typeof ApiPublicSiteVisitRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
@@ -329,6 +337,7 @@ export interface FileRoutesByTo {
   '/p/$slug': typeof PSlugRoute
   '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
+  '/api/public/process-email-queue': typeof ApiPublicProcessEmailQueueRoute
   '/api/public/site-visit': typeof ApiPublicSiteVisitRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
@@ -372,6 +381,7 @@ export interface FileRoutesById {
   '/p/$slug': typeof PSlugRoute
   '/api/public/committee-doc': typeof ApiPublicCommitteeDocRoute
   '/api/public/fund-doc': typeof ApiPublicFundDocRoute
+  '/api/public/process-email-queue': typeof ApiPublicProcessEmailQueueRoute
   '/api/public/site-visit': typeof ApiPublicSiteVisitRoute
   '/library/museum/$slug': typeof LibraryMuseumSlugRoute
 }
@@ -415,6 +425,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/api/public/committee-doc'
     | '/api/public/fund-doc'
+    | '/api/public/process-email-queue'
     | '/api/public/site-visit'
     | '/library/museum/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -456,6 +467,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/api/public/committee-doc'
     | '/api/public/fund-doc'
+    | '/api/public/process-email-queue'
     | '/api/public/site-visit'
     | '/library/museum/$slug'
   id:
@@ -498,6 +510,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/api/public/committee-doc'
     | '/api/public/fund-doc'
+    | '/api/public/process-email-queue'
     | '/api/public/site-visit'
     | '/library/museum/$slug'
   fileRoutesById: FileRoutesById
@@ -535,6 +548,7 @@ export interface RootRouteChildren {
   PSlugRoute: typeof PSlugRoute
   ApiPublicCommitteeDocRoute: typeof ApiPublicCommitteeDocRoute
   ApiPublicFundDocRoute: typeof ApiPublicFundDocRoute
+  ApiPublicProcessEmailQueueRoute: typeof ApiPublicProcessEmailQueueRoute
   ApiPublicSiteVisitRoute: typeof ApiPublicSiteVisitRoute
 }
 
@@ -806,6 +820,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicFundDocRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/process-email-queue': {
+      id: '/api/public/process-email-queue'
+      path: '/api/public/process-email-queue'
+      fullPath: '/api/public/process-email-queue'
+      preLoaderRoute: typeof ApiPublicProcessEmailQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/site-visit': {
       id: '/api/public/site-visit'
       path: '/api/public/site-visit'
@@ -906,6 +927,7 @@ const rootRouteChildren: RootRouteChildren = {
   PSlugRoute: PSlugRoute,
   ApiPublicCommitteeDocRoute: ApiPublicCommitteeDocRoute,
   ApiPublicFundDocRoute: ApiPublicFundDocRoute,
+  ApiPublicProcessEmailQueueRoute: ApiPublicProcessEmailQueueRoute,
   ApiPublicSiteVisitRoute: ApiPublicSiteVisitRoute,
 }
 export const routeTree = rootRouteImport

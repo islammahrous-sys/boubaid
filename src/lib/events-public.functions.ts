@@ -158,9 +158,9 @@ export const submitEventRegistration = createServerFn({ method: "POST" })
 
     // This handler writes with the service-role client, so RLS is not a second
     // line of defence here — throttle before doing anything else.
-    const { isPublicSubmissionRateLimited, getRequestIp } =
+    const { checkPublicSubmissionRateLimit, getRequestIp } =
       await import("./public-forms-rate-limit.server");
-    if (isPublicSubmissionRateLimited("event_registration", { max: 6 })) {
+    if (await checkPublicSubmissionRateLimit("event_registration", { max: 6 })) {
       console.warn("[events-public] rate limited");
       return { ok: false, error: "rate_limited" };
     }

@@ -2428,6 +2428,10 @@ export type Database = {
     Functions: {
       family_public_stats: { Args: never; Returns: Json }
       get_email_runtime_config: { Args: never; Returns: Json }
+      check_rate_limit: {
+        Args: { p_key: string; p_max: number; p_window_seconds: number }
+        Returns: boolean
+      }
       get_email_statistics: { Args: never; Returns: Json }
       record_site_visit: { Args: { p_visit_key: string }; Returns: number }
       replace_content_page_sections: {

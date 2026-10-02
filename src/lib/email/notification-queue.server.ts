@@ -227,6 +227,13 @@ export async function processQueuedNotificationEmails(batchSize = 25): Promise<{
 }> {
   const nowIso = new Date().toISOString();
 
+  // Rescue rows stranded in "processing" by a crashed/timed-out invocation.
+  await supabaseAdmin
+    .from("email_logs")
+    .update({ status: "queued", updated_at: nowIso })
+    .eq("status", "processing")
+    .lt("updated_at", new Date(Date.now() - 10 * 60 * 1000).toISOString());
+
   // Atomically select queued emails that are ready to send
   const { data: queueItems, error } = await supabaseAdmin
     .from("email_logs")

@@ -108,3 +108,49 @@ export function isUserSubmissionRateLimited(
 ): boolean {
   return isRateLimited(scope, userId, options?.max ?? 15, options?.windowMs ?? 60 * 60 * 1000);
 }
+
+/**
+ * Shared (cross-instance) limiter backed by the `check_rate_limit` RPC. On
+ * serverless hosts the in-memory counters above reset per instance, so this is
+ * the authoritative check; it falls back to the in-memory counter if the RPC
+ * is unavailable so a DB hiccup never takes the forms down.
+ */
+async function limitedViaDb(
+  scope: string,
+  key: string,
+  max: number,
+  windowMs: number,
+): Promise<boolean> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
+      p_key: `${scope}:${key}`,
+      p_max: max,
+      p_window_seconds: Math.max(1, Math.round(windowMs / 1000)),
+    });
+    if (error || typeof data !== "boolean") throw error ?? new Error("bad_rate_limit_response");
+    return data;
+  } catch (err) {
+    console.warn("[rate-limit] DB limiter unavailable, using in-memory fallback", err);
+    return isRateLimited(scope, key, max, windowMs);
+  }
+}
+
+/** Async, cross-instance version of `isPublicSubmissionRateLimited`. */
+export async function checkPublicSubmissionRateLimit(
+  scope: string,
+  options?: { max?: number; windowMs?: number },
+): Promise<boolean> {
+  const ip = getRequestIp();
+  if (ip === "unknown") return isPublicSubmissionRateLimited(scope, options);
+  return limitedViaDb(scope, ip, options?.max ?? 5, options?.windowMs ?? 10 * 60 * 1000);
+}
+
+/** Cross-instance throttle on an arbitrary key (e.g. a target email address). */
+export async function checkKeyRateLimit(
+  scope: string,
+  key: string,
+  options?: { max?: number; windowMs?: number },
+): Promise<boolean> {
+  return limitedViaDb(scope, key, options?.max ?? 5, options?.windowMs ?? 60 * 60 * 1000);
+}

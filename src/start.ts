@@ -48,6 +48,25 @@ const securityHeadersMiddleware = createMiddleware().server(async ({ next }) => 
     res.headers.set("X-Frame-Options", "SAMEORIGIN");
     res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
     res.headers.set("Permissions-Policy", "camera=(self), microphone=(), geolocation=()");
+    res.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    // Report-Only first: the theme/lang/GA bootstrap scripts are inline, so an
+    // enforcing CSP needs nonces. Watch the console/reports, then tighten.
+    res.headers.set(
+      "Content-Security-Policy-Report-Only",
+      [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' data: https://fonts.gstatic.com",
+        "img-src 'self' data: blob: https:",
+        "media-src 'self' blob: https:",
+        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://www.google-analytics.com https://*.google-analytics.com",
+        "frame-src https://challenges.cloudflare.com https://www.google.com https://www.youtube.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'self'",
+      ].join("; "),
+    );
   }
   return res;
 });
