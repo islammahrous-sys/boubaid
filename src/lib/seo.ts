@@ -1,4 +1,3 @@
-
 const DEFAULT_BASE_URL = "https://www.boubaid.com";
 
 export function getBaseUrl(): string {

@@ -51,8 +51,6 @@ export const Route = createFileRoute("/family-tree")({
   component: FamilyTreePage,
 });
 
-
-
 function FamilyTreePage() {
   const { t } = useLang();
   const { focus, q } = Route.useSearch();

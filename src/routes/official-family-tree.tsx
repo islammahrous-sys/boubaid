@@ -46,8 +46,6 @@ export const Route = createFileRoute("/official-family-tree")({
   component: OfficialFamilyTreePage,
 });
 
-
-
 function OfficialFamilyTreePage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";

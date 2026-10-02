@@ -63,8 +63,6 @@ function NewsLayout() {
   return <NewsPage />;
 }
 
-
-
 function NewsPage() {
   const { t, lang } = useLang();
   const { news } = Route.useLoaderData();

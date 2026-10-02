@@ -61,15 +61,23 @@ function weatherLabel(type: string, englishDescription?: string) {
  *  Google's condition types, so both providers render identically. */
 function openMeteoCondition(code: number) {
   const type =
-    code === 0 ? "CLEAR"
-    : code === 1 ? "MOSTLY_CLEAR"
-    : code === 2 ? "PARTLY_CLOUDY"
-    : code === 3 ? "CLOUDY"
-    : code === 45 || code === 48 ? "FOG"
-    : code >= 51 && code <= 57 ? "LIGHT_RAIN"
-    : (code >= 61 && code <= 67) || (code >= 80 && code <= 82) ? "RAIN"
-    : code >= 95 ? "THUNDERSTORM"
-    : "";
+    code === 0
+      ? "CLEAR"
+      : code === 1
+        ? "MOSTLY_CLEAR"
+        : code === 2
+          ? "PARTLY_CLOUDY"
+          : code === 3
+            ? "CLOUDY"
+            : code === 45 || code === 48
+              ? "FOG"
+              : code >= 51 && code <= 57
+                ? "LIGHT_RAIN"
+                : (code >= 61 && code <= 67) || (code >= 80 && code <= 82)
+                  ? "RAIN"
+                  : code >= 95
+                    ? "THUNDERSTORM"
+                    : "";
   return { condition: type, ...weatherLabel(type) };
 }
 
@@ -95,8 +103,14 @@ async function openMeteoWeather(signal: AbortSignal): Promise<WeatherPayload> {
   const code = data.current?.weather_code ?? -1;
   return {
     temperature,
-    high: typeof data.daily?.temperature_2m_max?.[0] === "number" ? data.daily.temperature_2m_max[0] : null,
-    low: typeof data.daily?.temperature_2m_min?.[0] === "number" ? data.daily.temperature_2m_min[0] : null,
+    high:
+      typeof data.daily?.temperature_2m_max?.[0] === "number"
+        ? data.daily.temperature_2m_max[0]
+        : null,
+    low:
+      typeof data.daily?.temperature_2m_min?.[0] === "number"
+        ? data.daily.temperature_2m_min[0]
+        : null,
     ...openMeteoCondition(code),
     location_ar: "الأحساء",
     location_en: "Al Ahsa",
@@ -106,8 +120,8 @@ async function openMeteoWeather(signal: AbortSignal): Promise<WeatherPayload> {
 }
 
 async function gatewayLookup(path: string, params: URLSearchParams, signal: AbortSignal) {
-  const lovableApiKey = process.env['LOVABLE_API_KEY'];
-  const googleMapsApiKey = process.env['GOOGLE_MAPS_API_KEY'];
+  const lovableApiKey = process.env["LOVABLE_API_KEY"];
+  const googleMapsApiKey = process.env["GOOGLE_MAPS_API_KEY"];
   if (!lovableApiKey || !googleMapsApiKey) throw new Error("weather_credentials_missing");
 
   const response = await fetch(
@@ -143,7 +157,11 @@ async function getAlAhsaWeather(): Promise<WeatherPayload | null> {
     };
 
     const [current, forecast] = await Promise.all([
-      gatewayLookup("currentConditions:lookup", new URLSearchParams(base), controller.signal) as Promise<{
+      gatewayLookup(
+        "currentConditions:lookup",
+        new URLSearchParams(base),
+        controller.signal,
+      ) as Promise<{
         temperature?: { degrees?: number };
         weatherCondition?: { type?: string; description?: { text?: string } };
       }>,
@@ -203,7 +221,6 @@ async function getAlAhsaWeather(): Promise<WeatherPayload | null> {
     clearTimeout(timeout);
   }
 }
-
 
 export const Route = createFileRoute("/api/public/site-visit")({
   server: {

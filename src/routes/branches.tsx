@@ -43,8 +43,6 @@ export const Route = createFileRoute("/branches")({
   component: BranchesPage,
 });
 
-
-
 const ordinals = ["١", "٢", "٣", "٤", "٥", "٦", "٧"];
 
 function BranchesPage() {

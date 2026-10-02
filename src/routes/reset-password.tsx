@@ -151,7 +151,6 @@ function ResetPasswordPage() {
       }, 1500);
     } catch (error) {
       toast.error(translateAuthError(error, lang));
-
     } finally {
       setBusy(false);
     }

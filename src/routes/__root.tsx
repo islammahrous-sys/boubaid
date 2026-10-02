@@ -116,7 +116,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "google-site-verification", content: "DWwzm2a7Wo2nqqcNQg5OQc83BuKjRKENcU9F-jnFsF4" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية" },
+      {
+        title: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية",
+      },
       {
         name: "description",
         content:
@@ -128,11 +130,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       {
         property: "og:title",
-        content: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية",
+        content:
+          "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية",
       },
       {
         name: "twitter:title",
-        content: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية",
+        content:
+          "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية",
       },
       {
         property: "og:description",
@@ -197,7 +201,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               "@type": "Organization",
               "@id": `${getCanonicalUrl("/")}#organization`,
               name: "آل بوعبيد — صندوق التنمية العائلية",
-              alternateName: ["Al Bu Obaid Family Council", "Al Buobaid Family Development Fund", "مجلس أسرة آل بوعبيد"],
+              alternateName: [
+                "Al Bu Obaid Family Council",
+                "Al Buobaid Family Development Fund",
+                "مجلس أسرة آل بوعبيد",
+              ],
               url: getCanonicalUrl("/"),
               logo: getCanonicalUrl("/favicon.png"),
               address: { "@type": "PostalAddress", addressRegion: "الأحساء", addressCountry: "SA" },

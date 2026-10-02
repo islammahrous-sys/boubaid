@@ -40,7 +40,14 @@ function loadImage(src: string): Promise<HTMLImageElement | null> {
   });
 }
 
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.arcTo(x + w, y, x + w, y + h, r);
@@ -109,8 +116,15 @@ async function drawFront(d: MemberCardData, crest: HTMLImageElement | null) {
 
   if (crest) ctx.drawImage(crest, rtl ? W - 130 - 150 : 130, 110, 150, 150);
   const hx = rtl ? W - 130 - 180 : 310;
-  text(ctx, rtl ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council", hx, 180, 64, GOLD, { weight: 700, align: alignS, rtl });
-  text(ctx, rtl ? "بطاقة العضوية الرسمية" : "Official Membership Card", hx, 245, 38, CLAY, { align: alignS, rtl });
+  text(ctx, rtl ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council", hx, 180, 64, GOLD, {
+    weight: 700,
+    align: alignS,
+    rtl,
+  });
+  text(ctx, rtl ? "بطاقة العضوية الرسمية" : "Official Membership Card", hx, 245, 38, CLAY, {
+    align: alignS,
+    rtl,
+  });
 
   // status badge
   ctx.font = `700 34px ${FONT}`;
@@ -152,10 +166,20 @@ async function drawFront(d: MemberCardData, crest: HTMLImageElement | null) {
   const ix = rtl ? px - 70 : px + 430;
   const label = (l: string, v: string, y: number, mono = false) => {
     text(ctx, l, ix, y, 30, MUTED, { align: alignS, rtl });
-    text(ctx, v, ix, y + 58, 46, mono ? BROWN : GREEN, { weight: 700, align: alignS, rtl: rtl && !mono, maxWidth: 820 });
+    text(ctx, v, ix, y + 58, 46, mono ? BROWN : GREEN, {
+      weight: 700,
+      align: alignS,
+      rtl: rtl && !mono,
+      maxWidth: 820,
+    });
   };
   text(ctx, rtl ? "اسم العضو" : "Member name", ix, 420, 30, MUTED, { align: alignS, rtl });
-  text(ctx, rtl ? d.nameAr : d.nameEn || d.nameAr, ix, 495, 64, BROWN, { weight: 700, align: alignS, rtl: rtl || !d.nameEn, maxWidth: 840 });
+  text(ctx, rtl ? d.nameAr : d.nameEn || d.nameAr, ix, 495, 64, BROWN, {
+    weight: 700,
+    align: alignS,
+    rtl: rtl || !d.nameEn,
+    maxWidth: 840,
+  });
   const second = rtl ? d.nameEn : d.nameAr;
   if (second && second !== (rtl ? d.nameAr : d.nameEn)) {
     text(ctx, second, ix, 550, 34, CLAY, { align: alignS, rtl: !rtl, maxWidth: 840 });
@@ -165,18 +189,29 @@ async function drawFront(d: MemberCardData, crest: HTMLImageElement | null) {
 
   // QR
   const qr = await loadImage(
-    await QRCode.toDataURL(d.verifyUrl, { margin: 1, width: 400, color: { dark: BROWN, light: CREAM_2 } }),
+    await QRCode.toDataURL(d.verifyUrl, {
+      margin: 1,
+      width: 400,
+      color: { dark: BROWN, light: CREAM_2 },
+    }),
   );
   const qx = rtl ? 130 : W - 130 - 330;
   roundRect(ctx, qx, 440, 330, 330, 24);
   ctx.fillStyle = CREAM_2;
   ctx.fill();
   if (qr) ctx.drawImage(qr, qx + 15, 455, 300, 300);
-  text(ctx, rtl ? "امسح للتحقق" : "Scan to verify", qx + 165, 820, 30, GREEN, { weight: 700, align: "center", rtl });
+  text(ctx, rtl ? "امسح للتحقق" : "Scan to verify", qx + 165, 820, 30, GREEN, {
+    weight: 700,
+    align: "center",
+    rtl,
+  });
 
   ctx.fillStyle = COPPER;
   ctx.fillRect(130, 1040, W - 260, 2);
-  text(ctx, `${rtl ? "تاريخ الإصدار" : "Issued"}: ${d.issued}`, S, 1120, 32, CLAY, { align: alignS, rtl });
+  text(ctx, `${rtl ? "تاريخ الإصدار" : "Issued"}: ${d.issued}`, S, 1120, 32, CLAY, {
+    align: alignS,
+    rtl,
+  });
   text(ctx, "NCNP LIC. #1200758400 · AL-AHSA, KSA", E, 1120, 30, MUTED, { align: alignE });
   return c;
 }
@@ -193,7 +228,11 @@ async function drawBack(d: MemberCardData, crest: HTMLImageElement | null) {
   const align: CanvasTextAlign = rtl ? "right" : "left";
   ctx.fillStyle = BROWN;
   ctx.fillRect(0, 150, W, 110);
-  text(ctx, rtl ? "شروط العضوية" : "Membership terms", W / 2, 225, 52, CREAM_2, { weight: 700, align: "center", rtl });
+  text(ctx, rtl ? "شروط العضوية" : "Membership terms", W / 2, 225, 52, CREAM_2, {
+    weight: 700,
+    align: "center",
+    rtl,
+  });
   const terms = rtl
     ? [
         "هذه البطاقة شخصية وتخص حاملها المسجّل في سجل أسرة آل بوعبيد.",
@@ -217,9 +256,19 @@ async function drawBack(d: MemberCardData, crest: HTMLImageElement | null) {
   });
   ctx.fillStyle = COPPER;
   ctx.fillRect(150, 850, W - 300, 2);
-  text(ctx, rtl ? "الأمانة العامة لمجلس أسرة آل بوعبيد" : "General Secretariat, Al Bu Obaid Family Council", W / 2, 950, 44, GREEN, { weight: 700, align: "center", rtl });
+  text(
+    ctx,
+    rtl ? "الأمانة العامة لمجلس أسرة آل بوعبيد" : "General Secretariat, Al Bu Obaid Family Council",
+    W / 2,
+    950,
+    44,
+    GREEN,
+    { weight: 700, align: "center", rtl },
+  );
   text(ctx, d.verifyUrl.replace(/^https?:\/\//, ""), W / 2, 1030, 32, CLAY, { align: "center" });
-  text(ctx, "NCNP License #1200758400 · Saudi Arabia · Al-Ahsa", W / 2, 1110, 30, MUTED, { align: "center" });
+  text(ctx, "NCNP License #1200758400 · Saudi Arabia · Al-Ahsa", W / 2, 1110, 30, MUTED, {
+    align: "center",
+  });
   return c;
 }
 
@@ -247,7 +296,10 @@ async function renderSheet(d: MemberCardData) {
 
 function canvasBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Image export failed"))), "image/png");
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("Image export failed"))),
+      "image/png",
+    );
   });
 }
 

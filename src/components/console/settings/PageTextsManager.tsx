@@ -86,7 +86,12 @@ export function PageTextsManager({
     }
     try {
       setSaving(true);
-      await onSaveSetting({ category: "content", key: "page_texts", value: clean, is_public: true });
+      await onSaveSetting({
+        category: "content",
+        key: "page_texts",
+        value: clean,
+        is_public: true,
+      });
       toast.success(isAr ? "تم حفظ نصوص الصفحات" : "Page texts saved");
     } catch (e: any) {
       toast.error(e?.message || "Error");

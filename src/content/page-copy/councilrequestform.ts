@@ -85,4 +85,3 @@ export const copy = registerCopy("councilrequestform", {
     en: "Close",
   } as BiText,
 });
-

@@ -60,7 +60,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.action_url || "/account");
       return {
         title: isAr ? "مرحباً بك في منصة الأسرة" : "Welcome to the Family Portal",
-        preheader: isAr ? "تم إنشاء وتفعيل حسابك في بوابة الأسرة بنجاح" : "Your family portal account was created successfully",
+        preheader: isAr
+          ? "تم إنشاء وتفعيل حسابك في بوابة الأسرة بنجاح"
+          : "Your family portal account was created successfully",
         badgeText: isAr ? "حساب جديد" : "New Account",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -68,19 +70,30 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "يسر مجلس الأسرة وصندوق التنمية العائلية الترحيب بكم في البوابة الرسمية، منصتكم الموحدة للتواصل، ومتابعة الطلبات، وتوثيق العضوية والاطلاع على أخبار ومناسبات الأسرة."
-              : "The Family Council and Development Fund welcome you to the official portal, your unified home for member services, council requests, and family records."
+              : "The Family Council and Development Fund welcome you to the official portal, your unified home for member services, council requests, and family records.",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "البريد الإلكتروني" : "Email", value: vars.user_email || "" },
-              { label: isAr ? "تاريخ التسجيل" : "Registration Date", value: vars.date || new Date().toLocaleDateString(isAr ? "ar-SA" : "en-US") },
-              { label: isAr ? "حالة الحساب" : "Account Status", value: isAr ? "نشط ومسجل" : "Active & Registered", isBadge: true, badgeVariant: "success" },
-            ], lang)
+            renderDetailsTable(
+              [
+                { label: isAr ? "البريد الإلكتروني" : "Email", value: vars.user_email || "" },
+                {
+                  label: isAr ? "تاريخ التسجيل" : "Registration Date",
+                  value: vars.date || new Date().toLocaleDateString(isAr ? "ar-SA" : "en-US"),
+                },
+                {
+                  label: isAr ? "حالة الحساب" : "Account Status",
+                  value: isAr ? "نشط ومسجل" : "Active & Registered",
+                  isBadge: true,
+                  badgeVariant: "success",
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderParagraph(
             isAr
               ? "يمكنكم الآن الدخول إلى ملفكم الشخصي لتوثيق بيانات العضوية أو الاطلاع على الخدمات ومستجدات الصندوق."
-              : "You can now log in to update your profile, verify your family membership, and view fund initiatives."
+              : "You can now log in to update your profile, verify your family membership, and view fund initiatives.",
           )}
           ${renderActionButton(actionUrl, isAr ? "الدخول إلى حسابي" : "Go to My Account", lang)}
           ${renderTrackingTroubleNotice(actionUrl, lang)}
@@ -104,7 +117,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.verification_url || "/verify");
       return {
         title: isAr ? "تأكيد البريد الإلكتروني" : "Verify Email Address",
-        preheader: isAr ? "يرجى تأكيد بريدك الإلكتروني لإكمال التفعيل" : "Please verify your email address to complete registration",
+        preheader: isAr
+          ? "يرجى تأكيد بريدك الإلكتروني لإكمال التفعيل"
+          : "Please verify your email address to complete registration",
         badgeText: isAr ? "أمان الحساب" : "Security",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -112,7 +127,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نرجو النقر على الزر أدناه لتأكيد بريدك الإلكتروني وتأمين حسابك في بوابة أسرة آل بوعبيد."
-              : "Please click the button below to verify your email address and secure your account."
+              : "Please click the button below to verify your email address and secure your account.",
           )}
           ${vars.otp_code ? renderAlertBox(isAr ? `رمز التحقق الخاص بك هو: ${vars.otp_code}` : `Your verification code is: ${vars.otp_code}`, "info", isAr ? "رمز التحقق" : "Verification Code") : ""}
           ${renderActionButton(actionUrl, isAr ? "تأكيد البريد الإلكتروني" : "Verify Email", lang)}
@@ -120,7 +135,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
             isAr
               ? "هذا الرابط صالح للاستخدام لمرة واحدة وينتهي خلال 60 دقيقة لحمايتكم."
               : "This link is valid for single use and expires in 60 minutes.",
-            "info"
+            "info",
           )}
           ${renderTrackingTroubleNotice(actionUrl, lang)}
         `,
@@ -143,7 +158,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.reset_url || "/reset-password");
       return {
         title: isAr ? "إعادة تعيين كلمة المرور" : "Reset Password Request",
-        preheader: isAr ? "تعليمات إعادة تعيين كلمة المرور لحسابك" : "Instructions to reset your family portal password",
+        preheader: isAr
+          ? "تعليمات إعادة تعيين كلمة المرور لحسابك"
+          : "Instructions to reset your family portal password",
         badgeText: isAr ? "أمان وخصوصية" : "Security",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -151,7 +168,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بحسابكم في بوابة أسرة آل بوعبيد. انقر على الزر أدناه لإنشاء كلمة مرور جديدة:"
-              : "We received a request to reset your password. Click the button below to set a new password:"
+              : "We received a request to reset your password. Click the button below to set a new password:",
           )}
           ${renderActionButton(actionUrl, isAr ? "إعادة تعيين كلمة المرور" : "Reset Password", lang)}
           ${renderAlertBox(
@@ -159,7 +176,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
               ? "ينتهي هذا الرابط خلال 60 دقيقة. إذا لم تقم بطلب إعادة التعيين، يرجى تجاهل هذا البريد فوراً."
               : "This link expires in 60 minutes. If you did not make this request, please disregard this email.",
             "critical",
-            isAr ? "تنبيه أمني" : "Security Alert"
+            isAr ? "تنبيه أمني" : "Security Alert",
           )}
           ${renderTrackingTroubleNotice(actionUrl, lang)}
         `,
@@ -182,7 +199,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تأكيد تغيير كلمة المرور" : "Password Changed",
-        preheader: isAr ? "تم تحديث كلمة المرور الخاصة بحسابكم بنجاح" : "Your account password was updated successfully",
+        preheader: isAr
+          ? "تم تحديث كلمة المرور الخاصة بحسابكم بنجاح"
+          : "Your account password was updated successfully",
         badgeText: isAr ? "أمان الحساب" : "Security",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -190,20 +209,29 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نحيطكم علماً بأنه تم تغيير كلمة المرور لحسابكم في بوابة أسرة آل بوعبيد."
-              : "This is a confirmation that the password for your family portal account was recently updated."
+              : "This is a confirmation that the password for your family portal account was recently updated.",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "التاريخ والوقت" : "Timestamp", value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US") },
-              { label: isAr ? "الجهاز / المتصفح" : "Client / Device", value: vars.client_info || (isAr ? "متصفح موثق" : "Web browser") },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "التاريخ والوقت" : "Timestamp",
+                  value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US"),
+                },
+                {
+                  label: isAr ? "الجهاز / المتصفح" : "Client / Device",
+                  value: vars.client_info || (isAr ? "متصفح موثق" : "Web browser"),
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderAlertBox(
             isAr
               ? "إذا لم تكن أنت من قام بهذا التغيير، يرجى استعادة حسابك والتواصل فوراً مع الدعم الفني."
               : "If you did not perform this change, please recover your account immediately and contact technical support.",
             "critical",
-            isAr ? "هل لم تكن أنت؟" : "Wasn't you?"
+            isAr ? "هل لم تكن أنت؟" : "Wasn't you?",
           )}
           ${renderActionButton(actionUrl, isAr ? "مراجعة أمان الحساب" : "Review Account Security", lang)}
         `,
@@ -226,7 +254,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تغيير البريد الإلكتروني" : "Email Address Changed",
-        preheader: isAr ? "تم تحديث عنوان البريد الإلكتروني المرتبط بحسابك" : "The email address associated with your account was updated",
+        preheader: isAr
+          ? "تم تحديث عنوان البريد الإلكتروني المرتبط بحسابك"
+          : "The email address associated with your account was updated",
         badgeText: isAr ? "أمان الحساب" : "Security Alert",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -234,21 +264,32 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نحيطكم علماً بأنه تم تعديل عنوان البريد الإلكتروني المرتبط بحسابكم في بوابة أسرة آل بوعبيد."
-              : "This is to notify you that the email address associated with your family portal account has been updated."
+              : "This is to notify you that the email address associated with your family portal account has been updated.",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              ...(vars.old_email ? [{ label: isAr ? "البريد السابق" : "Previous Email", value: vars.old_email }] : []),
-              { label: isAr ? "البريد الجديد" : "New Email", value: vars.new_email || vars.user_email || "" },
-              { label: isAr ? "التاريخ والوقت" : "Timestamp", value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US") },
-            ], lang)
+            renderDetailsTable(
+              [
+                ...(vars.old_email
+                  ? [{ label: isAr ? "البريد السابق" : "Previous Email", value: vars.old_email }]
+                  : []),
+                {
+                  label: isAr ? "البريد الجديد" : "New Email",
+                  value: vars.new_email || vars.user_email || "",
+                },
+                {
+                  label: isAr ? "التاريخ والوقت" : "Timestamp",
+                  value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US"),
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderAlertBox(
             isAr
               ? "إذا لم تكن أنت من أجرى هذا التغيير، يرجى المسارعة إلى استعادة حسابك والتواصل فوراً مع الدعم الفني لحماية بياناتك."
               : "If you did not make this change, please recover your account immediately and contact technical support.",
             "critical",
-            isAr ? "تنبيه أمني هام" : "Important Security Alert"
+            isAr ? "تنبيه أمني هام" : "Important Security Alert",
           )}
           ${renderActionButton(actionUrl, isAr ? "مراجعة أمان الحساب" : "Review Account Security", lang)}
         `,
@@ -271,7 +312,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تسجيل دخول جديد" : "New Sign-in Detected",
-        preheader: isAr ? "تم تسجيل الدخول إلى حسابك من جهاز أو موقع جديد" : "Your account was accessed from a new device or location",
+        preheader: isAr
+          ? "تم تسجيل الدخول إلى حسابك من جهاز أو موقع جديد"
+          : "Your account was accessed from a new device or location",
         badgeText: isAr ? "نشاط الحساب" : "Activity",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -279,14 +322,26 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "تم رصد تسجيل دخول جديد إلى حسابكم في بوابة أسرة آل بوعبيد بالبيانات التالية:"
-              : "A new sign-in to your family portal account was recorded with the following details:"
+              : "A new sign-in to your family portal account was recorded with the following details:",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "وقت التسجيل" : "Time", value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US") },
-              { label: isAr ? "الموقع التقريبي" : "Location", value: vars.location || (isAr ? "المملكة العربية السعودية" : "Saudi Arabia") },
-              { label: isAr ? "المتصفح / النظام" : "Device", value: vars.device || "Chrome / Windows" },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "وقت التسجيل" : "Time",
+                  value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US"),
+                },
+                {
+                  label: isAr ? "الموقع التقريبي" : "Location",
+                  value: vars.location || (isAr ? "المملكة العربية السعودية" : "Saudi Arabia"),
+                },
+                {
+                  label: isAr ? "المتصفح / النظام" : "Device",
+                  value: vars.device || "Chrome / Windows",
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderActionButton(actionUrl, isAr ? "تفاصيل الحساب" : "View Account", lang)}
         `,
@@ -309,7 +364,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/reset-password");
       return {
         title: isAr ? "تنبيه أمني عاجل" : "Security Alert",
-        preheader: isAr ? "إشعار أمني مهم لحماية حسابك في بوابة الأسرة" : "Important security notice regarding your family portal account",
+        preheader: isAr
+          ? "إشعار أمني مهم لحماية حسابك في بوابة الأسرة"
+          : "Important security notice regarding your family portal account",
         badgeText: isAr ? "حرج" : "Critical",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -320,12 +377,12 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
                 ? "تم رصد نشاط غير معتاد أو محاولات متكررة غير صحيحة لتسجيل الدخول إلى حسابك."
                 : "Unusual activity or multiple failed login attempts were detected on your account."),
             "critical",
-            isAr ? "تنبيه النظام" : "System Alert"
+            isAr ? "تنبيه النظام" : "System Alert",
           )}
           ${renderParagraph(
             isAr
               ? "حرصاً على أمن وسلامة بياناتكم في منصة الأسرة، نوصي بتحديث كلمة المرور ومراجعة تفاصيل تسجيل الدخول فوراً."
-              : "To protect your family portal account and personal information, we recommend changing your password immediately."
+              : "To protect your family portal account and personal information, we recommend changing your password immediately.",
           )}
           ${renderActionButton(actionUrl, isAr ? "تغيير كلمة المرور الآن" : "Change Password Now", lang)}
         `,
@@ -348,7 +405,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تم تفعيل الحساب" : "Account Activated",
-        preheader: isAr ? "حسابكم الآن نشط ومتاح للاستفادة من كافة الخدمات" : "Your account is now active and ready for all services",
+        preheader: isAr
+          ? "حسابكم الآن نشط ومتاح للاستفادة من كافة الخدمات"
+          : "Your account is now active and ready for all services",
         badgeText: isAr ? "مفعل" : "Active",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -356,7 +415,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نحيطكم علماً بأن حسابكم في بوابة أسرة آل بوعبيد أصبح مفعلاً بالكامل. يمكنكم الآن الاستفادة من جميع خدمات الأعضاء وتقديم ومتابعة الطلبات."
-              : "We are pleased to inform you that your account is now fully active. You can now access member services and submit requests."
+              : "We are pleased to inform you that your account is now fully active. You can now access member services and submit requests.",
           )}
           ${renderActionButton(actionUrl, isAr ? "فتح الحساب" : "Open Account", lang)}
         `,
@@ -379,7 +438,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/contact");
       return {
         title: isAr ? "إشعار تعليق الحساب" : "Account Suspended",
-        preheader: isAr ? "تم تعليق حسابكم مؤقتاً لمراجعة إدارية" : "Your account has been temporarily suspended for review",
+        preheader: isAr
+          ? "تم تعليق حسابكم مؤقتاً لمراجعة إدارية"
+          : "Your account has been temporarily suspended for review",
         badgeText: isAr ? "معلق" : "Suspended",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -390,12 +451,12 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
                 ? "تم تعليق حسابكم مؤقتاً من قِبل إدارة المنظومة لإجراء مراجعة تنظيمية أو تدقيق في البيانات."
                 : "Your account was temporarily suspended for administrative review or data verification."),
             "critical",
-            isAr ? "سبب التعليق" : "Reason"
+            isAr ? "سبب التعليق" : "Reason",
           )}
           ${renderParagraph(
             isAr
               ? "إذا كان لديكم أي استفسار أو لطلب إعادة التنشيط، يرجى التواصل مع أمانة المجلس عبر صفحة التواصل."
-              : "If you have any questions or wish to request reactivation, please reach out via our contact page."
+              : "If you have any questions or wish to request reactivation, please reach out via our contact page.",
           )}
           ${renderActionButton(actionUrl, isAr ? "التواصل مع أمانة المجلس" : "Contact Secretariat", lang)}
         `,
@@ -418,7 +479,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تم استعادة الحساب" : "Account Restored",
-        preheader: isAr ? "تم رفع التعليق وتنشيط حسابكم بالكامل" : "Suspension lifted and your account is active again",
+        preheader: isAr
+          ? "تم رفع التعليق وتنشيط حسابكم بالكامل"
+          : "Suspension lifted and your account is active again",
         badgeText: isAr ? "مستعاد" : "Restored",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -426,7 +489,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "يسرنا إشعاركم بانتهاء المراجعة ورفع التعليق عن حسابكم في بوابة الأسرة. يمكنكم الآن تسجيل الدخول بصورة طبيعية."
-              : "We are pleased to inform you that the administrative review has concluded and your account has been restored."
+              : "We are pleased to inform you that the administrative review has concluded and your account has been restored.",
           )}
           ${renderActionButton(actionUrl, isAr ? "تسجيل الدخول إلى حسابي" : "Log In to Account", lang)}
         `,
@@ -449,7 +512,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تحديث الملف الشخصي" : "Profile Updated",
-        preheader: isAr ? "إشعار بتحديث بيانات حسابك في المنظومة" : "Your profile details have been successfully updated",
+        preheader: isAr
+          ? "إشعار بتحديث بيانات حسابك في المنظومة"
+          : "Your profile details have been successfully updated",
         badgeText: isAr ? "تحديث بيانات" : "Updated",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -457,7 +522,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "تم حفظ وتحديث بيانات ملفكم الشخصي بنجاح في سجلات أسرة آل بوعبيد."
-              : "Your profile information has been successfully updated in the official family database."
+              : "Your profile information has been successfully updated in the official family database.",
           )}
           ${renderActionButton(actionUrl, isAr ? "معاينة الملف الشخصي" : "View Profile", lang)}
         `,
@@ -483,7 +548,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "استلام طلب العضوية" : "Membership Application Received",
-        preheader: isAr ? "طلبكم قيد المراجعة والتدقيق لدى أمانة المجلس" : "Your application has been received and is under review",
+        preheader: isAr
+          ? "طلبكم قيد المراجعة والتدقيق لدى أمانة المجلس"
+          : "Your application has been received and is under review",
         badgeText: isAr ? "قيد المراجعة" : "Under Review",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -491,21 +558,41 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نشكركم على تقديم طلب توثيق العضوية في مجلس أسرة آل بوعبيد. تم تسجيل طلبكم وأُحيل إلى أمانة المجلس ولجنة الأنساب للمراجعة والتحقق."
-              : "Thank you for submitting your family membership verification request. It has been forwarded to the General Secretariat for review."
+              : "Thank you for submitting your family membership verification request. It has been forwarded to the General Secretariat for review.",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "رقم الطلب" : "Request No.", value: vars.request_number || "قيد التعيين" },
-              { label: isAr ? "اسم مقدم الطلب" : "Applicant Name", value: vars.applicant_name || vars.user_name || "" },
-              { label: isAr ? "فرع الأسرة" : "Family Branch", value: vars.branch_name || (isAr ? "عام" : "General") },
-              { label: isAr ? "تاريخ التقديم" : "Submission Date", value: vars.date || new Date().toLocaleDateString(isAr ? "ar-SA" : "en-US") },
-              { label: isAr ? "الحالة الحالية" : "Current Status", value: isAr ? "قيد المراجعة والتدقيق" : "Pending Verification", isBadge: true, badgeVariant: "warning" },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "رقم الطلب" : "Request No.",
+                  value: vars.request_number || "قيد التعيين",
+                },
+                {
+                  label: isAr ? "اسم مقدم الطلب" : "Applicant Name",
+                  value: vars.applicant_name || vars.user_name || "",
+                },
+                {
+                  label: isAr ? "فرع الأسرة" : "Family Branch",
+                  value: vars.branch_name || (isAr ? "عام" : "General"),
+                },
+                {
+                  label: isAr ? "تاريخ التقديم" : "Submission Date",
+                  value: vars.date || new Date().toLocaleDateString(isAr ? "ar-SA" : "en-US"),
+                },
+                {
+                  label: isAr ? "الحالة الحالية" : "Current Status",
+                  value: isAr ? "قيد المراجعة والتدقيق" : "Pending Verification",
+                  isBadge: true,
+                  badgeVariant: "warning",
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderParagraph(
             isAr
               ? "سيتم إشعاركم فور الانتهاء من فحص وتدقيق الطلب، كما يمكنكم متابعة حالة الطلب في أي وقت من خلال شاشة الحساب."
-              : "You will be notified once verification is complete. You can also monitor your request status on your account page."
+              : "You will be notified once verification is complete. You can also monitor your request status on your account page.",
           )}
           ${renderActionButton(actionUrl, isAr ? "متابعة حالة العضوية" : "Check Membership Status", lang)}
         `,
@@ -528,7 +615,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "الطلب قيد التدقيق" : "Application Under Review",
-        preheader: isAr ? "بدأت أمانة المجلس تدقيق بيانات نسب وعضوية طلبكم" : "The Secretariat has commenced verification of your application",
+        preheader: isAr
+          ? "بدأت أمانة المجلس تدقيق بيانات نسب وعضوية طلبكم"
+          : "The Secretariat has commenced verification of your application",
         badgeText: isAr ? "تدقيق نشط" : "In Progress",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -536,7 +625,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نحيطكم علماً بأن أمانة المجلس ولجنة الأنساب قد بدأت دراسة طلبكم لمطابقة وثائق النسب وإصدار بطاقة الانتساب الرسمية."
-              : "The Secretariat has begun reviewing your genealogical details and family documentation."
+              : "The Secretariat has begun reviewing your genealogical details and family documentation.",
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض تفاصيل الطلب" : "View Application", lang)}
         `,
@@ -559,7 +648,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تم اعتماد العضوية" : "Membership Approved",
-        preheader: isAr ? "نبارك لك اعتماد عضويتك وإصدار بطاقة الأسرة الرسمية" : "Congratulations on your verified family membership",
+        preheader: isAr
+          ? "نبارك لك اعتماد عضويتك وإصدار بطاقة الأسرة الرسمية"
+          : "Congratulations on your verified family membership",
         badgeText: isAr ? "معتمد وموثق" : "Approved",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -567,20 +658,37 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "يسر أمانة مجلس أسرة آل بوعبيد إشعاركم باعتماد طلب توثيق عضويتكم في سجلات الأسرة الرسمية. أهلاً بكم في مجتمع الأسرة الموثق."
-              : "The Secretariat is delighted to announce that your family membership verification has been officially approved."
+              : "The Secretariat is delighted to announce that your family membership verification has been officially approved.",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "رقم العضوية" : "Membership ID", value: vars.membership_number || "ABF-MBR-VERIFIED" },
-              { label: isAr ? "الاسم المعتمد" : "Approved Name", value: vars.full_name || vars.user_name || "" },
-              { label: isAr ? "فرع الأسرة" : "Family Branch", value: vars.branch_name || (isAr ? "الفرع الموثق" : "Verified Branch") },
-              { label: isAr ? "الحالة" : "Status", value: isAr ? "عضو موثق رسمياً" : "Verified Member", isBadge: true, badgeVariant: "success" },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "رقم العضوية" : "Membership ID",
+                  value: vars.membership_number || "ABF-MBR-VERIFIED",
+                },
+                {
+                  label: isAr ? "الاسم المعتمد" : "Approved Name",
+                  value: vars.full_name || vars.user_name || "",
+                },
+                {
+                  label: isAr ? "فرع الأسرة" : "Family Branch",
+                  value: vars.branch_name || (isAr ? "الفرع الموثق" : "Verified Branch"),
+                },
+                {
+                  label: isAr ? "الحالة" : "Status",
+                  value: isAr ? "عضو موثق رسمياً" : "Verified Member",
+                  isBadge: true,
+                  badgeVariant: "success",
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderParagraph(
             isAr
               ? "بطاقة عضويتكم الرقمية متاحة الآن عبر حسابكم، ويمكنكم تحميلها بصيغة PDF أو طباعتها والاستفادة من كافة برامج الصندوق."
-              : "Your digital membership card is now available on your account dashboard for viewing or download."
+              : "Your digital membership card is now available on your account dashboard for viewing or download.",
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض وتحميل بطاقة العضوية" : "View & Download Card", lang)}
         `,
@@ -603,7 +711,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تحديث حول طلب العضوية" : "Membership Update",
-        preheader: isAr ? "تحديث أمانة المجلس بشأن طلب توثيق العضوية" : "Notice regarding your family membership application",
+        preheader: isAr
+          ? "تحديث أمانة المجلس بشأن طلب توثيق العضوية"
+          : "Notice regarding your family membership application",
         badgeText: isAr ? "غير معتمد" : "Not Approved",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -611,17 +721,20 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نحيطكم علماً بأنه بعد دراسة ومراجعة البيانات والمستندات المرفقة بطلبكم، تعذر على أمانة المجلس اعتماد الطلب في الوقت الحالي للأسباب التالية:"
-              : "Following careful review of the submitted information, the Secretariat was unable to approve the application due to the following reason:"
+              : "Following careful review of the submitted information, the Secretariat was unable to approve the application due to the following reason:",
           )}
           ${renderAlertBox(
-            vars.rejection_reason || (isAr ? "عدم اكتمال وثائق النسب المطلوبة أو عدم تطابق البيانات." : "Insufficient genealogical documentation or data discrepancy."),
+            vars.rejection_reason ||
+              (isAr
+                ? "عدم اكتمال وثائق النسب المطلوبة أو عدم تطابق البيانات."
+                : "Insufficient genealogical documentation or data discrepancy."),
             "critical",
-            isAr ? "ملاحظات المراجعة" : "Review Notes"
+            isAr ? "ملاحظات المراجعة" : "Review Notes",
           )}
           ${renderParagraph(
             isAr
               ? "يمكنكم مراجعة وتعديل بياناتكم وإرفاق المستندات الإضافية المطلوبة ثم إعادة التقديم."
-              : "You may review your details, attach required supporting documents, and resubmit."
+              : "You may review your details, attach required supporting documents, and resubmit.",
           )}
           ${renderActionButton(actionUrl, isAr ? "مراجعة تفاصيل الطلب" : "Review Application Details", lang)}
         `,
@@ -638,13 +751,16 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     nameAr: "طلب تصحيح أو استكمال بيانات العضوية",
     nameEn: "Membership Correction Required",
     subjectAr: (v) => `مطلوب استكمال بيانات طلب العضوية (${v.request_number || ""})`,
-    subjectEn: (v) => `Action Required: Complete Your Membership Application (${v.request_number || ""})`,
+    subjectEn: (v) =>
+      `Action Required: Complete Your Membership Application (${v.request_number || ""})`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "مطلوب تصحيح بيانات" : "Action Required",
-        preheader: isAr ? "يرجى استكمال البيانات والمستندات المطلوبة لاعتماد طلبك" : "Please complete the required details to finalize your application",
+        preheader: isAr
+          ? "يرجى استكمال البيانات والمستندات المطلوبة لاعتماد طلبك"
+          : "Please complete the required details to finalize your application",
         badgeText: isAr ? "مطلوب إجراء" : "Action Required",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -652,12 +768,15 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "أثناء تدقيق طلب عضويتكم، لوحظت الحاجة إلى تصحيح أو إرفاق معلومات إضافية قبل المتابعة في إجراءات الاعتماد."
-              : "During verification, our team identified additional details needed before your application can be completed."
+              : "During verification, our team identified additional details needed before your application can be completed.",
           )}
           ${renderAlertBox(
-            vars.instructions || (isAr ? "يرجى توضيح سلسلة النسب وإرفاق صورة الهوية الوطنية أو بطاقة العائلة." : "Please provide additional genealogical documentation or valid ID proof."),
+            vars.instructions ||
+              (isAr
+                ? "يرجى توضيح سلسلة النسب وإرفاق صورة الهوية الوطنية أو بطاقة العائلة."
+                : "Please provide additional genealogical documentation or valid ID proof."),
             "info",
-            isAr ? "المطلوب استكماله" : "Required Corrections"
+            isAr ? "المطلوب استكماله" : "Required Corrections",
           )}
           ${renderActionButton(actionUrl, isAr ? "تحديث البيانات الآن" : "Update Details Now", lang)}
         `,
@@ -680,7 +799,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تم تجديد العضوية" : "Membership Renewed",
-        preheader: isAr ? "تم تجديد بطاقة عضويتكم الرقمية بنجاح" : "Your digital membership card has been renewed",
+        preheader: isAr
+          ? "تم تجديد بطاقة عضويتكم الرقمية بنجاح"
+          : "Your digital membership card has been renewed",
         badgeText: isAr ? "مجدد" : "Renewed",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -688,7 +809,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "تم بنجاح تجديد بطاقة عضويتكم الرسمية في مجلس الأسرة، وتم تحديث تاريخ الصلاحية."
-              : "Your official family membership card has been successfully renewed with an extended validity date."
+              : "Your official family membership card has been successfully renewed with an extended validity date.",
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض البطاقة المجددة" : "View Renewed Card", lang)}
         `,
@@ -711,7 +832,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests?request=membership_card");
       return {
         title: isAr ? "انتهاء صلاحية البطاقة" : "Card Expired",
-        preheader: isAr ? "يرجى تقديم طلب تجديد بطاقة العضوية" : "Please request renewal of your membership card",
+        preheader: isAr
+          ? "يرجى تقديم طلب تجديد بطاقة العضوية"
+          : "Please request renewal of your membership card",
         badgeText: isAr ? "منتهية" : "Expired",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -719,7 +842,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نحيطكم علماً بأن صلاحية بطاقة عضويتكم قد انتهت. ندعوكم لتقديم طلب تجديد سريع عبر مركز الطلبات لضمان استمرار الاستفادة من خدمات الأسرة."
-              : "Your family membership card has reached its expiration date. You can request a renewal via the Request Hub."
+              : "Your family membership card has reached its expiration date. You can request a renewal via the Request Hub.",
           )}
           ${renderActionButton(actionUrl, isAr ? "طلب تجديد البطاقة" : "Renew Membership Card", lang)}
         `,
@@ -742,7 +865,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تحديث حالة العضوية" : "Membership Status Update",
-        preheader: isAr ? "تم تحديث تصنيف أو حالة عضويتكم في سجلات الأسرة" : "Your family membership classification or status was updated",
+        preheader: isAr
+          ? "تم تحديث تصنيف أو حالة عضويتكم في سجلات الأسرة"
+          : "Your family membership classification or status was updated",
         badgeText: isAr ? "تحديث حالة" : "Status Change",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -750,7 +875,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تم تحديث حالة عضويتكم في سجلات مجلس الأسرة إلى: <strong>${vars.new_status || "محدث"}</strong>.`
-              : `Your membership status in the family records has been updated to: <strong>${vars.new_status || "Updated"}</strong>.`
+              : `Your membership status in the family records has been updated to: <strong>${vars.new_status || "Updated"}</strong>.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "الاطلاع على الملف" : "View Profile", lang)}
         `,
@@ -773,7 +898,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "استلام الوثيقة" : "Document Received",
-        preheader: isAr ? "تم رفع وثيقتكم بنجاح وهي قيد الفحص والتدقيق" : "Your document upload was received and is under review",
+        preheader: isAr
+          ? "تم رفع وثيقتكم بنجاح وهي قيد الفحص والتدقيق"
+          : "Your document upload was received and is under review",
         badgeText: isAr ? "تم الرفع" : "Uploaded",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -781,7 +908,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تم استلام الوثيقة المرفقة (${vars.document_name || "وثيقة توثيق"}) وأُحيلت لأمانة المجلس للتحقق منها.`
-              : `Your attached document (${vars.document_name || "Verification Document"}) was received and queued for review.`
+              : `Your attached document (${vars.document_name || "Verification Document"}) was received and queued for review.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "متابعة الطلب" : "Check Request", lang)}
         `,
@@ -804,7 +931,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "اعتماد الوثيقة" : "Document Approved",
-        preheader: isAr ? "تمت مطابقة واعتماد وثيقة النسب المرفقة" : "Your submitted document has been approved",
+        preheader: isAr
+          ? "تمت مطابقة واعتماد وثيقة النسب المرفقة"
+          : "Your submitted document has been approved",
         badgeText: isAr ? "معتمد" : "Approved",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -812,7 +941,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تمت مراجعة واعتماد الوثيقة المرفقة (${vars.document_name || "وثيقة النسب"}) بنجاح.`
-              : `Your submitted document (${vars.document_name || "Genealogical Document"}) has passed verification.`
+              : `Your submitted document (${vars.document_name || "Genealogical Document"}) has passed verification.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض الحساب" : "View Account", lang)}
         `,
@@ -835,20 +964,25 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تعذر اعتماد الوثيقة" : "Document Rejected",
-        preheader: isAr ? "الوثيقة المرفقة غير واضحة أو غير مطابقة" : "The attached document could not be accepted",
+        preheader: isAr
+          ? "الوثيقة المرفقة غير واضحة أو غير مطابقة"
+          : "The attached document could not be accepted",
         badgeText: isAr ? "مرفوضة" : "Rejected",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
           ${renderTitle(isAr ? "تعذر اعتماد الوثيقة المرفقة" : "Document Verification Unsuccessful")}
           ${renderAlertBox(
-            vars.reason || (isAr ? "الوثيقة غير مقروءة أو غير مكتملة الأختام الرسمية." : "Document is illegible or missing official verification stamps."),
+            vars.reason ||
+              (isAr
+                ? "الوثيقة غير مقروءة أو غير مكتملة الأختام الرسمية."
+                : "Document is illegible or missing official verification stamps."),
             "critical",
-            isAr ? "سبب الرفض" : "Reason"
+            isAr ? "سبب الرفض" : "Reason",
           )}
           ${renderParagraph(
             isAr
               ? "يرجى إعادة رفع نسخة واضحة وموثقة عبر صفحة حسابكم."
-              : "Please re-upload a clear and verified copy on your account page."
+              : "Please re-upload a clear and verified copy on your account page.",
           )}
           ${renderActionButton(actionUrl, isAr ? "إعادة رفع الوثيقة" : "Re-upload Document", lang)}
         `,
@@ -867,14 +1001,18 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     defaultPriority: "HIGH",
     nameAr: "استلام وتأكيد تقديم الطلب",
     nameEn: "Request Submitted Confirmation",
-    subjectAr: (v) => `تأكيد استلام طلبكم: ${v.request_number || "طلب جديد"} — ${v.request_title || ""}`,
-    subjectEn: (v) => `Request Received: ${v.request_number || "New Request"} — ${v.request_title || ""}`,
+    subjectAr: (v) =>
+      `تأكيد استلام طلبكم: ${v.request_number || "طلب جديد"} — ${v.request_title || ""}`,
+    subjectEn: (v) =>
+      `Request Received: ${v.request_number || "New Request"} — ${v.request_title || ""}`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl(`/requests`);
       return {
         title: isAr ? "تأكيد استلام الطلب" : "Request Received",
-        preheader: isAr ? `تم تسجيل طلبكم بنجاح برقم قيد ${vars.request_number || ""}` : `Your request was registered with reference ${vars.request_number || ""}`,
+        preheader: isAr
+          ? `تم تسجيل طلبكم بنجاح برقم قيد ${vars.request_number || ""}`
+          : `Your request was registered with reference ${vars.request_number || ""}`,
         badgeText: vars.request_type || (isAr ? "طلب وارد" : "New Request"),
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -882,22 +1020,50 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نشكركم على تواصلكم مع مجلس أسرة آل بوعبيد. تم قيد وتسجيل طلبكم رسمياً وتوجيهه إلى اللجنة المختصة للمتابعة والمعالجة."
-              : "Thank you for contacting the Al Bu Obaid Family Council. Your request has been logged and assigned to the relevant committee."
+              : "Thank you for contacting the Al Bu Obaid Family Council. Your request has been logged and assigned to the relevant committee.",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "رقم الطلب" : "Reference Number", value: vars.request_number || "قيد التعيين" },
-              { label: isAr ? "نوع الطلب" : "Request Type", value: vars.request_type_label || vars.request_type || (isAr ? "طلب عام" : "General Request") },
-              { label: isAr ? "عنوان / موضوع الطلب" : "Subject", value: vars.request_title || "" },
-              { label: isAr ? "اللجنة المختصة" : "Committee", value: vars.committee_name || (isAr ? "أمانة المجلس العام" : "General Secretariat") },
-              { label: isAr ? "تاريخ التقديم" : "Submission Date", value: vars.submission_date || new Date().toLocaleDateString(isAr ? "ar-SA" : "en-US") },
-              { label: isAr ? "الحالة الحالية" : "Current Status", value: isAr ? "جديد — قيد التوجيه" : "New — Queued", isBadge: true, badgeVariant: "info" },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "رقم الطلب" : "Reference Number",
+                  value: vars.request_number || "قيد التعيين",
+                },
+                {
+                  label: isAr ? "نوع الطلب" : "Request Type",
+                  value:
+                    vars.request_type_label ||
+                    vars.request_type ||
+                    (isAr ? "طلب عام" : "General Request"),
+                },
+                {
+                  label: isAr ? "عنوان / موضوع الطلب" : "Subject",
+                  value: vars.request_title || "",
+                },
+                {
+                  label: isAr ? "اللجنة المختصة" : "Committee",
+                  value:
+                    vars.committee_name || (isAr ? "أمانة المجلس العام" : "General Secretariat"),
+                },
+                {
+                  label: isAr ? "تاريخ التقديم" : "Submission Date",
+                  value:
+                    vars.submission_date || new Date().toLocaleDateString(isAr ? "ar-SA" : "en-US"),
+                },
+                {
+                  label: isAr ? "الحالة الحالية" : "Current Status",
+                  value: isAr ? "جديد — قيد التوجيه" : "New — Queued",
+                  isBadge: true,
+                  badgeVariant: "info",
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderParagraph(
             isAr
               ? "يرجى الاحتفاظ برقم الطلب أعلاه لأي مراجعة مستقبلية. سنقوم بإشعاركم فور حدوث أي تحديث على مسار الطلب."
-              : "Please retain the reference number for your records. You will receive updates as your request progresses."
+              : "Please retain the reference number for your records. You will receive updates as your request progresses.",
           )}
           ${renderActionButton(actionUrl, isAr ? "متابعة مسار الطلب" : "Track Request Status", lang)}
         `,
@@ -913,14 +1079,18 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     defaultPriority: "NORMAL",
     nameAr: "استلام الطلب من قِبل اللجنة",
     nameEn: "Request Received by Committee",
-    subjectAr: (v) => `أُحيل طلبكم (${v.request_number || ""}) إلى ${v.committee_name || "اللجنة المختصة"}`,
-    subjectEn: (v) => `Request (${v.request_number || ""}) Received by ${v.committee_name || "Committee"}`,
+    subjectAr: (v) =>
+      `أُحيل طلبكم (${v.request_number || ""}) إلى ${v.committee_name || "اللجنة المختصة"}`,
+    subjectEn: (v) =>
+      `Request (${v.request_number || ""}) Received by ${v.committee_name || "Committee"}`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "إحالة إلى اللجنة" : "Assigned to Committee",
-        preheader: isAr ? `أحيل طلبكم إلى ${vars.committee_name || "اللجنة المختصة"}` : `Your request was routed to ${vars.committee_name || "the committee"}`,
+        preheader: isAr
+          ? `أحيل طلبكم إلى ${vars.committee_name || "اللجنة المختصة"}`
+          : `Your request was routed to ${vars.committee_name || "the committee"}`,
         badgeText: vars.committee_name || (isAr ? "لجنة المجلس" : "Committee"),
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -928,7 +1098,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `نحيطكم علماً بأنه تمت إحالة طلبكم رقم <strong>${vars.request_number || ""}</strong> إلى <strong>${vars.committee_name || "اللجنة المختصة"}</strong> لبدء المعالجة الإجرائية.`
-              : `Your request (${vars.request_number || ""}) has been assigned to <strong>${vars.committee_name || "the committee"}</strong> for operational handling.`
+              : `Your request (${vars.request_number || ""}) has been assigned to <strong>${vars.committee_name || "the committee"}</strong> for operational handling.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض الطلب" : "View Request", lang)}
         `,
@@ -951,7 +1121,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "تعيين مسؤول للطلب" : "Officer Assigned",
-        preheader: isAr ? "تم تعيين عضو مسؤول لمتابعة ومعالجة طلبكم" : "A staff officer was assigned to handle your request",
+        preheader: isAr
+          ? "تم تعيين عضو مسؤول لمتابعة ومعالجة طلبكم"
+          : "A staff officer was assigned to handle your request",
         badgeText: isAr ? "معين" : "Assigned",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -959,7 +1131,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تم تعيين مسؤول من قِبل اللجنة لمتابعة طلبكم رقم <strong>${vars.request_number || ""}</strong> والإشراف على كافة متطلبات إنجازه.`
-              : `An officer has been designated to oversee and process your request (${vars.request_number || ""}).`
+              : `An officer has been designated to oversee and process your request (${vars.request_number || ""}).`,
           )}
           ${renderActionButton(actionUrl, isAr ? "متابعة الطلب" : "Track Request", lang)}
         `,
@@ -982,7 +1154,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "الطلب قيد المراجعة" : "Under Review",
-        preheader: isAr ? "تجري دراسة طلبكم وفق السياسات المعتمدة" : "Your request is currently being reviewed",
+        preheader: isAr
+          ? "تجري دراسة طلبكم وفق السياسات المعتمدة"
+          : "Your request is currently being reviewed",
         badgeText: isAr ? "قيد الدراسة" : "In Review",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -990,7 +1164,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تجري حالياً دراسة تفاصيل طلبكم رقم <strong>${vars.request_number || ""}</strong> (${vars.request_title || ""}) من قِبل اللجنة المختصة للتأكد من استيفاء كافة المتطلبات والمعايير.`
-              : `Your request (${vars.request_number || ""}) is currently under active review by the committee.`
+              : `Your request (${vars.request_number || ""}) is currently under active review by the committee.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "متابعة حالة الطلب" : "Track Status", lang)}
         `,
@@ -1007,13 +1181,16 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     nameAr: "الطلب يتطلب معلومات إضافية",
     nameEn: "Request Requires Additional Information",
     subjectAr: (v) => `مطلوب معلومات إضافية لإكمال طلبكم (${v.request_number || ""})`,
-    subjectEn: (v) => `Action Required: Additional Information for Request (${v.request_number || ""})`,
+    subjectEn: (v) =>
+      `Action Required: Additional Information for Request (${v.request_number || ""})`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "مطلوب معلومات إضافية" : "Additional Info Required",
-        preheader: isAr ? "يرجى تزويد اللجنة بالمعلومات الموضحة لإكمال الطلب" : "Please provide the requested information to complete your request",
+        preheader: isAr
+          ? "يرجى تزويد اللجنة بالمعلومات الموضحة لإكمال الطلب"
+          : "Please provide the requested information to complete your request",
         badgeText: isAr ? "مطلوب رد" : "Action Required",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1021,12 +1198,15 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `بشأن طلبكم رقم <strong>${vars.request_number || ""}</strong>، نحيطكم علماً بالحاجة لاستكمال المعلومات أو المستندات التالية للمتابعة في إنجازه:`
-              : `Regarding your request (${vars.request_number || ""}), the committee requires the following information to proceed:`
+              : `Regarding your request (${vars.request_number || ""}), the committee requires the following information to proceed:`,
           )}
           ${renderAlertBox(
-            vars.requested_info || (isAr ? "يرجى مراجعة تفاصيل الملاحظات المدونة بالطلب وإرفاق المستندات المطلوبة." : "Please review the notes and attach the requested supporting files."),
+            vars.requested_info ||
+              (isAr
+                ? "يرجى مراجعة تفاصيل الملاحظات المدونة بالطلب وإرفاق المستندات المطلوبة."
+                : "Please review the notes and attach the requested supporting files."),
             "info",
-            isAr ? "المعلومات المطلوبة" : "Requested Details"
+            isAr ? "المعلومات المطلوبة" : "Requested Details",
           )}
           ${renderActionButton(actionUrl, isAr ? "إضافة المعلومات المطلوبة" : "Submit Required Info", lang)}
         `,
@@ -1049,7 +1229,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "تم اعتماد الطلب" : "Request Approved",
-        preheader: isAr ? "يسرنا إشعاركم بالموافقة على طلبكم واعتماده" : "We are pleased to inform you that your request has been approved",
+        preheader: isAr
+          ? "يسرنا إشعاركم بالموافقة على طلبكم واعتماده"
+          : "We are pleased to inform you that your request has been approved",
         badgeText: isAr ? "معتمد ومقبول" : "Approved",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1057,7 +1239,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `يسر مجلس أسرة آل بوعبيد إشعاركم بالموافقة على طلبكم رقم <strong>${vars.request_number || ""}</strong> (${vars.request_title || ""}) من قِبل اللجنة المعنية.`
-              : `We are pleased to inform you that your request (${vars.request_number || ""}) has been approved.`
+              : `We are pleased to inform you that your request (${vars.request_number || ""}) has been approved.`,
           )}
           ${vars.approval_notes ? renderAlertBox(vars.approval_notes, "info", isAr ? "ملاحظات الاعتماد" : "Approval Notes") : ""}
           ${renderActionButton(actionUrl, isAr ? "عرض تفاصيل الاعتماد" : "View Approval Details", lang)}
@@ -1081,7 +1263,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "تحديث حول الطلب" : "Request Update",
-        preheader: isAr ? "تحديث نتيجة دراسة طلبكم لدى اللجنة" : "Update regarding the outcome of your request review",
+        preheader: isAr
+          ? "تحديث نتيجة دراسة طلبكم لدى اللجنة"
+          : "Update regarding the outcome of your request review",
         badgeText: isAr ? "غير معتمد" : "Not Approved",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1089,12 +1273,15 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `نعتذر عن عدم إمكانية اعتماد طلبكم رقم <strong>${vars.request_number || ""}</strong> في الوقت الحالي للأسباب الموضحة أدناه:`
-              : `We regret to inform you that we are unable to approve request (${vars.request_number || ""}) at this time due to:`
+              : `We regret to inform you that we are unable to approve request (${vars.request_number || ""}) at this time due to:`,
           )}
           ${renderAlertBox(
-            vars.rejection_reason || (isAr ? "الطلب لا يقع ضمن نطاق اللائحة المعتمدة أو عدم توفر الشروط المطلوبة." : "Request does not meet the necessary regulatory criteria."),
+            vars.rejection_reason ||
+              (isAr
+                ? "الطلب لا يقع ضمن نطاق اللائحة المعتمدة أو عدم توفر الشروط المطلوبة."
+                : "Request does not meet the necessary regulatory criteria."),
             "critical",
-            isAr ? "سبب الاعتذار" : "Reason"
+            isAr ? "سبب الاعتذار" : "Reason",
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض تفاصيل الطلب" : "View Request Details", lang)}
         `,
@@ -1117,7 +1304,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "تم إنجاز الطلب" : "Request Completed",
-        preheader: isAr ? "تم إكمال تنفيذ كافة متطلبات طلبكم بنجاح" : "All requirements for your request have been fulfilled",
+        preheader: isAr
+          ? "تم إكمال تنفيذ كافة متطلبات طلبكم بنجاح"
+          : "All requirements for your request have been fulfilled",
         badgeText: isAr ? "مكتمل ومنجز" : "Completed",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1125,7 +1314,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `يسرنا إبلاغكم بإتمام وتنفيذ كافة الإجراءات المتعلقة بطلبكم رقم <strong>${vars.request_number || ""}</strong> (${vars.request_title || ""}). نشكركم على تعاونكم الدائم مع مجلس الأسرة.`
-              : `We are pleased to inform you that all actions regarding your request (${vars.request_number || ""}) have been completed.`
+              : `We are pleased to inform you that all actions regarding your request (${vars.request_number || ""}) have been completed.`,
           )}
           ${vars.completion_notes ? renderAlertBox(vars.completion_notes, "info", isAr ? "مخرجات الطلب" : "Summary") : ""}
           ${renderActionButton(actionUrl, isAr ? "معاينة النتيجة" : "View Outcome", lang)}
@@ -1149,7 +1338,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "تم إلغاء الطلب" : "Request Cancelled",
-        preheader: isAr ? "تم تسجيل إلغاء الطلب بناءً على الإجراء المتخذ" : "The request was marked as cancelled",
+        preheader: isAr
+          ? "تم تسجيل إلغاء الطلب بناءً على الإجراء المتخذ"
+          : "The request was marked as cancelled",
         badgeText: isAr ? "ملغى" : "Cancelled",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1157,7 +1348,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `نحيطكم علماً بأنه تم إلغاء الطلب رقم <strong>${vars.request_number || ""}</strong>.`
-              : `This is to confirm that request (${vars.request_number || ""}) has been cancelled.`
+              : `This is to confirm that request (${vars.request_number || ""}) has been cancelled.`,
           )}
           ${vars.cancellation_reason ? renderAlertBox(vars.cancellation_reason, "info", isAr ? "سبب الإلغاء" : "Cancellation Reason") : ""}
           ${renderActionButton(actionUrl, isAr ? "مركز الطلبات" : "Request Hub", lang)}
@@ -1181,7 +1372,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "إعادة فتح الطلب" : "Request Reopened",
-        preheader: isAr ? "تمت إعادة فتح الطلب لمواصلة المتابعة والتدقيق" : "The request was reopened for continued processing",
+        preheader: isAr
+          ? "تمت إعادة فتح الطلب لمواصلة المتابعة والتدقيق"
+          : "The request was reopened for continued processing",
         badgeText: isAr ? "مُعاد فتحه" : "Reopened",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1189,7 +1382,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تمت إعادة فتح الطلب رقم <strong>${vars.request_number || ""}</strong> لإجراء متابعة إضافية مع اللجنة المعنية.`
-              : `Request (${vars.request_number || ""}) has been reopened for further processing.`
+              : `Request (${vars.request_number || ""}) has been reopened for further processing.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض الطلب" : "View Request", lang)}
         `,
@@ -1212,7 +1405,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "رد جديد على الطلب" : "New Reply on Request",
-        preheader: isAr ? "أضافت أمانة المجلس أو اللجنة رداً جديداً على طلبكم" : "A new response has been posted to your request",
+        preheader: isAr
+          ? "أضافت أمانة المجلس أو اللجنة رداً جديداً على طلبكم"
+          : "A new response has been posted to your request",
         badgeText: isAr ? "رد جديد" : "New Response",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1220,12 +1415,15 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تمت إضافة رد رسمي جديد بخصوص طلبكم رقم <strong>${vars.request_number || ""}</strong> (${vars.request_title || ""}):`
-              : `A new official reply was added to your request (${vars.request_number || ""}):`
+              : `A new official reply was added to your request (${vars.request_number || ""}):`,
           )}
           ${renderAlertBox(
-            vars.comment || (isAr ? "يرجى مراجعة محتوى الرد في المنظومة." : "Please review the response in the portal."),
+            vars.comment ||
+              (isAr
+                ? "يرجى مراجعة محتوى الرد في المنظومة."
+                : "Please review the response in the portal."),
             "info",
-            isAr ? "نص الرد" : "Response Message"
+            isAr ? "نص الرد" : "Response Message",
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض الرد والرد عليه" : "View & Reply", lang)}
         `,
@@ -1242,13 +1440,16 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     nameAr: "تغيير وتحديث حالة الطلب",
     nameEn: "Request Status Updated",
     subjectAr: (v) => `تحديث حالة طلبكم (${v.request_number || ""}): ${v.status_label || ""}`,
-    subjectEn: (v) => `Status Update for Request (${v.request_number || ""}): ${v.status_label || ""}`,
+    subjectEn: (v) =>
+      `Status Update for Request (${v.request_number || ""}): ${v.status_label || ""}`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl("/requests");
       return {
         title: isAr ? "تحديث حالة الطلب" : "Request Status Updated",
-        preheader: isAr ? `أصبح طلبكم في حالة: ${vars.status_label || ""}` : `Your request status changed to ${vars.status_label || ""}`,
+        preheader: isAr
+          ? `أصبح طلبكم في حالة: ${vars.status_label || ""}`
+          : `Your request status changed to ${vars.status_label || ""}`,
         badgeText: vars.status_label || (isAr ? "تحديث حالة" : "Status"),
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1256,14 +1457,25 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `نحيطكم علماً بتحديث حالة طلبكم رقم <strong>${vars.request_number || ""}</strong> (${vars.request_title || ""}).`
-              : `The status of your request (${vars.request_number || ""}) has been updated.`
+              : `The status of your request (${vars.request_number || ""}) has been updated.`,
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "رقم الطلب" : "Request No.", value: vars.request_number || "" },
-              { label: isAr ? "الحالة الجديدة" : "New Status", value: vars.status_label || (isAr ? "محدث" : "Updated"), isBadge: true, badgeVariant: "info" },
-              { label: isAr ? "تاريخ التحديث" : "Date", value: vars.date || new Date().toLocaleDateString(isAr ? "ar-SA" : "en-US") },
-            ], lang)
+            renderDetailsTable(
+              [
+                { label: isAr ? "رقم الطلب" : "Request No.", value: vars.request_number || "" },
+                {
+                  label: isAr ? "الحالة الجديدة" : "New Status",
+                  value: vars.status_label || (isAr ? "محدث" : "Updated"),
+                  isBadge: true,
+                  badgeVariant: "info",
+                },
+                {
+                  label: isAr ? "تاريخ التحديث" : "Date",
+                  value: vars.date || new Date().toLocaleDateString(isAr ? "ar-SA" : "en-US"),
+                },
+              ],
+              lang,
+            ),
           )}
           ${vars.notes ? renderAlertBox(vars.notes, "info", isAr ? "ملاحظات إضافية" : "Notes") : ""}
           ${renderActionButton(actionUrl, isAr ? "متابعة الطلب في البوابة" : "View Request in Portal", lang)}
@@ -1290,7 +1502,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/committees");
       return {
         title: isAr ? "قرار تكليف بلجنة" : "Committee Appointment",
-        preheader: isAr ? `نبارك لك تعيينك في ${vars.committee_name || "لجان مجلس الأسرة"}` : `Appointment to ${vars.committee_name || "Family Committee"}`,
+        preheader: isAr
+          ? `نبارك لك تعيينك في ${vars.committee_name || "لجان مجلس الأسرة"}`
+          : `Appointment to ${vars.committee_name || "Family Committee"}`,
         badgeText: isAr ? "تكليف رسمي" : "Appointment",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1298,7 +1512,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `بناءً على اعتماد أمانة مجلس أسرة آل بوعبيد، يسرنا إشعاركم بصدور قرار تكليفكم بعضوية <strong>${vars.committee_name || "اللجنة"}</strong>، متمنين لكم دوام التوفيق والسداد في خدمة الأسرة الكريمة.`
-              : `The Secretariat is pleased to inform you of your official appointment to <strong>${vars.committee_name || "the committee"}</strong>.`
+              : `The Secretariat is pleased to inform you of your official appointment to <strong>${vars.committee_name || "the committee"}</strong>.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "الاطلاع على مهام اللجنة" : "View Committee Duties", lang)}
         `,
@@ -1315,13 +1529,16 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     nameAr: "إشعار للجنة بورود طلب جديد",
     nameEn: "Committee: New Request Assigned",
     subjectAr: (v) => `طلب جديد وارد للجنة ${v.committee_name || ""}: ${v.request_number || ""}`,
-    subjectEn: (v) => `New Request Assigned to ${v.committee_name || "Committee"}: ${v.request_number || ""}`,
+    subjectEn: (v) =>
+      `New Request Assigned to ${v.committee_name || "Committee"}: ${v.request_number || ""}`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl("/admin");
       return {
         title: isAr ? "طلب جديد وارد للجنة" : "New Committee Request",
-        preheader: isAr ? `طلب جديد بحاجة لمراجعة أعضاء ${vars.committee_name || "اللجنة"}` : `A new request has been assigned to ${vars.committee_name || "your committee"}`,
+        preheader: isAr
+          ? `طلب جديد بحاجة لمراجعة أعضاء ${vars.committee_name || "اللجنة"}`
+          : `A new request has been assigned to ${vars.committee_name || "your committee"}`,
         badgeText: isAr ? "وارد جديد" : "New Item",
         contentHtml: `
           ${renderGreeting(vars.officer_name, lang)}
@@ -1329,7 +1546,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `ورد طلب جديد إلى <strong>${vars.committee_name || "اللجنة"}</strong> برقم <strong>${vars.request_number || ""}</strong> (${vars.request_title || ""}) يتطلب المراجعة واتخاذ الإجراء اللازم.`
-              : `A new request (${vars.request_number || ""}) has been routed to <strong>${vars.committee_name || "the committee"}</strong> for processing.`
+              : `A new request (${vars.request_number || ""}) has been routed to <strong>${vars.committee_name || "the committee"}</strong> for processing.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "فتح لوحة الإدارة للمراجعة" : "Open Console to Review", lang)}
         `,
@@ -1352,15 +1569,20 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/admin");
       return {
         title: isAr ? "مطلوب إجراء من اللجنة" : "Action Required",
-        preheader: isAr ? "تذكير بمعاملة متأخرة أو تتطلب اعتماد أعضاء اللجنة" : "Reminder: pending committee action required",
+        preheader: isAr
+          ? "تذكير بمعاملة متأخرة أو تتطلب اعتماد أعضاء اللجنة"
+          : "Reminder: pending committee action required",
         badgeText: isAr ? "عاجل" : "Urgent",
         contentHtml: `
           ${renderGreeting(vars.officer_name, lang)}
           ${renderTitle(isAr ? "مطلوب إجراء واعتماد من اللجنة" : "Committee Action Required")}
           ${renderAlertBox(
-            vars.action_details || (isAr ? "يرجى مراجعة المعاملة وتسجيل قرار اللجنة المعتمد." : "Please review the item and record the committee decision."),
+            vars.action_details ||
+              (isAr
+                ? "يرجى مراجعة المعاملة وتسجيل قرار اللجنة المعتمد."
+                : "Please review the item and record the committee decision."),
             "info",
-            isAr ? "المعاملة المعلقة" : "Pending Item"
+            isAr ? "المعاملة المعلقة" : "Pending Item",
           )}
           ${renderActionButton(actionUrl, isAr ? "اتخاذ الإجراء في المنظومة" : "Take Action in Console", lang)}
         `,
@@ -1383,7 +1605,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/admin");
       return {
         title: isAr ? "توثيق قرار اللجنة" : "Decision Recorded",
-        preheader: isAr ? "تم تسجيل قرار اللجنة الرسمي بالمنظومة" : "The official committee decision has been logged",
+        preheader: isAr
+          ? "تم تسجيل قرار اللجنة الرسمي بالمنظومة"
+          : "The official committee decision has been logged",
         badgeText: isAr ? "قرار موثق" : "Logged",
         contentHtml: `
           ${renderGreeting(vars.officer_name, lang)}
@@ -1391,7 +1615,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تم بنجاح توثيق قرار <strong>${vars.committee_name || "اللجنة"}</strong> بشأن المعاملة رقم <strong>${vars.request_number || ""}</strong>.`
-              : `The official decision for (${vars.request_number || ""}) has been registered.`
+              : `The official decision for (${vars.request_number || ""}) has been registered.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض سجل القرارات" : "View Decision Log", lang)}
         `,
@@ -1408,13 +1632,16 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     nameAr: "دعوة لحضور اجتماع لجنة",
     nameEn: "Committee Meeting Invitation",
     subjectAr: (v) => `دعوة لاجتماع ${v.committee_name || "اللجنة"}: ${v.meeting_date || ""}`,
-    subjectEn: (v) => `Meeting Invitation: ${v.committee_name || "Committee"} (${v.meeting_date || ""})`,
+    subjectEn: (v) =>
+      `Meeting Invitation: ${v.committee_name || "Committee"} (${v.meeting_date || ""})`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl(vars.meeting_url || "/committees");
       return {
         title: isAr ? "دعوة اجتماع لجنة" : "Meeting Invitation",
-        preheader: isAr ? `موعد اجتماع ${vars.committee_name || "اللجنة"} القادم` : `Upcoming meeting for ${vars.committee_name || "the committee"}`,
+        preheader: isAr
+          ? `موعد اجتماع ${vars.committee_name || "اللجنة"} القادم`
+          : `Upcoming meeting for ${vars.committee_name || "the committee"}`,
         badgeText: isAr ? "اجتماع" : "Meeting",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1422,15 +1649,28 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "يسرنا دعوتكم لحضور الاجتماع الدوري للجنة لمناقشة جدول الأعمال التالي:"
-              : "You are cordially invited to attend the committee meeting to discuss the following agenda:"
+              : "You are cordially invited to attend the committee meeting to discuss the following agenda:",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "اللجنة" : "Committee", value: vars.committee_name || "" },
-              { label: isAr ? "الموعد والتاريخ" : "Date & Time", value: `${vars.meeting_date || ""} ${vars.meeting_time || ""}` },
-              { label: isAr ? "المكان / الرابط" : "Location / Link", value: vars.location || (isAr ? "مقر الأسرة / عن بُعد" : "Family Majlis / Remote") },
-              { label: isAr ? "الموضوع الرئيسي" : "Agenda", value: vars.agenda || (isAr ? "مناقشة بنود ومستجدات الخطة" : "Regular Review") },
-            ], lang)
+            renderDetailsTable(
+              [
+                { label: isAr ? "اللجنة" : "Committee", value: vars.committee_name || "" },
+                {
+                  label: isAr ? "الموعد والتاريخ" : "Date & Time",
+                  value: `${vars.meeting_date || ""} ${vars.meeting_time || ""}`,
+                },
+                {
+                  label: isAr ? "المكان / الرابط" : "Location / Link",
+                  value:
+                    vars.location || (isAr ? "مقر الأسرة / عن بُعد" : "Family Majlis / Remote"),
+                },
+                {
+                  label: isAr ? "الموضوع الرئيسي" : "Agenda",
+                  value: vars.agenda || (isAr ? "مناقشة بنود ومستجدات الخطة" : "Regular Review"),
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderActionButton(actionUrl, isAr ? "تأكيد الحضور والاطلاع على التفاصيل" : "Confirm Attendance", lang)}
         `,
@@ -1453,7 +1693,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.meeting_url || "/committees");
       return {
         title: isAr ? "تذكير بالاجتماع" : "Meeting Reminder",
-        preheader: isAr ? `تذكير بموعد اجتماع ${vars.committee_name || "اللجنة"}` : `Reminder for ${vars.committee_name || "the committee"} meeting`,
+        preheader: isAr
+          ? `تذكير بموعد اجتماع ${vars.committee_name || "اللجنة"}`
+          : `Reminder for ${vars.committee_name || "the committee"} meeting`,
         badgeText: isAr ? "تذكير" : "Reminder",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1461,7 +1703,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `نذكركم بموعد اجتماع <strong>${vars.committee_name || "اللجنة"}</strong> المقرر عقده في: <strong>${vars.meeting_date || ""} ${vars.meeting_time || ""}</strong>.`
-              : `This is a reminder that the meeting for <strong>${vars.committee_name || "the committee"}</strong> is scheduled for: <strong>${vars.meeting_date || ""} ${vars.meeting_time || ""}</strong>.`
+              : `This is a reminder that the meeting for <strong>${vars.committee_name || "the committee"}</strong> is scheduled for: <strong>${vars.meeting_date || ""} ${vars.meeting_time || ""}</strong>.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "الانضمام أو تفاصيل الاجتماع" : "Join / View Details", lang)}
         `,
@@ -1478,13 +1720,16 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     nameAr: "إعلان داخلي للجان",
     nameEn: "Committee Internal Announcement",
     subjectAr: (v) => `تعميم داخلي من ${v.committee_name || "أمانة المجلس"}: ${v.title || ""}`,
-    subjectEn: (v) => `Internal Circular from ${v.committee_name || "Secretariat"}: ${v.title || ""}`,
+    subjectEn: (v) =>
+      `Internal Circular from ${v.committee_name || "Secretariat"}: ${v.title || ""}`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl("/committees");
       return {
         title: isAr ? "تعميم داخلي" : "Internal Circular",
-        preheader: isAr ? "تعميم داخلي صادر لأعضاء اللجان بمجلس الأسرة" : "Internal circular for committee members",
+        preheader: isAr
+          ? "تعميم داخلي صادر لأعضاء اللجان بمجلس الأسرة"
+          : "Internal circular for committee members",
         badgeText: isAr ? "تعميم" : "Circular",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1514,7 +1759,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.event_slug ? `/events` : "/events");
       return {
         title: isAr ? "فعالية عائلية جديدة" : "New Family Event",
-        preheader: isAr ? `يسر مجلس الأسرة دعوتكم لحضور ${vars.event_title || ""}` : `You are invited to attend ${vars.event_title || ""}`,
+        preheader: isAr
+          ? `يسر مجلس الأسرة دعوتكم لحضور ${vars.event_title || ""}`
+          : `You are invited to attend ${vars.event_title || ""}`,
         badgeText: isAr ? "فعالية عائلية" : "Family Event",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1522,14 +1769,30 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `يسر مجلس أسرة آل بوعبيد دعوة عموم أفراد الأسرة الكريمة لحضور <strong>"${vars.event_title || ""}"</strong>.`
-              : `The Al Bu Obaid Family Council warmly invites all family members to attend <strong>"${vars.event_title || ""}"</strong>.`
+              : `The Al Bu Obaid Family Council warmly invites all family members to attend <strong>"${vars.event_title || ""}"</strong>.`,
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "الموعد والتاريخ" : "Date & Time", value: `${vars.event_date || ""} ${vars.event_time || ""}` },
-              { label: isAr ? "المكان" : "Venue", value: vars.event_location || (isAr ? "الأحساء — المقر العائلي" : "Al-Ahsa — Family Majlis") },
-              { label: isAr ? "التسجيل" : "Registration", value: isAr ? "متاح ومطلوب لتأكيد الحضور" : "Open for RSVP", isBadge: true, badgeVariant: "success" },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "الموعد والتاريخ" : "Date & Time",
+                  value: `${vars.event_date || ""} ${vars.event_time || ""}`,
+                },
+                {
+                  label: isAr ? "المكان" : "Venue",
+                  value:
+                    vars.event_location ||
+                    (isAr ? "الأحساء — المقر العائلي" : "Al-Ahsa — Family Majlis"),
+                },
+                {
+                  label: isAr ? "التسجيل" : "Registration",
+                  value: isAr ? "متاح ومطلوب لتأكيد الحضور" : "Open for RSVP",
+                  isBadge: true,
+                  badgeVariant: "success",
+                },
+              ],
+              lang,
+            ),
           )}
           ${vars.event_description ? renderParagraph(vars.event_description) : ""}
           ${renderActionButton(actionUrl, isAr ? "تسجيل الحضور في الفعالية" : "Register Attendance", lang)}
@@ -1553,7 +1816,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/events");
       return {
         title: isAr ? "تأكيد تسجيل الحضور" : "Attendance Confirmed",
-        preheader: isAr ? `تم تأكيد تسجيلكم في فعالية ${vars.event_title || ""}` : `Your registration for ${vars.event_title || ""} is confirmed`,
+        preheader: isAr
+          ? `تم تأكيد تسجيلكم في فعالية ${vars.event_title || ""}`
+          : `Your registration for ${vars.event_title || ""} is confirmed`,
         badgeText: isAr ? "مؤكد" : "Confirmed",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1561,15 +1826,24 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `يسعدنا تأكيد تسجيل حضوركم في <strong>"${vars.event_title || ""}"</strong>. نتطلع لرؤيتكم ولقائكم في هذا المحفل العائلي المبارك.`
-              : `We are pleased to confirm your registration for <strong>"${vars.event_title || ""}"</strong>.`
+              : `We are pleased to confirm your registration for <strong>"${vars.event_title || ""}"</strong>.`,
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "الفعالية" : "Event", value: vars.event_title || "" },
-              { label: isAr ? "الموعد" : "Date & Time", value: `${vars.event_date || ""} ${vars.event_time || ""}` },
-              { label: isAr ? "عدد الحضور المسجلين" : "Attendees", value: String(vars.attendees_count || "1") },
-              { label: isAr ? "الموقع" : "Location", value: vars.event_location || "" },
-            ], lang)
+            renderDetailsTable(
+              [
+                { label: isAr ? "الفعالية" : "Event", value: vars.event_title || "" },
+                {
+                  label: isAr ? "الموعد" : "Date & Time",
+                  value: `${vars.event_date || ""} ${vars.event_time || ""}`,
+                },
+                {
+                  label: isAr ? "عدد الحضور المسجلين" : "Attendees",
+                  value: String(vars.attendees_count || "1"),
+                },
+                { label: isAr ? "الموقع" : "Location", value: vars.event_location || "" },
+              ],
+              lang,
+            ),
           )}
           ${renderActionButton(actionUrl, isAr ? "تفاصيل الفعالية" : "Event Details", lang)}
         `,
@@ -1592,7 +1866,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/events");
       return {
         title: isAr ? "إلغاء التسجيل" : "Registration Cancelled",
-        preheader: isAr ? `تم إلغاء تسجيل حضوركم في ${vars.event_title || ""}` : `Your registration for ${vars.event_title || ""} was cancelled`,
+        preheader: isAr
+          ? `تم إلغاء تسجيل حضوركم في ${vars.event_title || ""}`
+          : `Your registration for ${vars.event_title || ""} was cancelled`,
         badgeText: isAr ? "ملغى" : "Cancelled",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1600,7 +1876,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تم تسجيل إلغاء حضوركم في فعالية <strong>"${vars.event_title || ""}"</strong> بناءً على طلبكم.`
-              : `Your registration for <strong>"${vars.event_title || ""}"</strong> has been cancelled.`
+              : `Your registration for <strong>"${vars.event_title || ""}"</strong> has been cancelled.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "جدول الفعاليات" : "Events Calendar", lang)}
         `,
@@ -1623,7 +1899,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/events");
       return {
         title: isAr ? "تذكير بموعد الفعالية" : "Event Reminder",
-        preheader: isAr ? `نذكركم بموعد فعالية ${vars.event_title || ""} القادمة` : `Reminder: upcoming event ${vars.event_title || ""}`,
+        preheader: isAr
+          ? `نذكركم بموعد فعالية ${vars.event_title || ""} القادمة`
+          : `Reminder: upcoming event ${vars.event_title || ""}`,
         badgeText: isAr ? "تذكير" : "Reminder",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1631,13 +1909,19 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `نذكركم بموعد انطلاق <strong>"${vars.event_title || ""}"</strong> غداً بإذن الله.`
-              : `This is a reminder that <strong>"${vars.event_title || ""}"</strong> will take place tomorrow.`
+              : `This is a reminder that <strong>"${vars.event_title || ""}"</strong> will take place tomorrow.`,
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "الموعد" : "Date & Time", value: `${vars.event_date || ""} ${vars.event_time || ""}` },
-              { label: isAr ? "الموقع" : "Location", value: vars.event_location || "" },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "الموعد" : "Date & Time",
+                  value: `${vars.event_date || ""} ${vars.event_time || ""}`,
+                },
+                { label: isAr ? "الموقع" : "Location", value: vars.event_location || "" },
+              ],
+              lang,
+            ),
           )}
           ${renderActionButton(actionUrl, isAr ? "معاينة الموقع والتفاصيل" : "View Location & Details", lang)}
         `,
@@ -1660,7 +1944,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/events");
       return {
         title: isAr ? "تحديث في تفاصيل الفعالية" : "Event Updated",
-        preheader: isAr ? `تم تحديث تفاصيل أو برنامج فعالية ${vars.event_title || ""}` : `Details updated for event ${vars.event_title || ""}`,
+        preheader: isAr
+          ? `تم تحديث تفاصيل أو برنامج فعالية ${vars.event_title || ""}`
+          : `Details updated for event ${vars.event_title || ""}`,
         badgeText: isAr ? "تحديث" : "Updated",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1668,7 +1954,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تم إجراء تحديث على تفاصيل فعالية <strong>"${vars.event_title || ""}"</strong>.`
-              : `Details for <strong>"${vars.event_title || ""}"</strong> have been updated.`
+              : `Details for <strong>"${vars.event_title || ""}"</strong> have been updated.`,
           )}
           ${vars.update_details ? renderAlertBox(vars.update_details, "info", isAr ? "التعديلات الجديدة" : "Updates") : ""}
           ${renderActionButton(actionUrl, isAr ? "الاطلاع على التفاصيل المحدثة" : "View Updated Details", lang)}
@@ -1692,15 +1978,20 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/events");
       return {
         title: isAr ? "إشعار بشأن الفعالية" : "Event Notice",
-        preheader: isAr ? `إشعار تأجيل أو إلغاء فعالية ${vars.event_title || ""}` : `Cancellation or postponement notice for ${vars.event_title || ""}`,
+        preheader: isAr
+          ? `إشعار تأجيل أو إلغاء فعالية ${vars.event_title || ""}`
+          : `Cancellation or postponement notice for ${vars.event_title || ""}`,
         badgeText: isAr ? "تأجيل / إلغاء" : "Postponed",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
           ${renderTitle(isAr ? "إشعار تأجيل أو إلغاء الفعالية" : "Event Cancellation / Postponement")}
           ${renderAlertBox(
-            vars.reason || (isAr ? "تقرر تأجيل الفعالية لظروف تنظيمية، وسيتم الإعلان عن الموعد البديل لاحقاً." : "The event has been postponed. A rescheduled date will be announced."),
+            vars.reason ||
+              (isAr
+                ? "تقرر تأجيل الفعالية لظروف تنظيمية، وسيتم الإعلان عن الموعد البديل لاحقاً."
+                : "The event has been postponed. A rescheduled date will be announced."),
             "critical",
-            isAr ? "بيان المجلس" : "Notice"
+            isAr ? "بيان المجلس" : "Notice",
           )}
           ${renderActionButton(actionUrl, isAr ? "صفحة الفعاليات" : "Events Page", lang)}
         `,
@@ -1723,17 +2014,25 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/events");
       return {
         title: isAr ? "تعديل الموعد أو الموقع" : "Schedule / Location Change",
-        preheader: isAr ? `تنبيه بتعديل موعد أو مكان فعالية ${vars.event_title || ""}` : `Venue or schedule change for ${vars.event_title || ""}`,
+        preheader: isAr
+          ? `تنبيه بتعديل موعد أو مكان فعالية ${vars.event_title || ""}`
+          : `Venue or schedule change for ${vars.event_title || ""}`,
         badgeText: isAr ? "تعديل مهم" : "Notice",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
           ${renderTitle(isAr ? "تعديل موعد أو موقع الفعالية" : "Venue or Schedule Change")}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "الفعالية" : "Event", value: vars.event_title || "" },
-              { label: isAr ? "الموعد المعدل" : "New Date & Time", value: `${vars.new_date || ""} ${vars.new_time || ""}` },
-              { label: isAr ? "الموقع الجديد" : "New Venue", value: vars.new_location || "" },
-            ], lang)
+            renderDetailsTable(
+              [
+                { label: isAr ? "الفعالية" : "Event", value: vars.event_title || "" },
+                {
+                  label: isAr ? "الموعد المعدل" : "New Date & Time",
+                  value: `${vars.new_date || ""} ${vars.new_time || ""}`,
+                },
+                { label: isAr ? "الموقع الجديد" : "New Venue", value: vars.new_location || "" },
+              ],
+              lang,
+            ),
           )}
           ${renderActionButton(actionUrl, isAr ? "معاينة التفاصيل في البوابة" : "View Updated Venue", lang)}
         `,
@@ -1756,7 +2055,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.gallery_url || "/library");
       return {
         title: isAr ? "شكراً لحضوركم" : "Thank You for Attending",
-        preheader: isAr ? `شكر وتقدير لمشاركتكم وتغطية صور ${vars.event_title || ""}` : `Thank you for participating in ${vars.event_title || ""}`,
+        preheader: isAr
+          ? `شكر وتقدير لمشاركتكم وتغطية صور ${vars.event_title || ""}`
+          : `Thank you for participating in ${vars.event_title || ""}`,
         badgeText: isAr ? "ألبوم الصور" : "Gallery",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1764,7 +2065,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `يتقدم مجلس أسرة آل بوعبيد بجزيل الشكر لحضوركم وتفاعلكم في <strong>"${vars.event_title || ""}"</strong>. صور وتغطيات الفعالية متاحة الآن في مكتبة وأرشيف الأسرة.`
-              : `The Council thanks you for your warm participation in <strong>"${vars.event_title || ""}"</strong>. Photos and event records are now available in the family archive.`
+              : `The Council thanks you for your warm participation in <strong>"${vars.event_title || ""}"</strong>. Photos and event records are now available in the family archive.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "مشاهدة ألبوم الصور والتغطية" : "View Event Gallery", lang)}
         `,
@@ -1783,14 +2084,17 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     defaultPriority: "HIGH",
     nameAr: "استلام إشعار المساهمة / الاشتراك",
     nameEn: "Contribution Notice Received",
-    subjectAr: (v) => `تم استلام إشعار مساهمتكم المالية بمبلغ ${v.amount || ""} ${v.currency || "ر.س"}`,
+    subjectAr: (v) =>
+      `تم استلام إشعار مساهمتكم المالية بمبلغ ${v.amount || ""} ${v.currency || "ر.س"}`,
     subjectEn: (v) => `Contribution Notice Received: ${v.amount || ""} ${v.currency || "SAR"}`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "استلام إشعار المساهمة" : "Contribution Notice Received",
-        preheader: isAr ? `تم تسجيل مساهمتكم بمبلغ ${vars.amount || ""} ${vars.currency || "ر.س"} وهي قيد المراجعة` : `Your contribution notice for ${vars.amount || ""} ${vars.currency || "SAR"} is under review`,
+        preheader: isAr
+          ? `تم تسجيل مساهمتكم بمبلغ ${vars.amount || ""} ${vars.currency || "ر.س"} وهي قيد المراجعة`
+          : `Your contribution notice for ${vars.amount || ""} ${vars.currency || "SAR"} is under review`,
         badgeText: isAr ? "صندوق التنمية" : "Family Fund",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1798,20 +2102,37 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "يتقدم صندوق التنمية العائلية (أسرة آل بوعبيد) بخالص الشكر والتقدير لمبادرتكم الكريمة ومساهمتكم في دعم برامج وصندوق الأسرة."
-              : "The Family Development Fund gratefully acknowledges your contribution notice supporting family development programs."
+              : "The Family Development Fund gratefully acknowledges your contribution notice supporting family development programs.",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "المبلغ" : "Amount", value: `${vars.amount || "0"} ${vars.currency || (isAr ? "ريال سعودي" : "SAR")}` },
-              { label: isAr ? "الغرض / البرنامج" : "Purpose", value: vars.purpose || (isAr ? "صندوق التنمية العام" : "General Family Fund") },
-              { label: isAr ? "رقم المرجع / الإشعار" : "Reference", value: vars.reference || "قيد التدقيق" },
-              { label: isAr ? "الحالة" : "Status", value: isAr ? "قيد التدقيق والتحقق" : "Under Treasury Audit", isBadge: true, badgeVariant: "warning" },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "المبلغ" : "Amount",
+                  value: `${vars.amount || "0"} ${vars.currency || (isAr ? "ريال سعودي" : "SAR")}`,
+                },
+                {
+                  label: isAr ? "الغرض / البرنامج" : "Purpose",
+                  value: vars.purpose || (isAr ? "صندوق التنمية العام" : "General Family Fund"),
+                },
+                {
+                  label: isAr ? "رقم المرجع / الإشعار" : "Reference",
+                  value: vars.reference || "قيد التدقيق",
+                },
+                {
+                  label: isAr ? "الحالة" : "Status",
+                  value: isAr ? "قيد التدقيق والتحقق" : "Under Treasury Audit",
+                  isBadge: true,
+                  badgeVariant: "warning",
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderParagraph(
             isAr
               ? "ستقوم أمانة الخزينة بالتحقق من الإيصال البنكي واعتماد القيد وإصدار إشعار السند الرسمي فور التدقيق."
-              : "The Treasury will verify the bank receipt and issue an official acknowledgment upon audit."
+              : "The Treasury will verify the bank receipt and issue an official acknowledgment upon audit.",
           )}
           ${renderActionButton(actionUrl, isAr ? "متابعة سجل المساهمات" : "View Contributions Record", lang)}
         `,
@@ -1827,14 +2148,17 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
     defaultPriority: "HIGH",
     nameAr: "تأكيد وقيد المساهمة في الصندوق",
     nameEn: "Contribution Confirmed & Verified",
-    subjectAr: (v) => `تم توثيق وقيد مساهمتكم الكريمة بمبلغ ${v.amount || ""} ${v.currency || "ر.س"}`,
+    subjectAr: (v) =>
+      `تم توثيق وقيد مساهمتكم الكريمة بمبلغ ${v.amount || ""} ${v.currency || "ر.س"}`,
     subjectEn: (v) => `Contribution Confirmed: ${v.amount || ""} ${v.currency || "SAR"}`,
     renderBody: (vars, lang) => {
       const isAr = lang === "ar";
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تم توثيق المساهمة" : "Contribution Verified",
-        preheader: isAr ? `تم تدقيق وتأكيد مساهمتكم الكريمة بمبلغ ${vars.amount || ""} ${vars.currency || "ر.س"}` : `Your contribution of ${vars.amount || ""} ${vars.currency || "SAR"} has been confirmed`,
+        preheader: isAr
+          ? `تم تدقيق وتأكيد مساهمتكم الكريمة بمبلغ ${vars.amount || ""} ${vars.currency || "ر.س"}`
+          : `Your contribution of ${vars.amount || ""} ${vars.currency || "SAR"} has been confirmed`,
         badgeText: isAr ? "موثق ومعتمد" : "Verified",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1842,7 +2166,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `نود إفادتكم بأن أمانة الخزينة قد أتمت مطابقة الحوالة البنكية وإيداع مساهمتكم الكريمة بمبلغ <strong>${vars.amount || ""} ${vars.currency || (isAr ? "ريال" : "SAR")}</strong> في حسابات الصندوق. بارك الله لكم وفي مالكم وعطائكم.`
-              : `The Treasury has verified your bank deposit and recorded your contribution of <strong>${vars.amount || ""} ${vars.currency || "SAR"}</strong>. Thank you for your generous support.`
+              : `The Treasury has verified your bank deposit and recorded your contribution of <strong>${vars.amount || ""} ${vars.currency || "SAR"}</strong>. Thank you for your generous support.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "معاينة سند المساهمة" : "View Acknowledgment", lang)}
         `,
@@ -1865,7 +2189,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تحديث حالة المساهمة" : "Contribution Status Update",
-        preheader: isAr ? "تحديث جديد من أمانة الخزينة بشأن المساهمة" : "A status update regarding your contribution",
+        preheader: isAr
+          ? "تحديث جديد من أمانة الخزينة بشأن المساهمة"
+          : "A status update regarding your contribution",
         badgeText: isAr ? "تحديث" : "Updated",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1873,7 +2199,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تم تحديث حالة مساهمتكم المالية إلى: <strong>${vars.status || "محدث"}</strong>.`
-              : `The status of your financial contribution has been updated to: <strong>${vars.status || "Updated"}</strong>.`
+              : `The status of your financial contribution has been updated to: <strong>${vars.status || "Updated"}</strong>.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "متابعة السجل المالي" : "View Financial Record", lang)}
         `,
@@ -1896,7 +2222,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/account");
       return {
         title: isAr ? "تم اعتماد المساهمة" : "Contribution Approved",
-        preheader: isAr ? "تم اعتماد قيد المساهمة المالية بصندوق الأسرة" : "Your financial contribution has been officially approved",
+        preheader: isAr
+          ? "تم اعتماد قيد المساهمة المالية بصندوق الأسرة"
+          : "Your financial contribution has been officially approved",
         badgeText: isAr ? "معتمد" : "Approved",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1904,7 +2232,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تم اعتماد مساهمتكم المالية بمبلغ <strong>${vars.amount || ""} ${vars.currency || (isAr ? "ريال" : "SAR")}</strong>، وأُضيفت إلى رصيد مساهماتكم الموثقة في صندوق التنمية العائلية.`
-              : `Your contribution of <strong>${vars.amount || ""} ${vars.currency || "SAR"}</strong> has been credited to your verified donor record.`
+              : `Your contribution of <strong>${vars.amount || ""} ${vars.currency || "SAR"}</strong> has been credited to your verified donor record.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "عرض السجل المالي" : "View Record", lang)}
         `,
@@ -1927,7 +2255,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/contribute");
       return {
         title: isAr ? "تعذر مطابقة الإشعار" : "Transfer Discrepancy",
-        preheader: isAr ? "يرجى مراجعة إيصال التحويل المالي أو إعادة رفعه" : "Action required regarding your contribution transfer receipt",
+        preheader: isAr
+          ? "يرجى مراجعة إيصال التحويل المالي أو إعادة رفعه"
+          : "Action required regarding your contribution transfer receipt",
         badgeText: isAr ? "تنبيه" : "Discrepancy",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1935,12 +2265,15 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نحيطكم علماً بأنه أثناء تدقيق ومطابقة كشوفات الحسابات البنكية للصندوق، تعذر التحقق من إيصال التحويل المرفق للأسباب التالية:"
-              : "During treasury reconciliation, we were unable to match the uploaded bank transfer notice due to:"
+              : "During treasury reconciliation, we were unable to match the uploaded bank transfer notice due to:",
           )}
           ${renderAlertBox(
-            vars.reason || (isAr ? "رقم المرجع غير مطابق أو لم يظهر المبلغ في الحساب البنكي." : "Reference number mismatch or transfer not visible on the statement."),
+            vars.reason ||
+              (isAr
+                ? "رقم المرجع غير مطابق أو لم يظهر المبلغ في الحساب البنكي."
+                : "Reference number mismatch or transfer not visible on the statement."),
             "critical",
-            isAr ? "ملاحظة الخزينة" : "Treasury Note"
+            isAr ? "ملاحظة الخزينة" : "Treasury Note",
           )}
           ${renderActionButton(actionUrl, isAr ? "إعادة رفع الإشعار الصحيح" : "Re-upload Valid Receipt", lang)}
         `,
@@ -1963,7 +2296,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.receipt_url || "/account");
       return {
         title: isAr ? "سند المساهمة جاهز" : "Receipt Available",
-        preheader: isAr ? "يمكنك الآن تحميل سند المساهمة المعتمد من الصندوق" : "Your official contribution receipt is now available",
+        preheader: isAr
+          ? "يمكنك الآن تحميل سند المساهمة المعتمد من الصندوق"
+          : "Your official contribution receipt is now available",
         badgeText: isAr ? "سند رسمي" : "Official Receipt",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -1971,7 +2306,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `أصدر صندوق التنمية العائلية سند الاستلام الرسمي برقم <strong>${vars.receipt_number || ""}</strong> لمساهمتكم الكريمة بمبلغ <strong>${vars.amount || ""} ${vars.currency || (isAr ? "ريال" : "SAR")}</strong>.`
-              : `The Family Development Fund has issued the official receipt (${vars.receipt_number || ""}) for your contribution of <strong>${vars.amount || ""} ${vars.currency || "SAR"}</strong>.`
+              : `The Family Development Fund has issued the official receipt (${vars.receipt_number || ""}) for your contribution of <strong>${vars.amount || ""} ${vars.currency || "SAR"}</strong>.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "تحميل سند الاستلام (PDF)" : "Download Receipt (PDF)", lang)}
         `,
@@ -1994,7 +2329,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/fund");
       return {
         title: isAr ? "تقرير إنجاز مشاريع الصندوق" : "Project Progress Report",
-        preheader: isAr ? `مستجدات وإنجازات ${vars.project_name || "مشاريع صندوق التنمية"}` : `Latest progress on ${vars.project_name || "family development projects"}`,
+        preheader: isAr
+          ? `مستجدات وإنجازات ${vars.project_name || "مشاريع صندوق التنمية"}`
+          : `Latest progress on ${vars.project_name || "family development projects"}`,
         badgeText: isAr ? "تقرير إنجاز" : "Progress",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2002,7 +2339,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "يسر إدارة صندوق التنمية العائلية موافاتكم بأحدث تطورات ونسب إنجاز المشاريع المدعومة من مساهماتكم المباركة."
-              : "The Family Development Fund is pleased to present the latest milestone progress report for our ongoing projects."
+              : "The Family Development Fund is pleased to present the latest milestone progress report for our ongoing projects.",
           )}
           ${vars.update_body ? renderParagraph(vars.update_body) : ""}
           ${renderActionButton(actionUrl, isAr ? "الاطلاع على تقارير الصندوق" : "View Fund Reports", lang)}
@@ -2026,7 +2363,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/fund");
       return {
         title: isAr ? "إطلاق مشروع تنموي جديد" : "New Development Project",
-        preheader: isAr ? `يعلن صندوق التنمية عن إطلاق ${vars.project_name || ""}` : `Announcing the launch of ${vars.project_name || ""}`,
+        preheader: isAr
+          ? `يعلن صندوق التنمية عن إطلاق ${vars.project_name || ""}`
+          : `Announcing the launch of ${vars.project_name || ""}`,
         badgeText: isAr ? "مشروع جديد" : "New Initiative",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2034,7 +2373,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `يعلن مجلس إدارة صندوق التنمية العائلية عن تدشين مشروع <strong>"${vars.project_name || ""}"</strong> الموجه لخدمة وتنمية أبناء وبنات الأسرة.`
-              : `The Family Development Fund Board announces the launch of <strong>"${vars.project_name || ""}"</strong>.`
+              : `The Family Development Fund Board announces the launch of <strong>"${vars.project_name || ""}"</strong>.`,
           )}
           ${vars.project_description ? renderParagraph(vars.project_description) : ""}
           ${renderActionButton(actionUrl, isAr ? "تفاصيل المشروع والمساهمة" : "Project Details & Support", lang)}
@@ -2061,7 +2400,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.article_url || "/news");
       return {
         title: vars.title || (isAr ? "إعلان عائلي" : "Family Announcement"),
-        preheader: isAr ? "إعلان من مجلس أسرة آل بوعبيد" : "Announcement from Al Bu Obaid Family Council",
+        preheader: isAr
+          ? "إعلان من مجلس أسرة آل بوعبيد"
+          : "Announcement from Al Bu Obaid Family Council",
         badgeText: isAr ? "إعلان عائلي" : "Announcement",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2088,7 +2429,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.article_url || "/news");
       return {
         title: isAr ? "بيان رسمي من مجلس الأسرة" : "Official Council Statement",
-        preheader: isAr ? "بيان رسمي صادر عن أمانة مجلس أسرة آل بوعبيد" : "Official statement from the Family Council Secretariat",
+        preheader: isAr
+          ? "بيان رسمي صادر عن أمانة مجلس أسرة آل بوعبيد"
+          : "Official statement from the Family Council Secretariat",
         badgeText: isAr ? "بيان رسمي" : "Official Statement",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2096,7 +2439,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderAlertBox(
             vars.statement || vars.body || "",
             "info",
-            isAr ? "نص البيان" : "Statement"
+            isAr ? "نص البيان" : "Statement",
           )}
           ${renderActionButton(actionUrl, isAr ? "الاطلاع على البيان الكامل" : "Read Full Statement", lang)}
         `,
@@ -2119,7 +2462,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.article_slug ? `/news/${vars.article_slug}` : "/news");
       return {
         title: vars.article_title || (isAr ? "مقال جديد" : "New Article"),
-        preheader: isAr ? "مقال جديد نُشر عبر بوابة الأسرة" : "A new article has been published on the family portal",
+        preheader: isAr
+          ? "مقال جديد نُشر عبر بوابة الأسرة"
+          : "A new article has been published on the family portal",
         badgeText: isAr ? "مقالات الأسرة" : "Articles",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2146,7 +2491,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/library");
       return {
         title: isAr ? "وثيقة تاريخية جديدة" : "Historical Document Added",
-        preheader: isAr ? "إدراج وثيقة تاريخية جديدة في الأرشيف العائلي" : "A new historical record was added to the family archive",
+        preheader: isAr
+          ? "إدراج وثيقة تاريخية جديدة في الأرشيف العائلي"
+          : "A new historical record was added to the family archive",
         badgeText: isAr ? "الأرشيف العائلي" : "Archive",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2154,7 +2501,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `تمت إضافة وثيقة تاريخية جديدة إلى المكتبة الرقمية للأرشيف: <strong>"${vars.document_title || ""}"</strong>.`
-              : `A new historical document has been cataloged in the digital archive: <strong>"${vars.document_title || ""}"</strong>.`
+              : `A new historical document has been cataloged in the digital archive: <strong>"${vars.document_title || ""}"</strong>.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "تصفح الوثيقة في الأرشيف" : "Browse Document", lang)}
         `,
@@ -2177,7 +2524,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/library");
       return {
         title: isAr ? "مقتنى تراثي جديد" : "New Heritage Item",
-        preheader: isAr ? "إضافة عنصر تراثي جديد لمجموعة المتحف" : "A new item has been added to the family heritage collection",
+        preheader: isAr
+          ? "إضافة عنصر تراثي جديد لمجموعة المتحف"
+          : "A new item has been added to the family heritage collection",
         badgeText: isAr ? "متحف الأسرة" : "Museum",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2185,7 +2534,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? `أُضيف مقتنى تراثي جديد إلى المتحف الرقمي للأسرة: <strong>"${vars.item_title || ""}"</strong>.`
-              : `A new heritage piece has been added to the family museum collection: <strong>"${vars.item_title || ""}"</strong>.`
+              : `A new heritage piece has been added to the family museum collection: <strong>"${vars.item_title || ""}"</strong>.`,
           )}
           ${renderActionButton(actionUrl, isAr ? "معاينة المقتنى بالمتحف" : "View in Museum", lang)}
         `,
@@ -2211,17 +2560,24 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.read_online_url || "/news");
       const unsubscribeUrl = getUrl(vars.unsubscribe_url || "/account");
       return {
-        title: vars.edition_title || (isAr ? "النشرة البريدية لأسرة آل بوعبيد" : "Al Bu Obaid Family Newsletter"),
-        preheader: isAr ? "أبرز أخبار ومستجدات ومناسبات الأسرة لهذا الشهر" : "Highlights of family news, events, and milestones",
+        title:
+          vars.edition_title ||
+          (isAr ? "النشرة البريدية لأسرة آل بوعبيد" : "Al Bu Obaid Family Newsletter"),
+        preheader: isAr
+          ? "أبرز أخبار ومستجدات ومناسبات الأسرة لهذا الشهر"
+          : "Highlights of family news, events, and milestones",
         badgeText: isAr ? "النشرة البريدية" : "Newsletter",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
           ${renderTitle(vars.edition_title || (isAr ? "نشرة الأسرة الدورية" : "Family Newsletter"))}
           ${vars.intro ? renderParagraph(vars.intro) : ""}
           ${renderAlertBox(
-            vars.highlights || (isAr ? "تصفح أحدث أخبار المتميزين، الفعاليات القادمة، ومشاريع صندوق التنمية." : "Explore the latest accomplishments, upcoming gatherings, and fund projects."),
+            vars.highlights ||
+              (isAr
+                ? "تصفح أحدث أخبار المتميزين، الفعاليات القادمة، ومشاريع صندوق التنمية."
+                : "Explore the latest accomplishments, upcoming gatherings, and fund projects."),
             "info",
-            isAr ? "أبرز العناوين" : "Highlights"
+            isAr ? "أبرز العناوين" : "Highlights",
           )}
           ${renderActionButton(actionUrl, isAr ? "قراءة النشرة الكاملة في البوابة" : "Read Full Newsletter Online", lang)}
         `,
@@ -2247,7 +2603,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const unsubscribeUrl = getUrl(vars.unsubscribe_url || "/account");
       return {
         title: isAr ? "التقرير الشهري لأعمال المجلس" : "Monthly Council Digest",
-        preheader: isAr ? "ملخص قرارات ومشاريع مجلس الأسرة خلال الشهر" : "Summary of Council decisions and initiatives this month",
+        preheader: isAr
+          ? "ملخص قرارات ومشاريع مجلس الأسرة خلال الشهر"
+          : "Summary of Council decisions and initiatives this month",
         badgeText: isAr ? "تقرير شهري" : "Monthly Digest",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2276,8 +2634,11 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/news");
       const unsubscribeUrl = getUrl(vars.unsubscribe_url || "/account");
       return {
-        title: vars.bulletin_title || (isAr ? "نشرة المناسبات والأفراح" : "Family Occasions Bulletin"),
-        preheader: isAr ? "مشاركة أفراح ومناسبات أبناء وبنات الأسرة" : "Celebrating family marriages, births, and accomplishments",
+        title:
+          vars.bulletin_title || (isAr ? "نشرة المناسبات والأفراح" : "Family Occasions Bulletin"),
+        preheader: isAr
+          ? "مشاركة أفراح ومناسبات أبناء وبنات الأسرة"
+          : "Celebrating family marriages, births, and accomplishments",
         badgeText: isAr ? "مناسبات وأفراح" : "Celebrations",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2307,7 +2668,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const unsubscribeUrl = getUrl(vars.unsubscribe_url || "/account");
       return {
         title: isAr ? "موجز الفعاليات القادمة" : "Upcoming Events Digest",
-        preheader: isAr ? "جدول بالفعاليات والمناسبات العائلية المجدولة" : "Schedule of upcoming family events and gatherings",
+        preheader: isAr
+          ? "جدول بالفعاليات والمناسبات العائلية المجدولة"
+          : "Schedule of upcoming family events and gatherings",
         badgeText: isAr ? "جدول الفعاليات" : "Events Digest",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2315,7 +2678,7 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
           ${renderParagraph(
             isAr
               ? "نضع بين أيديكم موجزاً بأبرز الفعاليات واللقاءات العائلية المرتقبة، وندعوكم للتسجيل والمشاركة."
-              : "Here is your upcoming schedule of family gatherings and initiatives. We warmly invite your participation."
+              : "Here is your upcoming schedule of family gatherings and initiatives. We warmly invite your participation.",
           )}
           ${renderActionButton(actionUrl, isAr ? "استعراض جدول الفعاليات والتسجيل" : "Explore Calendar & RSVP", lang)}
         `,
@@ -2343,7 +2706,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl(vars.action_url || "/");
       return {
         title: vars.title || (isAr ? "إشعار نظام" : "System Notification"),
-        preheader: isAr ? "إشعار صادر عن النظام التقني للمنصة" : "System notification from portal operations",
+        preheader: isAr
+          ? "إشعار صادر عن النظام التقني للمنصة"
+          : "System notification from portal operations",
         badgeText: isAr ? "النظام" : "System",
         contentHtml: `
           ${renderGreeting(vars.user_name, lang)}
@@ -2370,21 +2735,32 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/admin");
       return {
         title: isAr ? "تنبيه تعثر مسار عمل" : "Workflow Failure Alert",
-        preheader: isAr ? "تنبيه إداري عاجل للمشرفين عن تعثر عملية بالنظام" : "Administrative alert: a system workflow has encountered an error",
+        preheader: isAr
+          ? "تنبيه إداري عاجل للمشرفين عن تعثر عملية بالنظام"
+          : "Administrative alert: a system workflow has encountered an error",
         badgeText: isAr ? "حرج" : "Critical",
         contentHtml: `
           ${renderGreeting(vars.admin_name, lang)}
           ${renderTitle(isAr ? "تنبيه بتعثر مسار عمل في المنظومة" : "Workflow Execution Failed")}
           ${renderAlertBox(
-            vars.error_details || (isAr ? "حدث خطأ أثناء معالجة مسار العمل الآلي." : "An error occurred during automated workflow processing."),
+            vars.error_details ||
+              (isAr
+                ? "حدث خطأ أثناء معالجة مسار العمل الآلي."
+                : "An error occurred during automated workflow processing."),
             "critical",
-            isAr ? "تفاصيل الخطأ" : "Error Details"
+            isAr ? "تفاصيل الخطأ" : "Error Details",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "المسار / المهمة" : "Workflow", value: vars.workflow_name || "" },
-              { label: isAr ? "التاريخ والوقت" : "Timestamp", value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US") },
-            ], lang)
+            renderDetailsTable(
+              [
+                { label: isAr ? "المسار / المهمة" : "Workflow", value: vars.workflow_name || "" },
+                {
+                  label: isAr ? "التاريخ والوقت" : "Timestamp",
+                  value: vars.timestamp || new Date().toLocaleString(isAr ? "ar-SA" : "en-US"),
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderActionButton(actionUrl, isAr ? "فحص سجلات الإدارة" : "Open Admin Logs", lang)}
         `,
@@ -2407,22 +2783,30 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/admin");
       return {
         title: isAr ? "تعثر تسليم البريد" : "Delivery Failure",
-        preheader: isAr ? `تعذر تسليم بريد إلكتروني إلى ${vars.recipient_email || ""}` : `Email delivery failed for ${vars.recipient_email || ""}`,
+        preheader: isAr
+          ? `تعذر تسليم بريد إلكتروني إلى ${vars.recipient_email || ""}`
+          : `Email delivery failed for ${vars.recipient_email || ""}`,
         badgeText: isAr ? "خطأ إرسال" : "Delivery Error",
         contentHtml: `
           ${renderGreeting(vars.admin_name, lang)}
           ${renderTitle(isAr ? "تنبيه بتعثر إرسال بريد إلكتروني" : "Email Delivery Failed")}
           ${renderAlertBox(
-            vars.error_message || (isAr ? "فشل المزود في إيصال البريد (ارتداد أو عنوان غير صالح)." : "Failed to deliver email due to provider error or bounce."),
+            vars.error_message ||
+              (isAr
+                ? "فشل المزود في إيصال البريد (ارتداد أو عنوان غير صالح)."
+                : "Failed to deliver email due to provider error or bounce."),
             "critical",
-            isAr ? "رسالة الخطأ" : "Provider Error"
+            isAr ? "رسالة الخطأ" : "Provider Error",
           )}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "المستلم" : "Recipient", value: vars.recipient_email || "" },
-              { label: isAr ? "نوع البريد" : "Email Type", value: vars.email_type || "" },
-              { label: isAr ? "رقم المحاولة" : "Attempt", value: String(vars.attempts || "1") },
-            ], lang)
+            renderDetailsTable(
+              [
+                { label: isAr ? "المستلم" : "Recipient", value: vars.recipient_email || "" },
+                { label: isAr ? "نوع البريد" : "Email Type", value: vars.email_type || "" },
+                { label: isAr ? "رقم المحاولة" : "Attempt", value: String(vars.attempts || "1") },
+              ],
+              lang,
+            ),
           )}
           ${renderActionButton(actionUrl, isAr ? "مراجعة مركز الإشعارات" : "Review in Admin Center", lang)}
         `,
@@ -2445,7 +2829,9 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/admin");
       return {
         title: vars.title || (isAr ? "تنبيه إداري" : "Admin Alert"),
-        preheader: isAr ? "تنبيه إداري مخصص للمشرفين وأعضاء المجلس" : "Administrative alert for council staff and administrators",
+        preheader: isAr
+          ? "تنبيه إداري مخصص للمشرفين وأعضاء المجلس"
+          : "Administrative alert for council staff and administrators",
         badgeText: isAr ? "تنبيه إداري" : "Admin Notice",
         contentHtml: `
           ${renderGreeting(vars.admin_name, lang)}
@@ -2472,18 +2858,35 @@ export const EMAIL_TEMPLATE_CATALOG: Record<string, TemplateDefinition> = {
       const actionUrl = getUrl("/admin");
       return {
         title: isAr ? "الملخص الإداري الدوري" : "Periodic Operations Summary",
-        preheader: isAr ? "تقرير إحصائي دوري عن الطلبات والمساهمات ومستجدات المنظومة" : "Periodic operations report on requests, contributions, and memberships",
+        preheader: isAr
+          ? "تقرير إحصائي دوري عن الطلبات والمساهمات ومستجدات المنظومة"
+          : "Periodic operations report on requests, contributions, and memberships",
         badgeText: isAr ? "تقرير دوري" : "Summary",
         contentHtml: `
           ${renderGreeting(vars.admin_name, lang)}
           ${renderTitle(isAr ? `الملخص الدوري — ${vars.period || "أسبوعي"}` : "Periodic Operations Digest")}
           ${renderInformationCard(
-            renderDetailsTable([
-              { label: isAr ? "طلبات العضوية الجديدة" : "New Membership Requests", value: String(vars.new_memberships_count || "0") },
-              { label: isAr ? "طلبات اللجان الواردة" : "Committee Requests", value: String(vars.new_requests_count || "0") },
-              { label: isAr ? "المساهمات المالية" : "New Contributions", value: String(vars.contributions_count || "0") },
-              { label: isAr ? "المستخدمون الجدد" : "New Users", value: String(vars.new_users_count || "0") },
-            ], lang)
+            renderDetailsTable(
+              [
+                {
+                  label: isAr ? "طلبات العضوية الجديدة" : "New Membership Requests",
+                  value: String(vars.new_memberships_count || "0"),
+                },
+                {
+                  label: isAr ? "طلبات اللجان الواردة" : "Committee Requests",
+                  value: String(vars.new_requests_count || "0"),
+                },
+                {
+                  label: isAr ? "المساهمات المالية" : "New Contributions",
+                  value: String(vars.contributions_count || "0"),
+                },
+                {
+                  label: isAr ? "المستخدمون الجدد" : "New Users",
+                  value: String(vars.new_users_count || "0"),
+                },
+              ],
+              lang,
+            ),
           )}
           ${renderActionButton(actionUrl, isAr ? "فتح لوحة الإحصائيات الكاملة" : "Open Full Dashboard", lang)}
         `,
@@ -2511,7 +2914,8 @@ export function renderEmail(
   category: EmailCategory;
   priority: EmailPriority;
 } {
-  const template = EMAIL_TEMPLATE_CATALOG[templateKey] || EMAIL_TEMPLATE_CATALOG.system_notification;
+  const template =
+    EMAIL_TEMPLATE_CATALOG[templateKey] || EMAIL_TEMPLATE_CATALOG.system_notification;
   const isAr = language === "ar";
   const subject = isAr ? template.subjectAr(variables) : template.subjectEn(variables);
 
@@ -2527,9 +2931,12 @@ export function renderEmail(
     unsubscribeUrl: bodyData.unsubscribeUrl,
   });
 
-  const text = `${subject}\n\n` +
-    (isAr ? "السلام عليكم ورحمة الله وبركاته،" : "Dear Member,") + "\n\n" +
-    (bodyData.preheader || "") + "\n\n" +
+  const text =
+    `${subject}\n\n` +
+    (isAr ? "السلام عليكم ورحمة الله وبركاته،" : "Dear Member,") +
+    "\n\n" +
+    (bodyData.preheader || "") +
+    "\n\n" +
     `${bodyData.actionLabel || (isAr ? "فتح الرابط" : "Open Link")}: ${bodyData.actionUrl}\n\n` +
     `--\n${isAr ? "مجلس أسرة آل بوعبيد — صندوق التنمية العائلية" : "Al Bu Obaid Family Council"}\nhttps://www.boubaid.com\nteam@boubaid.com`;
 
@@ -2543,4 +2950,3 @@ export function renderEmail(
 }
 
 export { EMAIL_TEMPLATE_CATALOG as EMAIL_TEMPLATES_REGISTRY };
-

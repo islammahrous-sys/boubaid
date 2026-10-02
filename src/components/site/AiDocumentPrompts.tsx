@@ -208,7 +208,10 @@ export function AiDocumentPrompts() {
         {prompts.map((prompt, index) => {
           const content = rtl ? prompt.ar : prompt.en;
           return (
-            <article key={content.title} className="rounded-md border border-border bg-card p-5 md:p-6">
+            <article
+              key={content.title}
+              className="rounded-md border border-border bg-card p-5 md:p-6"
+            >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="nums font-mono text-[11px] text-muted-foreground">

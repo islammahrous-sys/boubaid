@@ -64,7 +64,11 @@ import {
   TEMPLATE_REQUESTS,
 } from "@/lib/council-requests";
 import { copy } from "@/content/page-copy/requests";
-import { trackCouncilRequest, getMyCouncilRequests, type TrackedRequestResult } from "@/lib/forms.functions";
+import {
+  trackCouncilRequest,
+  getMyCouncilRequests,
+  type TrackedRequestResult,
+} from "@/lib/forms.functions";
 import { formatDualDate } from "@/lib/dates";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -103,8 +107,6 @@ export const Route = createFileRoute("/requests")({
   }),
   component: RequestsHubPage,
 });
-
-
 
 type RequestGroup =
   | "membership"
@@ -168,17 +170,15 @@ type RequestEntry = {
   templateCode?: string;
 };
 
-const committeeIcons: Record<
-  (typeof COMMITTEE_REQUEST_DESTINATIONS)[number]["slug"],
-  LucideIcon
-> = {
-  "development-follow-up": ClipboardList,
-  "family-headquarters": Landmark,
-  "finance-investment": Banknote,
-  "family-communication": HeartHandshake,
-  "activities-initiatives": Sparkles,
-  "media-support-services": Megaphone,
-};
+const committeeIcons: Record<(typeof COMMITTEE_REQUEST_DESTINATIONS)[number]["slug"], LucideIcon> =
+  {
+    "development-follow-up": ClipboardList,
+    "family-headquarters": Landmark,
+    "finance-investment": Banknote,
+    "family-communication": HeartHandshake,
+    "activities-initiatives": Sparkles,
+    "media-support-services": Megaphone,
+  };
 
 /** Only request types that actually exist on this website. */
 const requests: RequestEntry[] = [
@@ -216,16 +216,14 @@ const requests: RequestEntry[] = [
     },
   },
 
-  ...COMMITTEE_REQUEST_DESTINATIONS.map(
-    (committee): RequestEntry => ({
-      id: committee.slug,
-      group: "committee_requests",
-      form: committee.requestType as CouncilRequestType,
-      Icon: committeeIcons[committee.slug],
-      name: committee.name,
-      desc: committee.desc,
-    }),
-  ),
+  ...COMMITTEE_REQUEST_DESTINATIONS.map((committee): RequestEntry => ({
+    id: committee.slug,
+    group: "committee_requests",
+    form: committee.requestType as CouncilRequestType,
+    Icon: committeeIcons[committee.slug],
+    name: committee.name,
+    desc: committee.desc,
+  })),
 
   {
     id: "directory",
@@ -558,17 +556,15 @@ const requests: RequestEntry[] = [
    * occasion request, a customised template request and an official greeting
    * request) duplicated these and have been retired in `council-requests.ts`.
    */
-  ...TEMPLATE_REQUESTS.map(
-    (tpl): RequestEntry => ({
-      id: `template-${tpl.templateCode.toLowerCase()}`,
-      group: "announcements",
-      form: tpl.key,
-      Icon: LayoutTemplate,
-      name: tpl.title,
-      desc: tpl.desc ?? tpl.details,
-      templateCode: tpl.templateCode,
-    }),
-  ),
+  ...TEMPLATE_REQUESTS.map((tpl): RequestEntry => ({
+    id: `template-${tpl.templateCode.toLowerCase()}`,
+    group: "announcements",
+    form: tpl.key,
+    Icon: LayoutTemplate,
+    name: tpl.title,
+    desc: tpl.desc ?? tpl.details,
+    templateCode: tpl.templateCode,
+  })),
 
   {
     id: "inquiry",
@@ -674,7 +670,9 @@ function RequestsHubPage() {
   useEffect(() => {
     if (requestedForm !== "committee_nomination") return;
     const id = window.setTimeout(() => {
-      document.getElementById("committee-requests")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document
+        .getElementById("committee-requests")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 300);
     return () => window.clearTimeout(id);
   }, [requestedForm]);
@@ -727,7 +725,10 @@ function RequestsHubPage() {
     switch (status) {
       case "new":
         return (
-          <Badge variant="outline" className="border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-400 gap-1.5 py-1 px-3">
+          <Badge
+            variant="outline"
+            className="border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-400 gap-1.5 py-1 px-3"
+          >
             <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
             {t(copy.statusNew)}
           </Badge>
@@ -735,21 +736,30 @@ function RequestsHubPage() {
       case "open":
       case "in_progress":
         return (
-          <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400 gap-1.5 py-1 px-3">
+          <Badge
+            variant="outline"
+            className="border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400 gap-1.5 py-1 px-3"
+          >
             <Clock className="h-3.5 w-3.5" />
             {t(copy.statusReview)}
           </Badge>
         );
       case "approved":
         return (
-          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 gap-1.5 py-1 px-3">
+          <Badge
+            variant="outline"
+            className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 gap-1.5 py-1 px-3"
+          >
             <CheckCircle2 className="h-3.5 w-3.5" />
             {t(copy.statusApproved)}
           </Badge>
         );
       case "rejected":
         return (
-          <Badge variant="outline" className="border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400 gap-1.5 py-1 px-3">
+          <Badge
+            variant="outline"
+            className="border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400 gap-1.5 py-1 px-3"
+          >
             <XCircle className="h-3.5 w-3.5" />
             {t(copy.statusRejected)}
           </Badge>
@@ -757,7 +767,10 @@ function RequestsHubPage() {
       case "resolved":
       case "completed":
         return (
-          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 gap-1.5 py-1 px-3">
+          <Badge
+            variant="outline"
+            className="border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 gap-1.5 py-1 px-3"
+          >
             <CheckCircle2 className="h-3.5 w-3.5" />
             {t(copy.statusCompleted)}
           </Badge>
@@ -854,7 +867,10 @@ function RequestsHubPage() {
                         <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
                           <img
                             src={bandLogo[g]}
-                            alt={t({ ar: "شعار مجلس أسرة آل بوعبيد", en: "Al Bu Obaid Family Council logo" })}
+                            alt={t({
+                              ar: "شعار مجلس أسرة آل بوعبيد",
+                              en: "Al Bu Obaid Family Council logo",
+                            })}
                             className="h-12 w-auto object-contain"
                             loading="lazy"
                           />
@@ -894,7 +910,10 @@ function RequestsHubPage() {
                               className={linkCls}
                             >
                               {t(copy.action)}
-                              <Arrow className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden="true" />
+                              <Arrow
+                                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
+                                aria-hidden="true"
+                              />
                             </button>
                           ) : (
                             <Link
@@ -903,7 +922,10 @@ function RequestsHubPage() {
                               className={linkCls}
                             >
                               {t(copy.action)}
-                              <Arrow className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" aria-hidden="true" />
+                              <Arrow
+                                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
+                                aria-hidden="true"
+                              />
                             </Link>
                           )}
                         </div>
@@ -934,11 +956,12 @@ function RequestsHubPage() {
               <Search className="h-4.5 w-4.5 text-bronze dark:text-gold" />
               {t(copy.trackTitle)}
             </h3>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t(copy.trackSubtitle)}
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t(copy.trackSubtitle)}</p>
 
-            <form onSubmit={handleTrackSubmit} className="mt-5 flex flex-col sm:flex-row gap-2.5 max-w-xl">
+            <form
+              onSubmit={handleTrackSubmit}
+              className="mt-5 flex flex-col sm:flex-row gap-2.5 max-w-xl"
+            >
               <Input
                 type="text"
                 value={trackRefInput}
@@ -1042,40 +1065,58 @@ function RequestsHubPage() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                         <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
                           <CheckCircle2 className="h-4 w-4 shrink-0" />
-                          <span className="font-medium text-[11.5px]">{rtl ? "1. استلام الطلب" : "1. Received"}</span>
+                          <span className="font-medium text-[11.5px]">
+                            {rtl ? "1. استلام الطلب" : "1. Received"}
+                          </span>
                         </div>
                         <div
                           className={`flex items-center gap-2 p-2 rounded-lg ${
-                            ["open", "in_progress", "approved", "rejected", "resolved", "completed"].includes(
-                              trackedResult.request.status,
-                            )
+                            [
+                              "open",
+                              "in_progress",
+                              "approved",
+                              "rejected",
+                              "resolved",
+                              "completed",
+                            ].includes(trackedResult.request.status)
                               ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                               : "bg-blue-500/10 text-blue-700 dark:text-blue-400 font-semibold"
                           }`}
                         >
-                          {["open", "in_progress", "approved", "rejected", "resolved", "completed"].includes(
-                            trackedResult.request.status,
-                          ) ? (
+                          {[
+                            "open",
+                            "in_progress",
+                            "approved",
+                            "rejected",
+                            "resolved",
+                            "completed",
+                          ].includes(trackedResult.request.status) ? (
                             <CheckCircle2 className="h-4 w-4 shrink-0" />
                           ) : (
                             <Clock className="h-4 w-4 shrink-0 animate-pulse" />
                           )}
-                          <span className="font-medium text-[11.5px]">{rtl ? "2. المراجعة الأولية" : "2. Initial Review"}</span>
+                          <span className="font-medium text-[11.5px]">
+                            {rtl ? "2. المراجعة الأولية" : "2. Initial Review"}
+                          </span>
                         </div>
                         <div
                           className={`flex items-center gap-2 p-2 rounded-lg ${
                             trackedResult.request.status === "rejected"
                               ? "bg-red-500/10 text-red-700 dark:text-red-400"
-                              : ["approved", "resolved", "completed"].includes(trackedResult.request.status)
-                              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                              : ["open", "in_progress"].includes(trackedResult.request.status)
-                              ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 font-semibold"
-                              : "bg-muted/40 text-muted-foreground"
+                              : ["approved", "resolved", "completed"].includes(
+                                    trackedResult.request.status,
+                                  )
+                                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                                : ["open", "in_progress"].includes(trackedResult.request.status)
+                                  ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 font-semibold"
+                                  : "bg-muted/40 text-muted-foreground"
                           }`}
                         >
                           {trackedResult.request.status === "rejected" ? (
                             <XCircle className="h-4 w-4 shrink-0" />
-                          ) : ["approved", "resolved", "completed"].includes(trackedResult.request.status) ? (
+                          ) : ["approved", "resolved", "completed"].includes(
+                              trackedResult.request.status,
+                            ) ? (
                             <CheckCircle2 className="h-4 w-4 shrink-0" />
                           ) : ["open", "in_progress"].includes(trackedResult.request.status) ? (
                             <Clock className="h-4 w-4 shrink-0 animate-pulse" />
@@ -1084,8 +1125,12 @@ function RequestsHubPage() {
                           )}
                           <span className="font-medium text-[11.5px]">
                             {trackedResult.request.status === "rejected"
-                              ? (rtl ? "3. اعتذار" : "3. Declined")
-                              : (rtl ? "3. اعتماد اللجنة" : "3. Committee Approval")}
+                              ? rtl
+                                ? "3. اعتذار"
+                                : "3. Declined"
+                              : rtl
+                                ? "3. اعتماد اللجنة"
+                                : "3. Committee Approval"}
                           </span>
                         </div>
                         <div
@@ -1093,8 +1138,8 @@ function RequestsHubPage() {
                             ["resolved", "completed"].includes(trackedResult.request.status)
                               ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                               : trackedResult.request.status === "approved"
-                              ? "bg-blue-500/10 text-blue-700 dark:text-blue-400 font-semibold"
-                              : "bg-muted/40 text-muted-foreground"
+                                ? "bg-blue-500/10 text-blue-700 dark:text-blue-400 font-semibold"
+                                : "bg-muted/40 text-muted-foreground"
                           }`}
                         >
                           {["resolved", "completed"].includes(trackedResult.request.status) ? (
@@ -1104,7 +1149,9 @@ function RequestsHubPage() {
                           ) : (
                             <div className="h-4 w-4 rounded-full border border-current shrink-0" />
                           )}
-                          <span className="font-medium text-[11.5px]">{rtl ? "4. التنفيذ النهائي" : "4. Completed"}</span>
+                          <span className="font-medium text-[11.5px]">
+                            {rtl ? "4. التنفيذ النهائي" : "4. Completed"}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -1149,7 +1196,9 @@ function RequestsHubPage() {
                           </h4>
                           {(item.committee_name_ar || item.committee_name_en) && (
                             <span className="text-[11px] text-muted-foreground block mt-0.5">
-                              {rtl ? item.committee_name_ar : (item.committee_name_en || item.committee_name_ar)}
+                              {rtl
+                                ? item.committee_name_ar
+                                : item.committee_name_en || item.committee_name_ar}
                             </span>
                           )}
                         </div>
@@ -1173,9 +1222,7 @@ function RequestsHubPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground italic">
-                  {t(copy.noRequestsYet)}
-                </p>
+                <p className="text-xs text-muted-foreground italic">{t(copy.noRequestsYet)}</p>
               )}
             </div>
           )}
@@ -1213,7 +1260,10 @@ function RequestsHubPage() {
                     <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
                       <img
                         src={bandLogo[a.group]}
-                        alt={t({ ar: "شعار مجلس أسرة آل بوعبيد", en: "Al Bu Obaid Family Council logo" })}
+                        alt={t({
+                          ar: "شعار مجلس أسرة آل بوعبيد",
+                          en: "Al Bu Obaid Family Council logo",
+                        })}
                         className="h-12 w-auto max-w-[75%] object-contain"
                       />
                       <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--req-on-band)]/30 text-[var(--req-on-band)]">
@@ -1221,7 +1271,9 @@ function RequestsHubPage() {
                       </span>
                     </div>
                     <div className="flex flex-1 flex-col p-5">
-                      <h3 className="text-[15px] font-semibold text-[var(--req-text)]">{t(a.name)}</h3>
+                      <h3 className="text-[15px] font-semibold text-[var(--req-text)]">
+                        {t(a.name)}
+                      </h3>
                       <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--req-muted)]">
                         {t(a.desc)}
                       </p>

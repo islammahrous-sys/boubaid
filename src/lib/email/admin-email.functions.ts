@@ -33,31 +33,53 @@ export const getEmailStats = createServerFn({ method: "GET" })
     try {
       const { data, error } = await supabaseAdmin.rpc("get_email_statistics");
       if (error) {
-        console.warn("[admin-email] RPC get_email_statistics error, falling back to direct count:", error);
+        console.warn(
+          "[admin-email] RPC get_email_statistics error, falling back to direct count:",
+          error,
+        );
         throw error;
       }
-      return (data as unknown as EmailStatsSummary) || {
-        total_emails: 0,
-        queued: 0,
-        processing: 0,
-        sent: 0,
-        delivered: 0,
-        failed: 0,
-        bounced: 0,
-        complained: 0,
-        opened: 0,
-        clicked: 0,
-        last_24_hours: 0,
-        failed_last_24_hours: 0,
-      };
+      return (
+        (data as unknown as EmailStatsSummary) || {
+          total_emails: 0,
+          queued: 0,
+          processing: 0,
+          sent: 0,
+          delivered: 0,
+          failed: 0,
+          bounced: 0,
+          complained: 0,
+          opened: 0,
+          clicked: 0,
+          last_24_hours: 0,
+          failed_last_24_hours: 0,
+        }
+      );
     } catch {
       // Fallback direct count
-      const { count: total } = await supabaseAdmin.from("email_logs").select("*", { count: "exact", head: true });
-      const { count: queued } = await supabaseAdmin.from("email_logs").select("*", { count: "exact", head: true }).eq("status", "queued");
-      const { count: sent } = await supabaseAdmin.from("email_logs").select("*", { count: "exact", head: true }).eq("status", "sent");
-      const { count: delivered } = await supabaseAdmin.from("email_logs").select("*", { count: "exact", head: true }).eq("status", "delivered");
-      const { count: failed } = await supabaseAdmin.from("email_logs").select("*", { count: "exact", head: true }).eq("status", "failed");
-      const { count: bounced } = await supabaseAdmin.from("email_logs").select("*", { count: "exact", head: true }).eq("status", "bounced");
+      const { count: total } = await supabaseAdmin
+        .from("email_logs")
+        .select("*", { count: "exact", head: true });
+      const { count: queued } = await supabaseAdmin
+        .from("email_logs")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "queued");
+      const { count: sent } = await supabaseAdmin
+        .from("email_logs")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "sent");
+      const { count: delivered } = await supabaseAdmin
+        .from("email_logs")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "delivered");
+      const { count: failed } = await supabaseAdmin
+        .from("email_logs")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "failed");
+      const { count: bounced } = await supabaseAdmin
+        .from("email_logs")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "bounced");
 
       return {
         total_emails: total ?? 0,
@@ -93,12 +115,17 @@ export const getEmailLogsPaginated = createServerFn({ method: "POST" })
 
     let query = supabaseAdmin
       .from("email_logs")
-      .select("id, recipient_email, recipient_name, email_type, category, priority, language, subject, status, attempts, error_message, provider_message_id, created_at, scheduled_at, sent_at, delivered_at, opened_at, clicked_at, failed_at, payload", { count: "exact" });
+      .select(
+        "id, recipient_email, recipient_name, email_type, category, priority, language, subject, status, attempts, error_message, provider_message_id, created_at, scheduled_at, sent_at, delivered_at, opened_at, clicked_at, failed_at, payload",
+        { count: "exact" },
+      );
 
     if (search) {
       const clean = search.replace(/[,()]/g, "").trim();
       if (clean) {
-        query = query.or(`recipient_email.ilike.%${clean}%,recipient_name.ilike.%${clean}%,subject.ilike.%${clean}%,email_type.ilike.%${clean}%`);
+        query = query.or(
+          `recipient_email.ilike.%${clean}%,recipient_name.ilike.%${clean}%,subject.ilike.%${clean}%,email_type.ilike.%${clean}%`,
+        );
       }
     }
 
@@ -117,9 +144,11 @@ export const getEmailLogsPaginated = createServerFn({ method: "POST" })
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    const { data: logs, count, error } = await query
-      .order("created_at", { ascending: false })
-      .range(from, to);
+    const {
+      data: logs,
+      count,
+      error,
+    } = await query.order("created_at", { ascending: false }).range(from, to);
 
     if (error) {
       throw new Error(`Failed to load email logs: ${error.message}`);
@@ -171,7 +200,10 @@ export const getTemplatesCatalog = createServerFn({ method: "GET" })
       .order("key", { ascending: true });
 
     if (error) {
-      console.warn("[admin-email] Could not fetch DB templates catalog, using registry fallback:", error);
+      console.warn(
+        "[admin-email] Could not fetch DB templates catalog, using registry fallback:",
+        error,
+      );
       return Object.values(EMAIL_TEMPLATES_REGISTRY).map((t: any) => ({
         key: t.key,
         category: t.category,
@@ -203,21 +235,35 @@ export const previewTemplateAction = createServerFn({ method: "POST" })
     const sampleVars: Record<string, any> = {
       user_name: language === "ar" ? "أحمد بن عبد الرحمن آل بوعبيد" : "Ahmed Al Bu Obaid",
       request_number: "ABF-REQ-2610-0042",
-      request_title: language === "ar" ? "طلب مساندة مبادرة توثيق التراث" : "Heritage Documentation Support Request",
+      request_title:
+        language === "ar"
+          ? "طلب مساندة مبادرة توثيق التراث"
+          : "Heritage Documentation Support Request",
       request_type: language === "ar" ? "مبادرة مجتمعية" : "Community Initiative",
       committee_name: language === "ar" ? "لجنة التنمية والمبادرات" : "Development Committee",
       status_label: language === "ar" ? "معتمد ومقبول" : "Approved",
       amount: "5,000",
       currency: "SAR",
       receipt_number: "REC-2026-0891",
-      event_title: language === "ar" ? "الملتقى السنوي لأسرة آل بوعبيد ١٤٤٨هـ" : "Annual Family Gathering 1448H",
+      event_title:
+        language === "ar"
+          ? "الملتقى السنوي لأسرة آل بوعبيد ١٤٤٨هـ"
+          : "Annual Family Gathering 1448H",
       event_date: "15-11-1448 هـ",
-      event_location: language === "ar" ? "قاعة المجلس الكبرى — الأحساء" : "Grand Council Hall — Al-Ahsa",
-      article_title: language === "ar" ? "صدور كتاب تاريخ ووثائق الأسرة — المجلد الثاني" : "Publication of Family History Book — Vol. 2",
+      event_location:
+        language === "ar" ? "قاعة المجلس الكبرى — الأحساء" : "Grand Council Hall — Al-Ahsa",
+      article_title:
+        language === "ar"
+          ? "صدور كتاب تاريخ ووثائق الأسرة — المجلد الثاني"
+          : "Publication of Family History Book — Vol. 2",
       ...(variables || {}),
     };
 
-    const rendered = renderEmail(templateKey as EmailTemplateKey, sampleVars, language as EmailLanguage);
+    const rendered = renderEmail(
+      templateKey as EmailTemplateKey,
+      sampleVars,
+      language as EmailLanguage,
+    );
 
     return {
       subject: rendered.subject,
@@ -246,7 +292,8 @@ export const sendTestEmailAction = createServerFn({ method: "POST" })
     const sampleVars: Record<string, any> = {
       user_name: language === "ar" ? "عضو أسرة آل بوعبيد التجريبي" : "Test Family Member",
       request_number: "ABF-TEST-" + Math.floor(1000 + Math.random() * 9000),
-      request_title: language === "ar" ? "رسالة تجريبية من لوحة إدارة البريد" : "Email Center Diagnostic Test",
+      request_title:
+        language === "ar" ? "رسالة تجريبية من لوحة إدارة البريد" : "Email Center Diagnostic Test",
       committee_name: language === "ar" ? "أمانة مجلس الأسرة" : "Family Council Secretariat",
       status_label: language === "ar" ? "تجريبي / نشط" : "Test / Active",
       amount: "1,000",

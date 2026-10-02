@@ -14,7 +14,8 @@ const Select = ({
 }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>) => {
   // Prevent React warning "Select is changing from uncontrolled to controlled"
   // when value is initially undefined or switching in controlled components:
-  const isControlled = value !== undefined || (onValueChange !== undefined && defaultValue === undefined);
+  const isControlled =
+    value !== undefined || (onValueChange !== undefined && defaultValue === undefined);
   return (
     <SelectPrimitive.Root
       value={isControlled ? (value ?? "") : undefined}

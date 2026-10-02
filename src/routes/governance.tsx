@@ -43,14 +43,20 @@ export const Route = createFileRoute("/governance")({
   component: GovernancePage,
 });
 
-
-
 const railSections: RailSection[] = [
   { id: "mandate", label: { ar: "الغرض والاختصاص", en: "Purpose & remit" } },
   { id: "board", label: { ar: "مجلس الأمناء", en: "Board of Trustees" } },
 ];
 
-function BoardChartFigure({ title, href, className = "" }: { title: string; href: string; className?: string }) {
+function BoardChartFigure({
+  title,
+  href,
+  className = "",
+}: {
+  title: string;
+  href: string;
+  className?: string;
+}) {
   const { t, lang } = useLang();
   const rtl = lang === "ar";
   return (
@@ -225,9 +231,10 @@ function GovernancePage() {
                 ? "الهيكل التنظيمي لمجلس أمناء الصندوق"
                 : "Organizational Chart of the Fund's Board of Trustees"
             }
-            href={
-              new URL(rtl ? boardChartAr.url : boardChartEn.url, "https://www.boubaid.com").toString()
-            }
+            href={new URL(
+              rtl ? boardChartAr.url : boardChartEn.url,
+              "https://www.boubaid.com",
+            ).toString()}
           />
         </section>
 

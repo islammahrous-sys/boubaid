@@ -201,7 +201,8 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSectionConfig[] = [
     title_ar: "تواصل مع لجان مجلس الأسرة",
     title_en: "Contact the Family Council Committees",
     subtitle_ar: "اختر اللجنة المختصة وقدّم طلبك مباشرة ليصل إلى مسار المتابعة المناسب.",
-    subtitle_en: "Choose the relevant committee and submit your request directly to the proper review path.",
+    subtitle_en:
+      "Choose the relevant committee and submit your request directly to the proper review path.",
     cta_label_ar: "إرسال طلب",
     cta_label_en: "Send a Request",
     cta_url: "/requests#committee-requests",

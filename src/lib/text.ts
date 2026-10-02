@@ -177,7 +177,10 @@ const AUTH_ERROR_TRANSLATIONS: { match: RegExp; ar: string; en: string }[] = [
   { match: /email rate limit/i, ...AUTH_ERROR_CODES.over_email_send_rate_limit },
   { match: /rate limit|too many requests/i, ...AUTH_ERROR_CODES.over_request_rate_limit },
   { match: /same password/i, ...AUTH_ERROR_CODES.same_password },
-  { match: /(unable to validate email|invalid email|email address .*invalid)/i, ...AUTH_ERROR_CODES.email_address_invalid },
+  {
+    match: /(unable to validate email|invalid email|email address .*invalid)/i,
+    ...AUTH_ERROR_CODES.email_address_invalid,
+  },
   {
     match: /(failed to fetch|network|load failed|timeout)/i,
     ar: "تعذر الاتصال بالخادم. تحقق من اتصال الإنترنت ثم أعد المحاولة.",
@@ -224,4 +227,3 @@ export function translateAuthError(error: unknown, lang: "ar" | "en"): string {
   }
   return fallback;
 }
-

@@ -80,7 +80,7 @@ export async function enqueueNotificationEmail(
     }
 
     // 2. Resolve Recipient Language Preference (default: Arabic)
-    let language: EmailLanguage = params.language || "ar";
+    const language: EmailLanguage = params.language || "ar";
     let recipientName = params.recipientName || null;
 
     if (params.userId) {
@@ -93,9 +93,10 @@ export async function enqueueNotificationEmail(
 
         if (profile) {
           if (!recipientName) {
-            recipientName = language === "ar"
-              ? profile.full_name_ar || profile.full_name_en
-              : profile.full_name_en || profile.full_name_ar;
+            recipientName =
+              language === "ar"
+                ? profile.full_name_ar || profile.full_name_en
+                : profile.full_name_en || profile.full_name_ar;
           }
         }
       } catch {
@@ -168,7 +169,8 @@ export async function enqueueNotificationEmail(
     const emailLogId = inserted.id;
 
     // 6. Immediate dispatch for CRITICAL and HIGH priority emails (or regular when not scheduled in future)
-    const isScheduledFuture = params.scheduledAt && params.scheduledAt.getTime() > Date.now() + 5000;
+    const isScheduledFuture =
+      params.scheduledAt && params.scheduledAt.getTime() > Date.now() + 5000;
     if (!isScheduledFuture) {
       // Mark as processing
       await supabaseAdmin
@@ -237,7 +239,9 @@ export async function processQueuedNotificationEmails(batchSize = 25): Promise<{
   // Atomically select queued emails that are ready to send
   const { data: queueItems, error } = await supabaseAdmin
     .from("email_logs")
-    .select("id, recipient_email, subject, html_body, text_body, email_type, category, attempts, max_attempts, scheduled_at")
+    .select(
+      "id, recipient_email, subject, html_body, text_body, email_type, category, attempts, max_attempts, scheduled_at",
+    )
     .eq("status", "queued")
     .lte("scheduled_at", nowIso)
     .order("priority", { ascending: false }) // CRITICAL, HIGH, NORMAL, LOW
@@ -306,7 +310,9 @@ export async function processQueuedNotificationEmails(batchSize = 25): Promise<{
 /**
  * Retries a specific failed email from the admin interface.
  */
-export async function retryFailedEmail(emailLogId: string): Promise<{ ok: boolean; error?: string }> {
+export async function retryFailedEmail(
+  emailLogId: string,
+): Promise<{ ok: boolean; error?: string }> {
   const { data: item, error } = await supabaseAdmin
     .from("email_logs")
     .select("*")

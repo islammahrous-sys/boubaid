@@ -9,7 +9,10 @@ export const Route = createFileRoute("/ahsa-family-councils")({
   head: () => ({
     meta: [
       { title: "مجالس أسر الأحساء | آل بوعبيد" },
-      { name: "description", content: "صفحة مجالس أسر الأحساء وطلب الانضمام إليها عبر مركز الطلبات." },
+      {
+        name: "description",
+        content: "صفحة مجالس أسر الأحساء وطلب الانضمام إليها عبر مركز الطلبات.",
+      },
       { property: "og:title", content: "مجالس أسر الأحساء — آل بوعبيد" },
       { property: "og:description", content: "مجالس أسر الأحساء وطلب الانضمام إليها." },
       { property: "og:type", content: "website" },

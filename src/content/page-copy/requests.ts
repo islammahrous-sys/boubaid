@@ -105,4 +105,3 @@ export const copy = registerCopy("requests", {
     en: "Reference No.",
   } as BiText,
 });
-

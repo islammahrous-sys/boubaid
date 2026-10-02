@@ -250,10 +250,7 @@ function AccountPage() {
   );
 
   useEffect(() => {
-    if (
-      searchTab &&
-      ["profile", "card", "notifications", "security"].includes(searchTab)
-    ) {
+    if (searchTab && ["profile", "card", "notifications", "security"].includes(searchTab)) {
       setActiveTab(searchTab);
     }
   }, [searchTab]);
@@ -377,7 +374,6 @@ function AccountPage() {
     }
   };
 
-
   const isApprovedMember =
     data?.request?.status === "approved" ||
     Boolean(data?.roles?.includes("member")) ||
@@ -389,7 +385,6 @@ function AccountPage() {
     Boolean(authContextRoles?.includes("super_admin")) ||
     Boolean(authContextRoles?.includes("treasurer")) ||
     Boolean(isAdmin);
-
 
   /**
    * Notification links come from the `notifications.link` column, which is
@@ -645,9 +640,7 @@ function AccountPage() {
         refreshProfile(),
       ]);
       toast.success(
-        isAr
-          ? "تم رفع الصورة الشخصية وحفظها بنجاح."
-          : "Profile photo uploaded and saved.",
+        isAr ? "تم رفع الصورة الشخصية وحفظها بنجاح." : "Profile photo uploaded and saved.",
       );
     } catch (err: unknown) {
       console.error("Avatar upload failed:", err);
@@ -1200,7 +1193,6 @@ function AccountPage() {
                 <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
 
-
               <Link
                 to="/directory"
                 className="p-3.5 rounded-2xl border border-border bg-card hover:bg-secondary/30 transition-all flex items-center justify-between group shadow-sm"
@@ -1435,24 +1427,36 @@ function AccountPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <Label className="text-xs font-semibold">{isAr ? "المستوى التعليمي" : "Education Level"}</Label>
-                              <span className="text-[10px] text-muted-foreground">{isAr ? "اختياري" : "Optional"}</span>
+                              <Label className="text-xs font-semibold">
+                                {isAr ? "المستوى التعليمي" : "Education Level"}
+                              </Label>
+                              <span className="text-[10px] text-muted-foreground">
+                                {isAr ? "اختياري" : "Optional"}
+                              </span>
                             </div>
                             <select
                               value={form.education_level}
-                              onChange={(e) => setForm({ ...form, education_level: e.target.value })}
+                              onChange={(e) =>
+                                setForm({ ...form, education_level: e.target.value })
+                              }
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
                               <option value="">{isAr ? "— اختر —" : "— Select —"}</option>
                               {EDUCATION_LEVELS.map((o) => (
-                                <option key={o.value} value={o.value}>{isAr ? o.ar : o.en}</option>
+                                <option key={o.value} value={o.value}>
+                                  {isAr ? o.ar : o.en}
+                                </option>
                               ))}
                             </select>
                           </div>
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <Label className="text-xs font-semibold">{isAr ? "المدينة" : "City"}</Label>
-                              <span className="text-[10px] text-muted-foreground">{isAr ? "اختياري" : "Optional"}</span>
+                              <Label className="text-xs font-semibold">
+                                {isAr ? "المدينة" : "City"}
+                              </Label>
+                              <span className="text-[10px] text-muted-foreground">
+                                {isAr ? "اختياري" : "Optional"}
+                              </span>
                             </div>
                             <select
                               value={form.city}
@@ -1461,7 +1465,9 @@ function AccountPage() {
                             >
                               <option value="">{isAr ? "— اختر —" : "— Select —"}</option>
                               {PROFILE_CITIES.map((o) => (
-                                <option key={o.value} value={o.value}>{isAr ? o.ar : o.en}</option>
+                                <option key={o.value} value={o.value}>
+                                  {isAr ? o.ar : o.en}
+                                </option>
                               ))}
                             </select>
                           </div>
@@ -1469,8 +1475,12 @@ function AccountPage() {
 
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <Label className="text-xs font-semibold">{isAr ? "العنوان" : "Address"}</Label>
-                            <span className="text-[10px] text-muted-foreground">{isAr ? "اختياري" : "Optional"}</span>
+                            <Label className="text-xs font-semibold">
+                              {isAr ? "العنوان" : "Address"}
+                            </Label>
+                            <span className="text-[10px] text-muted-foreground">
+                              {isAr ? "اختياري" : "Optional"}
+                            </span>
                           </div>
                           <Textarea
                             rows={2}
@@ -1750,235 +1760,237 @@ function AccountPage() {
             <div className="max-w-xl mx-auto space-y-6">
               {/* Gold & Emerald Digital Card — flips to show the back face */}
               <div className="[perspective:1400px]">
-              <div
-                className={cn(
-                  "relative transition-transform duration-700 [transform-style:preserve-3d]",
-                  cardFlipped && "[transform:rotateY(180deg)]",
-                )}
-              >
-              <div
-                aria-hidden={cardFlipped}
-                className="printable-card relative overflow-hidden rounded-2xl border-2 border-ink/70 bg-paper p-4 sm:p-6 md:p-7 text-ink shadow-xl [backface-visibility:hidden]"
-              >
-                <img
-                  src="/logo-mark-gold.svg"
-                  alt=""
-                  aria-hidden="true"
-                    className="pointer-events-none absolute left-1/2 top-1/2 w-2/3 -translate-x-1/2 -translate-y-1/2 opacity-[0.09]"
-                />
+                <div
+                  className={cn(
+                    "relative transition-transform duration-700 [transform-style:preserve-3d]",
+                    cardFlipped && "[transform:rotateY(180deg)]",
+                  )}
+                >
+                  <div
+                    aria-hidden={cardFlipped}
+                    className="printable-card relative overflow-hidden rounded-2xl border-2 border-ink/70 bg-paper p-4 sm:p-6 md:p-7 text-ink shadow-xl [backface-visibility:hidden]"
+                  >
+                    <img
+                      src="/logo-mark-gold.svg"
+                      alt=""
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-1/2 top-1/2 w-2/3 -translate-x-1/2 -translate-y-1/2 opacity-[0.09]"
+                    />
 
-                {/* Card Header */}
-                <div className="relative flex items-center justify-between border-b border-bronze/30 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gold/20 border border-gold/40 flex items-center justify-center text-gold">
-                      <Building className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold tracking-wide font-naskh text-gold">
-                        {isAr ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
-                      </h3>
-                      <p className="text-[10px] text-muted-foreground">
-                        {isAr
-                          ? "بطاقة العضوية الرسمية"
-                          : "Official Membership Card"}
-                      </p>
-                    </div>
-                  </div>
+                    {/* Card Header */}
+                    <div className="relative flex items-center justify-between border-b border-bronze/30 pb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gold/20 border border-gold/40 flex items-center justify-center text-gold">
+                          <Building className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold tracking-wide font-naskh text-gold">
+                            {isAr ? "مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council"}
+                          </h3>
+                          <p className="text-[10px] text-muted-foreground">
+                            {isAr ? "بطاقة العضوية الرسمية" : "Official Membership Card"}
+                          </p>
+                        </div>
+                      </div>
 
-                  {/* The card used to carry a binary Verified/Pending seal, so a
+                      {/* The card used to carry a binary Verified/Pending seal, so a
                       member whose request was *rejected* -- and a brand-new
                       account that had never applied at all -- both received a
                       gold "Pending" badge on an otherwise finished-looking
                       membership card. Each real `request_status` value now maps
                       to its own seal. */}
-                  {!statusKnown ? (
-                    <span className="inline-block h-5 w-20 rounded-full bg-ivory/20 animate-pulse" />
-                  ) : isApproved ? (
-                    <Badge className="bg-emerald text-ivory font-bold text-[10px] border-0">
-                      {isAr ? "عضو معتمد" : "Verified"}
-                    </Badge>
-                  ) : isPending ? (
-                    <Badge className="bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold text-[10px]">
-                      {isAr ? "قيد الاعتماد" : "Pending"}
-                    </Badge>
-                  ) : isRejected ? (
-                    <Badge className="bg-destructive/20 text-red-300 border border-red-400/40 font-bold text-[10px]">
-                      {isAr ? "غير معتمدة" : "Not Approved"}
-                    </Badge>
-                  ) : (
-                    <Badge className="bg-ivory/10 text-ivory/70 border border-ivory/25 font-bold text-[10px]">
-                      {isAr ? "لم تُقدَّم بعد" : "Not Submitted"}
-                    </Badge>
-                  )}
-                </div>
+                      {!statusKnown ? (
+                        <span className="inline-block h-5 w-20 rounded-full bg-ivory/20 animate-pulse" />
+                      ) : isApproved ? (
+                        <Badge className="bg-emerald text-ivory font-bold text-[10px] border-0">
+                          {isAr ? "عضو معتمد" : "Verified"}
+                        </Badge>
+                      ) : isPending ? (
+                        <Badge className="bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold text-[10px]">
+                          {isAr ? "قيد الاعتماد" : "Pending"}
+                        </Badge>
+                      ) : isRejected ? (
+                        <Badge className="bg-destructive/20 text-red-300 border border-red-400/40 font-bold text-[10px]">
+                          {isAr ? "غير معتمدة" : "Not Approved"}
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-ivory/10 text-ivory/70 border border-ivory/25 font-bold text-[10px]">
+                          {isAr ? "لم تُقدَّم بعد" : "Not Submitted"}
+                        </Badge>
+                      )}
+                    </div>
 
-                {/* An unapproved card is a preview, not credentials. Saying so
+                    {/* An unapproved card is a preview, not credentials. Saying so
                     on the card itself keeps it from being presented as proof of
                     membership that the public /verify endpoint would refuse. */}
-                {statusKnown && !isApproved && (
-                  <div className="relative mt-4 flex items-start gap-2 rounded-xl border border-gold/25 bg-ivory/5 p-2.5 text-[10px] leading-relaxed text-ivory/70">
-                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-px text-gold" />
-                    <span>
-                      {isAr
-                        ? "هذه معاينة للبطاقة ولا تُعد إثبات عضوية. لن تُصدر البطاقة رسمياً ولن يعتمدها رمز الفحص إلا بعد اعتماد الأمانة."
-                        : "This is a preview, not proof of membership. The card is only issued — and the QR seal only verifies — once the secretariat approves your request."}
-                    </span>
-                  </div>
-                )}
-
-                {/* Card Body */}
-                <div className="relative my-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-4 w-full sm:w-auto">
-                    <SaudiCulturalAvatar
-                      src={effectiveAvatar}
-                      alt={form.full_name_ar}
-                      size="xl"
-                      className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-ink/60 shrink-0 shadow-lg"
-                    />
-
-                    <div>
-                      <span className="text-[10px] text-muted-foreground block mb-0.5">
-                        {isAr ? "اسم العضو" : "Member Name"}
-                      </span>
-                      <h4 className="text-lg sm:text-xl font-bold font-naskh text-ink">
-                        {form.full_name_ar || (isAr ? "عضو أسرة آل بوعبيد" : "Family Member")}
-                      </h4>
-                      {form.full_name_en && (
-                        <p className="text-xs text-muted-foreground font-mono mt-0.5">
-                          {form.full_name_en}
-                        </p>
-                      )}
-
-                      <div className="mt-3 flex items-center gap-4 text-xs">
-                        <div>
-                          <span className="text-[9px] text-muted-foreground block">
-                            {isAr ? "الفرع" : "Branch"}
-                          </span>
-                          <span className="font-semibold text-gold">
-                            {selectedBranchName
-                              ? t(selectedBranchName)
-                              : isAr
-                                ? "غير محدد"
-                                : "Unassigned"}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[9px] text-muted-foreground block">
-                            {isAr ? "رقم العضوية" : "Member ID"}
-                          </span>
-                          <span className="font-mono text-ink/80">{memberCode}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Scannable QR Code (Active only for approved members/admins) */}
-                  <div className="flex flex-col items-center gap-1.5 shrink-0">
-                    {isApproved ? (
-                      <a
-                        href={`/verify?id=${memberCode}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative block p-2 rounded-2xl bg-white shadow-xl hover:scale-105 transition-all"
-                        title={
-                          isAr
-                            ? "انقر لعرض شهادة التوثيق الرسمية"
-                            : "Click to view official verification certificate"
-                        }
-                      >
-                        {qrCodeDataUrl ? (
-                          <img
-                            src={qrCodeDataUrl}
-                            alt="Official Scannable QR Verification Code"
-                            className="w-20 h-20 sm:w-22 sm:h-22 object-contain"
-                          />
-                        ) : (
-                          <div className="w-20 h-20 flex items-center justify-center">
-                            <QrCode className="w-10 h-10 text-stone-800" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gold/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <span className="bg-ink/90 text-gold text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
-                            {isAr ? "فحص" : "VERIFY"}
-                          </span>
-                        </div>
-                      </a>
-                    ) : (
-                      <div className="w-20 h-20 sm:w-22 sm:h-22 p-2 rounded-2xl bg-stone-900 border border-gold/30 flex flex-col items-center justify-center text-center shadow-inner">
-                        <Lock className="w-6 h-6 text-gold/80 mb-1" />
-                        <span className="text-[9px] text-ivory/70 font-semibold leading-tight">
-                          {isPending
-                            ? isAr
-                              ? "قيد المراجعة"
-                              : "Under Review"
-                            : isAr
-                              ? "غير مفعل"
-                              : "Locked"}
+                    {statusKnown && !isApproved && (
+                      <div className="relative mt-4 flex items-start gap-2 rounded-xl border border-gold/25 bg-ivory/5 p-2.5 text-[10px] leading-relaxed text-ivory/70">
+                        <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-px text-gold" />
+                        <span>
+                          {isAr
+                            ? "هذه معاينة للبطاقة ولا تُعد إثبات عضوية. لن تُصدر البطاقة رسمياً ولن يعتمدها رمز الفحص إلا بعد اعتماد الأمانة."
+                            : "This is a preview, not proof of membership. The card is only issued — and the QR seal only verifies — once the secretariat approves your request."}
                         </span>
                       </div>
                     )}
-                    <span className="text-[9px] font-mono text-ivory/60 flex items-center gap-1">
-                      {isApproved ? (
-                        <>
-                          <ExternalLink className="w-2.5 h-2.5 text-gold" />
-                          {isAr ? "باركود فحص حي" : "LIVE QR SEAL"}
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="w-2.5 h-2.5 text-gold/70" />
-                          {isAr ? "بانتظار الاعتماد" : "LOCKED SEAL"}
-                        </>
-                      )}
-                    </span>
+
+                    {/* Card Body */}
+                    <div className="relative my-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                      <div className="flex items-center gap-4 w-full sm:w-auto">
+                        <SaudiCulturalAvatar
+                          src={effectiveAvatar}
+                          alt={form.full_name_ar}
+                          size="xl"
+                          className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-ink/60 shrink-0 shadow-lg"
+                        />
+
+                        <div>
+                          <span className="text-[10px] text-muted-foreground block mb-0.5">
+                            {isAr ? "اسم العضو" : "Member Name"}
+                          </span>
+                          <h4 className="text-lg sm:text-xl font-bold font-naskh text-ink">
+                            {form.full_name_ar || (isAr ? "عضو أسرة آل بوعبيد" : "Family Member")}
+                          </h4>
+                          {form.full_name_en && (
+                            <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                              {form.full_name_en}
+                            </p>
+                          )}
+
+                          <div className="mt-3 flex items-center gap-4 text-xs">
+                            <div>
+                              <span className="text-[9px] text-muted-foreground block">
+                                {isAr ? "الفرع" : "Branch"}
+                              </span>
+                              <span className="font-semibold text-gold">
+                                {selectedBranchName
+                                  ? t(selectedBranchName)
+                                  : isAr
+                                    ? "غير محدد"
+                                    : "Unassigned"}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] text-muted-foreground block">
+                                {isAr ? "رقم العضوية" : "Member ID"}
+                              </span>
+                              <span className="font-mono text-ink/80">{memberCode}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Scannable QR Code (Active only for approved members/admins) */}
+                      <div className="flex flex-col items-center gap-1.5 shrink-0">
+                        {isApproved ? (
+                          <a
+                            href={`/verify?id=${memberCode}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group relative block p-2 rounded-2xl bg-white shadow-xl hover:scale-105 transition-all"
+                            title={
+                              isAr
+                                ? "انقر لعرض شهادة التوثيق الرسمية"
+                                : "Click to view official verification certificate"
+                            }
+                          >
+                            {qrCodeDataUrl ? (
+                              <img
+                                src={qrCodeDataUrl}
+                                alt="Official Scannable QR Verification Code"
+                                className="w-20 h-20 sm:w-22 sm:h-22 object-contain"
+                              />
+                            ) : (
+                              <div className="w-20 h-20 flex items-center justify-center">
+                                <QrCode className="w-10 h-10 text-stone-800" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gold/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="bg-ink/90 text-gold text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
+                                {isAr ? "فحص" : "VERIFY"}
+                              </span>
+                            </div>
+                          </a>
+                        ) : (
+                          <div className="w-20 h-20 sm:w-22 sm:h-22 p-2 rounded-2xl bg-stone-900 border border-gold/30 flex flex-col items-center justify-center text-center shadow-inner">
+                            <Lock className="w-6 h-6 text-gold/80 mb-1" />
+                            <span className="text-[9px] text-ivory/70 font-semibold leading-tight">
+                              {isPending
+                                ? isAr
+                                  ? "قيد المراجعة"
+                                  : "Under Review"
+                                : isAr
+                                  ? "غير مفعل"
+                                  : "Locked"}
+                            </span>
+                          </div>
+                        )}
+                        <span className="text-[9px] font-mono text-ivory/60 flex items-center gap-1">
+                          {isApproved ? (
+                            <>
+                              <ExternalLink className="w-2.5 h-2.5 text-gold" />
+                              {isAr ? "باركود فحص حي" : "LIVE QR SEAL"}
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="w-2.5 h-2.5 text-gold/70" />
+                              {isAr ? "بانتظار الاعتماد" : "LOCKED SEAL"}
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card Footer */}
+                    <div className="relative pt-3 border-t border-bronze/30 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
+                      <span>
+                        {isAr ? "تاريخ الإصدار" : "Issued"}: {cardIssuedDate}
+                      </span>
+                      <span>NCNP LIC. #1200758400 · AL-AHSA</span>
+                    </div>
+                  </div>
+
+                  {/* Back face */}
+                  <div
+                    aria-hidden={!cardFlipped}
+                    className="absolute inset-0 overflow-hidden rounded-2xl border-2 border-ink/70 bg-paper text-ink shadow-xl [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col"
+                  >
+                    <div className="bg-ink py-2.5 text-center text-sm font-bold text-paper">
+                      {isAr ? "شروط العضوية" : "Membership terms"}
+                    </div>
+                    <ul className="flex-1 space-y-2 overflow-auto p-4 sm:p-6 text-[11px] sm:text-xs leading-relaxed text-ink/85">
+                      {(isAr
+                        ? [
+                            "هذه البطاقة شخصية وتخص حاملها المسجّل في سجل أسرة آل بوعبيد.",
+                            "تثبت العضوية فقط عند مسح رمز التحقق ومطابقته مع السجل الرسمي.",
+                            "تبقى البطاقة ملكاً لمجلس الأسرة ويحق له إيقافها أو إلغاؤها.",
+                            "عند فقدان البطاقة أو تغيّر البيانات يرجى إبلاغ الأمانة العامة.",
+                          ]
+                        : [
+                            "This card is personal to the member registered with the Al Bu Obaid family.",
+                            "Membership is proven only by scanning the QR code against the official record.",
+                            "The card remains the property of the Family Council and may be suspended.",
+                            "Report a lost card or changed details to the General Secretariat.",
+                          ]
+                      ).map((term) => (
+                        <li key={term} className="flex gap-2">
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                          {term}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="border-t border-bronze/30 px-4 py-3 text-center text-[10px] text-muted-foreground">
+                      <p className="font-semibold text-gold">
+                        {isAr
+                          ? "الأمانة العامة لمجلس أسرة آل بوعبيد"
+                          : "General Secretariat, Al Bu Obaid Family Council"}
+                      </p>
+                      <p className="font-mono mt-0.5">
+                        NCNP License #1200758400 · Saudi Arabia · Al-Ahsa
+                      </p>
+                    </div>
                   </div>
                 </div>
-
-                {/* Card Footer */}
-                <div className="relative pt-3 border-t border-bronze/30 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
-                  <span>
-                    {isAr ? "تاريخ الإصدار" : "Issued"}: {cardIssuedDate}
-                  </span>
-                  <span>NCNP LIC. #1200758400 · AL-AHSA</span>
-                </div>
-              </div>
-
-              {/* Back face */}
-              <div
-                aria-hidden={!cardFlipped}
-                className="absolute inset-0 overflow-hidden rounded-2xl border-2 border-ink/70 bg-paper text-ink shadow-xl [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col"
-              >
-                <div className="bg-ink py-2.5 text-center text-sm font-bold text-paper">
-                  {isAr ? "شروط العضوية" : "Membership terms"}
-                </div>
-                <ul className="flex-1 space-y-2 overflow-auto p-4 sm:p-6 text-[11px] sm:text-xs leading-relaxed text-ink/85">
-                  {(isAr
-                    ? [
-                        "هذه البطاقة شخصية وتخص حاملها المسجّل في سجل أسرة آل بوعبيد.",
-                        "تثبت العضوية فقط عند مسح رمز التحقق ومطابقته مع السجل الرسمي.",
-                        "تبقى البطاقة ملكاً لمجلس الأسرة ويحق له إيقافها أو إلغاؤها.",
-                        "عند فقدان البطاقة أو تغيّر البيانات يرجى إبلاغ الأمانة العامة.",
-                      ]
-                    : [
-                        "This card is personal to the member registered with the Al Bu Obaid family.",
-                        "Membership is proven only by scanning the QR code against the official record.",
-                        "The card remains the property of the Family Council and may be suspended.",
-                        "Report a lost card or changed details to the General Secretariat.",
-                      ]
-                  ).map((term) => (
-                    <li key={term} className="flex gap-2">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                      {term}
-                    </li>
-                  ))}
-                </ul>
-                <div className="border-t border-bronze/30 px-4 py-3 text-center text-[10px] text-muted-foreground">
-                  <p className="font-semibold text-gold">
-                    {isAr ? "الأمانة العامة لمجلس أسرة آل بوعبيد" : "General Secretariat, Al Bu Obaid Family Council"}
-                  </p>
-                  <p className="font-mono mt-0.5">NCNP License #1200758400 · Saudi Arabia · Al-Ahsa</p>
-                </div>
-              </div>
-              </div>
               </div>
 
               <div className="flex justify-center">
@@ -1991,8 +2003,12 @@ function AccountPage() {
                 >
                   <RefreshCw className="w-3.5 h-3.5 text-gold" />
                   {cardFlipped
-                    ? isAr ? "عرض الوجه الأمامي" : "Show front"
-                    : isAr ? "قلب البطاقة" : "Flip card"}
+                    ? isAr
+                      ? "عرض الوجه الأمامي"
+                      : "Show front"
+                    : isAr
+                      ? "قلب البطاقة"
+                      : "Flip card"}
                 </Button>
               </div>
 

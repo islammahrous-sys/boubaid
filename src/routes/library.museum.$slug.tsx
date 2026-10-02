@@ -37,8 +37,6 @@ export const Route = createFileRoute("/library/museum/$slug")({
   component: MuseumCollectionPage,
 });
 
-
-
 function MuseumCollectionPage() {
   const { t, lang } = useLang();
   const rtl = lang === "ar";

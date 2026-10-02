@@ -63,7 +63,10 @@ export const PROFILE_CITIES = [
 ] as const;
 
 const optionalEnum = (values: readonly { value: string }[]) =>
-  z.enum(values.map((v) => v.value) as [string, ...string[]]).optional().or(z.literal(""));
+  z
+    .enum(values.map((v) => v.value) as [string, ...string[]])
+    .optional()
+    .or(z.literal(""));
 
 export const profileUpdateSchema = z.object({
   full_name_ar: z.string().trim().min(2).max(120),

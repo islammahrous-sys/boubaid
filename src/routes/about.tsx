@@ -40,8 +40,6 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
-
-
 /**
  * In-page wayfinding: the sections of the authoritative source document,
  * followed by the page's apparatus.

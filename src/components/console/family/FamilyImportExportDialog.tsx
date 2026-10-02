@@ -97,7 +97,9 @@ export function FamilyImportExportDialog({
           m.generation || 1,
           `"${m.visibility || "public"}"`,
           `"${m.status || "published"}"`,
-        ].map(csvCell).join(","),
+        ]
+          .map(csvCell)
+          .join(","),
       );
 
       const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");

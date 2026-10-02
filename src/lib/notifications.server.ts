@@ -483,7 +483,9 @@ export async function notifyMemberOnContributionDecision(
           action_url: "/account",
         },
         idempotencyKey: `email-contrib-${userId}-${status}-${amount}`,
-      }).catch((err) => console.error("[notifications.server] Contribution email enqueue failed:", err));
+      }).catch((err) =>
+        console.error("[notifications.server] Contribution email enqueue failed:", err),
+      );
     }
   } catch (err) {
     console.warn("[notifications.server] Contribution email error:", err);

@@ -30,8 +30,6 @@ export const Route = createFileRoute("/contribute")({
   component: ContributePage,
 });
 
-
-
 /** Values are transcribed exactly from the fund's official bank record. */
 const bank: { label: BiText; value: string; mono?: boolean; copy?: boolean }[] = [
   { label: { ar: "اسم البنك", en: "Bank name" }, value: "بنك البلاد — Bank Albilad" },

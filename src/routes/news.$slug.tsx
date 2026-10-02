@@ -48,8 +48,6 @@ export const Route = createFileRoute("/news/$slug")({
   notFoundComponent: () => <ContentNotFound kind="news" />,
 });
 
-
-
 function NewsDetail() {
   const { item, news } = Route.useLoaderData();
   const { t, lang } = useLang();

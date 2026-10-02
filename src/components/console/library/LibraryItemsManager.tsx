@@ -497,23 +497,25 @@ export function LibraryItemsManager({
                 document URL must never be written into `external_url`. */}
             <div className="space-y-1 pt-1 border-t border-border">
               <Label className="text-xs font-semibold">
-                  {form.collection === "collaterals"
+                {form.collection === "collaterals"
                   ? isAr
                     ? "المستند الأصلي القابل للتحرير (Word / PowerPoint / Excel / PDF) *"
                     : "Original editable document (Word / PowerPoint / Excel / PDF) *"
-                    : form.collection === "committee_charts"
-                      ? isAr
-                        ? "صورة المخطط التنظيمي (PNG / JPG) *"
-                        : "Organisational chart image (PNG / JPG) *"
-                  : isAr
-                    ? "الملف / الصورة / الوثيقة المرفقة (PDF / صور)"
-                    : "Attached File / PDF Document / Photo"}
+                  : form.collection === "committee_charts"
+                    ? isAr
+                      ? "صورة المخطط التنظيمي (PNG / JPG) *"
+                      : "Organisational chart image (PNG / JPG) *"
+                    : isAr
+                      ? "الملف / الصورة / الوثيقة المرفقة (PDF / صور)"
+                      : "Attached File / PDF Document / Photo"}
               </Label>
               <ImageUploadInput
                 bucket="site-media"
                 value={form.file_path}
                 allowPdf={true}
-                allowDocuments={form.collection === "collaterals" || form.collection === "visual_identity"}
+                allowDocuments={
+                  form.collection === "collaterals" || form.collection === "visual_identity"
+                }
                 onChange={(url) =>
                   setForm(
                     form.collection === "collaterals"
@@ -535,9 +537,9 @@ export function LibraryItemsManager({
                       ? isAr
                         ? "يدعم رفع ملفات PDF وPowerPoint والصور حتى 25 ميغابايت"
                         : "Supports PDF, PowerPoint and image files up to 25MB"
-                    : isAr
-                      ? "يدعم رفع ملفات PDF واللوائح والصور والوثائق حتى 25 ميغابايت"
-                      : "Supports PDF documents, bylaws, scans and photos up to 25MB"
+                      : isAr
+                        ? "يدعم رفع ملفات PDF واللوائح والصور والوثائق حتى 25 ميغابايت"
+                        : "Supports PDF documents, bylaws, scans and photos up to 25MB"
                 }
               />
             </div>
@@ -552,9 +554,7 @@ export function LibraryItemsManager({
                   value={form.external_url}
                   allowPdf={false}
                   onChange={(url) => setForm({ ...form, external_url: url })}
-                  placeholder={
-                    isAr ? "رابط صورة المعاينة..." : "Preview image URL..."
-                  }
+                  placeholder={isAr ? "رابط صورة المعاينة..." : "Preview image URL..."}
                   helperText={
                     isAr
                       ? "صورة (PNG أو JPG) تُعرض كمعاينة للمستند في الصفحة العامة. إن تُركت فارغة تُعرض البطاقة بأيقونة نوع الملف دون صورة."

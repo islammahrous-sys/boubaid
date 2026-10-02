@@ -180,8 +180,12 @@ export function InquiriesManager({
       setDecisionNote("");
       toast.success(
         targetStatus === "approved"
-          ? (isAr ? "تم اعتماد الطلب بنجاح وإرسال إشعار للمستفيد" : "Request approved successfully")
-          : (isAr ? "تم تسجيل الاعتذار وإرسال إشعار للمستفيد" : "Request declined and notification sent"),
+          ? isAr
+            ? "تم اعتماد الطلب بنجاح وإرسال إشعار للمستفيد"
+            : "Request approved successfully"
+          : isAr
+            ? "تم تسجيل الاعتذار وإرسال إشعار للمستفيد"
+            : "Request declined and notification sent",
       );
     } catch {
       toast.error(isAr ? "حدث خطأ أثناء تحديث حالة الطلب" : "Error updating request status");
@@ -200,7 +204,14 @@ export function InquiriesManager({
     isLoading,
     isFetching,
   } = useQuery({
-    queryKey: ["inquiries-paginated", currentPage, pageSize, statusFilter, committeeFilter, searchTerm],
+    queryKey: [
+      "inquiries-paginated",
+      currentPage,
+      pageSize,
+      statusFilter,
+      committeeFilter,
+      searchTerm,
+    ],
     queryFn: () =>
       fetchInquiriesPage({
         data: {
@@ -544,7 +555,9 @@ export function InquiriesManager({
                 setCurrentPage(1);
                 setSearchTerm(e.target.value);
               }}
-              placeholder={isAr ? "بحث بالاسم أو الموضوع أو اللجنة" : "Search name, subject, or committee"}
+              placeholder={
+                isAr ? "بحث بالاسم أو الموضوع أو اللجنة" : "Search name, subject, or committee"
+              }
               className="h-9 text-xs"
             />
             <Select
@@ -720,10 +733,16 @@ export function InquiriesManager({
                           <SelectItem value="in_progress" className="text-xs">
                             {isAr ? "قيد المتابعة" : "In Progress"}
                           </SelectItem>
-                          <SelectItem value="approved" className="text-xs font-semibold text-emerald-600">
+                          <SelectItem
+                            value="approved"
+                            className="text-xs font-semibold text-emerald-600"
+                          >
                             {isAr ? "معتمد ومقبول" : "Approved"}
                           </SelectItem>
-                          <SelectItem value="rejected" className="text-xs font-semibold text-red-600">
+                          <SelectItem
+                            value="rejected"
+                            className="text-xs font-semibold text-red-600"
+                          >
                             {isAr ? "معتذر عنه / مرفوض" : "Declined"}
                           </SelectItem>
                           <SelectItem value="resolved" className="text-xs">
@@ -820,7 +839,9 @@ export function InquiriesManager({
                           const rawStr = typeof att === "string" ? att : att.path;
                           const displayName =
                             typeof att === "string"
-                              ? att.split(" — ")[1] || att.split("/").pop() || (isAr ? `مرفق ${idx + 1}` : `Attachment ${idx + 1}`)
+                              ? att.split(" — ")[1] ||
+                                att.split("/").pop() ||
+                                (isAr ? `مرفق ${idx + 1}` : `Attachment ${idx + 1}`)
                               : att.name || (isAr ? `مرفق ${idx + 1}` : `Attachment ${idx + 1}`);
                           const isOpening = openingAttachment === rawStr;
                           return (
@@ -877,17 +898,21 @@ export function InquiriesManager({
                         >
                           <span className="font-bold block mb-1">
                             {decisionMode === "approve"
-                              ? (isAr ? "تأكيد اعتماد وقبول الطلب" : "Confirm Request Approval")
-                              : (isAr ? "تأكيد الاعتذار عن قبول الطلب" : "Confirm Request Decline")}
+                              ? isAr
+                                ? "تأكيد اعتماد وقبول الطلب"
+                                : "Confirm Request Approval"
+                              : isAr
+                                ? "تأكيد الاعتذار عن قبول الطلب"
+                                : "Confirm Request Decline"}
                           </span>
                           <p className="text-[11px] opacity-90">
                             {decisionMode === "approve"
-                              ? (isAr
-                                  ? "سيتم اعتماد الطلب رسمياً وإرسال إشعار بريدي فوري للمستفيد. يمكنك كتابة توجيه أو ملاحظة:"
-                                  : "The request will be approved and the applicant notified. Optional note:")
-                              : (isAr
-                                  ? "سيتم تسجيل الاعتذار وإرسال إشعار بريدي للمستفيد. يرجى توضيح سبب الاعتذار:"
-                                  : "The request will be declined and the applicant notified. Please state reason:")}
+                              ? isAr
+                                ? "سيتم اعتماد الطلب رسمياً وإرسال إشعار بريدي فوري للمستفيد. يمكنك كتابة توجيه أو ملاحظة:"
+                                : "The request will be approved and the applicant notified. Optional note:"
+                              : isAr
+                                ? "سيتم تسجيل الاعتذار وإرسال إشعار بريدي للمستفيد. يرجى توضيح سبب الاعتذار:"
+                                : "The request will be declined and the applicant notified. Please state reason:"}
                           </p>
                         </div>
 
@@ -897,8 +922,12 @@ export function InquiriesManager({
                           onChange={(e) => setDecisionNote(e.target.value)}
                           placeholder={
                             decisionMode === "approve"
-                              ? (isAr ? "ملاحظة أو توجيه إداري (اختياري)..." : "Optional review note...")
-                              : (isAr ? "سبب الاعتذار للمستفيد..." : "Reason for decline...")
+                              ? isAr
+                                ? "ملاحظة أو توجيه إداري (اختياري)..."
+                                : "Optional review note..."
+                              : isAr
+                                ? "سبب الاعتذار للمستفيد..."
+                                : "Reason for decline..."
                           }
                           className="text-xs resize-none bg-background rounded-lg"
                         />
@@ -923,8 +952,12 @@ export function InquiriesManager({
                               <XCircle className="w-3.5 h-3.5 me-1.5" />
                             )}
                             {decisionMode === "approve"
-                              ? (isAr ? "تأكيد الاعتماد والإشعار" : "Confirm Approval")
-                              : (isAr ? "تأكيد الاعتذار والإشعار" : "Confirm Decline")}
+                              ? isAr
+                                ? "تأكيد الاعتماد والإشعار"
+                                : "Confirm Approval"
+                              : isAr
+                                ? "تأكيد الاعتذار والإشعار"
+                                : "Confirm Decline"}
                           </Button>
                           <Button
                             size="sm"
@@ -942,7 +975,8 @@ export function InquiriesManager({
                       </div>
                     ) : (
                       <div className="pt-1 space-y-2">
-                        {selectedInquiry.status !== "approved" && selectedInquiry.status !== "rejected" ? (
+                        {selectedInquiry.status !== "approved" &&
+                        selectedInquiry.status !== "rejected" ? (
                           <div className="grid grid-cols-2 gap-2">
                             <Button
                               size="sm"
@@ -972,20 +1006,30 @@ export function InquiriesManager({
                           <div className="flex items-center justify-between p-2.5 rounded-lg border bg-background text-xs">
                             <span className="text-muted-foreground text-[11px]">
                               {selectedInquiry.status === "approved"
-                                ? (isAr ? "تم اعتماد الطلب رسمياً" : "Request is officially approved")
-                                : (isAr ? "تم الاعتذار عن هذا الطلب" : "Request has been declined")}
+                                ? isAr
+                                  ? "تم اعتماد الطلب رسمياً"
+                                  : "Request is officially approved"
+                                : isAr
+                                  ? "تم الاعتذار عن هذا الطلب"
+                                  : "Request has been declined"}
                             </span>
                             <Button
                               size="sm"
                               variant="ghost"
                               className="h-7 text-[11px] font-bold text-primary"
                               onClick={() => {
-                                setDecisionMode(selectedInquiry.status === "approved" ? "reject" : "approve");
+                                setDecisionMode(
+                                  selectedInquiry.status === "approved" ? "reject" : "approve",
+                                );
                               }}
                             >
                               {selectedInquiry.status === "approved"
-                                ? (isAr ? "تغيير للاعتذار" : "Change to Decline")
-                                : (isAr ? "تغيير للاعتماد" : "Change to Approve")}
+                                ? isAr
+                                  ? "تغيير للاعتذار"
+                                  : "Change to Decline"
+                                : isAr
+                                  ? "تغيير للاعتماد"
+                                  : "Change to Approve"}
                             </Button>
                           </div>
                         )}
@@ -996,9 +1040,17 @@ export function InquiriesManager({
                             variant="secondary"
                             className="w-full text-xs h-8 font-medium gap-1.5"
                             onClick={async () => {
-                              await onUpdateStatus(selectedInquiry.id, "in_progress", selectedInquiry.source_table);
-                              setSelectedInquiry((prev) => (prev ? { ...prev, status: "in_progress" } : null));
-                              toast.success(isAr ? "تم نقل الطلب إلى قيد المراجعة" : "Moved to In Progress");
+                              await onUpdateStatus(
+                                selectedInquiry.id,
+                                "in_progress",
+                                selectedInquiry.source_table,
+                              );
+                              setSelectedInquiry((prev) =>
+                                prev ? { ...prev, status: "in_progress" } : null,
+                              );
+                              toast.success(
+                                isAr ? "تم نقل الطلب إلى قيد المراجعة" : "Moved to In Progress",
+                              );
                             }}
                           >
                             <Clock className="w-3.5 h-3.5" />

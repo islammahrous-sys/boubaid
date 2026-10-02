@@ -69,8 +69,6 @@ type BusinessItem = {
   website: string;
 };
 
-
-
 function getSectorIcon(categoryName: string) {
   const cat = categoryName.toLowerCase();
   if (

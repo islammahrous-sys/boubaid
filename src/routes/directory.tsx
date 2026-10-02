@@ -63,7 +63,10 @@ export const Route = createFileRoute("/directory")({
         content:
           "خدمات أفراد أسرة آل بوعبيد وخدمات المنشآت العائلية: الاستشارات القانونية والمحاسبية والتعليمية، وخدمات الأعمال والمواقع الإلكترونية وشجرات العائلة.",
       },
-      { property: "og:title", content: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج | آل بوعبيد" },
+      {
+        property: "og:title",
+        content: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج | آل بوعبيد",
+      },
       {
         property: "og:description",
         content: "دليل خدمات أفراد أسرة آل بوعبيد وخدمات المنشآت العائلية المعتمدة.",
@@ -75,8 +78,6 @@ export const Route = createFileRoute("/directory")({
   }),
   component: DirectoryPage,
 });
-
-
 
 type BusinessItem = {
   id: string;

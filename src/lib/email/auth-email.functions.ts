@@ -67,7 +67,9 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
       if (!guard.ok) {
         // Throttled / failed-bot-check callers get the same uniform answer as
         // unknown addresses, except for the explicit bot-check error the UI handles.
-        return guard.error === "turnstile_failed" ? { ok: false, error: "turnstile_failed" } : { ok: true };
+        return guard.error === "turnstile_failed"
+          ? { ok: false, error: "turnstile_failed" }
+          : { ok: true };
       }
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -82,7 +84,10 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
 
       // If user is not found, return ok: true without error to protect user privacy (anti-enumeration)
       if (linkError || !linkData?.properties?.action_link) {
-        console.warn(`[auth-email] Password reset requested for ${email}, but user was not found or link generation failed:`, linkError?.message);
+        console.warn(
+          `[auth-email] Password reset requested for ${email}, but user was not found or link generation failed:`,
+          linkError?.message,
+        );
         return { ok: true };
       }
 
@@ -354,7 +359,9 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
       let name = data.fullName;
 
       const { checkKeyRateLimit } = await import("@/lib/public-forms-rate-limit.server");
-      if (await checkKeyRateLimit("auth_welcome", userId, { max: 2, windowMs: 24 * 60 * 60 * 1000 })) {
+      if (
+        await checkKeyRateLimit("auth_welcome", userId, { max: 2, windowMs: 24 * 60 * 60 * 1000 })
+      ) {
         return { ok: false, error: "rate_limited" };
       }
 
@@ -366,7 +373,11 @@ export const sendWelcomeEmail = createServerFn({ method: "POST" })
           .eq("id", userId)
           .maybeSingle();
         if (profile) {
-          name = name || (isAr ? profile.full_name_ar : profile.full_name_en) || profile.full_name_ar || undefined;
+          name =
+            name ||
+            (isAr ? profile.full_name_ar : profile.full_name_en) ||
+            profile.full_name_ar ||
+            undefined;
         }
       }
 

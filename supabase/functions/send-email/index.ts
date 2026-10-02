@@ -52,10 +52,10 @@ serve(async (req: Request) => {
     }
 
     if (!resendApiKey) {
-      return new Response(
-        JSON.stringify({ error: "RESEND_API_KEY is not configured" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "RESEND_API_KEY is not configured" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // 2. Parse request
@@ -66,10 +66,10 @@ serve(async (req: Request) => {
       .filter((r): r is string => Boolean(r && r.includes("@")));
 
     if (cleanedRecipients.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Missing or invalid 'to' recipient" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Missing or invalid 'to' recipient" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const fromName = body.fromName || defaultFromName;
@@ -105,7 +105,7 @@ serve(async (req: Request) => {
       console.error("[send-email] Resend error:", resendData);
       return new Response(
         JSON.stringify({ error: "Failed to send email via Resend", details: resendData }),
-        { status: resendResponse.status, headers: { "Content-Type": "application/json" } }
+        { status: resendResponse.status, headers: { "Content-Type": "application/json" } },
       );
     }
 
@@ -123,21 +123,18 @@ serve(async (req: Request) => {
         .eq("id", body.queueId);
     }
 
-    return new Response(
-      JSON.stringify({ success: true, data: resendData }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      }
-    );
+    return new Response(JSON.stringify({ success: true, data: resendData }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
   } catch (error: any) {
     console.error("[send-email] Unhandled error:", error);
-    return new Response(
-      JSON.stringify({ error: error?.message || "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: error?.message || "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 });

@@ -63,7 +63,10 @@ export function MobileNav() {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden">
-      <nav className="grid h-16 grid-cols-5 items-stretch px-1" aria-label={t({ ar: "التنقل السريع", en: "Quick navigation" })}>
+      <nav
+        className="grid h-16 grid-cols-5 items-stretch px-1"
+        aria-label={t({ ar: "التنقل السريع", en: "Quick navigation" })}
+      >
         {tabs.map((item) => {
           const Icon = item.Icon;
           const active = isRouteActive(pathname, item.to);
@@ -80,7 +83,14 @@ export function MobileNav() {
               )}
             >
               <Icon className="h-5 w-5" aria-hidden="true" />
-              <span className={cn("w-full truncate text-center text-[10px] sm:text-[11px]", active && "font-semibold")}>{t(item.label)}</span>
+              <span
+                className={cn(
+                  "w-full truncate text-center text-[10px] sm:text-[11px]",
+                  active && "font-semibold",
+                )}
+              >
+                {t(item.label)}
+              </span>
             </Link>
           );
         })}
@@ -94,7 +104,9 @@ export function MobileNav() {
               aria-label={lang === "ar" ? "فتح قائمة المزيد" : "Open more menu"}
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
-              <span className="w-full truncate text-center text-[10px] sm:text-[11px]">{lang === "ar" ? "المزيد" : "More"}</span>
+              <span className="w-full truncate text-center text-[10px] sm:text-[11px]">
+                {lang === "ar" ? "المزيد" : "More"}
+              </span>
             </Button>
           </DrawerTrigger>
 

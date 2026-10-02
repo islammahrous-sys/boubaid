@@ -1406,7 +1406,10 @@ function MasterAdminPage() {
                           refreshInquiries,
                         )
                       : runMutation(
-                          () => updateInqStatusMut({ data: { id, status: status as any, review_note: reviewNote } }),
+                          () =>
+                            updateInqStatusMut({
+                              data: { id, status: status as any, review_note: reviewNote },
+                            }),
                           refreshInquiries,
                         )
                   }

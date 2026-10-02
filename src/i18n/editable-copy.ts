@@ -9,7 +9,10 @@ const ids = new WeakMap<object, string>();
 export const copyRegistry: Record<string, { path: string; value: Bi }[]> = {};
 
 const isBi = (v: unknown): v is Bi =>
-  !!v && typeof v === "object" && typeof (v as Bi).ar === "string" && typeof (v as Bi).en === "string";
+  !!v &&
+  typeof v === "object" &&
+  typeof (v as Bi).ar === "string" &&
+  typeof (v as Bi).en === "string";
 
 export function registerCopy<T extends object>(page: string, copy: T): T {
   const list: { path: string; value: Bi }[] = [];

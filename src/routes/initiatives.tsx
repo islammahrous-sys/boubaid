@@ -70,8 +70,6 @@ function InitiativesLayout() {
   return <InitiativesPage />;
 }
 
-
-
 function InitiativesPage() {
   const { t, lang } = useLang();
   const { initiatives } = Route.useLoaderData();

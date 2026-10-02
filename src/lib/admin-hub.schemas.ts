@@ -338,7 +338,16 @@ export type ServiceInput = z.infer<typeof serviceInputSchema>;
 // 15. Inquiries & Notes Schema
 export const inquiryStatusUpdateSchema = z.object({
   id: z.string().uuid(),
-  status: z.enum(["new", "open", "in_progress", "approved", "rejected", "resolved", "closed", "spam"]),
+  status: z.enum([
+    "new",
+    "open",
+    "in_progress",
+    "approved",
+    "rejected",
+    "resolved",
+    "closed",
+    "spam",
+  ]),
   assigned_to: z.string().uuid().optional().nullable(),
   review_note: z.string().trim().optional().nullable(),
 });

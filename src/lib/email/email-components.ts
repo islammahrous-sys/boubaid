@@ -72,9 +72,9 @@ export function renderActionButton(
 ): string {
   return `<div class="btn-wrap">
     <!--[if mso]>
-    <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"${url}\" style=\"height:46px;v-text-anchor:middle;width:240px;\" arcsize=\"14%\" fillcolor=\"#245B3F\" stroke=\"f\">
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${url}" style="height:46px;v-text-anchor:middle;width:240px;" arcsize="14%" fillcolor="#245B3F" stroke="f">
       <w:anchorlock/>
-      <center style=\"color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:bold;\">${escapeXml(label)}</center>
+      <center style="color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:bold;">${escapeXml(label)}</center>
     </v:roundrect>
     <![endif]-->
     <!--[if !mso]><!-->

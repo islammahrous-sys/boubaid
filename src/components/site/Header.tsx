@@ -453,7 +453,9 @@ export function Header() {
             title="Ctrl + K"
           >
             <Search className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="hidden min-[2100px]:inline">{lang === "ar" ? "بحث..." : "Search..."}</span>
+            <span className="hidden min-[2100px]:inline">
+              {lang === "ar" ? "بحث..." : "Search..."}
+            </span>
             <kbd className="hidden min-[2100px]:inline ms-1 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
               ⌘K
             </kbd>

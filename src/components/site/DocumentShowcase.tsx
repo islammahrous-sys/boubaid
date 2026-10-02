@@ -171,7 +171,10 @@ export function DocumentShowcase({
                   >
                     {doc.ncnpRef}
                   </span>
-                  <span dir="auto" className="min-w-0 max-w-full break-words text-sm font-medium text-foreground [overflow-wrap:anywhere]">
+                  <span
+                    dir="auto"
+                    className="min-w-0 max-w-full break-words text-sm font-medium text-foreground [overflow-wrap:anywhere]"
+                  >
                     {t(doc.title)}
                   </span>
                   <span

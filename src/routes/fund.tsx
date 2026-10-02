@@ -51,13 +51,7 @@ function FundPage() {
 
   return (
     <div>
-      <PageHeader
-        eyebrow={t(copy.text5)}
-        title={t(copy.text6)}
-        subtitle={
-          t(copy.text7)
-        }
-      />
+      <PageHeader eyebrow={t(copy.text5)} title={t(copy.text6)} subtitle={t(copy.text7)} />
 
       <section className="container-page py-12">
         <Eyebrow rule>{t(copy.text8)}</Eyebrow>

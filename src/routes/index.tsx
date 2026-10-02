@@ -100,7 +100,6 @@ type HomeMetrics = {
   weather: WeatherPayload | null;
 };
 
-
 /**
  * Homepage "heritage gallery" preview: a handful of images from one
  * published, publicly-visible gallery. `galleries` / `gallery_media` both
@@ -214,7 +213,8 @@ export const Route = createFileRoute("/")({
     };
   },
   head: () => {
-    const pageTitle = "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية";
+    const pageTitle =
+      "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء، بني تميم | البوابة الرسمية";
     const pageDesc = `البوابة الرسمية لمجلس أسرة آل بوعبيد وصندوق التنمية العائلية — من العبادل من بني تميم بالأحساء: شجرة العائلة والنسب، الأرشيف والتراث، المبادرات، وخدمات أفراد الأسرة (ترخيص NCNP ${siteMeta.ncnpLicense}).`;
     const shareImageUrl = getCanonicalUrl("/images/og-share.jpg");
 
@@ -254,8 +254,6 @@ export const Route = createFileRoute("/")({
   },
   component: HomePage,
 });
-
-
 
 /** Arabic abjad-style ordinals for the branch index. */
 const ordinals = ["١", "٢", "٣", "٤", "٥", "٦", "٧"];
@@ -347,7 +345,6 @@ function HomePage() {
   useEffect(() => {
     let mounted = true;
     let inFlight = false;
-    let timer: ReturnType<typeof setInterval> | undefined;
 
     const load = async () => {
       if (inFlight) return; // guards re-render / visibility double-fetches
@@ -378,12 +375,10 @@ function HomePage() {
       }
     };
 
-
-
     void load();
     // Periodic refresh while the tab stays open, plus a refresh when the
     // visitor comes back to the page after a while.
-    timer = setInterval(() => void load(), 10 * 60 * 1000);
+    const timer = setInterval(() => void load(), 10 * 60 * 1000);
     const onVisible = () => {
       if (document.visibilityState === "visible") void load();
     };
@@ -391,11 +386,10 @@ function HomePage() {
 
     return () => {
       mounted = false;
-      if (timer) clearInterval(timer);
+      clearInterval(timer);
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, [metricsNonce]);
-
 
   // Live documented-member count per editorial branch (sum of its DB chart
   // rows), with the static `count` as fallback.
@@ -469,7 +463,6 @@ function HomePage() {
     return CloudSun;
   })();
 
-
   const renderSection = (sec: SectionConfig) => {
     switch (sec.id) {
       case "hero":
@@ -481,11 +474,7 @@ function HomePage() {
                 <div className="mx-auto flex w-full flex-col items-center justify-center motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                   <img
                     src="/logo-mark-gold.svg"
-                    alt={
-                      rtl
-                        ? "شعار مجلس أسرة آل بوعبيد"
-                        : "Al Bu Obaid Family Council mark"
-                    }
+                    alt={rtl ? "شعار مجلس أسرة آل بوعبيد" : "Al Bu Obaid Family Council mark"}
                     className="h-auto w-[clamp(9rem,36vw,13rem)] shrink-0 object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] sm:w-[clamp(11rem,25vw,15rem)] lg:w-[17rem]"
                   />
                 </div>
@@ -579,7 +568,6 @@ function HomePage() {
                       hash?: string;
                       icon: LucideIcon | null;
                     }[]
-
                   ).map((item, i) => {
                     const Icon = item.icon;
                     const content = (
@@ -641,7 +629,6 @@ function HomePage() {
                             </button>
                           </dd>
                         ) : null}
-
                       </div>
                     );
 
@@ -900,145 +887,151 @@ function HomePage() {
 
         return (
           <Fragment key={sec.id}>
-          <section className="container-page py-16 md:py-20 reveal-on-scroll">
-            <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-              <figure>
-                <HqProjectVideo label={t(hqTitle)} className="aspect-[4/3] w-full" />
-                <figcaption className="mt-3 flex items-start gap-2.5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
-                  <span className="mt-1.5 h-px w-5 shrink-0 bg-bronze" aria-hidden="true" />
-                  <span>{t(pageImages.home.project.caption)}</span>
-                </figcaption>
-              </figure>
+            <section className="container-page py-16 md:py-20 reveal-on-scroll">
+              <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+                <figure>
+                  <HqProjectVideo label={t(hqTitle)} className="aspect-[4/3] w-full" />
+                  <figcaption className="mt-3 flex items-start gap-2.5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
+                    <span className="mt-1.5 h-px w-5 shrink-0 bg-bronze" aria-hidden="true" />
+                    <span>{t(pageImages.home.project.caption)}</span>
+                  </figcaption>
+                </figure>
 
-              <div>
-                <Eyebrow>
-                  {sec.badge_ar && rtl
-                    ? sec.badge_ar
-                    : sec.badge_en && !rtl
-                      ? sec.badge_en
-                      : t(copy.hqEyebrow)}
-                </Eyebrow>
-                <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                  {sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : t(hqTitle)}
-                </h2>
-                <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
-                  {sec.subtitle_ar && rtl
-                    ? sec.subtitle_ar
-                    : sec.subtitle_en && !rtl
-                      ? sec.subtitle_en
-                      : t(hqSummary)}
-                </p>
-
-                {/* Progress */}
-                <div className="mt-7 border-t border-border pt-5">
-                  <div className="flex items-baseline justify-between">
-                    <span className="label-caps text-muted-foreground">{t(copy.hqProgress)}</span>
-                    <span className="nums font-mono text-2xl text-foreground">
-                      {hqProject.progress}%
-                    </span>
-                  </div>
-                  <div
-                    className="mt-3 h-1.5 w-full bg-border"
-                    role="progressbar"
-                    aria-valuenow={hqProject.progress}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={t(copy.hqProgress)}
-                  >
-                    <div
-                      className="h-full bg-bronze dark:bg-gold"
-                      style={{ width: `${hqProject.progress}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Supporter recognition levels */}
-                <div className="mt-7 border-t border-border pt-5">
-                  <p className="label-caps text-muted-foreground">
-                    {t({ ar: "مستويات الداعمين", en: "Supporter levels" })}
+                <div>
+                  <Eyebrow>
+                    {sec.badge_ar && rtl
+                      ? sec.badge_ar
+                      : sec.badge_en && !rtl
+                        ? sec.badge_en
+                        : t(copy.hqEyebrow)}
+                  </Eyebrow>
+                  <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
+                    {sec.title_ar && rtl
+                      ? sec.title_ar
+                      : sec.title_en && !rtl
+                        ? sec.title_en
+                        : t(hqTitle)}
+                  </h2>
+                  <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
+                    {sec.subtitle_ar && rtl
+                      ? sec.subtitle_ar
+                      : sec.subtitle_en && !rtl
+                        ? sec.subtitle_en
+                        : t(hqSummary)}
                   </p>
-                  <ol className="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
-                    {[
-                      { ar: "الماسي", en: "Diamond" },
-                      { ar: "البلاتيني", en: "Platinum" },
-                      { ar: "الذهبي", en: "Golden" },
-                    ].map((tier, i) => (
-                      <li
-                        key={tier.en}
-                        className="rounded-md border border-bronze/40 bg-secondary/40 px-2 py-4 text-center dark:border-gold/40"
-                      >
-                        <span className="nums block font-mono text-xs text-bronze dark:text-gold">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="mt-1 block text-[15px] font-semibold text-foreground">
-                          {t(tier)}
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
 
-                <div className="mt-8 flex flex-wrap items-center gap-3">
-                  <Link
-                    to="/contribute"
-                    search={{ purpose: "hq_project" }}
-                    className="inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-bold text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
-                  >
-                    {t(copy.hqSupportCta)}
-                    <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                  </Link>
-                  <Link
-                    to="/committees"
-                    hash="hq-project"
-                    className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
-                  >
-                    {t({ ar: "مشروع مقر مجلس الأسرة", en: "Family Council Headquarters Project" })}
-                    <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                  </Link>
-                </div>
+                  {/* Progress */}
+                  <div className="mt-7 border-t border-border pt-5">
+                    <div className="flex items-baseline justify-between">
+                      <span className="label-caps text-muted-foreground">{t(copy.hqProgress)}</span>
+                      <span className="nums font-mono text-2xl text-foreground">
+                        {hqProject.progress}%
+                      </span>
+                    </div>
+                    <div
+                      className="mt-3 h-1.5 w-full bg-border"
+                      role="progressbar"
+                      aria-valuenow={hqProject.progress}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={t(copy.hqProgress)}
+                    >
+                      <div
+                        className="h-full bg-bronze dark:bg-gold"
+                        style={{ width: `${hqProject.progress}%` }}
+                      />
+                    </div>
+                  </div>
 
-                <a
-                  href={siteMeta.contact.mapUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                  {t(copy.hqLocationLink)}
-                </a>
+                  {/* Supporter recognition levels */}
+                  <div className="mt-7 border-t border-border pt-5">
+                    <p className="label-caps text-muted-foreground">
+                      {t({ ar: "مستويات الداعمين", en: "Supporter levels" })}
+                    </p>
+                    <ol className="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
+                      {[
+                        { ar: "الماسي", en: "Diamond" },
+                        { ar: "البلاتيني", en: "Platinum" },
+                        { ar: "الذهبي", en: "Golden" },
+                      ].map((tier, i) => (
+                        <li
+                          key={tier.en}
+                          className="rounded-md border border-bronze/40 bg-secondary/40 px-2 py-4 text-center dark:border-gold/40"
+                        >
+                          <span className="nums block font-mono text-xs text-bronze dark:text-gold">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <span className="mt-1 block text-[15px] font-semibold text-foreground">
+                            {t(tier)}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  <div className="mt-8 flex flex-wrap items-center gap-3">
+                    <Link
+                      to="/contribute"
+                      search={{ purpose: "hq_project" }}
+                      className="inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-bold text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
+                    >
+                      {t(copy.hqSupportCta)}
+                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Link>
+                    <Link
+                      to="/committees"
+                      hash="hq-project"
+                      className="inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
+                    >
+                      {t({
+                        ar: "مشروع مقر مجلس الأسرة",
+                        en: "Family Council Headquarters Project",
+                      })}
+                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Link>
+                  </div>
+
+                  <a
+                    href={siteMeta.contact.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                    {t(copy.hqLocationLink)}
+                  </a>
+                </div>
               </div>
-            </div>
-          </section>
-          <section
-            key={`${sec.id}-testimonials`}
-            aria-labelledby="home-testimonials"
-            className="border-y border-border bg-secondary/40 reveal-on-scroll"
-          >
-            <div className="container-page py-16 md:py-20">
-              <SectionHeading
-                eyebrow={t({ ar: "شهادات", en: "Testimonials" })}
-                title={t({ ar: "قالوا عن الأسرة", en: "What They Said About the Family" })}
-              />
-              <div className="mt-8 rounded-md border border-border bg-card p-6 md:p-8 text-center max-w-2xl mx-auto">
-                <blockquote id="home-testimonials" className="text-base md:text-lg italic leading-relaxed text-foreground font-serif">
-                  {t({
-                    ar: "«من الأسر التميمية العريقة التي شهدت وثائق الأحساء والوقف الشرعي بمحافظتها على مكانتها الاجتماعية ووجاهتها الحضرية بالمبرز منذ مطلع القرن الثاني عشر الهجري.»",
-                    en: "“One of the distinguished Tamimi families whose heritage in Al-Ahsa and endowment records attest to their enduring civic standing and prominent status in Al-Mubarraz since the early 12th century AH.”",
-                  })}
-                </blockquote>
-                <p className="mt-3 text-xs text-muted-foreground">
-                  {t({
-                    ar: "— من سجلات توثيق أعيان وتاريخ الأحساء والوقفيات العدلية",
-                    en: "— From historical chronicles and judicial endowment archives of Al-Ahsa",
-                  })}
-                </p>
+            </section>
+            <section
+              key={`${sec.id}-testimonials`}
+              aria-labelledby="home-testimonials"
+              className="border-y border-border bg-secondary/40 reveal-on-scroll"
+            >
+              <div className="container-page py-16 md:py-20">
+                <SectionHeading
+                  eyebrow={t({ ar: "شهادات", en: "Testimonials" })}
+                  title={t({ ar: "قالوا عن الأسرة", en: "What They Said About the Family" })}
+                />
+                <div className="mt-8 rounded-md border border-border bg-card p-6 md:p-8 text-center max-w-2xl mx-auto">
+                  <blockquote
+                    id="home-testimonials"
+                    className="text-base md:text-lg italic leading-relaxed text-foreground font-serif"
+                  >
+                    {t({
+                      ar: "«من الأسر التميمية العريقة التي شهدت وثائق الأحساء والوقف الشرعي بمحافظتها على مكانتها الاجتماعية ووجاهتها الحضرية بالمبرز منذ مطلع القرن الثاني عشر الهجري.»",
+                      en: "“One of the distinguished Tamimi families whose heritage in Al-Ahsa and endowment records attest to their enduring civic standing and prominent status in Al-Mubarraz since the early 12th century AH.”",
+                    })}
+                  </blockquote>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    {t({
+                      ar: "— من سجلات توثيق أعيان وتاريخ الأحساء والوقفيات العدلية",
+                      en: "— From historical chronicles and judicial endowment archives of Al-Ahsa",
+                    })}
+                  </p>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
           </Fragment>
         );
       }

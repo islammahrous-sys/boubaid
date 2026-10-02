@@ -53,8 +53,6 @@ export const Route = createFileRoute("/initiatives/$slug")({
   component: InitiativeDetail,
 });
 
-
-
 function JoinInitiativeDialog({
   slug,
   open,

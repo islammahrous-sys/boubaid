@@ -49,8 +49,6 @@ export const Route = createFileRoute("/events")({
   component: EventsPage,
 });
 
-
-
 /** Both calendars plus the clock time, from the one shared date utility. */
 function formatEventDate(iso: string, lang: "ar" | "en", _timezone: string) {
   return formatDualDateTime(iso, lang);

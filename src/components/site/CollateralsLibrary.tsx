@@ -29,8 +29,6 @@ export interface CollateralRecord {
   previewUrl: string | null;
 }
 
-
-
 const KIND_LABEL: Record<string, BiText> = {
   DOCX: { ar: "مستند نصي", en: "Word" },
   PPTX: { ar: "عرض تقديمي", en: "PowerPoint" },
@@ -67,7 +65,9 @@ export function CollateralsLibrary({
 
   return (
     <section className="reveal-on-scroll mt-16">
-      <Eyebrow rule>{rtl ? "المواد التعريفية — Collaterals" : "Collaterals — المواد التعريفية"}</Eyebrow>
+      <Eyebrow rule>
+        {rtl ? "المواد التعريفية — Collaterals" : "Collaterals — المواد التعريفية"}
+      </Eyebrow>
       <p className="measure mt-4 text-[13px] leading-relaxed text-muted-foreground">
         {t(copy.intro)}
       </p>

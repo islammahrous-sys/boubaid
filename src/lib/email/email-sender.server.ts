@@ -70,9 +70,7 @@ export interface SendEmailResult {
  * Sends a transactional email through Resend with rate limiting,
  * exponential backoff retries, and comprehensive error handling.
  */
-export async function sendEmailViaResend(
-  payload: SendEmailPayload,
-): Promise<SendEmailResult> {
+export async function sendEmailViaResend(payload: SendEmailPayload): Promise<SendEmailResult> {
   const config = await getRuntimeEmailConfig();
 
   if (!config.resendApiKey) {
@@ -145,7 +143,9 @@ export async function sendEmailViaResend(
         lastError?.toLowerCase().includes("domain is not verified") &&
         !senderString.includes("onboarding@resend.dev")
       ) {
-        console.warn("[email-sender] Custom domain pending DNS verification. Retrying with onboarding fallback...");
+        console.warn(
+          "[email-sender] Custom domain pending DNS verification. Retrying with onboarding fallback...",
+        );
         const fallbackBody = {
           ...bodyData,
           from: `${config.fromName} <onboarding@resend.dev>`,

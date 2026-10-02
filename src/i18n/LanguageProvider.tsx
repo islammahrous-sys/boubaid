@@ -53,8 +53,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     staleTime: 5 * 60 * 1000,
   });
   const overrides = (settings as Record<string, any> | undefined)?.page_texts as
-    | Record<string, { ar?: string; en?: string }>
-    | undefined;
+    Record<string, { ar?: string; en?: string }> | undefined;
 
   const value = useMemo<Ctx>(
     () => ({

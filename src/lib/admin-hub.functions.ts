@@ -1458,7 +1458,9 @@ export const getInquiriesPaginated = createServerFn({ method: "POST" })
       .limit(MAX_ROWS_PER_SOURCE);
 
     if (committeeSlug) {
-      inquiriesQuery = inquiriesQuery.contains("request_metadata", { committee_slug: committeeSlug });
+      inquiriesQuery = inquiriesQuery.contains("request_metadata", {
+        committee_slug: committeeSlug,
+      });
     }
 
     if (cleanSearch) {
@@ -1539,9 +1541,11 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
         const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");
         const metadata = (row.request_metadata || {}) as Record<string, any>;
         const refNumber = metadata.reference || `REQ-${row.id.slice(0, 8).toUpperCase()}`;
-        const title = row.subject || metadata.request_title_ar || metadata.title || "طلب مجلس الأسرة";
+        const title =
+          row.subject || metadata.request_title_ar || metadata.title || "طلب مجلس الأسرة";
 
-        let templateKey: import("@/lib/email/email-types").EmailTemplateKey = "request_status_changed";
+        let templateKey: import("@/lib/email/email-types").EmailTemplateKey =
+          "request_status_changed";
         if (data.status === "approved") {
           templateKey = "request_approved";
         } else if (data.status === "rejected") {
@@ -1581,7 +1585,9 @@ export const updateInquiryStatus = createServerFn({ method: "POST" })
           },
           idempotencyKey: `inquiry-status-${row.id}-${data.status}-${Date.now()}`,
           priority: "HIGH",
-        }).catch((err) => console.error("[admin-hub] Failed to enqueue request status email:", err));
+        }).catch((err) =>
+          console.error("[admin-hub] Failed to enqueue request status email:", err),
+        );
       } catch (enqueueErr) {
         console.warn("[admin-hub] Email dispatch error:", enqueueErr);
       }
@@ -1595,7 +1601,10 @@ export const getRequestAttachmentSignedUrl = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ path: z.string().min(1) }).parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const cleanPath = data.path.replace(/^documents-private\//, "").split(" — ")[0].trim();
+    const cleanPath = data.path
+      .replace(/^documents-private\//, "")
+      .split(" — ")[0]
+      .trim();
     const { data: signed, error } = await supabaseAdmin.storage
       .from("documents-private")
       .createSignedUrl(cleanPath, 60 * 60);

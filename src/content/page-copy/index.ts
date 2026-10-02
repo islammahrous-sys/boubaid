@@ -102,5 +102,8 @@ export const copy = registerCopy("index", {
     en: "Monthly subscription funds the endowments, the solidarity programmes, and the headquarters project. Family members may also join a committee or update their record in the register.",
   } as BiText,
   joinCta: { ar: "الاشتراك والمساهمة", en: "Subscribe & contribute" } as BiText,
-  contactCta: { ar: "تواصل مع لجان مجلس الأسرة", en: "Contact Family Council Committees" } as BiText,
+  contactCta: {
+    ar: "تواصل مع لجان مجلس الأسرة",
+    en: "Contact Family Council Committees",
+  } as BiText,
 });

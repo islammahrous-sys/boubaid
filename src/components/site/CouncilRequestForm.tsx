@@ -1,7 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +21,16 @@ import {
 } from "@/lib/council-requests";
 import { copy } from "@/content/page-copy/councilrequestform";
 import { useAuth } from "@/hooks/useAuth";
-import { CheckCircle2, Copy, Check, Clock, ShieldCheck, Mail, ArrowRight, ArrowLeft } from "lucide-react";
+import {
+  CheckCircle2,
+  Copy,
+  Check,
+  Clock,
+  ShieldCheck,
+  Mail,
+  ArrowRight,
+  ArrowLeft,
+} from "lucide-react";
 
 /**
  * Shared submission form for every Requests Hub request type. All of them
@@ -204,7 +218,11 @@ export function CouncilRequestForm({
                   onClick={handleCopyRef}
                   className="h-8 gap-1.5 text-xs font-semibold rounded-lg"
                 >
-                  {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
                   {copied ? (isAr ? "تم النسخ" : "Copied") : t(copy.copyRef)}
                 </Button>
               </div>
@@ -218,19 +236,27 @@ export function CouncilRequestForm({
               </span>
               <ol className="space-y-2.5 text-xs text-muted-foreground">
                 <li className="flex items-center gap-2.5 text-emerald-600 dark:text-emerald-400 font-semibold">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 text-[10px]">✓</span>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 text-[10px]">
+                    ✓
+                  </span>
                   <span>1. {t(copy.stage1)}</span>
                 </li>
                 <li className="flex items-center gap-2.5 text-foreground font-semibold">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary text-[10px] animate-pulse">2</span>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary text-[10px] animate-pulse">
+                    2
+                  </span>
                   <span>2. {t(copy.stage2)}</span>
                 </li>
                 <li className="flex items-center gap-2.5 opacity-60">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground text-[10px]">3</span>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground text-[10px]">
+                    3
+                  </span>
                   <span>3. {t(copy.stage3)}</span>
                 </li>
                 <li className="flex items-center gap-2.5 opacity-60">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground text-[10px]">4</span>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground text-[10px]">
+                    4
+                  </span>
                   <span>4. {t(copy.stage4)}</span>
                 </li>
               </ol>
@@ -408,7 +434,11 @@ export function CouncilRequestForm({
                 <Input id="cr-link" name="link" type="url" maxLength={500} />
               </div>
 
-              <Button type="submit" disabled={sending} className="w-full h-10 font-bold rounded-xl shadow">
+              <Button
+                type="submit"
+                disabled={sending}
+                className="w-full h-10 font-bold rounded-xl shadow"
+              >
                 {sending ? t(copy.sending) : t(copy.submit)}
               </Button>
             </form>

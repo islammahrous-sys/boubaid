@@ -19,10 +19,7 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ArchiveVideoPlayer } from "@/components/site/ArchiveVideoPlayer";
 import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
-import {
-  CommitteeYearGrid,
-  type CommitteeArchiveItem,
-} from "@/components/site/CommitteeYearGrid";
+import { CommitteeYearGrid, type CommitteeArchiveItem } from "@/components/site/CommitteeYearGrid";
 import { Eyebrow } from "@/components/site/Editorial";
 import { committeeDocuments } from "@/content/committee-documents";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
@@ -158,8 +155,6 @@ function LibraryRouteLayout() {
 
 const MUSEUM_TAB = "museum";
 const VIDEOS_TAB = "videos";
-
-
 
 const PHOTO_PAGE_SIZE = 24;
 
@@ -435,19 +430,17 @@ function LibraryPage() {
       />
 
       <div className="container-page py-10 pb-20">
-        <section className="mb-12 border-b border-border pb-12" aria-labelledby="committee-archive-1448">
+        <section
+          className="mb-12 border-b border-border pb-12"
+          aria-labelledby="committee-archive-1448"
+        >
           <Eyebrow rule>{t({ ar: "الأرشيف", en: "Archive" })}</Eyebrow>
           <h2 id="committee-archive-1448" className="mt-6 text-xl font-semibold text-foreground">
             {t({ ar: "١٤٤٨ هـ", en: "1448 AH" })}
           </h2>
-          <CommitteeYearGrid
-            rows={committeeArchive as CommitteeArchiveItem[]}
-            kind="ARCH"
-          />
+          <CommitteeYearGrid rows={committeeArchive as CommitteeArchiveItem[]} kind="ARCH" />
 
-          {[
-            { year: 1444, label: { ar: "١٤٤٤ هـ", en: "1444 AH" } },
-          ].map(({ year, label }) => (
+          {[{ year: 1444, label: { ar: "١٤٤٤ هـ", en: "1444 AH" } }].map(({ year, label }) => (
             <div key={year} className="mt-10" aria-labelledby={`committee-archive-${year}`}>
               <h2
                 id={`committee-archive-${year}`}

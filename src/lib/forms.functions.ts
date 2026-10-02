@@ -340,9 +340,7 @@ export const submitCouncilRequest = createServerFn({ method: "POST" })
     // not bypass the guard above by posting to PostgREST directly.
     const { supabaseAdmin: supabase } = await import("@/integrations/supabase/client.server");
 
-    const { COUNCIL_REQUESTS, COMMITTEE_REQUEST_DESTINATIONS } = await import(
-      "./council-requests"
-    );
+    const { COUNCIL_REQUESTS, COMMITTEE_REQUEST_DESTINATIONS } = await import("./council-requests");
     const def: import("./council-requests").CouncilRequestDef = COUNCIL_REQUESTS[data.type];
     if (def.retired) return { ok: false, error: "request_retired" };
 
@@ -657,4 +655,3 @@ export const getMyCouncilRequests = createServerFn({ method: "GET" })
 
     return { ok: true, requests: sanitized };
   });
-

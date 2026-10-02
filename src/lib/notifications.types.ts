@@ -17,12 +17,7 @@ export type NotificationType =
   | "general";
 
 export type NotificationCategory =
-  | "all"
-  | "unread"
-  | "system"
-  | "events"
-  | "contributions"
-  | "heritage";
+  "all" | "unread" | "system" | "events" | "contributions" | "heritage";
 
 export function getCategoryForType(type: string): NotificationCategory {
   switch (type) {

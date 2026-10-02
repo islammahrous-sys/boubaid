@@ -1,6 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Download, Eye, FileArchive, FileText, Image as ImageIcon, Palette, Presentation, Type } from "lucide-react";
+import {
+  Download,
+  Eye,
+  FileArchive,
+  FileText,
+  Image as ImageIcon,
+  Palette,
+  Presentation,
+  Type,
+} from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { getPublishedLibrary } from "@/lib/cms.functions";
@@ -42,7 +51,6 @@ function collateralDisplayOrder(reference: string | null, fallback: number) {
   if (!reference) return fallback + 1000;
   return COLLATERAL_DISPLAY_ORDER[reference] ?? fallback + 1000;
 }
-
 
 /**
  * الهوية البصرية — official family identity assets plus the
@@ -101,8 +109,6 @@ export const Route = createFileRoute("/templates")({
   }),
   component: TemplatesPage,
 });
-
-
 
 /** Image records are either flagged IMAGE or point at an image file. */
 function isImageRecord(kind: string | null | undefined, href: string | null) {
@@ -274,7 +280,6 @@ function TemplatesPage() {
           items={collateralRecords}
           onView={(src, title) => setAssetViewer({ src, title, kind: "image" })}
         />
-
       </div>
 
       <div className="container-page pb-14 md:pb-16">
@@ -336,9 +341,7 @@ function VisualIdentityLibrary({
 }) {
   const mainDocument = records.find((r) => r.item.reference === "VIFC-DOCUMENT-01");
   const paletteRecords = records.filter((r) => isPaletteRecord(r.item.reference));
-  const assetRecords = records.filter(
-    (r) => r.item.reference?.startsWith("VI-ASSET-") && r.href,
-  );
+  const assetRecords = records.filter((r) => r.item.reference?.startsWith("VI-ASSET-") && r.href);
   const committeeEditableRecords = records.filter(
     (r) => r.item.reference?.startsWith("COMM-ORG-PPTX-") && r.href,
   );
@@ -349,12 +352,7 @@ function VisualIdentityLibrary({
   return (
     <div className="mt-8 space-y-10">
       {mainDocument ? (
-        <VisualIdentityCard
-          record={mainDocument}
-          featured
-          labels={labels}
-          onView={onView}
-        />
+        <VisualIdentityCard record={mainDocument} featured labels={labels} onView={onView} />
       ) : null}
 
       {paletteRecords.length > 0 ? (
@@ -486,11 +484,11 @@ function VisualIdentityCard({
       ? ImageIcon
       : rawType === "PPTX"
         ? Presentation
-      : rawType === "FONT"
-        ? Type
-        : rawType === "CSS"
-          ? Palette
-          : FileArchive;
+        : rawType === "FONT"
+          ? Type
+          : rawType === "CSS"
+            ? Palette
+            : FileArchive;
   const primaryAction = kind ? labels.view : labels.open;
 
   const handleOpen = () => {

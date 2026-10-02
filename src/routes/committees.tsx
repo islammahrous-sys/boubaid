@@ -6,10 +6,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { SectionRail, type RailSection } from "@/components/site/SectionRail";
 import { Eyebrow, Ornament } from "@/components/site/Editorial";
 import { HqProjectVideo } from "@/components/site/HqProjectVideo";
-import {
-  CommitteeYearGrid,
-  type CommitteeArchiveItem,
-} from "@/components/site/CommitteeYearGrid";
+import { CommitteeYearGrid, type CommitteeArchiveItem } from "@/components/site/CommitteeYearGrid";
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedInitiatives, getPublishedLibrary } from "@/lib/cms.functions";
 import { mapInitiativeRow } from "@/content/cms-adapt";
@@ -18,8 +15,14 @@ import { committeeDocuments } from "@/content/committee-documents";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 // 1445 org maps are served as plain static files from public/ so they render
 // on every host (Lovable, Vercel, custom domains) — not only Lovable's asset CDN.
-const map1445Ar = { url: "/images/committee-charts-1445/org-map-1445-ar.png", original_filename: "org-map-1445-ar.png" };
-const map1445En = { url: "/images/committee-charts-1445/org-map-1445-en.png", original_filename: "org-map-1445-en.png" };
+const map1445Ar = {
+  url: "/images/committee-charts-1445/org-map-1445-ar.png",
+  original_filename: "org-map-1445-ar.png",
+};
+const map1445En = {
+  url: "/images/committee-charts-1445/org-map-1445-en.png",
+  original_filename: "org-map-1445-en.png",
+};
 
 export const Route = createFileRoute("/committees")({
   loader: async () => {
@@ -56,8 +59,6 @@ export const Route = createFileRoute("/committees")({
   component: CommitteesPage,
 });
 
-
-
 const railSections: RailSection[] = [
   { id: "y1448", label: { ar: "١٤٤٨ هـ", en: "1448 AH" } },
   { id: "hq-project", label: { ar: "مشروع المقر", en: "HQ Project" } },
@@ -71,9 +72,13 @@ function CommitteesPage() {
   const { charts, hq } = Route.useLoaderData();
   const chartRecords = charts as CommitteeArchiveItem[];
   const hqTitle = hq?.title ?? hqProject.title;
-  const hqSummary = hq?.summary && (hq.summary.ar || hq.summary.en) ? hq.summary : hqProject.fundingModel;
+  const hqSummary =
+    hq?.summary && (hq.summary.ar || hq.summary.en) ? hq.summary : hqProject.fundingModel;
   const map1445 = rtl ? map1445Ar : map1445En;
-  const map1445Title = { ar: "الخريطة التنظيمية للجان ١٤٤٥ هـ", en: "Committees Organizational Map 1445 AH" };
+  const map1445Title = {
+    ar: "الخريطة التنظيمية للجان ١٤٤٥ هـ",
+    en: "Committees Organizational Map 1445 AH",
+  };
 
   return (
     <>
@@ -119,7 +124,10 @@ function CommitteesPage() {
             className="scroll-mt-28 mt-10 rounded-md border border-border bg-card p-5 md:p-8"
           >
             <p className="label-caps text-bronze dark:text-gold">
-              {t({ ar: "لجنة شؤون مقر مجلس الأسرة", en: "Family Council Headquarters Affairs Committee" })}
+              {t({
+                ar: "لجنة شؤون مقر مجلس الأسرة",
+                en: "Family Council Headquarters Affairs Committee",
+              })}
             </p>
             <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
               {t(hqTitle)}
@@ -129,15 +137,21 @@ function CommitteesPage() {
               <div>
                 <dl className="space-y-3 text-[14px]">
                   <div>
-                    <dt className="label-caps text-muted-foreground">{t({ ar: "الموقع", en: "Location" })}</dt>
+                    <dt className="label-caps text-muted-foreground">
+                      {t({ ar: "الموقع", en: "Location" })}
+                    </dt>
                     <dd className="mt-1 text-foreground">{t(hqProject.location)}</dd>
                   </div>
                   <div>
-                    <dt className="label-caps text-muted-foreground">{t({ ar: "المرحلة", en: "Stage" })}</dt>
+                    <dt className="label-caps text-muted-foreground">
+                      {t({ ar: "المرحلة", en: "Stage" })}
+                    </dt>
                     <dd className="mt-1 text-foreground">{t(hqProject.status)}</dd>
                   </div>
                   <div>
-                    <dt className="label-caps text-muted-foreground">{t({ ar: "التمويل", en: "Funding" })}</dt>
+                    <dt className="label-caps text-muted-foreground">
+                      {t({ ar: "التمويل", en: "Funding" })}
+                    </dt>
                     <dd className="mt-1 leading-relaxed text-muted-foreground">{t(hqSummary)}</dd>
                   </div>
                 </dl>
@@ -146,10 +160,21 @@ function CommitteesPage() {
                     <span className="label-caps text-muted-foreground">
                       {t({ ar: "نسبة الإنجاز", en: "Completion" })}
                     </span>
-                    <span className="nums font-mono text-xl text-foreground">{hqProject.progress}%</span>
+                    <span className="nums font-mono text-xl text-foreground">
+                      {hqProject.progress}%
+                    </span>
                   </div>
-                  <div className="mt-2 h-1.5 w-full bg-border" role="progressbar" aria-valuenow={hqProject.progress} aria-valuemin={0} aria-valuemax={100}>
-                    <div className="h-full bg-bronze dark:bg-gold" style={{ width: `${hqProject.progress}%` }} />
+                  <div
+                    className="mt-2 h-1.5 w-full bg-border"
+                    role="progressbar"
+                    aria-valuenow={hqProject.progress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  >
+                    <div
+                      className="h-full bg-bronze dark:bg-gold"
+                      style={{ width: `${hqProject.progress}%` }}
+                    />
                   </div>
                 </div>
                 <Link
@@ -165,14 +190,17 @@ function CommitteesPage() {
           </article>
 
           {/* ١٤٤٥ هـ — organisational map and documents, nested under 1448 */}
-          <div id="y1445" className="scroll-mt-28 mt-10 overflow-hidden rounded-md border border-border bg-card md:p-8">
+          <div
+            id="y1445"
+            className="scroll-mt-28 mt-10 overflow-hidden rounded-md border border-border bg-card md:p-8"
+          >
             <div className="px-4 pt-5 md:px-0 md:pt-0">
-            <p className="label-caps text-bronze dark:text-gold">
-              {t({ ar: "الخريطة التنظيمية ١٤٤٥ هـ", en: "1445 AH Organizational Map" })}
-            </p>
-            <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
-              {t({ ar: "١٤٤٥ هـ", en: "1445 AH" })}
-            </h3>
+              <p className="label-caps text-bronze dark:text-gold">
+                {t({ ar: "الخريطة التنظيمية ١٤٤٥ هـ", en: "1445 AH Organizational Map" })}
+              </p>
+              <h3 className="mt-3 text-xl font-semibold leading-tight text-foreground md:text-2xl">
+                {t({ ar: "١٤٤٥ هـ", en: "1445 AH" })}
+              </h3>
             </div>
             <figure className="mt-5 md:mt-6">
               <button
@@ -216,8 +244,13 @@ function CommitteesPage() {
               {committeeDocuments
                 .filter((d) => d.year === 1445)
                 .map((d) => (
-                  <li key={d.id} className="flex items-center justify-between gap-4 border-b border-border py-3">
-                    <span className="min-w-0 break-words text-[14px] text-foreground">{t(d.title)}</span>
+                  <li
+                    key={d.id}
+                    className="flex items-center justify-between gap-4 border-b border-border py-3"
+                  >
+                    <span className="min-w-0 break-words text-[14px] text-foreground">
+                      {t(d.title)}
+                    </span>
                     <button
                       type="button"
                       onClick={() =>
@@ -235,7 +268,6 @@ function CommitteesPage() {
                 ))}
             </ul>
           </div>
-
 
           <Link
             to="/requests"

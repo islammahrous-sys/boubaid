@@ -67,20 +67,44 @@ export const Route = createFileRoute("/achievers")({
   component: AchieversPage,
 });
 
-
-
 const AWARD_FIELDS: { text: BiText; sub?: BiText[] }[] = [
-  { text: { ar: "حفظ القرآن الكريم كاملاً بشهادة معتمدة من جهة رسمية أو إجازة حفظ", en: "Memorising the entire Holy Qur'an, with a certificate from an official body or an ijazah" } },
+  {
+    text: {
+      ar: "حفظ القرآن الكريم كاملاً بشهادة معتمدة من جهة رسمية أو إجازة حفظ",
+      en: "Memorising the entire Holy Qur'an, with a certificate from an official body or an ijazah",
+    },
+  },
   {
     text: { ar: "التميز العلمي وهو على النحو التالي:", en: "Academic excellence, as follows:" },
     sub: [
-      { ar: "الدراسات العليا: الدكتوراه والماجستير", en: "Postgraduate studies: doctorate and master's" },
-      { ar: "التخرج من المرحلة الجامعية بمعدل تراكمي 4.75 فما فوق", en: "University graduation with a cumulative GPA of 4.75 or above" },
+      {
+        ar: "الدراسات العليا: الدكتوراه والماجستير",
+        en: "Postgraduate studies: doctorate and master's",
+      },
+      {
+        ar: "التخرج من المرحلة الجامعية بمعدل تراكمي 4.75 فما فوق",
+        en: "University graduation with a cumulative GPA of 4.75 or above",
+      },
     ],
   },
-  { text: { ar: "الحصول على نسبة 90% في اختبار القدرات – الثالث ثانوي: الحصول على 90% في اختبار التحصيلي", en: "Scoring 90% in the Qudurat aptitude test – Grade 12: scoring 90% in the Tahsili achievement test" } },
-  { text: { ar: "الحصول على جائزة محلية أو دولية في أي مجال علمي أو مهاري أو مهني", en: "Winning a local or international award in any academic, skills or professional field" } },
-  { text: { ar: "الحصول على شهادة مهنية معتمدة", en: "Obtaining an accredited professional certificate" } },
+  {
+    text: {
+      ar: "الحصول على نسبة 90% في اختبار القدرات – الثالث ثانوي: الحصول على 90% في اختبار التحصيلي",
+      en: "Scoring 90% in the Qudurat aptitude test – Grade 12: scoring 90% in the Tahsili achievement test",
+    },
+  },
+  {
+    text: {
+      ar: "الحصول على جائزة محلية أو دولية في أي مجال علمي أو مهاري أو مهني",
+      en: "Winning a local or international award in any academic, skills or professional field",
+    },
+  },
+  {
+    text: {
+      ar: "الحصول على شهادة مهنية معتمدة",
+      en: "Obtaining an accredited professional certificate",
+    },
+  },
 ];
 
 function AchieversPage() {
@@ -362,12 +386,17 @@ function AchieversPage() {
             {!yearGroups.some((g) => g.year === "1448") ? (
               <section aria-labelledby="award-year-1448">
                 <div className="flex items-center gap-4 border-b border-ink/25 pb-3 dark:border-ivory/20">
-                  <h3 id="award-year-1448" className="nums text-xl font-bold text-bronze dark:text-gold">
+                  <h3
+                    id="award-year-1448"
+                    className="nums text-xl font-bold text-bronze dark:text-gold"
+                  >
                     {rtl ? "عام 1448هـ" : "Year 1448 AH"}
                   </h3>
                 </div>
                 <p className="py-5 text-sm text-muted-foreground">
-                  {rtl ? "تُعلن أسماء المكرمين لعام 1448هـ بعد حفل التكريم." : "The 1448 AH honourees will be announced after the ceremony."}
+                  {rtl
+                    ? "تُعلن أسماء المكرمين لعام 1448هـ بعد حفل التكريم."
+                    : "The 1448 AH honourees will be announced after the ceremony."}
                 </p>
               </section>
             ) : null}
@@ -418,12 +447,18 @@ function AchieversPage() {
 
       <section aria-labelledby="sponsors-title" className="container-page pb-16">
         <Eyebrow>{rtl ? "جائزة التميز" : "Excellence Award"}</Eyebrow>
-        <h2 id="sponsors-title" className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl">
+        <h2
+          id="sponsors-title"
+          className="mt-3 font-naskh text-2xl font-bold text-foreground md:text-3xl"
+        >
           {rtl ? "الرعاة والداعمون" : "Supporters & Sponsors"}
         </h2>
         <div className="mt-6 space-y-3 sm:hidden">
           {sponsorRows.map((r) => (
-            <article key={r.year} className="overflow-hidden rounded-md border border-border bg-card">
+            <article
+              key={r.year}
+              className="overflow-hidden rounded-md border border-border bg-card"
+            >
               <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-secondary/60 px-4 py-3">
                 <h3 className="nums text-lg font-bold text-foreground">
                   {rtl ? `عام ${r.year}هـ` : `Year ${r.year} AH`}
@@ -444,13 +479,17 @@ function AchieversPage() {
                 <div className="min-w-0 bg-card p-3">
                   <dt className="text-xs text-muted-foreground">{t(SPONSOR_HEAD[3])}</dt>
                   <dd className="mt-1 leading-relaxed text-foreground">
-                    {(r.branches ?? []).map((branch) => <div key={branch.en}>{t(branch)}</div>)}
+                    {(r.branches ?? []).map((branch) => (
+                      <div key={branch.en}>{t(branch)}</div>
+                    ))}
                   </dd>
                 </div>
                 <div className="min-w-0 bg-card p-3">
                   <dt className="text-xs text-muted-foreground">{t(SPONSOR_HEAD[5])}</dt>
                   <dd className="mt-1 leading-relaxed text-foreground">
-                    {(r.fields ?? []).map((field) => <div key={field.en}>{t(field)}</div>)}
+                    {(r.fields ?? []).map((field) => (
+                      <div key={field.en}>{t(field)}</div>
+                    ))}
                   </dd>
                 </div>
                 <div className="col-span-2 min-w-0 bg-card p-3">
@@ -463,17 +502,23 @@ function AchieversPage() {
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-md border border-border bg-border text-center">
             <div className="bg-secondary/60 p-3">
               <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
-              <div className="nums mt-1 text-base font-bold text-foreground">{sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}</div>
+              <div className="nums mt-1 text-base font-bold text-foreground">
+                {sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}
+              </div>
               <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[1])}</div>
             </div>
             <div className="bg-secondary/60 p-3">
               <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
-              <div className="nums mt-1 text-base font-bold text-foreground">{sponsorRows.reduce((n, r) => n + Number(r.honoured || 0), 0)}</div>
+              <div className="nums mt-1 text-base font-bold text-foreground">
+                {sponsorRows.reduce((n, r) => n + Number(r.honoured || 0), 0)}
+              </div>
               <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[2])}</div>
             </div>
             <div className="bg-secondary/60 p-3">
               <div className="text-[11px] text-muted-foreground">{rtl ? "الإجمالي" : "Total"}</div>
-              <div className="nums mt-1 text-sm font-bold text-foreground">{sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}</div>
+              <div className="nums mt-1 text-sm font-bold text-foreground">
+                {sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}
+              </div>
               <div className="text-[10px] text-muted-foreground">{t(SPONSOR_HEAD[4])}</div>
             </div>
           </div>
@@ -483,7 +528,11 @@ function AchieversPage() {
             <thead className="bg-secondary/60 text-foreground">
               <tr>
                 {SPONSOR_HEAD.map((h) => (
-                  <th key={h.en} scope="col" className="border-b border-border px-3 py-3 text-start font-semibold">
+                  <th
+                    key={h.en}
+                    scope="col"
+                    className="border-b border-border px-3 py-3 text-start font-semibold"
+                  >
                     {t(h)}
                   </th>
                 ))}
@@ -492,21 +541,42 @@ function AchieversPage() {
             <tbody>
               {sponsorRows.map((r) => (
                 <tr key={r.year} className="border-b border-border align-top">
-                  <th scope="row" className="nums bg-secondary/30 px-3 py-3 text-start font-semibold">{r.year}</th>
+                  <th
+                    scope="row"
+                    className="nums bg-secondary/30 px-3 py-3 text-start font-semibold"
+                  >
+                    {r.year}
+                  </th>
                   <td className="nums px-3 py-3">{r.participants}</td>
                   <td className="nums px-3 py-3">{r.honoured}</td>
-                  <td className="px-3 py-3">{(r.branches ?? []).map((b) => <div key={b.en}>{t(b)}</div>)}</td>
+                  <td className="px-3 py-3">
+                    {(r.branches ?? []).map((b) => (
+                      <div key={b.en}>{t(b)}</div>
+                    ))}
+                  </td>
                   <td className="nums px-3 py-3">{t(r.prize)}</td>
-                  <td className="px-3 py-3">{(r.fields ?? []).map((b) => <div key={b.en}>{t(b)}</div>)}</td>
+                  <td className="px-3 py-3">
+                    {(r.fields ?? []).map((b) => (
+                      <div key={b.en}>{t(b)}</div>
+                    ))}
+                  </td>
                   <td className="px-3 py-3">{r.sponsor}</td>
                 </tr>
               ))}
               <tr className="bg-secondary/50 font-semibold">
-                <th scope="row" className="px-3 py-3 text-start">{rtl ? "المجموع" : "Total"}</th>
-                <td className="nums px-3 py-3">{sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}</td>
-                <td className="nums px-3 py-3">{sponsorRows.reduce((n, r) => n + Number(r.honoured || 0), 0)}</td>
+                <th scope="row" className="px-3 py-3 text-start">
+                  {rtl ? "المجموع" : "Total"}
+                </th>
+                <td className="nums px-3 py-3">
+                  {sponsorRows.reduce((n, r) => n + Number(r.participants || 0), 0)}
+                </td>
+                <td className="nums px-3 py-3">
+                  {sponsorRows.reduce((n, r) => n + Number(r.honoured || 0), 0)}
+                </td>
                 <td className="px-3 py-3" />
-                <td className="nums px-3 py-3">{sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}</td>
+                <td className="nums px-3 py-3">
+                  {sponsorTotal ? t(sponsorTotal) : rtl ? "26000 ريال" : "SAR 26,000"}
+                </td>
                 <td className="px-3 py-3" />
                 <td className="px-3 py-3" />
               </tr>

@@ -95,9 +95,7 @@ export function Footer() {
     e.preventDefault();
     const parsed = newsletterSchema.safeParse({ email, locale: lang });
     if (!parsed.success) {
-      toast.error(
-        t(copy.text1),
-      );
+      toast.error(t(copy.text1));
       return;
     }
 
@@ -105,21 +103,13 @@ export function Footer() {
     try {
       const res = await subscribe({ data: parsed.data });
       if (res.ok) {
-        toast.success(
-          res.already
-            ? t(copy.text2)
-            : t(copy.text3),
-        );
+        toast.success(res.already ? t(copy.text2) : t(copy.text3));
         setEmail("");
       } else {
-        toast.error(
-          t(copy.text4),
-        );
+        toast.error(t(copy.text4));
       }
     } catch {
-      toast.error(
-        t(copy.text5),
-      );
+      toast.error(t(copy.text5));
     } finally {
       setSubscribing(false);
     }
@@ -184,21 +174,15 @@ export function Footer() {
             {/* Registration statement, set as a formal colophon rather than a badge. */}
             <dl className="mt-7 border-t border-ivory/15 pt-5 text-sm">
               <div className="flex flex-wrap gap-x-3 gap-y-1">
-                <dt className="label-caps pt-1 text-ivory/45">
-                  {t(copy.text7)}
-                </dt>
+                <dt className="label-caps pt-1 text-ivory/45">{t(copy.text7)}</dt>
                 <dd className="nums font-mono text-gold">{ncnpLicense}</dd>
               </div>
               <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-                <dt className="label-caps pt-1 text-ivory/45">
-                  {t(copy.text8)}
-                </dt>
+                <dt className="label-caps pt-1 text-ivory/45">{t(copy.text8)}</dt>
                 <dd className="text-ivory/75">{t(siteMeta.ncnpAuthority)}</dd>
               </div>
               <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-                <dt className="label-caps pt-1 text-ivory/45">
-                  {t(copy.text9)}
-                </dt>
+                <dt className="label-caps pt-1 text-ivory/45">{t(copy.text9)}</dt>
                 <dd className="nums text-ivory/75">
                   {t(siteMeta.foundedHijriLabel)} · {t(siteMeta.foundedGregorianLabel)}
                 </dd>
@@ -256,9 +240,7 @@ export function Footer() {
               <label htmlFor="footer-email" className="label-caps mb-2.5 block text-gold/80">
                 {t(copy.text10)}
               </label>
-              <p className="mb-3 text-[13px] leading-relaxed text-ivory/55">
-                {t(copy.text11)}
-              </p>
+              <p className="mb-3 text-[13px] leading-relaxed text-ivory/55">{t(copy.text11)}</p>
               <div className="flex">
                 <input
                   id="footer-email"

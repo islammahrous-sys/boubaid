@@ -41,8 +41,6 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
-
-
 const schema = contactMessageSchema;
 
 function ContactPage() {

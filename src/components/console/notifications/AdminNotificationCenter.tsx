@@ -117,19 +117,35 @@ export function AdminNotificationCenter() {
   const sendTestEmail = useServerFn(sendTestEmailAction);
 
   // Queries
-  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery<any>({
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    refetch: refetchStats,
+  } = useQuery<any>({
     queryKey: ["admin-email-stats"],
     queryFn: async () => await fetchStats(),
     refetchInterval: 30000,
   });
 
-  const { data: logsData, isLoading: logsLoading, refetch: refetchLogs } = useQuery<{
+  const {
+    data: logsData,
+    isLoading: logsLoading,
+    refetch: refetchLogs,
+  } = useQuery<{
     data: EmailLogRecord[];
     count: number;
     page: number;
     pageSize: number;
   }>({
-    queryKey: ["admin-email-logs", page, pageSize, search, statusFilter, priorityFilter, categoryFilter],
+    queryKey: [
+      "admin-email-logs",
+      page,
+      pageSize,
+      search,
+      statusFilter,
+      priorityFilter,
+      categoryFilter,
+    ],
     queryFn: async () =>
       (await fetchLogs({
         data: {
@@ -150,7 +166,8 @@ export function AdminNotificationCenter() {
 
   const { data: inspectedLog, isLoading: inspectedLogLoading } = useQuery<EmailLogRecord | null>({
     queryKey: ["admin-email-log-detail", selectedLogId],
-    queryFn: async () => (selectedLogId ? ((await fetchLogDetails({ data: { id: selectedLogId } })) as any) : null),
+    queryFn: async () =>
+      selectedLogId ? ((await fetchLogDetails({ data: { id: selectedLogId } })) as any) : null,
     enabled: !!selectedLogId,
   });
 
@@ -178,7 +195,9 @@ export function AdminNotificationCenter() {
   const retryMutation = useMutation({
     mutationFn: (id: string) => retryEmail({ data: { id } }),
     onSuccess: () => {
-      toast.success(isAr ? "تمت جدولة إعادة إرسال البريد بنجاح" : "Email retry scheduled successfully");
+      toast.success(
+        isAr ? "تمت جدولة إعادة إرسال البريد بنجاح" : "Email retry scheduled successfully",
+      );
       void queryClient.invalidateQueries({ queryKey: ["admin-email-logs"] });
       void queryClient.invalidateQueries({ queryKey: ["admin-email-stats"] });
       if (selectedLogId) {
@@ -186,7 +205,9 @@ export function AdminNotificationCenter() {
       }
     },
     onError: (err: any) => {
-      toast.error(isAr ? `فشلت إعادة الإرسال: ${err?.message || "خطأ"}` : `Retry failed: ${err?.message}`);
+      toast.error(
+        isAr ? `فشلت إعادة الإرسال: ${err?.message || "خطأ"}` : `Retry failed: ${err?.message}`,
+      );
     },
   });
 
@@ -212,7 +233,9 @@ export function AdminNotificationCenter() {
       }
     },
     onError: (err: any) => {
-      toast.error(isAr ? `تعذر إرسال البريد: ${err?.message || "خطأ"}` : `Send failed: ${err?.message}`);
+      toast.error(
+        isAr ? `تعذر إرسال البريد: ${err?.message || "خطأ"}` : `Send failed: ${err?.message}`,
+      );
     },
   });
 
@@ -282,9 +305,7 @@ export function AdminNotificationCenter() {
         );
       case "HIGH":
         return (
-          <Badge className="bg-amber-500 text-white font-mono text-[11px] px-1.5 py-0">
-            HIGH
-          </Badge>
+          <Badge className="bg-amber-500 text-white font-mono text-[11px] px-1.5 py-0">HIGH</Badge>
         );
       case "NORMAL":
         return (
@@ -294,7 +315,10 @@ export function AdminNotificationCenter() {
         );
       case "LOW":
         return (
-          <Badge variant="outline" className="font-mono text-[11px] px-1.5 py-0 text-muted-foreground">
+          <Badge
+            variant="outline"
+            className="font-mono text-[11px] px-1.5 py-0 text-muted-foreground"
+          >
             LOW
           </Badge>
         );
@@ -310,8 +334,7 @@ export function AdminNotificationCenter() {
         (t.name_ar && t.name_ar.includes(templateSearch)) ||
         (t.name_en && t.name_en.toLowerCase().includes(templateSearch.toLowerCase()));
 
-      const matchCat =
-        templateCategoryFilter === "all" || t.category === templateCategoryFilter;
+      const matchCat = templateCategoryFilter === "all" || t.category === templateCategoryFilter;
 
       return matchSearch && matchCat;
     },
@@ -369,7 +392,9 @@ export function AdminNotificationCenter() {
             disabled={statsLoading || logsLoading}
             className="gap-1.5 text-xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${statsLoading || logsLoading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${statsLoading || logsLoading ? "animate-spin" : ""}`}
+            />
             {isAr ? "تحديث" : "Refresh"}
           </Button>
 
@@ -399,7 +424,9 @@ export function AdminNotificationCenter() {
                 {totalEnqueuedCount.toLocaleString()}
               </span>
               <span className="text-[11px] text-muted-foreground">
-                {isAr ? `(عاجل: ${stats?.critical_count ?? 0})` : `(Critical: ${stats?.critical_count ?? 0})`}
+                {isAr
+                  ? `(عاجل: ${stats?.critical_count ?? 0})`
+                  : `(Critical: ${stats?.critical_count ?? 0})`}
               </span>
             </div>
           </CardContent>
@@ -417,7 +444,10 @@ export function AdminNotificationCenter() {
               <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">
                 {((stats?.delivered ?? 0) + (stats?.sent ?? 0)).toLocaleString()}
               </span>
-              <Badge variant="outline" className="text-[11px] text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300">
+              <Badge
+                variant="outline"
+                className="text-[11px] text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300"
+              >
                 {deliveredPercentage}%
               </Badge>
             </div>
@@ -455,7 +485,7 @@ export function AdminNotificationCenter() {
               <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400">
                 {((stats?.failed ?? 0) + (stats?.bounced ?? 0)).toLocaleString()}
               </span>
-              {((stats?.failed ?? 0) + (stats?.bounced ?? 0)) > 0 ? (
+              {(stats?.failed ?? 0) + (stats?.bounced ?? 0) > 0 ? (
                 <Badge variant="destructive" className="text-[10px]">
                   {isAr ? "يتطلب مراجعة" : "Requires attention"}
                 </Badge>
@@ -567,15 +597,25 @@ export function AdminNotificationCenter() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{isAr ? "كل التصنيفات" : "All Categories"}</SelectItem>
-                  <SelectItem value="auth">{isAr ? "الحساب والأمان" : "Auth & Security"}</SelectItem>
-                  <SelectItem value="membership">{isAr ? "توثيق العضوية" : "Membership"}</SelectItem>
+                  <SelectItem value="auth">
+                    {isAr ? "الحساب والأمان" : "Auth & Security"}
+                  </SelectItem>
+                  <SelectItem value="membership">
+                    {isAr ? "توثيق العضوية" : "Membership"}
+                  </SelectItem>
                   <SelectItem value="requests">{isAr ? "مركز الطلبات" : "Requests Hub"}</SelectItem>
-                  <SelectItem value="council">{isAr ? "المجلس واللجان" : "Council & Committees"}</SelectItem>
+                  <SelectItem value="council">
+                    {isAr ? "المجلس واللجان" : "Council & Committees"}
+                  </SelectItem>
                   <SelectItem value="events">{isAr ? "الفعاليات" : "Events"}</SelectItem>
                   <SelectItem value="fund">{isAr ? "صندوق التنمية" : "Family Fund"}</SelectItem>
                   <SelectItem value="news">{isAr ? "الأخبار والإعلام" : "News & Media"}</SelectItem>
-                  <SelectItem value="newsletter">{isAr ? "النشرة الدورية" : "Newsletter"}</SelectItem>
-                  <SelectItem value="system">{isAr ? "النظام والإدارة" : "System Alerts"}</SelectItem>
+                  <SelectItem value="newsletter">
+                    {isAr ? "النشرة الدورية" : "Newsletter"}
+                  </SelectItem>
+                  <SelectItem value="system">
+                    {isAr ? "النظام والإدارة" : "System Alerts"}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -586,13 +626,27 @@ export function AdminNotificationCenter() {
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="w-[120px] text-xs font-semibold">{isAr ? "الحالة" : "Status"}</TableHead>
-                  <TableHead className="text-xs font-semibold">{isAr ? "المستلم" : "Recipient"}</TableHead>
-                  <TableHead className="text-xs font-semibold">{isAr ? "الموضوع والنوع" : "Subject & Template"}</TableHead>
-                  <TableHead className="w-[110px] text-xs font-semibold">{isAr ? "الأولوية" : "Priority"}</TableHead>
-                  <TableHead className="w-[80px] text-xs font-semibold text-center">{isAr ? "المحاولات" : "Tries"}</TableHead>
-                  <TableHead className="w-[140px] text-xs font-semibold">{isAr ? "تاريخ الإنشاء" : "Created At"}</TableHead>
-                  <TableHead className="w-[120px] text-end text-xs font-semibold">{isAr ? "الإجراءات" : "Actions"}</TableHead>
+                  <TableHead className="w-[120px] text-xs font-semibold">
+                    {isAr ? "الحالة" : "Status"}
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold">
+                    {isAr ? "المستلم" : "Recipient"}
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold">
+                    {isAr ? "الموضوع والنوع" : "Subject & Template"}
+                  </TableHead>
+                  <TableHead className="w-[110px] text-xs font-semibold">
+                    {isAr ? "الأولوية" : "Priority"}
+                  </TableHead>
+                  <TableHead className="w-[80px] text-xs font-semibold text-center">
+                    {isAr ? "المحاولات" : "Tries"}
+                  </TableHead>
+                  <TableHead className="w-[140px] text-xs font-semibold">
+                    {isAr ? "تاريخ الإنشاء" : "Created At"}
+                  </TableHead>
+                  <TableHead className="w-[120px] text-end text-xs font-semibold">
+                    {isAr ? "الإجراءات" : "Actions"}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -602,7 +656,9 @@ export function AdminNotificationCenter() {
                     <TableCell colSpan={7} className="h-40 text-center">
                       <div className="flex flex-col items-center justify-center gap-2">
                         <RefreshCw className="w-5 h-5 animate-spin text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">{isAr ? "جارٍ تحميل السجلات..." : "Loading email logs..."}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {isAr ? "جارٍ تحميل السجلات..." : "Loading email logs..."}
+                        </span>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -611,8 +667,14 @@ export function AdminNotificationCenter() {
                     <TableCell colSpan={7} className="h-40 text-center">
                       <div className="flex flex-col items-center justify-center gap-2">
                         <Inbox className="w-8 h-8 text-muted-foreground/60" />
-                        <span className="text-sm font-medium">{isAr ? "لا توجد رسائل مطابقة للبحث" : "No matching email records found"}</span>
-                        <span className="text-xs text-muted-foreground">{isAr ? "جرب تعديل خيارات التصفية أو البحث أعلاه" : "Try changing your filter settings"}</span>
+                        <span className="text-sm font-medium">
+                          {isAr ? "لا توجد رسائل مطابقة للبحث" : "No matching email records found"}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {isAr
+                            ? "جرب تعديل خيارات التصفية أو البحث أعلاه"
+                            : "Try changing your filter settings"}
+                        </span>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -634,10 +696,16 @@ export function AdminNotificationCenter() {
 
                       <TableCell className="max-w-[280px]">
                         <div className="flex flex-col truncate">
-                          <span className="text-xs font-medium text-foreground truncate" title={log.subject}>
+                          <span
+                            className="text-xs font-medium text-foreground truncate"
+                            title={log.subject}
+                          >
                             {log.subject}
                           </span>
-                          <span className="text-[11px] font-mono text-muted-foreground truncate" title={log.email_type}>
+                          <span
+                            className="text-[11px] font-mono text-muted-foreground truncate"
+                            title={log.email_type}
+                          >
                             {log.email_type}
                           </span>
                         </div>
@@ -749,7 +817,11 @@ export function AdminNotificationCenter() {
               <Input
                 value={templateSearch}
                 onChange={(e) => setTemplateSearch(e.target.value)}
-                placeholder={isAr ? "بحث في قوالب الإشعارات الـ 70..." : "Search across 70 notification templates..."}
+                placeholder={
+                  isAr
+                    ? "بحث في قوالب الإشعارات الـ 70..."
+                    : "Search across 70 notification templates..."
+                }
                 className="ps-9 h-9 text-xs sm:text-sm"
               />
             </div>
@@ -793,7 +865,10 @@ export function AdminNotificationCenter() {
               >
                 <CardHeader className="p-4 pb-2">
                   <div className="flex items-start justify-between gap-2">
-                    <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground uppercase">
+                    <Badge
+                      variant="outline"
+                      className="font-mono text-[10px] text-muted-foreground uppercase"
+                    >
                       {t.category}
                     </Badge>
                     {renderPriorityBadge(t.defaultPriority || t.default_priority || "NORMAL")}
@@ -932,7 +1007,9 @@ export function AdminNotificationCenter() {
                   size="sm"
                   onClick={() => {
                     if (!testRecipientEmail || !testRecipientEmail.includes("@")) {
-                      toast.error(isAr ? "يرجى كتابة عنوان بريد صحيح" : "Please provide a valid email");
+                      toast.error(
+                        isAr ? "يرجى كتابة عنوان بريد صحيح" : "Please provide a valid email",
+                      );
                       return;
                     }
                     sendTestMutation.mutate({
@@ -1072,46 +1149,68 @@ export function AdminNotificationCenter() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3 bg-card p-4 rounded-xl border border-border/60 text-xs">
                       <div>
-                        <span className="text-muted-foreground block">{isAr ? "المستلم:" : "Recipient:"}</span>
+                        <span className="text-muted-foreground block">
+                          {isAr ? "المستلم:" : "Recipient:"}
+                        </span>
                         <span className="font-semibold">{inspectedLog.recipient_name}</span>
-                        <span className="text-muted-foreground font-mono block">{inspectedLog.recipient_email}</span>
+                        <span className="text-muted-foreground font-mono block">
+                          {inspectedLog.recipient_email}
+                        </span>
                       </div>
 
                       <div>
-                        <span className="text-muted-foreground block">{isAr ? "معرّف Resend:" : "Provider ID:"}</span>
+                        <span className="text-muted-foreground block">
+                          {isAr ? "معرّف Resend:" : "Provider ID:"}
+                        </span>
                         <span className="font-mono">{inspectedLog.provider_message_id || "—"}</span>
                       </div>
 
                       <div>
-                        <span className="text-muted-foreground block">{isAr ? "المحاولات:" : "Attempts:"}</span>
-                        <span className="font-semibold">{inspectedLog.attempts} / {inspectedLog.max_attempts}</span>
+                        <span className="text-muted-foreground block">
+                          {isAr ? "المحاولات:" : "Attempts:"}
+                        </span>
+                        <span className="font-semibold">
+                          {inspectedLog.attempts} / {inspectedLog.max_attempts}
+                        </span>
                       </div>
 
                       <div>
-                        <span className="text-muted-foreground block">{isAr ? "وقت الإرسال:" : "Sent At:"}</span>
+                        <span className="text-muted-foreground block">
+                          {isAr ? "وقت الإرسال:" : "Sent At:"}
+                        </span>
                         <span>{formatDateTime(inspectedLog.sent_at)}</span>
                       </div>
 
                       <div>
-                        <span className="text-muted-foreground block">{isAr ? "وقت التسليم:" : "Delivered At:"}</span>
+                        <span className="text-muted-foreground block">
+                          {isAr ? "وقت التسليم:" : "Delivered At:"}
+                        </span>
                         <span>{formatDateTime(inspectedLog.delivered_at)}</span>
                       </div>
 
                       <div>
-                        <span className="text-muted-foreground block">{isAr ? "مفتاح المطابقة:" : "Idempotency Key:"}</span>
-                        <span className="font-mono text-[11px] truncate block">{inspectedLog.idempotency_key || "—"}</span>
+                        <span className="text-muted-foreground block">
+                          {isAr ? "مفتاح المطابقة:" : "Idempotency Key:"}
+                        </span>
+                        <span className="font-mono text-[11px] truncate block">
+                          {inspectedLog.idempotency_key || "—"}
+                        </span>
                       </div>
                     </div>
 
                     {inspectedLog.error_message && (
                       <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-400 text-xs">
-                        <span className="font-bold block mb-1">{isAr ? "رسالة الخطأ:" : "Delivery Error:"}</span>
+                        <span className="font-bold block mb-1">
+                          {isAr ? "رسالة الخطأ:" : "Delivery Error:"}
+                        </span>
                         <p className="font-mono text-[11px]">{inspectedLog.error_message}</p>
                       </div>
                     )}
 
                     <div className="space-y-1">
-                      <span className="text-xs font-semibold text-muted-foreground block">{isAr ? "الحمولة المرسلة (Payload JSON):" : "Raw Variables (JSON):"}</span>
+                      <span className="text-xs font-semibold text-muted-foreground block">
+                        {isAr ? "الحمولة المرسلة (Payload JSON):" : "Raw Variables (JSON):"}
+                      </span>
                       <pre className="p-3 bg-card border border-border/60 rounded-xl text-xs font-mono overflow-x-auto text-foreground">
                         {JSON.stringify(inspectedLog.payload, null, 2)}
                       </pre>
@@ -1123,23 +1222,22 @@ export function AdminNotificationCenter() {
           </div>
 
           <div className="p-3 border-t border-border/50 bg-background flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              {inspectedLog?.recipient_email}
-            </span>
+            <span className="text-xs text-muted-foreground">{inspectedLog?.recipient_email}</span>
 
             <div className="flex items-center gap-2">
-              {inspectedLog && (inspectedLog.status === "failed" || inspectedLog.status === "queued") && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => retryMutation.mutate(inspectedLog.id)}
-                  disabled={retryMutation.isPending}
-                  className="text-xs text-amber-600 gap-1"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  {isAr ? "إعادة الإرسال الآن" : "Retry Send"}
-                </Button>
-              )}
+              {inspectedLog &&
+                (inspectedLog.status === "failed" || inspectedLog.status === "queued") && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => retryMutation.mutate(inspectedLog.id)}
+                    disabled={retryMutation.isPending}
+                    className="text-xs text-amber-600 gap-1"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    {isAr ? "إعادة الإرسال الآن" : "Retry Send"}
+                  </Button>
+                )}
 
               <Button
                 size="sm"

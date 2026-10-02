@@ -150,7 +150,10 @@ export const COUNCIL_REQUESTS = {
   family_competencies_nomination: {
     title: { ar: "ترشيح كفاءات الأسرة", en: "Family Competencies Nomination" },
     topic: { ar: "اسم المرشّح ومجال الكفاءة", en: "Nominee name and field of competency" },
-    details: { ar: "المؤهلات والخبرات وأسباب الترشيح", en: "Qualifications, experience and reasons" },
+    details: {
+      ar: "المؤهلات والخبرات وأسباب الترشيح",
+      en: "Qualifications, experience and reasons",
+    },
     allowAttachments: true,
   },
   excellence_award_application: {
@@ -604,7 +607,10 @@ export const COUNCIL_REQUESTS = {
       en: "Ask the secretariat to verify your membership and issue your official family card.",
     },
     topic: { ar: "الاسم الكامل والفرع المطلوب توثيقه", en: "Full name and branch to verify" },
-    details: { ar: "بيانات النسب والتفاصيل الإضافية", en: "Lineage details and additional information" },
+    details: {
+      ar: "بيانات النسب والتفاصيل الإضافية",
+      en: "Lineage details and additional information",
+    },
     fields: [
       personField("الفرع العائلي", "Family branch", "branch_line"),
       personField("عمود النسب حتى الجد الأكبر", "Lineage to eldest ancestor", "father_lineage"),
@@ -624,7 +630,10 @@ export const COUNCIL_REQUESTS = {
       en: "Register a subscription or contribution to the family development fund and attach your payment notice for review.",
     },
     topic: { ar: "نوع المساهمة أو الاشتراك", en: "Contribution or subscription type" },
-    details: { ar: "تفاصيل المساهمة أو ملاحظات السداد", en: "Contribution details or payment notes" },
+    details: {
+      ar: "تفاصيل المساهمة أو ملاحظات السداد",
+      en: "Contribution details or payment notes",
+    },
     fields: [
       personField("المبلغ (ريال سعودي)", "Amount (SAR)", "amount"),
       personField("اسم البنك المحول منه", "Bank name", "bank_name"),
@@ -641,7 +650,11 @@ export const COUNCIL_REQUESTS = {
     topic: { ar: "المقاس المطلوب للوحة", en: "Requested frame size" },
     details: { ar: "عنوان التوصيل وأية ملاحظات خاصة", en: "Delivery address and notes" },
     fields: [
-      personField("المقاس المطلوب (كبير جداري / متوسط / مكتبي)", "Frame size (Large wall / Medium / Desk)", "frame_size"),
+      personField(
+        "المقاس المطلوب (كبير جداري / متوسط / مكتبي)",
+        "Frame size (Large wall / Medium / Desk)",
+        "frame_size",
+      ),
       personField("مدينة التوصيل", "Delivery city", "city"),
       personField("العدد المطلوب", "Quantity", "quantity"),
     ],
@@ -654,7 +667,10 @@ export const COUNCIL_REQUESTS = {
       en: "Register attendance at an announced family event with guest count.",
     },
     topic: { ar: "اسم الفعالية المراد حضورها", en: "Event name" },
-    details: { ar: "ملاحظات أو استفسارات حول الحضور", en: "Notes or inquiries regarding attendance" },
+    details: {
+      ar: "ملاحظات أو استفسارات حول الحضور",
+      en: "Notes or inquiries regarding attendance",
+    },
     fields: [
       personField("عدد الحاضرين والمرافقين", "Number of attendees / guests", "attendees_count"),
       dateField("تاريخ الفعالية التقريبي", "Approximate event date", "attendance_date"),
@@ -668,9 +684,16 @@ export const COUNCIL_REQUESTS = {
       en: "Apply to take part in one of the family's active initiatives or projects.",
     },
     topic: { ar: "المبادرة أو المشروع المستهدف", en: "Target initiative or project" },
-    details: { ar: "طبيعة المشاركة والخبرات والمقترحات", en: "Nature of participation, skills, and proposals" },
+    details: {
+      ar: "طبيعة المشاركة والخبرات والمقترحات",
+      en: "Nature of participation, skills, and proposals",
+    },
     fields: [
-      personField("اسم المبادرة أو نوع المشروع", "Initiative name or project type", "initiative_name"),
+      personField(
+        "اسم المبادرة أو نوع المشروع",
+        "Initiative name or project type",
+        "initiative_name",
+      ),
       personField("الدور المقترح للمشاركة", "Proposed role", "role_proposed"),
     ],
     allowAttachments: true,

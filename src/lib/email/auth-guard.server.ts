@@ -19,9 +19,7 @@ function allowedOrigins(): Set<string> {
   if (site) {
     origins.add(site);
     const url = new URL(site);
-    const alt = url.hostname.startsWith("www.")
-      ? url.hostname.slice(4)
-      : `www.${url.hostname}`;
+    const alt = url.hostname.startsWith("www.") ? url.hostname.slice(4) : `www.${url.hostname}`;
     origins.add(`${url.protocol}//${alt}`);
   }
   try {
@@ -83,10 +81,20 @@ export async function guardAuthEmail(options: {
   const { getRequestIp, checkPublicSubmissionRateLimit, checkKeyRateLimit } =
     await import("@/lib/public-forms-rate-limit.server");
 
-  if (await checkPublicSubmissionRateLimit(`${options.scope}:ip`, { max: 10, windowMs: 60 * 60 * 1000 })) {
+  if (
+    await checkPublicSubmissionRateLimit(`${options.scope}:ip`, {
+      max: 10,
+      windowMs: 60 * 60 * 1000,
+    })
+  ) {
     return { ok: false, error: "rate_limited" };
   }
-  if (await checkKeyRateLimit(`${options.scope}:email`, options.email, { max: 3, windowMs: 60 * 60 * 1000 })) {
+  if (
+    await checkKeyRateLimit(`${options.scope}:email`, options.email, {
+      max: 3,
+      windowMs: 60 * 60 * 1000,
+    })
+  ) {
     return { ok: false, error: "rate_limited" };
   }
 

@@ -30,11 +30,7 @@ function itemHref(item: CommitteeArchiveItem) {
   return item.file_url || item.file_path || item.external_url || null;
 }
 
-function itemsFor(
-  rows: CommitteeArchiveItem[],
-  kind: "PLAN" | "ARCH",
-  committeeId: string,
-) {
+function itemsFor(rows: CommitteeArchiveItem[], kind: "PLAN" | "ARCH", committeeId: string) {
   const prefix = `COMM-1448-${kind}-${committeeId}`.toUpperCase();
   return rows.filter((row) => (row.reference ?? "").toUpperCase().startsWith(prefix));
 }
@@ -53,7 +49,11 @@ export function CommitteeYearGrid({
       {committees.map((committee) => {
         const items = itemsFor(rows, kind, committee.id);
         return (
-          <div key={committee.id} id={kind === "PLAN" ? `committee-${committee.id}` : undefined} className="flex flex-col scroll-mt-28 rounded-md border border-border bg-card p-5">
+          <div
+            key={committee.id}
+            id={kind === "PLAN" ? `committee-${committee.id}` : undefined}
+            className="flex flex-col scroll-mt-28 rounded-md border border-border bg-card p-5"
+          >
             <h3 className="text-[15px] font-semibold text-foreground">{t(committee.name)}</h3>
             {kind === "PLAN" ? (
               <>
@@ -65,7 +65,10 @@ export function CommitteeYearGrid({
                     href="#hq-project"
                     className="mt-2 self-start border-b border-bronze pb-0.5 text-[13px] font-medium text-bronze dark:border-gold dark:text-gold"
                   >
-                    {t({ ar: "مشروع المقر الدائم للأسرة", en: "Permanent Family Headquarters Project" })}
+                    {t({
+                      ar: "مشروع المقر الدائم للأسرة",
+                      en: "Permanent Family Headquarters Project",
+                    })}
                   </a>
                 ) : null}
                 <p className="label-caps mt-4 border-t border-border pt-3 text-bronze dark:text-gold">
@@ -76,8 +79,14 @@ export function CommitteeYearGrid({
             {kind === "PLAN" && planned1448[committee.id] ? (
               <ul className="mt-3 space-y-2">
                 {planned1448[committee.id].map((activity) => (
-                  <li key={activity.ar} className="flex items-center gap-2 text-[13px] text-foreground">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-bronze dark:bg-gold" aria-hidden="true" />
+                  <li
+                    key={activity.ar}
+                    className="flex items-center gap-2 text-[13px] text-foreground"
+                  >
+                    <span
+                      className="h-1.5 w-1.5 shrink-0 rounded-full bg-bronze dark:bg-gold"
+                      aria-hidden="true"
+                    />
                     {t(activity)}
                   </li>
                 ))}
@@ -97,13 +106,14 @@ export function CommitteeYearGrid({
                 {items.map((item) => {
                   const href = itemHref(item);
                   const title = t({ ar: item.title_ar, en: item.title_en || item.title_ar });
-                  const isImage = href
-                    ? /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(href)
-                    : false;
+                  const isImage = href ? /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(href) : false;
                   const isPdf = href ? /\.pdf(\?|$)/i.test(href) : false;
 
                   return (
-                    <li key={item.id} className="flex items-center justify-between gap-3 text-[13px]">
+                    <li
+                      key={item.id}
+                      className="flex items-center justify-between gap-3 text-[13px]"
+                    >
                       <span className="flex min-w-0 items-center gap-2">
                         <FileText
                           className="h-4 w-4 shrink-0 text-bronze/70 dark:text-gold/60"

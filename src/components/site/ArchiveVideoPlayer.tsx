@@ -17,8 +17,6 @@ import { copy } from "@/content/page-copy/archivevideoplayer";
 
 const SOUND_EVENT = "alboabid:archive-video-unmuted";
 
-
-
 export function ArchiveVideoPlayer({
   src,
   mimeType,

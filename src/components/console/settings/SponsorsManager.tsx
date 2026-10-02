@@ -54,7 +54,8 @@ export function SponsorsManager({
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const src: SponsorRow[] = Array.isArray(saved?.rows) && saved.rows.length ? saved.rows : SPONSOR_ROWS;
+    const src: SponsorRow[] =
+      Array.isArray(saved?.rows) && saved.rows.length ? saved.rows : SPONSOR_ROWS;
     setRows(src.map(toEdit));
     setTotalAr(saved?.total_ar ?? "26000 ريال");
     setTotalEn(saved?.total_en ?? "SAR 26,000");
@@ -101,28 +102,93 @@ export function SponsorsManager({
         <table className="w-full min-w-[1100px] text-xs">
           <thead>
             <tr className="text-start text-muted-foreground">
-              {["العام", "المشاركون", "المكرمون", "فروع المسابقة", "الجوائز (ع)", "Prize (EN)", "فروع الفائزين", "الراعي", ""].map(
-                (h) => (
-                  <th key={h} className="px-1 pb-2 text-start font-semibold">
-                    {h}
-                  </th>
-                ),
-              )}
+              {[
+                "العام",
+                "المشاركون",
+                "المكرمون",
+                "فروع المسابقة",
+                "الجوائز (ع)",
+                "Prize (EN)",
+                "فروع الفائزين",
+                "الراعي",
+                "",
+              ].map((h) => (
+                <th key={h} className="px-1 pb-2 text-start font-semibold">
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {rows.map((r, i) => (
               <tr key={i} className="align-top">
-                <td className="p-1"><Input className="w-20" value={r.year} onChange={(e) => upd(i, "year", e.target.value)} /></td>
-                <td className="p-1"><Input className="w-20" type="number" value={r.participants} onChange={(e) => upd(i, "participants", e.target.value)} /></td>
-                <td className="p-1"><Input className="w-20" type="number" value={r.honoured} onChange={(e) => upd(i, "honoured", e.target.value)} /></td>
-                <td className="p-1"><textarea className={`${cell} h-20 w-full rounded-md border border-input bg-background p-2`} value={r.branches} onChange={(e) => upd(i, "branches", e.target.value)} /></td>
-                <td className="p-1"><Input className={cell} dir="rtl" value={r.prize_ar} onChange={(e) => upd(i, "prize_ar", e.target.value)} /></td>
-                <td className="p-1"><Input className={cell} dir="ltr" value={r.prize_en} onChange={(e) => upd(i, "prize_en", e.target.value)} /></td>
-                <td className="p-1"><textarea className={`${cell} h-20 w-full rounded-md border border-input bg-background p-2`} value={r.fields} onChange={(e) => upd(i, "fields", e.target.value)} /></td>
-                <td className="p-1"><Input className="min-w-[180px]" value={r.sponsor} onChange={(e) => upd(i, "sponsor", e.target.value)} /></td>
                 <td className="p-1">
-                  <Button size="icon" variant="ghost" aria-label="delete row" onClick={() => setRows((rs) => rs.filter((_, j) => j !== i))}>
+                  <Input
+                    className="w-20"
+                    value={r.year}
+                    onChange={(e) => upd(i, "year", e.target.value)}
+                  />
+                </td>
+                <td className="p-1">
+                  <Input
+                    className="w-20"
+                    type="number"
+                    value={r.participants}
+                    onChange={(e) => upd(i, "participants", e.target.value)}
+                  />
+                </td>
+                <td className="p-1">
+                  <Input
+                    className="w-20"
+                    type="number"
+                    value={r.honoured}
+                    onChange={(e) => upd(i, "honoured", e.target.value)}
+                  />
+                </td>
+                <td className="p-1">
+                  <textarea
+                    className={`${cell} h-20 w-full rounded-md border border-input bg-background p-2`}
+                    value={r.branches}
+                    onChange={(e) => upd(i, "branches", e.target.value)}
+                  />
+                </td>
+                <td className="p-1">
+                  <Input
+                    className={cell}
+                    dir="rtl"
+                    value={r.prize_ar}
+                    onChange={(e) => upd(i, "prize_ar", e.target.value)}
+                  />
+                </td>
+                <td className="p-1">
+                  <Input
+                    className={cell}
+                    dir="ltr"
+                    value={r.prize_en}
+                    onChange={(e) => upd(i, "prize_en", e.target.value)}
+                  />
+                </td>
+                <td className="p-1">
+                  <textarea
+                    className={`${cell} h-20 w-full rounded-md border border-input bg-background p-2`}
+                    value={r.fields}
+                    onChange={(e) => upd(i, "fields", e.target.value)}
+                  />
+                </td>
+                <td className="p-1">
+                  <Input
+                    className="min-w-[180px]"
+                    value={r.sponsor}
+                    onChange={(e) => upd(i, "sponsor", e.target.value)}
+                  />
+                </td>
+                <td className="p-1">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label="delete row"
+                    onClick={() => setRows((rs) => rs.filter((_, j) => j !== i))}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </td>
@@ -137,7 +203,19 @@ export function SponsorsManager({
           variant="outline"
           className="gap-1.5 text-xs"
           onClick={() =>
-            setRows((rs) => [...rs, { year: "", participants: "0", honoured: "0", branches: "", prize_ar: "", prize_en: "", fields: "", sponsor: "" }])
+            setRows((rs) => [
+              ...rs,
+              {
+                year: "",
+                participants: "0",
+                honoured: "0",
+                branches: "",
+                prize_ar: "",
+                prize_en: "",
+                fields: "",
+                sponsor: "",
+              },
+            ])
           }
         >
           <Plus className="h-3.5 w-3.5" />

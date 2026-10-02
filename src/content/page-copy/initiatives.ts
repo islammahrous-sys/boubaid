@@ -47,5 +47,4 @@ export const copy = registerCopy("initiatives", {
     en: "The programmes are funded from monthly subscriptions and from interest-free contributory loans towards the headquarters project.",
   } as BiText,
   supportCta: { ar: "الاشتراك والمساهمة", en: "Subscribe & contribute" } as BiText,
-
 });

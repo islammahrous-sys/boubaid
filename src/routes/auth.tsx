@@ -169,7 +169,10 @@ function AuthPage() {
         });
         if (!result.ok) {
           toast.error(
-            label("تعذر إرسال رابط إعادة التعيين. يرجى المحاولة لاحقاً.", "Failed to send reset link. Please try again later.")
+            label(
+              "تعذر إرسال رابط إعادة التعيين. يرجى المحاولة لاحقاً.",
+              "Failed to send reset link. Please try again later.",
+            ),
           );
           setBusy(false);
           return;
@@ -264,7 +267,6 @@ function AuthPage() {
       toast.error(translateAuthError(error, lang));
       setBusy(false);
     }
-
   };
 
   const rise = (delay: number): React.CSSProperties => ({

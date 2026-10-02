@@ -30,8 +30,6 @@ export interface EditableTemplateRecord {
   href: string;
 }
 
-
-
 /** File-type icon per editable format; always paired with a text label. */
 function KindIcon({ kind }: { kind: string | null }) {
   if ((kind ?? "").toUpperCase() === "PDF") {
@@ -145,7 +143,7 @@ export function EditableTemplatesLibrary({
                   <button
                     type="button"
                     onClick={() => void downloadFile(r.href, `${r.reference ?? name} — ${name}`)}
-                      aria-label={`${t(copy.download)} — ${name}${rtl ? "" : ` (${(r.kind || "PPTX").toUpperCase()})`}`}
+                    aria-label={`${t(copy.download)} — ${name}${rtl ? "" : ` (${(r.kind || "PPTX").toUpperCase()})`}`}
                     className="inline-flex items-center gap-2 border-b border-transparent pb-0.5 text-[13px] font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                   >
                     <Download className="h-3.5 w-3.5" aria-hidden="true" />
@@ -170,7 +168,10 @@ export function EditableTemplatesLibrary({
             {references.map((r) => {
               const name = label(r);
               return (
-                <li key={r.id} className="flex flex-col rounded-md border border-border bg-card p-5">
+                <li
+                  key={r.id}
+                  className="flex flex-col rounded-md border border-border bg-card p-5"
+                >
                   <div className="flex items-center gap-2">
                     <KindIcon kind={r.kind} />
                     <span className="nums font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
@@ -312,8 +313,7 @@ const REFERENCE_ROWS: {
     name: "تهنئة زواج",
     occasion: "الزواج",
     colour: "أخضر النخيل",
-    fields:
-      "اسم العريس، اسم الأب، التاريخ الهجري، اسم العروس، مكان الحفل، رقم الجوال، الصورة",
+    fields: "اسم العريس، اسم الأب، التاريخ الهجري، اسم العروس، مكان الحفل، رقم الجوال، الصورة",
     optional: "اسم العروس، مكان الحفل، الصورة",
     image: "نعم",
     notes: "—",
@@ -334,8 +334,7 @@ const REFERENCE_ROWS: {
     name: "مبارك التعيين",
     occasion: "الترقية / التعيين",
     colour: "الرمادي الحجري",
-    fields:
-      "الاسم، التاريخ الهجري، المنصب الجديد، الجهة، تاريخ المباشرة، رقم الجوال، الصورة",
+    fields: "الاسم، التاريخ الهجري، المنصب الجديد، الجهة، تاريخ المباشرة، رقم الجوال، الصورة",
     optional: "تاريخ المباشرة، الصورة",
     image: "نعم",
     notes: "—",
@@ -345,8 +344,7 @@ const REFERENCE_ROWS: {
     name: "وظيفة جديدة",
     occasion: "الوظيفة الجديدة",
     colour: "أخضر النخيل الفاتح",
-    fields:
-      "الاسم، التاريخ الهجري، الجهة، المسمى الوظيفي، تاريخ المباشرة، رقم الجوال، الصورة",
+    fields: "الاسم، التاريخ الهجري، الجهة، المسمى الوظيفي، تاريخ المباشرة، رقم الجوال، الصورة",
     optional: "تاريخ المباشرة، الصورة",
     image: "نعم",
     notes: "—",
@@ -414,8 +412,8 @@ export function EditableTemplatesReferenceContent() {
         مجلس أسرة آل بوعبيد — نسخة العروض التقديمية القابلة للتحرير اليدوي
       </p>
       <p className="mt-4 text-[13.5px] leading-relaxed text-foreground">
-        يوثّق هذا الملف القوالب الأربعة عشر المستخرجة إلى ملفات عروض تقديمية مستقلة قابلة للتحرير، مع
-        رمز كل قالب، ولونه الأساسي المعتمد، وحقوله القابلة للتحرير، وحقوله الاختيارية، ومدى توفر
+        يوثّق هذا الملف القوالب الأربعة عشر المستخرجة إلى ملفات عروض تقديمية مستقلة قابلة للتحرير،
+        مع رمز كل قالب، ولونه الأساسي المعتمد، وحقوله القابلة للتحرير، وحقوله الاختيارية، ومدى توفر
         مساحة صورة فيه، وملاحظات استعمال خاصة به.
       </p>
       <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
@@ -465,8 +463,8 @@ export function EditableTemplatesReferenceContent() {
       </div>
 
       <p className="mt-6 border-s-2 border-bronze/60 bg-muted/30 p-4 text-[13px] leading-relaxed text-foreground dark:border-gold/60">
-        ملاحظة: التاريخ الهجري حقل ثابت في جميع القوالب الأربعة عشر ولذلك لم يُفرد له عمود مستقل؛ وهو
-        مُدرج ضمن «الحقول القابلة للتحرير» لكل قالب.
+        ملاحظة: التاريخ الهجري حقل ثابت في جميع القوالب الأربعة عشر ولذلك لم يُفرد له عمود مستقل؛
+        وهو مُدرج ضمن «الحقول القابلة للتحرير» لكل قالب.
       </p>
 
       <p className="mt-6 text-[12.5px] text-muted-foreground">اللجنة الإعلامية بالمجلس · 2 / 2</p>

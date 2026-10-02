@@ -41,8 +41,6 @@ export const Route = createFileRoute("/dna")({
   component: DnaPage,
 });
 
-
-
 const railSections: RailSection[] = [
   { id: "overview", label: { ar: "الخلاصة", en: "Overview" } },
   { id: "clade", label: { ar: "السلالة", en: "Haplogroup" } },
