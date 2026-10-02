@@ -53,3 +53,9 @@ Not done: live exploitation, browser E2E, load tests. The findings below come fr
 3. M1, M4 and the leaked-password toggle in one SQL migration plus a dashboard click.
 4. M2 and M6, which both need an infrastructure decision (KV or cron).
 5. CRLF/lint cleanup, then CSP Report-Only.
+
+## Remediation status (2 Oct 2026)
+
+Fixed and deployed (main 6a88055 and follow-ups; migrations 20261002114428, 20261002114725 applied to prod): H1–H4, H5 (code side), M1, M2, M3 (partly: server-side throttling only, no Turnstile widget on those forms), M4, M6, M7 (CSP Report-Only plus headers via vercel.json), FK index. Extra bug found while testing: contact form with a blank subject failed in the admin-notification trigger, now fixed.
+
+Still manual: rotate the service-role key (H5), set `CRON_SECRET` in Vercel (queue route returns 503 until then), enable leaked-password protection, js-yaml (H6: `npm audit fix` rewrites about 1,000 lockfile lines, so do it as its own PR), repo-wide prettier/CRLF cleanup (churn conflicts with Lovable sync), RLS initplan performance lints.
