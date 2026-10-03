@@ -12,7 +12,6 @@ export const inl = registerCopy("contribute-inline", {
   t_5d70aa49: { ar: "رقم الحساب", en: "Account number" } as BiText,
   t_39d195d6: { ar: "رقم الآيبان", en: "IBAN number" } as BiText,
   t_80fbdcaf: { ar: "البنك", en: "Bank" } as BiText,
-  t_5b9d31f2: { ar: "بنك البلاد", en: "Bank Albilad" } as BiText,
   t_2f3fb2d5: { ar: "رقم الآيبان", en: "IBAN" } as BiText,
   t_34bf31bf: {
     ar: "يُرجى التحقق من مطابقة اسم الحساب ورقم الآيبان قبل أي تحويل.",

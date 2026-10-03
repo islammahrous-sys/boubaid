@@ -82,6 +82,7 @@ import type {
   FundPurpose,
   ManualContributionInput,
 } from "@/lib/contributions.schemas";
+import { OFFICIAL_BANK_ACCOUNT } from "@/content/fund-bank";
 
 export type ContributionItem = {
   id: string;
@@ -102,18 +103,7 @@ export type ContributionItem = {
 };
 
 const DEFAULT_CONFIG: TreasuryConfig = {
-  bank_account: {
-    bank_name_ar: "مصرف الإنماء",
-    bank_name_en: "Alinma Bank",
-    beneficiary_name_ar: "صندوق التنمية العائلية (آل بوعبيد)",
-    beneficiary_name_en: "Al-Boabid Family Development Fund",
-    account_number: "",
-    iban: "",
-    notes_ar:
-      "الحساب البنكي الرسمي المعتمد لصندوق التنمية العائلية (آل بوعبيد) الخاضع للترخيص والإشراف المالي من المركز الوطني لتنمية القطاع غير الربحي (NCNP).",
-    notes_en:
-      "The official bank account of Al-Boabid Family Fund subject to NCNP licensing and audit.",
-  },
+  bank_account: OFFICIAL_BANK_ACCOUNT,
   tiers: [
     {
       id: "tier-adult",
@@ -1149,6 +1139,25 @@ export function TreasuryManager({
                         }
                         placeholder="Al-Boabid Family Development Fund"
                         className="rounded-xl text-xs"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="font-bold text-foreground">
+                        {isAr ? "رقم العميل / الهوية / السجل" : "Customer / ID / CR number"}
+                      </label>
+                      <Input
+                        value={config.bank_account.customer_number ?? ""}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            bank_account: {
+                              ...config.bank_account,
+                              customer_number: e.target.value,
+                            },
+                          })
+                        }
+                        className="rounded-xl font-mono text-xs"
                       />
                     </div>
 

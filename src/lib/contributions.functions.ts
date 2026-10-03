@@ -10,6 +10,7 @@ import {
   type ContributionTier,
   type FundPurpose,
 } from "./contributions.schemas";
+import { OFFICIAL_BANK_ACCOUNT, resolveBankAccount } from "@/content/fund-bank";
 
 export type ContributionRow = {
   id: string;
@@ -112,18 +113,7 @@ export type MemberBankAccount = {
 } | null;
 
 const DEFAULT_TREASURY_CONFIG: TreasuryConfig = {
-  bank_account: {
-    bank_name_ar: "مصرف الإنماء",
-    bank_name_en: "Alinma Bank",
-    beneficiary_name_ar: "صندوق التنمية العائلية (آل بوعبيد)",
-    beneficiary_name_en: "Al-Boabid Family Development Fund",
-    account_number: "",
-    iban: "",
-    notes_ar:
-      "الحساب البنكي الرسمي المعتمد لصندوق التنمية العائلية (آل بوعبيد) الخاضع للترخيص والإشراف المالي من المركز الوطني لتنمية القطاع غير الربحي (NCNP).",
-    notes_en:
-      "The official bank account of Al-Boabid Family Fund subject to NCNP licensing and audit.",
-  },
+  bank_account: OFFICIAL_BANK_ACCOUNT,
   tiers: [
     {
       id: "tier-adult",
@@ -241,9 +231,11 @@ export type PublicTreasuryConfig = {
   quickAmounts: number[];
   sallaStoreUrl: string;
   applicationOfFunds: TreasuryConfig["application_of_funds"];
+  /** Saved bank details, blank fields filled from the official record. */
+  bankAccount: TreasuryConfig["bank_account"];
 };
 
-/** Publicly accessible treasury configuration (tiers, fund purposes, quick amounts, salla url). */
+/** Publicly accessible treasury configuration (tiers, fund purposes, quick amounts, salla url, bank details). */
 export const getPublicTreasuryConfig = createServerFn({ method: "GET" }).handler(
   async (): Promise<PublicTreasuryConfig> => {
     try {
@@ -277,6 +269,7 @@ export const getPublicTreasuryConfig = createServerFn({ method: "GET" }).handler
         quickAmounts,
         sallaStoreUrl,
         applicationOfFunds,
+        bankAccount: resolveBankAccount(val.bank_account),
       };
     } catch (err) {
       console.error("[contributions] getPublicTreasuryConfig fallback error", err);
@@ -286,6 +279,7 @@ export const getPublicTreasuryConfig = createServerFn({ method: "GET" }).handler
         quickAmounts: DEFAULT_TREASURY_CONFIG.quick_amounts,
         sallaStoreUrl: DEFAULT_TREASURY_CONFIG.salla_store_url,
         applicationOfFunds: DEFAULT_TREASURY_CONFIG.application_of_funds,
+        bankAccount: OFFICIAL_BANK_ACCOUNT,
       };
     }
   },
@@ -307,10 +301,7 @@ export const getAdminTreasuryConfig = createServerFn({ method: "GET" })
         return {
           ...DEFAULT_TREASURY_CONFIG,
           ...(setting.value as any),
-          bank_account: {
-            ...DEFAULT_TREASURY_CONFIG.bank_account,
-            ...((setting.value as any).bank_account || {}),
-          },
+          bank_account: resolveBankAccount((setting.value as any).bank_account),
         };
       }
     } catch (err) {

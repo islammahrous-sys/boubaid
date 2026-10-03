@@ -79,10 +79,9 @@ export const siteMeta = registerCopy("site", {
     /** Google Maps pin for the permanent headquarters plot. */
     mapUrl: "https://maps.app.goo.gl/75fDFmv9vnEboKr58",
   },
-  // The fund's bank account is NOT kept here — anything in this file ships to
-  // every anonymous visitor in the client bundle. It is served member-gated by
-  // `getMemberBankAccount` (src/lib/contributions.functions.ts) from `SITE_BANK_*`
-  // server env.
+  // The fund's bank account is not kept here. It is public by design (shown on
+  // /contribute): edited in the treasury console (`treasury_config.bank_account`)
+  // with `src/content/fund-bank.ts` as the official fallback.
 });
 
 /**

@@ -8,6 +8,9 @@ import { CopyButton } from "@/components/site/CopyButton";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/contribute";
 import { inl } from "@/content/page-copy/contribute-inline";
+import { getPublicTreasuryConfig } from "@/lib/contributions.functions";
+import { OFFICIAL_BANK_ACCOUNT } from "@/content/fund-bank";
+import type { BankAccountConfig } from "@/lib/contributions.schemas";
 
 export const Route = createFileRoute("/contribute")({
   head: () => ({
@@ -28,38 +31,33 @@ export const Route = createFileRoute("/contribute")({
     ],
     links: [{ rel: "canonical", href: getCanonicalUrl("/contribute") }],
   }),
+  // Bank details come from the treasury console (blank fields fall back to the
+  // official record), so a change saved there shows here without a deploy.
+  loader: async () => {
+    const config = await getPublicTreasuryConfig();
+    return { bank: config.bankAccount };
+  },
   component: ContributePage,
 });
 
-/** Values are transcribed exactly from the fund's official bank record. */
-const bank: { label: BiText; value: string; mono?: boolean; copy?: boolean }[] = [
-  { label: inl.t_5bd3ce0b, value: "بنك البلاد — Bank Albilad" },
-  {
-    label: inl.t_2d5a1294,
-    value: "صندوق التنمية العائلية — Family Development Fund",
-  },
-  {
-    label: inl.t_4a27396d,
-    value: "7001473102",
-    mono: true,
-    copy: true,
-  },
-  {
-    label: inl.t_5d70aa49,
-    value: "999146092730006",
-    mono: true,
-    copy: true,
-  },
-  {
-    label: inl.t_39d195d6,
-    value: "SA1915000999146092730006",
-    mono: true,
-    copy: true,
-  },
-];
+function bankRows(
+  b: BankAccountConfig,
+): { label: BiText; value: string; mono?: boolean; copy?: boolean }[] {
+  return [
+    { label: inl.t_5bd3ce0b, value: `${b.bank_name_ar} — ${b.bank_name_en}` },
+    { label: inl.t_2d5a1294, value: `${b.beneficiary_name_ar} — ${b.beneficiary_name_en}` },
+    ...(b.customer_number
+      ? [{ label: inl.t_4a27396d, value: b.customer_number, mono: true, copy: true }]
+      : []),
+    { label: inl.t_5d70aa49, value: b.account_number, mono: true, copy: true },
+    { label: inl.t_39d195d6, value: b.iban, mono: true, copy: true },
+  ].filter((row) => row.value);
+}
 
 function ContributePage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const bankAccount = Route.useLoaderData()?.bank ?? OFFICIAL_BANK_ACCOUNT;
+  const bank = bankRows(bankAccount);
 
   return (
     <>
@@ -70,11 +68,11 @@ function ContributePage() {
         meta={[
           {
             label: t(inl.t_80fbdcaf),
-            value: t(inl.t_5b9d31f2),
+            value: lang === "en" ? bankAccount.bank_name_en : bankAccount.bank_name_ar,
           },
           {
             label: t(inl.t_2f3fb2d5),
-            value: "SA1915000999146092730006",
+            value: bankAccount.iban,
             mono: true,
           },
         ]}
