@@ -55,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // the *same* user; without this both would re-run the two queries below
     // for no new information. Cleared on failure so a later event retries.
     let loadedFor: string | null = null;
+    let retries = 0;
 
     const loadRoles = async (userId: string | undefined) => {
       if (!userId) {
@@ -76,15 +77,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .maybeSingle(),
         ]);
         if (!active) return;
-        loadedFor = userId;
-        if (!rolesRes.error && rolesRes.data) {
-          setRoles(((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role));
+        if (rolesRes.error || !rolesRes.data) {
+          // Don't cache a failure: an expired token at tab wake-up or a network
+          // blip would otherwise leave staff with no roles ("no access") until
+          // they sign out. Retry with backoff instead.
+          throw rolesRes.error ?? new Error("user_roles returned no data");
         }
+        loadedFor = userId;
+        retries = 0;
+        setRoles(((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role));
         if (!profileRes.error && profileRes.data) {
           setProfile(profileRes.data as AuthProfile);
         }
       } catch (err) {
         console.error("Failed to load user roles and profile:", err);
+        loadedFor = null;
+        if (active && retries < 4) {
+          const delay = 800 * 2 ** retries;
+          retries += 1;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          if (active && loadedFor === null) {
+            // Refresh first in case the failure was an expired access token.
+            await supabase.auth.refreshSession().catch(() => undefined);
+            await loadRoles(userId);
+          }
+        }
       }
     };
 
