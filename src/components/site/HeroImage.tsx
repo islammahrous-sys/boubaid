@@ -14,11 +14,18 @@ export interface HeroSlide {
 }
 
 /**
- * Permanent Supabase-hosted hero photographs. Al-Ahsa leads: the family's
- * identity is the oasis (Al-Mubarraz), so the first frame visitors see is home.
+ * Permanent Supabase-hosted hero photographs.
  * Bucket: public 'site-media' under 'hero/' folder.
  */
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
+  {
+    src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-masmak-fort.jpg",
+    altAr: "قصر المصمك التاريخي وعلم المملكة العربية السعودية",
+    altEn: "Historic Al-Masmak Fortress and Saudi Arabia flag",
+    titleAr: "قصر المصمك التاريخي",
+    titleEn: "Historic Al-Masmak Fortress",
+    objectPosition: "object-[60%_center] sm:object-[55%_center] lg:object-[50%_35%]",
+  },
   {
     src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-ahsa-oasis.jpg",
     altAr: "واحة الأحساء وبساتين النخيل وقنوات الري التراثية",
@@ -34,14 +41,6 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
     titleAr: "جبل القارة بالأحساء",
     titleEn: "Al-Qarah Mountain in Al-Ahsa",
     objectPosition: "object-[50%_30%] sm:object-[50%_35%] lg:object-[center_35%]",
-  },
-  {
-    src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-masmak-fort.jpg",
-    altAr: "قصر المصمك التاريخي وعلم المملكة العربية السعودية",
-    altEn: "Historic Al-Masmak Fortress and Saudi Arabia flag",
-    titleAr: "قصر المصمك التاريخي",
-    titleEn: "Historic Al-Masmak Fortress",
-    objectPosition: "object-[60%_center] sm:object-[55%_center] lg:object-[50%_35%]",
   },
 ];
 
