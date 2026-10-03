@@ -1,4 +1,4 @@
-import { useState, type ImgHTMLAttributes, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ImgHTMLAttributes, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,10 +12,20 @@ export function PlateImage({
   ...props
 }: ImgHTMLAttributes<HTMLImageElement> & { alt: string }) {
   const [loaded, setLoaded] = useState(false);
+  const ref = useRef<HTMLImageElement>(null);
+
+  // A server-rendered or cached image can finish loading before React
+  // hydrates and attaches onLoad, so the event never reaches us and the plate
+  // would stay invisible. Check the element directly once mounted.
+  useEffect(() => {
+    // `complete` is also true for a failed image, which onError shows too.
+    setLoaded(Boolean(ref.current?.complete));
+  }, [props.src]);
 
   return (
     <img
       {...props}
+      ref={ref}
       loading={props.loading ?? "lazy"}
       decoding="async"
       data-loaded={loaded ? "true" : "false"}
