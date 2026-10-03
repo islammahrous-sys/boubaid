@@ -145,10 +145,8 @@ export function InquiriesManager({
   const getAttachmentSignedUrlFn = useServerFn(getRequestAttachmentSignedUrl);
 
   const handleOpenAttachment = async (rawPath: string) => {
-    let cleanPath = rawPath.split(" — ")[0].trim();
-    if (cleanPath.startsWith("documents-private/")) {
-      cleanPath = cleanPath.slice("documents-private/".length);
-    }
+    // The server resolves the bucket from the stored "<bucket>/<path>" prefix.
+    const cleanPath = rawPath.split(" — ")[0].trim();
     setOpeningAttachment(rawPath);
     try {
       const res = await getAttachmentSignedUrlFn({ data: { path: cleanPath } });

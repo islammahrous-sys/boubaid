@@ -1604,12 +1604,16 @@ export const getRequestAttachmentSignedUrl = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ path: z.string().min(1) }).parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const cleanPath = data.path
-      .replace(/^documents-private\//, "")
-      .split(" — ")[0]
-      .trim();
+    // Attachments are stored as "<bucket>/<path> — <original name>". Council
+    // requests use documents-private, nominations use nomination-docs; a bare
+    // path (older rows) means documents-private.
+    const raw = data.path.split(" — ")[0].trim();
+    const ATTACHMENT_BUCKETS = ["documents-private", "nomination-docs"] as const;
+    const bucket = ATTACHMENT_BUCKETS.find((b) => raw.startsWith(`${b}/`)) ?? "documents-private";
+    const cleanPath = raw.startsWith(`${bucket}/`) ? raw.slice(bucket.length + 1) : raw;
+    if (!cleanPath || cleanPath.includes("..")) throw new Error("invalid_path");
     const { data: signed, error } = await supabaseAdmin.storage
-      .from("documents-private")
+      .from(bucket)
       .createSignedUrl(cleanPath, 60 * 60);
     if (error || !signed?.signedUrl) {
       throw new Error(error?.message || "failed_to_sign_url");
