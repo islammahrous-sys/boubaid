@@ -1,6 +1,7 @@
 {
   "framework": null,
   "buildCommand": "NITRO_PRESET=vercel npm run build",
+  "regions": ["dub1"],
   "crons": [{ "path": "/api/public/process-email-queue", "schedule": "0 3 * * *" }],
   "headers": [
     {
@@ -12,7 +13,7 @@
         { "key": "Permissions-Policy", "value": "camera=(self), microphone=(), geolocation=()" },
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://challenges.cloudflare.com https://www.google.com https://www.youtube.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://challenges.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://www.google-analytics.com https://*.google-analytics.com; frame-src 'self' https://challenges.cloudflare.com https://www.google.com https://www.youtube.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
         }
       ]
     }
