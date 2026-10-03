@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Building2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpLeft, ArrowUpRight, Building2, ShieldCheck } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
@@ -10,6 +10,7 @@ import { copy } from "@/content/page-copy/contribute";
 import { inl } from "@/content/page-copy/contribute-inline";
 import { getPublicTreasuryConfig } from "@/lib/contributions.functions";
 import { OFFICIAL_BANK_ACCOUNT } from "@/content/fund-bank";
+import { siteMeta } from "@/content/site";
 import type { BankAccountConfig } from "@/lib/contributions.schemas";
 
 export const Route = createFileRoute("/contribute")({
@@ -114,6 +115,51 @@ function ContributePage() {
             {t(inl.t_34bf31bf)}
           </p>
         </section>
+
+        {/* Trust panel: who the account belongs to and where to verify it. */}
+        <aside className="reveal-on-scroll mt-10 border border-bronze/30 bg-card p-5 sm:p-6 dark:border-gold/30">
+          <div className="flex items-start gap-4">
+            <ShieldCheck
+              className="h-9 w-9 shrink-0 text-bronze dark:text-gold"
+              aria-hidden="true"
+            />
+            <div className="min-w-0">
+              <h2 className="font-semibold text-foreground">{t(inl.verifiedTitle)}</h2>
+              <p className="measure mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
+                {t(inl.verifiedBody)}
+              </p>
+              <dl className="mt-4 grid gap-3 text-[13px] sm:grid-cols-3">
+                <div>
+                  <dt className="label-caps text-muted-foreground">{t(inl.verifiedAuthority)}</dt>
+                  <dd className="mt-1 text-foreground">{t(siteMeta.ncnpAuthority)}</dd>
+                </div>
+                <div>
+                  <dt className="label-caps text-muted-foreground">{t(inl.verifiedLicense)}</dt>
+                  <dd dir="ltr" className="nums mt-1 font-mono text-foreground">
+                    {siteMeta.ncnpLicense}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="label-caps text-muted-foreground">{t(inl.verifiedUnified)}</dt>
+                  <dd dir="ltr" className="nums mt-1 font-mono text-foreground">
+                    {siteMeta.unifiedNationalNumber}
+                  </dd>
+                </div>
+              </dl>
+              <Link
+                to="/fund-certificates"
+                className="tap-target-y mt-4 inline-flex items-center gap-1.5 border-b border-bronze/50 text-sm font-semibold text-bronze transition-colors hover:border-bronze dark:border-gold/50 dark:text-gold"
+              >
+                {t(inl.verifiedLink)}
+                {lang === "en" ? (
+                  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                ) : (
+                  <ArrowUpLeft className="h-3.5 w-3.5" aria-hidden="true" />
+                )}
+              </Link>
+            </div>
+          </div>
+        </aside>
       </div>
     </>
   );

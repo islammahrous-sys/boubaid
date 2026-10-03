@@ -17,4 +17,16 @@ export const inl = registerCopy("contribute-inline", {
     ar: "يُرجى التحقق من مطابقة اسم الحساب ورقم الآيبان قبل أي تحويل.",
     en: "Please verify the account name and IBAN match before making any transfer.",
   } as BiText,
+  verifiedTitle: { ar: "حساب رسمي موثّق", en: "Verified official account" } as BiText,
+  verifiedBody: {
+    ar: "الحساب مسجّل باسم صندوق التنمية العائلية، الكيان الأهلي المرخّص للأسرة. لا تحوّل لأي حساب آخر يصلك عبر الرسائل.",
+    en: "The account is registered to the Family Development Fund, the family's licensed nonprofit. Never transfer to any other account sent to you by message.",
+  } as BiText,
+  verifiedAuthority: { ar: "جهة الترخيص", en: "Licensing authority" } as BiText,
+  verifiedLicense: { ar: "رقم الترخيص", en: "License number" } as BiText,
+  verifiedUnified: { ar: "الرقم الوطني الموحّد", en: "Unified national number" } as BiText,
+  verifiedLink: {
+    ar: "شهادة الترخيص وخطاب البنك",
+    en: "License certificate and bank letter",
+  } as BiText,
 });
