@@ -14,18 +14,11 @@ export interface HeroSlide {
 }
 
 /**
- * Permanent Supabase-hosted hero photographs.
+ * Permanent Supabase-hosted hero photographs. Al-Ahsa leads: the family's
+ * identity is the oasis (Al-Mubarraz), so the first frame visitors see is home.
  * Bucket: public 'site-media' under 'hero/' folder.
  */
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
-  {
-    src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-masmak-fort.jpg",
-    altAr: "قصر المصمك التاريخي وعلم المملكة العربية السعودية",
-    altEn: "Historic Al-Masmak Fortress and Saudi Arabia flag",
-    titleAr: "قصر المصمك التاريخي",
-    titleEn: "Historic Al-Masmak Fortress",
-    objectPosition: "object-[60%_center] sm:object-[55%_center] lg:object-[50%_35%]",
-  },
   {
     src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-ahsa-oasis.jpg",
     altAr: "واحة الأحساء وبساتين النخيل وقنوات الري التراثية",
@@ -42,12 +35,23 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
     titleEn: "Al-Qarah Mountain in Al-Ahsa",
     objectPosition: "object-[50%_30%] sm:object-[50%_35%] lg:object-[center_35%]",
   },
+  {
+    src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-masmak-fort.jpg",
+    altAr: "قصر المصمك التاريخي وعلم المملكة العربية السعودية",
+    altEn: "Historic Al-Masmak Fortress and Saudi Arabia flag",
+    titleAr: "قصر المصمك التاريخي",
+    titleEn: "Historic Al-Masmak Fortress",
+    objectPosition: "object-[60%_center] sm:object-[55%_center] lg:object-[50%_35%]",
+  },
 ];
 
 export interface HeroImageProps {
   slides?: HeroSlide[];
   autoplayInterval?: number;
   children: ReactNode;
+  /** Strip rendered under the hero content (e.g. quick links). Kept outside the
+   *  content box so the slide dots never sit on top of it, whatever its height. */
+  colophon?: ReactNode;
   className?: string;
 }
 
@@ -61,6 +65,7 @@ export function HeroImage({
   slides = DEFAULT_HERO_SLIDES,
   autoplayInterval = 6000,
   children,
+  colophon,
   className,
 }: HeroImageProps) {
   const { lang, t } = useLang();
@@ -234,53 +239,57 @@ export function HeroImage({
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent via-ink/80 to-ink" />
       </div>
 
-      {/* Slide Navigation Indicator Dots (Floating above colophon) */}
-      {totalSlides > 1 && (
-        <div
-          className="absolute inset-x-0 bottom-24 sm:bottom-28 z-20 mx-auto flex items-center justify-center gap-2 pointer-events-auto"
-          role="tablist"
-          aria-label={t(inl.t_7c264f79)}
-        >
-          <div
-            className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-ink/70 px-3 py-1.5 backdrop-blur-md shadow-lg shadow-black/40"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            {activeSlides.map((slide, idx) => {
-              const isActive = idx === currentIndex;
-              const title = rtl
-                ? slide.titleAr || `الصورة ${idx + 1}`
-                : slide.titleEn || `Slide ${idx + 1}`;
+      {/* Foreground content, then the colophon strip */}
+      <div className="relative z-10">
+        <div className="relative">
+          {children}
+          {/* Slide dots: anchored to the bottom of the content box, above the colophon */}
+          {totalSlides > 1 && (
+            <div
+              className="absolute inset-x-0 bottom-14 lg:bottom-6 z-20 mx-auto flex items-center justify-center gap-2 pointer-events-auto"
+              role="tablist"
+              aria-label={t(inl.t_7c264f79)}
+            >
+              <div
+                className="inline-flex items-center rounded-full border border-gold/30 bg-ink/70 px-1 py-0.5 backdrop-blur-md shadow-lg shadow-black/40"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+              >
+                {activeSlides.map((slide, idx) => {
+                  const isActive = idx === currentIndex;
+                  const title = rtl
+                    ? slide.titleAr || `الصورة ${idx + 1}`
+                    : slide.titleEn || `Slide ${idx + 1}`;
 
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-label={rtl ? `عرض ${title}` : `View ${title}`}
-                  onClick={() => goToSlide(idx)}
-                  // The visible dot is the inner span; the button around it is the
-                  // touch target (40px tall, dot width + 8px either side).
-                  className="group flex h-10 items-center px-1 focus-visible:outline-none"
-                >
-                  <span
-                    className={cn(
-                      "block h-2 rounded-full transition-[width,background-color,box-shadow,transform] duration-300 ease-out group-focus-visible:ring-2 group-focus-visible:ring-gold",
-                      isActive
-                        ? "w-7 bg-gold shadow-[0_0_10px_rgba(237,167,70,0.8)]"
-                        : "w-2 bg-ivory/30 group-hover:bg-ivory/60 group-active:scale-95",
-                    )}
-                  />
-                </button>
-              );
-            })}
-          </div>
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      aria-label={rtl ? `عرض ${title}` : `View ${title}`}
+                      onClick={() => goToSlide(idx)}
+                      // The visible dot is the inner span; the button around it is the
+                      // touch target (at least 40×40px).
+                      className="group flex h-10 min-w-10 items-center justify-center px-1 focus-visible:outline-none"
+                    >
+                      <span
+                        className={cn(
+                          "block h-2 rounded-full transition-[width,background-color,box-shadow,transform] duration-300 ease-out group-focus-visible:ring-2 group-focus-visible:ring-gold",
+                          isActive
+                            ? "w-7 bg-gold shadow-[0_0_10px_rgba(237,167,70,0.8)]"
+                            : "w-2 bg-ivory/30 group-hover:bg-ivory/60 group-active:scale-95",
+                        )}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
-      )}
-
-      {/* Foreground Content: Emblem, Typography, CTAs, and Colophon Strip */}
-      <div className="relative z-10">{children}</div>
+        {colophon}
+      </div>
     </section>
   );
 }

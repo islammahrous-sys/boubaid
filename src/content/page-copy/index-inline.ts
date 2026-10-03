@@ -21,4 +21,14 @@ export const inl = registerCopy("index-inline", {
   t_cecded4a: { ar: "سجل الفعاليات", en: "View all events" } as BiText,
   t_0e0bb33d: { ar: "الأرشيف", en: "Archive" } as BiText,
   t_e3e60439: { ar: "المزيد", en: "More" } as BiText,
+  letterReadMore: { ar: "اقرأ الكلمة كاملة", en: "Read the full address" } as BiText,
+  letterShowLess: { ar: "عرض أقل", en: "Show less" } as BiText,
+  homeHeading: {
+    ar: "مجلس أسرة آل بوعبيد وصندوق التنمية العائلية — الأحساء",
+    en: "Al Bu Obaid Family Council and Family Development Fund — Al-Ahsa",
+  } as BiText,
+  galleryImageAlt: {
+    ar: "صورة من الأرشيف التراثي للأسرة",
+    en: "Photo from the family heritage archive",
+  } as BiText,
 });

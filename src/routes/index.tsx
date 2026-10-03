@@ -13,7 +13,6 @@ import {
   CloudSun,
   Sun,
   Wind,
-  Eye,
   Inbox,
   Archive,
   type LucideIcon,
@@ -342,6 +341,9 @@ function HomePage() {
   // "ready" or "error" so the card can never sit on the loading copy.
   const [metricsState, setMetricsState] = useState<"loading" | "ready" | "error">("loading");
   const [metricsNonce, setMetricsNonce] = useState(0);
+  // The council address opens with two paragraphs; the rest stay in the DOM
+  // (hidden) so the full text is still indexed and one tap away.
+  const [letterOpen, setLetterOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -435,11 +437,6 @@ function HomePage() {
   // While the metrics request is in flight, `null` renders as a skeleton bar
   // rather than a dash, so the band reads as "loading" and keeps its height.
   const metricsPending = metricsState === "loading";
-  const visitValue = homeMetrics?.visits
-    ? homeMetrics.visits.toLocaleString(lang === "ar" ? "ar-EG" : "en-US")
-    : metricsPending
-      ? null
-      : "—";
   const todayValue = homeMetrics?.now
     ? formatDualDate(homeMetrics.now, lang, "short")
     : metricsPending
@@ -478,8 +475,150 @@ function HomePage() {
       case "hero":
         return (
           <div key={sec.id}>
-            <HeroImage slides={sec.custom_payload?.hero_slides}>
-              <div className="container-page flex min-h-[75vh] sm:min-h-[86vh] md:min-h-[92vh] flex-col items-center justify-center py-14 sm:py-20 md:py-24 text-center">
+            <HeroImage
+              slides={sec.custom_payload?.hero_slides}
+              // Colophon strip, rendered by HeroImage under the content.
+              colophon={
+                <div className="relative border-t border-gold/20 bg-ink/70 backdrop-blur-md">
+                  <dl className="container-page grid grid-cols-2 divide-y divide-ivory/10 sm:grid-cols-4 sm:divide-x sm:divide-y-0 sm:rtl:divide-x-reverse">
+                    {(
+                      [
+                        {
+                          label: copy.todayDate,
+                          value: todayValue,
+                          mono: false,
+                          link: null,
+                          icon: CalendarDays,
+                        },
+                        {
+                          label: copy.easternWeather,
+                          value: weatherValue,
+                          detail: weatherDetail,
+                          retry: !weather && metricsState === "error",
+                          mono: false,
+                          link: null,
+                          icon: WeatherIcon,
+                        },
+                        {
+                          label: copy.quickRequests,
+                          link: "/requests",
+                          hash: "committee-requests",
+                          icon: Inbox,
+                        },
+                        { label: copy.quickArchive, link: "/library", icon: Archive },
+                      ] as {
+                        label: BiText;
+                        value?: string | null;
+                        detail?: string | null;
+                        retry?: boolean;
+                        mono?: boolean;
+                        link: string | null;
+                        hash?: string;
+                        icon: LucideIcon | null;
+                      }[]
+                    ).map((item, i) => {
+                      const Icon = item.icon;
+                      const content = (
+                        <div className="flex h-full flex-col items-center justify-center px-3 py-4 sm:px-6 sm:py-6 transition-[background-color,transform] duration-200 ease-out group-hover:bg-ivory/[0.06] active:scale-[0.98] sm:text-center sm:first:ps-0 sm:last:pe-0">
+                          {Icon ? (
+                            <Icon
+                              className="h-5 w-5 text-gold transition-colors group-hover:text-gold-soft"
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                          <dt
+                            className={cn(
+                              "label-caps flex items-center justify-center gap-1 text-[10px] sm:text-xs text-ivory/50 transition-colors group-hover:text-gold",
+                              Icon && "mt-2 text-[11px] font-semibold text-ivory sm:text-sm",
+                            )}
+                          >
+                            {t(item.label)}
+                          </dt>
+                          {item.link ? (
+                            // Persistent click invitation — always visible so the
+                            // entrance reads as a navigation action, not a label.
+                            <span
+                              className={cn(
+                                "mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1",
+                                "text-[10px] font-semibold leading-none text-gold sm:text-[11px]",
+                                "transition-colors duration-200 group-hover:border-gold/70 group-hover:bg-gold/20 group-hover:text-gold-soft",
+                              )}
+                            >
+                              {t(copy.quickCta)}
+                              <Arrow
+                                className="h-3 w-3 transition-transform duration-200 ease-out group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
+                                aria-hidden="true"
+                              />
+                            </span>
+                          ) : null}
+                          {item.value ? (
+                            <dd
+                              className={cn(
+                                "mt-1 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-semibold text-ivory transition-colors group-hover:text-gold sm:mt-2 sm:text-xs xl:text-sm",
+                                item.mono && "nums font-mono text-gold group-hover:text-gold-soft",
+                              )}
+                            >
+                              {item.value}
+                            </dd>
+                          ) : item.value === null ? (
+                            <dd className="mt-1 sm:mt-2" aria-busy="true">
+                              <span
+                                aria-hidden="true"
+                                className="block h-3 w-16 animate-pulse rounded-sm bg-ivory/20 sm:h-3.5 sm:w-20"
+                              />
+                            </dd>
+                          ) : null}
+                          {item.detail ? (
+                            <dd className="nums mt-0.5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-medium text-ivory/70 sm:text-[11px]">
+                              {item.detail}
+                            </dd>
+                          ) : null}
+                          {item.retry ? (
+                            <dd className="mt-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setMetricsNonce((n) => n + 1)}
+                                className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10px] font-semibold leading-none text-gold transition-colors hover:border-gold/70 hover:bg-gold/20 sm:text-[11px]"
+                              >
+                                {t(copy.weatherRetry)}
+                              </button>
+                            </dd>
+                          ) : null}
+                        </div>
+                      );
+
+                      return (
+                        <div
+                          key={i}
+                          className={cn(
+                            "group relative",
+                            item.link &&
+                              "transition-transform duration-200 ease-out hover:-translate-y-0.5",
+                          )}
+                        >
+                          {item.link ? (
+                            <Link
+                              to={item.link}
+                              hash={item.hash}
+                              resetScroll={!item.hash}
+                              className="block h-full w-full"
+                            >
+                              {content}
+                            </Link>
+                          ) : (
+                            content
+                          )}
+                        </div>
+                      );
+                    })}
+                  </dl>
+                </div>
+              }
+            >
+              <div className="container-page relative flex min-h-[64svh] sm:min-h-[80vh] md:min-h-[86vh] flex-col items-center justify-center py-14 sm:py-20 md:py-24 text-center">
+                {/* The calligraphic mark is the visual title; this is the page's
+                    document title for screen readers and search engines. */}
+                <h1 className="sr-only">{t(inl.homeHeading)}</h1>
                 {/* Council mark */}
                 <div className="mx-auto flex w-full flex-col items-center justify-center motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700">
                   <img
@@ -519,160 +658,6 @@ function HomePage() {
                     <span>{t(copy.storyCta)}</span>
                   </Link>
                 </div>
-
-                {/* Scroll cue — mobile only */}
-                <div
-                  className="pointer-events-none absolute inset-x-0 bottom-4 sm:bottom-6 mx-auto flex w-full justify-center motion-safe:animate-bounce lg:hidden"
-                  aria-hidden="true"
-                >
-                  <div className="flex h-8 w-5 sm:h-10 sm:w-6 justify-center rounded-full border border-ivory/40 pt-1.5 sm:pt-2">
-                    <span className="h-1.5 w-0.5 sm:h-2 rounded-full bg-ivory/70" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Colophon strip — sits at the base of the cinematic hero */}
-              <div className="relative border-t border-gold/20 bg-ink/70 backdrop-blur-md">
-                <dl className="container-page grid grid-cols-2 divide-y divide-ivory/10 sm:grid-cols-5 sm:divide-x sm:divide-y-0 sm:rtl:divide-x-reverse">
-                  {(
-                    [
-                      {
-                        label: copy.visitCount,
-                        value: visitValue,
-                        mono: true,
-                        link: null,
-                        icon: Eye,
-                      },
-                      {
-                        label: copy.todayDate,
-                        value: todayValue,
-                        mono: false,
-                        link: null,
-                        icon: CalendarDays,
-                      },
-                      {
-                        label: copy.easternWeather,
-                        value: weatherValue,
-                        detail: weatherDetail,
-                        retry: !weather && metricsState === "error",
-                        mono: false,
-                        link: null,
-                        icon: WeatherIcon,
-                      },
-                      {
-                        label: copy.quickRequests,
-                        link: "/requests",
-                        hash: "committee-requests",
-                        icon: Inbox,
-                      },
-                      { label: copy.quickArchive, link: "/library", icon: Archive },
-                    ] as {
-                      label: BiText;
-                      value?: string | null;
-                      detail?: string | null;
-                      retry?: boolean;
-                      mono?: boolean;
-                      link: string | null;
-                      hash?: string;
-                      icon: LucideIcon | null;
-                    }[]
-                  ).map((item, i) => {
-                    const Icon = item.icon;
-                    const content = (
-                      <div className="flex h-full flex-col items-center justify-center px-3 py-4 sm:px-6 sm:py-6 transition-[background-color,transform] duration-200 ease-out group-hover:bg-ivory/[0.06] active:scale-[0.98] sm:text-center sm:first:ps-0 sm:last:pe-0">
-                        {Icon ? (
-                          <Icon
-                            className="h-5 w-5 text-gold transition-colors group-hover:text-gold-soft"
-                            aria-hidden="true"
-                          />
-                        ) : null}
-                        <dt
-                          className={cn(
-                            "label-caps flex items-center justify-center gap-1 text-[10px] sm:text-xs text-ivory/50 transition-colors group-hover:text-gold",
-                            Icon && "mt-2 text-[11px] font-semibold text-ivory sm:text-sm",
-                          )}
-                        >
-                          {t(item.label)}
-                        </dt>
-                        {item.link ? (
-                          // Persistent click invitation — always visible so the
-                          // entrance reads as a navigation action, not a label.
-                          <span
-                            className={cn(
-                              "mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3 py-1",
-                              "text-[10px] font-semibold leading-none text-gold sm:text-[11px]",
-                              "transition-colors duration-200 group-hover:border-gold/70 group-hover:bg-gold/20 group-hover:text-gold-soft",
-                            )}
-                          >
-                            {t(copy.quickCta)}
-                            <Arrow
-                              className="h-3 w-3 transition-transform duration-200 ease-out group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
-                              aria-hidden="true"
-                            />
-                          </span>
-                        ) : null}
-                        {item.value ? (
-                          <dd
-                            className={cn(
-                              "mt-1 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-semibold text-ivory transition-colors group-hover:text-gold sm:mt-2 sm:text-xs xl:text-sm",
-                              item.mono && "nums font-mono text-gold group-hover:text-gold-soft",
-                            )}
-                          >
-                            {item.value}
-                          </dd>
-                        ) : item.value === null ? (
-                          <dd className="mt-1 sm:mt-2" aria-busy="true">
-                            <span
-                              aria-hidden="true"
-                              className="block h-3 w-16 animate-pulse rounded-sm bg-ivory/20 sm:h-3.5 sm:w-20"
-                            />
-                          </dd>
-                        ) : null}
-                        {item.detail ? (
-                          <dd className="nums mt-0.5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-medium text-ivory/70 sm:text-[11px]">
-                            {item.detail}
-                          </dd>
-                        ) : null}
-                        {item.retry ? (
-                          <dd className="mt-1.5">
-                            <button
-                              type="button"
-                              onClick={() => setMetricsNonce((n) => n + 1)}
-                              className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10px] font-semibold leading-none text-gold transition-colors hover:border-gold/70 hover:bg-gold/20 sm:text-[11px]"
-                            >
-                              {t(copy.weatherRetry)}
-                            </button>
-                          </dd>
-                        ) : null}
-                      </div>
-                    );
-
-                    return (
-                      <div
-                        key={i}
-                        className={cn(
-                          "group relative",
-                          i === 1 && "col-span-2 sm:col-span-1",
-                          item.link &&
-                            "transition-transform duration-200 ease-out hover:-translate-y-0.5",
-                        )}
-                      >
-                        {item.link ? (
-                          <Link
-                            to={item.link}
-                            hash={item.hash}
-                            resetScroll={!item.hash}
-                            className="block h-full w-full"
-                          >
-                            {content}
-                          </Link>
-                        ) : (
-                          content
-                        )}
-                      </div>
-                    );
-                  })}
-                </dl>
               </div>
             </HeroImage>
             {/* Paper-grain divider */}
@@ -735,9 +720,26 @@ function HomePage() {
               <div>
                 <Prose dropCap>
                   {councilAddress.paragraphs.map((p, i) => (
-                    <p key={i}>{t(p)}</p>
+                    <p
+                      key={i}
+                      id={i === 2 ? "council-letter-more" : undefined}
+                      hidden={!letterOpen && i >= 2}
+                    >
+                      {t(p)}
+                    </p>
                   ))}
                 </Prose>
+                {councilAddress.paragraphs.length > 2 ? (
+                  <button
+                    type="button"
+                    aria-expanded={letterOpen}
+                    aria-controls="council-letter-more"
+                    onClick={() => setLetterOpen((v) => !v)}
+                    className="mt-4 inline-flex min-h-10 items-center gap-1.5 border-b border-bronze/50 text-sm font-semibold text-bronze transition-colors hover:border-bronze hover:text-foreground dark:border-gold/50 dark:text-gold dark:hover:text-gold-soft"
+                  >
+                    {t(letterOpen ? inl.letterShowLess : inl.letterReadMore)}
+                  </button>
+                ) : null}
 
                 <div className="mt-8 grid gap-6 border-t border-border pt-5 sm:grid-cols-2">
                   <div>
@@ -1607,14 +1609,14 @@ function HomePage() {
             </div>
 
             <ol className="reveal-stagger mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-              {galleryPreview.items.slice(0, 6).map((item) => (
+              {galleryPreview.items.slice(0, 6).map((item, idx) => (
                 <li key={item.id} className="hover-lift active-scale aspect-square overflow-hidden">
                   <img
                     src={item.url}
                     alt={
                       (rtl ? item.alt_ar : item.alt_en) ||
                       (rtl ? item.caption_ar : item.caption_en) ||
-                      ""
+                      `${t(inl.galleryImageAlt)} ${(idx + 1).toLocaleString(rtl ? "ar-EG" : "en-US")}`
                     }
                     className="h-full w-full object-cover"
                     loading="lazy"
