@@ -125,7 +125,7 @@ export function HqProjectVideo({ label, className }: HqProjectVideoProps) {
               : "Turn video sound off"
         }
         className={cn(
-          "absolute bottom-3 z-10 inline-flex items-center gap-2 rounded-full border border-ivory/30 bg-ink/70 px-3 py-2 text-xs text-ivory backdrop-blur-md transition-colors hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
+          "absolute bottom-3 z-10 inline-flex min-h-10 items-center gap-2 rounded-full border border-ivory/30 bg-ink/70 px-3 py-2 text-xs text-ivory backdrop-blur-md transition-colors hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
           rtl ? "left-3" : "right-3",
         )}
       >

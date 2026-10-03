@@ -178,7 +178,7 @@ export function Header() {
             {t(siteMeta.ncnpAuthority)}
           </span>
           <span className="nums font-mono text-[10px] sm:text-[11px] font-bold text-bronze dark:text-gold shrink-0">
-            {siteMeta.ncnpLicense}
+            {(dynamicSettings as Record<string, any>).site_general?.license || siteMeta.ncnpLicense}
           </span>
         </div>
       </div>

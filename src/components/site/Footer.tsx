@@ -293,7 +293,7 @@ export function Footer() {
                       rel="noopener noreferrer"
                       aria-label={s.label}
                       title={s.label}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-ivory/15 text-ivory/60 transition-colors hover:border-gold/50 hover:text-gold"
+                      className="tap-target inline-flex h-9 w-9 items-center justify-center rounded-full border border-ivory/15 text-ivory/60 transition-colors hover:border-gold/50 hover:text-gold"
                     >
                       <Icon className="h-4 w-4" />
                     </a>
