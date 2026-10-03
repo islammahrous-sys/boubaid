@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Lock, Maximize2 } from "lucide-react";
+import { Lock, Maximize2, Network } from "lucide-react";
 import { useLang, type BiText } from "@/i18n/LanguageProvider";
 import { Eyebrow } from "@/components/site/Editorial";
+import { cn } from "@/lib/utils";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { historyMedia } from "@/content/history-source";
 import { inl } from "@/content/page-copy/familytreesections-inline";
@@ -52,6 +54,17 @@ export function ElectronicFamilyTreeSection({
   focusName?: string;
 }) {
   const { t } = useLang();
+  // Home page only: phones get the card, so the canvas is not mounted at all
+  // there (a hidden iframe would still download d3 and lay out at 0px).
+  const [showCanvas, setShowCanvas] = useState(!withHeading);
+  useEffect(() => {
+    if (!withHeading) return;
+    const mq = window.matchMedia("(min-width: 640px)");
+    const sync = () => setShowCanvas(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [withHeading]);
 
   const query = new URLSearchParams();
   if (focusId) query.set("focus", focusId);
@@ -73,7 +86,7 @@ export function ElectronicFamilyTreeSection({
               href={canvasSrc}
               target="_blank"
               rel="noopener noreferrer"
-              className="label-caps inline-flex shrink-0 items-center gap-2 border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-foreground"
+              className="tap-target-y label-caps hidden shrink-0 items-center sm:inline-flex gap-2 border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-foreground"
             >
               <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
               {t(treeCopy.fullscreen)}
@@ -82,13 +95,39 @@ export function ElectronicFamilyTreeSection({
         </div>
       ) : null}
 
-      <div className={withHeading ? "mt-6 bg-ink" : "bg-ink"}>
-        <iframe
-          key={canvasSrc}
-          src={canvasSrc}
-          title={t(treeCopy.treeTitle)}
-          className="block h-[50vh] min-h-[22rem] w-full border-0 bg-card sm:h-[65vh] sm:min-h-[32rem]"
-        />
+      {/* On the home page, phones get a card instead of the embedded canvas: a
+          pan/zoom iframe inside a scrolling page traps the finger and is too
+          cramped at 375px. The /family-tree page keeps the canvas everywhere. */}
+      {withHeading ? (
+        <div className="container-page mt-6 sm:hidden">
+          <Link
+            to="/family-tree"
+            className="flex items-center gap-4 border border-border bg-card p-5 transition-colors hover:border-foreground"
+          >
+            <Network className="h-10 w-10 shrink-0 text-bronze dark:text-gold" aria-hidden="true" />
+            <span className="min-w-0">
+              <span className="block font-semibold text-foreground">{t(inl.mobileOpen)}</span>
+              <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
+                {t(inl.mobileHint)}
+              </span>
+            </span>
+          </Link>
+        </div>
+      ) : null}
+
+      <div className={cn(withHeading ? "mt-6 hidden bg-ink sm:block" : "bg-ink")}>
+        {showCanvas ? (
+          <iframe
+            key={canvasSrc}
+            src={canvasSrc}
+            title={t(treeCopy.treeTitle)}
+            loading="lazy"
+            className="block h-[50vh] min-h-[22rem] w-full border-0 bg-card sm:h-[65vh] sm:min-h-[32rem]"
+          />
+        ) : (
+          // Reserves the canvas height on desktop until it mounts after hydration.
+          <div className="h-[65vh] min-h-[32rem] bg-card" aria-hidden="true" />
+        )}
       </div>
 
       <aside className="border-b border-border bg-muted/40">

@@ -47,4 +47,9 @@ export const inl = registerCopy("familytreesections-inline", {
     ar: "الدليل البصري لشجرة أسرة آل بوعبيد: إرث ينمو من الجذور إلى الأفق الرقمي",
     en: "Visual guide to the Al Bu Obaid family tree: a heritage growing from its roots to the digital horizon",
   } as BiText,
+  mobileOpen: { ar: "افتح الشجرة التفاعلية", en: "Open the interactive tree" } as BiText,
+  mobileHint: {
+    ar: "استعرض الفروع وابحث بالاسم وكبّر وصغّر بحرية في صفحة الشجرة.",
+    en: "Browse branches, search by name and zoom freely on the tree page.",
+  } as BiText,
 });
