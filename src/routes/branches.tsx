@@ -74,7 +74,9 @@ function BranchesPage() {
   const branchList = branches.map((b) => {
     const count = liveCount(b);
     const o = overrides.get(b.id);
-    if (!o) return { ...b, count };
+    // A portrait uploaded from the console wins over the built-in one.
+    const portrait = o?.image_url || branchPortraits[b.id] || b.image;
+    if (!o) return { ...b, count, portrait };
     return {
       ...b,
       count,
@@ -83,6 +85,7 @@ function BranchesPage() {
         ? { ar: o.description_ar, en: o.description_en ?? o.description_ar }
         : b.description,
       image: o.image_url ?? b.image,
+      portrait,
     };
   });
 
@@ -239,7 +242,7 @@ function BranchesPage() {
                 <figure className="max-w-[16rem] mx-auto sm:max-w-none">
                   <div className="plate-frame">
                     <img
-                      src={branchPortraits[b.id] || b.image || "/images/sheikh-mohammed-ahmed.png"}
+                      src={b.portrait || "/images/sheikh-mohammed-ahmed.png"}
                       alt={t({
                         ar: `صورة ${b.ancestor.ar} — الجد الجامع لفرع ${b.name.ar}`,
                         en: `Portrait of ${b.ancestor.en}, patriarch of the ${b.name.en} branch`,

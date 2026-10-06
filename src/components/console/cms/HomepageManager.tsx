@@ -25,10 +25,8 @@ import {
   CheckCircle2,
   ExternalLink,
   Layers,
-  Image as ImageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { ImageUploadInput } from "@/components/console/media/ImageUploadInput";
 import type { SiteSettingInput } from "@/lib/admin-hub.schemas";
 
 export type HomepageSectionConfig = {
@@ -517,29 +515,6 @@ export function HomepageManager({
                     }
                   />
                 </div>
-              </div>
-
-              {/* Background / Cover Image Upload */}
-              <div className="space-y-1 pt-1 border-t border-border">
-                <Label className="text-xs font-semibold flex items-center gap-1.5">
-                  <ImageIcon className="w-3.5 h-3.5 text-primary" />
-                  <span>
-                    {isAr ? "صورة الخلفية / الغلاف للقسم" : "Section Background / Cover Photo"}
-                  </span>
-                </Label>
-                <ImageUploadInput
-                  bucket="site-media"
-                  value={editingSection.image_path}
-                  onChange={(url) => setEditingSection({ ...editingSection, image_path: url })}
-                  placeholder={
-                    isAr ? "رابط الصورة أو ارفع صورة جديدة..." : "Image URL or upload..."
-                  }
-                  helperText={
-                    isAr
-                      ? "صورة الغلاف أو الخلفية الظاهرة لهذا القسم في الصفحة الرئيسية"
-                      : "Cover or background image displayed in this section"
-                  }
-                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">

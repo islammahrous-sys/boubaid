@@ -97,20 +97,15 @@ export const copy = registerCopy("index", {
     en: "Take part in the organisation's work",
   } as BiText,
   joinBody: {
-    ar: "الاشتراك الشهري يموّل الأوقاف وبرامج التكافل ومشروع المقر. ويسع أبناء الأسرة كذلك المشاركة في اللجان أو تحديث بياناتهم في السجل.",
-    en: "Monthly subscription funds the endowments, the solidarity programmes, and the headquarters project. Family members may also join a committee or update their record in the register.",
+    ar: "يسع أبناء الأسرة المشاركة في أعمال اللجان، وتقديم الطلبات، وتحديث بياناتهم في السجل.",
+    en: "Family members may join a committee's work, submit requests, and update their record in the register.",
   } as BiText,
-  joinCta: { ar: "الاشتراك والمساهمة", en: "Subscribe & contribute" } as BiText,
   contactCta: {
     ar: "تواصل مع لجان مجلس الأسرة",
     en: "Contact Family Council Committees",
   } as BiText,
   // ── Previously inline in routes/index.tsx; now editable from the CMS ──
   storyCta: { ar: "قصة الأسرة", en: "Our Story" } as BiText,
-  supporterLevels: { ar: "مستويات الداعمين", en: "Supporter levels" } as BiText,
-  tierDiamond: { ar: "الماسي", en: "Diamond" } as BiText,
-  tierPlatinum: { ar: "البلاتيني", en: "Platinum" } as BiText,
-  tierGolden: { ar: "الذهبي", en: "Golden" } as BiText,
   hqProjectLink: {
     ar: "مشروع مقر مجلس الأسرة",
     en: "Family Council Headquarters Project",

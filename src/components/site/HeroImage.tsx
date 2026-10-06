@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { cn } from "@/lib/utils";
 import { useLang } from "@/i18n/LanguageProvider";
 import { inl } from "@/content/page-copy/heroimage-inline";
+import { pageImages } from "@/content/images";
 
 export interface HeroSlide {
   src: string;
@@ -14,12 +15,14 @@ export interface HeroSlide {
 }
 
 /**
- * Permanent Supabase-hosted hero photographs.
- * Bucket: public 'site-media' under 'hero/' folder.
+ * The homepage hero photographs. `src` is read through `pageImages.home.heroSlideN`
+ * so an admin can replace each photo from Platform settings → Page images.
  */
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
-    src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-masmak-fort.jpg",
+    get src() {
+      return pageImages.home.heroSlide1.src;
+    },
     altAr: "قصر المصمك التاريخي وعلم المملكة العربية السعودية",
     altEn: "Historic Al-Masmak Fortress and Saudi Arabia flag",
     titleAr: "قصر المصمك التاريخي",
@@ -27,7 +30,9 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
     objectPosition: "object-[60%_center] sm:object-[55%_center] lg:object-[50%_35%]",
   },
   {
-    src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-ahsa-oasis.jpg",
+    get src() {
+      return pageImages.home.heroSlide2.src;
+    },
     altAr: "واحة الأحساء وبساتين النخيل وقنوات الري التراثية",
     altEn: "Al-Ahsa Oasis palm groves and heritage irrigation channels",
     titleAr: "واحة الأحساء النخيلية",
@@ -35,7 +40,9 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
     objectPosition: "object-center",
   },
   {
-    src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-qarah-mountain.jpg",
+    get src() {
+      return pageImages.home.heroSlide3.src;
+    },
     altAr: "جبل القارة وتكويناته الصخرية البديعة في الأحساء",
     altEn: "Al-Qarah Mountain and distinctive rock formations in Al-Ahsa",
     titleAr: "جبل القارة بالأحساء",

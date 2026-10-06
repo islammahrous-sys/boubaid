@@ -960,26 +960,6 @@ function HomePage() {
                     </div>
                   </div>
 
-                  {/* Supporter recognition levels */}
-                  <div className="mt-7 border-t border-border pt-5">
-                    <p className="label-caps text-muted-foreground">{t(copy.supporterLevels)}</p>
-                    <ol className="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
-                      {[copy.tierDiamond, copy.tierPlatinum, copy.tierGolden].map((tier, i) => (
-                        <li
-                          key={tier.en}
-                          className="rounded-md border border-bronze/40 bg-secondary/40 px-2 py-4 text-center dark:border-gold/40"
-                        >
-                          <span className="nums block font-mono text-xs text-bronze dark:text-gold">
-                            {String(i + 1).padStart(2, "0")}
-                          </span>
-                          <span className="mt-1 block text-[15px] font-semibold text-foreground">
-                            {t(tier)}
-                          </span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-
                   <div className="mt-8 flex flex-wrap items-center gap-3">
                     <Link
                       to="/committees"

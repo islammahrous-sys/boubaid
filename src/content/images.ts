@@ -20,6 +20,28 @@ export interface Figure {
 
 export const pageImages = {
   home: {
+    /** The three full-width photographs that cross-fade behind the homepage title. */
+    heroSlide1: {
+      src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-masmak-fort.jpg",
+      caption: {
+        ar: "صورة الواجهة الأولى (أعلى الصفحة الرئيسية) — قصر المصمك التاريخي",
+        en: "Homepage hero photo 1 — Historic Al-Masmak Fortress",
+      },
+    } satisfies Figure,
+    heroSlide2: {
+      src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-ahsa-oasis.jpg",
+      caption: {
+        ar: "صورة الواجهة الثانية (أعلى الصفحة الرئيسية) — واحة الأحساء",
+        en: "Homepage hero photo 2 — Al-Ahsa Oasis",
+      },
+    } satisfies Figure,
+    heroSlide3: {
+      src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/hero/al-qarah-mountain.jpg",
+      caption: {
+        ar: "صورة الواجهة الثالثة (أعلى الصفحة الرئيسية) — جبل القارة",
+        en: "Homepage hero photo 3 — Al-Qarah Mountain",
+      },
+    } satisfies Figure,
     project: {
       src: "/images/hq_building.png",
       caption: {
