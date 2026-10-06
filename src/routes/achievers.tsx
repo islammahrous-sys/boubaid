@@ -37,9 +37,6 @@ import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/achievers";
 import { inl } from "@/content/page-copy/achievers-inline";
 
-const EXCELLENCE_CEREMONY_IMAGE =
-  "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/excellence-award-ceremony.jpg";
-
 export const Route = createFileRoute("/achievers")({
   loader: async () => {
     const rows = await getPublishedAchievers();
@@ -339,7 +336,7 @@ function AchieversPage() {
           </h2>
           <figure className="mt-6">
             <img
-              src={EXCELLENCE_CEREMONY_IMAGE}
+              src={pageImages.achievers.ceremony.src}
               alt={t(inl.t_32f27a01)}
               width={1920}
               height={1280}

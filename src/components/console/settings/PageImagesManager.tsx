@@ -13,6 +13,7 @@ const GROUP_LABELS: Record<string, { ar: string; en: string }> = {
   governance: { ar: "الحوكمة", en: "Governance" },
   initiatives: { ar: "المبادرات", en: "Initiatives" },
   achievers: { ar: "لوحة الشرف", en: "Roll of honour" },
+  familyTree: { ar: "شجرة العائلة", en: "Family tree" },
   branches: { ar: "الفروع", en: "Branches" },
   dna: { ar: "الدراسات الجينية", en: "Genetic studies" },
   committees: { ar: "اللجان", en: "Committees" },

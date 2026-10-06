@@ -5,7 +5,7 @@ import { useLang, type BiText } from "@/i18n/LanguageProvider";
 import { Eyebrow } from "@/components/site/Editorial";
 import { cn } from "@/lib/utils";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
-import { historyMedia } from "@/content/history-source";
+import { pageImages } from "@/content/images";
 import { inl } from "@/content/page-copy/familytreesections-inline";
 
 /**
@@ -14,9 +14,6 @@ import { inl } from "@/content/page-copy/familytreesections-inline";
  * here so the lineage page and the home page render exactly the same sections
  * from the same data source instead of keeping two copies.
  */
-
-export const OFFICIAL_FAMILY_TREE_IMAGE =
-  "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/family-tree-plate-1447.jpg";
 
 export const treeCopy = {
   treeTitle: inl.t_9cbacbf8 as BiText,
@@ -168,7 +165,7 @@ export function OfficialPlateSection() {
           type="button"
           onClick={() =>
             openMediaViewer({
-              src: OFFICIAL_FAMILY_TREE_IMAGE,
+              src: pageImages.familyTree.plate.src,
               kind: "image",
               title: t(treeCopy.artworkTitle),
             })
@@ -177,7 +174,7 @@ export function OfficialPlateSection() {
           aria-label={t(treeCopy.artworkFull)}
         >
           <img
-            src={OFFICIAL_FAMILY_TREE_IMAGE}
+            src={pageImages.familyTree.plate.src}
             alt={t(inl.t_84ce44b7)}
             width={1344}
             height={1920}
@@ -195,7 +192,7 @@ export function OfficialPlateSection() {
           </span>
           <span className="flex flex-wrap items-center gap-3">
             <a
-              href={OFFICIAL_FAMILY_TREE_IMAGE}
+              href={pageImages.familyTree.plate.src}
               target="_blank"
               rel="noopener noreferrer"
               className="tap-target-y label-caps inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-xs font-semibold text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
@@ -240,7 +237,7 @@ export function VisualGenealogySection() {
             type="button"
             onClick={() =>
               openMediaViewer({
-                src: historyMedia.visualGenealogy,
+                src: pageImages.familyTree.visualGuide.src,
                 kind: "image",
                 title: t(treeCopy.visualTitle),
               })
@@ -249,7 +246,7 @@ export function VisualGenealogySection() {
             aria-label={t(treeCopy.artworkFull)}
           >
             <img
-              src={historyMedia.visualGenealogy}
+              src={pageImages.familyTree.visualGuide.src}
               alt={t(inl.t_bb8f2050)}
               decoding="async"
               loading="lazy"

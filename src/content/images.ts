@@ -179,12 +179,39 @@ export const pageImages = {
     } satisfies Figure,
   },
 
+  familyTree: {
+    /** Official illustrated plate — homepage and family-tree page. */
+    plate: {
+      src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/family-tree-plate-1447.jpg",
+      caption: {
+        ar: "اللوحة الرسمية المصورة لشجرة العائلة (الرئيسية وصفحة مشجرة العائلة)",
+        en: "Official illustrated family-tree plate (home and family-tree pages)",
+      },
+    } satisfies Figure,
+    /** Visual genealogy guide — homepage and family-tree page. */
+    visualGuide: {
+      src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/lineage/al-bu-obaid-visual-genealogy.png",
+      caption: {
+        ar: "الدليل البصري لشجرة الأسرة (الرئيسية وصفحة مشجرة العائلة)",
+        en: "Visual genealogy guide (home and family-tree pages)",
+      },
+    } satisfies Figure,
+  },
+
   achievers: {
     header: {
       src: "/images/achievers_hall_plate.jpg",
       caption: {
         ar: "قاعة تكريم المتفوقين — الاحتفاء السنوي بأبناء الأسرة المتميزين في العلم والعمل.",
         en: "The honours hall — the family's annual recognition of members distinguished in learning and service.",
+      },
+    } satisfies Figure,
+    /** Photograph above the excellence-award honour lists. */
+    ceremony: {
+      src: "https://ywsvittlswbbyqhahorh.supabase.co/storage/v1/object/public/site-media/official/excellence-award-ceremony.jpg",
+      caption: {
+        ar: "صورة حفل جائزة التميز (صفحة المتميزين — قسم جائزة التميز)",
+        en: "Excellence award ceremony photo (Achievers page — Excellence award section)",
       },
     } satisfies Figure,
   },
