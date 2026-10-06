@@ -245,8 +245,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { title: "منظومة أمانة المجلس والـ CMS الشاملة | أسرة آل بوعبيد" },
       {
         name: "description",
-        content:
-          "المنظومة الإدارية المتكاملة لإدارة شجرة العائلة، الدليل، المبادرات، والمحتوى.",
+        content: "المنظومة الإدارية المتكاملة لإدارة شجرة العائلة، الدليل، المبادرات، والمحتوى.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -1259,6 +1258,7 @@ function MasterAdminPage() {
                   articles={(articlesData?.articles ?? []) as any}
                   categories={(articlesData?.categories ?? []) as any}
                   onSaveArticle={(data) => runMutation(() => saveArtMut({ data }), refreshArticles)}
+                  onBulkAction={(data) => runMutation(() => bulkArtMut({ data }), refreshArticles)}
                 />
               ))}
 
