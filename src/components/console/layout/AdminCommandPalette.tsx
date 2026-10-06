@@ -139,9 +139,11 @@ export function AdminCommandPalette({
       <CommandList className="max-h-[380px]">
         <CommandEmpty>{isAr ? "لا توجد نتائج مطابقة." : "No results found."}</CommandEmpty>
 
-        {/* Dynamic Database Search Results */}
+        {/* Dynamic Database Search Results. The server already matched these,
+            so they are force-mounted: cmdk's own fuzzy filter otherwise hid
+            every Arabic database hit and left only the navigation entries. */}
         {searchQuery.length >= 2 && (
-          <CommandGroup heading={isAr ? "نتائج البحث" : "Search Results"}>
+          <CommandGroup forceMount heading={isAr ? "نتائج البحث" : "Search Results"}>
             {searchLoading ? (
               <div className="flex items-center justify-center p-4 text-muted-foreground">
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -149,7 +151,9 @@ export function AdminCommandPalette({
             ) : searchResults && searchResults.length > 0 ? (
               searchResults.map((item) => (
                 <CommandItem
+                  forceMount
                   key={`${item.category}-${item.id}`}
+                  value={`search-${item.category}-${item.id}`}
                   onSelect={() => {
                     const target = resolveSearchTarget(item.category, item.tab);
                     onSelectTab(target.domainId, target.tabId);
@@ -173,7 +177,7 @@ export function AdminCommandPalette({
                 </CommandItem>
               ))
             ) : (
-              <CommandItem disabled className="text-muted-foreground">
+              <CommandItem forceMount disabled className="text-muted-foreground">
                 {isAr ? "لا يوجد نتائج في قاعدة البيانات" : "No database records found"}
               </CommandItem>
             )}

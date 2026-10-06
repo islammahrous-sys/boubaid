@@ -9,6 +9,14 @@ import { autoSlug, slugify } from "@/lib/slugify";
  */
 const autoSlugField = z.string().trim().max(200).optional().nullable();
 
+/** Optional form fields arrive as "" when left blank. Postgres rejects "" for
+ *  date/timestamp/uuid columns ("invalid input syntax"), which made events
+ *  without an end time and members without a birth date impossible to save.
+ *  Blank → null before validation. */
+const blankToNull = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : v);
+const optionalDate = z.preprocess(blankToNull, z.string().optional().nullable());
+const optionalUuid = z.preprocess(blankToNull, z.string().uuid().optional().nullable());
+
 function withAutoSlug<T extends { slug?: string | null }>(
   values: T,
   titles: Array<string | null | undefined>,
@@ -48,8 +56,8 @@ export const familyMemberInputSchema = z
     display_name_en: z.string().trim().optional().nullable(),
     slug: autoSlugField,
     gender: genderSchema.default("male"),
-    date_of_birth: z.string().optional().nullable(),
-    date_of_death: z.string().optional().nullable(),
+    date_of_birth: optionalDate,
+    date_of_death: optionalDate,
     is_living: z.boolean().default(true),
     biography_ar: z.string().optional().nullable(),
     biography_en: z.string().optional().nullable(),
@@ -57,9 +65,9 @@ export const familyMemberInputSchema = z
     occupation_en: z.string().optional().nullable(),
     education_ar: z.string().optional().nullable(),
     education_en: z.string().optional().nullable(),
-    birth_place_id: z.string().uuid().optional().nullable(),
-    current_place_id: z.string().uuid().optional().nullable(),
-    branch_id: z.string().uuid().optional().nullable(),
+    birth_place_id: optionalUuid,
+    current_place_id: optionalUuid,
+    branch_id: optionalUuid,
     avatar_path: z.string().optional().nullable(),
     cover_path: z.string().optional().nullable(),
     generation: z.number().int().min(1).default(1),
@@ -134,7 +142,7 @@ export const familyHistoryInputSchema = z.object({
   description_en: z.string().optional().nullable(),
   date: z.string().optional().nullable(),
   date_end: z.string().optional().nullable(),
-  place_id: z.string().uuid().optional().nullable(),
+  place_id: optionalUuid,
   media_path: z.string().optional().nullable(),
   sort_order: z.number().int().default(0),
   visibility: visibilityLevelSchema.default("public"),
@@ -185,7 +193,7 @@ export const navigationItemInputSchema = z.object({
   label_en: z.string().trim().optional().nullable(),
   url: z.string().trim().min(1, "الرابط مطلوب"),
   type: z.enum(["page", "article", "event", "family", "external", "custom"]).default("custom"),
-  parent_id: z.string().uuid().optional().nullable(),
+  parent_id: optionalUuid,
   sort_order: z.number().int().default(0),
   target: z.string().default("_self"),
   icon: z.string().optional().nullable(),
@@ -206,9 +214,9 @@ export const articleInputSchema = z
     content_ar: z.string().optional().nullable(),
     content_en: z.string().optional().nullable(),
     featured_media_path: z.string().optional().nullable(),
-    category_id: z.string().uuid().optional().nullable(),
+    category_id: optionalUuid,
     status: recordStatusSchema.default("draft"),
-    published_at: z.string().optional().nullable(),
+    published_at: optionalDate,
     is_featured: z.boolean().default(false),
     seo_title_ar: z.string().optional().nullable(),
     seo_title_en: z.string().optional().nullable(),
@@ -229,12 +237,12 @@ export const eventInputSchema = z
     description_ar: z.string().optional().nullable(),
     description_en: z.string().optional().nullable(),
     start_at: z.string().min(1, "تاريخ ووقت البدء مطلوب"),
-    end_at: z.string().optional().nullable(),
+    end_at: optionalDate,
     timezone: z.string().default("Asia/Riyadh"),
-    place_id: z.string().uuid().optional().nullable(),
+    place_id: optionalUuid,
     cover_path: z.string().optional().nullable(),
     registration_enabled: z.boolean().default(false),
-    registration_deadline: z.string().optional().nullable(),
+    registration_deadline: optionalDate,
     max_attendees: z.number().int().optional().nullable(),
     status: z.enum(["draft", "published", "cancelled", "completed"]).default("published"),
   })
@@ -250,8 +258,8 @@ export const announcementInputSchema = z.object({
   message_en: z.string().trim().optional().nullable(),
   type: z.enum(["info", "success", "warning", "important"]).default("info"),
   priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
-  start_at: z.string().optional().nullable(),
-  end_at: z.string().optional().nullable(),
+  start_at: optionalDate,
+  end_at: optionalDate,
   status: z.enum(["draft", "published", "archived"]).default("published"),
 });
 export type AnnouncementInput = z.infer<typeof announcementInputSchema>;
@@ -298,7 +306,7 @@ export const galleryInputSchema = z
     /** "museum" = Museum Collection (protected legacy set), "archive" = Archive folder tree. */
     section: z.enum(["museum", "archive"]).default("museum"),
     /** Parent Archive folder, for sub-folders. Null for a top-level folder. */
-    parent_id: z.string().uuid().optional().nullable(),
+    parent_id: optionalUuid,
   })
   .transform((v) => withAutoSlug(v, [v.title_ar, v.title_en], "gallery"));
 export type GalleryInput = z.infer<typeof galleryInputSchema>;
@@ -313,7 +321,7 @@ export const documentInputSchema = z.object({
   file_path: z.string().min(1, "مسار الملف مطلوب"),
   category: z.string().default("governance"),
   /** Optional link to a row in `services`, used by the services catalogue. */
-  service_id: z.string().uuid().optional().nullable(),
+  service_id: optionalUuid,
   visibility: visibilityLevelSchema.default("public"),
   status: z.string().default("published"),
 });
@@ -348,7 +356,7 @@ export const inquiryStatusUpdateSchema = z.object({
     "closed",
     "spam",
   ]),
-  assigned_to: z.string().uuid().optional().nullable(),
+  assigned_to: optionalUuid,
   review_note: z.string().trim().optional().nullable(),
 });
 export const inquiryNoteInputSchema = z.object({
@@ -523,7 +531,7 @@ export const bulkMembersActionSchema = z
       "draft",
       "change_visibility",
     ]),
-    branch_id: z.string().uuid().optional().nullable(),
+    branch_id: optionalUuid,
     visibility: visibilityLevelSchema.optional(),
   })
   // Both of these actions used to silently no-op (and still report success)
