@@ -42,3 +42,4 @@ dist-ssr
 .vercel
 supabase/.temp/
 .temp/
+.e2e-output/
