@@ -9,9 +9,7 @@ import { getCanonicalUrl } from "@/lib/seo";
 import { getPublicSiteSettings } from "@/lib/cms.functions";
 import { copy } from "@/content/page-copy/official-family-tree";
 import { inl } from "@/content/page-copy/official-family-tree-inline";
-
-/** Bundled fallback used only if the managed media record is unavailable. */
-const FALLBACK_PLATE = "/images/family_tree_official_artwork.jpg";
+import { pageImages } from "@/content/images";
 
 export const Route = createFileRoute("/official-family-tree")({
   loader: () => getPublicSiteSettings(),
@@ -51,7 +49,12 @@ function OfficialFamilyTreePage() {
   const { t, lang } = useLang();
   const isAr = lang === "ar";
   const settings = Route.useLoaderData();
-  const plateSrc: string = settings?.family_tree_plate?.url || FALLBACK_PLATE;
+  // A photo chosen in Platform settings → Page images (familyTree.plate) wins.
+  const plateOverride = (settings?.page_images as Record<string, string> | undefined)?.[
+    "familyTree.plate"
+  ];
+  const plateSrc: string =
+    plateOverride || settings?.family_tree_plate?.url || pageImages.familyTree.plate.src;
 
   return (
     <div>
