@@ -2,7 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /account
-Disallow: /treasury
 Disallow: /content
 Disallow: /auth
 Disallow: /verify

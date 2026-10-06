@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, ArrowRight, HeartHandshake, Share2, Copy, Check, Users } from "lucide-react";
+import { ArrowLeft, ArrowRight, Share2, Copy, Check, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
@@ -277,25 +277,6 @@ function InitiativeDetail() {
             <p>{t(item.body)}</p>
           </div>
         </section>
-
-        {/* ── Support & Contribute Synergy Banner ─────────────── */}
-        <div className="mt-10 p-5 bg-card border border-border rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="text-xs font-semibold text-bronze dark:text-gold uppercase tracking-wider">
-              {t(inl.t_719f7fd9)}
-            </span>
-            <h3 className="text-base font-bold text-foreground">{t(inl.t_1461042f)}</h3>
-            <p className="text-xs text-muted-foreground">{t(inl.t_f741ab62)}</p>
-          </div>
-          <Link
-            to="/contribute"
-            search={{ initiative: item.slug, purpose: t(item.title) }}
-            className="inline-flex shrink-0 items-center gap-2 border border-ink bg-ink px-5 py-2.5 text-xs font-bold text-ivory hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold transition-colors"
-          >
-            <HeartHandshake className="w-4 h-4" />
-            {t(inl.t_364e0e12)}
-          </Link>
-        </div>
 
         <Ornament className="my-12" />
 

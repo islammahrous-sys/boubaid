@@ -623,24 +623,6 @@ export const COUNCIL_REQUESTS = {
     ],
     allowAttachments: true,
   },
-  fund_contribution: {
-    title: { ar: "الاشتراك والمساهمة", en: "Subscription & contribution" },
-    desc: {
-      ar: "تسجيل اشتراك أو مساهمة في صندوق التنمية العائلية وإرفاق إشعار السداد للمراجعة.",
-      en: "Register a subscription or contribution to the family development fund and attach your payment notice for review.",
-    },
-    topic: { ar: "نوع المساهمة أو الاشتراك", en: "Contribution or subscription type" },
-    details: {
-      ar: "تفاصيل المساهمة أو ملاحظات السداد",
-      en: "Contribution details or payment notes",
-    },
-    fields: [
-      personField("المبلغ (ريال سعودي)", "Amount (SAR)", "amount"),
-      personField("اسم البنك المحول منه", "Bank name", "bank_name"),
-      dateField("تاريخ التحويل", "Transfer date", "transfer_date"),
-    ],
-    allowAttachments: true,
-  },
   family_tree_frame: {
     title: { ar: "طلب لوحة شجرة العائلة", en: "Family tree frame order" },
     desc: {

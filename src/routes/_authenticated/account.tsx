@@ -379,11 +379,9 @@ function AccountPage() {
     Boolean(data?.roles?.includes("member")) ||
     Boolean(data?.roles?.includes("admin")) ||
     Boolean(data?.roles?.includes("super_admin")) ||
-    Boolean(data?.roles?.includes("treasurer")) ||
     Boolean(authContextRoles?.includes("member")) ||
     Boolean(authContextRoles?.includes("admin")) ||
     Boolean(authContextRoles?.includes("super_admin")) ||
-    Boolean(authContextRoles?.includes("treasurer")) ||
     Boolean(isAdmin);
 
   /**
@@ -785,7 +783,6 @@ function AccountPage() {
         : [];
   const isSuperAdmin = authRoles.includes("super_admin");
   const isCouncilAdmin = authRoles.includes("admin") || isSuperAdmin;
-  const isTreasurer = authRoles.includes("treasurer") || isCouncilAdmin;
   const isEditor =
     authRoles.includes("editor") || authRoles.includes("content_manager") || isCouncilAdmin;
   const isFamilyManager = authRoles.includes("family_manager") || isCouncilAdmin;
@@ -848,11 +845,6 @@ function AccountPage() {
                       <ShieldCheck className="w-3 h-3 me-1" />
                       {isAr ? "أمانة المجلس" : "Admin"}
                     </Badge>
-                  ) : isTreasurer ? (
-                    <Badge className="bg-emerald-600 text-white font-semibold text-xs border-0">
-                      <Building className="w-3 h-3 me-1" />
-                      {isAr ? "أمانة الخزينة والصندوق" : "Treasurer"}
-                    </Badge>
                   ) : isEditor ? (
                     <Badge className="bg-sky-600 text-white font-semibold text-xs border-0">
                       <Sliders className="w-3 h-3 me-1" />
@@ -911,7 +903,7 @@ function AccountPage() {
 
             {/* Quick Actions tailored to user roles */}
             <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
-              {(isCouncilAdmin || isTreasurer || isEditor || isFamilyManager) && (
+              {(isCouncilAdmin || isEditor || isFamilyManager) && (
                 <Button
                   asChild
                   size="sm"
@@ -920,13 +912,11 @@ function AccountPage() {
                   <Link
                     to="/admin"
                     search={
-                      isTreasurer && !isCouncilAdmin
-                        ? { domain: "governance", tab: "treasury" }
-                        : isEditor && !isCouncilAdmin
-                          ? { domain: "content", tab: "articles" }
-                          : isFamilyManager && !isCouncilAdmin
-                            ? { domain: "family", tab: "members" }
-                            : undefined
+                      isEditor && !isCouncilAdmin
+                        ? { domain: "content", tab: "articles" }
+                        : isFamilyManager && !isCouncilAdmin
+                          ? { domain: "family", tab: "members" }
+                          : undefined
                     }
                   >
                     <LayoutDashboard className="w-4 h-4" />
@@ -934,21 +924,17 @@ function AccountPage() {
                       ? isAr
                         ? "لوحة الأمانة العامة"
                         : "Executive Console"
-                      : isTreasurer && !isCouncilAdmin
+                      : isEditor && !isCouncilAdmin
                         ? isAr
-                          ? "لوحة الخزينة"
-                          : "Treasury Hub"
-                        : isEditor && !isCouncilAdmin
+                          ? "لوحة إدارة المحتوى"
+                          : "Content Studio"
+                        : isFamilyManager && !isCouncilAdmin
                           ? isAr
-                            ? "لوحة إدارة المحتوى"
-                            : "Content Studio"
-                          : isFamilyManager && !isCouncilAdmin
-                            ? isAr
-                              ? "لوحة شجرة الأنساب"
-                              : "Family Tree Admin"
-                            : isAr
-                              ? "لوحة الإدارة والأمانة"
-                              : "Admin Console"}
+                            ? "لوحة شجرة الأنساب"
+                            : "Family Tree Admin"
+                          : isAr
+                            ? "لوحة الإدارة والأمانة"
+                            : "Admin Console"}
                   </Link>
                 </Button>
               )}
@@ -1595,21 +1581,17 @@ function AccountPage() {
                                 ? isAr
                                   ? "أمانة المجلس (مسؤول معتمد)"
                                   : "Council Secretariat (Admin)"
-                                : isTreasurer
+                                : isEditor
                                   ? isAr
-                                    ? "أمين الخزينة والصندوق"
-                                    : "Treasurer"
-                                  : isEditor
+                                    ? "هيئة التحرير والمحتوى"
+                                    : "Content Editor"
+                                  : isFamilyManager
                                     ? isAr
-                                      ? "هيئة التحرير والمحتوى"
-                                      : "Content Editor"
-                                    : isFamilyManager
-                                      ? isAr
-                                        ? "لجنة السجل والأنساب"
-                                        : "Genealogy Committee"
-                                      : isAr
-                                        ? "عضو معتمد وموثق"
-                                        : "Verified Member"}
+                                      ? "لجنة السجل والأنساب"
+                                      : "Genealogy Committee"
+                                    : isAr
+                                      ? "عضو معتمد وموثق"
+                                      : "Verified Member"}
                           </Badge>
                         </div>
                         <div className="p-3 rounded-lg bg-secondary/40 border border-border text-[11px] text-muted-foreground space-y-1">
@@ -1621,21 +1603,17 @@ function AccountPage() {
                               ? isAr
                                 ? "حسابك معتمد وموثق بصلاحيات الأمانة العامة وإدارة المنصة بالكامل."
                                 : "Your account is fully verified with executive council privileges."
-                              : isTreasurer
+                              : isEditor
                                 ? isAr
-                                  ? "حسابك معتمد ومخول بالاطلاع على وإدارة الخزينة والتحويلات المالية وصندوق التنمية."
-                                  : "Your account is authorized to manage the family treasury and transactions."
-                                : isEditor
+                                  ? "حسابك معتمد بصلاحيات نشر وتحرير المحتوى والمقالات والمكتبة الرقمية."
+                                  : "Your account is authorized to edit and publish content."
+                                : isFamilyManager
                                   ? isAr
-                                    ? "حسابك معتمد بصلاحيات نشر وتحرير المحتوى والمقالات والمكتبة الرقمية."
-                                    : "Your account is authorized to edit and publish content."
-                                  : isFamilyManager
-                                    ? isAr
-                                      ? "حسابك معتمد بصلاحيات تحديث وإدارة فروع شجرة العائلة وسجلات الأنساب."
-                                      : "Your account is authorized to manage the family tree records."
-                                    : isAr
-                                      ? "تم توثيق بياناتك بنجاح في السجل العائلي الرسمي وشجرة الأنساب."
-                                      : "Your record has been officially verified in the family register."}
+                                    ? "حسابك معتمد بصلاحيات تحديث وإدارة فروع شجرة العائلة وسجلات الأنساب."
+                                    : "Your account is authorized to manage the family tree records."
+                                  : isAr
+                                    ? "تم توثيق بياناتك بنجاح في السجل العائلي الرسمي وشجرة الأنساب."
+                                    : "Your record has been officially verified in the family register."}
                           </p>
                         </div>
                       </div>
@@ -2244,8 +2222,8 @@ function AccountPage() {
                       </CardTitle>
                       <CardDescription className="text-xs">
                         {isAr
-                          ? "متابعة مستجدات العضوية، إعلانات الأسرة، اشتراكات الخزينة، وتحديثات الأنساب."
-                          : "Stay informed with membership, announcements, treasury, and lineage updates."}
+                          ? "متابعة مستجدات العضوية، إعلانات الأسرة، وتحديثات الأنساب."
+                          : "Stay informed with membership, announcements, and lineage updates."}
                       </CardDescription>
                     </div>
                   </div>
@@ -2302,12 +2280,6 @@ function AccountPage() {
                       labelAr: "المناسبات والفعاليات",
                       labelEn: "Events",
                       count: categorizedNotifications.events.length,
-                    },
-                    {
-                      key: "contributions",
-                      labelAr: "الخزينة والمساهمات",
-                      labelEn: "Treasury",
-                      count: categorizedNotifications.contributions.length,
                     },
                     {
                       key: "heritage",
@@ -2608,29 +2580,6 @@ function AccountPage() {
                         checked={prefsState.family_events}
                         onCheckedChange={(checked) =>
                           setPrefsState((prev) => ({ ...prev, family_events: checked }))
-                        }
-                      />
-                    </div>
-
-                    {/* Treasury & Contributions */}
-                    <div className="p-3.5 flex items-center justify-between gap-4">
-                      <div className="space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <Landmark className="w-4 h-4 text-emerald-500" />
-                          <Label className="text-xs font-semibold cursor-pointer">
-                            {isAr ? "صندوق الأسرة والمساهمات المالية" : "Treasury & Family Fund"}
-                          </Label>
-                        </div>
-                        <p className="text-[11px] text-muted-foreground ps-6">
-                          {isAr
-                            ? "تأكيد اعتماد الاشتراكات، إيصالات التحويل، وحملات الدعم الأسري."
-                            : "Contribution verification confirmations, receipts, and fund campaigns."}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={prefsState.contributions}
-                        onCheckedChange={(checked) =>
-                          setPrefsState((prev) => ({ ...prev, contributions: checked }))
                         }
                       />
                     </div>

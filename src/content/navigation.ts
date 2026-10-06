@@ -81,9 +81,6 @@ export const primaryNav: NavItem[] = [
           ar: "القوائم المالية والموازنة والحسابات",
           en: "Financial Statements, Budget & Accounts",
         },
-        children: [
-          { to: "/contribute", label: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" } },
-        ],
       },
     ],
   },
@@ -141,12 +138,6 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
               ar: "القوائم المالية والموازنة والحسابات",
               en: "Financial Statements, Budget & Accounts",
             },
-            children: [
-              {
-                to: "/contribute",
-                label: { ar: "الاشتراك والمساهمة", en: "Subscribe & Contribute" },
-              },
-            ],
           },
         ],
       },

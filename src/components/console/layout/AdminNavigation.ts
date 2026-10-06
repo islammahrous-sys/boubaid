@@ -15,7 +15,6 @@ import {
   Dna,
   Image as ImageIcon,
   FolderArchive,
-  Landmark,
   MessageSquare,
   ClipboardList,
   UserCheck,
@@ -39,11 +38,10 @@ import type { ComponentType } from "react";
  * Console roles. These mirror the database helpers the RLS policies use, so a
  * tab is only offered to someone whose server calls (and RLS) will accept it:
  *   editor         -> private.can_edit_content  (editor, content_manager)
- *   treasurer      -> private.can_treasury
  *   family_manager -> private.can_manage_family
  * admin / super_admin satisfy all of them.
  */
-export type AdminRole = "admin" | "super_admin" | "editor" | "treasurer" | "family_manager";
+export type AdminRole = "admin" | "super_admin" | "editor" | "family_manager";
 
 const ADMINS: AdminRole[] = ["admin", "super_admin"];
 
@@ -292,31 +290,20 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     ],
   },
   {
-    id: "treasury",
-    label_ar: "الخزينة والمشاريع",
-    label_en: "Treasury & Projects",
-    description_ar: "المساهمات المالية، مبادرات المقر، ولوحة الشرف",
-    description_en: "Contributions, initiatives, and honor roll",
-    icon: Landmark,
-    badgeKey: "pendingReceipts",
-    roles: [...ADMINS, "treasurer", "editor"],
+    id: "projects",
+    label_ar: "المبادرات ولوحة الشرف",
+    label_en: "Initiatives & Honour Roll",
+    description_ar: "مبادرات المقر ومشاريع التطوير، ولوحة الشرف",
+    description_en: "Initiatives, development projects, and honour roll",
+    icon: Rocket,
+    roles: [...ADMINS, "editor"],
     tabs: [
-      {
-        id: "treasury_ledger",
-        label_ar: "سجل العمليات والمساهمات",
-        label_en: "Contributions & Ledger",
-        description_ar: "مراجعة التحويلات البنكية وإيصالات المساهمة المالية",
-        description_en: "Audit bank receipts and contribution payments",
-        icon: Landmark,
-        badgeKey: "pendingReceipts",
-        roles: [...ADMINS, "treasurer"],
-      },
       {
         id: "initiatives",
         label_ar: "المبادرات ومقر الأسرة",
-        label_en: "Initiatives & HQ Fund",
-        description_ar: "مشاريع التطوير وحملات جمع الدعم للمقر الدائم",
-        description_en: "Family headquarters fund and development campaigns",
+        label_en: "Initiatives & HQ",
+        description_ar: "مشاريع التطوير ومبادرات المقر الدائم",
+        description_en: "Family headquarters and development initiatives",
         icon: Rocket,
       },
       {
@@ -377,7 +364,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         label_ar: "مركز البريد والإشعارات",
         label_en: "Email & Notifications",
         description_ar: "سجل الرسائل المرسلة، فحص التسليم، قوالب البريد، وإعادة المحاولة",
-        description_en: "Delivery logs, delivery status, 70 email templates, and retries",
+        description_en: "Delivery logs, delivery status, email templates, and retries",
         icon: Mail,
       },
     ],
@@ -390,7 +377,6 @@ export function consoleRolesFor(roles: readonly string[] | undefined | null): Ad
   const list: AdminRole[] = [];
   if (has("super_admin")) list.push("super_admin");
   if (has("admin")) list.push("admin");
-  if (has("treasurer")) list.push("treasurer");
   if (has("editor") || has("content_manager")) list.push("editor");
   if (has("family_manager")) list.push("family_manager");
   return list;
@@ -481,9 +467,6 @@ export const preloadAdminManager = (tabId: string) => {
       break;
     case "committees":
       void import("@/components/console/committees/CouncilCommitteesManager");
-      break;
-    case "treasury_ledger":
-      void import("@/components/console/treasury/TreasuryManager");
       break;
     case "initiatives":
       void import("@/components/console/initiatives/InitiativesManager");

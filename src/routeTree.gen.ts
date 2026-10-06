@@ -19,7 +19,6 @@ import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as CommitteesRouteImport } from './routes/committees'
 import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as DnaRouteImport } from './routes/dna'
 import { Route as EventsRouteImport } from './routes/events'
@@ -41,7 +40,6 @@ import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedContentRouteImport } from './routes/_authenticated/content'
-import { Route as AuthenticatedTreasuryRouteImport } from './routes/_authenticated/treasury'
 import { Route as InitiativesSlugRouteImport } from './routes/initiatives.$slug'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
@@ -98,11 +96,6 @@ const CompetitionsRoute = CompetitionsRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContributeRoute = ContributeRouteImport.update({
-  id: '/contribute',
-  path: '/contribute',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DirectoryRoute = DirectoryRouteImport.update({
@@ -210,11 +203,6 @@ const AuthenticatedContentRoute = AuthenticatedContentRouteImport.update({
   path: '/content',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTreasuryRoute = AuthenticatedTreasuryRouteImport.update({
-  id: '/treasury',
-  path: '/treasury',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const InitiativesSlugRoute = InitiativesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -267,7 +255,6 @@ export interface FileRoutesByFullPath {
   '/committees': typeof CommitteesRoute
   '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
-  '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
   '/dna': typeof DnaRoute
   '/events': typeof EventsRoute
@@ -289,7 +276,6 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/content': typeof AuthenticatedContentRoute
-  '/treasury': typeof AuthenticatedTreasuryRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -309,7 +295,6 @@ export interface FileRoutesByTo {
   '/committees': typeof CommitteesRoute
   '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
-  '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
   '/dna': typeof DnaRoute
   '/events': typeof EventsRoute
@@ -331,7 +316,6 @@ export interface FileRoutesByTo {
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/content': typeof AuthenticatedContentRoute
-  '/treasury': typeof AuthenticatedTreasuryRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -353,7 +337,6 @@ export interface FileRoutesById {
   '/committees': typeof CommitteesRoute
   '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
-  '/contribute': typeof ContributeRoute
   '/directory': typeof DirectoryRoute
   '/dna': typeof DnaRoute
   '/events': typeof EventsRoute
@@ -375,7 +358,6 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/content': typeof AuthenticatedContentRoute
-  '/_authenticated/treasury': typeof AuthenticatedTreasuryRoute
   '/initiatives/$slug': typeof InitiativesSlugRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -397,7 +379,6 @@ export interface FileRouteTypes {
     | '/committees'
     | '/competitions'
     | '/contact'
-    | '/contribute'
     | '/directory'
     | '/dna'
     | '/events'
@@ -419,7 +400,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/content'
-    | '/treasury'
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
@@ -439,7 +419,6 @@ export interface FileRouteTypes {
     | '/committees'
     | '/competitions'
     | '/contact'
-    | '/contribute'
     | '/directory'
     | '/dna'
     | '/events'
@@ -461,7 +440,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/content'
-    | '/treasury'
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
@@ -482,7 +460,6 @@ export interface FileRouteTypes {
     | '/committees'
     | '/competitions'
     | '/contact'
-    | '/contribute'
     | '/directory'
     | '/dna'
     | '/events'
@@ -504,7 +481,6 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/_authenticated/admin'
     | '/_authenticated/content'
-    | '/_authenticated/treasury'
     | '/initiatives/$slug'
     | '/news/$slug'
     | '/p/$slug'
@@ -526,7 +502,6 @@ export interface RootRouteChildren {
   CommitteesRoute: typeof CommitteesRoute
   CompetitionsRoute: typeof CompetitionsRoute
   ContactRoute: typeof ContactRoute
-  ContributeRoute: typeof ContributeRoute
   DirectoryRoute: typeof DirectoryRoute
   DnaRoute: typeof DnaRoute
   EventsRoute: typeof EventsRoute
@@ -622,13 +597,6 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contribute': {
-      id: '/contribute'
-      path: '/contribute'
-      fullPath: '/contribute'
-      preLoaderRoute: typeof ContributeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/directory': {
@@ -778,13 +746,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContentRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/treasury': {
-      id: '/_authenticated/treasury'
-      path: '/treasury'
-      fullPath: '/treasury'
-      preLoaderRoute: typeof AuthenticatedTreasuryRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/initiatives/$slug': {
       id: '/initiatives/$slug'
       path: '/$slug'
@@ -848,14 +809,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedContentRoute: typeof AuthenticatedContentRoute
-  AuthenticatedTreasuryRoute: typeof AuthenticatedTreasuryRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedContentRoute: AuthenticatedContentRoute,
-  AuthenticatedTreasuryRoute: AuthenticatedTreasuryRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -905,7 +864,6 @@ const rootRouteChildren: RootRouteChildren = {
   CommitteesRoute: CommitteesRoute,
   CompetitionsRoute: CompetitionsRoute,
   ContactRoute: ContactRoute,
-  ContributeRoute: ContributeRoute,
   DirectoryRoute: DirectoryRoute,
   DnaRoute: DnaRoute,
   EventsRoute: EventsRoute,

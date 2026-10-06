@@ -982,14 +982,6 @@ function HomePage() {
 
                   <div className="mt-8 flex flex-wrap items-center gap-3">
                     <Link
-                      to="/contribute"
-                      search={{ purpose: "hq_project" }}
-                      className="inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-bold text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
-                    >
-                      {t(copy.hqSupportCta)}
-                      <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                    </Link>
-                    <Link
                       to="/committees"
                       hash="hq-project"
                       className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
@@ -1461,12 +1453,6 @@ function HomePage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Link
-                  to="/contribute"
-                  className="inline-flex items-center border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
-                >
-                  {t(copy.joinCta)}
-                </Link>
                 <Link
                   to={(sec.cta_url || "/requests").split("#")[0] || "/requests"}
                   hash={(sec.cta_url || "/requests#committee-requests").split("#")[1]}

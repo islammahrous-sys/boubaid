@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileSpreadsheet, Clock, MessageCircle, HeartHandshake, Eye, Download } from "lucide-react";
+import { FileSpreadsheet, Clock, MessageCircle, Eye, Download } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
@@ -176,13 +176,6 @@ function FundFinancialsPage() {
             <MessageCircle className="h-4 w-4" aria-hidden="true" />
             {isAr ? "طلب استعلام مالي" : "Financial Inquiry Request"}
           </a>
-          <Link
-            to="/contribute"
-            className="inline-flex items-center justify-center gap-2 border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-bronze hover:text-bronze dark:hover:border-gold dark:hover:text-gold"
-          >
-            <HeartHandshake className="h-4 w-4" aria-hidden="true" />
-            {isAr ? "الدعم والمساهمة — Support and Donate" : "Support and Donate"}
-          </Link>
         </div>
 
         <Prose className="mt-6 text-xs text-muted-foreground">{t(inl.t_6c22913c)}</Prose>

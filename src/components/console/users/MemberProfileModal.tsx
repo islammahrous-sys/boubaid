@@ -106,8 +106,8 @@ const ROLE_DEFINITIONS = [
     role: "admin",
     label_ar: "مشرف أمانة المجلس",
     label_en: "Council Admin",
-    desc_ar: "إدارة الأعضاء، اعتماد طلبات العضوية، مراجعة المساهمات، ونشر القرارات.",
-    desc_en: "Manage members, verify requests, review contributions, and publish records.",
+    desc_ar: "إدارة الأعضاء، اعتماد طلبات العضوية، ونشر القرارات.",
+    desc_en: "Manage members, verify requests, and publish records.",
   },
   {
     role: "family_manager",
@@ -129,13 +129,6 @@ const ROLE_DEFINITIONS = [
     label_en: "Content Editor",
     desc_ar: "كتابة المسودات ورفع الصور وتقديم المقالات والأخبار للمراجعة والاعتماد.",
     desc_en: "Draft articles, upload media, and submit news for council approval.",
-  },
-  {
-    role: "treasurer",
-    label_ar: "أمين الخزينة والمالية",
-    label_en: "Treasurer",
-    desc_ar: "مراجعة التحويلات البنكية، مطابقة إيصالات المساهمات، وإدارة حملات الدعم.",
-    desc_en: "Audit bank receipts, verify financial contributions, and track fund targets.",
   },
   {
     role: "member",

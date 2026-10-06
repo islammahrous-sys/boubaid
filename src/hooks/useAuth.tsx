@@ -185,14 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isMember: roles.length > 0,
       canAccessConsole: roles.some((r) =>
         (
-          [
-            "admin",
-            "super_admin",
-            "editor",
-            "treasurer",
-            "content_manager",
-            "family_manager",
-          ] as AppRole[]
+          ["admin", "super_admin", "editor", "content_manager", "family_manager"] as AppRole[]
         ).includes(r),
       ),
       refreshProfile,

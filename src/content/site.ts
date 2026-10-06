@@ -61,15 +61,12 @@ export const siteMeta = registerCopy("site", {
   /** Official family-tree frames catalog on the external store. */
   frameStoreUrl:
     "https://albouabidfamily.com/%D8%B4%D8%AC%D8%B1%D8%A9-%D8%A7%D9%84%D8%A3%D8%B3%D8%B1%D8%A9/c1284478939",
-  sallaStoreUrl: "https://albouabidfamily.com/القسط-الشهري/c1360847582",
 
   contact: {
     phone: "+966 13 580 0000",
     email: "contact@albouabidfamily.com",
     /** Secretariat / chairman correspondence address. */
     secretariatEmail: "khalid@buobaidlc.sa.com",
-    /** Bank-registered address for the fund — used on the contribution page. */
-    fundEmail: "family.fund@boubaid.com",
     whatsapp: "https://chat.whatsapp.com/albouabidfamily",
     telegram: "https://t.me/albouabidfamily",
     x: "https://x.com/alboubaidsa?s=11&t=JjqjL-WTkQap2J3eRRQdSQ",
@@ -79,9 +76,6 @@ export const siteMeta = registerCopy("site", {
     /** Google Maps pin for the permanent headquarters plot. */
     mapUrl: "https://maps.app.goo.gl/75fDFmv9vnEboKr58",
   },
-  // The fund's bank account is not kept here. It is public by design (shown on
-  // /contribute): edited in the treasury console (`treasury_config.bank_account`)
-  // with `src/content/fund-bank.ts` as the official fallback.
 });
 
 /**

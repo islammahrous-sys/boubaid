@@ -35,7 +35,6 @@ export const SEO_EDITABLE_PAGES: { path: string; ar: string; en: string }[] = [
   { path: "/governance", ar: "الحوكمة ومجلس الأمناء", en: "Governance" },
   { path: "/fund-certificates", ar: "الشهادات والإثباتات", en: "Certificates" },
   { path: "/fund-financials", ar: "القوائم المالية", en: "Financial statements" },
-  { path: "/contribute", ar: "الاشتراك والمساهمة", en: "Contribute" },
   { path: "/committees", ar: "اللجان", en: "Committees" },
   { path: "/directory", ar: "دليل الأسر المنتجة", en: "Directory" },
   { path: "/library", ar: "الأرشيف والمكتبة", en: "Archive & library" },
@@ -122,7 +121,7 @@ export function installSeoOverrides(router: { routesById: Record<string, any> })
     // Record-driven pages build their own SEO from CMS data.
     if (fullPath.includes("$")) continue;
     // Console routes are noindex and never shared.
-    if (/^\/(admin|content|treasury|account)/.test(fullPath)) continue;
+    if (/^\/(admin|content|account)/.test(fullPath)) continue;
     const isRoot = route.id === "__root__";
 
     options.head = async (ctx: any) => {

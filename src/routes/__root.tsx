@@ -327,10 +327,7 @@ function RootComponent() {
   const siteSettings = Route.useLoaderData();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   useRecoveryHashRedirect(pathname);
-  const isConsole =
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/treasury") ||
-    pathname.startsWith("/content");
+  const isConsole = pathname.startsWith("/admin") || pathname.startsWith("/content");
 
   return (
     <QueryClientProvider client={queryClient}>

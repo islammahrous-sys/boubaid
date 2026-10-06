@@ -405,17 +405,6 @@ export const membershipRequestReviewSchema = z.object({
 });
 export type MembershipRequestReviewInput = z.infer<typeof membershipRequestReviewSchema>;
 
-// 19. Treasury Contribution Review Schema
-/** Mirrors the live `contribution_status` Postgres enum. */
-export const contributionStatusSchema = z.enum(["pending", "verified", "rejected"]);
-
-export const treasuryContributionReviewSchema = z.object({
-  id: z.string().uuid(),
-  status: contributionStatusSchema,
-  review_note: z.string().optional().nullable(),
-});
-export type TreasuryContributionReviewInput = z.infer<typeof treasuryContributionReviewSchema>;
-
 // 20. Initiative Schema
 export const initiativeInputSchema = z
   .object({

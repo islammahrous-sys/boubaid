@@ -28,7 +28,6 @@ export const inl = registerCopy("committees-inline", {
   t_ab38a45b: { ar: "المرحلة", en: "Stage" } as BiText,
   t_9a95969e: { ar: "التمويل", en: "Funding" } as BiText,
   t_abadc0e9: { ar: "نسبة الإنجاز", en: "Completion" } as BiText,
-  t_ac8caaf4: { ar: "ننتظر دعمك", en: "We await your support" } as BiText,
   t_dfa17c47: { ar: "الخريطة التنظيمية ١٤٤٥ هـ", en: "1445 AH Organizational Map" } as BiText,
   t_421eb17d: { ar: "تكبير الخريطة التنظيمية", en: "Enlarge organizational map" } as BiText,
   t_fc80dbee: { ar: "عرض وتكبير", en: "View / enlarge" } as BiText,

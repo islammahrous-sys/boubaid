@@ -2,7 +2,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Menu,
   UserRound,
-  HeartHandshake,
   ChevronLeft,
   ChevronRight,
   ShoppingBag,
@@ -139,18 +138,6 @@ export function MobileNav() {
                     )}
                     <span className="text-[11px] font-bold text-foreground line-clamp-1">
                       {user ? t(inl.t_40d4acb5) : t(inl.t_8aafe200)}
-                    </span>
-                  </Link>
-                </DrawerClose>
-
-                <DrawerClose asChild>
-                  <Link
-                    to="/contribute"
-                    className="flex flex-col items-center justify-center gap-1.5 p-3 rounded border border-bronze/40 bg-bronze/10 text-center transition-all duration-200 active:scale-95 hover:bg-bronze/20"
-                  >
-                    <HeartHandshake className="h-5 w-5 text-bronze dark:text-gold" />
-                    <span className="text-[11px] font-bold text-foreground line-clamp-1">
-                      {t(inl.t_11d85479)}
                     </span>
                   </Link>
                 </DrawerClose>

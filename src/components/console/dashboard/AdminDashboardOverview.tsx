@@ -2,11 +2,10 @@ import { useState, useMemo, type KeyboardEvent } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Users,
   Building2,
-  Landmark,
+  Home,
   Rocket,
   Award,
   MessageSquare,
@@ -17,7 +16,6 @@ import {
   Layers,
   Calendar,
   FileText,
-  TrendingUp,
   Activity,
   Database,
   Megaphone,
@@ -39,12 +37,10 @@ export type DashboardOverviewProps = {
     totalArticles: number;
     draftArticles: number;
     totalEvents: number;
-    pendingReceipts: number;
     pendingVerifications: number;
     totalBusinesses: number;
     totalInitiatives: number;
     totalAchievers: number;
-    treasuryVerified: number;
     pendingMembersWithoutRoles?: number;
     healthScore?: number;
     recentActivity: Array<{
@@ -69,10 +65,7 @@ export function AdminDashboardOverview({
   const [activityCategory, setActivityCategory] = useState<string>("all");
 
   const totalNeedsAttention =
-    overviewData.pendingReceipts +
-    overviewData.pendingVerifications +
-    overviewData.pendingInquiries +
-    overviewData.draftArticles;
+    overviewData.pendingVerifications + overviewData.pendingInquiries + overviewData.draftArticles;
 
   /** The KPI/entity tiles navigate on click but are plain <div>s, so without
    *  this they are unreachable by keyboard and announced as static text rather
@@ -96,10 +89,8 @@ export function AdminDashboardOverview({
       const type = act.entity_type.toLowerCase();
       if (activityCategory === "family")
         return type.includes("member") || type.includes("branch") || type.includes("tree");
-      if (activityCategory === "treasury")
-        return (
-          type.includes("treasury") || type.includes("contribution") || type.includes("initiative")
-        );
+      if (activityCategory === "projects")
+        return type.includes("initiative") || type.includes("achiever");
       if (activityCategory === "content")
         return (
           type.includes("article") ||
@@ -124,12 +115,6 @@ export function AdminDashboardOverview({
     if (diffHours < 24) return isAr ? `منذ ${diffHours} ساعة` : `${diffHours}h ago`;
     return isAr ? `منذ ${diffDays} يوم` : `${diffDays}d ago`;
   };
-
-  const treasuryTarget = 500000;
-  const treasuryPercentage = Math.min(
-    100,
-    Math.round((overviewData.treasuryVerified / treasuryTarget) * 100),
-  );
 
   return (
     <div className="space-y-6">
@@ -219,13 +204,13 @@ export function AdminDashboardOverview({
           </Button>
 
           <Button
-            onClick={() => onNavigateTab("treasury", "treasury_ledger")}
+            onClick={() => onNavigateTab("content", "homepage")}
             className="h-12 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-0 shadow-none font-bold justify-start gap-3 rounded-xl transition-all"
           >
             <div className="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center shrink-0">
-              <Landmark className="w-4 h-4" />
+              <Home className="w-4 h-4" />
             </div>
-            <span className="text-sm">{isAr ? "سجل الخزينة" : "Treasury Ledger"}</span>
+            <span className="text-sm">{isAr ? "الصفحة الرئيسية" : "Homepage"}</span>
           </Button>
 
           <Button
@@ -264,46 +249,12 @@ export function AdminDashboardOverview({
             </p>
             <p className="text-[11px] text-muted-foreground max-w-md mx-auto">
               {isAr
-                ? "تم الرد على جميع الاستفسارات، واعتماد مساهمات الخزينة، ومراجعة طلبات العضوية."
-                : "All inquiries are resolved, treasury contributions verified, and membership applications reviewed."}
+                ? "تم الرد على جميع الاستفسارات ومراجعة طلبات العضوية."
+                : "All inquiries are resolved and membership applications reviewed."}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {/* 1. Pending Receipts */}
-            {overviewData.pendingReceipts > 0 && (
-              <div className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] text-amber-600 border-amber-500/40"
-                  >
-                    {isAr ? "الخزينة" : "Treasury"}
-                  </Badge>
-                  <span className="text-xs font-bold font-mono text-amber-600">
-                    {overviewData.pendingReceipts}
-                  </span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-foreground">
-                    {isAr ? "إيصالات معلّقة" : "Pending Receipts"}
-                  </h4>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {isAr ? "بحاجة لمطابقة بنكية" : "Requires bank match"}
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onNavigateTab("treasury", "treasury_ledger")}
-                  className="w-full text-xs h-8 justify-between border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10"
-                >
-                  <span>{isAr ? "مراجعة" : "Review"}</span>
-                  <ArrowRight className="w-3 h-3 rtl:rotate-180" />
-                </Button>
-              </div>
-            )}
-
             {/* 2. Pending Membership Requests */}
             {overviewData.pendingVerifications > 0 && (
               <div className="p-4 rounded-2xl border border-blue-500/30 bg-blue-500/5 space-y-2.5">
@@ -489,30 +440,6 @@ export function AdminDashboardOverview({
             </div>
           </div>
 
-          {/* Treasury SAR */}
-          <div
-            {...tileActivation(
-              () => onNavigateTab("treasury", "treasury_ledger"),
-              isAr ? "عرض سجل الخزينة" : "View treasury ledger",
-            )}
-            className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            <div className="flex items-center justify-between text-muted-foreground mb-2">
-              <span className="text-xs font-semibold">
-                {isAr ? "أموال الخزينة" : "Treasury Funds"}
-              </span>
-              <Landmark className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
-            </div>
-            <div className="text-2xl font-bold text-foreground font-mono">
-              {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US", { maximumFractionDigits: 0 }).format(
-                overviewData.treasuryVerified,
-              )}
-            </div>
-            <div className="text-[11px] text-muted-foreground font-medium mt-1">
-              {isAr ? "ريال سعودي معتمد" : "SAR verified"}
-            </div>
-          </div>
-
           {/* Business Directory */}
           <div
             {...tileActivation(
@@ -536,7 +463,7 @@ export function AdminDashboardOverview({
           {/* Initiatives */}
           <div
             {...tileActivation(
-              () => onNavigateTab("treasury", "initiatives"),
+              () => onNavigateTab("projects", "initiatives"),
               isAr ? "عرض المبادرات" : "View initiatives",
             )}
             className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -556,7 +483,7 @@ export function AdminDashboardOverview({
           {/* Achievers */}
           <div
             {...tileActivation(
-              () => onNavigateTab("treasury", "achievers"),
+              () => onNavigateTab("projects", "achievers"),
               isAr ? "عرض لوحة الشرف" : "View roll of honour",
             )}
             className="p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -595,46 +522,8 @@ export function AdminDashboardOverview({
         </div>
       </div>
 
-      {/* 5. FINANCIAL TARGET & INFRASTRUCTURE HEALTH ROW */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        {/* Financial Campaign Tracker */}
-        <div className="p-5 rounded-2xl border border-border bg-card space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-emerald-500" />
-              <h3 className="text-xs font-bold text-foreground">
-                {isAr ? "التقدم السنوي لصندوق التنمية" : "Annual Fund Progress"}
-              </h3>
-            </div>
-            <Badge
-              variant="outline"
-              className="text-[10px] font-mono border-emerald-500/30 text-emerald-600"
-            >
-              {treasuryPercentage}%
-            </Badge>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-muted-foreground">{isAr ? "المحصّل:" : "Collected:"}</span>
-              <span className="font-bold text-foreground">
-                {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US").format(
-                  overviewData.treasuryVerified,
-                )}{" "}
-                SAR
-              </span>
-            </div>
-            <Progress value={treasuryPercentage} className="h-2" />
-            <div className="flex justify-between text-[11px] text-muted-foreground font-mono">
-              <span>0 SAR</span>
-              <span>
-                {new Intl.NumberFormat(isAr ? "ar-SA" : "en-US").format(treasuryTarget)} SAR{" "}
-                {isAr ? "الهدف" : "Target"}
-              </span>
-            </div>
-          </div>
-        </div>
-
+      {/* 5. INFRASTRUCTURE HEALTH ROW */}
+      <div className="grid grid-cols-1 gap-4 md:gap-6">
         {/* Database Core Health Summary */}
         <div className="p-5 rounded-2xl border border-border bg-card space-y-4">
           <div className="flex items-center justify-between">
@@ -710,7 +599,7 @@ export function AdminDashboardOverview({
             {[
               { id: "all", label_ar: "الكل", label_en: "All" },
               { id: "family", label_ar: "الأسرة", label_en: "Family" },
-              { id: "treasury", label_ar: "الخزينة", label_en: "Treasury" },
+              { id: "projects", label_ar: "المبادرات", label_en: "Projects" },
               { id: "content", label_ar: "المحتوى", label_en: "Content" },
               { id: "system", label_ar: "النظام", label_en: "System" },
             ].map((cat) => (

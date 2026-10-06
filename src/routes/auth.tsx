@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2, ShieldCheck, UsersRound, Landmark } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck, UsersRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/i18n/LanguageProvider";
 import { getMyAccount } from "@/lib/account.functions";
@@ -331,14 +331,6 @@ function AuthPage() {
                     desc: label(
                       "دليل الأعضاء والفروع والمشجرة الموثّقة في مكان واحد.",
                       "The member directory, branches, and documented tree in one place.",
-                    ),
-                  },
-                  {
-                    icon: Landmark,
-                    title: label("أمانة الصندوق", "Stewardship of the fund"),
-                    desc: label(
-                      "متابعة الاشتراكات ومساهمات صندوق التنمية بشفافية.",
-                      "Track subscriptions and development-fund contributions transparently.",
                     ),
                   },
                 ].map(({ icon: Icon, title, desc }, i) => (

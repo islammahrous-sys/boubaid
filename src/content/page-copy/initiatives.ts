@@ -40,11 +40,4 @@ export const copy = registerCopy("initiatives", {
   shareWhatsApp: { ar: "مشاركة عبر واتساب", en: "Share on WhatsApp" } as BiText,
   copyLink: { ar: "نسخ الرابط", en: "Copy link" } as BiText,
   copied: { ar: "تم النسخ", en: "Copied" } as BiText,
-
-  supportTitle: { ar: "دعم البرامج", en: "Supporting the programmes" } as BiText,
-  supportBody: {
-    ar: "تموَّل البرامج من الاشتراكات الشهرية ومن القروض الحسنة المساهمة في مشروع المقر.",
-    en: "The programmes are funded from monthly subscriptions and from interest-free contributory loans towards the headquarters project.",
-  } as BiText,
-  supportCta: { ar: "الاشتراك والمساهمة", en: "Subscribe & contribute" } as BiText,
 });

@@ -151,7 +151,6 @@ export function UsersManager({
       label_en: "Content Manager",
     },
     { role: "editor", label_ar: "محرر محتوى", label_en: "Editor" },
-    { role: "treasurer", label_ar: "أمين الصندوق والمالية", label_en: "Treasurer" },
     { role: "member", label_ar: "عضو موثق في الأسرة", label_en: "Verified Member" },
     { role: "viewer", label_ar: "مشاهد فقط", label_en: "Viewer" },
   ];

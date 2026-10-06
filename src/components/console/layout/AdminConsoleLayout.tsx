@@ -61,7 +61,6 @@ import {
   PanelLeftOpen,
   BellRing,
   CheckCircle2,
-  Landmark,
   UserCheck,
   MessageSquare,
   Newspaper,
@@ -286,7 +285,6 @@ export function AdminConsoleLayout({
   // Meaningful Actionable Attention Count (No vanity numbers)
   const totalPendingAlerts = useMemo(() => {
     return (
-      (badgeCounts.pendingReceipts ?? 0) +
       (badgeCounts.pendingVerifications ?? 0) +
       (badgeCounts.pendingInquiries ?? 0) +
       (badgeCounts.draftArticles ?? 0)
@@ -312,9 +310,6 @@ export function AdminConsoleLayout({
     const t = type.toLowerCase();
     if (t.includes("inquiry") || t.includes("contact") || t.includes("message")) {
       return <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />;
-    }
-    if (t.includes("treasury") || t.includes("receipt") || t.includes("contribution")) {
-      return <Landmark className="w-3.5 h-3.5 text-amber-500" />;
     }
     if (t.includes("verification") || t.includes("member") || t.includes("request")) {
       return <UserCheck className="w-3.5 h-3.5 text-blue-500" />;
@@ -1359,35 +1354,6 @@ export function AdminConsoleLayout({
                     value="tasks"
                     className="max-h-72 overflow-y-auto p-2 space-y-1.5 mt-0"
                   >
-                    {(badgeCounts.pendingReceipts ?? 0) > 0 && (
-                      <button
-                        onClick={() => {
-                          onSelectTab("treasury", "treasury_ledger");
-                          setNotifPopoverOpen(false);
-                        }}
-                        className="w-full flex items-center justify-between p-2.5 rounded-xl border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 text-xs text-start transition-all"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Landmark className="w-4 h-4 text-amber-500" />
-                          <div>
-                            <span className="font-bold block text-foreground">
-                              {isAr
-                                ? "إيصالات مساهمة مالية بانتظار الاعتماد"
-                                : "Pending Treasury Receipts"}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground">
-                              {isAr
-                                ? "تحتاج لمراجعة المستند وتأكيد التحويل البنكي"
-                                : "Review bank slips"}
-                            </span>
-                          </div>
-                        </div>
-                        <Badge className="bg-amber-500 text-white font-mono font-bold text-[10px]">
-                          {badgeCounts.pendingReceipts}
-                        </Badge>
-                      </button>
-                    )}
-
                     {(badgeCounts.pendingVerifications ?? 0) > 0 && (
                       <button
                         onClick={() => {
@@ -1721,12 +1687,12 @@ export function AdminConsoleLayout({
                 </div>
                 <div className="p-2 rounded-lg bg-card border border-border/50">
                   <span className="font-bold text-foreground block">
-                    5. {isAr ? "الخزينة والمشاريع" : "Treasury"}
+                    5. {isAr ? "المبادرات ولوحة الشرف" : "Initiatives & Honour Roll"}
                   </span>
                   <span className="text-muted-foreground">
                     {isAr
-                      ? "المساهمات المالية، مبادرات المقر، ولوحة الشرف."
-                      : "Contributions, HQ campaign, and honor roll."}
+                      ? "مبادرات المقر ومشاريع التطوير، ولوحة الشرف."
+                      : "HQ initiatives, development projects, and honour roll."}
                   </span>
                 </div>
                 <div className="p-2 rounded-lg bg-card border border-border/50">

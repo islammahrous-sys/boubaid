@@ -196,14 +196,6 @@ const requests: RequestEntry[] = [
     name: inl.t_0b324e14,
     desc: inl.t_6059f864,
   },
-  {
-    id: "contribution",
-    group: "membership",
-    form: "fund_contribution",
-    Icon: Banknote,
-    name: inl.t_b8f9bdc1,
-    desc: inl.t_63d8e837,
-  },
 
   ...COMMITTEE_REQUEST_DESTINATIONS.map((committee): RequestEntry => ({
     id: committee.slug,
@@ -474,9 +466,7 @@ type ApprovalEntry = {
   group: RequestGroup;
   name: BiText;
   desc: BiText;
-  /** Either an in-console tab or a standalone review route. */
   admin?: { domain: string; tab: string };
-  route?: "/treasury";
   allow: (roles: string[]) => boolean;
 };
 
@@ -490,14 +480,6 @@ const approvals: ApprovalEntry[] = [
     desc: inl.t_90861988,
     admin: { domain: "system", tab: "users" },
     allow: isAdmin,
-  },
-  {
-    id: "ap-contributions",
-    group: "fund",
-    name: inl.t_704198a5,
-    desc: inl.t_3403d9c8,
-    route: "/treasury",
-    allow: (roles) => isAdmin(roles) || roles.includes("treasurer"),
   },
   {
     id: "ap-directory",
@@ -1136,12 +1118,7 @@ function RequestsHubPage() {
                       <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--req-muted)]">
                         {t(a.desc)}
                       </p>
-                      {a.route ? (
-                        <Link to={a.route} className={reviewLinkClass}>
-                          {t(inl.t_f62d4b93)}
-                          <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                        </Link>
-                      ) : a.admin ? (
+                      {a.admin ? (
                         <Link
                           to="/admin"
                           search={{ domain: a.admin.domain, tab: a.admin.tab }}

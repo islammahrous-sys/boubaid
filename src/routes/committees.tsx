@@ -163,14 +163,6 @@ function CommitteesPage() {
                     />
                   </div>
                 </div>
-                <Link
-                  to="/contribute"
-                  search={{ purpose: "hq_project" }}
-                  className="mt-6 inline-flex items-center gap-2 border border-ink bg-ink px-4 py-2.5 text-xs font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
-                >
-                  {t(inl.t_ac8caaf4)}
-                  <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                </Link>
               </div>
             </div>
           </article>

@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
   requireAdminAuth,
-  requireTreasuryAuth,
   requireEditorAuth,
   requireSupabaseAuth,
   requireFamilyManagementAuth,
@@ -27,7 +26,6 @@ import {
   siteSettingInputSchema,
   businessInputSchema,
   membershipRequestReviewSchema,
-  treasuryContributionReviewSchema,
   initiativeInputSchema,
   achieverInputSchema,
   libraryItemInputSchema,
@@ -39,7 +37,6 @@ import {
   bulkArticlesActionSchema,
   broadcastNotificationSchema,
   dnaStudiesDataSchema,
-  contributionStatusSchema,
   galleryMediaInputSchema,
   sortOrderUpdateSchema,
 } from "./admin-hub.schemas";
@@ -133,7 +130,7 @@ export const globalAdminSearch = createServerFn({ method: "POST" })
     if (!cleanQuery) return [];
     const term = `%${cleanQuery}%`;
 
-    const [profiles, members, articles, treasury] = await Promise.all([
+    const [profiles, members, articles] = await Promise.all([
       supabase
         .from("profiles")
         .select("id, full_name_ar, full_name_en, email")
@@ -152,11 +149,6 @@ export const globalAdminSearch = createServerFn({ method: "POST" })
         .select("id, title_ar, slug")
         .ilike("title_ar", term)
         .is("deleted_at", null)
-        .limit(5),
-      supabase
-        .from("contributions")
-        .select("id, contributor_name, amount")
-        .ilike("contributor_name", term)
         .limit(5),
     ]);
 
@@ -199,16 +191,6 @@ export const globalAdminSearch = createServerFn({ method: "POST" })
           tab: "articles",
         }),
       );
-    if (treasury.data)
-      treasury.data.forEach((t) =>
-        results.push({
-          id: t.id,
-          title: t.contributor_name,
-          subtitle: `${t.amount} SAR`,
-          category: "treasury",
-          tab: "contributions",
-        }),
-      );
 
     return results;
   });
@@ -232,20 +214,12 @@ export type DashboardStats = {
   totalUsers: number;
   /** Website accounts holding the `member` role (an approved membership). */
   approvedMembers: number;
-  /** Sum of contributions still awaiting verification (SAR). */
-  treasuryPending: number;
-  /** Annual fundraising target from treasury_config; 0 = not set. */
-  treasuryTarget: number;
-  /** Number of verified contribution records. */
-  treasuryContributionCount: number;
   // Enrichment for dashboard to prevent huge array fetches
   draftArticles: number;
-  pendingReceipts: number;
   pendingVerifications: number;
   totalBusinesses: number;
   totalInitiatives: number;
   totalAchievers: number;
-  treasuryVerified: number;
   pendingMembersWithoutRoles: number;
   healthScore: number;
   recentActivity: {
@@ -274,16 +248,12 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       inquiriesRes,
       contactRes,
       usersRes,
-      receiptsRes,
-      verifiedAmountsRes,
       verificationsRes,
       businessesRes,
       initiativesRes,
       achieversRes,
       activityRes,
       approvedMembersRes,
-      pendingAmountsRes,
-      treasuryConfigRes,
     ] = await Promise.all([
       supabase
         .from("family_members")
@@ -314,11 +284,6 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
         .eq("status", "new"),
       supabase.from("profiles").select("*", { count: "exact", head: true }),
       supabase
-        .from("contributions")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "pending"),
-      supabase.from("contributions").select("amount").eq("status", "verified"),
-      supabase
         .from("membership_requests")
         .select("*", { count: "exact", head: true })
         .eq("status", "pending"),
@@ -333,24 +298,10 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       // Website accounts that hold the `member` role (an approved membership),
       // as opposed to `family_members` (the documented genealogy).
       supabase.from("user_roles").select("*", { count: "exact", head: true }).eq("role", "member"),
-      supabase.from("contributions").select("amount").eq("status", "pending"),
-      supabase.from("site_settings").select("value").eq("key", "treasury_config").maybeSingle(),
     ]);
 
     const totalMembers = membersTotalRes.count ?? 0;
     const livingMembers = membersLivingRes.count ?? 0;
-    const treasuryVerified = (verifiedAmountsRes.data ?? []).reduce(
-      (sum, row) => sum + Number(row.amount || 0),
-      0,
-    );
-    const treasuryPending = (pendingAmountsRes.data ?? []).reduce(
-      (sum, row) => sum + Number(row.amount || 0),
-      0,
-    );
-    const treasuryTarget = Math.max(
-      0,
-      Number((treasuryConfigRes.data?.value as { annual_target?: unknown })?.annual_target ?? 0),
-    );
 
     return {
       totalMembers,
@@ -372,20 +323,14 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
           100,
           100 -
             ((verificationsRes.count ?? 0) * 3 +
-              (receiptsRes.count ?? 0) * 3 +
               (articlesDraftRes.count ?? 0) * 2 +
               ((inquiriesRes.count ?? 0) + (contactRes.count ?? 0)) * 2),
         ),
       ),
-      treasuryPending,
-      treasuryTarget,
-      treasuryContributionCount: (verifiedAmountsRes.data ?? []).length,
-      pendingReceipts: receiptsRes.count ?? 0,
       pendingVerifications: verificationsRes.count ?? 0,
       totalBusinesses: businessesRes.count ?? 0,
       totalInitiatives: initiativesRes.count ?? 0,
       totalAchievers: achieversRes.count ?? 0,
-      treasuryVerified,
       recentActivity: (activityRes.data ?? []) as DashboardStats["recentActivity"],
     };
   });
@@ -2102,149 +2047,6 @@ export const reviewMembershipRequest = createServerFn({ method: "POST" })
     }
 
     return { ok: true, request: req };
-  });
-
-/* =========================================================================
- * 9. Treasury & Contributions Management
- * ========================================================================= */
-
-export const getTreasuryManagementData = createServerFn({ method: "GET" })
-  .middleware([requireTreasuryAuth])
-  .handler(async ({ context }) => {
-    const { supabase } = context;
-    const [contribsRes, configRes] = await Promise.all([
-      supabase
-        .from("contributions")
-        .select("id, amount, status, purpose, method, created_at, user_id, currency"),
-      supabase.from("site_settings").select("value").eq("key", "treasury_config").maybeSingle(),
-    ]);
-
-    if (contribsRes.error) throw new Error(contribsRes.error.message);
-    const contributions = contribsRes.data ?? [];
-
-    const verifiedTotal = contributions
-      .filter((c) => c.status === "verified")
-      .reduce((sum, c) => sum + Number(c.amount || 0), 0);
-
-    const pendingTotal = contributions
-      .filter((c) => c.status === "pending")
-      .reduce((sum, c) => sum + Number(c.amount || 0), 0);
-
-    const rejectedTotal = contributions
-      .filter((c) => c.status === "rejected")
-      .reduce((sum, c) => sum + Number(c.amount || 0), 0);
-
-    const byPurpose: Record<string, { count: number; total: number }> = {};
-    for (const c of contributions) {
-      if (c.status === "verified") {
-        const p = c.purpose?.trim() || "غير محدد / عام";
-        if (!byPurpose[p]) byPurpose[p] = { count: 0, total: 0 };
-        byPurpose[p].count += 1;
-        byPurpose[p].total += Number(c.amount || 0);
-      }
-    }
-
-    return {
-      contributions,
-      verifiedTotal,
-      pendingTotal,
-      rejectedTotal,
-      totalCount: contributions.length,
-      totals: {
-        verified: verifiedTotal,
-        pending: pendingTotal,
-        count: contributions.length,
-      },
-      byPurpose,
-      treasuryConfig: configRes.data?.value || null,
-    };
-  });
-
-export const getTreasuryContributionsPaginated = createServerFn({ method: "POST" })
-  .middleware([requireTreasuryAuth])
-  .validator((d: unknown) => paginationSchema.parse(d))
-  .handler(async ({ data, context }) => {
-    const { supabase } = context;
-    const { page, pageSize, search, status } = data;
-
-    let query = supabase.from("contributions").select("*", { count: "exact" });
-
-    if (search) {
-      // Strip LIKE/PostgREST wildcards so a typed "%" or "*" searches for that
-      // character instead of silently matching every contributor.
-      const term = sanitizeFilterTerm(search).replace(/[%_*\\]/g, "");
-      if (term) query = query.ilike("contributor_name", `%${term}%`);
-    }
-    if (status && status !== "all") {
-      // Previously cast straight into `.eq("status", ...)`; an unknown value
-      // came back to the admin as a raw Postgres "invalid input value for enum
-      // contribution_status" error instead of a validation failure.
-      const parsedStatus = contributionStatusSchema.safeParse(status);
-      if (!parsedStatus.success) {
-        throw new Error(
-          `حالة مساهمة غير معروفة: "${status}". Unknown contribution status "${status}".`,
-        );
-      }
-      query = query.eq("status", parsedStatus.data);
-    }
-
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-
-    const {
-      data: contributions,
-      count,
-      error,
-    } = await query.order("created_at", { ascending: false }).range(from, to);
-    if (error) throw new Error(error.message);
-
-    return { data: contributions ?? [], count: count ?? 0, page, pageSize };
-  });
-
-export const reviewTreasuryContribution = createServerFn({ method: "POST" })
-  .middleware([requireTreasuryAuth])
-  .validator((d: unknown) => treasuryContributionReviewSchema.parse(d))
-  .handler(async ({ data, context }) => {
-    const { supabase, session } = context;
-    const { data: updated, error } = await supabase
-      .from("contributions")
-      .update({
-        status: data.status,
-        review_note: data.review_note,
-        reviewed_by: context.userId || session?.user?.id || (context.claims?.sub as string),
-        reviewed_at: new Date().toISOString(),
-      })
-      .eq("id", data.id)
-      .select()
-      .single();
-
-    if (error) throw new Error(error.message);
-
-    await supabase.from("audit_logs").insert({
-      actor_user_id: context.userId || session?.user?.id || (context.claims?.sub as string),
-      action: "update",
-      entity_type: "contributions",
-      entity_id: data.id,
-      after_data: updated,
-    });
-
-    const targetUserId = updated?.user_id;
-    if (targetUserId) {
-      try {
-        const { notifyMemberOnContributionDecision } = await import("@/lib/notifications.server");
-        void notifyMemberOnContributionDecision(
-          targetUserId,
-          data.status as "verified" | "rejected",
-          Number(updated.amount),
-          updated.currency || "SAR",
-          data.review_note,
-        ).catch((err) => console.error("[admin-hub] treasury review notification failed:", err));
-      } catch (err) {
-        console.warn("[admin-hub] notification hook failed:", err);
-      }
-    }
-
-    return { ok: true, contribution: updated };
   });
 
 /* =========================================================================

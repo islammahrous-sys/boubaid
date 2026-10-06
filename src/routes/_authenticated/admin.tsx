@@ -59,8 +59,6 @@ import {
   upsertBusiness,
   deleteBusiness,
   reviewMembershipRequest,
-  getTreasuryManagementData,
-  reviewTreasuryContribution,
   getInitiativesManagementData,
   upsertInitiative,
   deleteInitiative,
@@ -88,7 +86,6 @@ import {
   markAllNotificationsRead,
   deleteNotification,
 } from "@/lib/admin-hub.functions";
-import { saveTreasuryConfig, createManualContribution } from "@/lib/contributions.functions";
 // Every manager below is only ever shown for one admin tab at a time, so
 // loading all ~26 of them eagerly bloated /admin's own JS bundle to ~935KB —
 // dwarfing every other route's chunk and dominating the "admin feels laggy"
@@ -200,11 +197,6 @@ const DirectoryManager = lazy(() =>
     default: m.DirectoryManager,
   })),
 );
-const TreasuryManager = lazy(() =>
-  import("@/components/console/treasury/TreasuryManager").then((m) => ({
-    default: m.TreasuryManager,
-  })),
-);
 const InitiativesManager = lazy(() =>
   import("@/components/console/initiatives/InitiativesManager").then((m) => ({
     default: m.InitiativesManager,
@@ -254,7 +246,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
       {
         name: "description",
         content:
-          "المنظومة الإدارية المتكاملة لإدارة شجرة العائلة، الخزينة، الدليل، المبادرات، والمحتوى.",
+          "المنظومة الإدارية المتكاملة لإدارة شجرة العائلة، الدليل، المبادرات، والمحتوى.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -271,7 +263,7 @@ function MasterAdminPage() {
   const navigate = useNavigate({ from: Route.fullPath });
 
   // Land each role on a section it can actually use (editors on Content,
-  // treasurers on Treasury, ...) instead of an admin-only dashboard.
+  // family managers on Family, ...) instead of an admin-only dashboard.
   const consoleRoles = consoleRolesFor(roles);
   const canManageFamily = ["admin", "super_admin", "family_manager"].some((r) =>
     consoleRoles.includes(r as never),
@@ -317,7 +309,6 @@ function MasterAdminPage() {
   const fetchAudit = useServerFn(getAuditLogsData);
   const fetchSettings = useServerFn(getSiteSettingsData);
   const fetchDirectory = useServerFn(getDirectoryManagementData);
-  const fetchTreasury = useServerFn(getTreasuryManagementData);
   const fetchInitiatives = useServerFn(getInitiativesManagementData);
   const fetchAchievers = useServerFn(getAchieversManagementData);
   const fetchLibrary = useServerFn(getLibraryManagementData);
@@ -363,9 +354,6 @@ function MasterAdminPage() {
   const saveBizMut = useServerFn(upsertBusiness);
   const delBizMut = useServerFn(deleteBusiness);
   const reviewReqMut = useServerFn(reviewMembershipRequest);
-  const reviewTreasuryMut = useServerFn(reviewTreasuryContribution);
-  const saveTreasuryConfigMut = useServerFn(saveTreasuryConfig);
-  const createManualContributionMut = useServerFn(createManualContribution);
   const saveInitMut = useServerFn(upsertInitiative);
   const delInitMut = useServerFn(deleteInitiative);
   const updateInitRegMut = useServerFn(updateInitiativeRegistrationStatus);
@@ -545,24 +533,13 @@ function MasterAdminPage() {
   });
 
   const {
-    data: treasuryData,
-    isLoading: treasuryLoading,
-    error: treasuryError,
-  } = useQuery({
-    queryKey: ["treasury-management-data"],
-    queryFn: () => fetchTreasury(),
-    enabled: canAccessConsole && activeDomainId === "treasury" && activeTabId === "treasury_ledger",
-    ...queryConfig,
-  });
-
-  const {
     data: initiativesData,
     isLoading: initiativesLoading,
     error: initiativesError,
   } = useQuery({
     queryKey: ["initiatives-management-data"],
     queryFn: () => fetchInitiatives(),
-    enabled: canAccessConsole && activeDomainId === "treasury" && activeTabId === "initiatives",
+    enabled: canAccessConsole && activeDomainId === "projects" && activeTabId === "initiatives",
     ...queryConfig,
   });
 
@@ -573,7 +550,7 @@ function MasterAdminPage() {
   } = useQuery({
     queryKey: ["achievers-management-data"],
     queryFn: () => fetchAchievers(),
-    enabled: canAccessConsole && activeDomainId === "treasury" && activeTabId === "achievers",
+    enabled: canAccessConsole && activeDomainId === "projects" && activeTabId === "achievers",
     ...queryConfig,
   });
 
@@ -663,9 +640,6 @@ function MasterAdminPage() {
   const refreshDirectory = () => {
     void queryClient.invalidateQueries({ queryKey: ["directory-management-data"] });
   };
-  const refreshTreasury = () => {
-    void queryClient.invalidateQueries({ queryKey: ["treasury-management-data"] });
-  };
   const refreshInitiatives = () => {
     void queryClient.invalidateQueries({ queryKey: ["initiatives-management-data"] });
   };
@@ -718,10 +692,6 @@ function MasterAdminPage() {
       ? inquiriesData.inquiries.filter((i: any) => i.status === "new").length
       : (overviewData?.pendingInquiries ?? 0);
 
-    const pendingReceipts = treasuryData
-      ? treasuryData.contributions.filter((c: any) => c.status === "pending").length
-      : (overviewData?.pendingReceipts ?? 0);
-
     const pendingVerifications = usersData?.membershipRequests
       ? usersData.membershipRequests.filter((r: any) => r.status === "pending").length
       : directoryData?.membershipRequests
@@ -734,11 +704,10 @@ function MasterAdminPage() {
 
     return {
       pendingInquiries,
-      pendingReceipts,
       pendingVerifications,
       draftArticles,
     };
-  }, [overviewData, treasuryData, directoryData, articlesData, inquiriesData, usersData]);
+  }, [overviewData, directoryData, articlesData, inquiriesData, usersData]);
 
   // Inbox KPI cards / filter-tab counters. These used to be passed as literal
   // zeros, so the Inquiries panel permanently reported "0 in progress" and
@@ -787,9 +756,8 @@ function MasterAdminPage() {
       "community:inquiries": inquiriesError,
       "community:directory": directoryError,
       "community:verification": directoryError,
-      "treasury:treasury_ledger": treasuryError,
-      "treasury:initiatives": initiativesError,
-      "treasury:achievers": achieversError,
+      "projects:initiatives": initiativesError,
+      "projects:achievers": achieversError,
       "system:users": usersError,
       "system:roles_matrix": usersError,
       "system:audit_logs": auditError,
@@ -813,7 +781,6 @@ function MasterAdminPage() {
     libraryError,
     inquiriesError,
     directoryError,
-    treasuryError,
     initiativesError,
     achieversError,
     usersError,
@@ -862,11 +829,9 @@ function MasterAdminPage() {
         return Boolean(inquiriesData);
       case "community:directory":
         return Boolean(directoryData);
-      case "treasury:treasury_ledger":
-        return Boolean(treasuryData);
-      case "treasury:initiatives":
+      case "projects:initiatives":
         return Boolean(initiativesData);
-      case "treasury:achievers":
+      case "projects:achievers":
         return Boolean(achieversData);
       case "system:users":
       case "system:roles_matrix":
@@ -895,7 +860,6 @@ function MasterAdminPage() {
     libraryData,
     inquiriesData,
     directoryData,
-    treasuryData,
     initiativesData,
     achieversData,
     usersData,
@@ -1118,12 +1082,10 @@ function MasterAdminPage() {
                     totalArticles: overviewData?.totalArticles ?? 0,
                     draftArticles: overviewData?.draftArticles ?? 0,
                     totalEvents: overviewData?.totalEvents ?? 0,
-                    pendingReceipts: overviewData?.pendingReceipts ?? 0,
                     pendingVerifications: overviewData?.pendingVerifications ?? 0,
                     totalBusinesses: overviewData?.totalBusinesses ?? 0,
                     totalInitiatives: overviewData?.totalInitiatives ?? 0,
                     totalAchievers: overviewData?.totalAchievers ?? 0,
-                    treasuryVerified: overviewData?.treasuryVerified ?? 0,
                     recentActivity: overviewData?.recentActivity ?? [],
                   }}
                   onNavigateTab={handleSelectTab}
@@ -1552,45 +1514,8 @@ function MasterAdminPage() {
                 />
               ))}
 
-            {/* 6. DOMAIN: TREASURY & INITIATIVES */}
-            {activeDomainId === "treasury" &&
-              activeTabId === "treasury_ledger" &&
-              (treasuryLoading && !treasuryData ? (
-                <AdminTabSkeleton type="table" cardCount={4} />
-              ) : (
-                <TreasuryManager
-                  verifiedTotal={treasuryData?.verifiedTotal ?? 0}
-                  pendingTotal={treasuryData?.pendingTotal ?? 0}
-                  rejectedTotal={treasuryData?.rejectedTotal ?? 0}
-                  pendingCount={
-                    (treasuryData?.contributions ?? []).filter((c) => c.status === "pending").length
-                  }
-                  verifiedCount={
-                    (treasuryData?.contributions ?? []).filter((c) => c.status === "verified")
-                      .length
-                  }
-                  rejectedCount={
-                    (treasuryData?.contributions ?? []).filter((c) => c.status === "rejected")
-                      .length
-                  }
-                  totalCount={
-                    treasuryData?.totalCount ?? (treasuryData?.contributions ?? []).length
-                  }
-                  byPurpose={treasuryData?.byPurpose}
-                  initialConfig={treasuryData?.treasuryConfig as never}
-                  onReviewContribution={(data) =>
-                    runMutation(() => reviewTreasuryMut({ data }), refreshTreasury)
-                  }
-                  onSaveTreasuryConfig={(config) =>
-                    runMutation(() => saveTreasuryConfigMut({ data: config }), refreshTreasury)
-                  }
-                  onCreateManualContribution={(data) =>
-                    runMutation(() => createManualContributionMut({ data }), refreshTreasury)
-                  }
-                />
-              ))}
-
-            {activeDomainId === "treasury" &&
+            {/* 6. DOMAIN: PROJECTS & HONOUR ROLL */}
+            {activeDomainId === "projects" &&
               activeTabId === "initiatives" &&
               (initiativesLoading && !initiativesData ? (
                 <AdminTabSkeleton type="grid" cardCount={3} />
@@ -1616,7 +1541,7 @@ function MasterAdminPage() {
                 />
               ))}
 
-            {activeDomainId === "treasury" &&
+            {activeDomainId === "projects" &&
               activeTabId === "achievers" &&
               (achieversLoading && !achieversData ? (
                 <AdminTabSkeleton type="grid" cardCount={3} />

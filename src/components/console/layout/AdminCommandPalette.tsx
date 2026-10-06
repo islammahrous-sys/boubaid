@@ -19,7 +19,6 @@ import {
   Layers,
   Newspaper,
   Calendar,
-  Landmark,
   Building2,
   Plus,
   ArrowRight,
@@ -31,13 +30,11 @@ import {
 import { ADMIN_DOMAINS } from "./AdminNavigation";
 
 /** `globalAdminSearch` labels its rows with a loose "category" that is not
- *  always an actual console domain id (profiles come back as "directory",
- *  treasury rows as tab "contributions"). Navigating with those raw values
+ *  always an actual console domain id (profiles come back as "directory"). Navigating with those raw values
  *  landed on a domain/tab pair that no branch in the admin route renders --
  *  i.e. a blank page. Resolve every hit against the real navigation tree
  *  instead, so a search result always opens a tab that exists. */
 const SEARCH_TAB_ALIASES: Record<string, string> = {
-  contributions: "treasury_ledger",
   verification: "users",
 };
 
@@ -60,15 +57,7 @@ export type SearchableItem = {
   title: string;
   subtitle?: string;
   category:
-    | "family"
-    | "content"
-    | "articles"
-    | "events"
-    | "directory"
-    | "treasury"
-    | "initiatives"
-    | "media"
-    | "users";
+    "family" | "content" | "articles" | "events" | "directory" | "initiatives" | "media" | "users";
   onSelect: () => void;
 };
 
@@ -127,8 +116,6 @@ export function AdminCommandPalette({
         return <Calendar className="w-4 h-4 text-purple-500" />;
       case "directory":
         return <Building2 className="w-4 h-4 text-indigo-500" />;
-      case "treasury":
-        return <Landmark className="w-4 h-4 text-yellow-500" />;
       case "initiatives":
         return <Rocket className="w-4 h-4 text-rose-500" />;
       case "users":

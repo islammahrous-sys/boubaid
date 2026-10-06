@@ -34,9 +34,6 @@ export function useAdminRealtime(enabled = true) {
 
     const channel = supabase
       .channel("admin-console-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "contributions" }, () => {
-        invalidateWithDebounce(["admin", "treasury", "my-contributions"]);
-      })
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "membership_requests" },

@@ -157,23 +157,6 @@ export const pageImages = {
     } satisfies Figure,
   },
 
-  contribute: {
-    endowment: {
-      src: "/images/ramadan_community.png",
-      caption: {
-        ar: "من برامج التكافل الرمضانية الممولة من اشتراكات أبناء الأسرة.",
-        en: "One of the Ramadan solidarity programmes funded by members' subscriptions.",
-      },
-    } satisfies Figure,
-    stewardship: {
-      src: "/images/contribute_stewardship.jpg",
-      caption: {
-        ar: "رعاية أشجار النخيل بأوقاف الأسرة — استمرار مبدأ الوقف بأيدي الجيل الحاضر.",
-        en: "Tending the family's endowed palm grove — the principle of waqf carried forward by the present generation.",
-      },
-    } satisfies Figure,
-  },
-
   achievers: {
     header: {
       src: "/images/achievers_hall_plate.jpg",

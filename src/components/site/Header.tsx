@@ -32,7 +32,6 @@ const HEADER_PRIMARY_COUNT = 6;
 export function Header() {
   const { t, lang } = useLang();
   const { user, roles, profile } = useAuth();
-  const canReviewTreasury = roles.includes("admin") || roles.includes("treasurer");
 
   /** Dynamic site settings from Supabase (for Salla store URL override, etc.) */
   const { data: dynamicSettings = {} } = useQuery({
@@ -487,15 +486,6 @@ export function Header() {
             {user && <NotificationBell />}
           </div>
 
-          {canReviewTreasury ? (
-            <Link
-              to="/treasury"
-              className="hidden items-center gap-1.5 border border-border h-8 sm:h-9 px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary rounded-md min-[2100px]:inline-flex whitespace-nowrap shrink-0"
-            >
-              {t(inl.t_b3f688b6)}
-            </Link>
-          ) : null}
-
           <Link
             to={user ? "/account" : "/auth"}
             aria-label={user ? t(inl.t_9658eb71) : t(inl.t_ebee3f50)}
@@ -514,13 +504,6 @@ export function Header() {
             <span className={user ? "hidden min-[2100px]:inline" : "hidden xl:inline"}>
               {user ? t(inl.t_9658eb71) : t(inl.t_ebee3f50)}
             </span>
-          </Link>
-
-          <Link
-            to="/contribute"
-            className="hidden items-center border border-gold bg-gold h-9 px-4 text-[13px] font-bold text-ink transition-colors hover:bg-transparent hover:text-gold rounded-md min-[2100px]:inline-flex whitespace-nowrap shrink-0"
-          >
-            {t(inl.t_61f0b078)}
           </Link>
 
           {/* Tablet Hamburger Menu Button (Mobile phones use bottom bar) */}
@@ -742,14 +725,6 @@ export function Header() {
                 ))}
               </>
             )}
-
-            <Link
-              to="/contribute"
-              onClick={() => setOpen(false)}
-              className="menu-in active-scale mt-4 block border border-gold bg-gold px-4 py-3.5 text-center text-sm font-bold text-ink transition-colors hover:bg-transparent hover:text-bronze dark:hover:text-gold"
-            >
-              {t(inl.t_c330a77d)}
-            </Link>
           </nav>
         </div>
       ) : null}

@@ -214,7 +214,7 @@ export function NotificationBell({ className, align = "end" }: NotificationBellP
             onValueChange={(v) => setActiveTab(v as NotificationCategory)}
             className="w-full"
           >
-            <TabsList className="grid grid-cols-6 h-8 bg-muted/60 p-0.5 rounded-lg text-[10px] sm:text-[11px]">
+            <TabsList className="grid grid-cols-5 h-8 bg-muted/60 p-0.5 rounded-lg text-[10px] sm:text-[11px]">
               <TabsTrigger value="all" className="px-1 py-1 rounded-md">
                 {isAr ? "الكل" : "All"}
               </TabsTrigger>
@@ -231,9 +231,6 @@ export function NotificationBell({ className, align = "end" }: NotificationBellP
               </TabsTrigger>
               <TabsTrigger value="events" className="px-1 py-1 rounded-md">
                 {isAr ? "الفعاليات" : "Events"}
-              </TabsTrigger>
-              <TabsTrigger value="contributions" className="px-1 py-1 rounded-md">
-                {isAr ? "الخزينة" : "Dues"}
               </TabsTrigger>
               <TabsTrigger value="heritage" className="px-1 py-1 rounded-md">
                 {isAr ? "التراث" : "Heritage"}

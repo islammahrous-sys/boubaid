@@ -936,7 +936,7 @@ export function AdminNotificationCenter() {
             <CardContent className="p-5 space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground">
-                  {isAr ? "اختر قالب الإشعار (من بين 70 قالباً)" : "Select Template"}
+                  {isAr ? "اختر قالب الإشعار" : "Select Template"}
                 </label>
                 <Select value={testTemplateKey} onValueChange={setTestTemplateKey}>
                   <SelectTrigger className="text-xs h-9">

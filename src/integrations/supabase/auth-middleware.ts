@@ -222,30 +222,3 @@ export const requireFamilyManagementAuth = createMiddleware({ type: "function" }
 
     return next();
   });
-
-/** Mirrors `private.can_treasury` in the DB (admin, super_admin, treasurer). */
-export const requireTreasuryAuth = createMiddleware({ type: "function" })
-  .middleware([requireSupabaseAuth])
-  .server(async ({ next, context }) => {
-    const { supabase, userId } = context;
-
-    const { data: roles, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
-
-    if (error || !roles) {
-      throw new Response("Forbidden: Could not verify user permissions", { status: 403 });
-    }
-
-    const roleList = roles.map((r: { role: string }) => r.role);
-    if (
-      !roleList.includes("admin") &&
-      !roleList.includes("super_admin") &&
-      !roleList.includes("treasurer")
-    ) {
-      throw new Response("Forbidden: Treasury privileges required", { status: 403 });
-    }
-
-    return next();
-  });

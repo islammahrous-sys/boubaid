@@ -13,7 +13,6 @@ export const inl = registerCopy("mobilenav-inline", {
   t_4b314583: { ar: "بوابة أسرة آل بوعبيد", en: "Al Bu Obaid Portal" } as BiText,
   t_40d4acb5: { ar: "حسابي", en: "Account" } as BiText,
   t_8aafe200: { ar: "دخول", en: "Sign in" } as BiText,
-  t_11d85479: { ar: "المساهمة", en: "Contribute" } as BiText,
   t_0e0bb33d: { ar: "الأرشيف", en: "Archive" } as BiText,
   t_262a9ac2: { ar: "المتجر", en: "Store" } as BiText,
 });

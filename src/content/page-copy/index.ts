@@ -87,7 +87,6 @@ export const copy = registerCopy("index", {
     en: "A reserved space for the proposed family poem. The text will appear here once approved by the family council.",
   } as BiText,
 
-  hqSupportCta: { ar: "ننتظر دعمك", en: "We await your support" } as BiText,
   hqLocationLink: {
     ar: "موقع المقر على الخريطة",
     en: "Headquarters location on the map",

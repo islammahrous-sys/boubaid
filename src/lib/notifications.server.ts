@@ -409,90 +409,6 @@ export async function notifyMemberOnRoleAssignment(
 }
 
 /**
- * Trigger: Member submits financial support/contribution.
- * Audience: Council Admins, Super Admins, Treasurers.
- */
-export async function notifyAdminsAndTreasurersOnContribution(contribution: {
-  id: string;
-  contributorName: string;
-  amount: number;
-  currency: string;
-  userId?: string | null;
-}) {
-  await notifyRoles(
-    ["admin", "super_admin", "treasurer"],
-    {
-      title_ar: "مساهمة مالية جديدة قيد التحقق",
-      title_en: "New Financial Contribution",
-      message_ar: `وردت مساهمة مالية جديدة بمبلغ ${contribution.amount} ${contribution.currency} من ${contribution.contributorName} تتطلب مراجعة أمين الصندوق.`,
-      message_en: `New contribution of ${contribution.amount} ${contribution.currency} received from ${contribution.contributorName} awaiting treasury verification.`,
-      type: "financial",
-      link: "/treasury",
-    },
-    contribution.userId || undefined,
-  );
-}
-
-/**
- * Trigger: Treasurer or Admin reviews contribution receipt.
- * Audience: The contributing member.
- */
-export async function notifyMemberOnContributionDecision(
-  userId: string,
-  status: "verified" | "rejected",
-  amount: number,
-  currency: string,
-  reviewNote?: string | null,
-) {
-  const isVerified = status === "verified";
-  await createNotification(userId, {
-    title_ar: isVerified ? "تم توثيق وقيد مساهمتك المالية" : "تحديث حول مساهمتك المالية",
-    title_en: isVerified ? "Contribution Verified" : "Contribution Review Update",
-    message_ar: isVerified
-      ? `تم التحقق من إيصال تحويلك بمبلغ ${amount} ${currency} وإيداعها في سجلات الصندوق بنجاح. بارك الله في عطائك.`
-      : `تمت مراجعة مساهمتك بمبلغ ${amount} ${currency}: ${reviewNote || "يرجى مراجعة إيصال التحويل في حسابك."}`,
-    message_en: isVerified
-      ? `Your contribution of ${amount} ${currency} has been verified and recorded in the family fund. Thank you for your support.`
-      : `Your contribution of ${amount} ${currency} was reviewed: ${reviewNote || "Please check transaction details in your account."}`,
-    type: "financial",
-    link: "/account",
-  });
-
-  // Dispatch professional email notification
-  try {
-    const { enqueueNotificationEmail } = await import("./email/notification-queue.server");
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("email, full_name_ar, full_name_en")
-      .eq("id", userId)
-      .maybeSingle();
-
-    if (profile?.email) {
-      void enqueueNotificationEmail({
-        userId,
-        recipientEmail: profile.email,
-        recipientName: profile.full_name_ar || profile.full_name_en,
-        emailType: isVerified ? "fund_contribution_confirmed" : "fund_contribution_rejected",
-        category: "fund",
-        priority: "HIGH",
-        variables: {
-          user_name: profile.full_name_ar || profile.full_name_en || "",
-          amount: String(amount),
-          currency,
-          reason: reviewNote || "",
-          action_url: "/account",
-        },
-        idempotencyKey: `email-contrib-${userId}-${status}-${amount}`,
-      }).catch((err) =>
-        console.error("[notifications.server] Contribution email enqueue failed:", err),
-      );
-    }
-  } catch (err) {
-    console.warn("[notifications.server] Contribution email error:", err);
-  }
-}
-
-/**
  * Trigger: Lineage record change (family member added/updated/archived).
  * Audience: Family Managers, Genealogists, Admins.
  */
@@ -638,7 +554,6 @@ export async function notifyMembersOnNewArticle(article: {
 }
 
 // Convenience alias helpers matching dispatch naming conventions
-export const notifyAdminsAndTreasurers = notifyAdminsAndTreasurersOnContribution;
 export const notifyAdminsAndGenealogists = notifyFamilyManagersOnLineageUpdate;
 export const notifyAdminsAndEditors = notifyContentStaffOnInquiryOrMessage;
 export const notifyAdminsForNewMember = notifyAdminsOnNewRegistration;

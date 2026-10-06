@@ -30,11 +30,6 @@ export const inl = registerCopy("requests-inline", {
     ar: "طلب إصدار بطاقة عضوية جديدة أو تجديد بطاقة قائمة بعد توثيق العضوية.",
     en: "Request a new membership card, or renew an existing one after verification.",
   } as BiText,
-  t_b8f9bdc1: { ar: "الاشتراك والمساهمة", en: "Subscription & contribution" } as BiText,
-  t_63d8e837: {
-    ar: "تسجيل اشتراك أو مساهمة في صندوق التنمية العائلية وإرفاق إشعار السداد للمراجعة.",
-    en: "Register a subscription or contribution to the family development fund and attach your payment notice for review.",
-  } as BiText,
   t_76decf7d: { ar: "إدراج نشاط تجاري في الدليل", en: "Business directory listing" } as BiText,
   t_82a18b99: {
     ar: "طلب إضافة منشأة أو نشاط تجاري لأحد أبناء الأسرة إلى دليل الأعمال.",
@@ -220,11 +215,6 @@ export const inl = registerCopy("requests-inline", {
   t_90861988: {
     ar: "مراجعة طلبات العضوية وإسناد الأدوار في شاشة المستخدمين والتوثيق.",
     en: "Review membership requests and role assignments in User Accounts & Verification.",
-  } as BiText,
-  t_704198a5: { ar: "المساهمات والاشتراكات", en: "Contributions & subscriptions" } as BiText,
-  t_3403d9c8: {
-    ar: "اعتماد أو رفض إشعارات السداد في شاشة الخزينة.",
-    en: "Approve or decline payment notices in the treasury screen.",
   } as BiText,
   t_74f6facc: { ar: "طلبات إدراج الأعمال", en: "Business listing requests" } as BiText,
   t_eb16d7ce: {

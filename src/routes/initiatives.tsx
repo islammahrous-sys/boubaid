@@ -1,6 +1,5 @@
 import { createFileRoute, Link, Outlet, redirect, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { initiatives as staticInitiatives, hqProject } from "@/content/site";
@@ -72,10 +71,8 @@ function InitiativesLayout() {
 }
 
 function InitiativesPage() {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const { initiatives } = Route.useLoaderData();
-  const rtl = lang === "ar";
-  const Arrow = rtl ? ArrowLeft : ArrowRight;
   const [page, setPage] = useState(1);
 
   const activeCount = initiatives.filter((i) => i.status === "ongoing").length;
@@ -161,16 +158,6 @@ function InitiativesPage() {
                 <Prose className="text-[13px]">
                   <p>{t(hqFunding)}</p>
                 </Prose>
-                <div className="mt-5">
-                  <Link
-                    to="/contribute"
-                    search={{ initiative: liveHq?.slug || "hq", purpose: "hq_project" }}
-                    className="inline-flex items-center gap-2 border border-ink bg-ink px-4 py-2.5 text-xs font-bold text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
-                  >
-                    <span>{t(inl.t_ac8caaf4)}</span>
-                    <Arrow className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
               </div>
             </div>
           </div>
@@ -269,25 +256,6 @@ function InitiativesPage() {
             </PaginationContent>
           </Pagination>
         )}
-      </section>
-
-      {/* ── Support ─────────────────────────────────────────── */}
-      <section className="reveal-on-scroll border-t border-border bg-secondary/40">
-        <div className="container-page flex flex-wrap items-center justify-between gap-6 py-12">
-          <div className="measure">
-            <h2 className="text-xl text-foreground">{t(copy.supportTitle)}</h2>
-            <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-              {t(copy.supportBody)}
-            </p>
-          </div>
-          <Link
-            to="/contribute"
-            className="inline-flex shrink-0 items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-colors hover:bg-transparent hover:text-foreground dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
-          >
-            {t(copy.supportCta)}
-            <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-          </Link>
-        </div>
       </section>
     </>
   );

@@ -68,11 +68,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.boubaid.com/contribute</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://www.boubaid.com/requests</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

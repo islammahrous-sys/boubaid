@@ -26,7 +26,6 @@ const PAGE_LABELS: Record<string, string> = {
   "vision-mission": "الرؤية والرسالة والقيم — Vision, mission & values",
   about: "عن الأسرة — About",
   contact: "تواصل — Contact",
-  contribute: "المساهمة — Contribute",
   governance: "الحوكمة — Governance",
   achievers: "المتميزون والجائزة — Achievers",
   initiatives: "المبادرات — Initiatives",

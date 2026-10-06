@@ -63,14 +63,6 @@ const SYSTEM_ROLES: RoleDef[] = [
     desc_en: "Manages family members, relationships, and family history (not branches or places).",
   },
   {
-    key: "treasurer",
-    name_ar: "أمين الصندوق (Treasurer)",
-    name_en: "Treasurer",
-    badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    desc_ar: "مراجعة إيصالات التحويل البنكي، تدقيق المساهمات، وسجل الخزينة.",
-    desc_en: "Review of bank transfer receipts, funds ledger, and initiative budgets.",
-  },
-  {
     key: "member",
     name_ar: "عضو موثق (Member)",
     name_en: "Verified Member",
@@ -111,7 +103,6 @@ const PERMISSIONS_MATRIX: PermissionItem[] = [
       "editor",
       "content_manager",
       "family_manager",
-      "treasurer",
       "member",
       "viewer",
     ],
@@ -233,32 +224,6 @@ const PERMISSIONS_MATRIX: PermissionItem[] = [
     allowedRoles: ["super_admin", "admin", "member"],
   },
 
-  // 4. Treasury & Funds
-  {
-    key: "treasury.view_ledger",
-    category_ar: "الخزينة والمساهمات",
-    category_en: "Treasury",
-    name_ar: "استعراض سجل الخزينة والمبالغ المعتمدة",
-    name_en: "View Treasury Ledger",
-    allowedRoles: ["super_admin", "admin", "treasurer"],
-  },
-  {
-    key: "treasury.verify_receipts",
-    category_ar: "الخزينة والمساهمات",
-    category_en: "Treasury",
-    name_ar: "مراجعة واعتماد إيصالات التحويل البنكي",
-    name_en: "Verify Bank Transfer Receipts",
-    allowedRoles: ["super_admin", "treasurer"],
-  },
-  {
-    key: "treasury.export",
-    category_ar: "الخزينة والمساهمات",
-    category_en: "Treasury",
-    name_ar: "تصدير التقارير المالية كملفات CSV",
-    name_en: "Export Financial Reports",
-    allowedRoles: ["super_admin", "treasurer"],
-  },
-
   // 5. Directory & Verification
   {
     key: "directory.manage",
@@ -335,7 +300,6 @@ const CATEGORY_LABELS_AR: Record<string, string> = {
   navigation: "قوائم التصفح",
   notifications: "الإشعارات",
   settings: "إعدادات المنصة",
-  treasury: "الخزينة والمساهمات",
   users: "المستخدمون والصلاحيات",
 };
 
@@ -505,8 +469,6 @@ export function RolesPermissionMatrix({
                     <span className="text-sky-600 dark:text-sky-400">Content Mgr</span>
                   ) : r.key === "family_manager" ? (
                     <span className="text-indigo-600 dark:text-indigo-400">Family Mgr</span>
-                  ) : r.key === "treasurer" ? (
-                    <span className="text-emerald-600 dark:text-emerald-400">Treasurer</span>
                   ) : r.key === "member" ? (
                     <span className="text-purple-600 dark:text-purple-400">Member</span>
                   ) : (
@@ -569,7 +531,7 @@ export function RolesPermissionMatrix({
           <span>
             {isAr
               ? "هذه المصفوفة تعرض جدول الصلاحيات في قاعدة البيانات فقط. بعض القيود إضافية وتُطبَّق في الخادم وسياسات RLS (مثل صلاحيات أمين الصندوق ومدير الأنساب)، لذلك قد لا يظهر لها صف هنا."
-              : "This matrix reflects the database permission grants only. Some rules are enforced separately in the server guards and RLS policies (treasurer and family-manager access, for example) and have no row here."}
+              : "This matrix reflects the database permission grants only. Some rules are enforced separately in the server guards and RLS policies (family-manager access, for example) and have no row here."}
           </span>
         </p>
       )}
