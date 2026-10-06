@@ -8,11 +8,23 @@ import { toast } from "sonner";
 import { copyRegistry } from "@/i18n/editable-copy";
 import type { SiteSettingInput } from "@/lib/admin-hub.schemas";
 
+import * as siteCopy from "@/content/site";
+import * as councilCopy from "@/content/council-address";
+import * as historyCopy from "@/content/history-source";
+
 // Load every page's text set so the registry is complete in the admin.
-import.meta.glob("/src/content/page-copy/*.ts", { eager: true });
-import "@/content/site";
-import "@/content/council-address";
-import "@/content/history-source";
+// These modules only matter for the registerCopy() call they run, and the
+// package declares `"sideEffects": false` — so bare side-effect imports were
+// tree-shaken out of the production build and the editor listed just the 18
+// sets the console happened to import for other reasons. Holding on to the
+// module namespaces (and reading them below) keeps every one of them.
+const pageCopyModules = import.meta.glob("/src/content/page-copy/*.ts", { eager: true });
+const COPY_MODULES: unknown[] = [
+  ...Object.values(pageCopyModules),
+  siteCopy,
+  councilCopy,
+  historyCopy,
+];
 
 type Bi = { ar?: string; en?: string };
 
@@ -70,7 +82,7 @@ export function PageTextsManager({
   onSaveSetting: (data: SiteSettingInput) => Promise<void>;
   isAr: boolean;
 }) {
-  const pages = useMemo(() => Object.keys(copyRegistry).sort(), []);
+  const pages = useMemo(() => (COPY_MODULES.length ? Object.keys(copyRegistry).sort() : []), []);
   const [page, setPage] = useState(pages.includes("index") ? "index" : pages[0]);
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState<Record<string, Bi>>({});
