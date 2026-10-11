@@ -27,6 +27,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { consoleLabel } from "@/components/console/common/consoleLabels";
 import { Plus, Edit2, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error-utils";
@@ -267,8 +268,8 @@ export function AnnouncementsManager({
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="text-[10px] uppercase">
-                      {ann.type}
+                    <Badge variant="outline" className="text-[10px]">
+                      {consoleLabel(ann.type, isAr)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
@@ -280,12 +281,12 @@ export function AnnouncementsManager({
                       }
                       className="text-[10px]"
                     >
-                      {ann.priority}
+                      {consoleLabel(ann.priority, isAr)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
                     <Badge variant="secondary" className="text-[10px]">
-                      {ann.status}
+                      {consoleLabel(ann.status, isAr)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-end">

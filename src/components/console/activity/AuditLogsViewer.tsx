@@ -1,15 +1,6 @@
 import { formatDualDateTime } from "@/lib/dates";
-import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -20,13 +11,23 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Shield, Search, Eye, Filter } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, History, Search } from "lucide-react";
+import {
+  AUDIT_TONE_CLASS,
+  auditEntityLabel,
+  describeAuditAction,
+  type AuditTone,
+} from "@/components/console/common/consoleLabels";
+import { ConsolePager } from "@/components/console/common/ConsolePager";
+import { usePaged } from "@/components/console/common/usePaged";
 
 export type AuditLogRow = {
   id: string;
@@ -40,202 +41,255 @@ export type AuditLogRow = {
   created_at: string;
 };
 
+/** The most human name a logged record carries, if any. */
+function recordName(log: AuditLogRow): string | null {
+  const d = log.after_data ?? log.before_data;
+  const m = log.metadata;
+  const pick = (o: any) =>
+    o &&
+    (o.title_ar ||
+      o.name_ar ||
+      o.label_ar ||
+      (o.first_name_ar ? `${o.first_name_ar} ${o.last_name_ar ?? ""}`.trim() : null) ||
+      o.title ||
+      o.name ||
+      o.key);
+  return (
+    pick(d) || (typeof m?.title === "string" ? m.title : null) || (m?.role ? String(m.role) : null)
+  );
+}
+
+const TONES: { id: "all" | AuditTone; ar: string; en: string }[] = [
+  { id: "all", ar: "كل العمليات", en: "All actions" },
+  { id: "add", ar: "إضافة ونشر", en: "Additions" },
+  { id: "change", ar: "تعديلات", en: "Changes" },
+  { id: "remove", ar: "حذف وأرشفة", en: "Removals" },
+];
+
 export function AuditLogsViewer({ auditLogs }: { auditLogs: AuditLogRow[] }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
 
   const [search, setSearch] = useState("");
-  const [actionFilter, setActionFilter] = useState("all");
+  const [tone, setTone] = useState<"all" | AuditTone>("all");
+  const [entity, setEntity] = useState("all");
   const [selectedLog, setSelectedLog] = useState<AuditLogRow | null>(null);
 
-  const filteredLogs = auditLogs.filter((log) => {
-    const matchAction = actionFilter === "all" || log.action === actionFilter;
-    const matchSearch =
-      !search ||
-      log.entity_type.toLowerCase().includes(search.toLowerCase()) ||
-      (log.action && log.action.toLowerCase().includes(search.toLowerCase())) ||
-      (log.entity_id && log.entity_id.toLowerCase().includes(search.toLowerCase()));
-    return matchAction && matchSearch;
-  });
+  const entities = useMemo(
+    () =>
+      [...new Set(auditLogs.map((l) => l.entity_type))].sort((a, b) =>
+        auditEntityLabel(a, isAr).localeCompare(auditEntityLabel(b, isAr)),
+      ),
+    [auditLogs, isAr],
+  );
 
-  const getActionBadge = (action: string) => {
-    switch (action) {
-      case "create":
-        return (
-          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">
-            CREATE
-          </Badge>
-        );
-      case "update":
-        return (
-          <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 text-[10px]">
-            UPDATE
-          </Badge>
-        );
-      case "delete":
-      case "archive":
-        return (
-          <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-[10px]">
-            DELETE
-          </Badge>
-        );
-      case "role_change":
-        return (
-          <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20 text-[10px]">
-            ROLE
-          </Badge>
-        );
-      case "publish":
-        return (
-          <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px]">
-            PUBLISH
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="outline" className="text-[10px]">
-            {action.toUpperCase()}
-          </Badge>
-        );
-    }
-  };
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return auditLogs.filter((log) => {
+      const act = describeAuditAction(log.action);
+      if (tone !== "all" && act.tone !== tone) return false;
+      if (entity !== "all" && log.entity_type !== entity) return false;
+      if (!q) return true;
+      const hay = [
+        log.action,
+        log.entity_type,
+        log.entity_id ?? "",
+        act.ar,
+        act.en,
+        auditEntityLabel(log.entity_type, true),
+        auditEntityLabel(log.entity_type, false),
+        recordName(log) ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [auditLogs, search, tone, entity]);
+
+  const { slice, page, pageCount, setPage, total, pageSize } = usePaged(filtered, 25);
+  const Chevron = isAr ? ChevronLeft : ChevronRight;
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-card p-4 rounded-xl border border-border">
-        <div className="flex items-center gap-2.5">
-          <Shield className="w-5 h-5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">
-            {isAr
-              ? "سجل الرقابة وتتبع العمليات (Audit Logs)"
-              : "System Audit Logs & Security History"}
-          </h3>
+      <div className="console-card flex flex-col gap-3 p-4 md:flex-row md:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={
+              isAr
+                ? "ابحث باسم السجل أو القسم أو نوع العملية..."
+                : "Search by record, area or action..."
+            }
+            className="h-10 ps-9"
+            aria-label={isAr ? "بحث في السجل" : "Search the log"}
+          />
         </div>
+        <Select value={entity} onValueChange={setEntity}>
+          <SelectTrigger className="h-10 md:w-56" aria-label={isAr ? "القسم" : "Area"}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{isAr ? "كل الأقسام" : "All areas"}</SelectItem>
+            {entities.map((e) => (
+              <SelectItem key={e} value={e}>
+                {auditEntityLabel(e, isAr)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex gap-1 rounded-xl bg-[var(--console-canvas)] p-1" role="group">
+          {TONES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTone(t.id)}
+              aria-pressed={tone === t.id}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-[13px] font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+                tone === t.id
+                  ? "bg-card text-foreground shadow-[var(--console-shadow-sm)]"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {isAr ? t.ar : t.en}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        <div className="flex items-center gap-2.5 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-60">
-            <Search className="w-4 h-4 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={isAr ? "بحث في السجلات..." : "Search logs..."}
-              className="ps-9 h-8 text-xs"
-            />
+      <div className="console-card overflow-hidden">
+        {slice.length === 0 ? (
+          <div className="flex flex-col items-center px-6 py-16 text-center text-muted-foreground">
+            <History className="h-8 w-8 opacity-40" />
+            <p className="mt-3 text-sm">
+              {isAr ? "لا توجد عمليات مطابقة." : "No matching activity."}
+            </p>
           </div>
-
-          <Select value={actionFilter} onValueChange={setActionFilter}>
-            <SelectTrigger className="h-8 w-[130px] text-xs">
-              <Filter className="w-3.5 h-3.5 me-1.5 text-muted-foreground" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{isAr ? "كل العمليات" : "All Actions"}</SelectItem>
-              <SelectItem value="create">Create</SelectItem>
-              <SelectItem value="update">Update</SelectItem>
-              <SelectItem value="archive">Archive</SelectItem>
-              <SelectItem value="role_change">Role Change</SelectItem>
-              <SelectItem value="upload">Upload</SelectItem>
-              <SelectItem value="settings_change">Settings</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="border border-border rounded-xl bg-card overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/40 text-xs">
-              <TableHead>{isAr ? "نوع الإجراء" : "Action"}</TableHead>
-              <TableHead>{isAr ? "الكيان المتأثر" : "Entity"}</TableHead>
-              <TableHead>{isAr ? "معرف السجل" : "Entity ID"}</TableHead>
-              <TableHead>{isAr ? "الوقت والتاريخ" : "Timestamp"}</TableHead>
-              <TableHead className="text-end">{isAr ? "التفاصيل" : "Details"}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredLogs.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-28 text-center text-muted-foreground text-xs">
-                  {isAr ? "لا توجد عمليات مسجلة" : "No audit records found"}
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredLogs.map((log) => (
-                <TableRow key={log.id} className="text-xs hover:bg-muted/30">
-                  <TableCell>{getActionBadge(log.action)}</TableCell>
-                  <TableCell className="font-mono text-foreground font-medium">
-                    {log.entity_type}
-                  </TableCell>
-                  <TableCell className="font-mono text-muted-foreground truncate max-w-[140px]">
-                    {log.entity_id || "—"}
-                  </TableCell>
-                  <TableCell className="font-mono text-muted-foreground">
-                    {formatDualDateTime(log.created_at, isAr ? "ar" : "en")}
-                  </TableCell>
-                  <TableCell className="text-end">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-7 h-7 text-muted-foreground hover:text-foreground"
-                      onClick={() => setSelectedLog(log)}
+        ) : (
+          <ul className="divide-y divide-[var(--console-hairline)]">
+            {slice.map((log) => {
+              const act = describeAuditAction(log.action);
+              const name = recordName(log);
+              return (
+                <li key={log.id}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedLog(log)}
+                    className="group flex w-full items-center gap-4 px-4 py-3.5 text-start transition-colors hover:bg-[var(--console-canvas)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                  >
+                    <span
+                      className={cn(
+                        "w-32 shrink-0 rounded-full px-2.5 py-1 text-center text-xs font-semibold",
+                        AUDIT_TONE_CLASS[act.tone],
+                      )}
                     >
-                      <Eye className="w-3.5 h-3.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+                      {isAr ? act.ar : act.en}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-foreground">
+                        {auditEntityLabel(log.entity_type, isAr)}
+                        {name && (
+                          <span className="font-normal text-muted-foreground"> — {name}</span>
+                        )}
+                      </span>
+                      <span
+                        className="block truncate font-mono text-xs text-muted-foreground"
+                        dir="ltr"
+                      >
+                        {log.entity_type}
+                        {log.entity_id ? ` · ${log.entity_id.slice(0, 8)}` : ""}
+                      </span>
+                    </span>
+                    <span className="hidden shrink-0 text-end text-xs tabular-nums text-muted-foreground md:block">
+                      {formatDualDateTime(log.created_at, isAr ? "ar" : "en")}
+                    </span>
+                    <Chevron className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <ConsolePager
+          page={page}
+          pageCount={pageCount}
+          total={total}
+          pageSize={pageSize}
+          onPage={setPage}
+          isAr={isAr}
+          className="border-t border-[var(--console-hairline)]"
+        />
       </div>
 
-      {/* JSON Diff Dialog */}
       {selectedLog && (
         <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
-          <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-h-[85vh] max-w-xl overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-base font-bold flex items-center justify-between">
-                <span>{isAr ? "تفاصيل حدث التدقيق والرقابة" : "Audit Event Details"}</span>
-                {getActionBadge(selectedLog.action)}
+              <DialogTitle className="flex items-center gap-3 text-base font-bold">
+                <span
+                  className={cn(
+                    "rounded-full px-2.5 py-1 text-xs font-semibold",
+                    AUDIT_TONE_CLASS[describeAuditAction(selectedLog.action).tone],
+                  )}
+                >
+                  {isAr
+                    ? describeAuditAction(selectedLog.action).ar
+                    : describeAuditAction(selectedLog.action).en}
+                </span>
+                {auditEntityLabel(selectedLog.entity_type, isAr)}
               </DialogTitle>
+              <DialogDescription>
+                {formatDualDateTime(selectedLog.created_at, isAr ? "ar" : "en")}
+                {recordName(selectedLog) ? ` — ${recordName(selectedLog)}` : ""}
+              </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2 p-3 bg-muted/30 rounded-lg font-mono text-[11px]">
+              <div className="grid grid-cols-2 gap-2 rounded-lg bg-muted/40 p-3">
                 <div>
-                  <span className="text-muted-foreground block">
-                    {isAr ? "الكيان:" : "Entity:"}
+                  <span className="block text-muted-foreground">{isAr ? "الجدول" : "Table"}</span>
+                  <span className="font-mono text-foreground" dir="ltr">
+                    {selectedLog.entity_type}
                   </span>
-                  <span className="font-bold text-foreground">{selectedLog.entity_type}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground block">{isAr ? "التاريخ:" : "Date:"}</span>
-                  <span className="text-foreground">
-                    {formatDualDateTime(selectedLog.created_at, isAr ? "ar" : "en")}
+                  <span className="block text-muted-foreground">
+                    {isAr ? "معرّف السجل" : "Record ID"}
+                  </span>
+                  <span className="break-all font-mono text-foreground" dir="ltr">
+                    {selectedLog.entity_id || "—"}
                   </span>
                 </div>
               </div>
 
               {selectedLog.after_data && (
-                <div className="space-y-1">
-                  <span className="font-semibold text-foreground text-xs block">
-                    {isAr ? "البيانات المسجلة (After State):" : "Recorded Payload (After):"}
-                  </span>
-                  <pre className="p-3 rounded-lg bg-zinc-950 text-zinc-200 font-mono text-[10px] overflow-x-auto max-h-56">
+                <details className="rounded-lg border border-[var(--console-hairline)]">
+                  <summary className="cursor-pointer px-3 py-2 font-semibold text-foreground">
+                    {isAr ? "البيانات المحفوظة" : "Saved data"}
+                  </summary>
+                  <pre
+                    className="max-h-56 overflow-auto bg-[#1b110b] p-3 font-mono text-[11px] text-[#f7ecdf]"
+                    dir="ltr"
+                  >
                     {JSON.stringify(selectedLog.after_data, null, 2)}
                   </pre>
-                </div>
+                </details>
               )}
 
               {selectedLog.metadata && Object.keys(selectedLog.metadata).length > 0 && (
-                <div className="space-y-1">
-                  <span className="font-semibold text-foreground text-xs block">
-                    {isAr ? "معلومات إضافية (Metadata):" : "Metadata:"}
-                  </span>
-                  <pre className="p-3 rounded-lg bg-zinc-950 text-zinc-200 font-mono text-[10px] overflow-x-auto">
+                <details className="rounded-lg border border-[var(--console-hairline)]" open>
+                  <summary className="cursor-pointer px-3 py-2 font-semibold text-foreground">
+                    {isAr ? "تفاصيل إضافية" : "Details"}
+                  </summary>
+                  <pre
+                    className="overflow-auto bg-[#1b110b] p-3 font-mono text-[11px] text-[#f7ecdf]"
+                    dir="ltr"
+                  >
                     {JSON.stringify(selectedLog.metadata, null, 2)}
                   </pre>
-                </div>
+                </details>
               )}
             </div>
 

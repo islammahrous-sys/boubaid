@@ -16,6 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { ConsolePager } from "@/components/console/common/ConsolePager";
+import { usePaged } from "@/components/console/common/usePaged";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -25,7 +28,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
-import { Plus, Trash2, Link2, Users, Loader2 } from "lucide-react";
+import { Plus, Trash2, Link2, Users, Loader2, Search } from "lucide-react";
 import type { FamilyRelationshipInput } from "@/lib/admin-hub.schemas";
 import { useConfirm } from "@/hooks/useConfirm";
 
@@ -63,6 +66,10 @@ export function FamilyRelationshipsManager({
   const [formOpen, setFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | RelationshipItem["relationship_type"]>(
+    "all",
+  );
 
   const [form, setForm] = useState<FamilyRelationshipInput>({
     person_id: filterMemberId ?? "",
@@ -81,12 +88,26 @@ export function FamilyRelationshipsManager({
     return map;
   }, [members]);
 
+  // 1,098 links in the official dataset: search + type filter + paging instead
+  // of one 50,000px table.
   const filtered = useMemo(() => {
-    if (!filterMemberId) return relationships;
-    return relationships.filter(
-      (r) => r.person_id === filterMemberId || r.related_person_id === filterMemberId,
-    );
-  }, [relationships, filterMemberId]);
+    const q = query.trim();
+    return relationships.filter((r) => {
+      if (
+        filterMemberId &&
+        r.person_id !== filterMemberId &&
+        r.related_person_id !== filterMemberId
+      )
+        return false;
+      if (typeFilter !== "all" && r.relationship_type !== typeFilter) return false;
+      if (!q) return true;
+      return (
+        (memberMap.get(r.person_id) ?? "").includes(q) ||
+        (memberMap.get(r.related_person_id) ?? "").includes(q)
+      );
+    });
+  }, [relationships, filterMemberId, typeFilter, query, memberMap]);
+  const paged = usePaged(filtered, 30);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,6 +171,30 @@ export function FamilyRelationshipsManager({
         </Button>
       </div>
 
+      <div className="console-card flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={isAr ? "ابحث باسم أحد الطرفين..." : "Search by either person's name..."}
+            className="h-10 ps-9"
+            aria-label={isAr ? "بحث في صلات القرابة" : "Search kinship links"}
+          />
+        </div>
+        <Select value={typeFilter} onValueChange={(v: any) => setTypeFilter(v)}>
+          <SelectTrigger className="h-10 sm:w-48" aria-label={isAr ? "نوع الصلة" : "Link type"}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{isAr ? "كل الصلات" : "All links"}</SelectItem>
+            <SelectItem value="parent">{isAr ? "والد / والدة" : "Parent"}</SelectItem>
+            <SelectItem value="child">{isAr ? "ابن / ابنة" : "Child"}</SelectItem>
+            <SelectItem value="spouse">{isAr ? "زوج / زوجة" : "Spouse"}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="border border-border rounded-xl bg-card overflow-hidden">
         <Table>
           <TableHeader>
@@ -168,7 +213,7 @@ export function FamilyRelationshipsManager({
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((r) => (
+              paged.slice.map((r) => (
                 <TableRow key={r.id} className="text-xs hover:bg-muted/30">
                   <TableCell className="font-semibold text-foreground">
                     {memberMap.get(r.person_id) || "—"}
@@ -217,6 +262,15 @@ export function FamilyRelationshipsManager({
             )}
           </TableBody>
         </Table>
+        <ConsolePager
+          page={paged.page}
+          pageCount={paged.pageCount}
+          total={paged.total}
+          pageSize={paged.pageSize}
+          onPage={paged.setPage}
+          isAr={isAr}
+          className="border-t border-[var(--console-hairline)]"
+        />
       </div>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>

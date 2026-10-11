@@ -30,6 +30,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { consoleLabel } from "@/components/console/common/consoleLabels";
 import { cn } from "@/lib/utils";
 import {
   Plus,
@@ -839,7 +840,7 @@ export function ArticlesManager({
                           "border-sky-500/40 text-sky-600 bg-sky-500/10 dark:text-sky-400",
                       )}
                     >
-                      {a.status}
+                      {consoleLabel(a.status, isAr)}
                     </Badge>
                   </TableCell>
 
@@ -1303,7 +1304,7 @@ export function ArticlesManager({
                       "border-sky-500/40 text-sky-600 bg-sky-500/10 dark:text-sky-400",
                   )}
                 >
-                  {previewArticle.status}
+                  {consoleLabel(previewArticle.status, isAr)}
                 </Badge>
                 {previewArticle.is_featured && (
                   <Badge variant="outline" className="border-amber-500/30 text-amber-600">

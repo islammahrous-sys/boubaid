@@ -1213,11 +1213,17 @@ blockquote {
      · a warm, quiet canvas where the work happens,
      · three depth levels — canvas → card → floating — with
        green/brown-tinted shadows instead of grey ones.
-   Everything is scoped to `.console-shell`, so public pages are
-   untouched. `.console-portal` carries the same tokens into Radix
-   portals (the mobile drawer), which render outside the shell.
+   Tokens are set on `body:has(.console-shell)` so they also reach the
+   Radix portals (dialogs, sheets, popovers, selects) that render outside
+   the shell; public pages never match, so they are untouched.
+   `.console-portal` is kept for portals mounted before the shell.
+
+   The Tailwind default palette (blue, indigo, purple, rose, …) used
+   across the 45 console screens is re-pointed to heritage ramps drawn
+   from the identity guide, so every screen speaks the brand's colours
+   while keeping its category distinctions — no per-component rewrite.
    ══════════════════════════════════════════════════════════════ */
-.console-shell,
+body:has(.console-shell),
 .console-portal {
   --console-canvas: #fbf5ec;
   --console-rail: #143726;
@@ -1243,9 +1249,134 @@ blockquote {
   --text-xs: 0.8125rem;
   --text-xs--line-height: 1.6;
 
+  /* emerald → heritage green (#245B3F) */
+  --color-emerald-50: #eef5f0;
+  --color-emerald-100: #d6e8dc;
+  --color-emerald-200: #b0d1bc;
+  --color-emerald-300: #82b496;
+  --color-emerald-400: #569372;
+  --color-emerald-500: #3a7a58;
+  --color-emerald-600: #2c6648;
+  --color-emerald-700: #245b3f;
+  --color-emerald-800: #1d4a34;
+  --color-emerald-900: #163a29;
+  --color-emerald-950: #0d2419;
+  --color-green-500: #3a7a58;
+  --color-green-600: #2c6648;
+  --color-green-700: #245b3f;
+  /* amber → brand gold #ECA654 through copper #BA734A */
+  --color-amber-50: #fdf6ec;
+  --color-amber-100: #fbe9d0;
+  --color-amber-200: #f7d3a3;
+  --color-amber-300: #f1bc7d;
+  --color-amber-400: #eca654;
+  --color-amber-500: #d98c3a;
+  --color-amber-600: #b0692f;
+  --color-amber-700: #8f5530;
+  --color-amber-800: #6e4126;
+  --color-amber-900: #55331f;
+  --color-amber-950: #2f1c10;
+  --color-yellow-500: #d98c3a;
+  --color-orange-500: #c9773f;
+  --color-orange-600: #ba734a;
+  /* blue / sky → cool mist (guide's #E4EAEF ladder) */
+  --color-blue-50: #f2f5f7;
+  --color-blue-100: #e4eaef;
+  --color-blue-200: #c9d4dc;
+  --color-blue-300: #a7b8c2;
+  --color-blue-400: #8299a7;
+  --color-blue-500: #5f7a8a;
+  --color-blue-600: #4c6574;
+  --color-blue-700: #3f5561;
+  --color-blue-800: #344650;
+  --color-blue-900: #2c3b43;
+  --color-blue-950: #1b252a;
+  --color-sky-50: #f2f5f7;
+  --color-sky-100: #e4eaef;
+  --color-sky-200: #c9d4dc;
+  --color-sky-300: #a7b8c2;
+  --color-sky-400: #8299a7;
+  --color-sky-500: #5f7a8a;
+  --color-sky-600: #4c6574;
+  --color-sky-700: #3f5561;
+  --color-sky-800: #344650;
+  --color-sky-900: #2c3b43;
+  /* indigo / cyan → palm teal */
+  --color-indigo-50: #eff6f4;
+  --color-indigo-100: #d8eae5;
+  --color-indigo-200: #b3d4cb;
+  --color-indigo-300: #86b8ab;
+  --color-indigo-400: #5e9a8b;
+  --color-indigo-500: #457f71;
+  --color-indigo-600: #36675b;
+  --color-indigo-700: #2e554b;
+  --color-indigo-800: #27463e;
+  --color-indigo-900: #213a34;
+  --color-indigo-950: #12221e;
+  --color-cyan-500: #457f71;
+  --color-cyan-600: #36675b;
+  --color-teal-500: #457f71;
+  --color-teal-600: #36675b;
+  --color-teal-400: #5e9a8b;
+  /* purple / violet / pink → clay (#8B5638 / #774932) */
+  --color-purple-50: #f8f1ec;
+  --color-purple-100: #efdfd3;
+  --color-purple-200: #e0c0a9;
+  --color-purple-300: #cd9c7d;
+  --color-purple-400: #b9795a;
+  --color-purple-500: #a0623f;
+  --color-purple-600: #8b5638;
+  --color-purple-700: #774932;
+  --color-purple-800: #5f3a28;
+  --color-purple-900: #4b2e20;
+  --color-purple-950: #2a1911;
+  --color-violet-500: #a0623f;
+  --color-violet-600: #8b5638;
+  --color-pink-400: #b9795a;
+  --color-pink-500: #a0623f;
+  --color-pink-600: #8b5638;
+  /* red / rose → terracotta */
+  --color-rose-50: #fbf1ed;
+  --color-rose-100: #f6dfd5;
+  --color-rose-200: #ecbfac;
+  --color-rose-300: #df997c;
+  --color-rose-400: #cf7452;
+  --color-rose-500: #bd5a37;
+  --color-rose-600: #a84a2b;
+  --color-rose-700: #8b3c23;
+  --color-rose-800: #6f311e;
+  --color-rose-900: #5a291a;
+  --color-rose-950: #33160d;
+  --color-red-50: #fbf1ed;
+  --color-red-100: #f6dfd5;
+  --color-red-200: #ecbfac;
+  --color-red-300: #df997c;
+  --color-red-400: #cf7452;
+  --color-red-500: #bd5a37;
+  --color-red-600: #a84a2b;
+  --color-red-700: #8b3c23;
+  --color-red-800: #6f311e;
+  --color-red-900: #5a291a;
+  --color-red-950: #33160d;
+  /* zinc / stone → warm neutral */
+  --color-zinc-100: #f1ebe4;
+  --color-zinc-200: #e2d8cd;
+  --color-zinc-300: #cbbcad;
+  --color-zinc-400: #a8988a;
+  --color-zinc-500: #8a7768;
+  --color-zinc-600: #736053;
+  --color-zinc-700: #5c4c41;
+  --color-zinc-800: #463a32;
+  --color-zinc-900: #342b25;
+  --color-stone-500: #8a7768;
+}
+body:has(.console-shell) {
   background-color: var(--console-canvas);
 }
-.dark .console-shell,
+.console-shell {
+  background-color: var(--console-canvas);
+}
+.dark body:has(.console-shell),
 .dark .console-portal {
   --console-canvas: var(--paper);
   --console-rail: #120c08;
@@ -1255,22 +1386,58 @@ blockquote {
   --console-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --console-shadow-md: 0 12px 28px -14px rgb(0 0 0 / 0.6);
   --console-shadow-lg: 0 28px 56px -24px rgb(0 0 0 / 0.75);
+  /* Lighter steps so dark:text-*-300/400 stay legible on the brown canvas. */
+  --color-emerald-300: #a6d1b6;
+  --color-emerald-400: #7fb896;
+  --color-amber-300: #f5cf9e;
+  --color-amber-400: #f1bc7d;
+  --color-blue-300: #c4d2db;
+  --color-blue-400: #a9bccb;
+  --color-sky-300: #c4d2db;
+  --color-sky-400: #a9bccb;
+  --color-indigo-300: #a8d0c5;
+  --color-indigo-400: #86bcae;
+  --color-purple-300: #e2bea5;
+  --color-purple-400: #d6a283;
+  --color-rose-300: #f0b39b;
+  --color-rose-400: #e8957a;
+  --color-red-300: #f0b39b;
+  --color-red-400: #e8957a;
 }
 
-.console-shell .text-\[9px\] {
+body:has(.console-shell) .text-\[9px\] {
   font-size: 10.5px;
 }
-.console-shell .text-\[10px\] {
+body:has(.console-shell) .text-\[10px\] {
   font-size: 11.5px;
 }
-.console-shell .text-\[11px\] {
+body:has(.console-shell) .text-\[11px\] {
   font-size: 12.5px;
 }
 /* IBM Plex Mono has no Arabic glyphs; the system fallback rendered Arabic
    letter-by-letter with gaps ("ا ل ن ت ا ئ ج"). Fall back to Plex Arabic. */
-.console-shell .font-mono {
+body:has(.console-shell) .font-mono {
   font-family: "IBM Plex Mono", "IBM Plex Sans Arabic", ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
+}
+
+/* Shared defaults for the managers' tables, cards and tabs. They sit in the
+   components layer, so any explicit utility on an element still wins. */
+@layer components {
+  .console-shell main table thead tr {
+    background-color: color-mix(in oklab, var(--paper-shade) 55%, transparent);
+  }
+  .console-shell main table thead th {
+    height: 2.875rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+  }
+  .console-shell main table tbody td {
+    padding-block: 0.8rem;
+  }
+  .console-shell main [role="tablist"] {
+    border-radius: 0.875rem;
+  }
 }
 
 /* Component classes live in the components layer so Tailwind utilities on

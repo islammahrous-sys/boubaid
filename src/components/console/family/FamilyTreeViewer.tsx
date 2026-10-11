@@ -1,5 +1,4 @@
-import { useState, useMemo, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   Select,
   SelectContent,
@@ -7,19 +6,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { useLang } from "@/i18n/LanguageProvider";
-import {
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-  User,
-  Heart,
-  Filter,
-  ChevronDown,
-  ChevronRight,
-  Layers,
-} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ChevronDown, ChevronLeft, ChevronRight, Heart, Network, Search } from "lucide-react";
 import type { MemberRow } from "./FamilyMembersTable";
 import type { BranchOption } from "./FamilyMemberFormDialog";
 
@@ -30,6 +20,19 @@ type RelationshipRow = {
   relationship_type: "parent" | "child" | "spouse";
 };
 
+/** Arabic agreement: ابن واحد، ابنان، ٣–١٠ أبناء، ١١+ ابنًا. */
+const arChildren = (n: number, nf: Intl.NumberFormat) =>
+  n === 1 ? "ابن واحد" : n === 2 ? "ابنان" : ` `;
+
+/**
+ * Lineage tree built from the recorded parent/child links.
+ *
+ * The previous view laid every generation out as one row of cards; with
+ * hundreds of people per generation that row was thousands of pixels wide and
+ * the canvas showed mostly empty space. An expandable outline follows the real
+ * descent (father → children), scales to the full 550-member register, and
+ * search opens the path down to every match.
+ */
 export function FamilyTreeViewer({
   members,
   branches,
@@ -43,239 +46,301 @@ export function FamilyTreeViewer({
 }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const nf = useMemo(() => new Intl.NumberFormat(isAr ? "ar-SA-u-nu-latn" : "en-US"), [isAr]);
 
   const [branchFilter, setBranchFilter] = useState("all");
-  const [zoom, setZoom] = useState(1);
-  const [collapsedGens, setCollapsedGens] = useState<Record<number, boolean>>({});
+  const [query, setQuery] = useState("");
+  const [expanded, setExpanded] = useState<Set<string> | null>(null);
 
-  const branchMap = useMemo(() => {
+  const branchName = useMemo(() => {
     const map = new Map<string, string>();
     branches.forEach((b) => map.set(b.id, isAr ? b.name_ar : b.name_en || b.name_ar));
     return map;
   }, [branches, isAr]);
 
-  const memberMap = useMemo(() => {
-    const map = new Map<string, MemberRow>();
-    members.forEach((m) => map.set(m.id, m));
-    return map;
-  }, [members]);
+  const byId = useMemo(() => new Map(members.map((m) => [m.id, m])), [members]);
 
-  // Group members by generation
-  const generationGroups = useMemo(() => {
-    const filtered =
-      branchFilter === "all" ? members : members.filter((m) => m.branch_id === branchFilter);
-    const groups: Record<number, MemberRow[]> = {};
-
-    filtered.forEach((m) => {
-      const gen = m.generation || 1;
-      if (!groups[gen]) groups[gen] = [];
-      groups[gen].push(m);
-    });
-
-    return Object.entries(groups)
-      .map(([gen, list]) => ({
-        generation: parseInt(gen),
-        members: list.sort((a, b) => a.sort_order - b.sort_order),
-      }))
-      .sort((a, b) => a.generation - b.generation);
-  }, [members, branchFilter]);
-
-  // Find spouse pairs
-  const spouseMap = useMemo(() => {
-    const map = new Map<string, string>();
-    relationships.forEach((rel) => {
-      if (rel.relationship_type === "spouse") {
-        map.set(rel.person_id, rel.related_person_id);
-        map.set(rel.related_person_id, rel.person_id);
+  // parent → children and child → parent, from both directions of the links.
+  const { childrenOf, parentOf, spouseOf } = useMemo(() => {
+    const kids = new Map<string, Set<string>>();
+    const parent = new Map<string, string>();
+    const spouse = new Map<string, string>();
+    const link = (p: string, c: string) => {
+      if (!byId.has(p) || !byId.has(c) || p === c) return;
+      if (!kids.has(p)) kids.set(p, new Set());
+      kids.get(p)!.add(c);
+      if (!parent.has(c)) parent.set(c, p);
+    };
+    for (const r of relationships) {
+      if (r.relationship_type === "parent") link(r.person_id, r.related_person_id);
+      else if (r.relationship_type === "child") link(r.related_person_id, r.person_id);
+      else if (r.relationship_type === "spouse") {
+        spouse.set(r.person_id, r.related_person_id);
+        spouse.set(r.related_person_id, r.person_id);
       }
-    });
-    return map;
-  }, [relationships]);
+    }
+    const order = (a: string, b: string) => {
+      const ma = byId.get(a)!;
+      const mb = byId.get(b)!;
+      return (
+        (ma.sort_order ?? 0) - (mb.sort_order ?? 0) ||
+        ma.first_name_ar.localeCompare(mb.first_name_ar)
+      );
+    };
+    const sorted = new Map<string, string[]>();
+    kids.forEach((set, p) => sorted.set(p, [...set].sort(order)));
+    return { childrenOf: sorted, parentOf: parent, spouseOf: spouse };
+  }, [relationships, byId]);
 
-  const toggleGenCollapse = (gen: number) => {
-    setCollapsedGens((prev) => ({ ...prev, [gen]: !prev[gen] }));
+  const inScope = (m: MemberRow) => branchFilter === "all" || m.branch_id === branchFilter;
+
+  // Roots: people in scope whose parent is unknown or outside the scope.
+  const roots = useMemo(() => {
+    return members
+      .filter(inScope)
+      .filter((m) => {
+        const p = parentOf.get(m.id);
+        return !p || !inScope(byId.get(p)!);
+      })
+      .sort(
+        (a, b) =>
+          (a.generation ?? 0) - (b.generation ?? 0) || (a.sort_order ?? 0) - (b.sort_order ?? 0),
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [members, parentOf, byId, branchFilter]);
+
+  // Descendant counts, for "n descendants" hints.
+  const descendants = useMemo(() => {
+    const memo = new Map<string, number>();
+    const count = (id: string, seen = new Set<string>()): number => {
+      if (memo.has(id)) return memo.get(id)!;
+      if (seen.has(id)) return 0;
+      seen.add(id);
+      const n = (childrenOf.get(id) ?? []).reduce((s, c) => s + 1 + count(c, seen), 0);
+      memo.set(id, n);
+      return n;
+    };
+    members.forEach((m) => count(m.id));
+    return memo;
+  }, [members, childrenOf]);
+
+  // Search: matching people, and every ancestor that must open to reveal them.
+  const q = query.trim();
+  const { matches, openForSearch } = useMemo(() => {
+    const found = new Set<string>();
+    const open = new Set<string>();
+    if (!q) return { matches: found, openForSearch: open };
+    for (const m of members) {
+      if (!inScope(m)) continue;
+      const name = `${m.first_name_ar} ${m.last_name_ar} ${m.first_name_en ?? ""} ${m.last_name_en ?? ""}`;
+      if (name.toLowerCase().includes(q.toLowerCase())) {
+        found.add(m.id);
+        let p = parentOf.get(m.id);
+        const guard = new Set<string>();
+        while (p && !guard.has(p)) {
+          guard.add(p);
+          open.add(p);
+          p = parentOf.get(p);
+        }
+      }
+    }
+    return { matches: found, openForSearch: open };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q, members, parentOf, branchFilter]);
+
+  // Default: roots and their children open, so the first view shows the trunk.
+  const defaultOpen = useMemo(() => new Set(roots.map((r) => r.id)), [roots]);
+  const open = q ? openForSearch : (expanded ?? defaultOpen);
+
+  const toggle = (id: string) => {
+    if (q) setQuery("");
+    setExpanded((prev) => {
+      const next = new Set(prev ?? defaultOpen);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const expandAll = () => setExpanded(new Set(childrenOf.keys()));
+  const collapseAll = () => setExpanded(new Set());
+
+  const generations = useMemo(
+    () => new Set(members.filter(inScope).map((m) => m.generation ?? 0)).size,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [members, branchFilter],
+  );
+  const Chevron = isAr ? ChevronLeft : ChevronRight;
+
+  const renderNode = (id: string, depth: number, trail: Set<string>): ReactNode => {
+    const m = byId.get(id);
+    if (!m || trail.has(id) || depth > 40) return null;
+    const kids = (childrenOf.get(id) ?? []).filter((c) => inScope(byId.get(c)!));
+    const isOpen = open.has(id);
+    const isMatch = matches.has(id);
+    const spouse = spouseOf.get(id) ? byId.get(spouseOf.get(id)!) : null;
+    const next = new Set(trail).add(id);
+    const name = isAr
+      ? `${m.first_name_ar} ${m.last_name_ar}`
+      : `${m.first_name_en || m.first_name_ar} ${m.last_name_en || m.last_name_ar}`;
+
+    if (q && !isMatch && !openForSearch.has(id)) return null;
+
+    return (
+      <li key={id} role="treeitem" aria-expanded={kids.length ? isOpen : undefined}>
+        <div
+          className={cn(
+            "group flex items-center gap-2 rounded-xl py-1.5 pe-2 transition-colors hover:bg-[var(--console-canvas)]",
+            isMatch && "bg-[#eca654]/15 ring-1 ring-[#eca654]/50",
+          )}
+        >
+          {kids.length ? (
+            <button
+              type="button"
+              onClick={() => toggle(id)}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary focus-visible:outline-2 focus-visible:outline-ring"
+              aria-label={isOpen ? (isAr ? "طي" : "Collapse") : isAr ? "توسيع" : "Expand"}
+            >
+              {isOpen ? <ChevronDown className="h-4 w-4" /> : <Chevron className="h-4 w-4" />}
+            </button>
+          ) : (
+            <span className="h-7 w-7 shrink-0" />
+          )}
+          <button
+            type="button"
+            onClick={() => onSelectMember?.(m)}
+            disabled={!onSelectMember}
+            className="flex min-w-0 flex-1 items-center gap-3 text-start disabled:cursor-default"
+          >
+            <span
+              className={cn(
+                "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold",
+                m.is_living ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground",
+              )}
+            >
+              {m.avatar_path ? (
+                <img src={m.avatar_path} alt="" className="h-full w-full object-cover" />
+              ) : (
+                (isAr ? m.first_name_ar : m.first_name_en || m.first_name_ar)?.[0]
+              )}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[14.5px] font-semibold text-foreground">
+                {name}
+              </span>
+              <span className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                {m.generation ? (isAr ? `الجيل ${m.generation}` : `Gen ${m.generation}`) : null}
+                {m.branch_id && branchName.has(m.branch_id) && (
+                  <span>· {branchName.get(m.branch_id)}</span>
+                )}
+                {!m.is_living && <span>· {isAr ? "رحمه الله" : "deceased"}</span>}
+                {spouse && (
+                  <span className="inline-flex items-center gap-1">
+                    · <Heart className="h-3 w-3 text-[#a84a2b]" /> {spouse.first_name_ar}
+                  </span>
+                )}
+              </span>
+            </span>
+          </button>
+          {kids.length > 0 && (
+            <span className="shrink-0 rounded-full bg-[var(--console-canvas)] px-2.5 py-0.5 text-xs tabular-nums text-muted-foreground">
+              {isAr
+                ? `${arChildren(kids.length, nf)} · ${nf.format(descendants.get(id) ?? 0)} من الذرية`
+                : `${nf.format(kids.length)} children · ${nf.format(descendants.get(id) ?? 0)} descendants`}
+            </span>
+          )}
+        </div>
+        {kids.length > 0 && isOpen && (
+          <ul
+            role="group"
+            className="relative ms-[13px] border-s border-[var(--console-hairline)] ps-4"
+          >
+            {kids.map((c) => renderNode(c, depth + 1, next))}
+          </ul>
+        )}
+      </li>
+    );
   };
 
   return (
     <div className="space-y-4">
-      {/* Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-4 rounded-xl border border-border">
-        <div className="flex items-center gap-3">
-          <Select value={branchFilter} onValueChange={setBranchFilter}>
-            <SelectTrigger className="h-9 w-[180px] text-xs">
-              <Filter className="w-3.5 h-3.5 me-1.5 text-muted-foreground" />
-              <SelectValue placeholder={isAr ? "تصفية حسب الفرع" : "Filter by branch"} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{isAr ? "جميع فروع الأسرة" : "All Branches"}</SelectItem>
-              {branches.map((b) => (
-                <SelectItem key={b.id} value={b.id}>
-                  {isAr ? b.name_ar : b.name_en || b.name_ar}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Badge variant="outline" className="text-xs font-normal">
-            {isAr ? `إجمالي الأفراد: ${members.length}` : `Total Members: ${members.length}`}
-          </Badge>
+      <div className="console-card flex flex-col gap-3 p-4 lg:flex-row lg:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={
+              isAr ? "ابحث عن فرد لإظهار موقعه في الشجرة..." : "Find a person in the tree..."
+            }
+            className="h-10 ps-9"
+            aria-label={isAr ? "بحث في الشجرة" : "Search the tree"}
+          />
         </div>
-
-        {/* Zoom controls */}
-        <div className="flex items-center gap-1.5 bg-muted/40 p-1 rounded-lg border border-border">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-7 h-7 text-xs"
-            onClick={() => setZoom((z) => Math.max(0.6, z - 0.1))}
-            title={isAr ? "تصغير" : "Zoom Out"}
+        <Select value={branchFilter} onValueChange={setBranchFilter}>
+          <SelectTrigger className="h-10 lg:w-56" aria-label={isAr ? "الفرع" : "Branch"}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{isAr ? "كل الفروع" : "All branches"}</SelectItem>
+            {branches.map((b) => (
+              <SelectItem key={b.id} value={b.id}>
+                {isAr ? b.name_ar : b.name_en || b.name_ar}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={expandAll}
+            className="h-10 rounded-xl border border-[var(--console-hairline)] bg-card px-4 text-sm font-semibold text-foreground transition-colors hover:bg-[var(--console-canvas)] focus-visible:outline-2 focus-visible:outline-ring active:scale-[0.98]"
           >
-            <ZoomOut className="w-3.5 h-3.5" />
-          </Button>
-          <span className="text-[11px] font-mono w-10 text-center font-medium">
-            {Math.round(zoom * 100)}%
-          </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-7 h-7 text-xs"
-            onClick={() => setZoom((z) => Math.min(1.5, z + 0.1))}
-            title={isAr ? "تكبير" : "Zoom In"}
+            {isAr ? "توسيع الكل" : "Expand all"}
+          </button>
+          <button
+            type="button"
+            onClick={collapseAll}
+            className="h-10 rounded-xl border border-[var(--console-hairline)] bg-card px-4 text-sm font-semibold text-foreground transition-colors hover:bg-[var(--console-canvas)] focus-visible:outline-2 focus-visible:outline-ring active:scale-[0.98]"
           >
-            <ZoomIn className="w-3.5 h-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-7 h-7 text-xs"
-            onClick={() => setZoom(1)}
-            title={isAr ? "إعادة ضبط" : "Reset"}
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </Button>
+            {isAr ? "طي الكل" : "Collapse all"}
+          </button>
         </div>
       </div>
 
-      {/* Tree Canvas Area */}
-      <div className="border border-border rounded-xl bg-card/60 overflow-x-auto min-h-[500px] p-8 shadow-inner relative">
-        <div
-          className="transition-transform duration-150 origin-top flex flex-col gap-10 items-center min-w-max"
-          style={{ transform: `scale(${zoom})` }}
-        >
-          {generationGroups.length === 0 ? (
-            <div className="py-20 text-center text-muted-foreground text-sm">
-              {isAr ? "لا توجد بيانات شجرة متطابقة" : "No family tree data found"}
-            </div>
-          ) : (
-            generationGroups.map(({ generation, members: genMembers }, genIdx) => {
-              const isCollapsed = !!collapsedGens[generation];
+      <div className="flex flex-wrap gap-2 text-[13px]">
+        {[
+          [isAr ? "أفراد" : "People", members.filter(inScope).length],
+          [isAr ? "أجيال" : "Generations", generations],
+          [isAr ? "جذور" : "Roots", roots.length],
+          ...(q ? [[isAr ? "نتائج البحث" : "Matches", matches.size] as const] : []),
+        ].map(([label, n]) => (
+          <span
+            key={String(label)}
+            className="rounded-lg bg-card px-3 py-1.5 text-muted-foreground shadow-[var(--console-shadow-sm)]"
+          >
+            {label} <b className="tabular-nums text-foreground">{nf.format(Number(n))}</b>
+          </span>
+        ))}
+      </div>
 
-              return (
-                <div key={generation} className="flex flex-col items-center w-full relative">
-                  {/* Generation Label */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <button
-                      onClick={() => toggleGenCollapse(generation)}
-                      className="flex items-center gap-1.5 px-3 py-1 bg-muted/80 hover:bg-muted text-xs font-semibold rounded-full border border-border shadow-sm transition-colors text-foreground"
-                    >
-                      {isCollapsed ? (
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      ) : (
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      )}
-                      <Layers className="w-3.5 h-3.5 text-primary" />
-                      {isAr ? `الجيل رقم ${generation}` : `Generation ${generation}`}
-                      <span className="text-[10px] text-muted-foreground ms-1">
-                        ({genMembers.length})
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* Generation Cards */}
-                  {!isCollapsed && (
-                    <div className="flex flex-wrap items-center justify-center gap-5 relative">
-                      {genMembers.map((member) => {
-                        const spouseId = spouseMap.get(member.id);
-                        const spouse = spouseId ? memberMap.get(spouseId) : null;
-
-                        return (
-                          <div
-                            key={member.id}
-                            onClick={() => onSelectMember && onSelectMember(member)}
-                            className={`group relative flex flex-col items-center p-3 rounded-xl border bg-card/95 hover:bg-accent/40 shadow-sm transition-all duration-200 cursor-pointer w-[180px] ${
-                              member.is_living
-                                ? "border-border hover:border-primary/50"
-                                : "border-zinc-300 dark:border-zinc-800 bg-muted/20"
-                            }`}
-                          >
-                            {/* Avatar */}
-                            <div className="relative w-14 h-14 rounded-full border-2 border-border overflow-hidden bg-background mb-2 group-hover:scale-105 transition-transform">
-                              {member.avatar_path ? (
-                                <img
-                                  src={member.avatar_path}
-                                  alt=""
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-muted/50">
-                                  <User className="w-6 h-6 text-muted-foreground" />
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Name */}
-                            <p className="text-xs font-bold text-foreground text-center truncate w-full group-hover:text-primary transition-colors">
-                              {member.first_name_ar} {member.last_name_ar}
-                            </p>
-                            {member.first_name_en && (
-                              <p className="text-[10px] text-muted-foreground text-center truncate w-full font-mono">
-                                {member.first_name_en} {member.last_name_en}
-                              </p>
-                            )}
-
-                            {/* Branch & Dates */}
-                            <div className="flex flex-wrap items-center justify-center gap-1 mt-2">
-                              {member.branch_id && branchMap.has(member.branch_id) && (
-                                <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4">
-                                  {branchMap.get(member.branch_id)}
-                                </Badge>
-                              )}
-                              {member.date_of_birth && (
-                                <span className="text-[9px] text-muted-foreground font-mono">
-                                  {member.date_of_birth.slice(0, 4)}
-                                  {!member.is_living && member.date_of_death
-                                    ? ` - ${member.date_of_death.slice(0, 4)}`
-                                    : ""}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Spouse indicator if exists */}
-                            {spouse && (
-                              <div className="mt-2 pt-1.5 border-t border-border/40 w-full flex items-center justify-center gap-1 text-[10px] text-pink-600 dark:text-pink-400">
-                                <Heart className="w-2.5 h-2.5 fill-pink-500/20" />
-                                <span className="truncate max-w-[120px]">
-                                  {spouse.first_name_ar}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* Connecting line to next generation */}
-                  {genIdx < generationGroups.length - 1 && !isCollapsed && (
-                    <div className="w-0.5 h-8 bg-border my-2 relative">
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary/60" />
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
+      <div className="console-card p-3 md:p-4">
+        {roots.length === 0 ? (
+          <div className="flex flex-col items-center py-16 text-center text-muted-foreground">
+            <Network className="h-8 w-8 opacity-40" />
+            <p className="mt-3 text-sm">{isAr ? "لا توجد بيانات للشجرة." : "No tree data."}</p>
+          </div>
+        ) : q && matches.size === 0 ? (
+          <div className="flex flex-col items-center py-16 text-center text-muted-foreground">
+            <Search className="h-8 w-8 opacity-40" />
+            <p className="mt-3 text-sm">
+              {isAr ? "لا يوجد فرد بهذا الاسم." : "No one matches that name."}
+            </p>
+          </div>
+        ) : (
+          <ul role="tree" aria-label={isAr ? "شجرة الأسرة" : "Family tree"} className="space-y-0.5">
+            {roots.map((r) => renderNode(r.id, 0, new Set()))}
+          </ul>
+        )}
       </div>
     </div>
   );

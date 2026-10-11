@@ -2,6 +2,7 @@ import { useMemo, useState, type ComponentType } from "react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { AUDIT_TONE_CLASS, describeAuditAction } from "@/components/console/common/consoleLabels";
 import {
   ArrowLeft,
   ArrowRight,
@@ -155,41 +156,12 @@ const ENTITIES: Record<string, { ar: string; en: string; icon: Icon; to?: [strin
   },
 };
 
-type Tone = "add" | "change" | "remove" | "neutral";
-function describeAction(action: string): { ar: string; en: string; tone: Tone } {
-  const a = action.toLowerCase();
-  if (a.startsWith("bulk_") && a.includes("delete"))
-    return { ar: "حذف جماعي", en: "Bulk delete", tone: "remove" };
-  if (a.startsWith("bulk_")) return { ar: "تعديل جماعي", en: "Bulk update", tone: "change" };
-  if (a === "create" || a === "insert") return { ar: "إضافة", en: "Added", tone: "add" };
-  if (a === "upload") return { ar: "رفع", en: "Uploaded", tone: "add" };
-  if (a === "granted") return { ar: "منح صلاحية", en: "Access granted", tone: "add" };
-  if (a.includes("delete")) return { ar: "حذف", en: "Deleted", tone: "remove" };
-  if (a === "archive") return { ar: "أرشفة", en: "Archived", tone: "remove" };
-  if (a === "role_change") return { ar: "تعديل صلاحيات", en: "Roles changed", tone: "change" };
-  if (a === "settings_change")
-    return { ar: "تعديل إعدادات", en: "Settings changed", tone: "change" };
-  if (a === "broadcast_notification") return { ar: "بثّ إشعار", en: "Broadcast sent", tone: "add" };
-  if (a.includes("registration_status"))
-    return { ar: "تحديث حالة تسجيل", en: "Registration updated", tone: "change" };
-  if (a.includes("publish")) return { ar: "نشر", en: "Published", tone: "add" };
-  if (a.includes("update")) return { ar: "تحديث", en: "Updated", tone: "change" };
-  return { ar: action, en: action, tone: "neutral" };
-}
-
 /** Arabic number agreement for "item": عنصر واحد، عنصران، ٣–١٠ عناصر، ١١+ عنصرًا. */
 function arabicCount(n: number, nf: Intl.NumberFormat) {
   if (n === 1) return "عنصر واحد";
   if (n === 2) return "عنصران";
   return `${nf.format(n)} ${n % 100 >= 3 && n % 100 <= 10 ? "عناصر" : "عنصرًا"}`;
 }
-
-const TONE_CLASS: Record<Tone, string> = {
-  add: "bg-[#245b3f]/10 text-[#245b3f] dark:bg-[#59836e]/20 dark:text-[#9cc7ae]",
-  change: "bg-[#eca654]/15 text-[#8a5a1c] dark:text-[#f1bc7d]",
-  remove: "bg-[#b4532a]/10 text-[#9a4220] dark:text-[#e8a184]",
-  neutral: "bg-muted text-muted-foreground",
-};
 
 export function AdminDashboardOverview({
   overviewData,
@@ -686,7 +658,7 @@ export function AdminDashboardOverview({
                         en: item.entity_type,
                         icon: Activity,
                       };
-                      const act = describeAction(item.action);
+                      const act = describeAuditAction(item.action);
                       const meta =
                         item.metadata &&
                         typeof item.metadata === "object" &&
@@ -729,7 +701,7 @@ export function AdminDashboardOverview({
                             <span
                               className={cn(
                                 "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold",
-                                TONE_CLASS[act.tone],
+                                AUDIT_TONE_CLASS[act.tone],
                               )}
                             >
                               {isAr ? act.ar : act.en}

@@ -365,25 +365,7 @@ export function AdminNotificationCenter() {
   return (
     <div className="space-y-6">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-              <Mail className="w-5 h-5 text-[#245B3F] dark:text-[#ECA654]" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                {isAr ? "مركز البريد والإشعارات المؤسسي" : "Enterprise Notification Center"}
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {isAr
-                  ? "إدارة الرسائل البريدية، التحقق من تسليم Resend، ومتابعة قوالب الإشعارات الـ 70 الرسمية"
-                  : "Central email dispatch queue, Resend delivery audit, and 70 bilingual templates"}
-              </p>
-            </div>
-          </div>
-        </div>
-
+      <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-end gap-4">
         <div className="flex items-center gap-2">
           <Button
             variant="outline"

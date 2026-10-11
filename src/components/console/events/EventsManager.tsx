@@ -30,6 +30,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { consoleLabel } from "@/components/console/common/consoleLabels";
 import { useConfirm } from "@/hooks/useConfirm";
 import {
   Plus,
@@ -293,7 +294,7 @@ export function EventsManager({
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="secondary" className="text-[10px]">
-                        {evt.status}
+                        {consoleLabel(evt.status, isAr)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-end">

@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ConsolePager } from "@/components/console/common/ConsolePager";
+import { usePaged } from "@/components/console/common/usePaged";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -174,14 +176,20 @@ export function MediaLibrary({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
-  const filteredAssets = mediaAssets.filter((a) => {
-    const matchBucket = selectedBucket === "all" || a.bucket === selectedBucket;
-    const matchSearch =
-      !search ||
-      a.file_name.toLowerCase().includes(search.toLowerCase()) ||
-      (a.caption_ar && a.caption_ar.toLowerCase().includes(search.toLowerCase()));
-    return matchBucket && matchSearch;
-  });
+  const filteredAssets = useMemo(
+    () =>
+      mediaAssets.filter((a) => {
+        const matchBucket = selectedBucket === "all" || a.bucket === selectedBucket;
+        const matchSearch =
+          !search ||
+          a.file_name.toLowerCase().includes(search.toLowerCase()) ||
+          (a.caption_ar && a.caption_ar.toLowerCase().includes(search.toLowerCase()));
+        return matchBucket && matchSearch;
+      }),
+    [mediaAssets, selectedBucket, search],
+  );
+  // 800+ files: page the grid instead of mounting every thumbnail at once.
+  const paged = usePaged(filteredAssets, 48);
 
   return (
     <div className="space-y-4">
@@ -250,7 +258,7 @@ export function MediaLibrary({
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {filteredAssets.map((asset) => {
+          {paged.slice.map((asset) => {
             const isPdf =
               asset.mime_type === "application/pdf" ||
               asset.file_name.toLowerCase().endsWith(".pdf");
@@ -321,6 +329,18 @@ export function MediaLibrary({
           })}
         </div>
       )}
+      <ConsolePager
+        page={paged.page}
+        pageCount={paged.pageCount}
+        total={paged.total}
+        pageSize={paged.pageSize}
+        onPage={(p) => {
+          paged.setPage(p);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+        isAr={isAr}
+        className="console-card"
+      />
     </div>
   );
 }

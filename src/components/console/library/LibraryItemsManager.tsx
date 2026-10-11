@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { ConsolePager } from "@/components/console/common/ConsolePager";
+import { usePaged } from "@/components/console/common/usePaged";
 import {
   Table,
   TableBody,
@@ -158,9 +160,14 @@ export function LibraryItemsManager({
     }
   };
 
-  const filtered = libraryItems.filter((item) => {
-    return collectionFilter === "all" || item.collection === collectionFilter;
-  });
+  const filtered = useMemo(
+    () =>
+      libraryItems.filter(
+        (item) => collectionFilter === "all" || item.collection === collectionFilter,
+      ),
+    [libraryItems, collectionFilter],
+  );
+  const paged = usePaged(filtered, 30);
 
   const getCollectionIcon = (col: string) => {
     switch (col) {
@@ -254,7 +261,7 @@ export function LibraryItemsManager({
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((item) => (
+              paged.slice.map((item) => (
                 <TableRow key={item.id} className="text-xs hover:bg-muted/30">
                   <TableCell>
                     <div className="flex items-center gap-2.5">
@@ -328,6 +335,15 @@ export function LibraryItemsManager({
             )}
           </TableBody>
         </Table>
+        <ConsolePager
+          page={paged.page}
+          pageCount={paged.pageCount}
+          total={paged.total}
+          pageSize={paged.pageSize}
+          onPage={paged.setPage}
+          isAr={isAr}
+          className="border-t border-[var(--console-hairline)]"
+        />
       </div>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>

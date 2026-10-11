@@ -27,6 +27,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { consoleLabel } from "@/components/console/common/consoleLabels";
 import {
   Plus,
   Search,
@@ -966,9 +967,9 @@ export function FamilyMembersTable({
                   <TableCell className="text-center">
                     <Badge
                       variant={member.visibility === "public" ? "default" : "outline"}
-                      className="text-[10px] font-mono uppercase tracking-wider"
+                      className="text-[10px]"
                     >
-                      {member.visibility}
+                      {consoleLabel(member.visibility, isAr)}
                     </Badge>
                   </TableCell>
 
@@ -1222,8 +1223,8 @@ export function FamilyMembersTable({
                     <Shield className="w-3 h-3" />
                     {isAr ? "مستوى الخصوصية" : "Visibility"}
                   </span>
-                  <span className="font-mono font-semibold text-foreground mt-0.5 block uppercase">
-                    {quickViewMember.visibility}
+                  <span className="font-semibold text-foreground mt-0.5 block">
+                    {consoleLabel(quickViewMember.visibility, isAr)}
                   </span>
                 </div>
               </div>

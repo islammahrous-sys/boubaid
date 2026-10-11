@@ -25,6 +25,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { consoleLabel } from "@/components/console/common/consoleLabels";
 import { cn } from "@/lib/utils";
 import {
   Shield,
@@ -160,7 +161,7 @@ export function UsersManager({
 
   const getRoleLabel = (role: string) => {
     const def = ALL_ROLES.find((r) => r.role === role);
-    return def ? (isAr ? def.label_ar : def.label_en) : role;
+    return def ? (isAr ? def.label_ar : def.label_en) : consoleLabel(role, isAr);
   };
 
   const handleMakeMember = async (user: ProfileRow) => {

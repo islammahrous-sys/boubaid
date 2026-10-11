@@ -26,6 +26,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useLang } from "@/i18n/LanguageProvider";
+import { consoleLabel } from "@/components/console/common/consoleLabels";
 import { Menu, Plus, Edit2, Trash2, ExternalLink, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -349,7 +350,7 @@ export function NavigationManager({
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="secondary" className="text-[10px]">
-                        {it.visibility}
+                        {consoleLabel(it.visibility, isAr)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-center font-mono">{it.sort_order}</TableCell>

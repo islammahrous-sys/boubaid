@@ -85,6 +85,9 @@ import {
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
+  saveRolePermissions,
+  createPermission,
+  deletePermission,
 } from "@/lib/admin-hub.functions";
 // Every manager below is only ever shown for one admin tab at a time, so
 // loading all ~26 of them eagerly bloated /admin's own JS bundle to ~935KB —
@@ -365,6 +368,9 @@ function MasterAdminPage() {
   const saveNavItemMut = useServerFn(upsertNavigationItem);
   const delNavItemMut = useServerFn(deleteNavigationItem);
   const saveDnaMut = useServerFn(saveDnaStudiesData);
+  const saveRolePermsMut = useServerFn(saveRolePermissions);
+  const createPermMut = useServerFn(createPermission);
+  const deletePermMut = useServerFn(deletePermission);
 
   // Gated, high-performance cached queries (5 min staleTime, 30 min cache)
   const queryConfig = {
@@ -1611,6 +1617,19 @@ function MasterAdminPage() {
                 <RolesPermissionMatrix
                   permissions={(usersData?.permissions ?? []) as any}
                   rolePermissions={(usersData?.rolePermissions ?? []) as any}
+                  userRoles={(usersData?.userRoles ?? []) as any}
+                  onSaveRole={(role, grant, revoke) =>
+                    runMutation(
+                      () => saveRolePermsMut({ data: { role: role as any, grant, revoke } }),
+                      refreshUsers,
+                    )
+                  }
+                  onCreatePermission={(p) =>
+                    runMutation(() => createPermMut({ data: p }), refreshUsers)
+                  }
+                  onDeletePermission={(id) =>
+                    runMutation(() => deletePermMut({ data: { id } }), refreshUsers)
+                  }
                 />
               ))}
 

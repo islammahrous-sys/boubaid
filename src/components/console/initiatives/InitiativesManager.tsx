@@ -254,18 +254,8 @@ export function InitiativesManager({
 
   return (
     <div className="space-y-6 max-w-[1200px] mx-auto pb-12">
-      {/* 1. Page Context / Welcome Summary */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            {isAr ? "مبادرات وبرامج العائلة" : "Family Initiatives"}
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            {isAr
-              ? "إدارة المبادرات والمشاريع التنموية والخيرية"
-              : "Manage development and charitable initiatives"}
-          </p>
-        </div>
+      {/* Page actions (title + description come from the console header) */}
+      <div className="flex flex-col empty:hidden sm:flex-row sm:items-start sm:justify-end gap-4">
         <div className="flex items-center gap-2">
           {draftCount > 0 && (
             <div className="flex items-center gap-2 bg-amber-500/10 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-lg border border-amber-500/20 shadow-xs">

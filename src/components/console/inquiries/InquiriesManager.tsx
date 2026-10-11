@@ -311,18 +311,8 @@ export function InquiriesManager({
 
   return (
     <div className="space-y-6 max-w-[1200px] mx-auto pb-12">
-      {/* 1. Page Context / Welcome Summary */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            {isAr ? "مركز الاستفسارات والدعم" : "Inquiries & Support Center"}
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            {isAr
-              ? "إدارة رسائل التواصل واستفسارات العائلة"
-              : "Manage contact messages and family inquiries"}
-          </p>
-        </div>
+      {/* Page actions (title + description come from the console header) */}
+      <div className="flex flex-col empty:hidden sm:flex-row sm:items-start sm:justify-end gap-4">
         {newCount > 0 && (
           <div className="flex items-center gap-2 bg-blue-500/10 text-blue-700 dark:text-blue-400 px-4 py-2 rounded-lg border border-blue-500/20 shadow-xs">
             <AlertCircle className="w-4 h-4 shrink-0" />

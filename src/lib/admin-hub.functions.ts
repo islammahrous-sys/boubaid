@@ -2757,3 +2757,135 @@ export const upsertCouncilCommittee = createServerFn({ method: "POST" })
 
     return { ok: true, committee: row };
   });
+
+/* =========================================================================
+ * Role editor: capability grants per role (`role_permissions`)
+ * ========================================================================= */
+
+/** admin / super_admin pass every `private.has_permission` check regardless of
+ *  rows, so their grants are not editable — editing them would change nothing. */
+const editableRoleSchema = z.enum([
+  "editor",
+  "content_manager",
+  "family_manager",
+  "treasurer",
+  "member",
+  "viewer",
+]);
+const permissionIdSchema = z
+  .string()
+  .trim()
+  .regex(/^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$/, "Use the form area.action, e.g. articles.publish");
+
+/** Grants and revokes in one call. `role_permissions` accepts writes from
+ *  admins through RLS (`role_permissions_write` → private.can_manage_users),
+ *  so this uses the caller's own client — no service key involved. */
+export const saveRolePermissions = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) =>
+    z
+      .object({
+        role: editableRoleSchema,
+        grant: z.array(permissionIdSchema).max(500),
+        revoke: z.array(permissionIdSchema).max(500),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await requireCallerIsAdmin(supabase, userId);
+
+    if (data.revoke.length) {
+      const { error } = await (supabase as any)
+        .from("role_permissions")
+        .delete()
+        .eq("role", data.role)
+        .in("permission_id", data.revoke);
+      if (error) throw new Error(error.message);
+    }
+    if (data.grant.length) {
+      const { error } = await (supabase as any).from("role_permissions").upsert(
+        data.grant.map((permission_id) => ({ role: data.role, permission_id })),
+        { onConflict: "role,permission_id", ignoreDuplicates: true },
+      );
+      if (error) throw new Error(error.message);
+    }
+
+    await (supabase as any).from("audit_logs").insert({
+      actor_user_id: userId,
+      action: "permissions_change",
+      entity_type: "role_permissions",
+      metadata: { role: data.role, granted: data.grant, revoked: data.revoke },
+    });
+
+    return { ok: true, granted: data.grant.length, revoked: data.revoke.length };
+  });
+
+/** `permissions` has no write policy for `authenticated`, so new capabilities
+ *  go through the service-role client after the admin check. */
+export const createPermission = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) =>
+    z
+      .object({
+        id: permissionIdSchema,
+        name: z.string().trim().min(2).max(120),
+        description: z.string().trim().max(300).optional().nullable(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await requireCallerIsAdmin(supabase, userId);
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const category = data.id.split(".")[0];
+    const { error } = await (supabaseAdmin as any).from("permissions").insert({
+      id: data.id,
+      name: data.name,
+      description: data.description || null,
+      category,
+    });
+    if (error) {
+      if (error.code === "23505") throw new Error("A capability with this key already exists.");
+      throw new Error(error.message);
+    }
+
+    await (supabase as any).from("audit_logs").insert({
+      actor_user_id: userId,
+      action: "create",
+      entity_type: "permissions",
+      metadata: { title: data.id },
+    });
+    return { ok: true };
+  });
+
+/** Keys the database's own RLS policies check by name; deleting them would
+ *  silently change who can manage businesses and nomination documents. */
+const PROTECTED_PERMISSION_IDS = new Set(["cms.manage", "admin.all"]);
+
+export const deletePermission = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .validator((d: unknown) => z.object({ id: permissionIdSchema }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await requireCallerIsAdmin(supabase, userId);
+    if (PROTECTED_PERMISSION_IDS.has(data.id)) {
+      throw new Error(
+        "This capability is checked by database security policies and can't be deleted.",
+      );
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // role_permissions rows go with it (ON DELETE CASCADE).
+    const { error } = await (supabaseAdmin as any).from("permissions").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+
+    await (supabase as any).from("audit_logs").insert({
+      actor_user_id: userId,
+      action: "delete",
+      entity_type: "permissions",
+      metadata: { title: data.id },
+    });
+    return { ok: true };
+  });

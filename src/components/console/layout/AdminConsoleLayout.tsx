@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { DirectionProvider } from "@radix-ui/react-direction";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/i18n/LanguageProvider";
 import { useAuth } from "@/hooks/useAuth";
@@ -706,740 +707,752 @@ export function AdminConsoleLayout({
   );
 
   return (
-    <div className="console-shell flex min-h-screen flex-col text-foreground md:flex-row">
-      {signingOut && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background/90 backdrop-blur-sm"
-        >
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <p className="text-xs font-medium text-muted-foreground">
-            {isAr ? "جاري تسجيل الخروج..." : "Signing out..."}
-          </p>
-        </div>
-      )}
-
-      {/* ==================== 1. RAIL (desktop sidebar) ==================== */}
-      <aside
-        className={cn(
-          "console-rail sticky top-0 z-30 hidden h-screen shrink-0 select-none flex-col transition-[width] duration-300 md:flex",
-          sidebarCollapsed ? "w-[84px]" : "w-[284px]",
+    // Radix primitives default to LTR and stamp dir="ltr" on their roots (Tabs
+    // flipped every table inside them); give them the console's real direction.
+    <DirectionProvider dir={isRtl ? "rtl" : "ltr"}>
+      <div className="console-shell flex min-h-screen flex-col text-foreground md:flex-row">
+        {signingOut && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background/90 backdrop-blur-sm"
+          >
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <p className="text-xs font-medium text-muted-foreground">
+              {isAr ? "جاري تسجيل الخروج..." : "Signing out..."}
+            </p>
+          </div>
         )}
-      >
-        <div
+
+        {/* ==================== 1. RAIL (desktop sidebar) ==================== */}
+        <aside
           className={cn(
-            "flex h-[76px] items-center border-b border-[var(--console-rail-line)]",
-            sidebarCollapsed ? "justify-center px-2" : "justify-between gap-2 px-4",
+            "console-rail sticky top-0 z-30 hidden h-screen shrink-0 select-none flex-col transition-[width] duration-300 md:flex",
+            sidebarCollapsed ? "w-[84px]" : "w-[284px]",
           )}
         >
-          {brand(sidebarCollapsed)}
-          {!sidebarCollapsed && (
-            <button
-              type="button"
-              onClick={handleToggleSidebar}
-              className="console-rail-item hidden h-8 w-8 items-center justify-center rounded-lg lg:flex"
-              aria-label={isAr ? "طي القائمة" : "Collapse sidebar"}
-              title={isAr ? "طي القائمة" : "Collapse sidebar"}
-            >
-              <PanelLeftClose className="h-4 w-4 rtl:rotate-180" />
-            </button>
-          )}
-        </div>
-
-        <div className="no-scrollbar flex-1 overflow-y-auto px-3 py-4">{renderNavList(false)}</div>
-
-        <div className="space-y-1 border-t border-[var(--console-rail-line)] p-3">
-          {sidebarCollapsed && (
-            <button
-              type="button"
-              onClick={handleToggleSidebar}
-              className="console-rail-item mx-auto flex h-10 w-10 items-center justify-center rounded-xl"
-              aria-label={isAr ? "توسيع القائمة" : "Expand sidebar"}
-              title={isAr ? "توسيع القائمة" : "Expand sidebar"}
-            >
-              <PanelLeftOpen className="h-4 w-4 rtl:rotate-180" />
-            </button>
-          )}
-          {!sidebarCollapsed && (
-            <button
-              type="button"
-              onClick={() => setHelpModalOpen(true)}
-              className="console-rail-item flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start text-[13.5px]"
-            >
-              <HelpCircle className="h-4 w-4" />
-              {isAr ? "دليل الاستخدام" : "User guide"}
-            </button>
-          )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <div
+            className={cn(
+              "flex h-[76px] items-center border-b border-[var(--console-rail-line)]",
+              sidebarCollapsed ? "justify-center px-2" : "justify-between gap-2 px-4",
+            )}
+          >
+            {brand(sidebarCollapsed)}
+            {!sidebarCollapsed && (
               <button
                 type="button"
-                className={cn(
-                  "console-rail-item flex w-full items-center gap-3 rounded-2xl text-start",
-                  sidebarCollapsed ? "justify-center p-1.5" : "p-2",
-                )}
-                aria-label={isAr ? "قائمة الحساب" : "Account menu"}
+                onClick={handleToggleSidebar}
+                className="console-rail-item hidden h-8 w-8 items-center justify-center rounded-lg lg:flex"
+                aria-label={isAr ? "طي القائمة" : "Collapse sidebar"}
+                title={isAr ? "طي القائمة" : "Collapse sidebar"}
               >
-                {userAvatar("h-10 w-10")}
-                {!sidebarCollapsed && (
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-[var(--console-rail-fg)]">
-                      {displayName}
+                <PanelLeftClose className="h-4 w-4 rtl:rotate-180" />
+              </button>
+            )}
+          </div>
+
+          <div className="no-scrollbar flex-1 overflow-y-auto px-3 py-4">
+            {renderNavList(false)}
+          </div>
+
+          <div className="space-y-1 border-t border-[var(--console-rail-line)] p-3">
+            {sidebarCollapsed && (
+              <button
+                type="button"
+                onClick={handleToggleSidebar}
+                className="console-rail-item mx-auto flex h-10 w-10 items-center justify-center rounded-xl"
+                aria-label={isAr ? "توسيع القائمة" : "Expand sidebar"}
+                title={isAr ? "توسيع القائمة" : "Expand sidebar"}
+              >
+                <PanelLeftOpen className="h-4 w-4 rtl:rotate-180" />
+              </button>
+            )}
+            {!sidebarCollapsed && (
+              <button
+                type="button"
+                onClick={() => setHelpModalOpen(true)}
+                className="console-rail-item flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start text-[13.5px]"
+              >
+                <HelpCircle className="h-4 w-4" />
+                {isAr ? "دليل الاستخدام" : "User guide"}
+              </button>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    "console-rail-item flex w-full items-center gap-3 rounded-2xl text-start",
+                    sidebarCollapsed ? "justify-center p-1.5" : "p-2",
+                  )}
+                  aria-label={isAr ? "قائمة الحساب" : "Account menu"}
+                >
+                  {userAvatar("h-10 w-10")}
+                  {!sidebarCollapsed && (
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-[var(--console-rail-fg)]">
+                        {displayName}
+                      </span>
+                      <span className="block truncate text-xs text-gold">{roleLabel}</span>
                     </span>
+                  )}
+                  {!sidebarCollapsed && <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />}
+                </button>
+              </DropdownMenuTrigger>
+              {userMenu}
+            </DropdownMenu>
+          </div>
+        </aside>
+
+        {/* ==================== 2. WORKSPACE ==================== */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="console-topbar sticky top-0 z-20 flex h-16 select-none items-center gap-2 px-3 md:gap-3 md:px-6">
+            <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
+              <SheetTrigger asChild>
+                <button
+                  type="button"
+                  className="console-icon-btn md:hidden"
+                  aria-label={isAr ? "فتح القائمة" : "Open menu"}
+                >
+                  <MenuIcon className="h-5 w-5" />
+                </button>
+              </SheetTrigger>
+              <SheetContent
+                side={isRtl ? "right" : "left"}
+                className="console-portal console-rail flex w-[300px] flex-col border-0 p-0 text-[var(--console-rail-fg)]"
+              >
+                <SheetTitle className="sr-only">
+                  {isAr ? "أقسام الإدارة" : "Console sections"}
+                </SheetTitle>
+                <div className="flex h-[76px] items-center border-b border-[var(--console-rail-line)] px-4">
+                  {brand(false)}
+                </div>
+                <div className="flex-1 overflow-y-auto px-3 py-4">{renderNavList(true)}</div>
+                <div className="flex items-center gap-3 border-t border-[var(--console-rail-line)] p-4">
+                  {userAvatar("h-10 w-10")}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{displayName}</span>
                     <span className="block truncate text-xs text-gold">{roleLabel}</span>
                   </span>
-                )}
-                {!sidebarCollapsed && <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />}
-              </button>
-            </DropdownMenuTrigger>
-            {userMenu}
-          </DropdownMenu>
-        </div>
-      </aside>
+                </div>
+              </SheetContent>
+            </Sheet>
 
-      {/* ==================== 2. WORKSPACE ==================== */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="console-topbar sticky top-0 z-20 flex h-16 select-none items-center gap-2 px-3 md:gap-3 md:px-6">
-          <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
-            <SheetTrigger asChild>
+            {/* One search for everything: pages, members, articles, users. */}
+            <button
+              type="button"
+              onClick={() => setCommandPaletteOpen(true)}
+              className="group flex h-11 min-w-0 flex-1 items-center gap-3 rounded-2xl border border-[var(--console-hairline)] bg-card px-4 text-start text-sm text-muted-foreground shadow-[var(--console-shadow-sm)] transition-[box-shadow,transform] duration-300 hover:shadow-[var(--console-shadow-md)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.995] md:max-w-xl"
+            >
+              <Search className="h-4 w-4 shrink-0 text-primary" />
+              <span className="truncate">
+                {isAr ? "بحث شامل وأوامر سريعة..." : "Search across admin..."}
+              </span>
+              <kbd className="ms-auto hidden shrink-0 rounded-md border border-[var(--console-hairline)] bg-[var(--console-canvas)] px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground lg:inline-flex">
+                Ctrl K
+              </kbd>
+            </button>
+
+            <div className="ms-auto flex shrink-0 items-center gap-0.5 md:gap-1">
               <button
                 type="button"
-                className="console-icon-btn md:hidden"
-                aria-label={isAr ? "فتح القائمة" : "Open menu"}
+                onClick={() => setLang(isAr ? "en" : "ar")}
+                className="console-icon-btn hidden text-sm font-semibold sm:inline-flex"
+                title={isAr ? "Switch to English" : "التحويل للعربية"}
               >
-                <MenuIcon className="h-5 w-5" />
+                {isAr ? "EN" : "ع"}
               </button>
-            </SheetTrigger>
-            <SheetContent
-              side={isRtl ? "right" : "left"}
-              className="console-portal console-rail flex w-[300px] flex-col border-0 p-0 text-[var(--console-rail-fg)]"
-            >
-              <SheetTitle className="sr-only">
-                {isAr ? "أقسام الإدارة" : "Console sections"}
-              </SheetTitle>
-              <div className="flex h-[76px] items-center border-b border-[var(--console-rail-line)] px-4">
-                {brand(false)}
-              </div>
-              <div className="flex-1 overflow-y-auto px-3 py-4">{renderNavList(true)}</div>
-              <div className="flex items-center gap-3 border-t border-[var(--console-rail-line)] p-4">
-                {userAvatar("h-10 w-10")}
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold">{displayName}</span>
-                  <span className="block truncate text-xs text-gold">{roleLabel}</span>
-                </span>
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          {/* One search for everything: pages, members, articles, users. */}
-          <button
-            type="button"
-            onClick={() => setCommandPaletteOpen(true)}
-            className="group flex h-11 min-w-0 flex-1 items-center gap-3 rounded-2xl border border-[var(--console-hairline)] bg-card px-4 text-start text-sm text-muted-foreground shadow-[var(--console-shadow-sm)] transition-[box-shadow,transform] duration-300 hover:shadow-[var(--console-shadow-md)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.995] md:max-w-xl"
-          >
-            <Search className="h-4 w-4 shrink-0 text-primary" />
-            <span className="truncate">
-              {isAr ? "بحث شامل وأوامر سريعة..." : "Search across admin..."}
-            </span>
-            <kbd className="ms-auto hidden shrink-0 rounded-md border border-[var(--console-hairline)] bg-[var(--console-canvas)] px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground lg:inline-flex">
-              Ctrl K
-            </kbd>
-          </button>
-
-          <div className="ms-auto flex shrink-0 items-center gap-0.5 md:gap-1">
-            <button
-              type="button"
-              onClick={() => setLang(isAr ? "en" : "ar")}
-              className="console-icon-btn hidden text-sm font-semibold sm:inline-flex"
-              title={isAr ? "Switch to English" : "التحويل للعربية"}
-            >
-              {isAr ? "EN" : "ع"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="console-icon-btn hidden sm:inline-flex"
-              aria-label={isAr ? "تغيير المظهر" : "Toggle theme"}
-              title={isAr ? "تغيير المظهر" : "Toggle theme"}
-            >
-              {theme === "dark" ? (
-                <Sun className="h-[18px] w-[18px]" />
-              ) : (
-                <Moon className="h-[18px] w-[18px]" />
-              )}
-            </button>
-
-            {/* Attention & Notifications Center Popover */}
-            <Popover open={notifPopoverOpen} onOpenChange={setNotifPopoverOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className="console-icon-btn relative"
-                  aria-label={
-                    isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & attention center"
-                  }
-                  title={
-                    isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & attention center"
-                  }
-                >
-                  <Bell className="h-[18px] w-[18px]" />
-                  {totalCombinedBadge > 0 && (
-                    <span className="absolute -top-0.5 -end-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#b4532a] px-1 text-[10px] font-bold tabular-nums text-white ring-2 ring-[var(--console-canvas)]">
-                      {totalCombinedBadge > 99 ? "99+" : totalCombinedBadge}
-                    </span>
-                  )}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                className="w-[calc(100vw-2rem)] sm:w-96 max-w-sm p-0 shadow-2xl border-border bg-card"
+              <button
+                type="button"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="console-icon-btn hidden sm:inline-flex"
+                aria-label={isAr ? "تغيير المظهر" : "Toggle theme"}
+                title={isAr ? "تغيير المظهر" : "Toggle theme"}
               >
-                {/* Popover Header */}
-                <div className="p-3.5 border-b border-border bg-muted/40 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-bold text-foreground">
-                      {isAr ? "مركز الإشعارات والمهام" : "Notifications & Triage"}
-                    </span>
-                  </div>
+                {theme === "dark" ? (
+                  <Sun className="h-[18px] w-[18px]" />
+                ) : (
+                  <Moon className="h-[18px] w-[18px]" />
+                )}
+              </button>
 
-                  <div className="flex items-center gap-1.5">
-                    {onBroadcastNotification && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setNotifPopoverOpen(false);
-                          setBroadcastModalOpen(true);
-                        }}
-                        className="h-6 text-[10px] px-2 text-primary hover:bg-primary/10 gap-1 rounded-md"
-                        title={
-                          isAr ? "إرسال إشعار فوري لجميع المستخدمين" : "Broadcast notification"
-                        }
-                      >
-                        <Megaphone className="w-3 h-3" />
-                        <span>{isAr ? "بث إشعار" : "Broadcast"}</span>
-                      </Button>
-                    )}
-
-                    {onMarkAllNotificationsRead && (notificationsData?.unreadCount ?? 0) > 0 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => void handleMarkAllNotificationsRead()}
-                        className="h-6 text-[10px] px-2 text-muted-foreground hover:text-foreground gap-1 rounded-md"
-                        title={isAr ? "تحديد الكل كمقروء" : "Mark all as read"}
-                      >
-                        <CheckCheck className="w-3 h-3 text-emerald-500" />
-                        <span>{isAr ? "قراءة الكل" : "Read all"}</span>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Tabs: Alerts vs Action Tasks */}
-                <Tabs value={notifActiveTab} onValueChange={(v: any) => setNotifActiveTab(v)}>
-                  <TabsList className="grid grid-cols-2 p-1 m-2 bg-muted/60 rounded-xl">
-                    <TabsTrigger value="alerts" className="text-xs py-1">
-                      {isAr ? "التنبيهات الحية" : "Live Alerts"}{" "}
-                      {unreadLiveCount > 0 && (
-                        <span className="ms-1 font-mono text-[10px]">({unreadLiveCount})</span>
-                      )}
-                    </TabsTrigger>
-                    <TabsTrigger value="tasks" className="text-xs py-1">
-                      {isAr ? "المهام المعلقة" : "Action Queue"}{" "}
-                      {totalPendingAlerts > 0 && (
-                        <span className="ms-1 font-mono text-[10px]">({totalPendingAlerts})</span>
-                      )}
-                    </TabsTrigger>
-                  </TabsList>
-
-                  {/* Tab 1: Live Notifications */}
-                  <TabsContent
-                    value="alerts"
-                    className="max-h-72 overflow-y-auto p-2 space-y-1 mt-0"
+              {/* Attention & Notifications Center Popover */}
+              <Popover open={notifPopoverOpen} onOpenChange={setNotifPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="console-icon-btn relative"
+                    aria-label={
+                      isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & attention center"
+                    }
+                    title={
+                      isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & attention center"
+                    }
                   >
-                    {!notificationsData?.notifications ||
-                    notificationsData.notifications.length === 0 ? (
-                      <div className="py-8 text-center text-muted-foreground text-xs space-y-1">
-                        <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-500/60" />
-                        <p>{isAr ? "لا توجد تنبيهات غير مقروءة" : "No new notifications"}</p>
-                      </div>
-                    ) : (
-                      notificationsData.notifications.map((item) => (
-                        <div
-                          key={item.id}
+                    <Bell className="h-[18px] w-[18px]" />
+                    {totalCombinedBadge > 0 && (
+                      <span className="absolute -top-0.5 -end-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#b4532a] px-1 text-[10px] font-bold tabular-nums text-white ring-2 ring-[var(--console-canvas)]">
+                        {totalCombinedBadge > 99 ? "99+" : totalCombinedBadge}
+                      </span>
+                    )}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  className="w-[calc(100vw-2rem)] sm:w-96 max-w-sm p-0 shadow-2xl border-border bg-card"
+                >
+                  {/* Popover Header */}
+                  <div className="p-3.5 border-b border-border bg-muted/40 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-bold text-foreground">
+                        {isAr ? "مركز الإشعارات والمهام" : "Notifications & Triage"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {onBroadcastNotification && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
-                            if (!item.is_read && onMarkNotificationRead) {
-                              void handleMarkNotificationRead(item.id);
-                            }
-                            if (item.link) {
-                              setNotifPopoverOpen(false);
-                              window.location.href = item.link;
-                            }
+                            setNotifPopoverOpen(false);
+                            setBroadcastModalOpen(true);
                           }}
-                          className={cn(
-                            "p-2.5 rounded-xl border text-xs flex items-start gap-2.5 transition-all cursor-pointer hover:bg-muted/60",
-                            item.is_read
-                              ? "bg-card border-border/40 text-muted-foreground opacity-75"
-                              : "bg-primary/5 border-primary/20 text-foreground font-medium",
-                          )}
+                          className="h-6 text-[10px] px-2 text-primary hover:bg-primary/10 gap-1 rounded-md"
+                          title={
+                            isAr ? "إرسال إشعار فوري لجميع المستخدمين" : "Broadcast notification"
+                          }
                         >
-                          <div className="mt-0.5 shrink-0">{getNotifIcon(item.type)}</div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-1">
-                              <span className="font-bold text-foreground truncate block">
-                                {isAr ? item.title_ar : item.title_en || item.title_ar}
+                          <Megaphone className="w-3 h-3" />
+                          <span>{isAr ? "بث إشعار" : "Broadcast"}</span>
+                        </Button>
+                      )}
+
+                      {onMarkAllNotificationsRead && (notificationsData?.unreadCount ?? 0) > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => void handleMarkAllNotificationsRead()}
+                          className="h-6 text-[10px] px-2 text-muted-foreground hover:text-foreground gap-1 rounded-md"
+                          title={isAr ? "تحديد الكل كمقروء" : "Mark all as read"}
+                        >
+                          <CheckCheck className="w-3 h-3 text-emerald-500" />
+                          <span>{isAr ? "قراءة الكل" : "Read all"}</span>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Tabs: Alerts vs Action Tasks */}
+                  <Tabs value={notifActiveTab} onValueChange={(v: any) => setNotifActiveTab(v)}>
+                    <TabsList className="grid grid-cols-2 p-1 m-2 bg-muted/60 rounded-xl">
+                      <TabsTrigger value="alerts" className="text-xs py-1">
+                        {isAr ? "التنبيهات الحية" : "Live Alerts"}{" "}
+                        {unreadLiveCount > 0 && (
+                          <span className="ms-1 font-mono text-[10px]">({unreadLiveCount})</span>
+                        )}
+                      </TabsTrigger>
+                      <TabsTrigger value="tasks" className="text-xs py-1">
+                        {isAr ? "المهام المعلقة" : "Action Queue"}{" "}
+                        {totalPendingAlerts > 0 && (
+                          <span className="ms-1 font-mono text-[10px]">({totalPendingAlerts})</span>
+                        )}
+                      </TabsTrigger>
+                    </TabsList>
+
+                    {/* Tab 1: Live Notifications */}
+                    <TabsContent
+                      value="alerts"
+                      className="max-h-72 overflow-y-auto p-2 space-y-1 mt-0"
+                    >
+                      {!notificationsData?.notifications ||
+                      notificationsData.notifications.length === 0 ? (
+                        <div className="py-8 text-center text-muted-foreground text-xs space-y-1">
+                          <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-500/60" />
+                          <p>{isAr ? "لا توجد تنبيهات غير مقروءة" : "No new notifications"}</p>
+                        </div>
+                      ) : (
+                        notificationsData.notifications.map((item) => (
+                          <div
+                            key={item.id}
+                            onClick={() => {
+                              if (!item.is_read && onMarkNotificationRead) {
+                                void handleMarkNotificationRead(item.id);
+                              }
+                              if (item.link) {
+                                setNotifPopoverOpen(false);
+                                window.location.href = item.link;
+                              }
+                            }}
+                            className={cn(
+                              "p-2.5 rounded-xl border text-xs flex items-start gap-2.5 transition-all cursor-pointer hover:bg-muted/60",
+                              item.is_read
+                                ? "bg-card border-border/40 text-muted-foreground opacity-75"
+                                : "bg-primary/5 border-primary/20 text-foreground font-medium",
+                            )}
+                          >
+                            <div className="mt-0.5 shrink-0">{getNotifIcon(item.type)}</div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="font-bold text-foreground truncate block">
+                                  {isAr ? item.title_ar : item.title_en || item.title_ar}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground font-mono shrink-0">
+                                  {formatNotifTime(item.created_at)}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
+                                {isAr ? item.message_ar : item.message_en || item.message_ar}
+                              </p>
+                            </div>
+                            <div
+                              className="flex items-center gap-1 shrink-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {!item.is_read && onMarkNotificationRead && (
+                                <button
+                                  type="button"
+                                  onClick={() => void handleMarkNotificationRead(item.id)}
+                                  className="text-muted-foreground hover:text-primary p-1 rounded hover:bg-primary/10"
+                                  aria-label={isAr ? "تحديد كمقروء" : "Mark as read"}
+                                  title={isAr ? "تحديد كمقروء" : "Mark as read"}
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                              {onDeleteNotification && (
+                                <button
+                                  type="button"
+                                  onClick={() => void handleDeleteNotification(item.id)}
+                                  className="text-muted-foreground hover:text-destructive p-1 rounded hover:bg-destructive/10"
+                                  aria-label={isAr ? "حذف الإشعار" : "Delete notification"}
+                                  title={isAr ? "حذف" : "Delete"}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </TabsContent>
+
+                    {/* Tab 2: Action Tasks Queue */}
+                    <TabsContent
+                      value="tasks"
+                      className="max-h-72 overflow-y-auto p-2 space-y-1.5 mt-0"
+                    >
+                      {(badgeCounts.pendingVerifications ?? 0) > 0 && (
+                        <button
+                          onClick={() => {
+                            onSelectTab("system", "users");
+                            setNotifPopoverOpen(false);
+                          }}
+                          className="w-full flex items-center justify-between p-2.5 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 text-xs text-start transition-all"
+                        >
+                          <div className="flex items-center gap-2">
+                            <UserCheck className="w-4 h-4 text-blue-500" />
+                            <div>
+                              <span className="font-bold block text-foreground">
+                                {isAr
+                                  ? "طلبات توثيق حسابات عائلية جديدة"
+                                  : "Membership Verifications"}
                               </span>
-                              <span className="text-[10px] text-muted-foreground font-mono shrink-0">
-                                {formatNotifTime(item.created_at)}
+                              <span className="text-[10px] text-muted-foreground">
+                                {isAr ? "تحقق من صلة القرابة والفرع" : "Verify tribal lineage"}
                               </span>
                             </div>
-                            <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
-                              {isAr ? item.message_ar : item.message_en || item.message_ar}
-                            </p>
                           </div>
-                          <div
-                            className="flex items-center gap-1 shrink-0"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {!item.is_read && onMarkNotificationRead && (
-                              <button
-                                type="button"
-                                onClick={() => void handleMarkNotificationRead(item.id)}
-                                className="text-muted-foreground hover:text-primary p-1 rounded hover:bg-primary/10"
-                                aria-label={isAr ? "تحديد كمقروء" : "Mark as read"}
-                                title={isAr ? "تحديد كمقروء" : "Mark as read"}
-                              >
-                                <Check className="w-3.5 h-3.5" />
-                              </button>
-                            )}
-                            {onDeleteNotification && (
-                              <button
-                                type="button"
-                                onClick={() => void handleDeleteNotification(item.id)}
-                                className="text-muted-foreground hover:text-destructive p-1 rounded hover:bg-destructive/10"
-                                aria-label={isAr ? "حذف الإشعار" : "Delete notification"}
-                                title={isAr ? "حذف" : "Delete"}
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </TabsContent>
+                          <Badge className="bg-blue-500 text-white font-mono font-bold text-[10px]">
+                            {badgeCounts.pendingVerifications}
+                          </Badge>
+                        </button>
+                      )}
 
-                  {/* Tab 2: Action Tasks Queue */}
-                  <TabsContent
-                    value="tasks"
-                    className="max-h-72 overflow-y-auto p-2 space-y-1.5 mt-0"
+                      {(badgeCounts.pendingInquiries ?? 0) > 0 && (
+                        <button
+                          onClick={() => {
+                            onSelectTab("community", "inquiries");
+                            setNotifPopoverOpen(false);
+                          }}
+                          className="w-full flex items-center justify-between p-2.5 rounded-xl border border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 text-xs text-start transition-all"
+                        >
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="w-4 h-4 text-indigo-500" />
+                            <div>
+                              <span className="font-bold block text-foreground">
+                                {isAr ? "استفسارات ورسائل تواصل واردة" : "New Inquiries Inbox"}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {isAr ? "استفسارات الأعضاء تتطلب رداً" : "Awaiting response"}
+                              </span>
+                            </div>
+                          </div>
+                          <Badge className="bg-indigo-500 text-white font-mono font-bold text-[10px]">
+                            {badgeCounts.pendingInquiries}
+                          </Badge>
+                        </button>
+                      )}
+
+                      {(badgeCounts.draftArticles ?? 0) > 0 && (
+                        <button
+                          onClick={() => {
+                            onSelectTab("content", "articles");
+                            setNotifPopoverOpen(false);
+                          }}
+                          className="w-full flex items-center justify-between p-2.5 rounded-xl border border-border bg-muted/20 hover:bg-muted/40 text-xs text-start transition-all"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Newspaper className="w-4 h-4 text-primary" />
+                            <div>
+                              <span className="font-bold block text-foreground">
+                                {isAr ? "مقالات وأخبار قيد الإعداد (مسودات)" : "Draft Articles"}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {isAr ? "بانتظار المراجعة والاعتماد للنشر" : "Ready for review"}
+                              </span>
+                            </div>
+                          </div>
+                          <Badge variant="secondary" className="font-mono font-bold text-[10px]">
+                            {badgeCounts.draftArticles}
+                          </Badge>
+                        </button>
+                      )}
+
+                      {totalPendingAlerts === 0 && (
+                        <div className="py-8 text-center text-muted-foreground text-xs space-y-1">
+                          <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-500/60" />
+                          <p>
+                            {isAr
+                              ? "لا توجد مهام معلقة، كل العمليات مكتملة!"
+                              : "All tasks are resolved!"}
+                          </p>
+                        </div>
+                      )}
+                    </TabsContent>
+                  </Tabs>
+                </PopoverContent>
+              </Popover>
+
+              <Link
+                to="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="console-icon-btn gap-1.5 text-sm"
+                title={isAr ? "فتح الموقع في نافذة جديدة" : "Open the website in a new tab"}
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span className="hidden lg:inline">{isAr ? "الموقع" : "Website"}</span>
+              </Link>
+            </div>
+          </header>
+
+          {/* Mobile: sibling pages of the current section */}
+          {currentDomain.tabs.length > 1 && (
+            <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto border-b border-[var(--console-hairline)] bg-card/60 px-3 py-2 md:hidden">
+              {currentDomain.tabs.map((tab) => {
+                const isTabActive = tab.id === activeTabId;
+                const tabBadge = tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => onSelectTab(currentDomain.id, tab.id)}
+                    className={cn(
+                      "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
+                      isTabActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    )}
                   >
-                    {(badgeCounts.pendingVerifications ?? 0) > 0 && (
-                      <button
-                        onClick={() => {
-                          onSelectTab("system", "users");
-                          setNotifPopoverOpen(false);
-                        }}
-                        className="w-full flex items-center justify-between p-2.5 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 text-xs text-start transition-all"
-                      >
-                        <div className="flex items-center gap-2">
-                          <UserCheck className="w-4 h-4 text-blue-500" />
-                          <div>
-                            <span className="font-bold block text-foreground">
-                              {isAr
-                                ? "طلبات توثيق حسابات عائلية جديدة"
-                                : "Membership Verifications"}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground">
-                              {isAr ? "تحقق من صلة القرابة والفرع" : "Verify tribal lineage"}
-                            </span>
-                          </div>
-                        </div>
-                        <Badge className="bg-blue-500 text-white font-mono font-bold text-[10px]">
-                          {badgeCounts.pendingVerifications}
-                        </Badge>
-                      </button>
+                    <span>{isAr ? tab.label_ar : tab.label_en}</span>
+                    {tabBadge > 0 && (
+                      <span className="rounded-full bg-gold px-1.5 text-[10px] font-bold tabular-nums text-[#2b1a10]">
+                        {tabBadge}
+                      </span>
                     )}
-
-                    {(badgeCounts.pendingInquiries ?? 0) > 0 && (
-                      <button
-                        onClick={() => {
-                          onSelectTab("community", "inquiries");
-                          setNotifPopoverOpen(false);
-                        }}
-                        className="w-full flex items-center justify-between p-2.5 rounded-xl border border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 text-xs text-start transition-all"
-                      >
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="w-4 h-4 text-indigo-500" />
-                          <div>
-                            <span className="font-bold block text-foreground">
-                              {isAr ? "استفسارات ورسائل تواصل واردة" : "New Inquiries Inbox"}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground">
-                              {isAr ? "استفسارات الأعضاء تتطلب رداً" : "Awaiting response"}
-                            </span>
-                          </div>
-                        </div>
-                        <Badge className="bg-indigo-500 text-white font-mono font-bold text-[10px]">
-                          {badgeCounts.pendingInquiries}
-                        </Badge>
-                      </button>
-                    )}
-
-                    {(badgeCounts.draftArticles ?? 0) > 0 && (
-                      <button
-                        onClick={() => {
-                          onSelectTab("content", "articles");
-                          setNotifPopoverOpen(false);
-                        }}
-                        className="w-full flex items-center justify-between p-2.5 rounded-xl border border-border bg-muted/20 hover:bg-muted/40 text-xs text-start transition-all"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Newspaper className="w-4 h-4 text-primary" />
-                          <div>
-                            <span className="font-bold block text-foreground">
-                              {isAr ? "مقالات وأخبار قيد الإعداد (مسودات)" : "Draft Articles"}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground">
-                              {isAr ? "بانتظار المراجعة والاعتماد للنشر" : "Ready for review"}
-                            </span>
-                          </div>
-                        </div>
-                        <Badge variant="secondary" className="font-mono font-bold text-[10px]">
-                          {badgeCounts.draftArticles}
-                        </Badge>
-                      </button>
-                    )}
-
-                    {totalPendingAlerts === 0 && (
-                      <div className="py-8 text-center text-muted-foreground text-xs space-y-1">
-                        <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-500/60" />
-                        <p>
-                          {isAr
-                            ? "لا توجد مهام معلقة، كل العمليات مكتملة!"
-                            : "All tasks are resolved!"}
-                        </p>
-                      </div>
-                    )}
-                  </TabsContent>
-                </Tabs>
-              </PopoverContent>
-            </Popover>
-
-            <Link
-              to="/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="console-icon-btn gap-1.5 text-sm"
-              title={isAr ? "فتح الموقع في نافذة جديدة" : "Open the website in a new tab"}
-            >
-              <ExternalLink className="h-4 w-4" />
-              <span className="hidden lg:inline">{isAr ? "الموقع" : "Website"}</span>
-            </Link>
-          </div>
-        </header>
-
-        {/* Mobile: sibling pages of the current section */}
-        {currentDomain.tabs.length > 1 && (
-          <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto border-b border-[var(--console-hairline)] bg-card/60 px-3 py-2 md:hidden">
-            {currentDomain.tabs.map((tab) => {
-              const isTabActive = tab.id === activeTabId;
-              const tabBadge = tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => onSelectTab(currentDomain.id, tab.id)}
-                  className={cn(
-                    "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
-                    isTabActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  <span>{isAr ? tab.label_ar : tab.label_en}</span>
-                  {tabBadge > 0 && (
-                    <span className="rounded-full bg-gold px-1.5 text-[10px] font-bold tabular-nums text-[#2b1a10]">
-                      {tabBadge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        <main className="mx-auto w-full max-w-[1360px] flex-1 space-y-6 px-4 py-6 md:px-8 md:py-8">
-          {activeDomainId !== "dashboard" && (
-            <div
-              key={`${activeDomainId}:${activeTabId}`}
-              className="console-rise flex items-start gap-4"
-            >
-              <span className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[var(--console-shadow-md)] sm:flex">
-                <DomainIconCurrent className="h-6 w-6" />
-              </span>
-              <div className="min-w-0">
-                <p className="console-eyebrow">
-                  {isAr ? currentDomain.label_ar : currentDomain.label_en}
-                </p>
-                <h1 className="console-title mt-1 text-[26px] text-foreground md:text-[32px]">
-                  {isAr ? currentTab.label_ar : currentTab.label_en}
-                </h1>
-                {pageDescription && (
-                  <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                    {pageDescription}
-                  </p>
-                )}
-              </div>
+                  </button>
+                );
+              })}
             </div>
           )}
-          {children}
-        </main>
-      </div>
 
-      {/* =========================================================================
-       * 3. GLOBAL COMMAND PALETTE (CTRL+K)
-       * ========================================================================= */}
-      <AdminCommandPalette
-        open={commandPaletteOpen}
-        onOpenChange={setCommandPaletteOpen}
-        items={searchItems}
-        onSelectTab={onSelectTab}
-        onQuickAction={onQuickAction}
-      />
-
-      {/* =========================================================================
-       * 4. BROADCAST NOTIFICATION MODAL
-       * ========================================================================= */}
-      <Dialog open={broadcastModalOpen} onOpenChange={setBroadcastModalOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <Megaphone className="w-5 h-5 text-primary" />
-              {isAr ? "بث إشعار عام لجميع المستخدمين" : "Broadcast Notification"}
-            </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              {isAr
-                ? "سيظهر هذا الإشعار في مركز التنبيهات لجميع أعضاء المنصة والمشرفين."
-                : "This notification will be delivered to all platform members and administrators."}
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleBroadcastSubmit} className="space-y-3.5 pt-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">
-                {isAr ? "عنوان الإشعار (بالعربية)" : "Title (Arabic)"}
-              </Label>
-              <Input
-                required
-                value={broadcastForm.title_ar}
-                onChange={(e) => setBroadcastForm({ ...broadcastForm, title_ar: e.target.value })}
-                placeholder={
-                  isAr
-                    ? "مثال: تحديث شجرة الأنساب أو موعد اللقاء القادم"
-                    : "e.g. Family gathering notice"
-                }
-                className="text-xs h-9"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">
-                {isAr ? "نص الرسالة (بالعربية)" : "Message Body (Arabic)"}
-              </Label>
-              <Textarea
-                required
-                rows={3}
-                value={broadcastForm.body_ar}
-                onChange={(e) => setBroadcastForm({ ...broadcastForm, body_ar: e.target.value })}
-                placeholder={isAr ? "اكتب تفاصيل الإشعار هنا..." : "Write notification details..."}
-                className="text-xs"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">
-                  {isAr ? "نوع التنبيه" : "Alert Type"}
-                </Label>
-                <Select
-                  value={broadcastForm.type}
-                  onValueChange={(val) => setBroadcastForm({ ...broadcastForm, type: val })}
-                >
-                  <SelectTrigger className="text-xs h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="info">{isAr ? "معلوماتي عادي" : "Information"}</SelectItem>
-                    <SelectItem value="announcement">
-                      {isAr ? "إعلان رسمي" : "Official Announcement"}
-                    </SelectItem>
-                    <SelectItem value="event">{isAr ? "مناسبة وفعالية" : "Event"}</SelectItem>
-                    <SelectItem value="urgent">{isAr ? "تنبيه عاجل" : "Urgent Notice"}</SelectItem>
-                  </SelectContent>
-                </Select>
+          <main className="mx-auto w-full max-w-[1360px] flex-1 space-y-6 px-4 py-6 md:px-8 md:py-8">
+            {activeDomainId !== "dashboard" && (
+              <div
+                key={`${activeDomainId}:${activeTabId}`}
+                className="console-rise flex items-start gap-4"
+              >
+                <span className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[var(--console-shadow-md)] sm:flex">
+                  <DomainIconCurrent className="h-6 w-6" />
+                </span>
+                <div className="min-w-0">
+                  <p className="console-eyebrow">
+                    {isAr ? currentDomain.label_ar : currentDomain.label_en}
+                  </p>
+                  <h1 className="console-title mt-1 text-[26px] text-foreground md:text-[32px]">
+                    {isAr ? currentTab.label_ar : currentTab.label_en}
+                  </h1>
+                  {pageDescription && (
+                    <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                      {pageDescription}
+                    </p>
+                  )}
+                </div>
               </div>
+            )}
+            {children}
+          </main>
+        </div>
 
+        {/* =========================================================================
+         * 3. GLOBAL COMMAND PALETTE (CTRL+K)
+         * ========================================================================= */}
+        <AdminCommandPalette
+          open={commandPaletteOpen}
+          onOpenChange={setCommandPaletteOpen}
+          items={searchItems}
+          onSelectTab={onSelectTab}
+          onQuickAction={onQuickAction}
+        />
+
+        {/* =========================================================================
+         * 4. BROADCAST NOTIFICATION MODAL
+         * ========================================================================= */}
+        <Dialog open={broadcastModalOpen} onOpenChange={setBroadcastModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-primary" />
+                {isAr ? "بث إشعار عام لجميع المستخدمين" : "Broadcast Notification"}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                {isAr
+                  ? "سيظهر هذا الإشعار في مركز التنبيهات لجميع أعضاء المنصة والمشرفين."
+                  : "This notification will be delivered to all platform members and administrators."}
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleBroadcastSubmit} className="space-y-3.5 pt-2">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">
-                  {isAr ? "رابط توجيه (اختياري)" : "Action Link (Optional)"}
+                  {isAr ? "عنوان الإشعار (بالعربية)" : "Title (Arabic)"}
                 </Label>
                 <Input
-                  value={broadcastForm.link_url}
-                  onChange={(e) => setBroadcastForm({ ...broadcastForm, link_url: e.target.value })}
-                  placeholder="/events أو /articles"
-                  className="text-xs h-9 font-mono"
+                  required
+                  value={broadcastForm.title_ar}
+                  onChange={(e) => setBroadcastForm({ ...broadcastForm, title_ar: e.target.value })}
+                  placeholder={
+                    isAr
+                      ? "مثال: تحديث شجرة الأنساب أو موعد اللقاء القادم"
+                      : "e.g. Family gathering notice"
+                  }
+                  className="text-xs h-9"
                 />
               </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">
+                  {isAr ? "نص الرسالة (بالعربية)" : "Message Body (Arabic)"}
+                </Label>
+                <Textarea
+                  required
+                  rows={3}
+                  value={broadcastForm.body_ar}
+                  onChange={(e) => setBroadcastForm({ ...broadcastForm, body_ar: e.target.value })}
+                  placeholder={
+                    isAr ? "اكتب تفاصيل الإشعار هنا..." : "Write notification details..."
+                  }
+                  className="text-xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "نوع التنبيه" : "Alert Type"}
+                  </Label>
+                  <Select
+                    value={broadcastForm.type}
+                    onValueChange={(val) => setBroadcastForm({ ...broadcastForm, type: val })}
+                  >
+                    <SelectTrigger className="text-xs h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="info">{isAr ? "معلوماتي عادي" : "Information"}</SelectItem>
+                      <SelectItem value="announcement">
+                        {isAr ? "إعلان رسمي" : "Official Announcement"}
+                      </SelectItem>
+                      <SelectItem value="event">{isAr ? "مناسبة وفعالية" : "Event"}</SelectItem>
+                      <SelectItem value="urgent">
+                        {isAr ? "تنبيه عاجل" : "Urgent Notice"}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">
+                    {isAr ? "رابط توجيه (اختياري)" : "Action Link (Optional)"}
+                  </Label>
+                  <Input
+                    value={broadcastForm.link_url}
+                    onChange={(e) =>
+                      setBroadcastForm({ ...broadcastForm, link_url: e.target.value })
+                    }
+                    placeholder="/events أو /articles"
+                    className="text-xs h-9 font-mono"
+                  />
+                </div>
+              </div>
+
+              <DialogFooter className="pt-3 border-t border-border flex items-center justify-between sm:justify-between">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setBroadcastModalOpen(false)}
+                  className="text-xs"
+                >
+                  {isAr ? "إلغاء" : "Cancel"}
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={submittingBroadcast}
+                  className="gap-2 text-xs bg-primary text-primary-foreground font-bold"
+                >
+                  {submittingBroadcast ? (
+                    <div className="w-3.5 h-3.5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Megaphone className="w-3.5 h-3.5" />
+                  )}
+                  {isAr ? "إرسال الإشعار الآن" : "Send Broadcast"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* =========================================================================
+         * 5. ADMINISTRATOR USER GUIDE & HELP MODAL
+         * ========================================================================= */}
+        <Dialog open={helpModalOpen} onOpenChange={setHelpModalOpen}>
+          <DialogContent className="max-w-xl">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-primary" />
+                {isAr ? "دليل المشرف الإداري السريع" : "Administrator Quick Guide"}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                {isAr
+                  ? "إرشادات سريعة لمساعدتك في إدارة منظومة مجلس آل بوعبيد بكل يسر وسهولة."
+                  : "Quick reference guide for navigating and operating the Al Bu Obaid management platform."}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 pt-2 text-xs">
+              {/* Business Structure Map */}
+              <div className="p-3 rounded-xl border border-border bg-muted/20 space-y-2">
+                <h4 className="font-bold text-foreground flex items-center gap-1.5 text-xs">
+                  <Compass className="w-4 h-4 text-primary" />
+                  {isAr ? "الأقسام والقطاعات الإدارية الستة:" : "The 6 Core Business Modules:"}
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                  <div className="p-2 rounded-lg bg-card border border-border/50">
+                    <span className="font-bold text-foreground block">
+                      1. {isAr ? "الرئيسية والمتابعة" : "Dashboard"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {isAr
+                        ? "المؤشرات العامة وقائمة المهام التي تتطلب تدخلك."
+                        : "Key metrics and pending action items."}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-card border border-border/50">
+                    <span className="font-bold text-foreground block">
+                      2. {isAr ? "الأسرة والأنساب" : "Family & Tree"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {isAr
+                        ? "سجل الأفراد، الشجرة التفاعلية، الفروع والنسب."
+                        : "Genealogy, interactive tree, and branches."}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-card border border-border/50">
+                    <span className="font-bold text-foreground block">
+                      3. {isAr ? "المحتوى والنشر" : "Content & Media"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {isAr
+                        ? "المقالات، الفعاليات، الإعلانات، ومكتبة الوسائط."
+                        : "Articles, events, notices, and media library."}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-card border border-border/50">
+                    <span className="font-bold text-foreground block">
+                      4. {isAr ? "التواصل والمجتمع" : "Community"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {isAr
+                        ? "صندوق الرسائل واستفسارات التواصل، ودليل المنشآت والأعمال."
+                        : "Inquiries, messages, and business directory."}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-card border border-border/50">
+                    <span className="font-bold text-foreground block">
+                      5. {isAr ? "المبادرات ولوحة الشرف" : "Initiatives & Honour Roll"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {isAr
+                        ? "مبادرات المقر ومشاريع التطوير، ولوحة الشرف."
+                        : "HQ initiatives, development projects, and honour roll."}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-card border border-border/50">
+                    <span className="font-bold text-foreground block">
+                      6. {isAr ? "الإدارة والنظام" : "Governance"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {isAr
+                        ? "المستخدمون وتوثيق العضوية، مصفوفة الصلاحيات، وسجل الأمان والرقابة."
+                        : "User accounts, verification, access control, and audit logs."}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shortcuts */}
+              <div className="p-3 rounded-xl border border-border bg-card space-y-2">
+                <h4 className="font-bold text-foreground flex items-center gap-1.5 text-xs">
+                  <Keyboard className="w-4 h-4 text-primary" />
+                  {isAr ? "اختصارات لوحة المفاتيح:" : "Keyboard Shortcuts:"}
+                </h4>
+                <div className="flex items-center justify-between p-1.5 rounded-lg bg-muted/40 font-mono text-[11px]">
+                  <span>
+                    {isAr ? "البحث الشامل والأوامر السريعة" : "Global Search & Command Palette"}
+                  </span>
+                  <kbd className="bg-background px-2 py-0.5 rounded border border-border font-bold">
+                    ⌘K / Ctrl+K
+                  </kbd>
+                </div>
+              </div>
             </div>
 
-            <DialogFooter className="pt-3 border-t border-border flex items-center justify-between sm:justify-between">
+            <DialogFooter className="pt-3 border-t border-border">
               <Button
-                type="button"
-                variant="ghost"
                 size="sm"
-                onClick={() => setBroadcastModalOpen(false)}
-                className="text-xs"
+                onClick={() => setHelpModalOpen(false)}
+                className="text-xs bg-primary font-bold"
               >
-                {isAr ? "إلغاء" : "Cancel"}
-              </Button>
-              <Button
-                type="submit"
-                size="sm"
-                disabled={submittingBroadcast}
-                className="gap-2 text-xs bg-primary text-primary-foreground font-bold"
-              >
-                {submittingBroadcast ? (
-                  <div className="w-3.5 h-3.5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Megaphone className="w-3.5 h-3.5" />
-                )}
-                {isAr ? "إرسال الإشعار الآن" : "Send Broadcast"}
+                {isAr ? "فهمت ذلك، إغلاق" : "Got it"}
               </Button>
             </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* =========================================================================
-       * 5. ADMINISTRATOR USER GUIDE & HELP MODAL
-       * ========================================================================= */}
-      <Dialog open={helpModalOpen} onOpenChange={setHelpModalOpen}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-primary" />
-              {isAr ? "دليل المشرف الإداري السريع" : "Administrator Quick Guide"}
-            </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              {isAr
-                ? "إرشادات سريعة لمساعدتك في إدارة منظومة مجلس آل بوعبيد بكل يسر وسهولة."
-                : "Quick reference guide for navigating and operating the Al Bu Obaid management platform."}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 pt-2 text-xs">
-            {/* Business Structure Map */}
-            <div className="p-3 rounded-xl border border-border bg-muted/20 space-y-2">
-              <h4 className="font-bold text-foreground flex items-center gap-1.5 text-xs">
-                <Compass className="w-4 h-4 text-primary" />
-                {isAr ? "الأقسام والقطاعات الإدارية الستة:" : "The 6 Core Business Modules:"}
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-                <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">
-                    1. {isAr ? "الرئيسية والمتابعة" : "Dashboard"}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {isAr
-                      ? "المؤشرات العامة وقائمة المهام التي تتطلب تدخلك."
-                      : "Key metrics and pending action items."}
-                  </span>
-                </div>
-                <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">
-                    2. {isAr ? "الأسرة والأنساب" : "Family & Tree"}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {isAr
-                      ? "سجل الأفراد، الشجرة التفاعلية، الفروع والنسب."
-                      : "Genealogy, interactive tree, and branches."}
-                  </span>
-                </div>
-                <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">
-                    3. {isAr ? "المحتوى والنشر" : "Content & Media"}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {isAr
-                      ? "المقالات، الفعاليات، الإعلانات، ومكتبة الوسائط."
-                      : "Articles, events, notices, and media library."}
-                  </span>
-                </div>
-                <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">
-                    4. {isAr ? "التواصل والمجتمع" : "Community"}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {isAr
-                      ? "صندوق الرسائل واستفسارات التواصل، ودليل المنشآت والأعمال."
-                      : "Inquiries, messages, and business directory."}
-                  </span>
-                </div>
-                <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">
-                    5. {isAr ? "المبادرات ولوحة الشرف" : "Initiatives & Honour Roll"}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {isAr
-                      ? "مبادرات المقر ومشاريع التطوير، ولوحة الشرف."
-                      : "HQ initiatives, development projects, and honour roll."}
-                  </span>
-                </div>
-                <div className="p-2 rounded-lg bg-card border border-border/50">
-                  <span className="font-bold text-foreground block">
-                    6. {isAr ? "الإدارة والنظام" : "Governance"}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {isAr
-                      ? "المستخدمون وتوثيق العضوية، مصفوفة الصلاحيات، وسجل الأمان والرقابة."
-                      : "User accounts, verification, access control, and audit logs."}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Shortcuts */}
-            <div className="p-3 rounded-xl border border-border bg-card space-y-2">
-              <h4 className="font-bold text-foreground flex items-center gap-1.5 text-xs">
-                <Keyboard className="w-4 h-4 text-primary" />
-                {isAr ? "اختصارات لوحة المفاتيح:" : "Keyboard Shortcuts:"}
-              </h4>
-              <div className="flex items-center justify-between p-1.5 rounded-lg bg-muted/40 font-mono text-[11px]">
-                <span>
-                  {isAr ? "البحث الشامل والأوامر السريعة" : "Global Search & Command Palette"}
-                </span>
-                <kbd className="bg-background px-2 py-0.5 rounded border border-border font-bold">
-                  ⌘K / Ctrl+K
-                </kbd>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter className="pt-3 border-t border-border">
-            <Button
-              size="sm"
-              onClick={() => setHelpModalOpen(false)}
-              className="text-xs bg-primary font-bold"
-            >
-              {isAr ? "فهمت ذلك، إغلاق" : "Got it"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </DirectionProvider>
   );
 }

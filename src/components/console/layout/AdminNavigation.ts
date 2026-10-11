@@ -145,14 +145,6 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
         description_en: "Historic landmarks, diwaniyas, and council halls",
         icon: MapPin,
       },
-      {
-        id: "privacy",
-        label_ar: "الخصوصية",
-        label_en: "Privacy",
-        description_ar: "مستويات إتاحة وظهور البيانات للعموم والأسرة",
-        description_en: "Control public and family-only visibility",
-        icon: ShieldCheck,
-      },
     ],
   },
   {
@@ -271,7 +263,7 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
       },
       {
         id: "services",
-        label_ar: "خدمات «أسرتي تنتج»",
+        label_ar: "خدمات أسرتي تنتج",
         label_en: "Family Services",
         description_ar: "إدارة الخدمات في التصنيفين ورفع وثائقها",
         description_en: "Manage both service categories and upload their documents",
