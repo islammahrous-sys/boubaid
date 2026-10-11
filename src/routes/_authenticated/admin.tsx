@@ -1085,6 +1085,9 @@ function MasterAdminPage() {
                     totalBusinesses: overviewData?.totalBusinesses ?? 0,
                     totalInitiatives: overviewData?.totalInitiatives ?? 0,
                     totalAchievers: overviewData?.totalAchievers ?? 0,
+                    totalBranches: overviewData?.totalBranches,
+                    totalPages: overviewData?.totalPages,
+                    totalMedia: overviewData?.totalMedia,
                     recentActivity: overviewData?.recentActivity ?? [],
                   }}
                   onNavigateTab={handleSelectTab}

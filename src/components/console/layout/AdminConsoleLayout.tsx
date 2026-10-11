@@ -75,6 +75,7 @@ import {
   ArrowLeft,
   AlertTriangle,
   HelpCircle,
+  Inbox,
   Keyboard,
   Compass,
   Layers,
@@ -400,269 +401,226 @@ export function AdminConsoleLayout({
     }
   };
 
-  // Render navigation group items
+  const displayName = isAr
+    ? profile?.full_name_ar || profile?.full_name_en || user?.email?.split("@")[0]
+    : profile?.full_name_en || profile?.full_name_ar || user?.email?.split("@")[0];
+  const initial =
+    profile?.full_name_ar?.[0] ||
+    profile?.full_name_en?.[0] ||
+    user?.email?.[0]?.toUpperCase() ||
+    "A";
+  const roleLabel = isSuperAdmin
+    ? isAr
+      ? "مشرف عام"
+      : "Super Admin"
+    : isAdmin
+      ? isAr
+        ? "مدير نظام"
+        : "Admin"
+      : isAr
+        ? "مسؤول قطاع"
+        : "Officer";
+  const DomainIconCurrent = currentDomain.icon;
+  const pageDescription = isAr ? currentTab.description_ar : currentTab.description_en;
+
+  // Sidebar navigation: one calm list. Each group shows its pages only when
+  // open (the active group always is), pages carry no icons of their own —
+  // the group icon already says where you are — and pending work is pulled
+  // into a single "awaiting you" entry instead of red badges everywhere.
   const renderNavList = (isMobile = false) => {
     const isCollapsed = !isMobile && sidebarCollapsed;
+    const closeDrawer = () => {
+      if (isMobile) setMobileDrawerOpen(false);
+    };
 
     return (
-      <TooltipProvider delayDuration={150}>
-        <div className="space-y-1">
-          {/* Quick "Needs Attention" / "تحتاج إلى انتباهك" Tile */}
-          {totalPendingAlerts > 0 && (
-            <div className="mb-3 px-1">
-              {isCollapsed ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={() => {
-                        onSelectTab("dashboard", "overview");
-                        setNotifPopoverOpen(true);
-                      }}
-                      className="w-10 h-10 mx-auto rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all relative group"
-                    >
-                      <AlertTriangle className="w-4 h-4 text-amber-500 animate-pulse" />
-                      <span className="absolute -top-1 -end-1 w-4 h-4 bg-amber-500 text-white rounded-full text-[9px] font-bold font-mono flex items-center justify-center">
-                        {totalPendingAlerts}
-                      </span>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side={isRtl ? "left" : "right"} className="text-xs font-medium">
-                    <p className="font-bold">{isAr ? "تحتاج إلى انتباهك" : "Needs Attention"}</p>
-                    <p className="text-[11px] opacity-80">
-                      {isAr
-                        ? `${totalPendingAlerts} مهام تتطلب تدخلك`
-                        : `${totalPendingAlerts} actionable items`}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                <button
-                  onClick={() => {
-                    onSelectTab("dashboard", "overview");
-                    if (isMobile) setMobileDrawerOpen(false);
-                  }}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/15 transition-all text-start group"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-6 h-6 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 animate-pulse" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-xs font-bold text-amber-700 dark:text-amber-300 block truncate">
-                        {isAr ? "تحتاج إلى انتباهك" : "Needs Attention"}
-                      </span>
-                      <span className="text-[10px] text-amber-600/80 dark:text-amber-400/80 font-medium block">
-                        {isAr ? "مهام واعتمادات معلقة" : "Pending reviews & actions"}
-                      </span>
-                    </div>
-                  </div>
-                  <Badge
-                    variant="outline"
-                    className="bg-amber-500 text-white border-amber-600 font-mono font-bold text-[10px] h-5 px-1.5 shrink-0"
+      <TooltipProvider delayDuration={120}>
+        <nav aria-label={isAr ? "أقسام لوحة الإدارة" : "Console sections"} className="space-y-1">
+          {totalPendingAlerts > 0 &&
+            (isCollapsed ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => onSelectTab("dashboard", "overview")}
+                    className="console-rail-item relative mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-[rgb(236_166_84/0.16)] text-gold"
+                    aria-label={isAr ? "بانتظار قرارك" : "Awaiting you"}
                   >
-                    {totalPendingAlerts}
-                  </Badge>
-                </button>
-              )}
-            </div>
+                    <Inbox className="h-[18px] w-[18px]" />
+                    <span className="absolute -top-1 -end-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[11px] font-bold tabular-nums text-[#2b1a10]">
+                      {totalPendingAlerts}
+                    </span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side={isRtl ? "left" : "right"} className="text-xs">
+                  {isAr
+                    ? `${totalPendingAlerts} عناصر بانتظار قرارك`
+                    : `${totalPendingAlerts} items awaiting you`}
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectTab("dashboard", "overview");
+                  closeDrawer();
+                }}
+                className="console-rail-item mb-4 flex w-full items-center gap-3 rounded-2xl border border-[rgb(236_166_84/0.32)] bg-[rgb(236_166_84/0.1)] px-3 py-2.5 text-start text-[var(--console-rail-fg)]"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold text-[#2b1a10]">
+                  <Inbox className="h-[18px] w-[18px]" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold">
+                    {isAr ? "بانتظار قرارك" : "Awaiting you"}
+                  </span>
+                  <span className="block truncate text-xs text-[var(--console-rail-muted)]">
+                    {isAr ? "طلبات ورسائل ومسودات" : "Requests, messages & drafts"}
+                  </span>
+                </span>
+                <span className="rounded-full bg-gold px-2 py-0.5 text-xs font-bold tabular-nums text-[#2b1a10]">
+                  {totalPendingAlerts}
+                </span>
+              </button>
+            ))}
+
+          {!isCollapsed && (
+            <p className="px-3 pb-1 pt-1 text-[11px] font-semibold text-[var(--console-rail-faint)]">
+              {isAr ? "الأقسام" : "Sections"}
+            </p>
           )}
 
-          {/* Business-Oriented Primary Groups */}
           {visibleDomains.map((domain) => {
             const DomainIcon = domain.icon;
             const isDomainActive = domain.id === activeDomainId;
-            const isExpanded = isMobile
-              ? (expandedDomains[domain.id] ?? true)
-              : !!expandedDomains[domain.id];
+            const isSingle = domain.tabs.length === 1;
+            const isExpanded = isDomainActive || !!expandedDomains[domain.id];
+            const domainBadge = domain.tabs.reduce(
+              (sum, tab) => sum + (tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0),
+              0,
+            );
+            const preloadDomain = () => domain.tabs.forEach((t) => preloadAdminManager(t.id));
 
-            // Aggregate domain badge count
-            const domainBadge = domain.tabs.reduce((sum, tab) => {
-              return sum + (tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0);
-            }, 0);
-
-            // Collapsed rail mode item with Tooltip
             if (isCollapsed) {
               return (
                 <Tooltip key={domain.id}>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => {
-                        onSelectTab(domain.id, domain.tabs[0]?.id || "");
-                      }}
-                      onMouseEnter={() => {
-                        domain.tabs.forEach((t) => preloadAdminManager(t.id));
-                      }}
-                      onFocus={() => {
-                        domain.tabs.forEach((t) => preloadAdminManager(t.id));
-                      }}
-                      className={cn(
-                        "w-10 h-10 mx-auto rounded-xl flex items-center justify-center transition-all relative group",
-                        isDomainActive
-                          ? "bg-primary text-primary-foreground font-bold shadow-sm"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                      )}
+                      type="button"
+                      data-active={isDomainActive}
+                      onClick={() => onSelectTab(domain.id, domain.tabs[0]?.id || "")}
+                      onMouseEnter={preloadDomain}
+                      onFocus={preloadDomain}
+                      aria-label={isAr ? domain.label_ar : domain.label_en}
+                      className="console-rail-item relative mx-auto flex h-11 w-11 items-center justify-center rounded-xl"
                     >
-                      <DomainIcon className="w-4 h-4" />
+                      <DomainIcon className="h-[18px] w-[18px]" />
                       {domainBadge > 0 && (
-                        <span className="absolute -top-1 -end-1 w-4 h-4 bg-destructive text-destructive-foreground rounded-full text-[9px] font-bold font-mono flex items-center justify-center">
-                          {domainBadge}
-                        </span>
+                        <span className="absolute top-1.5 end-1.5 h-2 w-2 rounded-full bg-gold ring-2 ring-[var(--console-rail)]" />
                       )}
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent
-                    side={isRtl ? "left" : "right"}
-                    className="text-xs p-2.5 max-w-xs"
-                  >
-                    <p className="font-bold text-xs">{isAr ? domain.label_ar : domain.label_en}</p>
-                    {domain.description_ar && (
-                      <p className="text-[10px] opacity-80 mt-0.5">
-                        {isAr ? domain.description_ar : domain.description_en}
+                  <TooltipContent side={isRtl ? "left" : "right"} className="max-w-xs p-3 text-xs">
+                    <p className="font-semibold">{isAr ? domain.label_ar : domain.label_en}</p>
+                    {!isSingle && (
+                      <p className="mt-1 opacity-80">
+                        {domain.tabs.map((t) => (isAr ? t.label_ar : t.label_en)).join(" · ")}
                       </p>
-                    )}
-                    {domain.tabs.length > 1 && (
-                      <div className="mt-2 pt-1.5 border-t border-primary-foreground/20 space-y-1">
-                        {domain.tabs.map((t) => (
-                          <div
-                            key={t.id}
-                            className="text-[11px] flex items-center gap-1.5 opacity-90"
-                          >
-                            <span className="w-1 h-1 rounded-full bg-current" />
-                            <span>{isAr ? t.label_ar : t.label_en}</span>
-                          </div>
-                        ))}
-                      </div>
                     )}
                   </TooltipContent>
                 </Tooltip>
               );
             }
 
-            // Expanded Mode: Collapsible Accordion Header
             return (
-              <div key={domain.id} className="space-y-0.5">
+              <div key={domain.id}>
                 <button
                   type="button"
+                  data-active={isSingle && isDomainActive}
+                  aria-expanded={isSingle ? undefined : isExpanded}
                   onClick={() => {
-                    if (domain.tabs.length === 1) {
+                    if (isSingle) {
                       onSelectTab(domain.id, domain.tabs[0].id);
-                      if (isMobile) setMobileDrawerOpen(false);
-                    } else {
+                      closeDrawer();
+                    } else if (!isDomainActive) {
                       toggleDomainExpand(domain.id);
                     }
                   }}
-                  onMouseEnter={() => {
-                    domain.tabs.forEach((t) => preloadAdminManager(t.id));
-                  }}
-                  onFocus={() => {
-                    domain.tabs.forEach((t) => preloadAdminManager(t.id));
-                  }}
+                  onMouseEnter={preloadDomain}
+                  onFocus={preloadDomain}
                   className={cn(
-                    "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all text-start group cursor-pointer",
-                    isDomainActive && domain.tabs.length === 1
-                      ? "bg-primary text-primary-foreground shadow-xs font-bold"
-                      : isDomainActive
-                        ? "text-primary font-bold bg-primary/5 hover:bg-primary/10"
-                        : "text-foreground/80 hover:text-foreground hover:bg-muted/50",
+                    "console-rail-item flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-start text-sm font-semibold",
+                    isDomainActive && "text-[var(--console-rail-fg)]",
+                    !isSingle && isDomainActive && "cursor-default hover:bg-transparent",
                   )}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <DomainIcon
-                      className={cn(
-                        "w-4 h-4 shrink-0 transition-colors",
-                        isDomainActive && domain.tabs.length === 1
-                          ? "text-primary-foreground"
-                          : isDomainActive
-                            ? "text-primary"
-                            : "text-muted-foreground group-hover:text-foreground",
-                      )}
-                    />
-                    <span className="truncate">{isAr ? domain.label_ar : domain.label_en}</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0 ms-2">
-                    {domainBadge > 0 && (
-                      <Badge
-                        variant="destructive"
-                        className="h-4 px-1.5 text-[9px] font-bold font-mono"
-                      >
-                        {domainBadge}
-                      </Badge>
-                    )}
-                    {domain.tabs.length > 1 && (
-                      <ChevronDown
-                        className={cn(
-                          "w-3.5 h-3.5 transition-transform duration-200 text-muted-foreground/70 group-hover:text-foreground",
-                          isExpanded ? "transform rotate-180" : "",
-                        )}
-                      />
-                    )}
-                  </div>
-                </button>
-
-                {/* Sub-tabs List */}
-                {isExpanded && domain.tabs.length > 1 && (
-                  <div
+                  <span
                     className={cn(
-                      "py-1 space-y-0.5",
-                      isRtl
-                        ? "pe-1 ps-3 border-r border-border/60 mr-3.5"
-                        : "ps-3 pe-1 border-l border-border/60 ml-3.5",
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                      isDomainActive
+                        ? "bg-[rgb(236_166_84/0.2)] text-gold"
+                        : "bg-[rgb(247_236_223/0.06)]",
                     )}
                   >
+                    <DomainIcon className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1 truncate">
+                    {isAr ? domain.label_ar : domain.label_en}
+                  </span>
+                  {domainBadge > 0 && !isExpanded && (
+                    <span className="rounded-full bg-gold px-1.5 text-[11px] font-bold tabular-nums leading-5 text-[#2b1a10]">
+                      {domainBadge}
+                    </span>
+                  )}
+                  {!isSingle && !isDomainActive && (
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 shrink-0 opacity-50 transition-transform duration-300",
+                        isExpanded && "rotate-180",
+                      )}
+                    />
+                  )}
+                </button>
+
+                {!isSingle && isExpanded && (
+                  <ul className="relative mb-2 mt-0.5 space-y-0.5 ps-[2.6rem]">
+                    <span
+                      aria-hidden
+                      className="absolute inset-y-1 start-[1.55rem] w-px bg-[var(--console-rail-line)]"
+                    />
                     {domain.tabs.map((tab) => {
-                      const TabIcon = tab.icon;
                       const isTabActive = isDomainActive && tab.id === activeTabId;
                       const tabBadge = tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0;
-
                       return (
-                        <button
-                          key={tab.id}
-                          type="button"
-                          onClick={() => {
-                            onSelectTab(domain.id, tab.id);
-                            if (isMobile) setMobileDrawerOpen(false);
-                          }}
-                          onMouseEnter={() => preloadAdminManager(tab.id)}
-                          onFocus={() => preloadAdminManager(tab.id)}
-                          className={cn(
-                            "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all text-start relative group cursor-pointer",
-                            isTabActive
-                              ? cn(
-                                  "bg-primary/10 text-primary font-bold dark:bg-primary/20",
-                                  isRtl
-                                    ? "border-r-2 border-primary -mr-[13px] pr-3"
-                                    : "border-l-2 border-primary -ml-[13px] pl-3",
-                                )
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
-                          )}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <TabIcon
-                              className={cn(
-                                "w-3.5 h-3.5 shrink-0",
-                                isTabActive ? "text-primary" : "opacity-70 group-hover:opacity-100",
-                              )}
-                            />
+                        <li key={tab.id}>
+                          <button
+                            type="button"
+                            data-active={isTabActive}
+                            aria-current={isTabActive ? "page" : undefined}
+                            onClick={() => {
+                              onSelectTab(domain.id, tab.id);
+                              closeDrawer();
+                            }}
+                            onMouseEnter={() => preloadAdminManager(tab.id)}
+                            onFocus={() => preloadAdminManager(tab.id)}
+                            className="console-rail-item flex w-full items-center justify-between gap-2 rounded-lg px-3 py-[7px] text-start text-[13.5px]"
+                          >
                             <span className="truncate">{isAr ? tab.label_ar : tab.label_en}</span>
-                          </div>
-                          {tabBadge > 0 && (
-                            <Badge
-                              variant={isTabActive ? "default" : "destructive"}
-                              className="h-4 px-1 text-[9px] font-bold font-mono shrink-0"
-                            >
-                              {tabBadge}
-                            </Badge>
-                          )}
-                        </button>
+                            {tabBadge > 0 && (
+                              <span className="rounded-full bg-gold px-1.5 text-[11px] font-bold tabular-nums leading-5 text-[#2b1a10]">
+                                {tabBadge}
+                              </span>
+                            )}
+                          </button>
+                        </li>
                       );
                     })}
-                  </div>
+                  </ul>
                 )}
               </div>
             );
           })}
-        </div>
+        </nav>
       </TooltipProvider>
     );
   };
@@ -678,535 +636,260 @@ export function AdminConsoleLayout({
     consoleQueryClient.clear();
   };
 
+  const userMenu = (
+    <DropdownMenuContent align="end" side="top" className="w-64 p-1.5 shadow-xl">
+      <DropdownMenuLabel className="p-2 text-xs">
+        <span className="block truncate font-bold text-foreground">{displayName}</span>
+        <span className="block truncate text-[11px] font-normal text-muted-foreground">
+          {user?.email}
+        </span>
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem asChild>
+        <Link to="/account" className="cursor-pointer text-xs">
+          <User className="me-2 h-3.5 w-3.5" />
+          {isAr ? "الملف الشخصي والحساب" : "My Profile"}
+        </Link>
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={() => setHelpModalOpen(true)} className="cursor-pointer text-xs">
+        <HelpCircle className="me-2 h-3.5 w-3.5 text-primary" />
+        {isAr ? "دليل الاستخدام والمساعدة" : "Help & Documentation"}
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem
+        onClick={handleSignOut}
+        disabled={signingOut}
+        className="cursor-pointer text-xs text-destructive focus:text-destructive"
+      >
+        <LogOut className="me-2 h-3.5 w-3.5" />
+        {isAr ? "تسجيل الخروج" : "Sign Out"}
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  );
+
+  const userAvatar = (size: string) => (
+    <Avatar
+      className={cn(
+        "shrink-0 rounded-full bg-[rgb(236_166_84/0.2)] ring-2 ring-[rgb(236_166_84/0.45)]",
+        size,
+      )}
+    >
+      {avatarUrl && (
+        <AvatarImage src={avatarUrl} alt={displayName || ""} className="object-cover" />
+      )}
+      <AvatarFallback className="bg-[rgb(236_166_84/0.2)] text-sm font-bold text-gold">
+        {initial}
+      </AvatarFallback>
+    </Avatar>
+  );
+
+  const brand = (compact: boolean) => (
+    <Link
+      to="/"
+      className="group flex min-w-0 items-center gap-3 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+      title={isAr ? "الانتقال إلى الموقع" : "Go to website"}
+    >
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[rgb(247_236_223/0.07)] ring-1 ring-[rgb(236_166_84/0.35)] transition-transform duration-300 group-hover:scale-105">
+        <img src="/logo-mark-gold.svg" alt="" className="h-8 w-8 object-contain" />
+      </span>
+      {!compact && (
+        <span className="min-w-0">
+          <span className="console-title block truncate text-[17px] text-[var(--console-rail-fg)]">
+            {isAr ? "مجلس آل بوعبيد" : "Al Bu Obaid Council"}
+          </span>
+          <span className="block truncate text-xs text-[var(--console-rail-faint)]">
+            {isAr ? "منظومة الإدارة" : "Management console"}
+          </span>
+        </span>
+      )}
+    </Link>
+  );
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
+    <div className="console-shell flex min-h-screen flex-col text-foreground md:flex-row">
       {signingOut && (
         <div
           role="status"
           aria-live="polite"
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background/90 backdrop-blur-sm"
         >
-          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
           <p className="text-xs font-medium text-muted-foreground">
             {isAr ? "جاري تسجيل الخروج..." : "Signing out..."}
           </p>
         </div>
       )}
-      {/* =========================================================================
-       * 1. DESKTOP SIDEBAR
-       * ========================================================================= */}
+
+      {/* ==================== 1. RAIL (desktop sidebar) ==================== */}
       <aside
         className={cn(
-          "hidden md:flex flex-col border-e border-border/70 bg-card/70 backdrop-blur-xl shrink-0 transition-all duration-300 z-30 sticky top-0 h-screen select-none",
-          sidebarCollapsed ? "w-16" : "w-64",
+          "console-rail sticky top-0 z-30 hidden h-screen shrink-0 select-none flex-col transition-[width] duration-300 md:flex",
+          sidebarCollapsed ? "w-[84px]" : "w-[284px]",
         )}
       >
-        {/* Brand Header */}
-        <div className="h-16 px-3.5 flex items-center justify-between border-b border-border/70">
-          {!sidebarCollapsed ? (
-            <Link to="/" className="flex items-center gap-2.5 min-w-0 group">
-              <div className="w-9 h-9 rounded-xl bg-gold/10 border border-gold/30 p-1 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
-                <img
-                  src="/logo-mark-gold.svg"
-                  alt={isAr ? "شعار مجلس أسرة آل بوعبيد" : "Al Bu Obaid Logo"}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <div className="min-w-0">
-                <span className="font-bold text-xs text-foreground block truncate">
-                  {isAr ? "أمانة آل بوعبيد" : "Al Bu Obaid Hub"}
-                </span>
-                <span className="text-[10px] text-muted-foreground font-mono block truncate">
-                  {isAr ? "المنظومة الإدارية الموحدة" : "Unified Management"}
-                </span>
-              </div>
-            </Link>
-          ) : (
-            <div className="w-9 h-9 mx-auto rounded-xl bg-gold/10 border border-gold/30 p-1 flex items-center justify-center shadow-2xs">
-              <img
-                src="/logo-mark-gold.svg"
-                alt={isAr ? "شعار مجلس أسرة آل بوعبيد" : "Al Bu Obaid Logo"}
-                className="w-full h-full object-contain"
-              />
-            </div>
+        <div
+          className={cn(
+            "flex h-[76px] items-center border-b border-[var(--console-rail-line)]",
+            sidebarCollapsed ? "justify-center px-2" : "justify-between gap-2 px-4",
           )}
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleToggleSidebar}
-            className="w-7 h-7 text-muted-foreground hover:text-foreground hidden lg:flex rounded-lg"
-            title={
-              sidebarCollapsed
-                ? isAr
-                  ? "توسيع القائمة (Ctrl+\\)"
-                  : "Expand Sidebar"
-                : isAr
-                  ? "طي القائمة"
-                  : "Collapse Sidebar"
-            }
-          >
-            {sidebarCollapsed ? (
-              isRtl ? (
-                <PanelLeftOpen className="w-4 h-4 transform rotate-180" />
-              ) : (
-                <PanelLeftOpen className="w-4 h-4" />
-              )
-            ) : isRtl ? (
-              <PanelLeftClose className="w-4 h-4 transform rotate-180" />
-            ) : (
-              <PanelLeftClose className="w-4 h-4" />
-            )}
-          </Button>
+        >
+          {brand(sidebarCollapsed)}
+          {!sidebarCollapsed && (
+            <button
+              type="button"
+              onClick={handleToggleSidebar}
+              className="console-rail-item hidden h-8 w-8 items-center justify-center rounded-lg lg:flex"
+              aria-label={isAr ? "طي القائمة" : "Collapse sidebar"}
+              title={isAr ? "طي القائمة" : "Collapse sidebar"}
+            >
+              <PanelLeftClose className="h-4 w-4 rtl:rotate-180" />
+            </button>
+          )}
         </div>
 
-        {/* Global Search Shortcut in Sidebar */}
-        {!sidebarCollapsed && (
-          <div className="px-3 pt-3 pb-1">
+        <div className="no-scrollbar flex-1 overflow-y-auto px-3 py-4">{renderNavList(false)}</div>
+
+        <div className="space-y-1 border-t border-[var(--console-rail-line)] p-3">
+          {sidebarCollapsed && (
             <button
-              onClick={() => setCommandPaletteOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/70 hover:border-border text-xs text-muted-foreground hover:text-foreground transition-all shadow-2xs"
+              type="button"
+              onClick={handleToggleSidebar}
+              className="console-rail-item mx-auto flex h-10 w-10 items-center justify-center rounded-xl"
+              aria-label={isAr ? "توسيع القائمة" : "Expand sidebar"}
+              title={isAr ? "توسيع القائمة" : "Expand sidebar"}
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <Search className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">{isAr ? "بحث سريع..." : "Quick Search..."}</span>
-              </div>
-              <kbd className="text-[9px] bg-background px-1.5 py-0.5 rounded border border-border font-mono shrink-0 shadow-2xs">
-                ⌘K
-              </kbd>
+              <PanelLeftOpen className="h-4 w-4 rtl:rotate-180" />
             </button>
-          </div>
-        )}
-
-        {/* Navigation Groups (Scrollable) */}
-        <div className="flex-1 overflow-y-auto px-2 py-2 no-scrollbar">{renderNavList(false)}</div>
-
-        {/* Bottom Utility & User Profile Strip */}
-        <div className="p-2 border-t border-border/70 bg-card/40 space-y-1">
-          {/* Quick Help Button */}
-          {!sidebarCollapsed ? (
-            <div className="flex items-center justify-between px-1 py-0.5">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setHelpModalOpen(true)}
-                className="h-7 text-[11px] px-2 text-muted-foreground hover:text-foreground gap-1.5"
-              >
-                <HelpCircle className="w-3.5 h-3.5 text-primary" />
-                <span>{isAr ? "دليل المشرف" : "User Guide"}</span>
-              </Button>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setLang(isAr ? "en" : "ar")}
-                  className="w-7 h-7 text-xs font-mono text-muted-foreground hover:text-foreground"
-                  title={isAr ? "Switch to English" : "التحويل للعربية"}
-                >
-                  {isAr ? "EN" : "ع"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="w-7 h-7 text-muted-foreground hover:text-foreground"
-                  title={isAr ? "تغيير المظهر" : "Toggle Theme"}
-                >
-                  {theme === "dark" ? (
-                    <Sun className="w-3.5 h-3.5 text-amber-500" />
-                  ) : (
-                    <Moon className="w-3.5 h-3.5" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <TooltipProvider delayDuration={150}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setHelpModalOpen(true)}
-                    className="w-10 h-10 mx-auto text-muted-foreground hover:text-foreground rounded-xl"
-                  >
-                    <HelpCircle className="w-4 h-4 text-primary" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side={isRtl ? "left" : "right"}>
-                  {isAr ? "دليل المشرف والمساعدة" : "User Guide & Help"}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
           )}
-
-          {/* User Profile Pill */}
+          {!sidebarCollapsed && (
+            <button
+              type="button"
+              onClick={() => setHelpModalOpen(true)}
+              className="console-rail-item flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start text-[13.5px]"
+            >
+              <HelpCircle className="h-4 w-4" />
+              {isAr ? "دليل الاستخدام" : "User guide"}
+            </button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
+                type="button"
                 className={cn(
-                  "w-full flex items-center gap-2.5 p-1.5 rounded-xl text-start hover:bg-muted/60 transition-colors cursor-pointer",
-                  sidebarCollapsed && "justify-center p-1",
+                  "console-rail-item flex w-full items-center gap-3 rounded-2xl text-start",
+                  sidebarCollapsed ? "justify-center p-1.5" : "p-2",
                 )}
+                aria-label={isAr ? "قائمة الحساب" : "Account menu"}
               >
-                <Avatar className="w-8 h-8 rounded-full border border-primary/30 shadow-2xs shrink-0 bg-primary/10">
-                  {avatarUrl && (
-                    <AvatarImage
-                      src={avatarUrl}
-                      alt={profile?.full_name_ar || profile?.full_name_en || "User Avatar"}
-                      className="object-cover"
-                    />
-                  )}
-                  <AvatarFallback className="bg-primary/15 text-primary font-bold text-xs">
-                    {profile?.full_name_ar?.[0] ||
-                      profile?.full_name_en?.[0] ||
-                      user?.email?.[0]?.toUpperCase() ||
-                      "A"}
-                  </AvatarFallback>
-                </Avatar>
+                {userAvatar("h-10 w-10")}
                 {!sidebarCollapsed && (
-                  <div className="min-w-0 flex-1">
-                    <span className="font-bold text-xs text-foreground block truncate">
-                      {profile?.full_name_ar || profile?.full_name_en || user?.email?.split("@")[0]}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-[var(--console-rail-fg)]">
+                      {displayName}
                     </span>
-                    <span className="text-[10px] text-muted-foreground font-mono block truncate">
-                      {isSuperAdmin
-                        ? isAr
-                          ? "مشرف عام"
-                          : "Super Admin"
-                        : isAdmin
-                          ? isAr
-                            ? "مدير نظام"
-                            : "Admin"
-                          : isAr
-                            ? "مسؤول قطاع"
-                            : "Officer"}
-                    </span>
-                  </div>
+                    <span className="block truncate text-xs text-gold">{roleLabel}</span>
+                  </span>
                 )}
+                {!sidebarCollapsed && <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60 shadow-xl border-border p-1.5">
-              <DropdownMenuLabel className="text-xs p-2">
-                <div className="flex items-center gap-2.5">
-                  <Avatar className="w-9 h-9 rounded-full border border-primary/30 shadow-2xs shrink-0 bg-primary/10">
-                    {avatarUrl && (
-                      <AvatarImage
-                        src={avatarUrl}
-                        alt={profile?.full_name_ar || profile?.full_name_en || "User Avatar"}
-                        className="object-cover"
-                      />
-                    )}
-                    <AvatarFallback className="bg-primary/15 text-primary font-bold text-xs">
-                      {profile?.full_name_ar?.[0] ||
-                        profile?.full_name_en?.[0] ||
-                        user?.email?.[0]?.toUpperCase() ||
-                        "A"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <span className="block font-bold text-foreground truncate">
-                      {profile?.full_name_ar || profile?.full_name_en || "مشرف المنظومة"}
-                    </span>
-                    <span className="block text-[11px] font-normal text-muted-foreground font-mono truncate">
-                      {user?.email}
-                    </span>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/account" className="text-xs cursor-pointer">
-                  <User className="w-3.5 h-3.5 me-2" />
-                  {isAr ? "الملف الشخصي والحساب" : "My Profile"}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setHelpModalOpen(true)}
-                className="text-xs cursor-pointer"
-              >
-                <HelpCircle className="w-3.5 h-3.5 me-2 text-primary" />
-                {isAr ? "دليل الاستخدام والمساعدة" : "Help & Documentation"}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="text-xs cursor-pointer"
-              >
-                {theme === "dark" ? (
-                  <Sun className="w-3.5 h-3.5 me-2 text-amber-500" />
-                ) : (
-                  <Moon className="w-3.5 h-3.5 me-2 text-primary" />
-                )}
-                {isAr
-                  ? theme === "dark"
-                    ? "المظهر الفاتح"
-                    : "المظهر الداكن"
-                  : theme === "dark"
-                    ? "Light Mode"
-                    : "Dark Mode"}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setLang(isAr ? "en" : "ar")}
-                className="text-xs cursor-pointer"
-              >
-                <Globe className="w-3.5 h-3.5 me-2" />
-                {isAr ? "English" : "العربية"}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleSignOut}
-                disabled={signingOut}
-                className="text-xs text-destructive focus:text-destructive cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5 me-2" />
-                {isAr ? "تسجيل الخروج" : "Sign Out"}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+            {userMenu}
           </DropdownMenu>
         </div>
       </aside>
 
-      {/* =========================================================================
-       * 2. MAIN CONTENT AREA & HEADER
-       * ========================================================================= */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header Navigation Bar */}
-        <header className="h-16 border-b border-border/70 bg-card/60 backdrop-blur-xl px-4 flex items-center justify-between sticky top-0 z-20 gap-4 select-none">
-          {/* Left: Mobile Sheet Trigger & Global Search */}
-          <div className="flex items-center gap-3 lg:w-[320px]">
-            {/* Mobile Sheet Trigger */}
-            <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden w-8 h-8 text-muted-foreground shrink-0 rounded-lg"
-                >
-                  <MenuIcon className="w-5 h-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side={isRtl ? "right" : "left"} className="w-72 p-0 flex flex-col">
-                <div className="p-4 border-b border-border flex items-center justify-between">
-                  <SheetTitle className="text-xs font-bold text-foreground flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-gold/10 border border-gold/30 p-0.5 flex items-center justify-center shrink-0">
-                      <img
-                        src="/logo-mark-gold.svg"
-                        alt="Logo"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <span>{isAr ? "أمانة مجلس آل بوعبيد" : "Al Bu Obaid Hub"}</span>
-                  </SheetTitle>
-                </div>
-                <div className="flex-1 overflow-y-auto p-3">{renderNavList(true)}</div>
-                <div className="p-3 border-t border-border/70 bg-card/60 flex items-center gap-2.5">
-                  <Avatar className="w-8 h-8 rounded-full border border-primary/30 shadow-2xs shrink-0 bg-primary/10">
-                    {avatarUrl && (
-                      <AvatarImage
-                        src={avatarUrl}
-                        alt={profile?.full_name_ar || profile?.full_name_en || "User Avatar"}
-                        className="object-cover"
-                      />
-                    )}
-                    <AvatarFallback className="bg-primary/15 text-primary font-bold text-xs">
-                      {profile?.full_name_ar?.[0] ||
-                        profile?.full_name_en?.[0] ||
-                        user?.email?.[0]?.toUpperCase() ||
-                        "A"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <span className="font-bold text-xs text-foreground block truncate">
-                      {profile?.full_name_ar || profile?.full_name_en || user?.email?.split("@")[0]}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground font-mono block truncate">
-                      {isSuperAdmin
-                        ? isAr
-                          ? "مشرف عام"
-                          : "Super Admin"
-                        : isAdmin
-                          ? isAr
-                            ? "مدير نظام"
-                            : "Admin"
-                          : isAr
-                            ? "مسؤول قطاع"
-                            : "Officer"}
-                    </span>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-
-            {/* Global Search Header Input */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCommandPaletteOpen(true)}
-              className="hidden md:flex flex-1 text-xs text-muted-foreground hover:text-foreground justify-between h-9 rounded-xl bg-background/50 border-border/60 shadow-2xs"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <Search className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">
-                  {isAr ? "بحث شامل وأوامر سريعة..." : "Search across admin..."}
-                </span>
-              </div>
-              <kbd className="text-[9px] bg-muted px-1.5 py-0.5 rounded border border-border font-mono hidden lg:inline-flex">
-                ⌘K
-              </kbd>
-            </Button>
-          </div>
-
-          {/* Center: Business Context & Breadcrumb Switcher */}
-          <div className="flex items-center justify-start lg:justify-center flex-1 min-w-0 overflow-x-auto no-scrollbar">
-            <nav
-              aria-label="Admin Breadcrumbs"
-              className="flex items-center gap-1.5 text-xs whitespace-nowrap"
-            >
+      {/* ==================== 2. WORKSPACE ==================== */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="console-topbar sticky top-0 z-20 flex h-16 select-none items-center gap-2 px-3 md:gap-3 md:px-6">
+          <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
+            <SheetTrigger asChild>
               <button
                 type="button"
-                onClick={() => onSelectTab("dashboard", "overview")}
-                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-lg hover:bg-muted/50 font-medium cursor-pointer"
-                title={isAr ? "الرئيسية (لوحة التحكم)" : "Dashboard"}
+                className="console-icon-btn md:hidden"
+                aria-label={isAr ? "فتح القائمة" : "Open menu"}
               >
-                <LayoutDashboard className="w-3.5 h-3.5 text-primary" />
-                <span className="hidden sm:inline">{isAr ? "الرئيسية" : "Dashboard"}</span>
+                <MenuIcon className="h-5 w-5" />
               </button>
+            </SheetTrigger>
+            <SheetContent
+              side={isRtl ? "right" : "left"}
+              className="console-portal console-rail flex w-[300px] flex-col border-0 p-0 text-[var(--console-rail-fg)]"
+            >
+              <SheetTitle className="sr-only">
+                {isAr ? "أقسام الإدارة" : "Console sections"}
+              </SheetTitle>
+              <div className="flex h-[76px] items-center border-b border-[var(--console-rail-line)] px-4">
+                {brand(false)}
+              </div>
+              <div className="flex-1 overflow-y-auto px-3 py-4">{renderNavList(true)}</div>
+              <div className="flex items-center gap-3 border-t border-[var(--console-rail-line)] p-4">
+                {userAvatar("h-10 w-10")}
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold">{displayName}</span>
+                  <span className="block truncate text-xs text-gold">{roleLabel}</span>
+                </span>
+              </div>
+            </SheetContent>
+          </Sheet>
 
-              {activeDomainId !== "dashboard" && (
-                <>
-                  {isRtl ? (
-                    <ChevronLeft className="w-3 h-3 text-muted-foreground/60 shrink-0" />
-                  ) : (
-                    <ChevronRight className="w-3 h-3 text-muted-foreground/60 shrink-0" />
-                  )}
+          {/* One search for everything: pages, members, articles, users. */}
+          <button
+            type="button"
+            onClick={() => setCommandPaletteOpen(true)}
+            className="group flex h-11 min-w-0 flex-1 items-center gap-3 rounded-2xl border border-[var(--console-hairline)] bg-card px-4 text-start text-sm text-muted-foreground shadow-[var(--console-shadow-sm)] transition-[box-shadow,transform] duration-300 hover:shadow-[var(--console-shadow-md)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.995] md:max-w-xl"
+          >
+            <Search className="h-4 w-4 shrink-0 text-primary" />
+            <span className="truncate">
+              {isAr ? "بحث شامل وأوامر سريعة..." : "Search across admin..."}
+            </span>
+            <kbd className="ms-auto hidden shrink-0 rounded-md border border-[var(--console-hairline)] bg-[var(--console-canvas)] px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground lg:inline-flex">
+              Ctrl K
+            </kbd>
+          </button>
 
-                  {/* Domain Dropdown Switcher */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className="flex items-center gap-1 font-bold text-foreground/80 hover:text-foreground transition-colors px-2 py-1 rounded-lg hover:bg-muted/60 cursor-pointer"
-                      >
-                        <span>{isAr ? currentDomain.label_ar : currentDomain.label_en}</span>
-                        <ChevronDown className="w-3 h-3 text-muted-foreground" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align={isRtl ? "end" : "start"}
-                      className="w-60 p-1.5 shadow-xl border-border"
-                    >
-                      <DropdownMenuLabel className="text-[11px] text-muted-foreground font-semibold">
-                        {isAr ? "الانتقال المباشر إلى قطاع آخر" : "Switch Management Domain"}
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {visibleDomains.map((dom) => {
-                        const DomIcon = dom.icon;
-                        const isCurrent = dom.id === activeDomainId;
-                        return (
-                          <DropdownMenuItem
-                            key={dom.id}
-                            onClick={() => onSelectTab(dom.id, dom.tabs[0]?.id || "")}
-                            className={cn(
-                              "text-xs cursor-pointer flex items-center justify-between py-2 rounded-lg",
-                              isCurrent && "font-bold text-primary bg-primary/10",
-                            )}
-                          >
-                            <div className="flex items-center gap-2">
-                              <DomIcon className="w-3.5 h-3.5 text-primary" />
-                              <span>{isAr ? dom.label_ar : dom.label_en}</span>
-                            </div>
-                            {isCurrent && <Check className="w-3 h-3 text-primary" />}
-                          </DropdownMenuItem>
-                        );
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  {isRtl ? (
-                    <ChevronLeft className="w-3 h-3 text-muted-foreground/60 shrink-0" />
-                  ) : (
-                    <ChevronRight className="w-3 h-3 text-muted-foreground/60 shrink-0" />
-                  )}
-
-                  {/* Active Sub-Tab Dropdown / Badge */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15 transition-colors cursor-pointer shadow-2xs"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                        <span>{isAr ? currentTab.label_ar : currentTab.label_en}</span>
-                        {currentDomain.tabs.length > 1 && (
-                          <ChevronDown className="w-3 h-3 text-primary/70" />
-                        )}
-                      </button>
-                    </DropdownMenuTrigger>
-                    {currentDomain.tabs.length > 1 && (
-                      <DropdownMenuContent
-                        align={isRtl ? "end" : "start"}
-                        className="w-56 p-1.5 shadow-xl border-border"
-                      >
-                        <DropdownMenuLabel className="text-[11px] text-muted-foreground font-semibold">
-                          {isAr
-                            ? `صفحات ${currentDomain.label_ar}`
-                            : `${currentDomain.label_en} Sections`}
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {currentDomain.tabs.map((tab) => {
-                          const TabIcon = tab.icon;
-                          const isCurrent = tab.id === activeTabId;
-                          return (
-                            <DropdownMenuItem
-                              key={tab.id}
-                              onClick={() => onSelectTab(currentDomain.id, tab.id)}
-                              className={cn(
-                                "text-xs cursor-pointer flex items-center justify-between py-1.5 rounded-lg",
-                                isCurrent && "font-bold text-primary bg-primary/10",
-                              )}
-                            >
-                              <div className="flex items-center gap-2">
-                                <TabIcon className="w-3.5 h-3.5 text-primary" />
-                                <span>{isAr ? tab.label_ar : tab.label_en}</span>
-                              </div>
-                              {isCurrent && <Check className="w-3 h-3 text-primary" />}
-                            </DropdownMenuItem>
-                          );
-                        })}
-                      </DropdownMenuContent>
-                    )}
-                  </DropdownMenu>
-                </>
+          <div className="ms-auto flex shrink-0 items-center gap-0.5 md:gap-1">
+            <button
+              type="button"
+              onClick={() => setLang(isAr ? "en" : "ar")}
+              className="console-icon-btn hidden text-sm font-semibold sm:inline-flex"
+              title={isAr ? "Switch to English" : "التحويل للعربية"}
+            >
+              {isAr ? "EN" : "ع"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="console-icon-btn hidden sm:inline-flex"
+              aria-label={isAr ? "تغيير المظهر" : "Toggle theme"}
+              title={isAr ? "تغيير المظهر" : "Toggle theme"}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-[18px] w-[18px]" />
+              ) : (
+                <Moon className="h-[18px] w-[18px]" />
               )}
-            </nav>
-          </div>
-
-          {/* Right: Actions, Live Status, & Notifications */}
-          <div className="flex items-center justify-end gap-2 shrink-0 lg:w-[320px]">
-            {/* Live System Sync Indicator */}
-            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{isAr ? "المنظومة متصلة" : "System Live"}</span>
-            </div>
+            </button>
 
             {/* Attention & Notifications Center Popover */}
             <Popover open={notifPopoverOpen} onOpenChange={setNotifPopoverOpen}>
               <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="w-8 h-8 relative text-muted-foreground hover:text-foreground rounded-lg"
+                <button
+                  type="button"
+                  className="console-icon-btn relative"
+                  aria-label={
+                    isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & attention center"
+                  }
                   title={
-                    isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & Attention Center"
+                    isAr ? "مركز الإشعارات والمهام المعلقة" : "Notifications & attention center"
                   }
                 >
-                  <BellRing className="w-4 h-4" />
+                  <Bell className="h-[18px] w-[18px]" />
                   {totalCombinedBadge > 0 && (
-                    <span className="absolute -top-0.5 -end-0.5 min-w-4 h-4 px-1 bg-destructive text-destructive-foreground rounded-full text-[9px] font-bold font-mono flex items-center justify-center animate-pulse">
-                      {totalCombinedBadge}
+                    <span className="absolute -top-0.5 -end-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#b4532a] px-1 text-[10px] font-bold tabular-nums text-white ring-2 ring-[var(--console-canvas)]">
+                      {totalCombinedBadge > 99 ? "99+" : totalCombinedBadge}
                     </span>
                   )}
-                </Button>
+                </button>
               </PopoverTrigger>
               <PopoverContent
                 align="end"
@@ -1446,25 +1129,23 @@ export function AdminConsoleLayout({
               </PopoverContent>
             </Popover>
 
-            {/* Quick View Website Button */}
             <Link
               to="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 border border-border/60 shadow-2xs transition-colors"
-              title={isAr ? "فتح الموقع الخارجي" : "View Live Site"}
+              className="console-icon-btn gap-1.5 text-sm"
+              title={isAr ? "فتح الموقع في نافذة جديدة" : "Open the website in a new tab"}
             >
-              <span>{isAr ? "واجهة المنصة" : "Live Site"}</span>
-              <ExternalLink className="w-3 h-3 text-primary" />
+              <ExternalLink className="h-4 w-4" />
+              <span className="hidden lg:inline">{isAr ? "الموقع" : "Website"}</span>
             </Link>
           </div>
         </header>
 
-        {/* Mobile Sub-Tab Navigation Ribbon */}
+        {/* Mobile: sibling pages of the current section */}
         {currentDomain.tabs.length > 1 && (
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2 px-3 border-b border-border/60 bg-card/40 md:hidden">
+          <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto border-b border-[var(--console-hairline)] bg-card/60 px-3 py-2 md:hidden">
             {currentDomain.tabs.map((tab) => {
-              const TabIcon = tab.icon;
               const isTabActive = tab.id === activeTabId;
               const tabBadge = tab.badgeKey ? (badgeCounts[tab.badgeKey] ?? 0) : 0;
               return (
@@ -1473,16 +1154,15 @@ export function AdminConsoleLayout({
                   type="button"
                   onClick={() => onSelectTab(currentDomain.id, tab.id)}
                   className={cn(
-                    "flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
+                    "flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
                     isTabActive
-                      ? "bg-primary text-primary-foreground font-bold shadow-2xs"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
-                  <TabIcon className="w-3.5 h-3.5" />
                   <span>{isAr ? tab.label_ar : tab.label_en}</span>
                   {tabBadge > 0 && (
-                    <span className="ms-0.5 px-1 py-0.2 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold font-mono">
+                    <span className="rounded-full bg-gold px-1.5 text-[10px] font-bold tabular-nums text-[#2b1a10]">
                       {tabBadge}
                     </span>
                   )}
@@ -1492,8 +1172,32 @@ export function AdminConsoleLayout({
           </div>
         )}
 
-        {/* Content Body Area */}
-        <main className="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto space-y-6">{children}</main>
+        <main className="mx-auto w-full max-w-[1360px] flex-1 space-y-6 px-4 py-6 md:px-8 md:py-8">
+          {activeDomainId !== "dashboard" && (
+            <div
+              key={`${activeDomainId}:${activeTabId}`}
+              className="console-rise flex items-start gap-4"
+            >
+              <span className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[var(--console-shadow-md)] sm:flex">
+                <DomainIconCurrent className="h-6 w-6" />
+              </span>
+              <div className="min-w-0">
+                <p className="console-eyebrow">
+                  {isAr ? currentDomain.label_ar : currentDomain.label_en}
+                </p>
+                <h1 className="console-title mt-1 text-[26px] text-foreground md:text-[32px]">
+                  {isAr ? currentTab.label_ar : currentTab.label_en}
+                </h1>
+                {pageDescription && (
+                  <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    {pageDescription}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+          {children}
+        </main>
       </div>
 
       {/* =========================================================================

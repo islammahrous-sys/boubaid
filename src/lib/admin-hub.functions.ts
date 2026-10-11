@@ -220,8 +220,6 @@ export type DashboardStats = {
   totalBusinesses: number;
   totalInitiatives: number;
   totalAchievers: number;
-  pendingMembersWithoutRoles: number;
-  healthScore: number;
   recentActivity: {
     id: string;
     action: string;
@@ -316,17 +314,6 @@ export const getDashboardOverview = createServerFn({ method: "GET" })
       pendingInquiries: (inquiriesRes.count ?? 0) + (contactRes.count ?? 0),
       totalUsers: usersRes.count ?? 0,
       approvedMembers: approvedMembersRes.count ?? 0,
-      pendingMembersWithoutRoles: Math.max(0, (approvedMembersRes.count ?? 0) - 5),
-      healthScore: Math.max(
-        65,
-        Math.min(
-          100,
-          100 -
-            ((verificationsRes.count ?? 0) * 3 +
-              (articlesDraftRes.count ?? 0) * 2 +
-              ((inquiriesRes.count ?? 0) + (contactRes.count ?? 0)) * 2),
-        ),
-      ),
       pendingVerifications: verificationsRes.count ?? 0,
       totalBusinesses: businessesRes.count ?? 0,
       totalInitiatives: initiativesRes.count ?? 0,

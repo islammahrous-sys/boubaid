@@ -195,7 +195,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         // Amiri is the Arabic display face and carries every heading in the
         // site's primary language — it is not optional decoration.
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600;700&display=swap",
       },
     ],
     scripts: [

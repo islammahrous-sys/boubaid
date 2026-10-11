@@ -1203,3 +1203,270 @@ blockquote {
   --req-on-band: #3f2518;
   --req-link-dark: #c4d2da;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   Admin console — the "Majlis" workspace
+
+   The public site is a printed archive; the console is the council's
+   office. Same paper and ink, but arranged for daily work:
+     · a deep-green rail (the council's seat) holding navigation,
+     · a warm, quiet canvas where the work happens,
+     · three depth levels — canvas → card → floating — with
+       green/brown-tinted shadows instead of grey ones.
+   Everything is scoped to `.console-shell`, so public pages are
+   untouched. `.console-portal` carries the same tokens into Radix
+   portals (the mobile drawer), which render outside the shell.
+   ══════════════════════════════════════════════════════════════ */
+.console-shell,
+.console-portal {
+  --console-canvas: #fbf5ec;
+  --console-rail: #143726;
+  --console-rail-raised: #1c4733;
+  --console-rail-fg: #f7ecdf;
+  --console-rail-muted: rgb(247 236 223 / 0.66);
+  --console-rail-faint: rgb(247 236 223 / 0.42);
+  --console-rail-line: rgb(247 236 223 / 0.1);
+  --console-hairline: rgb(138 119 104 / 0.26);
+  --console-shadow-sm: 0 1px 2px rgb(36 91 63 / 0.05), 0 2px 8px -3px rgb(119 73 50 / 0.1);
+  --console-shadow-md: 0 1px 2px rgb(36 91 63 / 0.06), 0 12px 28px -14px rgb(119 73 50 / 0.28);
+  --console-shadow-lg: 0 2px 6px rgb(20 55 38 / 0.08), 0 28px 56px -24px rgb(20 55 38 / 0.45);
+  --console-ease: cubic-bezier(0.22, 1.2, 0.36, 1);
+
+  /* Container borders become hairlines. Form controls keep --input (the
+     guide's 3:1 rule colour), so field edges stay accessible. */
+  --border: var(--console-hairline);
+  --color-border: var(--console-hairline);
+
+  /* Readability floor. Council members read this console daily; 12px body
+     and 10–11px captions were below comfortable reading size, especially in
+     Arabic where diacritics and dots need room. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.6;
+
+  background-color: var(--console-canvas);
+}
+.dark .console-shell,
+.dark .console-portal {
+  --console-canvas: var(--paper);
+  --console-rail: #120c08;
+  --console-rail-raised: #1f150e;
+  --console-rail-line: rgb(247 236 223 / 0.08);
+  --console-hairline: rgb(255 244 233 / 0.11);
+  --console-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --console-shadow-md: 0 12px 28px -14px rgb(0 0 0 / 0.6);
+  --console-shadow-lg: 0 28px 56px -24px rgb(0 0 0 / 0.75);
+}
+
+.console-shell .text-\[9px\] {
+  font-size: 10.5px;
+}
+.console-shell .text-\[10px\] {
+  font-size: 11.5px;
+}
+.console-shell .text-\[11px\] {
+  font-size: 12.5px;
+}
+/* IBM Plex Mono has no Arabic glyphs; the system fallback rendered Arabic
+   letter-by-letter with gaps ("ا ل ن ت ا ئ ج"). Fall back to Plex Arabic. */
+.console-shell .font-mono {
+  font-family: "IBM Plex Mono", "IBM Plex Sans Arabic", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Component classes live in the components layer so Tailwind utilities on
+   the same element (md:hidden, sm:inline-flex, …) still win. */
+@layer components {
+  /* ── Rail (sidebar) ── */
+  .console-rail {
+    position: relative;
+    isolation: isolate;
+    color: var(--console-rail-fg);
+    background:
+      radial-gradient(140% 55% at 100% 0%, rgb(236 166 84 / 0.12), transparent 62%),
+      radial-gradient(90% 40% at 0% 100%, rgb(186 115 74 / 0.12), transparent 70%),
+      linear-gradient(180deg, var(--console-rail-raised), var(--console-rail));
+  }
+  /* Eight-point star (khatam) lattice — the heritage motif, at whisper level. */
+  .console-rail::before,
+  .console-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23F1BC7D' stroke-width='1'%3E%3Crect x='19' y='19' width='26' height='26'/%3E%3Crect x='19' y='19' width='26' height='26' transform='rotate(45 32 32)'/%3E%3Ccircle cx='32' cy='32' r='5'/%3E%3Cpath d='M0 32h6M58 32h6M32 0v6M32 58v6'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 64px 64px;
+    opacity: 0.07;
+    mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / 0.35) 45%, transparent 85%);
+  }
+  .console-rail-item {
+    position: relative;
+    color: var(--console-rail-muted);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .console-rail-item:hover {
+    color: var(--console-rail-fg);
+    background-color: rgb(247 236 223 / 0.07);
+  }
+  .console-rail-item:active {
+    background-color: rgb(247 236 223 / 0.1);
+  }
+  .console-rail-item:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+  }
+  .console-rail-item[data-active="true"] {
+    color: #fff;
+    background-color: rgb(247 236 223 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(247 236 223 / 0.08);
+  }
+  .console-rail-item[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    inset-block: 9px;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 999px;
+    background: var(--gold);
+    box-shadow: 0 0 12px rgb(236 166 84 / 0.6);
+  }
+
+  /* ── Top bar ── */
+  .console-topbar {
+    background-color: rgb(251 245 236 / 0.82);
+    backdrop-filter: blur(14px) saturate(1.15);
+    border-bottom: 1px solid var(--console-hairline);
+  }
+  .dark .console-topbar {
+    background-color: rgb(36 24 17 / 0.82);
+  }
+  .console-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    min-width: 2.5rem;
+    padding-inline: 0.625rem;
+    border-radius: 0.75rem;
+    color: var(--muted-foreground);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s var(--console-ease);
+  }
+  .console-icon-btn:hover {
+    color: var(--foreground);
+    background-color: color-mix(in oklab, var(--ink) 7%, transparent);
+  }
+  .console-icon-btn:active {
+    transform: scale(0.94);
+  }
+  .console-icon-btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* ── Surfaces ── */
+  .console-card {
+    background-color: var(--card);
+    border: 1px solid var(--console-hairline);
+    border-radius: 1.125rem;
+    box-shadow: var(--console-shadow-sm);
+  }
+  .console-card-interactive {
+    transition:
+      transform 0.35s var(--console-ease),
+      box-shadow 0.35s ease;
+  }
+  .console-card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--console-shadow-md);
+  }
+  .console-card-interactive:active {
+    transform: translateY(0);
+  }
+  .console-card-interactive:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  /* Dashboard hero: the council seal on green. */
+  .console-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: #fbf3e8;
+    border-radius: 1.5rem;
+    background:
+      radial-gradient(70% 120% at 0% 0%, rgb(236 166 84 / 0.22), transparent 55%),
+      radial-gradient(60% 90% at 100% 100%, rgb(186 115 74 / 0.28), transparent 60%),
+      linear-gradient(135deg, #1d4a35 0%, #143726 55%, #0f2b1e 100%);
+    box-shadow: var(--console-shadow-lg);
+  }
+  .console-hero::before {
+    opacity: 0.09;
+    mask-image: radial-gradient(80% 100% at 85% 50%, #000, transparent 75%);
+  }
+  .dark .console-hero {
+    background:
+      radial-gradient(70% 120% at 0% 0%, rgb(236 166 84 / 0.16), transparent 55%),
+      linear-gradient(135deg, #1b3b2b 0%, #10281c 60%, #0b1c14 100%);
+  }
+
+  /* Section heading inside the console */
+  .console-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--bronze);
+  }
+  :lang(en) .console-eyebrow {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+  }
+  .console-title {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  :lang(en) .console-title {
+    letter-spacing: -0.02em;
+  }
+}
+
+@keyframes console-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.console-rise {
+  animation: console-rise 0.5s var(--console-ease) both;
+}
+.console-rise-2 {
+  animation: console-rise 0.5s var(--console-ease) 0.06s both;
+}
+.console-rise-3 {
+  animation: console-rise 0.5s var(--console-ease) 0.12s both;
+}
+.console-rise-4 {
+  animation: console-rise 0.5s var(--console-ease) 0.18s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .console-rise,
+  .console-rise-2,
+  .console-rise-3,
+  .console-rise-4 {
+    animation: none;
+  }
+  .console-card-interactive,
+  .console-icon-btn {
+    transition: none;
+  }
+}
