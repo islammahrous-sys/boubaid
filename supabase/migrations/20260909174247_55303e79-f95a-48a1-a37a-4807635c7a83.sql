@@ -1,0 +1,2 @@
+DELETE FROM public.navigation_items WHERE parent_id = 'fd000000-0000-0000-0000-000000000007';
+UPDATE public.navigation_items SET parent_id = NULL, sort_order = 5, updated_at = now() WHERE id = 'fd000000-0000-0000-0000-000000000007';

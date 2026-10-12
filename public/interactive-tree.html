@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <title>شجرة أسرة آل بوعبيد التفاعلية | Al Bu Obaid Family Tree</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+    <style>
+      :root {
+        --clay: #8b5433;
+        --clay-deep: #78462a;
+        --gold: #eda746;
+        --gold-soft: #f7d9a8;
+        --green: #26583c;
+        --sand: #fbf3ea;
+        --sand-2: #f5e6d8;
+        --ink: #2a1b10;
+        --shadow: 0 10px 30px rgba(120, 70, 42, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Cairo", system-ui, sans-serif;
+        color: var(--ink);
+        background-color: var(--sand);
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+
+      /* ── Canvas ───────────────────────────────────────────── */
+      #tree-container {
+        position: absolute;
+        inset: 0;
+        touch-action: none; /* let d3 own pinch + drag */
+        cursor: grab;
+      }
+      #tree-container:active {
+        cursor: grabbing;
+      }
+      #tree-container svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .link {
+        fill: none;
+        stroke: var(--gold);
+        stroke-opacity: 0.45;
+        stroke-width: 2px;
+        transition:
+          stroke 0.25s,
+          stroke-width 0.25s,
+          stroke-opacity 0.25s;
+      }
+      .link.path-highlight {
+        stroke: var(--green);
+        stroke-width: 3.5px;
+        stroke-opacity: 1;
+      }
+
+      .node-group {
+        cursor: pointer;
+      }
+      .node-bg {
+        transition:
+          stroke 0.2s,
+          filter 0.2s;
+      }
+      .node-group:active .node-bg,
+      .node-group:hover .node-bg {
+        stroke: var(--gold) !important;
+        stroke-width: 3px !important;
+      }
+
+      @keyframes pulse-ring {
+        0%,
+        100% {
+          stroke-opacity: 0.55;
+          stroke-width: 2px;
+        }
+        50% {
+          stroke-opacity: 1;
+          stroke-width: 5px;
+        }
+      }
+      .node--highlighted .node-bg {
+        stroke: var(--green) !important;
+        animation: pulse-ring 1.4s infinite;
+      }
+
+      /* ── Top bar ──────────────────────────────────────────── */
+      .topbar {
+        position: absolute;
+        top: 0;
+        inset-inline: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        padding-top: max(10px, env(safe-area-inset-top));
+        background: linear-gradient(
+          to bottom,
+          rgba(251, 243, 234, 0.97),
+          rgba(251, 243, 234, 0.86)
+        );
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(237, 167, 70, 0.35);
+      }
+      .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
+      }
+      .brand strong {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--clay-deep);
+        white-space: nowrap;
+      }
+      .brand span {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--clay);
+        white-space: nowrap;
+      }
+
+      .search-wrap {
+        position: relative;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 340px;
+        margin-inline-start: auto;
+      }
+      .search-wrap input {
+        width: 100%;
+        height: 40px;
+        padding: 0 38px 0 12px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--clay-deep);
+        background: #fff;
+        border: 1.5px solid rgba(38, 88, 60, 0.22);
+        border-radius: 12px;
+        outline: none;
+      }
+      .search-wrap input:focus-visible {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(237, 167, 70, 0.25);
+      }
+      .search-wrap .icon {
+        position: absolute;
+        inset-inline-end: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold);
+        font-size: 14px;
+        pointer-events: none;
+      }
+      .search-count {
+        position: absolute;
+        inset-inline-start: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--green);
+        pointer-events: none;
+      }
+
+      /* ── Buttons ──────────────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-width: 44px;
+        height: 44px;
+        padding: 0 12px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 12px;
+        border: 1.5px solid rgba(237, 167, 70, 0.5);
+        background: #fff;
+        color: var(--clay-deep);
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          color 0.2s,
+          transform 0.1s;
+      }
+      .btn:active {
+        transform: scale(0.96);
+      }
+      .btn.primary {
+        background: var(--clay-deep);
+        color: #fff;
+        border-color: var(--clay-deep);
+      }
+      .btn.gold {
+        background: var(--gold);
+        color: var(--ink);
+        border-color: var(--gold);
+      }
+      .btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .toolbar {
+        position: absolute;
+        z-index: 40;
+        inset-inline-start: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toolbar-row {
+        display: flex;
+        gap: 8px;
+      }
+
+      /* ── Path breadcrumb ─────────────────────────────────── */
+      .crumb {
+        position: absolute;
+        z-index: 35;
+        inset-inline: 12px;
+        top: 66px;
+        display: none;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.6;
+        color: var(--clay-deep);
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid rgba(237, 167, 70, 0.4);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+      .crumb.show {
+        display: block;
+      }
+      .crumb b {
+        color: var(--green);
+      }
+
+      /* ── Bottom sheet (details + legend) ─────────────────── */
+      .sheet {
+        position: absolute;
+        z-index: 60;
+        inset-inline: 0;
+        bottom: 0;
+        transform: translateY(105%);
+        transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+        background: #fff;
+        border-top: 3px solid var(--green);
+        border-radius: 18px 18px 0 0;
+        box-shadow: 0 -12px 40px rgba(120, 70, 42, 0.22);
+        padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+        max-height: 62vh;
+        overflow-y: auto;
+      }
+      .sheet.open {
+        transform: translateY(0);
+      }
+      .sheet h3 {
+        margin: 0 0 4px;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--clay-deep);
+      }
+      .sheet .sub {
+        margin: 0 0 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gold);
+      }
+      .sheet .lineage {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.9;
+        color: var(--ink);
+      }
+      .sheet .meta {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        padding: 5px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 999px;
+        background: var(--sand-2);
+        color: var(--clay-deep);
+      }
+      .sheet .close {
+        position: absolute;
+        inset-inline-end: 12px;
+        top: 10px;
+      }
+      .legend-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 10px;
+        font-size: 12.5px;
+        font-weight: 700;
+      }
+      .legend-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        flex: none;
+      }
+
+      .sheet-actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .error-msg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 18px 22px;
+        border-radius: 14px;
+        border: 2px solid #b91c1c;
+        color: #b91c1c;
+        font-weight: 800;
+        text-align: center;
+        z-index: 90;
+      }
+
+      /* ── Small screens ───────────────────────────────────── */
+      @media (max-width: 640px) {
+        .brand span {
+          display: none;
+        }
+        .brand strong {
+          font-size: 13px;
+        }
+        .search-wrap {
+          max-width: none;
+        }
+        .toolbar .label {
+          display: none;
+        }
+        .btn {
+          padding: 0;
+        }
+      }
+      @media (min-width: 641px) {
+        .crumb {
+          max-width: 60ch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <strong>شجرة آل بوعبيد</strong>
+        <span>من العبادل من بني تميم</span>
+      </div>
+      <div class="search-wrap">
+        <input
+          type="search"
+          id="search-box"
+          inputmode="search"
+          enterkeyhint="search"
+          placeholder="ابحث عن اسم…"
+          aria-label="ابحث عن اسم في الشجرة"
+        />
+        <span class="icon" aria-hidden="true">🔍</span>
+        <span class="search-count" id="search-count"></span>
+      </div>
+    </header>
+
+    <p class="crumb" id="crumb" aria-live="polite"></p>
+
+    <div id="tree-container" role="application" aria-label="شجرة العائلة التفاعلية"></div>
+
+    <div class="toolbar">
+      <div class="toolbar-row">
+        <button class="btn primary" id="zoom-in" aria-label="تكبير" title="تكبير">＋</button>
+        <button class="btn" id="zoom-out" aria-label="تصغير" title="تصغير">－</button>
+        <button class="btn gold" id="fit" aria-label="ملاءمة الشاشة" title="ملاءمة الشاشة">
+          ⤢
+        </button>
+      </div>
+      <div class="toolbar-row">
+        <button class="btn" id="reset" aria-label="العودة للجد الجامع" title="العودة للجد الجامع">
+          <span aria-hidden="true">⌂</span><span class="label">الجد الجامع</span>
+        </button>
+        <button
+          class="btn"
+          id="expand-all"
+          aria-label="استعراض كافة الفروع"
+          title="استعراض كافة الفروع"
+        >
+          <span aria-hidden="true">⇲</span><span class="label">فتح الكل</span>
+        </button>
+        <button class="btn" id="collapse-all" aria-label="طي التفرعات" title="طي التفرعات">
+          <span aria-hidden="true">⇱</span><span class="label">طي الكل</span>
+        </button>
+        <button class="btn" id="help" aria-label="دليل الاستخدام" title="دليل الاستخدام">؟</button>
+      </div>
+    </div>
+
+    <!-- Details sheet -->
+    <section class="sheet" id="detail-sheet" aria-live="polite">
+      <button class="btn close" id="detail-close" aria-label="إغلاق">✕</button>
+      <h3 id="detail-name"></h3>
+      <p class="sub" id="detail-title"></p>
+      <p class="lineage" id="detail-lineage"></p>
+      <div class="meta" id="detail-meta"></div>
+      <div class="sheet-actions">
+        <button class="btn primary" id="detail-toggle">فتح الذرية</button>
+        <button class="btn" id="detail-center">تمركز</button>
+      </div>
+    </section>
+
+    <!-- Legend sheet -->
+    <section class="sheet" id="legend-sheet">
+      <button class="btn close" id="legend-close" aria-label="إغلاق">✕</button>
+      <h3>دليل الجدارية التفاعلية</h3>
+      <p class="sub">توثيق إلكتروني مستخرج من المشجرات الاثنتي عشرة المعتمدة (٥٥٠ اسماً موثقاً)</p>
+      <ul class="legend-list">
+        <li>
+          <span class="swatch" style="background: #78462a; border: 2px solid #eda746"></span> الجذع
+          البني: الجد الجامع والأجيال المؤسسة.
+        </li>
+        <li>
+          <span class="swatch" style="background: #fde7d6; border: 2px solid #26583c"></span>
+          البطاقة الفاتحة: الفروع والذرية الموثقة في المشجرات المعتمدة.
+        </li>
+        <li>
+          <span class="swatch" style="background: #eda746"></span> النقطة الذهبية: ذرية مطوية — انقر
+          لفتحها.
+        </li>
+        <li><span aria-hidden="true">👆</span> اسحب بإصبع للتنقل، وباصبعين للتكبير والتصغير.</li>
+        <li>
+          <span aria-hidden="true">🔍</span> البحث يفتح الفروع تلقائياً ويتمركز على أول نتيجة.
+        </li>
+      </ul>
+    </section>
+
+    <script src="/family-tree-data.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const container = document.getElementById("tree-container");
+
+        if (typeof d3 === "undefined" || !window.AL_BU_OBAID_TREE) {
+          container.innerHTML =
+            '<div class="error-msg">تعذّر تحميل الجدارية التفاعلية. يرجى التحقق من الاتصال وإعادة المحاولة.</div>';
+          return;
+        }
+
+        try {
+          const familyData = window.AL_BU_OBAID_TREE;
+          const duration = 380;
+          let uid = 0;
+
+          let width = container.clientWidth;
+          let height = container.clientHeight;
+          /** Narrow viewports read a top-down tree far better than a wide RTL fan. */
+          let vertical = width < 760;
+
+          const svg = d3
+            .select(container)
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .style("background-color", "transparent");
+          const g = svg.append("g");
+
+          const zoom = d3
+            .zoom()
+            .scaleExtent([0.12, 3.2])
+            .on("zoom", (event) => g.attr("transform", event.transform));
+
+          svg.call(zoom).on("dblclick.zoom", null);
+
+          const root = d3.hierarchy(familyData, (d) => d.children);
+          root.x0 = 0;
+          root.y0 = 0;
+
+          function collapse(d) {
+            if (d.children) {
+              d._children = d.children;
+              d._children.forEach(collapse);
+              d.children = null;
+            }
+          }
+          function expand(d) {
+            if (d._children) {
+              d.children = d._children;
+              d._children = null;
+            }
+          }
+
+          /** Open the documented trunk, hide the crowded layers underneath. */
+          function initialCollapse() {
+            root.descendants().forEach(expand);
+            const branches = root.descendants().filter((d) => d.data.isBranch);
+            branches.forEach(collapse);
+          }
+          /** Captured while everything is still expanded so search can reach collapsed names. */
+          const ALL_NODES = (() => {
+            root.descendants().forEach(expand);
+            return root.descendants();
+          })();
+          initialCollapse();
+
+          const NODE_W = 158,
+            NODE_H = 44;
+          /** Names must stay inside the pill: shrink the type first, and only
+           *  clip (with an ellipsis and a full-name tooltip) as a last resort.
+           *  Arabic clips from the logical end, so we trim characters, not bytes. */
+          const NODE_TEXT_W = NODE_W - 26;
+          function fitInsideNode(el, startPx, minPx) {
+            const full = el.textContent;
+            let size = startPx;
+            el.style.fontSize = size + "px";
+            while (el.getComputedTextLength() > NODE_TEXT_W && size > minPx) {
+              size = Math.max(minPx, size - 0.5);
+              el.style.fontSize = size + "px";
+            }
+            if (el.getComputedTextLength() <= NODE_TEXT_W) return;
+            let chars = Array.from(full);
+            while (chars.length > 1 && el.getComputedTextLength() > NODE_TEXT_W) {
+              chars.pop();
+              el.textContent = chars.join("") + "…";
+            }
+            const tip = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            tip.textContent = full;
+            el.appendChild(tip);
+          }
+
+          function layout() {
+            const treemap = vertical
+              ? d3.tree().nodeSize([NODE_W + 14, 104])
+              : d3.tree().nodeSize([56, 232]);
+            return treemap(root);
+          }
+
+          /** One place converts layout coordinates into screen coordinates. */
+          function px(d) {
+            return vertical ? d.x : -d.y;
+          }
+          function py(d) {
+            return vertical ? d.y : d.x;
+          }
+          function tf(d) {
+            return `translate(${px(d)},${py(d)})`;
+          }
+
+          function diagonal(s, t) {
+            const sx = px(s),
+              sy = py(s),
+              tx = px(t),
+              ty = py(t);
+            return vertical
+              ? `M ${sx} ${sy} C ${sx} ${(sy + ty) / 2}, ${tx} ${(sy + ty) / 2}, ${tx} ${ty}`
+              : `M ${sx} ${sy} C ${(sx + tx) / 2} ${sy}, ${(sx + tx) / 2} ${ty}, ${tx} ${ty}`;
+          }
+
+          /** Latest layout, kept so the camera can fit the final positions
+           *  instead of whatever the in-flight transitions have reached. */
+          let layoutNodes = [];
+
+          function update(source) {
+            const data = layout();
+            const nodes = data.descendants();
+            layoutNodes = nodes;
+            const links = nodes.slice(1);
+
+            const node = g.selectAll("g.node").data(nodes, (d) => d.id || (d.id = ++uid));
+
+            const nodeEnter = node
+              .enter()
+              .append("g")
+              .attr("class", "node-group node")
+              .attr("transform", () => `translate(${source.px0 || 0},${source.py0 || 0})`)
+              .on("click", onClick)
+              .on("mouseover", highlightPath)
+              .on("mouseout", clearPath);
+
+            nodeEnter
+              .append("rect")
+              .attr("class", "node-bg")
+              .attr("width", NODE_W)
+              .attr("height", NODE_H)
+              .attr("x", -NODE_W / 2)
+              .attr("y", -NODE_H / 2)
+              .attr("rx", NODE_H / 2)
+              .attr("fill", (d) =>
+                d.data.isRoot ? "#78462A" : d.data.isBranch ? "#FDE7D6" : "#ffffff",
+              )
+              .attr("stroke", (d) =>
+                d.data.isRoot ? "#EDA746" : d.data.isBranch ? "#26583C" : "#d8cbbd",
+              )
+              .attr("stroke-width", (d) => (d.data.isRoot ? 3 : 1.5));
+
+            nodeEnter
+              .append("text")
+              .attr("dy", (d) => (d.data.title ? -4 : 6))
+              .attr("text-anchor", "middle")
+              .text((d) => d.data.name)
+              .style("fill", (d) => (d.data.isRoot ? "#ffffff" : "#78462A"))
+              .style("font-weight", (d) => (d.data.isRoot || d.data.isBranch ? 800 : 600))
+              .style("font-size", (d) => (d.data.isRoot ? "15px" : "14px"))
+              .style("pointer-events", "none")
+              .each(function (d) {
+                fitInsideNode(this, d.data.isRoot ? 15 : 14, 10);
+              });
+
+            nodeEnter
+              .filter((d) => d.data.title)
+              .append("text")
+              .attr("dy", 13)
+              .attr("text-anchor", "middle")
+              .text((d) => d.data.title)
+              .style("fill", (d) => (d.data.isRoot ? "#F7D9A8" : "#BE744A"))
+              .style("font-weight", 700)
+              .style("font-size", "10.5px")
+              .style("pointer-events", "none")
+              .each(function () {
+                fitInsideNode(this, 10.5, 8.5);
+              });
+
+            /** Gold dot marks hidden descendants; it sits below the pill when
+             *  the tree runs top-down, and beside it when it runs sideways. */
+            const dot = nodeEnter.append("g").attr("class", "children-indicator");
+            dot
+              .append("circle")
+              .attr("r", 5.5)
+              .style("fill", "#EDA746")
+              .style("stroke", "#fff")
+              .style("stroke-width", "2px");
+            dot
+              .append("text")
+              .attr("dy", 3.5)
+              .attr("text-anchor", "middle")
+              .text((d) => (d._children ? d._children.length : ""))
+              .style("font-size", "9px")
+              .style("font-weight", 800)
+              .style("fill", "#4a2f1c")
+              .style("pointer-events", "none");
+
+            const nodeUpdate = nodeEnter.merge(node);
+            nodeUpdate.transition().duration(duration).attr("transform", tf);
+            nodeUpdate
+              .select(".children-indicator")
+              .attr(
+                "transform",
+                vertical ? `translate(0,${NODE_H / 2 + 10})` : `translate(-${NODE_W / 2 + 12},0)`,
+              )
+              .style("opacity", (d) => (d._children ? 1 : 0));
+            nodeUpdate
+              .select(".children-indicator text")
+              .text((d) => (d._children ? d._children.length : ""));
+
+            node
+              .exit()
+              .transition()
+              .duration(duration)
+              .attr("transform", () => `translate(${px(source)},${py(source)})`)
+              .style("opacity", 0)
+              .remove();
+
+            const link = g.selectAll("path.link").data(links, (d) => d.id);
+
+            const linkEnter = link
+              .enter()
+              .insert("path", "g")
+              .attr("class", "link")
+              .attr("d", () => {
+                const o = { x: source.x0 ?? source.x, y: source.y0 ?? source.y };
+                return diagonal(o, o);
+              });
+
+            linkEnter
+              .merge(link)
+              .transition()
+              .duration(duration)
+              .attr("d", (d) => diagonal(d, d.parent));
+
+            link
+              .exit()
+              .transition()
+              .duration(duration)
+              .attr("d", () => diagonal(source, source))
+              .remove();
+
+            nodes.forEach((d) => {
+              d.x0 = d.x;
+              d.y0 = d.y;
+              d.px0 = px(d);
+              d.py0 = py(d);
+            });
+          }
+
+          /* ── Camera ──────────────────────────────────────── */
+          /** Space the search bar (top) and the control cluster (bottom) cover. */
+          const INSET_TOP = 64,
+            INSET_BOTTOM = 72;
+
+          function fitToView(pad) {
+            if (!layoutNodes.length) return;
+            /** Measured from the layout targets, not getBBox(): this runs while
+             *  nodes are still mid-transition, which made the fit zoom in too far
+             *  (cropping branches) or out too far, depending on timing. Margins
+             *  cover the pill plus the hidden-children dot beside/below it. */
+            const halfW = NODE_W / 2 + 18;
+            const halfH = NODE_H / 2 + (vertical ? 18 : 4);
+            let x0 = Infinity,
+              x1 = -Infinity,
+              y0 = Infinity,
+              y1 = -Infinity;
+            layoutNodes.forEach((d) => {
+              x0 = Math.min(x0, px(d) - halfW);
+              x1 = Math.max(x1, px(d) + halfW);
+              y0 = Math.min(y0, py(d) - halfH);
+              y1 = Math.max(y1, py(d) + halfH);
+            });
+            const padX = pad ?? 28;
+            const availH = height - INSET_TOP - INSET_BOTTOM;
+            const k = Math.min((width - padX * 2) / (x1 - x0), availH / (y1 - y0), 1.1);
+            /** Never shrink past legibility — panning beats unreadable text. */
+            const scale = Math.min(Math.max(vertical ? 0.62 : 0.5, k), 1.1);
+            const cx = (x0 + x1) / 2;
+            const cy = (y0 + y1) / 2;
+            svg
+              .transition()
+              .duration(600)
+              .call(
+                zoom.transform,
+                d3.zoomIdentity
+                  .translate(width / 2 - cx * scale, INSET_TOP + availH / 2 - cy * scale)
+                  .scale(scale),
+              );
+          }
+
+          function centerNode(d, scale) {
+            const k = scale ?? (vertical ? 0.95 : 1.05);
+            svg
+              .transition()
+              .duration(600)
+              .call(
+                zoom.transform,
+                d3.zoomIdentity
+                  .translate(width / 2 - px(d) * k, (height + 50) / 2 - py(d) * k)
+                  .scale(k),
+              );
+          }
+
+          /* ── Path + lineage helpers ─────────────────────── */
+          function highlightPath(event, d) {
+            d3.selectAll(".link").classed("path-highlight", false);
+            let cur = d;
+            while (cur.parent) {
+              d3.selectAll(".link")
+                .filter((l) => l === cur)
+                .classed("path-highlight", true);
+              cur = cur.parent;
+            }
+          }
+          function clearPath() {
+            d3.selectAll(".link").classed("path-highlight", false);
+          }
+
+          function lineageOf(d) {
+            const chain = [];
+            let cur = d;
+            while (cur) {
+              chain.push(cur.data.name);
+              cur = cur.parent;
+            }
+            return chain.join(" بن ").replace(/بن آل/g, "من فرع آل");
+          }
+
+          /* ── Detail sheet ───────────────────────────────── */
+          const detailSheet = document.getElementById("detail-sheet");
+          const legendSheet = document.getElementById("legend-sheet");
+          let selected = null;
+
+          function openDetail(d) {
+            selected = d;
+            document.getElementById("detail-name").textContent = d.data.name;
+            document.getElementById("detail-title").textContent =
+              d.data.title || (d.data.isBranch ? "فرع رئيسي" : "من ذرية الأسرة");
+            document.getElementById("detail-lineage").textContent = lineageOf(d);
+
+            const meta = document.getElementById("detail-meta");
+            const kids = (d.children || d._children || []).length;
+            meta.innerHTML = "";
+            [
+              `الجيل ${d.depth + 1}`,
+              kids ? `الأبناء الموثقون: ${kids}` : "لا ذرية موثقة في الجدارية",
+            ].forEach((text) => {
+              const s = document.createElement("span");
+              s.className = "chip";
+              s.textContent = text;
+              meta.appendChild(s);
+            });
+
+            const toggle = document.getElementById("detail-toggle");
+            toggle.style.display = kids ? "" : "none";
+            toggle.textContent = d.children ? "طي الذرية" : "فتح الذرية";
+
+            legendSheet.classList.remove("open");
+            detailSheet.classList.add("open");
+            showCrumb(d);
+          }
+
+          function showCrumb(d) {
+            const crumb = document.getElementById("crumb");
+            const parts = [];
+            let cur = d;
+            while (cur) {
+              parts.unshift(cur.data.name);
+              cur = cur.parent;
+            }
+            crumb.innerHTML = parts
+              .map((n, i) => (i === parts.length - 1 ? `<b>${n}</b>` : n))
+              .join(" › ");
+            crumb.classList.add("show");
+          }
+
+          function toggleChildren(d) {
+            if (d.children) {
+              d._children = d.children;
+              d.children = null;
+            } else if (d._children) {
+              d.children = d._children;
+              d._children = null;
+            }
+            update(d);
+          }
+
+          function onClick(event, d) {
+            openDetail(d);
+            if (d._children || d.children) {
+              toggleChildren(d);
+              setTimeout(() => centerNode(d), duration + 40);
+            } else {
+              centerNode(d);
+            }
+          }
+
+          document
+            .getElementById("detail-close")
+            .addEventListener("click", () => detailSheet.classList.remove("open"));
+          document
+            .getElementById("legend-close")
+            .addEventListener("click", () => legendSheet.classList.remove("open"));
+          document.getElementById("help").addEventListener("click", () => {
+            detailSheet.classList.remove("open");
+            legendSheet.classList.toggle("open");
+          });
+          document.getElementById("detail-toggle").addEventListener("click", () => {
+            if (!selected) return;
+            toggleChildren(selected);
+            document.getElementById("detail-toggle").textContent = selected.children
+              ? "طي الذرية"
+              : "فتح الذرية";
+            setTimeout(() => centerNode(selected), duration + 40);
+          });
+          document
+            .getElementById("detail-center")
+            .addEventListener("click", () => selected && centerNode(selected));
+
+          /* ── Controls ───────────────────────────────────── */
+          document
+            .getElementById("zoom-in")
+            .addEventListener("click", () =>
+              svg.transition().duration(250).call(zoom.scaleBy, 1.35),
+            );
+          document
+            .getElementById("zoom-out")
+            .addEventListener("click", () =>
+              svg.transition().duration(250).call(zoom.scaleBy, 0.74),
+            );
+          document.getElementById("fit").addEventListener("click", () => fitToView());
+          document.getElementById("reset").addEventListener("click", () => {
+            initialCollapse();
+            update(root);
+            setTimeout(() => fitToView(), duration + 40);
+            document.getElementById("crumb").classList.remove("show");
+            detailSheet.classList.remove("open");
+          });
+          document.getElementById("expand-all").addEventListener("click", () => {
+            root.descendants().forEach(expand);
+            update(root);
+            setTimeout(() => fitToView(24), duration + 40);
+          });
+          document.getElementById("collapse-all").addEventListener("click", () => {
+            initialCollapse();
+            update(root);
+            setTimeout(() => fitToView(), duration + 40);
+          });
+
+          /* ── Search ─────────────────────────────────────── */
+          const searchBox = document.getElementById("search-box");
+          const searchCount = document.getElementById("search-count");
+          let searchTimer;
+
+          searchBox.addEventListener("input", function (e) {
+            clearTimeout(searchTimer);
+            const term = e.target.value.trim();
+            searchTimer = setTimeout(() => runSearch(term), 220);
+          });
+
+          function runSearch(term) {
+            g.selectAll(".node-group").classed("node--highlighted", false);
+            if (term.length < 2) {
+              searchCount.textContent = "";
+              return;
+            }
+
+            const matches = ALL_NODES.filter((d) => d.data.name.includes(term));
+            searchCount.textContent = matches.length ? `${matches.length}` : "٠";
+            if (!matches.length) return;
+
+            matches.forEach((match) => {
+              let cur = match.parent;
+              while (cur) {
+                expand(cur);
+                cur = cur.parent;
+              }
+            });
+            update(root);
+
+            setTimeout(() => {
+              const ids = new Set(matches.map((m) => m.id));
+              g.selectAll(".node-group").classed("node--highlighted", (d) => ids.has(d.id));
+              centerNode(matches[0], vertical ? 0.85 : 1);
+              showCrumb(matches[0]);
+            }, duration + 60);
+          }
+
+          /* ── Responsive ─────────────────────────────────── */
+          let resizeTimer;
+          window.addEventListener("resize", () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+              width = container.clientWidth;
+              height = container.clientHeight;
+              const nextVertical = width < 760;
+              if (nextVertical !== vertical) {
+                vertical = nextVertical;
+                update(root);
+              }
+              fitToView();
+            }, 180);
+          });
+
+          update(root);
+          setTimeout(() => fitToView(), 120);
+
+          /* ── Deep link: ?focus=<id>&q=<name> from the site-wide search ──── */
+          (function focusFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const focusId = (params.get("focus") || "").trim();
+            const name = (params.get("q") || "").trim();
+            if (!focusId && !name) return;
+
+            let target = focusId ? ALL_NODES.find((d) => d.data.id === focusId) : null;
+            if (!target && name) {
+              target =
+                ALL_NODES.find((d) => d.data.name === name) ||
+                ALL_NODES.find((d) => d.data.name.includes(name)) ||
+                ALL_NODES.find((d) => name.includes(d.data.name));
+            }
+            if (!target) {
+              if (name) {
+                searchBox.value = name;
+                runSearch(name);
+              }
+              return;
+            }
+
+            let cur = target.parent;
+            while (cur) {
+              expand(cur);
+              cur = cur.parent;
+            }
+            update(root);
+            setTimeout(() => {
+              g.selectAll(".node-group").classed("node--highlighted", (d) => d.id === target.id);
+              centerNode(target, vertical ? 0.85 : 1);
+              showCrumb(target);
+              openDetail(target);
+            }, duration + 120);
+          })();
+        } catch (error) {
+          console.error("Family tree error:", error);
+          container.innerHTML =
+            '<div class="error-msg">حدث خطأ في رسم الجدارية: <br>' + error.message + "</div>";
+        }
+      });
+    </script>
+  </body>
+</html>

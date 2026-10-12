@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /content
+Disallow: /auth
+Disallow: /verify
+
+Sitemap: https://www.boubaid.com/sitemap.xml

@@ -1,0 +1,1639 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Self-hosted brand display face — bilingual (Arabic + Latin), used only
+   for the masthead wordmark and page h1s. Self-hosting avoids a third
+   external font origin and guarantees it's available even if the licence
+   restricts a public CDN. */
+@font-face {
+  font-family: "HT Baybars Display";
+  src: url("/fonts/HTBaybarsDisplay-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "HT Baybars Display";
+  src: url("/fonts/HTBaybarsDisplay-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "HT Baybars Display";
+  src: url("/fonts/HTBaybarsDisplay-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Al Bu Obaid — design tokens
+
+   The site reads as a printed archive: warm paper, sepia ink,
+   hairline rules, and gold used as a seal rather than a surface.
+   Gold is deliberately scarce — roughly one gold element per
+   viewport. If you are reaching for `text-gold` a second time in
+   the same section, use `bronze` or `ink-soft` instead.
+   ══════════════════════════════════════════════════════════════ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 6px);
+  --radius-3xl: calc(var(--radius) + 10px);
+  --radius-4xl: calc(var(--radius) + 14px);
+
+  /* Arabic sets the tone — it is the primary language of the site.
+     Naskh (Amiri) carries section headings within content, where a
+     calligraphic, manuscript feel serves long-form reading. HT Baybars
+     Display is reserved for the site's own voice — the masthead wordmark
+     and page-title (h1) moments — so the two don't compete on the same
+     line of text. */
+  --font-naskh: "Amiri", "Scheherazade New", Georgia, serif;
+  --font-brand: "HT Baybars Display", "Amiri", Georgia, serif;
+  --font-arabic: "IBM Plex Sans Arabic", "Tajawal", system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  /* Heritage palette. `navy` is kept as an alias of `ink` because it
+     is referenced widely; new work should prefer `ink`. */
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-navy: var(--ink);
+  --color-navy-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-shade: var(--paper-shade);
+  --color-rule: var(--rule);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-ivory: var(--ivory);
+  --color-emerald: var(--emerald);
+  --color-bronze: var(--bronze);
+  --color-copper: var(--copper);
+  --color-mist: var(--mist);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Tight radius. Pillowy corners read as generic app UI; an archive
+     wants something closer to a printed rule box. */
+  --radius: 0.25rem;
+
+  /* Exact values from the family's official visual identity guide
+     (دليل الهوية البصرية, v1.0, Muharram 1448H), not an approximation:
+       #774932 deep brown · #8B5638 clay · #BA734A copper ·
+       #FFE9D4 cream · #245B3F heritage green · #E4EAEF cool grey ·
+       #ECA654 brand gold.
+     One correction to the guide's own default-border token: its
+     --border-default (#D0BBA9, ladder step 400) measures 1.7:1 against
+     the page background — the guide's contrast table never tested
+     border-on-page, only text pairs. Step 700 (#8A7768) of the same
+     "Raq" ladder is the shallowest step that clears 3:1, so structural
+     rules use that instead; everything else is the guide's literal
+     value. Dark mode isn't specified by the guide (flagged there as
+     needing visual sign-off before launch) — extrapolated from the
+     same ladders, verified against WCAG below. */
+  --ink: #245b3f; /* heritage green — the guide's surface-inverse /
+       action-primary-bg role. The site already used one token for both
+       "dark band" backgrounds (header, footer, hero) and "brand
+       primary" buttons — that's exactly this role, so fixing the value
+       here corrects every such surface at once. */
+  --ink-soft: #3f6f56; /* palm ladder, step 700 — the guide's literal
+       --focus-ring value; doubles as the inverse hover tone. */
+  --paper: #fff4e9; /* surface-page */
+  --paper-shade: #ffe9d4; /* surface-sunken — the base cream swatch */
+  --rule: #8a7768; /* structural border — see note above */
+
+  --gold: #eca654;
+  --gold-soft: #f1bc7d; /* gold ladder, step 300 */
+  --ivory: #ffffff; /* surface-raised */
+  --emerald: #245b3f; /* status "active" reuses the brand green */
+  --bronze: #ba734a; /* copper — the logo's second colourway */
+  --copper: #ba734a;
+  --mist: #e4eaef; /* cool neutral — guide restricts this to table
+       headers and toolbars, not general UI */
+
+  --background: var(--paper);
+  --foreground: #1b110b; /* text-primary — deliberately not var(--ink):
+       that token is now the brand green, a surface colour, and body
+       text needs the guide's near-black instead. */
+  --card: var(--ivory);
+  --card-foreground: #1b110b;
+  --popover: var(--ivory);
+  --popover-foreground: #1b110b;
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: var(--paper-shade);
+  --secondary-foreground: #1b110b;
+  --muted: var(--paper-shade);
+  --muted-foreground: #736053; /* text-muted */
+  --accent: var(--gold);
+  --accent-foreground: #1b110b;
+  --destructive: oklch(0.52 0.19 28);
+  --destructive-foreground: oklch(0.985 0.003 247);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--ink-soft);
+
+  --chart-1: var(--ink);
+  --chart-2: var(--gold);
+  --chart-3: #774932;
+  --chart-4: var(--bronze);
+  --chart-5: var(--mist);
+
+  --sidebar: var(--paper);
+  --sidebar-foreground: #1b110b;
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: var(--paper);
+  --sidebar-accent: var(--paper-shade);
+  --sidebar-accent-foreground: #1b110b;
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--ink-soft);
+}
+
+.dark {
+  /* The guide explicitly doesn't specify dark mode — its own open-issues
+     list (page 23) flags it as "معرَّف مبدئياً... يحتاج مراجعة بصرية"
+     (only preliminarily defined, needs visual sign-off before launch).
+     Extrapolated here from the same official ladders and verified
+     against WCAG, but treat it as a draft pending that review.
+
+     One deliberate asymmetry from light mode: --ink stays a near-black
+     rather than becoming green. The site's established dark-mode button
+     convention pairs a gold fill with `dark:text-ink` for the label —
+     tried as green (matching light mode's inverse-band logic) it only
+     reaches 2.5–3.4:1 on gold, short of the 4.5:1 regular text needs.
+     Near-black clears 10.8:1, so dark mode keeps ink for text-on-gold
+     and lets header/footer bands read close to the page fill instead
+     of as a separate green block — a reasonable dark-UI convention on
+     its own, and correct until the brand system says otherwise. */
+  --ink: #1b110b;
+  --ink-soft: #492d1f;
+  --paper: #241811;
+  --paper-shade: #2e2015;
+  --rule: oklch(0.94 0.03 62 / 16%);
+
+  --gold: #f1bc7d;
+  --gold-soft: #f5d1a7;
+  --ivory: #fff4e9;
+  --emerald: #59836e;
+  --bronze: #c58a67;
+  --copper: #c58a67;
+  --mist: #5a6167;
+
+  --background: var(--paper);
+  --foreground: #fff4e9;
+  --card: var(--paper-shade);
+  --card-foreground: #fff4e9;
+  --popover: var(--paper-shade);
+  --popover-foreground: #fff4e9;
+  --primary: var(--gold);
+  --primary-foreground: var(--ink);
+  --secondary: var(--paper-shade);
+  --secondary-foreground: #fff4e9;
+  --muted: var(--paper-shade);
+  --muted-foreground: #dbb7a2;
+  --accent: var(--gold);
+  --accent-foreground: var(--ink);
+  --destructive: oklch(0.66 0.17 24);
+  --destructive-foreground: oklch(0.95 0.008 78);
+  --border: var(--rule);
+  --input: oklch(0.94 0.03 62 / 20%);
+  --ring: var(--gold);
+
+  --sidebar: var(--paper-shade);
+  --sidebar-foreground: #fff4e9;
+  --sidebar-primary: var(--gold);
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent: var(--paper-shade);
+  --sidebar-accent-foreground: #fff4e9;
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--gold);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: clip;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Every link, button, and custom control on the site gets a visible
+     keyboard focus ring. shadcn's own components already set their own
+     focus-visible ring via a utility class, which — being a compound
+     selector — wins the cascade over this bare pseudo-class and is left
+     untouched; this rule exists for the 60+ hand-built links, tabs, and
+     filter buttons that had no focus state at all. */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  /* Prevent automatic iOS Safari viewport zoom on form field focus */
+  @media (max-width: 640px) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+
+  html[dir="rtl"] body {
+    font-family: var(--font-arabic);
+    line-height: 1.8;
+  }
+
+  /* Headings carry a display face in both scripts. Previously the RTL
+     override sent Arabic headings back to the body face, which left the
+     primary language with no typographic contrast at all. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    /* Headlines wrap on meaning, not on the container edge. */
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Quotes and dashes hang into the margin so the text edge stays optically
+     straight — the one typographic detail that most says "typeset". */
+  blockquote {
+    hanging-punctuation: first last;
+  }
+
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5,
+  html[dir="rtl"] h6 {
+    font-family: var(--font-naskh);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.5;
+  }
+
+  /* The site's own voice: h1 — the masthead wordmark and every page's
+     title — carries the brand display face rather than the naskh used
+     for section headings within content. This is the one place display
+     type is allowed to announce the brand rather than serve the text. */
+  h1 {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  html[dir="rtl"] h1 {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    letter-spacing: 0;
+    /* HT Baybars sits taller on the metric line than Amiri; the earlier
+       1.06em compensation (tuned for Amiri) would overshoot here. */
+    font-size: 1em;
+  }
+  html[dir="rtl"] h2 {
+    font-size: 1.04em;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-paper-shade);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.49 0.09 58 / 35%);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-bronze);
+  }
+
+  ::selection {
+    background-color: oklch(0.68 0.13 76 / 28%);
+    color: var(--color-ink);
+  }
+
+  .dark ::selection {
+    color: oklch(0.95 0.01 80);
+  }
+}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 88rem;
+  padding-inline: 1.25rem;
+}
+
+@utility container-header {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 120rem;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .container-page,
+  .container-header {
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-page,
+  .container-header {
+    padding-inline: 2.5rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .container-header {
+    padding-inline: 3rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container-header {
+    padding-inline: 4rem;
+  }
+}
+
+/* Narrow measure for running prose. Long-form text should never span
+   the full container — 66ch is the readable limit. */
+@utility measure {
+  max-width: 66ch;
+}
+
+@utility measure-tight {
+  max-width: 54ch;
+}
+
+/* ── Editorial rules & ornament ─────────────────────────────── */
+
+@utility rule-hair {
+  border-top: 1px solid var(--color-rule);
+}
+
+@utility rule-ink {
+  border-top: 2px solid var(--color-ink);
+}
+
+.dark .rule-ink {
+  border-top-color: var(--color-gold);
+}
+
+/* Double rule — the printed-page device for a major division. */
+@utility rule-double {
+  border-top: 1px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-ink);
+  height: 4px;
+}
+
+.dark .rule-double {
+  border-top-color: oklch(0.98 0.01 80 / 30%);
+  border-bottom-color: oklch(0.98 0.01 80 / 30%);
+}
+
+/* An eight-point star, the standard Islamic geometric unit. Used as a
+   section break — sparingly, and never more than once per screen. */
+@utility ornament-star {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0l3.06 5.88L21.6 3.6l-2.28 6.54L24 12l-4.68 1.86 2.28 6.54-6.54-2.28L12 24l-3.06-5.88L2.4 20.4l2.28-6.54L0 12l4.68-1.86L2.4 3.6l6.54 2.28z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0l3.06 5.88L21.6 3.6l-2.28 6.54L24 12l-4.68 1.86 2.28 6.54-6.54-2.28L12 24l-3.06-5.88L2.4 20.4l2.28-6.54L0 12l4.68-1.86L2.4 3.6l6.54 2.28z'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Very low-contrast tile for the few surfaces that want texture rather
+   than a flat fill. Deliberately near-invisible — applied to <body> so
+   every page carries a faint paper grain instead of a flat digital fill. */
+@utility paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z' fill='none' stroke='%237a5a35' stroke-width='0.4' opacity='0.05'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+.dark .paper-texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z' fill='none' stroke='%23d4af37' stroke-width='0.4' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Warm, unifying grade for editorial photography — the site's imagery is
+   a mixed bag of AI-generated plates shot at different times; this ties
+   them to one palette instead of each sitting in its own raw contrast.
+   Not applied to diagrams, charts, or logos, which need full fidelity. */
+@utility photo-plate {
+  filter: sepia(14%) saturate(88%) contrast(1.03) brightness(0.99);
+}
+
+/* A matte/passe-partout mount around a figure — the difference between a
+   photo floating on the page and a plate presented on it. */
+@utility plate-frame {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card);
+  padding: 0.3125rem;
+}
+
+/* ── Typographic devices ────────────────────────────────────── */
+
+/* Tabular figures for anything in a column: licence numbers, counts,
+   years, percentages. Keeps digits from dancing between rows. */
+@utility nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+@utility label-caps {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* Arabic has no uppercase; letterspacing actively damages it by
+   breaking the joined script. Track it back in and drop the casing. */
+html[dir="rtl"] .label-caps {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.75rem;
+}
+
+@utility drop-cap {
+  &::first-letter {
+    float: inline-start;
+    font-family: var(--font-display);
+    font-size: 3.2em;
+    line-height: 0.82;
+    font-weight: 600;
+    padding-inline-end: 0.08em;
+    padding-block-start: 0.06em;
+    color: var(--color-bronze);
+  }
+}
+
+html[dir="rtl"] .drop-cap::first-letter {
+  font-family: var(--font-naskh);
+  font-size: 2.6em;
+  line-height: 1;
+}
+
+/* ── Motion ─────────────────────────────────────────────────── */
+
+/* One named motion vocabulary. Nothing in the site should invent its own
+   duration or curve: pick a step from this scale.
+     quick     — state changes (colour, border, press)
+     normal    — small elements entering, nav underline travel
+     slow      — text blocks, cards
+     cinematic — full-width plates and hero-scale imagery
+   `--ease-editorial` is a decelerating curve: fast departure, long settle,
+   which reads as weight rather than bounce. `--ease-exit` is its inverse,
+   used only for things leaving. */
+:root {
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --dur-quick: 180ms;
+  --dur-normal: 320ms;
+  --dur-slow: 560ms;
+  --dur-cinematic: 900ms;
+  /* Stagger step, overridable per container. */
+  --reveal-step: 70ms;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-fade-up {
+  animation: fadeInUp var(--dur-slow) var(--ease-editorial) forwards;
+}
+
+@keyframes heroZoom {
+  0% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+@utility animate-hero-zoom {
+  animation: heroZoom 22s ease-out both;
+}
+
+/* ── Scroll reveal ──────────────────────────────────────────────
+   Four variants, matched to the weight of what is entering. All are
+   driven by the observer in ScrollReveal.tsx, which adds `.revealed`.
+   Only opacity and transform animate, so nothing triggers layout. */
+
+@utility reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--dur-slow) var(--ease-editorial),
+    transform var(--dur-slow) var(--ease-editorial);
+  will-change: opacity, transform;
+}
+
+/* Alias with an explicit name, for readability at call sites. */
+@utility reveal-rise {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--dur-slow) var(--ease-editorial),
+    transform var(--dur-slow) var(--ease-editorial);
+  will-change: opacity, transform;
+}
+
+/* Text: opacity only. Running prose that slides is distracting. */
+@utility reveal-fade {
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-editorial);
+  will-change: opacity;
+}
+
+/* Plates: heavier, slower, with a hair of scale so the image settles
+   into its mount rather than sliding into place. */
+@utility reveal-plate {
+  opacity: 0;
+  transform: translateY(22px) scale(0.985);
+  transition:
+    opacity var(--dur-cinematic) var(--ease-editorial),
+    transform var(--dur-cinematic) var(--ease-editorial);
+  will-change: opacity, transform;
+}
+
+/* Hairline rules draw open from the leading edge — the printed-page
+   gesture of a division being ruled in. */
+@utility reveal-rule {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease-editorial);
+  will-change: transform;
+}
+html[dir="rtl"] .reveal-rule {
+  transform-origin: right center;
+}
+
+.reveal-on-scroll.revealed,
+.reveal-rise.revealed,
+.reveal-plate.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.reveal-fade.revealed {
+  opacity: 1;
+}
+.reveal-rule.revealed {
+  transform: scaleX(1);
+}
+
+/* Once an element has arrived it should stop claiming a GPU layer. */
+.revealed {
+  will-change: auto;
+}
+
+/* Per-element delay, set by the reveal engine as an index. Works for
+   sequences of siblings and for grids of any length. */
+.reveal-on-scroll,
+.reveal-rise,
+.reveal-fade,
+.reveal-plate,
+.reveal-rule {
+  transition-delay: calc(var(--reveal-i, 0) * var(--reveal-step));
+}
+
+/* Stagger children when parent is revealed. Delay is index-driven so
+   grids of any size (library, directory) keep cascading. */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-slow) var(--ease-editorial),
+    transform var(--dur-slow) var(--ease-editorial);
+  transition-delay: calc(var(--reveal-i, 0) * var(--reveal-step));
+  will-change: opacity, transform;
+}
+.reveal-stagger.revealed > * {
+  opacity: 1;
+  transform: translateY(0);
+  will-change: auto;
+}
+
+/* ── Page transitions ───────────────────────────────────────────
+   Smooth, subtle entrance tuned on a fast deceleration curve.
+   Kept fast (220ms) and short in travel (4px) so navigations feel
+   instantaneous and physical rather than sluggish. */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition[data-state="entering"] {
+  animation: pageIn 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+/* ── Native View Transitions (Browser Supported) ─────────────── */
+::view-transition-old(root) {
+  animation: 160ms cubic-bezier(0.4, 0, 1, 1) both pageFadeOut;
+}
+
+::view-transition-new(root) {
+  animation: 220ms cubic-bezier(0.16, 1, 0.3, 1) both pageFadeIn;
+}
+
+@keyframes pageFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Image resolve ─────────────────────────────────────────────
+   Plates fade up out of a paper-toned ground instead of flashing in. */
+@utility plate-img {
+  opacity: 0;
+  transition: opacity var(--dur-cinematic) var(--ease-editorial);
+  background-color: var(--color-paper-shade);
+}
+.plate-img[data-loaded="true"] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .reveal-on-scroll,
+  .reveal-rise,
+  .reveal-fade,
+  .reveal-plate,
+  .reveal-stagger > * {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-rule {
+    transform: none;
+  }
+  .plate-img {
+    opacity: 1;
+  }
+}
+
+/* ── Misc ───────────────────────────────────────────────────── */
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch hit area. Grows the tappable region of a small control to 44px
+   (or `--tap-size`) without changing its drawn size or the layout around it.
+   `tap-target-y` expands vertically only, for segmented controls whose
+   neighbours sit edge to edge. Not for elements that are already absolutely
+   positioned or clip their overflow. */
+@utility tap-target {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--tap-size, 2.75rem));
+    height: max(100%, var(--tap-size, 2.75rem));
+    transform: translate(-50%, -50%);
+  }
+}
+@utility tap-target-y {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: max(100%, var(--tap-size, 2.75rem));
+    transform: translateY(-50%);
+  }
+}
+
+@utility active-scale {
+  transition: transform var(--dur-quick) var(--ease-editorial);
+}
+.active-scale:active {
+  transform: scale(0.98);
+}
+
+/* Editorial hover-lift — a hairline shift, not a bounce. */
+@utility hover-lift {
+  transition:
+    transform var(--dur-slow) var(--ease-editorial),
+    box-shadow var(--dur-slow) var(--ease-editorial),
+    border-color var(--dur-normal) var(--ease-editorial);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* A card that behaves like a mounted plate: the hairline warms, the mount
+   deepens a touch, and the whole thing yields under the press. Never
+   scales up on hover — enlargement reads as web UI, not print. */
+@utility card-craft {
+  transition:
+    border-color var(--dur-normal) var(--ease-editorial),
+    background-color var(--dur-normal) var(--ease-editorial),
+    box-shadow var(--dur-slow) var(--ease-editorial),
+    transform var(--dur-slow) var(--ease-editorial);
+}
+.card-craft:hover {
+  border-color: var(--color-bronze);
+  box-shadow: 0 10px 30px -22px oklch(0.3 0.06 50 / 55%);
+  transform: translateY(-2px);
+}
+.card-craft:active {
+  transform: translateY(0) scale(0.995);
+}
+.dark .card-craft:hover {
+  border-color: var(--color-gold);
+  box-shadow: 0 10px 30px -22px oklch(0 0 0 / 60%);
+}
+
+/* Inline prose links: a rule that sweeps in from the leading edge. */
+@utility link-sweep {
+  position: relative;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size var(--dur-normal) var(--ease-editorial);
+}
+html[dir="rtl"] .link-sweep {
+  background-position: 100% 100%;
+}
+.link-sweep:hover {
+  background-size: 100% 1px;
+}
+
+/* Slow, decorative flicker for lamp/star glyphs. Opt in explicitly. */
+@utility glyph-breathe {
+  animation: glyph-breathe 6s ease-in-out infinite;
+}
+@keyframes glyph-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Gold seals warm only under a deliberate hover — never on their own. */
+@utility seal-warm {
+  transition:
+    filter var(--dur-slow) var(--ease-editorial),
+    opacity var(--dur-slow) var(--ease-editorial);
+}
+.group:hover .seal-warm,
+.seal-warm:hover {
+  filter: drop-shadow(0 0 10px oklch(0.78 0.14 72 / 45%));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift:hover,
+  .card-craft:hover,
+  .card-craft:active {
+    transform: none;
+  }
+  .glyph-breathe {
+    animation: none;
+  }
+}
+
+/* Primary nav: inactive items get a hairline that grows from the centre on
+   hover. The active item is marked by the travelling rule the header
+   measures, so this one is deliberately quieter — a hint, not a second
+   indicator competing with it. */
+@utility nav-link {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0.5rem;
+    bottom: 0;
+    height: 1px;
+    background-color: var(--color-rule);
+    transform: scaleX(0);
+    transition: transform var(--dur-normal) var(--ease-editorial);
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+
+  &[data-nav-active="true"]::after {
+    display: none;
+  }
+}
+
+/* Mobile menu: rows arrive in sequence rather than as one block. Indices are
+   stamped inline by the markup so this stays pure CSS. */
+@utility menu-in {
+  animation: menuIn var(--dur-normal) var(--ease-editorial) both;
+  animation-delay: calc(var(--menu-i, 0) * 28ms);
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-in {
+    animation: none;
+  }
+  .nav-link::after {
+    transition: none;
+  }
+}
+
+/* ── Accessibility apparatus ────────────────────────────────────
+   A skip link that stays out of the way until it is tabbed to, and a
+   single focus treatment for every custom control on the site. The
+   editorial surfaces are low-contrast by design, so focus is drawn as a
+   bronze/gold hairline offset from the element rather than a glow. */
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  inset-inline-start: 0.5rem;
+  z-index: 100;
+  transform: translateY(-160%);
+  transition: transform var(--dur-normal) var(--ease-editorial);
+  background-color: var(--color-ink);
+  color: var(--color-ivory);
+  padding: 0.6rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+:where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-bronze);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+.dark
+  :where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+  outline-color: var(--color-gold);
+}
+
+/* Section targets receive focus programmatically from the section rail;
+   they should not draw a box when they do. */
+section:focus,
+section:focus-visible,
+article:focus,
+article:focus-visible {
+  outline: none;
+}
+
+/* ── Reading comfort ────────────────────────────────────────────
+   Arabic and Latin do not reach the same comfortable measure at the same
+   width: the joined script sets denser, so it tolerates a longer line. */
+html[dir="rtl"] .measure {
+  max-width: 42rem;
+}
+html[dir="ltr"] .measure {
+  max-width: 38rem;
+}
+
+/* Quotation marks hang into the margin so the first character of the
+   quoted text stays on the text edge. */
+blockquote {
+  hanging-punctuation: first last;
+}
+
+/* ── Print ──────────────────────────────────────────────────────
+   The lineage, genetic and foundation pages are reference documents and
+   get printed. Drop the chrome, flatten the palette to ink on paper, and
+   keep headings with their text. */
+@media print {
+  header,
+  footer,
+  nav,
+  video,
+  .print-hide {
+    display: none !important;
+  }
+
+  @page {
+    margin: 1.5cm;
+    size: auto;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Hide interactive overheads in print */
+  header,
+  footer,
+  nav,
+  .site-nav,
+  .site-footer,
+  .no-print,
+  button:not(.printable-button),
+  [role="tablist"],
+  [role="alert"],
+  .sonner-toast,
+  .network-status-banner {
+    display: none !important;
+  }
+
+  .paper-texture {
+    background-image: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .container-page {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  /* High fidelity print badge / certificate card */
+  .printable-card,
+  .print-certificate {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  figure,
+  blockquote,
+  table {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* Clean print: don't expand href text on cards */
+  .printable-card a::after,
+  .print-certificate a::after {
+    content: none !important;
+  }
+
+  .reveal-on-scroll,
+  .reveal-rise,
+  .reveal-fade,
+  .reveal-plate,
+  .reveal-stagger > *,
+  .plate-img {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ── Requests Hub category tones (official council palette) ── */
+.req-tone {
+  --req-body: color-mix(in oklab, var(--req-band) 9%, #f6efe4);
+  --req-text: #3f2518;
+  --req-muted: #5e4332;
+  background: var(--req-body);
+  border-color: color-mix(in oklab, var(--req-band) 45%, transparent);
+  color: var(--req-text);
+}
+.dark .req-tone {
+  --req-body: color-mix(in oklab, var(--req-band) 14%, #1f1712);
+  --req-text: #f6efe4;
+  --req-muted: #e3c9a8;
+  --req-link: var(--req-link-dark, #e3c9a8);
+}
+.req-tone-membership {
+  --req-band: #6b3f2a;
+  --req-link: #6b3f2a;
+  --req-on-band: #f6efe4;
+}
+.req-tone-committee_requests {
+  --req-band: #3e5a3f;
+  --req-link: #2e4a2f;
+  --req-on-band: #f6efe4;
+  --req-link-dark: #a7c3a8;
+}
+.req-tone-services {
+  --req-band: #b87333;
+  --req-link: #7a4621;
+  --req-on-band: #ffffff;
+  --req-link-dark: #f3c9a3;
+}
+.req-tone-tree {
+  --req-band: #c99a72;
+  --req-link: #6b3f2a;
+  --req-on-band: #3f2518;
+}
+.req-tone-fund {
+  --req-band: #d4af37;
+  --req-link: #6b4f10;
+  --req-on-band: #3f2518;
+  --req-link-dark: #f6e6a1;
+}
+.req-tone-participation {
+  --req-band: #6f8796;
+  --req-link: #3f5561;
+  --req-on-band: #ffffff;
+  --req-link-dark: #c4d2da;
+}
+.req-tone-announcements {
+  --req-band: #e3c9a8;
+  --req-link: #6b3f2a;
+  --req-on-band: #3f2518;
+}
+.req-tone-general {
+  --req-band: #a7b8c2;
+  --req-link: #2e4a2f;
+  --req-on-band: #3f2518;
+  --req-link-dark: #c4d2da;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Admin console — the "Majlis" workspace
+
+   The public site is a printed archive; the console is the council's
+   office. Same paper and ink, but arranged for daily work:
+     · a deep-green rail (the council's seat) holding navigation,
+     · a warm, quiet canvas where the work happens,
+     · three depth levels — canvas → card → floating — with
+       green/brown-tinted shadows instead of grey ones.
+   Tokens are set on `body:has(.console-shell)` so they also reach the
+   Radix portals (dialogs, sheets, popovers, selects) that render outside
+   the shell; public pages never match, so they are untouched.
+   `.console-portal` is kept for portals mounted before the shell.
+
+   The Tailwind default palette (blue, indigo, purple, rose, …) used
+   across the 45 console screens is re-pointed to heritage ramps drawn
+   from the identity guide, so every screen speaks the brand's colours
+   while keeping its category distinctions — no per-component rewrite.
+   ══════════════════════════════════════════════════════════════ */
+body:has(.console-shell),
+.console-portal {
+  --console-canvas: #fbf5ec;
+  --console-rail: #143726;
+  --console-rail-raised: #1c4733;
+  --console-rail-fg: #f7ecdf;
+  --console-rail-muted: rgb(247 236 223 / 0.66);
+  --console-rail-faint: rgb(247 236 223 / 0.42);
+  --console-rail-line: rgb(247 236 223 / 0.1);
+  --console-hairline: rgb(138 119 104 / 0.26);
+  --console-shadow-sm: 0 1px 2px rgb(36 91 63 / 0.05), 0 2px 8px -3px rgb(119 73 50 / 0.1);
+  --console-shadow-md: 0 1px 2px rgb(36 91 63 / 0.06), 0 12px 28px -14px rgb(119 73 50 / 0.28);
+  --console-shadow-lg: 0 2px 6px rgb(20 55 38 / 0.08), 0 28px 56px -24px rgb(20 55 38 / 0.45);
+  --console-ease: cubic-bezier(0.22, 1.2, 0.36, 1);
+
+  /* Container borders become hairlines. Form controls keep --input (the
+     guide's 3:1 rule colour), so field edges stay accessible. */
+  --border: var(--console-hairline);
+  --color-border: var(--console-hairline);
+
+  /* Readability floor. Council members read this console daily; 12px body
+     and 10–11px captions were below comfortable reading size, especially in
+     Arabic where diacritics and dots need room. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.6;
+
+  /* emerald → heritage green (#245B3F) */
+  --color-emerald-50: #eef5f0;
+  --color-emerald-100: #d6e8dc;
+  --color-emerald-200: #b0d1bc;
+  --color-emerald-300: #82b496;
+  --color-emerald-400: #569372;
+  --color-emerald-500: #3a7a58;
+  --color-emerald-600: #2c6648;
+  --color-emerald-700: #245b3f;
+  --color-emerald-800: #1d4a34;
+  --color-emerald-900: #163a29;
+  --color-emerald-950: #0d2419;
+  --color-green-500: #3a7a58;
+  --color-green-600: #2c6648;
+  --color-green-700: #245b3f;
+  /* amber → brand gold #ECA654 through copper #BA734A */
+  --color-amber-50: #fdf6ec;
+  --color-amber-100: #fbe9d0;
+  --color-amber-200: #f7d3a3;
+  --color-amber-300: #f1bc7d;
+  --color-amber-400: #eca654;
+  --color-amber-500: #d98c3a;
+  --color-amber-600: #b0692f;
+  --color-amber-700: #8f5530;
+  --color-amber-800: #6e4126;
+  --color-amber-900: #55331f;
+  --color-amber-950: #2f1c10;
+  --color-yellow-500: #d98c3a;
+  --color-orange-500: #c9773f;
+  --color-orange-600: #ba734a;
+  /* blue / sky → cool mist (guide's #E4EAEF ladder) */
+  --color-blue-50: #f2f5f7;
+  --color-blue-100: #e4eaef;
+  --color-blue-200: #c9d4dc;
+  --color-blue-300: #a7b8c2;
+  --color-blue-400: #8299a7;
+  --color-blue-500: #5f7a8a;
+  --color-blue-600: #4c6574;
+  --color-blue-700: #3f5561;
+  --color-blue-800: #344650;
+  --color-blue-900: #2c3b43;
+  --color-blue-950: #1b252a;
+  --color-sky-50: #f2f5f7;
+  --color-sky-100: #e4eaef;
+  --color-sky-200: #c9d4dc;
+  --color-sky-300: #a7b8c2;
+  --color-sky-400: #8299a7;
+  --color-sky-500: #5f7a8a;
+  --color-sky-600: #4c6574;
+  --color-sky-700: #3f5561;
+  --color-sky-800: #344650;
+  --color-sky-900: #2c3b43;
+  /* indigo / cyan → palm teal */
+  --color-indigo-50: #eff6f4;
+  --color-indigo-100: #d8eae5;
+  --color-indigo-200: #b3d4cb;
+  --color-indigo-300: #86b8ab;
+  --color-indigo-400: #5e9a8b;
+  --color-indigo-500: #457f71;
+  --color-indigo-600: #36675b;
+  --color-indigo-700: #2e554b;
+  --color-indigo-800: #27463e;
+  --color-indigo-900: #213a34;
+  --color-indigo-950: #12221e;
+  --color-cyan-500: #457f71;
+  --color-cyan-600: #36675b;
+  --color-teal-500: #457f71;
+  --color-teal-600: #36675b;
+  --color-teal-400: #5e9a8b;
+  /* purple / violet / pink → clay (#8B5638 / #774932) */
+  --color-purple-50: #f8f1ec;
+  --color-purple-100: #efdfd3;
+  --color-purple-200: #e0c0a9;
+  --color-purple-300: #cd9c7d;
+  --color-purple-400: #b9795a;
+  --color-purple-500: #a0623f;
+  --color-purple-600: #8b5638;
+  --color-purple-700: #774932;
+  --color-purple-800: #5f3a28;
+  --color-purple-900: #4b2e20;
+  --color-purple-950: #2a1911;
+  --color-violet-500: #a0623f;
+  --color-violet-600: #8b5638;
+  --color-pink-400: #b9795a;
+  --color-pink-500: #a0623f;
+  --color-pink-600: #8b5638;
+  /* red / rose → terracotta */
+  --color-rose-50: #fbf1ed;
+  --color-rose-100: #f6dfd5;
+  --color-rose-200: #ecbfac;
+  --color-rose-300: #df997c;
+  --color-rose-400: #cf7452;
+  --color-rose-500: #bd5a37;
+  --color-rose-600: #a84a2b;
+  --color-rose-700: #8b3c23;
+  --color-rose-800: #6f311e;
+  --color-rose-900: #5a291a;
+  --color-rose-950: #33160d;
+  --color-red-50: #fbf1ed;
+  --color-red-100: #f6dfd5;
+  --color-red-200: #ecbfac;
+  --color-red-300: #df997c;
+  --color-red-400: #cf7452;
+  --color-red-500: #bd5a37;
+  --color-red-600: #a84a2b;
+  --color-red-700: #8b3c23;
+  --color-red-800: #6f311e;
+  --color-red-900: #5a291a;
+  --color-red-950: #33160d;
+  /* zinc / stone → warm neutral */
+  --color-zinc-100: #f1ebe4;
+  --color-zinc-200: #e2d8cd;
+  --color-zinc-300: #cbbcad;
+  --color-zinc-400: #a8988a;
+  --color-zinc-500: #8a7768;
+  --color-zinc-600: #736053;
+  --color-zinc-700: #5c4c41;
+  --color-zinc-800: #463a32;
+  --color-zinc-900: #342b25;
+  --color-stone-500: #8a7768;
+}
+body:has(.console-shell) {
+  background-color: var(--console-canvas);
+}
+.console-shell {
+  background-color: var(--console-canvas);
+}
+.dark body:has(.console-shell),
+.dark .console-portal {
+  --console-canvas: var(--paper);
+  --console-rail: #120c08;
+  --console-rail-raised: #1f150e;
+  --console-rail-line: rgb(247 236 223 / 0.08);
+  --console-hairline: rgb(255 244 233 / 0.11);
+  --console-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --console-shadow-md: 0 12px 28px -14px rgb(0 0 0 / 0.6);
+  --console-shadow-lg: 0 28px 56px -24px rgb(0 0 0 / 0.75);
+  /* Lighter steps so dark:text-*-300/400 stay legible on the brown canvas. */
+  --color-emerald-300: #a6d1b6;
+  --color-emerald-400: #7fb896;
+  --color-amber-300: #f5cf9e;
+  --color-amber-400: #f1bc7d;
+  --color-blue-300: #c4d2db;
+  --color-blue-400: #a9bccb;
+  --color-sky-300: #c4d2db;
+  --color-sky-400: #a9bccb;
+  --color-indigo-300: #a8d0c5;
+  --color-indigo-400: #86bcae;
+  --color-purple-300: #e2bea5;
+  --color-purple-400: #d6a283;
+  --color-rose-300: #f0b39b;
+  --color-rose-400: #e8957a;
+  --color-red-300: #f0b39b;
+  --color-red-400: #e8957a;
+}
+
+body:has(.console-shell) .text-\[9px\] {
+  font-size: 10.5px;
+}
+body:has(.console-shell) .text-\[10px\] {
+  font-size: 11.5px;
+}
+body:has(.console-shell) .text-\[11px\] {
+  font-size: 12.5px;
+}
+/* IBM Plex Mono has no Arabic glyphs; the system fallback rendered Arabic
+   letter-by-letter with gaps ("ا ل ن ت ا ئ ج"). Fall back to Plex Arabic. */
+body:has(.console-shell) .font-mono {
+  font-family: "IBM Plex Mono", "IBM Plex Sans Arabic", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Shared defaults for the managers' tables, cards and tabs. They sit in the
+   components layer, so any explicit utility on an element still wins. */
+@layer components {
+  .console-shell main table thead tr {
+    background-color: color-mix(in oklab, var(--paper-shade) 55%, transparent);
+  }
+  .console-shell main table thead th {
+    height: 2.875rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+  }
+  .console-shell main table tbody td {
+    padding-block: 0.8rem;
+  }
+  .console-shell main [role="tablist"] {
+    border-radius: 0.875rem;
+  }
+}
+
+/* Component classes live in the components layer so Tailwind utilities on
+   the same element (md:hidden, sm:inline-flex, …) still win. */
+@layer components {
+  /* ── Rail (sidebar) ── */
+  .console-rail {
+    position: relative;
+    isolation: isolate;
+    color: var(--console-rail-fg);
+    background:
+      radial-gradient(140% 55% at 100% 0%, rgb(236 166 84 / 0.12), transparent 62%),
+      radial-gradient(90% 40% at 0% 100%, rgb(186 115 74 / 0.12), transparent 70%),
+      linear-gradient(180deg, var(--console-rail-raised), var(--console-rail));
+  }
+  /* Eight-point star (khatam) lattice — the heritage motif, at whisper level. */
+  .console-rail::before,
+  .console-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23F1BC7D' stroke-width='1'%3E%3Crect x='19' y='19' width='26' height='26'/%3E%3Crect x='19' y='19' width='26' height='26' transform='rotate(45 32 32)'/%3E%3Ccircle cx='32' cy='32' r='5'/%3E%3Cpath d='M0 32h6M58 32h6M32 0v6M32 58v6'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 64px 64px;
+    opacity: 0.07;
+    mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / 0.35) 45%, transparent 85%);
+  }
+  .console-rail-item {
+    position: relative;
+    color: var(--console-rail-muted);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .console-rail-item:hover {
+    color: var(--console-rail-fg);
+    background-color: rgb(247 236 223 / 0.07);
+  }
+  .console-rail-item:active {
+    background-color: rgb(247 236 223 / 0.1);
+  }
+  .console-rail-item:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+  }
+  .console-rail-item[data-active="true"] {
+    color: #fff;
+    background-color: rgb(247 236 223 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(247 236 223 / 0.08);
+  }
+  .console-rail-item[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    inset-block: 9px;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 999px;
+    background: var(--gold);
+    box-shadow: 0 0 12px rgb(236 166 84 / 0.6);
+  }
+
+  /* ── Top bar ── */
+  .console-topbar {
+    background-color: rgb(251 245 236 / 0.82);
+    backdrop-filter: blur(14px) saturate(1.15);
+    border-bottom: 1px solid var(--console-hairline);
+  }
+  .dark .console-topbar {
+    background-color: rgb(36 24 17 / 0.82);
+  }
+  .console-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    min-width: 2.5rem;
+    padding-inline: 0.625rem;
+    border-radius: 0.75rem;
+    color: var(--muted-foreground);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s var(--console-ease);
+  }
+  .console-icon-btn:hover {
+    color: var(--foreground);
+    background-color: color-mix(in oklab, var(--ink) 7%, transparent);
+  }
+  .console-icon-btn:active {
+    transform: scale(0.94);
+  }
+  .console-icon-btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* ── Surfaces ── */
+  .console-card {
+    background-color: var(--card);
+    border: 1px solid var(--console-hairline);
+    border-radius: 1.125rem;
+    box-shadow: var(--console-shadow-sm);
+  }
+  .console-card-interactive {
+    transition:
+      transform 0.35s var(--console-ease),
+      box-shadow 0.35s ease;
+  }
+  .console-card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--console-shadow-md);
+  }
+  .console-card-interactive:active {
+    transform: translateY(0);
+  }
+  .console-card-interactive:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  /* Dashboard hero: the council seal on green. */
+  .console-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: #fbf3e8;
+    border-radius: 1.5rem;
+    background:
+      radial-gradient(70% 120% at 0% 0%, rgb(236 166 84 / 0.22), transparent 55%),
+      radial-gradient(60% 90% at 100% 100%, rgb(186 115 74 / 0.28), transparent 60%),
+      linear-gradient(135deg, #1d4a35 0%, #143726 55%, #0f2b1e 100%);
+    box-shadow: var(--console-shadow-lg);
+  }
+  .console-hero::before {
+    opacity: 0.09;
+    mask-image: radial-gradient(80% 100% at 85% 50%, #000, transparent 75%);
+  }
+  .dark .console-hero {
+    background:
+      radial-gradient(70% 120% at 0% 0%, rgb(236 166 84 / 0.16), transparent 55%),
+      linear-gradient(135deg, #1b3b2b 0%, #10281c 60%, #0b1c14 100%);
+  }
+
+  /* Section heading inside the console */
+  .console-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--bronze);
+  }
+  :lang(en) .console-eyebrow {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+  }
+  .console-title {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  :lang(en) .console-title {
+    letter-spacing: -0.02em;
+  }
+}
+
+@keyframes console-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.console-rise {
+  animation: console-rise 0.5s var(--console-ease) both;
+}
+.console-rise-2 {
+  animation: console-rise 0.5s var(--console-ease) 0.06s both;
+}
+.console-rise-3 {
+  animation: console-rise 0.5s var(--console-ease) 0.12s both;
+}
+.console-rise-4 {
+  animation: console-rise 0.5s var(--console-ease) 0.18s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .console-rise,
+  .console-rise-2,
+  .console-rise-3,
+  .console-rise-4 {
+    animation: none;
+  }
+  .console-card-interactive,
+  .console-icon-btn {
+    transition: none;
+  }
+}
