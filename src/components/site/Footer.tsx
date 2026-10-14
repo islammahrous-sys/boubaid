@@ -21,6 +21,7 @@ import {
   primaryNav,
   secondaryNav,
   buildFooterColumns,
+  tagNavigation,
   withoutRetiredNavigation,
 } from "@/content/navigation";
 import { subscribeToNewsletter } from "@/lib/forms.functions";
@@ -67,7 +68,7 @@ export function Footer() {
    *  3. otherwise the static navigation lists (build-time fallback). */
   const { data: liveNav } = useQuery({
     queryKey: ["public_navigation"],
-    queryFn: () => getPublicNavigation(),
+    queryFn: () => getPublicNavigation().then(tagNavigation),
     staleTime: 5 * 60 * 1000,
   });
   const liveFooterItems = withoutRetiredNavigation(liveNav?.footer ?? []);

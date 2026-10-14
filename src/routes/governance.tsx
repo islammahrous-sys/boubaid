@@ -16,8 +16,7 @@ import { Seal } from "@/components/site/Seal";
 import { getCanonicalUrl } from "@/lib/seo";
 import { getPublicSiteSettings } from "@/lib/cms.functions";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
-import boardChartAr from "@/assets/fund-board/chart-ar.png.asset.json";
-import boardChartEn from "@/assets/fund-board/chart-en.png.asset.json";
+import { pageImages } from "@/content/images";
 import { copy } from "@/content/page-copy/governance";
 import { inl } from "@/content/page-copy/governance-inline";
 
@@ -147,7 +146,7 @@ function GovernancePage() {
               className="not-prose group mt-6 flex max-w-sm items-center gap-4 border border-border p-3 transition-colors hover:border-bronze dark:hover:border-gold"
             >
               <img
-                src="/images/ncnp_license_certificate.jpg"
+                src={pageImages.governance.licence.src}
                 alt=""
                 className="h-16 w-24 shrink-0 border border-border object-cover"
                 loading="lazy"
@@ -224,10 +223,9 @@ function GovernancePage() {
           <BoardChartFigure
             className="mt-10"
             title={t(inl.t_203448fe)}
-            href={new URL(
-              rtl ? boardChartAr.url : boardChartEn.url,
-              "https://www.boubaid.com",
-            ).toString()}
+            href={
+              rtl ? pageImages.governance.boardChartAr.src : pageImages.governance.boardChartEn.src
+            }
           />
         </section>
 

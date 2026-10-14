@@ -9,13 +9,14 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider, LANG_STORAGE_KEY } from "@/i18n/LanguageProvider";
 import { ThemeProvider, THEME_STORAGE_KEY } from "@/lib/ThemeProvider";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { useLiveEdit } from "@/lib/live-edit/store";
 import { Header } from "@/components/site/Header";
 import { AnnouncementTicker } from "@/components/site/AnnouncementTicker";
 import { Footer } from "@/components/site/Footer";
@@ -322,12 +323,30 @@ function useRecoveryHashRedirect(pathname: string) {
   }, [pathname]);
 }
 
+// The on-page live editor is admin-only, so it is split out of the visitor bundle.
+const LiveEditor = lazy(() => import("@/components/live-edit/LiveEditor"));
+
+function LiveEditorMount() {
+  const { isAdmin } = useAuth();
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
+  if (!ready || !isAdmin) return null;
+  return (
+    <Suspense fallback={null}>
+      <LiveEditor />
+    </Suspense>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const siteSettings = Route.useLoaderData();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   useRecoveryHashRedirect(pathname);
   const isConsole = pathname.startsWith("/admin") || pathname.startsWith("/content");
+  // Toggling live-edit mode remounts the page so every text (including ones a
+  // component memoised) re-renders with — or without — its editor tag.
+  const { session: liveEditSession } = useLiveEdit();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -335,6 +354,7 @@ function RootComponent() {
         <AuthProvider>
           <LanguageProvider initialSettings={siteSettings}>
             <div
+              key={liveEditSession}
               className={`flex min-h-screen w-full flex-col overflow-x-clip ${isConsole ? "pb-0" : "pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0"}`}
             >
               <TopProgressBar />
@@ -360,6 +380,7 @@ function RootComponent() {
               </div>
               <ScrollReveal />
             </div>
+            <LiveEditorMount />
             <NetworkStatusBanner />
             <GlobalMediaViewer />
             <Toaster richColors position="top-center" />

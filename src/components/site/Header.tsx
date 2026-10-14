@@ -13,6 +13,7 @@ import {
   isNavItemActive,
   type NavItem,
   navLinkProps,
+  tagNavigation,
   withoutRetiredNavigation,
 } from "@/content/navigation";
 import { getPublicNavigation, getPublicSiteSettings } from "@/lib/cms.functions";
@@ -45,7 +46,7 @@ export function Header() {
    *  "header" menu has no public items configured. */
   const { data: liveNav } = useQuery({
     queryKey: ["public_navigation"],
-    queryFn: () => getPublicNavigation(),
+    queryFn: () => getPublicNavigation().then(tagNavigation),
     staleTime: 5 * 60 * 1000,
   });
   const liveHeaderItems = withoutRetiredNavigation(liveNav?.header ?? []);
