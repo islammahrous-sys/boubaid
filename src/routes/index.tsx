@@ -29,6 +29,8 @@ import { cn } from "@/lib/utils";
 
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
+import { tagCmsText } from "@/i18n/editable-copy";
+import { getLiveEdit } from "@/lib/live-edit/store";
 import {
   news as staticNews,
   initiatives as staticInitiatives,
@@ -280,6 +282,50 @@ type SectionConfig = {
   image_path?: string;
   custom_payload?: Record<string, any>;
 };
+
+type HomeTextField = "badge" | "title" | "subtitle" | "cta_label";
+
+/**
+ * A homepage section text: the Homepage Manager's value when one is set for the
+ * current language, otherwise the built-in copy (`fallback`). The stored value is
+ * tagged `cms-home:<section>.<field>` so the live editor can edit it in place;
+ * clearing it there falls back to the built-in copy, exactly as on the site.
+ */
+function homeSectionText(
+  sec: SectionConfig,
+  field: HomeTextField,
+  lang: "ar" | "en",
+  t: <T>(entry: { ar: T; en: T }) => T,
+  fallback?: BiText,
+): string {
+  const id = `cms-home:${sec.id}.${field}`;
+  const ar = sec[`${field}_ar`];
+  const en = sec[`${field}_en`];
+  const live = getLiveEdit();
+  const draft = live.enabled ? live.texts[id]?.[lang] : undefined;
+  const stored = lang === "ar" ? ar : en;
+  if (fallback && (draft === null || draft === "" || (!stored && typeof draft !== "string"))) {
+    return t(fallback);
+  }
+  // Without a built-in fallback the section shows its English text in Arabic too.
+  const entry = fallback ? { ar: ar ?? "", en: en ?? "" } : { ar: ar || en || "", en: en ?? "" };
+  return t(tagCmsText(entry, id));
+}
+
+/** Like `homeSectionText`, but with no stored value for this language the text is omitted. */
+function homeSectionOptional(
+  sec: SectionConfig,
+  field: HomeTextField,
+  lang: "ar" | "en",
+  t: <T>(entry: { ar: T; en: T }) => T,
+): string | undefined {
+  const id = `cms-home:${sec.id}.${field}`;
+  const live = getLiveEdit();
+  const draft = live.enabled ? live.texts[id]?.[lang] : undefined;
+  const stored = lang === "ar" ? sec[`${field}_ar`] : sec[`${field}_en`];
+  if (draft === null || draft === "" || (!stored && typeof draft !== "string")) return undefined;
+  return t(tagCmsText({ ar: sec[`${field}_ar`] ?? "", en: sec[`${field}_en`] ?? "" }, id));
+}
 
 const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "hero", enabled: true, order: 1 },
@@ -629,11 +675,7 @@ function HomePage() {
                 </div>
 
                 <p className="mx-auto mt-4 max-w-3xl text-balance text-sm leading-relaxed text-ivory/90 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:mt-6 sm:text-base md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-700 motion-safe:delay-150">
-                  {sec.subtitle_ar && rtl
-                    ? sec.subtitle_ar
-                    : sec.subtitle_en && !rtl
-                      ? sec.subtitle_en
-                      : t(copy.standfirst)}
+                  {homeSectionText(sec, "subtitle", lang, t, copy.standfirst)}
                 </p>
 
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:mt-8 sm:gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 motion-safe:duration-700 motion-safe:delay-300">
@@ -641,13 +683,7 @@ function HomePage() {
                     to={sec.cta_url || "/family-tree"}
                     className="group relative inline-flex items-center gap-2.5 overflow-hidden border border-gold bg-gradient-to-r from-gold via-gold/95 to-gold-soft px-5 py-3 sm:px-7 sm:py-3.5 text-xs sm:text-sm font-bold text-ink shadow-[0_10px_40px_-10px_rgba(237,167,70,0.6)] transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.03] hover:shadow-[0_15px_50px_-10px_rgba(237,167,70,0.8)] active:scale-[0.98]"
                   >
-                    <span>
-                      {sec.cta_label_ar && rtl
-                        ? sec.cta_label_ar
-                        : sec.cta_label_en && !rtl
-                          ? sec.cta_label_en
-                          : t(inl.t_dceea135)}
-                    </span>
+                    <span>{homeSectionText(sec, "cta_label", lang, t, inl.t_dceea135)}</span>
                     <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
                   </Link>
 
@@ -683,19 +719,9 @@ function HomePage() {
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
               <div>
-                <Eyebrow>
-                  {sec.badge_ar && rtl
-                    ? sec.badge_ar
-                    : sec.badge_en && !rtl
-                      ? sec.badge_en
-                      : t(councilAddress.eyebrow)}
-                </Eyebrow>
+                <Eyebrow>{homeSectionText(sec, "badge", lang, t, councilAddress.eyebrow)}</Eyebrow>
                 <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                  {sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : t(councilAddress.title)}
+                  {homeSectionText(sec, "title", lang, t, councilAddress.title)}
                 </h2>
 
                 <figure className="mt-8 border-s-2 border-bronze/40 ps-4 dark:border-gold/40">
@@ -771,20 +797,8 @@ function HomePage() {
           <section key={sec.id} className="border-y border-border bg-secondary/40 reveal-on-scroll">
             <div className="container-page py-16 md:py-20">
               <SectionHeading
-                eyebrow={
-                  sec.badge_ar && rtl
-                    ? sec.badge_ar
-                    : sec.badge_en && !rtl
-                      ? sec.badge_en
-                      : t(visionMission.eyebrow)
-                }
-                title={
-                  sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : t(visionMission.title)
-                }
+                eyebrow={homeSectionText(sec, "badge", lang, t, visionMission.eyebrow)}
+                title={homeSectionText(sec, "title", lang, t, visionMission.title)}
               />
 
               <div className="mt-10 grid gap-6 md:grid-cols-2">
@@ -819,27 +833,9 @@ function HomePage() {
           <section key={sec.id} className="border-y border-border bg-secondary/40 reveal-on-scroll">
             <div className="container-page py-16 md:py-20">
               <SectionHeading
-                eyebrow={
-                  sec.badge_ar && rtl
-                    ? sec.badge_ar
-                    : sec.badge_en && !rtl
-                      ? sec.badge_en
-                      : t(copy.branchesEyebrow)
-                }
-                title={
-                  sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : t(copy.branchesTitle)
-                }
-                subtitle={
-                  sec.subtitle_ar && rtl
-                    ? sec.subtitle_ar
-                    : sec.subtitle_en && !rtl
-                      ? sec.subtitle_en
-                      : t(copy.branchesSub)
-                }
+                eyebrow={homeSectionText(sec, "badge", lang, t, copy.branchesEyebrow)}
+                title={homeSectionText(sec, "title", lang, t, copy.branchesTitle)}
+                subtitle={homeSectionText(sec, "subtitle", lang, t, copy.branchesSub)}
               />
 
               <ol className="reveal-stagger mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -884,11 +880,7 @@ function HomePage() {
                 to={sec.cta_url || "/branches"}
                 className="tap-target-y mt-7 inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
-                {sec.cta_label_ar && rtl
-                  ? sec.cta_label_ar
-                  : sec.cta_label_en && !rtl
-                    ? sec.cta_label_en
-                    : t(copy.allBranches)}
+                {homeSectionText(sec, "cta_label", lang, t, copy.allBranches)}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -915,26 +907,12 @@ function HomePage() {
                 </figure>
 
                 <div>
-                  <Eyebrow>
-                    {sec.badge_ar && rtl
-                      ? sec.badge_ar
-                      : sec.badge_en && !rtl
-                        ? sec.badge_en
-                        : t(copy.hqEyebrow)}
-                  </Eyebrow>
+                  <Eyebrow>{homeSectionText(sec, "badge", lang, t, copy.hqEyebrow)}</Eyebrow>
                   <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                    {sec.title_ar && rtl
-                      ? sec.title_ar
-                      : sec.title_en && !rtl
-                        ? sec.title_en
-                        : t(hqTitle)}
+                    {homeSectionText(sec, "title", lang, t, hqTitle)}
                   </h2>
                   <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
-                    {sec.subtitle_ar && rtl
-                      ? sec.subtitle_ar
-                      : sec.subtitle_en && !rtl
-                        ? sec.subtitle_en
-                        : t(hqSummary)}
+                    {homeSectionText(sec, "subtitle", lang, t, hqSummary)}
                   </p>
 
                   {/* Progress */}
@@ -1014,37 +992,15 @@ function HomePage() {
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
               <SectionHeading
-                eyebrow={
-                  sec.badge_ar && rtl
-                    ? sec.badge_ar
-                    : sec.badge_en && !rtl
-                      ? sec.badge_en
-                      : t(copy.newsEyebrow)
-                }
-                title={
-                  sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : t(copy.newsTitle)
-                }
-                subtitle={
-                  sec.subtitle_ar && rtl
-                    ? sec.subtitle_ar
-                    : sec.subtitle_en && !rtl
-                      ? sec.subtitle_en
-                      : undefined
-                }
+                eyebrow={homeSectionText(sec, "badge", lang, t, copy.newsEyebrow)}
+                title={homeSectionText(sec, "title", lang, t, copy.newsTitle)}
+                subtitle={homeSectionOptional(sec, "subtitle", lang, t)}
               />
               <Link
                 to={sec.cta_url || "/news"}
                 className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
-                {sec.cta_label_ar && rtl
-                  ? sec.cta_label_ar
-                  : sec.cta_label_en && !rtl
-                    ? sec.cta_label_en
-                    : t(copy.allNews)}
+                {homeSectionText(sec, "cta_label", lang, t, copy.allNews)}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -1107,37 +1063,15 @@ function HomePage() {
             <div className="container-page py-16 md:py-20">
               <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
                 <SectionHeading
-                  eyebrow={
-                    sec.badge_ar && rtl
-                      ? sec.badge_ar
-                      : sec.badge_en && !rtl
-                        ? sec.badge_en
-                        : t(copy.honoursEyebrow)
-                  }
-                  title={
-                    sec.title_ar && rtl
-                      ? sec.title_ar
-                      : sec.title_en && !rtl
-                        ? sec.title_en
-                        : t(copy.honoursTitle)
-                  }
-                  subtitle={
-                    sec.subtitle_ar && rtl
-                      ? sec.subtitle_ar
-                      : sec.subtitle_en && !rtl
-                        ? sec.subtitle_en
-                        : undefined
-                  }
+                  eyebrow={homeSectionText(sec, "badge", lang, t, copy.honoursEyebrow)}
+                  title={homeSectionText(sec, "title", lang, t, copy.honoursTitle)}
+                  subtitle={homeSectionOptional(sec, "subtitle", lang, t)}
                 />
                 <Link
                   to={sec.cta_url || "/achievers"}
                   className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
-                  {sec.cta_label_ar && rtl
-                    ? sec.cta_label_ar
-                    : sec.cta_label_en && !rtl
-                      ? sec.cta_label_en
-                      : t(copy.allHonours)}
+                  {homeSectionText(sec, "cta_label", lang, t, copy.allHonours)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
@@ -1169,37 +1103,15 @@ function HomePage() {
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
               <SectionHeading
-                eyebrow={
-                  sec.badge_ar && rtl
-                    ? sec.badge_ar
-                    : sec.badge_en && !rtl
-                      ? sec.badge_en
-                      : t(copy.programmesEyebrow)
-                }
-                title={
-                  sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : t(copy.programmesTitle)
-                }
-                subtitle={
-                  sec.subtitle_ar && rtl
-                    ? sec.subtitle_ar
-                    : sec.subtitle_en && !rtl
-                      ? sec.subtitle_en
-                      : undefined
-                }
+                eyebrow={homeSectionText(sec, "badge", lang, t, copy.programmesEyebrow)}
+                title={homeSectionText(sec, "title", lang, t, copy.programmesTitle)}
+                subtitle={homeSectionOptional(sec, "subtitle", lang, t)}
               />
               <Link
                 to={sec.cta_url || "/initiatives"}
                 className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
               >
-                {sec.cta_label_ar && rtl
-                  ? sec.cta_label_ar
-                  : sec.cta_label_en && !rtl
-                    ? sec.cta_label_en
-                    : t(copy.allProgrammes)}
+                {homeSectionText(sec, "cta_label", lang, t, copy.allProgrammes)}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -1254,13 +1166,7 @@ function HomePage() {
             <div className="container-page py-16 md:py-20">
               <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-16">
                 <div>
-                  <Eyebrow>
-                    {sec.badge_ar && rtl
-                      ? sec.badge_ar
-                      : sec.badge_en && !rtl
-                        ? sec.badge_en
-                        : t(copy.dnaEyebrow)}
-                  </Eyebrow>
+                  <Eyebrow>{homeSectionText(sec, "badge", lang, t, copy.dnaEyebrow)}</Eyebrow>
                   <p className="nums mt-4 font-mono text-3xl text-foreground">
                     {dnaInfo.haplogroup}
                   </p>
@@ -1268,18 +1174,10 @@ function HomePage() {
 
                 <div>
                   <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                    {sec.title_ar && rtl
-                      ? sec.title_ar
-                      : sec.title_en && !rtl
-                        ? sec.title_en
-                        : t(dnaInfo.title)}
+                    {homeSectionText(sec, "title", lang, t, dnaInfo.title)}
                   </h2>
                   <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
-                    {sec.subtitle_ar && rtl
-                      ? sec.subtitle_ar
-                      : sec.subtitle_en && !rtl
-                        ? sec.subtitle_en
-                        : t(dnaInfo.overview)}
+                    {homeSectionText(sec, "subtitle", lang, t, dnaInfo.overview)}
                   </p>
 
                   <div className="mt-6 border-y border-border py-3">
@@ -1297,11 +1195,7 @@ function HomePage() {
                       to={sec.cta_url || "/dna"}
                       className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                     >
-                      {sec.cta_label_ar && rtl
-                        ? sec.cta_label_ar
-                        : sec.cta_label_en && !rtl
-                          ? sec.cta_label_en
-                          : t(copy.dnaLink)}
+                      {homeSectionText(sec, "cta_label", lang, t, copy.dnaLink)}
                       <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                     </Link>
                     {dnaInfo.databases.map((db) => (
@@ -1336,27 +1230,9 @@ function HomePage() {
         return (
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <SectionHeading
-              eyebrow={
-                sec.badge_ar && rtl
-                  ? sec.badge_ar
-                  : sec.badge_en && !rtl
-                    ? sec.badge_en
-                    : t(inl.t_279322fd)
-              }
-              title={
-                sec.title_ar && rtl
-                  ? sec.title_ar
-                  : sec.title_en && !rtl
-                    ? sec.title_en
-                    : t(inl.t_881212c1)
-              }
-              subtitle={
-                sec.subtitle_ar && rtl
-                  ? sec.subtitle_ar
-                  : sec.subtitle_en && !rtl
-                    ? sec.subtitle_en
-                    : undefined
-              }
+              eyebrow={homeSectionText(sec, "badge", lang, t, inl.t_279322fd)}
+              title={homeSectionText(sec, "title", lang, t, inl.t_881212c1)}
+              subtitle={homeSectionOptional(sec, "subtitle", lang, t)}
             />
             <dl className="mt-10 grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4">
               {statItems.map((s, i) => (
@@ -1376,34 +1252,20 @@ function HomePage() {
         return (
           <section key={sec.id} className="border-y border-border bg-secondary/40 reveal-on-scroll">
             <div className="container-page py-16 text-center md:py-20">
-              <Eyebrow>
-                {sec.badge_ar && rtl
-                  ? sec.badge_ar
-                  : sec.badge_en && !rtl
-                    ? sec.badge_en
-                    : t(inl.t_2fb3840b)}
-              </Eyebrow>
+              <Eyebrow>{homeSectionText(sec, "badge", lang, t, inl.t_2fb3840b)}</Eyebrow>
               <h2 className="mt-4 text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                {sec.title_ar && rtl
-                  ? sec.title_ar
-                  : sec.title_en && !rtl
-                    ? sec.title_en
-                    : t(inl.t_d858321e)}
+                {homeSectionText(sec, "title", lang, t, inl.t_d858321e)}
               </h2>
               {(sec.subtitle_ar || sec.subtitle_en) && (
                 <p className="measure mx-auto mt-4 text-sm leading-relaxed text-muted-foreground">
-                  {sec.subtitle_ar && rtl ? sec.subtitle_ar : sec.subtitle_en}
+                  {homeSectionText(sec, "subtitle", lang, t)}
                 </p>
               )}
               <Link
                 to={sec.cta_url || "/family-tree"}
                 className="mt-7 inline-flex items-center gap-2 border border-ink bg-ink px-5 py-3 text-sm font-medium text-ivory transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-transparent hover:text-foreground active:scale-[0.97] dark:border-gold dark:bg-gold dark:text-ink dark:hover:bg-transparent dark:hover:text-gold"
               >
-                {sec.cta_label_ar && rtl
-                  ? sec.cta_label_ar
-                  : sec.cta_label_en && !rtl
-                    ? sec.cta_label_en
-                    : t(inl.t_5090b82d)}
+                {homeSectionText(sec, "cta_label", lang, t, inl.t_5090b82d)}
                 <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -1417,18 +1279,10 @@ function HomePage() {
             <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
               <div>
                 <h2 className="text-2xl leading-tight text-foreground md:text-[1.75rem]">
-                  {sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : t(copy.joinTitle)}
+                  {homeSectionText(sec, "title", lang, t, copy.joinTitle)}
                 </h2>
                 <p className="measure mt-4 text-sm leading-relaxed text-muted-foreground">
-                  {sec.subtitle_ar && rtl
-                    ? sec.subtitle_ar
-                    : sec.subtitle_en && !rtl
-                      ? sec.subtitle_en
-                      : t(copy.joinBody)}
+                  {homeSectionText(sec, "subtitle", lang, t, copy.joinBody)}
                 </p>
               </div>
 
@@ -1438,11 +1292,7 @@ function HomePage() {
                   hash={(sec.cta_url || "/requests#committee-requests").split("#")[1]}
                   className="inline-flex items-center border border-border px-5 py-3 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-150 ease-out hover:bg-secondary active:scale-[0.97]"
                 >
-                  {sec.cta_label_ar && rtl
-                    ? sec.cta_label_ar
-                    : sec.cta_label_en && !rtl
-                      ? sec.cta_label_en
-                      : t(copy.contactCta)}
+                  {homeSectionText(sec, "cta_label", lang, t, copy.contactCta)}
                 </Link>
               </div>
             </div>
@@ -1456,37 +1306,15 @@ function HomePage() {
             <div className="container-page py-16 md:py-20">
               <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
                 <SectionHeading
-                  eyebrow={
-                    sec.badge_ar && rtl
-                      ? sec.badge_ar
-                      : sec.badge_en && !rtl
-                        ? sec.badge_en
-                        : t(inl.t_b5065b03)
-                  }
-                  title={
-                    sec.title_ar && rtl
-                      ? sec.title_ar
-                      : sec.title_en && !rtl
-                        ? sec.title_en
-                        : t(inl.t_c6f2e4b6)
-                  }
-                  subtitle={
-                    sec.subtitle_ar && rtl
-                      ? sec.subtitle_ar
-                      : sec.subtitle_en && !rtl
-                        ? sec.subtitle_en
-                        : undefined
-                  }
+                  eyebrow={homeSectionText(sec, "badge", lang, t, inl.t_b5065b03)}
+                  title={homeSectionText(sec, "title", lang, t, inl.t_c6f2e4b6)}
+                  subtitle={homeSectionOptional(sec, "subtitle", lang, t)}
                 />
                 <Link
                   to={sec.cta_url || "/events"}
                   className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
-                  {sec.cta_label_ar && rtl
-                    ? sec.cta_label_ar
-                    : sec.cta_label_en && !rtl
-                      ? sec.cta_label_en
-                      : t(inl.t_cecded4a)}
+                  {homeSectionText(sec, "cta_label", lang, t, inl.t_cecded4a)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
@@ -1535,40 +1363,21 @@ function HomePage() {
           <section key={sec.id} className="container-page py-16 md:py-20 reveal-on-scroll">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
               <SectionHeading
-                eyebrow={
-                  sec.badge_ar && rtl
-                    ? sec.badge_ar
-                    : sec.badge_en && !rtl
-                      ? sec.badge_en
-                      : t(inl.t_0e0bb33d)
-                }
+                eyebrow={homeSectionText(sec, "badge", lang, t, inl.t_0e0bb33d)}
                 title={
-                  sec.title_ar && rtl
-                    ? sec.title_ar
-                    : sec.title_en && !rtl
-                      ? sec.title_en
-                      : rtl
-                        ? galleryPreview.title_ar
-                        : galleryPreview.title_en || galleryPreview.title_ar
+                  homeSectionOptional(sec, "title", lang, t) ??
+                  (rtl
+                    ? galleryPreview.title_ar
+                    : galleryPreview.title_en || galleryPreview.title_ar)
                 }
-                subtitle={
-                  sec.subtitle_ar && rtl
-                    ? sec.subtitle_ar
-                    : sec.subtitle_en && !rtl
-                      ? sec.subtitle_en
-                      : undefined
-                }
+                subtitle={homeSectionOptional(sec, "subtitle", lang, t)}
               />
               {sec.cta_url ? (
                 <Link
                   to={sec.cta_url}
                   className="tap-target-y inline-flex items-center gap-2 border-b border-bronze pb-0.5 text-sm font-medium text-bronze transition-colors hover:border-foreground hover:text-foreground dark:border-gold dark:text-gold dark:hover:border-ivory dark:hover:text-ivory"
                 >
-                  {sec.cta_label_ar && rtl
-                    ? sec.cta_label_ar
-                    : sec.cta_label_en && !rtl
-                      ? sec.cta_label_en
-                      : t(inl.t_e3e60439)}
+                  {homeSectionText(sec, "cta_label", lang, t, inl.t_e3e60439)}
                   <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               ) : null}

@@ -19,6 +19,9 @@ export function registerCopy<T extends object>(page: string, copy: T): T {
   const walk = (v: unknown, path: string) => {
     if (!v || typeof v !== "object") return;
     if (isBi(v)) {
+      // An entry shared with a set registered earlier keeps that id, so the
+      // overrides already published under it keep applying.
+      if (ids.has(v)) return;
       ids.set(v, `${page}:${path}`);
       list.push({ path, value: { ar: v.ar, en: v.en } });
       return;
@@ -32,4 +35,22 @@ export function registerCopy<T extends object>(page: string, copy: T): T {
 
 export function copyId(entry: object): string | undefined {
   return ids.get(entry);
+}
+
+/**
+ * CMS-managed texts (homepage sections, navigation items) live in the database,
+ * not in code. Tagging their {ar,en} object with a `cms-<kind>:<key>` id lets
+ * `t()` treat them like registered copy — the live editor can then find, preview
+ * and publish them — while `cmsTexts` keeps the latest stored value per id.
+ */
+export const cmsTexts = new Map<string, Bi>();
+
+export function tagCmsText<T extends Bi>(entry: T, id: string): T {
+  ids.set(entry, id);
+  cmsTexts.set(id, { ar: entry.ar, en: entry.en });
+  return entry;
+}
+
+export function isCmsTextId(id: string): boolean {
+  return id.startsWith("cms-");
 }

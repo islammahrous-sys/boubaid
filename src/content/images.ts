@@ -1,4 +1,10 @@
 import type { BiText } from "@/i18n/LanguageProvider";
+import { registerCopy } from "@/i18n/editable-copy";
+import boardChartAr from "@/assets/fund-board/chart-ar.png.asset.json";
+import boardChartEn from "@/assets/fund-board/chart-en.png.asset.json";
+
+/** Lovable asset paths are host-relative; pin them to the live domain so they load on any host. */
+const onLiveDomain = (url: string) => new URL(url, "https://www.boubaid.com").toString();
 
 /**
  * Editorial imagery, assigned per page.
@@ -236,6 +242,76 @@ export const pageImages = {
       "/images/ramadan_custom.png",
     ],
   },
+
+  governance: {
+    /** Thumbnail beside the "view certificate" link. */
+    licence: {
+      src: "/images/ncnp_license_certificate.jpg",
+      caption: {
+        ar: "صورة شهادة ترخيص المركز الوطني لتنمية القطاع غير الربحي (صفحة الحوكمة)",
+        en: "NCNP licence certificate thumbnail (Governance page)",
+      },
+    } satisfies Figure,
+    boardChartAr: {
+      src: onLiveDomain(boardChartAr.url),
+      caption: {
+        ar: "الهيكل التنظيمي لمجلس أمناء الصندوق — النسخة العربية (صفحة الحوكمة)",
+        en: "Fund board of trustees org chart — Arabic version (Governance page)",
+      },
+    } satisfies Figure,
+    boardChartEn: {
+      src: onLiveDomain(boardChartEn.url),
+      caption: {
+        ar: "الهيكل التنظيمي لمجلس أمناء الصندوق — النسخة الإنجليزية (صفحة الحوكمة)",
+        en: "Fund board of trustees org chart — English version (Governance page)",
+      },
+    } satisfies Figure,
+  },
+
+  committees: {
+    orgMap1445Ar: {
+      src: "/images/committee-charts-1445/org-map-1445-ar.png",
+      caption: {
+        ar: "الخريطة التنظيمية للجان 1445 هـ — النسخة العربية (صفحة اللجان)",
+        en: "1445 AH committees org map — Arabic version (Committees page)",
+      },
+    } satisfies Figure,
+    orgMap1445En: {
+      src: "/images/committee-charts-1445/org-map-1445-en.png",
+      caption: {
+        ar: "الخريطة التنظيمية للجان 1445 هـ — النسخة الإنجليزية (صفحة اللجان)",
+        en: "1445 AH committees org map — English version (Committees page)",
+      },
+    } satisfies Figure,
+  },
+
+  dna: {
+    haplogroupTree: {
+      src: "/images/dna_z20777_haplogroup_tree.png",
+      caption: {
+        ar: "شجرة السلالة الجينية Z20777 (صفحة الدراسات الجينية)",
+        en: "Z20777 haplogroup tree (Genetic studies page)",
+      },
+    } satisfies Figure,
+    haplogroupTreeFull: {
+      src: "/images/dna_haplogroup_tree_v2_full.png",
+      caption: {
+        ar: "شجرة السلالات الجينية الكاملة (صفحة الدراسات الجينية)",
+        en: "Full haplogroup tree (Genetic studies page)",
+      },
+    } satisfies Figure,
+  },
+
+  branches: {
+    /** Shown for a branch patriarch with no portrait of his own. */
+    fallbackPortrait: {
+      src: "/images/sheikh-mohammed-ahmed.png",
+      caption: {
+        ar: "الصورة الافتراضية لجد الفرع عند عدم توفر صورته (صفحة الفروع)",
+        en: "Default patriarch portrait when a branch has none (Branches page)",
+      },
+    } satisfies Figure,
+  },
 } as const;
 
 /* ── Admin-replaceable page figures ─────────────────────────────────────────
@@ -267,6 +343,13 @@ function registerPageImages(node: unknown, path: string) {
   }
 }
 registerPageImages(pageImages, "");
+// Figure captions are editable copy too (shown under images and as alt text).
+registerCopy("page-images", pageImages);
+
+/** The URL a figure currently renders with (override, or the built-in default). */
+export function currentPageImageSrc(id: string): string | undefined {
+  return pageImageOverrides[id] || pageImageRegistry.find((e) => e.id === id)?.defaultSrc;
+}
 
 /** Replace the active overrides (called whenever the public settings load). */
 export function setPageImageOverrides(map: Record<string, unknown> | null | undefined) {

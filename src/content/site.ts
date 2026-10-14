@@ -1072,3 +1072,19 @@ export const references = [
     url: "https://www.yfull.com/tree/J-Z20773/",
   },
 ];
+
+// Every bilingual text above (siteMeta aside, registered at the top) becomes
+// editable copy — in the console's Page texts and in the on-page live editor.
+registerCopy("site-content", {
+  branches,
+  dnaInfo,
+  boardOfTrustees,
+  boardTerm,
+  foundingMembers,
+  ceoRequirement,
+  committees,
+  hqProject,
+  news,
+  libraryItems,
+  lineageChain,
+});

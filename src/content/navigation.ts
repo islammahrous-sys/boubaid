@@ -1,4 +1,5 @@
 import type { BiText } from "@/i18n/LanguageProvider";
+import { registerCopy, tagCmsText } from "@/i18n/editable-copy";
 
 /**
  * Single source of truth for site navigation.
@@ -244,6 +245,27 @@ export function buildFooterColumns(items: FooterNavItem[]): FooterColumn[] {
   return flat.length
     ? [{ key: "site-sections", title: SITE_SECTIONS_TITLE, items: flat }, ...columns]
     : columns;
+}
+
+// The static menus above are the fallback whenever the CMS has no header menu;
+// registering them makes their labels editable like any other page copy.
+registerCopy("navigation", { primaryNav, navGroups, siteSections: SITE_SECTIONS_TITLE });
+
+/**
+ * Tags every label of the CMS navigation (Navigation Manager) with its
+ * `navigation_items` id, so the live editor can edit menu labels in place.
+ * Pass it the result of `getPublicNavigation()`; returns it unchanged.
+ */
+export function tagNavigation<T>(nav: T): T {
+  const walk = (items: unknown) => {
+    if (!Array.isArray(items)) return;
+    for (const item of items as { id?: string; label?: BiText; children?: unknown }[]) {
+      if (item.id && item.label) tagCmsText(item.label, `cms-nav:${item.id}`);
+      walk(item.children);
+    }
+  };
+  if (nav && typeof nav === "object") Object.values(nav).forEach(walk);
+  return nav;
 }
 
 /** Split a nav URL such as "/committees#board" into Link props. */

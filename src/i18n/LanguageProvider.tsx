@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getPublicSiteSettings } from "@/lib/cms.functions";
 import { copyId } from "@/i18n/editable-copy";
 import { setPageImageOverrides } from "@/content/images";
+import { useLiveEdit } from "@/lib/live-edit/store";
+import { tagText } from "@/lib/live-edit/stega";
 
 export type Lang = "ar" | "en";
 
@@ -61,10 +63,18 @@ export function LanguageProvider({
     staleTime: 5 * 60 * 1000,
     initialData: initialSettings,
   });
+  // Live editor (admins only): unpublished drafts are previewed — and every
+  // registered string is tagged with its copy id — only while edit mode is on.
+  const edit = useLiveEdit();
+  const editing = edit.enabled;
+  const draftTexts = edit.texts;
+  const draftImages = edit.images;
+
   // Admin-replaced page figures (site_settings key `page_images`). Applied
   // during render, before any page reads `pageImages.*.src`, so SSR and the
   // first client paint already show the admin's choice.
-  setPageImageOverrides((settings as Record<string, any> | undefined)?.page_images);
+  const publishedImages = (settings as Record<string, any> | undefined)?.page_images;
+  setPageImageOverrides(editing ? withImageDrafts(publishedImages, draftImages) : publishedImages);
   const overrides = (settings as Record<string, any> | undefined)?.page_texts as
     Record<string, { ar?: string; en?: string }> | undefined;
 
@@ -81,16 +91,38 @@ export function LanguageProvider({
         }
       },
       t: (entry) => {
-        const id = overrides ? copyId(entry as object) : undefined;
+        const id = copyId(entry as object);
+        const builtIn = lang === "ar" ? entry.ar : entry.en;
+        let text: unknown = builtIn;
         const o = id ? overrides?.[id]?.[lang] : undefined;
-        if (typeof o === "string" && o.trim()) return o as never;
-        return lang === "ar" ? entry.ar : entry.en;
+        if (typeof o === "string" && o.trim()) text = o;
+        if (editing && id) {
+          // An emptied field publishes as "back to built-in", so preview it that way.
+          const draft = draftTexts[id]?.[lang];
+          if (draft === null || (typeof draft === "string" && !draft.trim())) text = builtIn;
+          else if (typeof draft === "string") text = draft;
+          if (typeof text === "string") text = tagText(text, id);
+        }
+        return text as never;
       },
     }),
-    [lang, overrides],
+    [lang, overrides, editing, draftTexts],
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+}
+
+/** Published `page_images` with the live editor's drafts on top (null = back to built-in). */
+function withImageDrafts(
+  published: Record<string, unknown> | undefined,
+  drafts: Record<string, string | null>,
+): Record<string, unknown> {
+  const merged: Record<string, unknown> = { ...published };
+  for (const [id, url] of Object.entries(drafts)) {
+    if (url === null) delete merged[id];
+    else merged[id] = url;
+  }
+  return merged;
 }
 
 export function useLang() {

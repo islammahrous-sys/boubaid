@@ -5,7 +5,7 @@ import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
 import { branches } from "@/content/site";
 import { getPublishedBranches, getPublicFamilyStats } from "@/lib/cms.functions";
-import { branchPortraits } from "@/content/images";
+import { branchPortraits, pageImages } from "@/content/images";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Record, RecordField } from "@/components/site/Editorial";
 import { parseLineageList } from "@/lib/text";
@@ -242,7 +242,7 @@ function BranchesPage() {
                 <figure className="max-w-[16rem] mx-auto sm:max-w-none">
                   <div className="plate-frame">
                     <img
-                      src={b.portrait || "/images/sheikh-mohammed-ahmed.png"}
+                      src={b.portrait || pageImages.branches.fallbackPortrait.src}
                       alt={t({
                         ar: `صورة ${b.ancestor.ar} — الجد الجامع لفرع ${b.name.ar}`,
                         en: `Portrait of ${b.ancestor.en}, patriarch of the ${b.name.en} branch`,

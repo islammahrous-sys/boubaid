@@ -15,14 +15,20 @@ import { resolveCommitteeDocuments } from "@/content/committee-documents";
 import { formatDualHijriYear } from "@/lib/dates";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { inl } from "@/content/page-copy/committees-inline";
+import { pageImages } from "@/content/images";
 // 1445 org maps are served as plain static files from public/ so they render
 // on every host (Lovable, Vercel, custom domains) — not only Lovable's asset CDN.
+// The URL is read through the page-images registry so admins can replace it.
 const map1445Ar = {
-  url: "/images/committee-charts-1445/org-map-1445-ar.png",
+  get url() {
+    return pageImages.committees.orgMap1445Ar.src;
+  },
   original_filename: "org-map-1445-ar.png",
 };
 const map1445En = {
-  url: "/images/committee-charts-1445/org-map-1445-en.png",
+  get url() {
+    return pageImages.committees.orgMap1445En.src;
+  },
   original_filename: "org-map-1445-en.png",
 };
 

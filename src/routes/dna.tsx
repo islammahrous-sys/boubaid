@@ -313,13 +313,13 @@ function DnaPage() {
           <div className="mt-10 grid gap-10 sm:grid-cols-2">
             <figure>
               <a
-                href="/images/dna_z20777_haplogroup_tree.png"
+                href={pageImages.dna.haplogroupTree.src}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block border border-border"
               >
                 <img
-                  src="/images/dna_z20777_haplogroup_tree.png"
+                  src={pageImages.dna.haplogroupTree.src}
                   alt=""
                   className="w-full bg-white object-contain"
                   loading="lazy"
@@ -336,13 +336,13 @@ function DnaPage() {
 
             <figure>
               <a
-                href="/images/dna_haplogroup_tree_v2_full.png"
+                href={pageImages.dna.haplogroupTreeFull.src}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block border border-border"
               >
                 <img
-                  src="/images/dna_haplogroup_tree_v2_full.png"
+                  src={pageImages.dna.haplogroupTreeFull.src}
                   alt=""
                   className="w-full bg-white object-contain"
                   loading="lazy"

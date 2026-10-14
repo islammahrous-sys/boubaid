@@ -1,4 +1,5 @@
 import type { BiText } from "@/i18n/LanguageProvider";
+import { registerCopy } from "@/i18n/editable-copy";
 import type { LibraryRow } from "@/lib/cms.functions";
 import { isHidden, replacedId, rowHref } from "@/content/library-overrides";
 
@@ -131,6 +132,10 @@ export const fundDocumentGroups: { id: FundDocumentGroup; title: BiText }[] = [
   },
   { id: "banking", title: { ar: "التفويضات البنكية", en: "Banking authorisations" } },
 ];
+
+// Built-in document titles and notes are editable copy (CMS replacements are
+// edited on their library record instead).
+registerCopy("fund-documents", { fundDocuments, fundDocumentGroups });
 
 /** A fund document ready to render: built-in or CMS-managed. */
 export interface ResolvedFundDocument {

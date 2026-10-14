@@ -6,11 +6,15 @@ import { Label } from "@/components/ui/label";
 import { Save, RotateCcw, Search } from "lucide-react";
 import { toast } from "sonner";
 import { copyRegistry } from "@/i18n/editable-copy";
+import { pageLabel } from "@/i18n/page-labels";
 import type { SiteSettingInput } from "@/lib/admin-hub.schemas";
 
 import * as siteCopy from "@/content/site";
 import * as councilCopy from "@/content/council-address";
 import * as historyCopy from "@/content/history-source";
+import * as navigationCopy from "@/content/navigation";
+import * as fundDocumentsCopy from "@/content/fund-documents";
+import * as imagesCopy from "@/content/images";
 
 // Load every page's text set so the registry is complete in the admin.
 // These modules only matter for the registerCopy() call they run, and the
@@ -24,54 +28,12 @@ const COPY_MODULES: unknown[] = [
   siteCopy,
   councilCopy,
   historyCopy,
+  navigationCopy,
+  fundDocumentsCopy,
+  imagesCopy,
 ];
 
 type Bi = { ar?: string; en?: string };
-
-const PAGE_LABELS: Record<string, string> = {
-  index: "الرئيسية — Home",
-  footer: "تذييل الموقع — Footer",
-  fund: "الصندوق — Fund",
-  site: "بيانات عامة للموقع — Site-wide details",
-  "council-address": "كلمة مجلس الأسرة (الرئيسية) — Council address",
-  history: "التاريخ والجذور (عن الأسرة) — History & roots (About)",
-  "vision-mission": "الرؤية والرسالة والقيم — Vision, mission & values",
-  about: "عن الأسرة — About",
-  contact: "تواصل — Contact",
-  governance: "الحوكمة — Governance",
-  achievers: "المتميزون والجائزة — Achievers",
-  initiatives: "المبادرات — Initiatives",
-  "initiatives-slug": "صفحة مبادرة — Initiative page",
-  news: "المركز الإعلامي — Media Center",
-  "news-slug": "صفحة خبر — News article",
-  library: "المكتبة والأرشيف — Library & Archive",
-  "library-museum-slug": "صفحة متحف — Museum item",
-  events: "الفعاليات — Events",
-  directory: "الدليل — Directory",
-  "family-tree": "شجرة الأسرة — Family Tree",
-  "official-family-tree": "الشجرة الرسمية — Official Tree",
-  branches: "الفروع — Branches",
-  committees: "اللجان — Committees",
-  dna: "الحمض النووي — DNA",
-  requests: "مركز الطلبات — Requests",
-  templates: "الهوية البصرية — Visual Identity",
-  archivevideoplayer: "مشغّل فيديو الأرشيف — Archive video player",
-  collateralslibrary: "مكتبة المطبوعات — Collaterals library",
-  councilrequestform: "نموذج طلبات المجلس — Council request form",
-  editabletemplateslibrary: "القوالب القابلة للتعديل — Editable templates",
-  establishmentsdirectory: "دليل المنشآت — Establishments directory",
-};
-
-/** Labels a registry page; `<page>-inline` holds texts that used to be written
- *  directly in that page's component, so it is shown as "more texts". */
-function pageLabel(key: string): string {
-  if (PAGE_LABELS[key]) return PAGE_LABELS[key];
-  if (key.endsWith("-inline")) {
-    const base = key.slice(0, -"-inline".length);
-    return `${PAGE_LABELS[base] ?? base} — نصوص إضافية / more texts`;
-  }
-  return key;
-}
 
 export function PageTextsManager({
   settings,
