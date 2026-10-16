@@ -43,6 +43,7 @@ import {
   XCircle,
   Copy,
   Check,
+  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -687,106 +688,88 @@ function RequestsHubPage() {
                 id={g === "committee_requests" ? "committee-requests" : undefined}
                 className="mt-10 scroll-mt-28"
               >
-                <h2 className="flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-foreground">
-                  <span
-                    className={`req-tone-${g} inline-block h-3 w-3 rounded-full bg-[var(--req-band)]`}
-                    aria-hidden="true"
-                  />
-                  {t(groupTitles[g])}
+                <h2
+                  className={`req-tone-${g} flex items-center gap-4 rounded-2xl border-s-[6px] border-[var(--req-band)] bg-[color-mix(in_oklab,var(--req-band)_16%,var(--card))] px-[1.1rem] py-[0.9rem] shadow-[0_6px_18px_-12px_color-mix(in_oklab,var(--req-band)_70%,transparent)] sm:px-6 sm:py-4`}
+                >
+                  <span className="flex h-16 w-20 shrink-0 items-center justify-center rounded-xl bg-[var(--req-band)] p-[0.45rem] sm:h-[4.5rem] sm:w-24">
+                    <img
+                      src={bandLogo[g]}
+                      alt=""
+                      aria-hidden="true"
+                      className="h-full w-full object-contain"
+                      loading="lazy"
+                    />
+                  </span>
+                  <span className="flex-1 text-[1.2rem] font-bold leading-[1.4] text-foreground sm:text-[1.4rem]">
+                    {t(groupTitles[g])}
+                  </span>
+                  <span className="inline-flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full bg-[var(--req-band)] px-[0.6rem] text-[0.85rem] font-bold text-[var(--req-on-band)]">
+                    {items.length}
+                  </span>
                 </h2>
                 {g === "committee_requests" ? (
                   <p className="measure mt-2 text-[13px] leading-relaxed text-muted-foreground">
                     {t(copy.committeeIntro)}
                   </p>
                 ) : null}
-                <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="mt-3 divide-y divide-border border-y border-border">
                   {items.map((r) => {
-                    const Icon = r.Icon;
                     const linkCls =
-                      "mt-4 inline-flex items-center gap-2 self-start scroll-mt-28 rounded-md bg-[var(--req-band)] px-3.5 py-2 text-[13px] font-semibold text-[var(--req-on-band)] shadow-sm transition-opacity hover:opacity-90";
+                      "mt-3 inline-flex items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-[13px] font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring";
                     return (
-                      <li
-                        key={r.id}
-                        tabIndex={0}
-                        role="button"
-                        aria-label={t(r.name)}
-                        onClick={() => {
-                          if (r.form) setActiveForm(r.form);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            if (r.form) setActiveForm(r.form);
-                          }
-                        }}
-                        className={`req-tone req-tone-${g} group flex flex-col overflow-hidden rounded-xl border shadow-sm transition-all hover:shadow-md hover:border-bronze/50 dark:hover:border-gold/50 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-bronze`}
-                      >
-                        <div className="flex h-16 items-center justify-between gap-3 bg-[var(--req-band)] px-4">
-                          <img
-                            src={bandLogo[g]}
-                            alt={t(inl.t_0a08ec6f)}
-                            className="h-12 w-auto object-contain"
-                            loading="lazy"
-                          />
-                          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--req-on-band)]/30 text-[var(--req-on-band)]">
-                            <Icon className="h-4.5 w-4.5" aria-hidden="true" />
-                          </span>
-                        </div>
-                        <div className="flex flex-1 flex-col p-5">
-                          <h3 className="text-[15px] font-semibold text-[var(--req-text)]">
-                            {t(r.name)}
-                          </h3>
-                          <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--req-muted)]">
-                            {t(r.desc)}
-                          </p>
-                          {r.templateCode ? (
-                            <Link
-                              to="/templates"
-                              onClick={(e) => e.stopPropagation()}
-                              className="mt-3 inline-flex w-fit items-center gap-1.5 font-mono text-[11px] text-[var(--req-link)] underline-offset-4 hover:underline"
-                            >
-                              {r.templateCode}
-                            </Link>
-                          ) : null}
-                          {r.requiresAuth && !user ? (
-                            <p className="mt-3 text-[11.5px] text-[var(--req-muted)]">
-                              {t(copy.signInNote)}
+                      <li key={r.id} id={r.id} className="scroll-mt-28">
+                        <details className="group">
+                          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-1 py-3.5 text-[14px] font-medium text-foreground hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring rounded-sm [&::-webkit-details-marker]:hidden">
+                            <span>{t(r.name)}</span>
+                            <ChevronDown
+                              className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                              aria-hidden="true"
+                            />
+                          </summary>
+                          <div className="px-1 pb-4">
+                            <p className="text-[13px] leading-relaxed text-muted-foreground">
+                              {t(r.desc)}
                             </p>
-                          ) : null}
-                          {r.form ? (
-                            <button
-                              type="button"
-                              id={r.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveForm(r.form!);
-                              }}
-                              className={linkCls}
-                            >
-                              {t(copy.action)}
-                              <Arrow
-                                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
-                                aria-hidden="true"
-                              />
-                            </button>
-                          ) : (
-                            <Link
-                              to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
-                              onClick={(e) => e.stopPropagation()}
-                              className={linkCls}
-                            >
-                              {t(copy.action)}
-                              <Arrow
-                                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
-                                aria-hidden="true"
-                              />
-                            </Link>
-                          )}
-                        </div>
+                            {r.templateCode ? (
+                              <Link
+                                to="/templates"
+                                className="mt-2 inline-flex w-fit font-mono text-[11px] text-muted-foreground underline-offset-4 hover:underline"
+                              >
+                                {r.templateCode}
+                              </Link>
+                            ) : null}
+                            {r.requiresAuth && !user ? (
+                              <p className="mt-2 text-[11.5px] text-muted-foreground">
+                                {t(copy.signInNote)}
+                              </p>
+                            ) : null}
+                            <div>
+                              {r.form ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setActiveForm(r.form!)}
+                                  className={linkCls}
+                                >
+                                  {t(copy.action)}
+                                  <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                                </button>
+                              ) : (
+                                <Link
+                                  to={r.requiresAuth && !user ? "/auth" : (r.to ?? "/contact")}
+                                  className={linkCls}
+                                >
+                                  {t(copy.action)}
+                                  <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
+                                </Link>
+                              )}
+                            </div>
+                          </div>
+                        </details>
                       </li>
                     );
                   })}
                 </ul>
+
               </div>
             );
           })}
