@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import type { SiteSettingInput } from "@/lib/admin-hub.schemas";
 import { PageTextsManager } from "./PageTextsManager";
 import { SponsorsManager } from "./SponsorsManager";
+import { HonorRollManager } from "./HonorRollManager";
 import { SeoManager } from "./SeoManager";
 import { PageImagesManager } from "./PageImagesManager";
 
@@ -174,6 +175,10 @@ export function SiteSettingsManager({
             <TabsTrigger value="sponsors" className="text-xs gap-1.5">
               <Users className="w-3.5 h-3.5" />
               {isAr ? "جدول رعاة الجائزة" : "Award sponsors"}
+            </TabsTrigger>
+            <TabsTrigger value="honor" className="text-xs gap-1.5">
+              <Users className="w-3.5 h-3.5" />
+              {isAr ? "لوحة الشرف للمقر" : "HQ Wall of Honor"}
             </TabsTrigger>
             <TabsTrigger value="security" className="text-xs gap-1.5">
               <Shield className="w-3.5 h-3.5" />
@@ -404,6 +409,9 @@ export function SiteSettingsManager({
           </TabsContent>
           <TabsContent value="sponsors">
             <SponsorsManager settings={settings} onSaveSetting={onSaveSetting} isAr={isAr} />
+          </TabsContent>
+          <TabsContent value="honor">
+            <HonorRollManager settings={settings} onSaveSetting={onSaveSetting} isAr={isAr} />
           </TabsContent>
 
           {/* Security */}

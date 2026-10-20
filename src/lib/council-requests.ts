@@ -222,6 +222,41 @@ export const COUNCIL_REQUESTS = {
     topic: { ar: "نوع الشهادة المطلوبة", en: "Type of certificate requested" },
     details: { ar: "الغرض من الشهادة", en: "Purpose of the certificate" },
   },
+  /**
+   * Wall of Honor — the request behind «ساهم في تأسيس المقر» on the homepage's
+   * headquarters section. Routed to the Finance & Investment Committee, which
+   * confirms the contribution before any recognition is published.
+   */
+  hq_contribution: {
+    title: {
+      ar: "طلب المساهمة في تأسيس مقر مجلس الأسرة",
+      en: "Family Council Headquarters contribution request",
+    },
+    desc: {
+      ar: "أبدِ رغبتك في المساهمة في المقر الدائم للأسرة، وستتواصل معك اللجنة المالية لتأكيد المساهمة وفئتها.",
+      en: "Register your intention to contribute to the permanent headquarters; the Finance Committee will contact you to confirm it.",
+    },
+    topic: {
+      ar: "فئة المساهمة المقترحة (البلاتينية / الماسية / الذهبية / الفضية)",
+      en: "Intended tier (Platinum / Diamond / Golden / Silver)",
+    },
+    details: {
+      ar: "ملاحظات أو استفسارات حول المساهمة",
+      en: "Notes or questions about your contribution",
+    },
+    committeeSlug: "finance-investment",
+    fields: [
+      {
+        name: "recognition_consent",
+        label: {
+          ar: "هل توافق على إدراج اسمك في لوحة الشرف بعد تأكيد المساهمة؟ (نعم / لا)",
+          en: "May your name appear on the Wall of Honor once confirmed? (Yes / No)",
+        },
+        required: true,
+        maxLength: 20,
+      },
+    ],
+  },
   financial_statement_copy: {
     title: { ar: "طلب نسخة من القوائم المالية", en: "Financial statement copy request" },
     topic: { ar: "السنة المالية المطلوبة", en: "Financial year requested" },

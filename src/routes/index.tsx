@@ -48,6 +48,7 @@ import {
   Status,
 } from "@/components/site/Editorial";
 import { HqProjectVideo } from "@/components/site/HqProjectVideo";
+import { WallOfHonor } from "@/components/site/WallOfHonor";
 
 import { newsImage } from "@/content/news-images";
 import { pageImages } from "@/content/images";
@@ -960,6 +961,8 @@ function HomePage() {
                   </a>
                 </div>
               </div>
+
+              <WallOfHonor className="mt-14 md:mt-20" />
             </section>
             <section
               key={`${sec.id}-testimonials`}

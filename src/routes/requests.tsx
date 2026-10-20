@@ -338,6 +338,14 @@ const requests: RequestEntry[] = [
   },
 
   {
+    id: "hq-contribution",
+    group: "fund",
+    form: "hq_contribution",
+    Icon: Landmark,
+    name: COUNCIL_REQUESTS.hq_contribution.title,
+    desc: COUNCIL_REQUESTS.hq_contribution.desc,
+  },
+  {
     id: "fund-attestation",
     group: "fund",
     form: "fund_attestation",
@@ -769,7 +777,6 @@ function RequestsHubPage() {
                     );
                   })}
                 </ul>
-
               </div>
             );
           })}
