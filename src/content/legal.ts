@@ -9,6 +9,8 @@ import type { BiText } from "@/i18n/LanguageProvider";
  */
 export const LEGAL_VERSION = "1.0";
 export const LEGAL_EFFECTIVE_DATE = "2026-10-24";
+/** Fixed text (not locale-formatted) so server and browser render identically. */
+export const LEGAL_EFFECTIVE_LABEL: BiText = { ar: "٢٤ أكتوبر ٢٠٢٦م", en: "24 October 2026" };
 
 export type LegalDocumentKey = "terms" | "privacy";
 

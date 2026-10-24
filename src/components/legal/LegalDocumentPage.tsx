@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import {
   LEGAL_DOCUMENTS,
   LEGAL_EFFECTIVE_DATE,
+  LEGAL_EFFECTIVE_LABEL,
   LEGAL_VERSION,
   PRIVACY_SECTIONS,
   TERMS_SECTIONS,
@@ -19,11 +20,10 @@ const SECTIONS: Record<LegalDocumentKey, LegalSection[]> = {
   privacy: PRIVACY_SECTIONS,
 };
 
-function formatDate(iso: string, lang: "ar" | "en") {
-  return new Date(`${iso}T00:00:00+03:00`).toLocaleDateString(
-    lang === "ar" ? "ar-SA-u-ca-gregory" : "en-GB",
-    { year: "numeric", month: "long", day: "numeric" },
-  );
+// Only ever called with LEGAL_EFFECTIVE_DATE; uses the fixed label because
+// locale date formatting differs between the server and browsers (hydration).
+function formatDate(_iso: string, lang: "ar" | "en") {
+  return LEGAL_EFFECTIVE_LABEL[lang];
 }
 
 const escapeHtml = (s: string) =>
