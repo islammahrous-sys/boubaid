@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { MediaPickerModal } from "./MediaPickerModal";
+import { UploadRightsNotice } from "@/components/legal/LegalNotices";
 
 export interface ImageUploadInputProps {
   label?: string;
@@ -235,6 +236,7 @@ export function ImageUploadInput({
       />
 
       <div className="flex flex-col gap-2.5">
+        <UploadRightsNotice />
         {value ? (
           <div className="relative group flex items-center gap-3 p-2.5 bg-muted/40 rounded-xl border border-border">
             {!hidePreview &&

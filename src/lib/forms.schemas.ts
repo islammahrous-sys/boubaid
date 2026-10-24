@@ -35,6 +35,8 @@ export const newsletterSchema = z.object({
   name: z.string().trim().max(100).optional().or(z.literal("")),
   locale: localeSchema,
   website_url_check: honeypotSchema,
+  // Subscribing is a marketing consent in its own right: explicit, unticked by default.
+  consent: z.literal(true),
 });
 
 export type NewsletterInput = z.infer<typeof newsletterSchema>;

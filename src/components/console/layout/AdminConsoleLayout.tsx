@@ -1046,7 +1046,7 @@ export function AdminConsoleLayout({
                       {(badgeCounts.pendingVerifications ?? 0) > 0 && (
                         <button
                           onClick={() => {
-                            onSelectTab("system", "users");
+                            onSelectTab("registration", "requests");
                             setNotifPopoverOpen(false);
                           }}
                           className="w-full flex items-center justify-between p-2.5 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 text-xs text-start transition-all"

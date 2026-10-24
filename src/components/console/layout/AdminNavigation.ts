@@ -89,6 +89,43 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     ],
   },
   {
+    id: "registration",
+    label_ar: "التسجيل والعضوية",
+    label_en: "Registration",
+    description_ar: "طلبات العضوية واعتمادها، صلاحيات الصفحات، وسجل الموافقات",
+    description_en: "Membership requests and approvals, page access, and consent records",
+    icon: UserCheck,
+    badgeKey: "pendingVerifications",
+    roles: ADMINS,
+    tabs: [
+      {
+        id: "requests",
+        label_ar: "طلبات العضوية",
+        label_en: "Membership requests",
+        description_ar: "مراجعة طلبات التسجيل واعتمادها أو رفضها، مع إشعار مقدم الطلب تلقائياً",
+        description_en: "Review registrations and approve or reject them; applicants are notified automatically",
+        icon: ClipboardList,
+        badgeKey: "pendingVerifications",
+      },
+      {
+        id: "page_access",
+        label_ar: "صلاحيات الصفحات",
+        label_en: "Page access",
+        description_ar: "من يطّلع على كل صفحة، ورئيس المجلس ورؤساء اللجان المخوّلون",
+        description_en: "Who can open each page, and the authorised council and committee chairs",
+        icon: ShieldCheck,
+      },
+      {
+        id: "consents",
+        label_ar: "سجل الموافقات",
+        label_en: "Consent records",
+        description_ar: "إثبات الموافقة على الشروط وسياسة الخصوصية والموافقات الاختيارية",
+        description_en: "Evidence of acceptance of the terms, privacy policy and optional consents",
+        icon: FolderArchive,
+      },
+    ],
+  },
+  {
     id: "family",
     label_ar: "الأسرة والأنساب",
     label_en: "Family & Lineage",
@@ -312,20 +349,18 @@ export const ADMIN_DOMAINS: AdminDomainGroup[] = [
     id: "system",
     label_ar: "الإدارة",
     label_en: "Administration",
-    description_ar: "حسابات المستخدمين، مراجعة طلبات التوثيق، الصلاحيات، وسجل العمليات",
-    description_en: "User accounts, verification requests, access control, and audit logs",
+    description_ar: "حسابات المستخدمين، الأدوار والصلاحيات، وسجل العمليات",
+    description_en: "User accounts, roles and permissions, and audit logs",
     icon: Settings,
-    badgeKey: "pendingVerifications",
     roles: ["admin", "super_admin"],
     tabs: [
       {
         id: "users",
-        label_ar: "المستخدمون والتوثيق",
-        label_en: "Users & Verification",
-        description_ar: "إدارة حسابات المستخدمين، مراجعة طلبات التوثيق، وإسناد الأدوار",
-        description_en: "Manage administrator and member accounts, verify lineage requests",
+        label_ar: "المستخدمون والأدوار",
+        label_en: "Users & Roles",
+        description_ar: "إدارة حسابات المستخدمين وإسناد الأدوار الإدارية",
+        description_en: "Manage administrator and member accounts and assign roles",
         icon: UserCheck,
-        badgeKey: "pendingVerifications",
       },
       {
         id: "roles_matrix",
@@ -400,6 +435,15 @@ export const preloadAdminManager = (tabId: string) => {
   switch (tabId) {
     case "overview":
       void import("@/components/console/dashboard/AdminDashboardOverview");
+      break;
+    case "requests":
+      void import("@/components/console/registration/RegistrationDesk");
+      break;
+    case "page_access":
+      void import("@/components/console/registration/PageAccessManager");
+      break;
+    case "consents":
+      void import("@/components/console/registration/ConsentRegister");
       break;
     case "members":
     case "privacy":

@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { registerMediaAsset } from "@/lib/admin-hub.functions";
 import { cn } from "@/lib/utils";
+import { UploadRightsNotice } from "@/components/legal/LegalNotices";
 
 export type MediaItem = {
   id: string;
@@ -492,6 +493,7 @@ export function MediaPickerModal({
                 className="hidden"
                 onChange={(e) => void handleUploadFile(e.target.files)}
               />
+              <UploadRightsNotice className="mt-3" />
 
               <Button
                 type="button"

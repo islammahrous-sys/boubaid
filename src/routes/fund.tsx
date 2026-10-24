@@ -3,10 +3,14 @@ import { FileCheck2, Wallet, ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
-import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/fund";
+import { GatedPage, resolvePageAccess } from "@/components/access/AccessGate";
 
 export const Route = createFileRoute("/fund")({
+  // Registered family members only (Pages Access). Client-rendered so nothing
+  // reaches server HTML or search indexes; access is decided before data loads.
+  ssr: false,
+  beforeLoad: async () => ({ access: await resolvePageAccess("members") }),
   head: () => ({
     meta: [
       { title: "صندوق التنمية العائلية | آل بوعبيد" },
@@ -22,11 +26,14 @@ export const Route = createFileRoute("/fund")({
           "الشهادات والإثباتات الرسمية للصندوق، والقوائم المالية والموازنة وكشوف الحسابات المعتمدة.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: getCanonicalUrl("/fund") },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
     ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/fund") }],
   }),
-  component: FundPage,
+  component: () => (
+    <GatedPage title={{ ar: "صندوق التنمية العائلية", en: "Family Development Fund" }}>
+      <FundPage />
+    </GatedPage>
+  ),
 });
 
 function FundPage() {

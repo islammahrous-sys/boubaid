@@ -8,12 +8,19 @@ import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { fundDocumentGroups, resolveFundDocuments } from "@/content/fund-documents";
 import { getPublishedLibrary } from "@/lib/cms.functions";
-import { getCanonicalUrl } from "@/lib/seo";
 import { formatDualHijriYear } from "@/lib/dates";
 import { inl } from "@/content/page-copy/fund-certificates-inline";
+import { GatedPage, resolvePageAccess } from "@/components/access/AccessGate";
 
 export const Route = createFileRoute("/fund-certificates")({
-  loader: async () => ({ documents: resolveFundDocuments(await getPublishedLibrary()) }),
+  // Registered family members only (Pages Access). Client-rendered so nothing
+  // reaches server HTML or search indexes; access is decided before data loads.
+  ssr: false,
+  beforeLoad: async () => ({ access: await resolvePageAccess("members") }),
+  loader: async ({ context }) =>
+    context.access.allowed
+      ? { documents: resolveFundDocuments(await getPublishedLibrary()) }
+      : { documents: resolveFundDocuments([]) },
   head: () => ({
     meta: [
       { title: "الشهادات والإثباتات | صندوق التنمية العائلية" },
@@ -28,11 +35,14 @@ export const Route = createFileRoute("/fund-certificates")({
         content: "الترخيص الرسمي والإثباتات النظامية المعتمدة لصندوق التنمية العائلية (آل بوعبيد).",
       },
       { property: "og:type", content: "article" },
-      { property: "og:url", content: getCanonicalUrl("/fund-certificates") },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
     ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/fund-certificates") }],
   }),
-  component: FundCertificatesPage,
+  component: () => (
+    <GatedPage title={{ ar: "صندوق التنمية العائلية", en: "Family Development Fund" }}>
+      <FundCertificatesPage />
+    </GatedPage>
+  ),
 });
 
 function FundCertificatesPage() {

@@ -58,11 +58,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.boubaid.com/library</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://www.boubaid.com/directory</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -78,24 +73,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.boubaid.com/templates</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <loc>https://www.boubaid.com/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://www.boubaid.com/fund</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.boubaid.com/fund-certificates</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.boubaid.com/fund-financials</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <loc>https://www.boubaid.com/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.boubaid.com/events</loc>

@@ -174,14 +174,13 @@ async function main() {
       priority: "0.8",
     },
     { loc: `${SITE_URL}/news`, lastmod: newsListLastmod, changefreq: "daily", priority: "0.8" },
-    { loc: `${SITE_URL}/library`, changefreq: "monthly", priority: "0.7" },
+    // /library, /templates, /fund, /fund-certificates and /fund-financials are
+    // restricted pages (src/lib/page-access.ts) — never list them here.
     { loc: `${SITE_URL}/directory`, changefreq: "weekly", priority: "0.7" },
     { loc: `${SITE_URL}/requests`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/contact`, changefreq: "monthly", priority: "0.6" },
-    { loc: `${SITE_URL}/templates`, changefreq: "monthly", priority: "0.6" },
-    { loc: `${SITE_URL}/fund`, changefreq: "monthly", priority: "0.7" },
-    { loc: `${SITE_URL}/fund-certificates`, changefreq: "monthly", priority: "0.6" },
-    { loc: `${SITE_URL}/fund-financials`, changefreq: "monthly", priority: "0.6" },
+    { loc: `${SITE_URL}/terms`, changefreq: "yearly", priority: "0.3" },
+    { loc: `${SITE_URL}/privacy`, changefreq: "yearly", priority: "0.3" },
     { loc: `${SITE_URL}/events`, changefreq: "weekly", priority: "0.6" },
     { loc: `${SITE_URL}/ahsa-family-councils`, changefreq: "monthly", priority: "0.5" },
   ];

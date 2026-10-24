@@ -180,6 +180,21 @@ const InquiriesManager = lazy(() =>
 const UsersManager = lazy(() =>
   import("@/components/console/users/UsersManager").then((m) => ({ default: m.UsersManager })),
 );
+const RegistrationDesk = lazy(() =>
+  import("@/components/console/registration/RegistrationDesk").then((m) => ({
+    default: m.RegistrationDesk,
+  })),
+);
+const PageAccessManager = lazy(() =>
+  import("@/components/console/registration/PageAccessManager").then((m) => ({
+    default: m.PageAccessManager,
+  })),
+);
+const ConsentRegister = lazy(() =>
+  import("@/components/console/registration/ConsentRegister").then((m) => ({
+    default: m.ConsentRegister,
+  })),
+);
 const AuditLogsViewer = lazy(() =>
   import("@/components/console/activity/AuditLogsViewer").then((m) => ({
     default: m.AuditLogsViewer,
@@ -283,7 +298,7 @@ function MasterAdminPage() {
   useEffect(() => {
     if (activeDomainId === "community" && activeTabId === "verification") {
       void navigate({
-        search: { domain: "system", tab: "users" },
+        search: { domain: "registration", tab: "requests" },
         replace: true,
       });
     }
@@ -1182,6 +1197,12 @@ function MasterAdminPage() {
                   onSaveHistory={(data) => runMutation(() => saveHistMut({ data }), refreshFamily)}
                 />
               ))}
+
+            {activeDomainId === "registration" && activeTabId === "requests" && <RegistrationDesk />}
+            {activeDomainId === "registration" && activeTabId === "page_access" && (
+              <PageAccessManager />
+            )}
+            {activeDomainId === "registration" && activeTabId === "consents" && <ConsentRegister />}
 
             {activeDomainId === "family" &&
               activeTabId === "places" &&

@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { branches } from "@/content/site";
 import { SaudiCulturalAvatar } from "@/components/common/SaudiCulturalAvatar";
+import { MyAgreementsCard } from "@/components/account/MyAgreementsCard";
+import { UploadRightsNotice } from "@/components/legal/LegalNotices";
 import {
   getMyAccount,
   submitMembershipRequest,
@@ -1298,6 +1300,7 @@ function AccountPage() {
                               className="hidden"
                               onChange={handleAvatarFileSelect}
                             />
+                            <UploadRightsNotice />
 
                             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
                               <Button
@@ -2716,6 +2719,7 @@ function AccountPage() {
           {/* ──────────────── TAB 4: Security & Credentials ─────────── */}
           <TabsContent value="security" className="space-y-6">
             <div className="max-w-2xl mx-auto space-y-6">
+              <MyAgreementsCard />
               <Card className="border-border bg-card rounded-2xl shadow-sm">
                 <CardHeader className="border-b border-border/50 pb-4">
                   <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">

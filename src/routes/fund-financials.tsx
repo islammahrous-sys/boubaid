@@ -3,15 +3,20 @@ import { FileSpreadsheet, Clock, MessageCircle, Eye, Download } from "lucide-rea
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
-import { getCanonicalUrl } from "@/lib/seo";
 import { getPublishedLibrary } from "@/lib/cms.functions";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { downloadFile } from "@/lib/download";
 import { formatDualYear, formatDualYearRange } from "@/lib/dates";
 import { inl } from "@/content/page-copy/fund-financials-inline";
+import { GatedPage, resolvePageAccess } from "@/components/access/AccessGate";
 
 export const Route = createFileRoute("/fund-financials")({
-  loader: async () => {
+  // Registered family members only (Pages Access). Client-rendered so nothing
+  // reaches server HTML or search indexes; access is decided before data loads.
+  ssr: false,
+  beforeLoad: async () => ({ access: await resolvePageAccess("members") }),
+  loader: async ({ context }) => {
+    if (!context.access.allowed) return { statements: [] };
     const library = await getPublishedLibrary();
     return {
       statements: library
@@ -34,11 +39,14 @@ export const Route = createFileRoute("/fund-financials")({
           "القوائم المالية والموازنة وكشوف حسابات صندوق التنمية العائلية، وطلب استعلام مالي.",
       },
       { property: "og:type", content: "article" },
-      { property: "og:url", content: getCanonicalUrl("/fund-financials") },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
     ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/fund-financials") }],
   }),
-  component: FundFinancialsPage,
+  component: () => (
+    <GatedPage title={{ ar: "صندوق التنمية العائلية", en: "Family Development Fund" }}>
+      <FundFinancialsPage />
+    </GatedPage>
+  ),
 });
 
 /** Financial inquiries are reviewed and approved by the President of the Family

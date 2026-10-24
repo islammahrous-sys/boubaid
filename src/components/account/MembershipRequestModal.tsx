@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useLang } from "@/i18n/LanguageProvider";
+import { PrivacyNotice } from "@/components/legal/LegalNotices";
 import {
   Send,
   ShieldCheck,
@@ -257,6 +258,7 @@ export function MembershipRequestModal({
                 : "All submitted data and messages are strictly confidential and visible only to authorized council administrators."}
             </span>
           </div>
+          <PrivacyNotice />
 
           <DialogFooter className="pt-2 gap-2 sm:gap-0">
             <Button

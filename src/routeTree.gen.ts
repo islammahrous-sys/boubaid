@@ -32,10 +32,12 @@ import { Route as InitiativesRouteImport } from './routes/initiatives'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as OfficialFamilyTreeRouteImport } from './routes/official-family-tree'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as RequestsRouteImport } from './routes/requests'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -163,6 +165,11 @@ const OfficialFamilyTreeRoute = OfficialFamilyTreeRouteImport.update({
   path: '/official-family-tree',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgramsRoute = ProgramsRouteImport.update({
   id: '/programs',
   path: '/programs',
@@ -181,6 +188,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const TemplatesRoute = TemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyRoute = VerifyRouteImport.update({
@@ -268,10 +280,12 @@ export interface FileRoutesByFullPath {
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/official-family-tree': typeof OfficialFamilyTreeRoute
+  '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRoute
   '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/templates': typeof TemplatesRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -308,10 +322,12 @@ export interface FileRoutesByTo {
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/official-family-tree': typeof OfficialFamilyTreeRoute
+  '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRoute
   '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/templates': typeof TemplatesRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -350,10 +366,12 @@ export interface FileRoutesById {
   '/library': typeof LibraryRouteWithChildren
   '/news': typeof NewsRouteWithChildren
   '/official-family-tree': typeof OfficialFamilyTreeRoute
+  '/privacy': typeof PrivacyRoute
   '/programs': typeof ProgramsRoute
   '/requests': typeof RequestsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/templates': typeof TemplatesRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -392,10 +410,12 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/official-family-tree'
+    | '/privacy'
     | '/programs'
     | '/requests'
     | '/reset-password'
     | '/templates'
+    | '/terms'
     | '/verify'
     | '/account'
     | '/admin'
@@ -432,10 +452,12 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/official-family-tree'
+    | '/privacy'
     | '/programs'
     | '/requests'
     | '/reset-password'
     | '/templates'
+    | '/terms'
     | '/verify'
     | '/account'
     | '/admin'
@@ -473,10 +495,12 @@ export interface FileRouteTypes {
     | '/library'
     | '/news'
     | '/official-family-tree'
+    | '/privacy'
     | '/programs'
     | '/requests'
     | '/reset-password'
     | '/templates'
+    | '/terms'
     | '/verify'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -515,10 +539,12 @@ export interface RootRouteChildren {
   LibraryRoute: typeof LibraryRouteWithChildren
   NewsRoute: typeof NewsRouteWithChildren
   OfficialFamilyTreeRoute: typeof OfficialFamilyTreeRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProgramsRoute: typeof ProgramsRoute
   RequestsRoute: typeof RequestsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TemplatesRoute: typeof TemplatesRoute
+  TermsRoute: typeof TermsRoute
   VerifyRoute: typeof VerifyRoute
   PSlugRoute: typeof PSlugRoute
   ApiPublicCommitteeDocRoute: typeof ApiPublicCommitteeDocRoute
@@ -690,6 +716,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OfficialFamilyTreeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/programs': {
       id: '/programs'
       path: '/programs'
@@ -716,6 +749,13 @@ declare module '@tanstack/react-router' {
       path: '/templates'
       fullPath: '/templates'
       preLoaderRoute: typeof TemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify': {
@@ -877,10 +917,12 @@ const rootRouteChildren: RootRouteChildren = {
   LibraryRoute: LibraryRouteWithChildren,
   NewsRoute: NewsRouteWithChildren,
   OfficialFamilyTreeRoute: OfficialFamilyTreeRoute,
+  PrivacyRoute: PrivacyRoute,
   ProgramsRoute: ProgramsRoute,
   RequestsRoute: RequestsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TemplatesRoute: TemplatesRoute,
+  TermsRoute: TermsRoute,
   VerifyRoute: VerifyRoute,
   PSlugRoute: PSlugRoute,
   ApiPublicCommitteeDocRoute: ApiPublicCommitteeDocRoute,

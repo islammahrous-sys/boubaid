@@ -23,6 +23,12 @@ const signUpSchema = z.object({
   redirectTo: z.string().optional(),
   locale: z.enum(["ar", "en"]).optional(),
   turnstileToken: z.string().optional(),
+  // The unchecked-by-default terms box: an account cannot exist without it.
+  acceptTerms: z.literal(true),
+  // Separate, optional consents — never implied by acceptTerms.
+  consents: z
+    .object({ marketing: z.boolean(), media_publication: z.boolean() })
+    .default({ marketing: false, media_publication: false }),
 });
 
 const passwordChangedSchema = z.object({
@@ -161,13 +167,23 @@ export const signUpWithBrandedVerification = createServerFn({ method: "POST" })
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
       const redirectTo = resolveSafeRedirect(data.redirectTo, "/auth");
+      const { LEGAL_VERSION } = await import("@/content/legal");
+      const acceptedAt = new Date().toISOString();
 
       const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
         type: "signup",
         email,
         password: data.password,
         options: {
-          data: { full_name_ar: fullName },
+          // Stored with the account in the same call that creates it, so an
+          // account can never exist without its acceptance on record.
+          data: {
+            full_name_ar: fullName,
+            terms_version: LEGAL_VERSION,
+            terms_accepted_at: acceptedAt,
+            consent_marketing: data.consents.marketing,
+            consent_media_publication: data.consents.media_publication,
+          },
           redirectTo,
         },
       });
@@ -187,6 +203,36 @@ export const signUpWithBrandedVerification = createServerFn({ method: "POST" })
       const directVerifyUrl = hashedToken
         ? `${redirectTo}${redirectTo.includes("?") ? "&" : "?"}token_hash=${encodeURIComponent(hashedToken)}&type=signup`
         : actionLink;
+
+      // Evidence trail (IP, user agent, version, timestamp). The metadata above
+      // already holds the acceptance, so a logging failure here is reported but
+      // does not undo a sign-up that has just been created.
+      try {
+        const { recordConsents } = await import("@/lib/consent.server");
+        await recordConsents([
+          { document: "terms", granted: true, source: "signup", userId, email },
+          { document: "privacy", granted: true, source: "signup", userId, email },
+          { document: "marketing", granted: data.consents.marketing, source: "signup", userId, email },
+          {
+            document: "media_publication",
+            granted: data.consents.media_publication,
+            source: "signup",
+            userId,
+            email,
+          },
+        ]);
+      } catch (err) {
+        console.error("[auth-email] consent evidence write failed:", err);
+      }
+
+      if (data.consents.marketing) {
+        const { error: subError } = await supabaseAdmin
+          .from("newsletter_subscribers")
+          .insert({ email, name: fullName, locale });
+        if (subError && subError.code !== "23505") {
+          console.error("[auth-email] newsletter opt-in failed:", subError.message);
+        }
+      }
 
       if (directVerifyUrl) {
         const { enqueueNotificationEmail } = await import("@/lib/email/notification-queue.server");

@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import type { MediaAssetInput } from "@/lib/admin-hub.schemas";
+import { UploadRightsNotice } from "@/components/legal/LegalNotices";
 
 export type MediaAssetRow = {
   id: string;
@@ -250,6 +251,7 @@ export function MediaLibrary({
           </label>
         </div>
       </div>
+      <UploadRightsNotice />
 
       {filteredAssets.length === 0 ? (
         <div className="border-2 border-dashed border-border rounded-xl p-16 text-center text-xs text-muted-foreground bg-card">

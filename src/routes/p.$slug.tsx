@@ -5,6 +5,7 @@ import { useState, useRef } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useLang } from "@/i18n/LanguageProvider";
+import { PrivacyNotice } from "@/components/legal/LegalNotices";
 import {
   getPublicContentPageBySlug,
   getPublishedBranches,
@@ -886,6 +887,7 @@ function ContactFormBlock({ title, isAr }: { title?: string; isAr: boolean }) {
           className={`${fieldClass} resize-y`}
         />
         <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
+        <PrivacyNotice />
         <button
           type="submit"
           disabled={submitting}

@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/library";
 import { inl } from "@/content/page-copy/library-inline";
+import { AccessDenied, resolvePageAccess } from "@/components/access/AccessGate";
 
 /**
  * Archive (/library).
@@ -56,7 +57,15 @@ export const Route = createFileRoute("/library")({
     const tab = search.tab;
     return typeof tab === "string" && tab.length > 0 && tab.length < 120 ? { tab } : {};
   },
-  loader: async () => {
+  // Archive is for registered family members only (Pages Access). Rendering in
+  // the browser keeps its contents out of server HTML and search indexes, and
+  // the access decision is taken before any archive data is requested.
+  ssr: false,
+  beforeLoad: async () => ({ access: await resolvePageAccess("members") }),
+  loader: async ({ context }) => {
+    if (!context.access.allowed) {
+      return { collections: [], folders: [], videos: [], committeeArchive: [], committeeDocs: resolveCommitteeDocuments([]) };
+    }
     const [collections, folders, library, archiveVideos] = await Promise.all([
       getPublishedGalleries(),
       getPublishedArchiveFolders(),
@@ -138,8 +147,7 @@ export const Route = createFileRoute("/library")({
         content: "أرشيف مصور موثّق لمناسبات الأسرة وأنشطتها ومسابقاتها ومجموعات المتحف.",
       },
       { property: "og:type", content: "article" },
-      { property: "og:url", content: getCanonicalUrl("/library") },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
     ],
     links:
       matches[matches.length - 1]?.routeId === match.routeId
@@ -155,6 +163,17 @@ export const Route = createFileRoute("/library")({
  *  would keep showing on top of the collection detail route. */
 function LibraryRouteLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { access } = Route.useRouteContext();
+  const { lang } = useLang();
+  if (!access.allowed) {
+    return (
+      <AccessDenied
+        result={access}
+        title={lang === "ar" ? "الأرشيف" : "Archive"}
+        redirectTo={pathname}
+      />
+    );
+  }
   const isDetail = pathname !== "/library" && pathname !== "/library/";
   if (isDetail) return <Outlet />;
   return <LibraryPage />;

@@ -22,6 +22,7 @@ import {
   branchInputSchema,
   type CmsTable,
 } from "@/lib/cms.schemas";
+import { UploadRightsNotice } from "@/components/legal/LegalNotices";
 
 export const Route = createFileRoute("/_authenticated/content")({
   head: () => ({
@@ -877,6 +878,7 @@ function MediaField({
           }}
           className="text-[12px] text-muted-foreground"
         />
+        <UploadRightsNotice />
         {busy ? (
           <span className="text-[12px] text-muted-foreground">
             {label("جارٍ الرفع…", "Uploading…")}

@@ -17,8 +17,28 @@ import { getPublicSiteSettings } from "@/lib/cms.functions";
 import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/contact";
 import { inl } from "@/content/page-copy/contact-inline";
+import { PrivacyNotice } from "@/components/legal/LegalNotices";
+
+/** Topics the legal pages link to directly (`/contact?topic=report|data`). */
+const LEGAL_SUBJECTS = {
+  report: { ar: "الإبلاغ عن محتوى", en: "Report content" },
+  data: { ar: "طلب يتعلق بالبيانات الشخصية", en: "Personal data request" },
+} satisfies Record<string, BiText>;
+
+const LEGAL_HINTS: Record<string, BiText> = {
+  [LEGAL_SUBJECTS.report.en]: {
+    ar: "اذكر رابط الصفحة أو وصف المحتوى، ونوع المخالفة (حقوق مؤلف، خصوصية، صورة دون إذن...)، وصفتك (صاحب الحق، الشخص المعني، الولي). تُسجَّل البلاغات فور وصولها ويُحجب المحتوى احترازياً متى ظهر فيه مساس واضح.",
+    en: "Include the page link or a description of the content, the type of issue (copyright, privacy, image without permission…), and your capacity (rights holder, person concerned, guardian). Reports are logged on arrival and content is taken down as a precaution where the issue is clear.",
+  },
+  [LEGAL_SUBJECTS.data.en]: {
+    ar: "حدد طلبك: الاطلاع على بياناتك أو الحصول على نسخة منها، تصحيحها، حذف الحساب، أو سحب موافقة. سنرد خلال ٣٠ يوماً على البريد المسجل.",
+    en: "State your request: access or a copy of your data, correction, account deletion, or withdrawing a consent. We reply within 30 days to the email on file.",
+  },
+};
 
 export const Route = createFileRoute("/contact")({
+  validateSearch: (search: Record<string, unknown>): { topic?: "report" | "data" } =>
+    search.topic === "report" || search.topic === "data" ? { topic: search.topic } : {},
   loader: () => getPublicSiteSettings(),
   head: () => ({
     meta: [
@@ -48,7 +68,10 @@ function ContactPage() {
   const { t, lang } = useLang();
   const dynamicSettings = (Route.useLoaderData() || {}) as Record<string, any>;
   const [submitting, setSubmitting] = useState(false);
-  const [selectedSubject, setSelectedSubject] = useState("");
+  const { topic } = Route.useSearch();
+  const [selectedSubject, setSelectedSubject] = useState(topic ? LEGAL_SUBJECTS[topic].en : "");
+  const subjects = [...copy.subjects, LEGAL_SUBJECTS.report, LEGAL_SUBJECTS.data];
+  const hint = LEGAL_HINTS[selectedSubject];
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const sendContact = useServerFn(submitContactMessage);
@@ -164,7 +187,7 @@ function ContactPage() {
                 </label>
                 {/* Quick topic chips */}
                 <div className="flex flex-wrap gap-1.5 mb-2.5">
-                  {copy.subjects.map((s) => (
+                  {subjects.map((s) => (
                     <button
                       key={s.en}
                       type="button"
@@ -191,12 +214,17 @@ function ContactPage() {
                   <option value="" disabled>
                     {t(inl.t_53b54432)}
                   </option>
-                  {copy.subjects.map((s) => (
+                  {subjects.map((s) => (
                     <option key={s.en} value={s.en}>
                       {t(s)}
                     </option>
                   ))}
                 </select>
+                {hint ? (
+                  <p className="mt-2.5 rounded-md border border-bronze/25 bg-bronze/5 p-3 text-[12.5px] leading-relaxed text-foreground/85 dark:border-gold/25 dark:bg-gold/5">
+                    {t(hint)}
+                  </p>
+                ) : null}
               </div>
 
               <div>
@@ -214,6 +242,8 @@ function ContactPage() {
               </div>
 
               <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
+
+              <PrivacyNotice />
 
               <button
                 type="submit"

@@ -28,6 +28,8 @@ import { subscribeToNewsletter } from "@/lib/forms.functions";
 import { getPublicSiteSettings, getPublicNavigation } from "@/lib/cms.functions";
 import { newsletterSchema } from "@/lib/forms.schemas";
 import { cn } from "@/lib/utils";
+import { LEGAL_DOCUMENTS } from "@/content/legal";
+import { ConsentCheckbox, PrivacyNotice } from "@/components/legal/LegalNotices";
 
 /** Brand glyphs lucide-react doesn't ship — kept tiny and monochrome (currentColor). */
 type IconProps = { className?: string };
@@ -52,6 +54,7 @@ export function Footer() {
   const { t, lang } = useLang();
   const [email, setEmail] = useState("");
   const [subscribing, setSubscribing] = useState(false);
+  const [newsletterConsent, setNewsletterConsent] = useState(false);
   const subscribe = useServerFn(subscribeToNewsletter);
   const rtl = lang === "ar";
 
@@ -94,7 +97,15 @@ export function Footer() {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = newsletterSchema.safeParse({ email, locale: lang });
+    if (!newsletterConsent) {
+      toast.error(
+        rtl
+          ? "يرجى الموافقة على تلقي النشرة أولاً."
+          : "Please tick the consent box to subscribe.",
+      );
+      return;
+    }
+    const parsed = newsletterSchema.safeParse({ email, locale: lang, consent: true });
     if (!parsed.success) {
       toast.error(t(copy.text1));
       return;
@@ -106,6 +117,7 @@ export function Footer() {
       if (res.ok) {
         toast.success(res.already ? t(copy.text2) : t(copy.text3));
         setEmail("");
+        setNewsletterConsent(false);
       } else {
         toast.error(t(copy.text4));
       }
@@ -262,6 +274,20 @@ export function Footer() {
                   {t(copy.text13)}
                 </button>
               </div>
+              <div className="mt-3 space-y-2">
+                <ConsentCheckbox
+                  id="footer-newsletter-consent"
+                  checked={newsletterConsent}
+                  onChange={setNewsletterConsent}
+                  required
+                  tone="dark"
+                >
+                  {rtl
+                    ? "أوافق على تلقي النشرة الأسرية عبر البريد الإلكتروني، ويمكنني إلغاء الاشتراك في أي وقت."
+                    : "I agree to receive the family newsletter by email and can unsubscribe at any time."}
+                </ConsentCheckbox>
+                <PrivacyNotice tone="dark" />
+              </div>
             </form>
 
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -312,6 +338,20 @@ export function Footer() {
             © {formatDualYear(new Date().getFullYear(), lang)} {t(siteMeta.officialName)} ·{" "}
             {t(copy.text14)}
           </p>
+          <nav
+            aria-label={rtl ? "الوثائق النظامية" : "Legal"}
+            className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1"
+          >
+            {(["terms", "privacy"] as const).map((key) => (
+              <Link
+                key={key}
+                to={LEGAL_DOCUMENTS[key].path}
+                className="tap-target-y text-xs text-ivory/60 underline-offset-4 transition-colors hover:text-gold hover:underline focus-visible:text-gold"
+              >
+                {t(LEGAL_DOCUMENTS[key].title)}
+              </Link>
+            ))}
+          </nav>
           <button
             type="button"
             suppressHydrationWarning

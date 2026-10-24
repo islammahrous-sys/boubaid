@@ -6,13 +6,16 @@ import type { BiText } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ArchiveLightbox } from "@/components/site/ArchiveLightbox";
 import { getPublicGalleryBySlug } from "@/lib/cms.functions";
-import { getCanonicalUrl } from "@/lib/seo";
 import { copy } from "@/content/page-copy/library-museum-slug";
 
 const PAGE_SIZE = 24;
 
 export const Route = createFileRoute("/library/museum/$slug")({
-  loader: async ({ params }) => {
+  ssr: false,
+  loader: async ({ params, context }) => {
+    // The parent /library route renders the access screen instead of this page
+    // for visitors who may not see the archive, so fetch nothing for them.
+    if (!context.access.allowed) return { gallery: null };
     const gallery = await getPublicGalleryBySlug({ data: params.slug });
     if (!gallery) throw notFound();
     return { gallery };
@@ -28,9 +31,7 @@ export const Route = createFileRoute("/library/museum/$slug")({
         { name: "description", content: gallery?.description_ar || title },
         { property: "og:title", content: title },
         { property: "og:type", content: "article" },
-        ...(gallery
-          ? [{ property: "og:url", content: getCanonicalUrl(`/library/museum/${gallery.slug}`) }]
-          : []),
+        { name: "robots", content: "noindex, nofollow, noarchive" },
       ],
     };
   },
@@ -45,6 +46,7 @@ function MuseumCollectionPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  if (!gallery) return null;
   const visible = gallery.media.slice(0, visibleCount);
 
   return (

@@ -487,7 +487,7 @@ const approvals: ApprovalEntry[] = [
     group: "membership",
     name: inl.t_f4d79be6,
     desc: inl.t_90861988,
-    admin: { domain: "system", tab: "users" },
+    admin: { domain: "registration", tab: "requests" },
     allow: isAdmin,
   },
   {

@@ -19,6 +19,11 @@ import {
   signUpWithBrandedVerification,
 } from "@/lib/email/auth-email.functions";
 import authManuscript from "@/assets/auth-manuscript.jpg";
+import {
+  ConsentCheckbox,
+  OptionalConsentLabel,
+  TermsConsentLabel,
+} from "@/components/legal/LegalNotices";
 
 /** Where a member lands after signing in when no destination was requested. */
 const DEFAULT_DESTINATION = "/account";
@@ -78,6 +83,11 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  // Every box starts unticked: terms acceptance is required, the other two are
+  // independent optional consents and are never implied by it.
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [consentMarketing, setConsentMarketing] = useState(false);
+  const [consentMedia, setConsentMedia] = useState(false);
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const navigatingRef = useRef(false);
   const checkedSessionRef = useRef(false);
@@ -195,6 +205,16 @@ function AuthPage() {
           setBusy(false);
           return;
         }
+        if (!acceptTerms) {
+          toast.error(
+            label(
+              "يلزم الإقرار بقراءة شروط الاستخدام وإخلاء المسؤولية والموافقة عليها لإنشاء الحساب.",
+              "You must read and agree to the Terms of Use and Disclaimer to create an account.",
+            ),
+          );
+          setBusy(false);
+          return;
+        }
         if (isTurnstileConfigured) {
           const verification = await verifyTurnstile({ data: { token: turnstileToken } });
           if (!verification.ok) {
@@ -220,6 +240,8 @@ function AuthPage() {
             redirectTo: `${window.location.origin}/auth`,
             locale: lang === "en" ? "en" : "ar",
             turnstileToken: turnstileToken || undefined,
+            acceptTerms: true,
+            consents: { marketing: consentMarketing, media_publication: consentMedia },
           },
         });
         if (!result.ok) {
@@ -243,6 +265,9 @@ function AuthPage() {
           ),
         );
         setPassword("");
+        setAcceptTerms(false);
+        setConsentMarketing(false);
+        setConsentMedia(false);
         switchMode("signin");
         setBusy(false);
       } else {
@@ -521,7 +546,40 @@ function AuthPage() {
                   </div>
 
                   {mode === "signup" ? (
-                    <div className="animate-fade-up opacity-0" style={rise(210)}>
+                    <div className="space-y-4 animate-fade-up opacity-0" style={rise(210)}>
+                      <fieldset className="space-y-3 rounded-xl border border-border bg-secondary/30 p-4">
+                        <legend className="px-1 text-[12px] font-semibold text-foreground">
+                          {label("الإقرار والموافقات", "Acknowledgement & consents")}
+                        </legend>
+                        <ConsentCheckbox
+                          id="accept-terms"
+                          checked={acceptTerms}
+                          onChange={setAcceptTerms}
+                          required
+                        >
+                          <TermsConsentLabel />
+                        </ConsentCheckbox>
+                        <p className="ps-7 text-[11px] text-muted-foreground">
+                          {label(
+                            "الموافقتان التاليتان اختياريتان ومستقلتان، ولا يؤثر رفضهما على العضوية:",
+                            "The two consents below are optional and separate; declining them does not affect membership:",
+                          )}
+                        </p>
+                        <ConsentCheckbox
+                          id="consent-marketing"
+                          checked={consentMarketing}
+                          onChange={setConsentMarketing}
+                        >
+                          <OptionalConsentLabel kind="marketing" />
+                        </ConsentCheckbox>
+                        <ConsentCheckbox
+                          id="consent-media"
+                          checked={consentMedia}
+                          onChange={setConsentMedia}
+                        >
+                          <OptionalConsentLabel kind="media_publication" />
+                        </ConsentCheckbox>
+                      </fieldset>
                       <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
                     </div>
                   ) : null}
@@ -529,7 +587,7 @@ function AuthPage() {
                   <div className="animate-fade-up opacity-0" style={rise(280)}>
                     <button
                       type="submit"
-                      disabled={busy}
+                      disabled={busy || (mode === "signup" && !acceptTerms)}
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-gold px-4 py-3.5 text-[14px] font-bold text-ink shadow-[0_12px_24px_-10px_color-mix(in_oklab,var(--gold)_60%,transparent)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.99] disabled:opacity-60 disabled:hover:translate-y-0"
                     >
                       {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
 import { TurnstileWidget, type TurnstileWidgetHandle } from "@/components/site/TurnstileWidget";
 import { submitCouncilRequest } from "@/lib/forms.functions";
+import { PrivacyNotice, UploadRightsNotice } from "@/components/legal/LegalNotices";
 import type { CouncilRequestType } from "@/lib/forms.schemas";
 import {
   COMMITTEE_REQUEST_DESTINATIONS,
@@ -434,6 +435,7 @@ export function CouncilRequestForm({
                     accept={ATTACHMENT_TYPES.join(",")}
                     className="cursor-pointer"
                   />
+                  <UploadRightsNotice />
                 </div>
               ) : null}
 
@@ -445,6 +447,8 @@ export function CouncilRequestForm({
               </div>
 
               <TurnstileWidget ref={turnstileRef} onToken={setTurnstileToken} />
+
+              <PrivacyNotice />
 
               <Button
                 type="submit"

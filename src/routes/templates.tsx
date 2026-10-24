@@ -20,12 +20,12 @@ import {
   EditableTemplatesLibrary,
   type EditableTemplateRecord,
 } from "@/components/site/EditableTemplatesLibrary";
-import { getCanonicalUrl } from "@/lib/seo";
 import { downloadFile } from "@/lib/download";
 import { AiDocumentPrompts } from "@/components/site/AiDocumentPrompts";
 import { CollateralsLibrary, type CollateralRecord } from "@/components/site/CollateralsLibrary";
 import { copy } from "@/content/page-copy/templates";
 import { inl } from "@/content/page-copy/templates-inline";
+import { GatedPage, resolvePageAccess } from "@/components/access/AccessGate";
 
 const COLLATERAL_DISPLAY_ORDER: Record<string, number> = {
   "COLL-001": 10,
@@ -65,7 +65,11 @@ function collateralDisplayOrder(reference: string | null, fallback: number) {
  * collection set to «النماذج و القوالب» appears here with no code change.
  */
 export const Route = createFileRoute("/templates")({
-  loader: async () => {
+  // Visual Identity: council chair and committee chairs only (Pages Access).
+  ssr: false,
+  beforeLoad: async () => ({ access: await resolvePageAccess("leadership") }),
+  loader: async ({ context }) => {
+    if (!context.access.allowed) return { items: [], editable: [], visualIdentity: [], collaterals: [] };
     const rows = await getPublishedLibrary();
     return {
       items: rows
@@ -103,12 +107,15 @@ export const Route = createFileRoute("/templates")({
         content: "دليل الهوية البصرية الرسمي وأصوله مع قوالب المناسبات القابلة للتحرير.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: getCanonicalUrl("/templates") },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: getCanonicalUrl("/templates") }],
   }),
-  component: TemplatesPage,
+  component: () => (
+    <GatedPage title={{ ar: "الهوية البصرية", en: "Visual Identity" }}>
+      <TemplatesPage />
+    </GatedPage>
+  ),
 });
 
 /** Image records are either flagged IMAGE or point at an image file. */

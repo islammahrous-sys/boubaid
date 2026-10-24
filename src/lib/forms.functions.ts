@@ -153,11 +153,26 @@ export const subscribeToNewsletter = createServerFn({ method: "POST" })
     // as `already: true`: this endpoint is anonymous, so a distinguishable
     // "already subscribed" answer lets anyone probe arbitrary addresses to learn
     // who is on the family's list.
-    if (error && error.code === "23505") return { ok: true };
-
-    if (error) {
+    if (error && error.code !== "23505") {
       console.error("[newsletter] insert failed", error.code, error.message);
       return { ok: false, error: "insert_failed" };
+    }
+
+    // A returning subscriber re-consents here, so a previous withdrawal ends.
+    if (error) {
+      await supabase
+        .from("newsletter_subscribers")
+        .update({ is_active: true })
+        .eq("email", data.email.toLowerCase());
+    }
+
+    try {
+      const { recordConsents } = await import("./consent.server");
+      await recordConsents([
+        { document: "marketing", granted: true, source: "newsletter", email: data.email },
+      ]);
+    } catch (err) {
+      console.error("[newsletter] consent evidence write failed:", err);
     }
 
     return { ok: true };

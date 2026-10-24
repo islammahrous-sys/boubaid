@@ -114,7 +114,7 @@ export const AUDIT_ENTITIES: Record<string, { ar: string; en: string; to?: [stri
   permissions: { ar: "الصلاحيات", en: "Capabilities", to: ["system", "roles_matrix"] },
   site_settings: { ar: "إعدادات المنصة", en: "Platform settings", to: ["system", "site_settings"] },
   businesses: { ar: "دليل الأعمال", en: "Business directory", to: ["community", "directory"] },
-  membership_requests: { ar: "طلبات العضوية", en: "Membership requests", to: ["system", "users"] },
+  membership_requests: { ar: "طلبات العضوية", en: "Membership requests", to: ["registration", "requests"] },
   contact_messages: { ar: "رسائل التواصل", en: "Contact messages", to: ["community", "inquiries"] },
   inquiries: { ar: "الطلبات والاستفسارات", en: "Inquiries", to: ["community", "inquiries"] },
   initiatives: { ar: "المبادرات", en: "Initiatives", to: ["projects", "initiatives"] },

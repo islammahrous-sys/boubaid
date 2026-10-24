@@ -51,6 +51,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import type { GalleryInput, GalleryMediaInput, MediaAssetInput } from "@/lib/admin-hub.schemas";
+import { UploadRightsNotice } from "@/components/legal/LegalNotices";
 
 export type GalleryRow = {
   id: string;
@@ -574,6 +575,7 @@ export function MuseumArchiveManager({
             </label>
           </div>
         </div>
+        <UploadRightsNotice />
 
         {activeGalleryImages.length === 0 ? (
           <div className="border-2 border-dashed border-border rounded-xl p-16 text-center text-xs text-muted-foreground bg-card">

@@ -127,7 +127,7 @@ const ENTITIES: Record<string, { ar: string; en: string; icon: Icon; to?: [strin
     ar: "طلبات العضوية",
     en: "Membership requests",
     icon: UserCheck,
-    to: ["system", "users"],
+    to: ["registration", "requests"],
   },
   initiatives: {
     ar: "المبادرات",
@@ -217,7 +217,7 @@ export function AdminDashboardOverview({
         ? "تحقق من النسب والفرع ثم اعتمد أو ارفض"
         : "Check lineage and branch, then approve or decline",
       cta: isAr ? "مراجعة الطلبات" : "Review requests",
-      to: ["system", "users"] as const,
+      to: ["registration", "requests"] as const,
     },
     {
       id: "inbox",
