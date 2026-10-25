@@ -123,7 +123,8 @@ try {
     const { count } = await admin.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", u.id).eq("type", "membership");
     check(`applicant in-app notification (${status})`, (count ?? 0) >= 1, `${count}`);
     const { data: mails } = await admin.from("email_logs").select("email_type, status, error_message").eq("recipient_email", u.email);
-    check(`decision email queued/sent (${status})`, (mails ?? []).length > 0, JSON.stringify(mails));
+    const delivered = (mails ?? []).some((m) => m.status !== "failed");
+    check(`decision email delivered (${status})`, delivered, JSON.stringify(mails));
   }
   {
     const { data: r } = await admin.from("membership_requests").select("review_note").eq("id", rejectMe.requestId).single();
