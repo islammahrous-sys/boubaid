@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import type { BiText } from "@/i18n/LanguageProvider";
-import { getPublishedLibrary } from "@/lib/cms.functions";
+import { getLeadershipLibrary } from "@/lib/cms.functions";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow } from "@/components/site/Editorial";
 import { MediaViewerDialog, type MediaViewerKind } from "@/components/site/MediaViewerDialog";
@@ -70,7 +70,7 @@ export const Route = createFileRoute("/templates")({
   beforeLoad: async () => ({ access: await resolvePageAccess("leadership") }),
   loader: async ({ context }) => {
     if (!context.access.allowed) return { items: [], editable: [], visualIdentity: [], collaterals: [] };
-    const rows = await getPublishedLibrary();
+    const rows = await getLeadershipLibrary();
     return {
       items: rows
         .filter((r) => r.collection === "templates" && r.is_published)

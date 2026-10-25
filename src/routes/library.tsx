@@ -27,7 +27,7 @@ import {
   getPublishedGalleries,
   getPublishedArchiveFolders,
   getPublishedArchiveVideos,
-  getPublishedLibrary,
+  getMemberLibrary,
   getPublicGalleryBySlug,
 } from "@/lib/cms.functions";
 import { cn } from "@/lib/utils";
@@ -69,7 +69,7 @@ export const Route = createFileRoute("/library")({
     const [collections, folders, library, archiveVideos] = await Promise.all([
       getPublishedGalleries(),
       getPublishedArchiveFolders(),
-      getPublishedLibrary(),
+      getMemberLibrary(),
       getPublishedArchiveVideos(),
     ]);
 

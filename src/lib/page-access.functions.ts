@@ -1,46 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAdminAuth, requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  LEADERSHIP_ROLES,
-  MEMBER_ROLES,
-  PAGE_ACCESS_SETTING_KEY,
-  normaliseEmails,
-  type PageAccessSetting,
-} from "./page-access";
-
-/**
- * Reads the chairs list. Never lets a missing/broken service-role key break
- * page access: it falls back to the caller's own client (which RLS may limit
- * to admins), and finally to an empty list — members still get member pages
- * and admins still get leadership pages from their roles alone.
- */
-async function readSetting(callerClient?: unknown): Promise<PageAccessSetting> {
-  const read = async (client: any) => {
-    const { data, error } = await client
-      .from("site_settings")
-      .select("value")
-      .eq("key", PAGE_ACCESS_SETTING_KEY)
-      .maybeSingle();
-    if (error) throw error;
-    const value = (data?.value ?? {}) as Record<string, unknown>;
-    return { leadership_emails: normaliseEmails(value.leadership_emails) };
-  };
-  try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    return await read(supabaseAdmin);
-  } catch (err) {
-    console.error("[page-access] admin read failed, falling back:", (err as Error)?.message);
-  }
-  if (callerClient) {
-    try {
-      return await read(callerClient);
-    } catch {
-      // RLS denied — fine for non-admins.
-    }
-  }
-  return { leadership_emails: [] };
-}
+import { PAGE_ACCESS_SETTING_KEY, normaliseEmails, type PageAccessSetting } from "./page-access";
 
 export type MyAccess = {
   signedIn: true;
@@ -55,8 +16,9 @@ export const getMyAccess = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<MyAccess> => {
     const { supabase, userId, claims } = context;
-    const [rolesRes, requestRes, setting] = await Promise.all([
-      supabase.from("user_roles").select("role").eq("user_id", userId),
+    const { computeAccess } = await import("./page-access.server");
+    const [access, requestRes] = await Promise.all([
+      computeAccess(supabase, userId, claims.email),
       supabase
         .from("membership_requests")
         .select("status")
@@ -64,26 +26,21 @@ export const getMyAccess = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
-      readSetting(supabase),
     ]);
-    if (rolesRes.error) throw new Error(`roles_read_failed: ${rolesRes.error.message}`);
-    const roles = (rolesRes.data ?? []).map((r) => r.role as string);
-    const email = String(claims.email ?? "").toLowerCase();
-    const member = roles.some((r) => (MEMBER_ROLES as readonly string[]).includes(r));
-    const leadership =
-      roles.some((r) => (LEADERSHIP_ROLES as readonly string[]).includes(r)) ||
-      (!!email && member && setting.leadership_emails.includes(email));
     return {
       signedIn: true,
-      member,
-      leadership,
+      member: access.member,
+      leadership: access.leadership,
       requestStatus: (requestRes.data?.status as MyAccess["requestStatus"]) ?? null,
     };
   });
 
 export const getPageAccessSetting = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
-  .handler(async ({ context }) => readSetting(context.supabase));
+  .handler(async ({ context }) => {
+    const { readPageAccessSetting } = await import("./page-access.server");
+    return readPageAccessSetting(context.supabase);
+  });
 
 export const savePageAccessSetting = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])

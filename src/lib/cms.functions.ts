@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireApprovedMember, requireCouncilLeader } from "./member-auth";
+import { LEADERSHIP_LIBRARY_COLLECTIONS, PUBLIC_LIBRARY_COLLECTIONS } from "./page-access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
@@ -294,6 +296,45 @@ export const getPublishedAchievers = createServerFn({ method: "GET" }).handler(
   },
 );
 
+/**
+ * Archive & Family Development Fund library rows (plus the public ones) for
+ * approved members. Reads through the member's own client so the database
+ * RLS policies apply as well as this guard.
+ */
+export const getMemberLibrary = createServerFn({ method: "GET" })
+  .middleware([requireApprovedMember])
+  .handler(async ({ context }): Promise<LibraryRow[]> => {
+    const { data, error } = await context.supabase
+      .from("library_items")
+      .select(LIBRARY_COLS)
+      .eq("is_published", true)
+      .not("collection", "in", `(${LEADERSHIP_LIBRARY_COLLECTIONS.join(",")})`)
+      .order("sort_order", { ascending: true })
+      .limit(1000);
+    if (error) throw new Error(error.message);
+    return withMedia((data ?? []) as LibraryRow[], [{ from: "file_path", to: "file_url" }]);
+  });
+
+/** Visual Identity collections — council chair, committee chairs and admins only. */
+export const getLeadershipLibrary = createServerFn({ method: "GET" })
+  .middleware([requireCouncilLeader])
+  .handler(async ({ context }): Promise<LibraryRow[]> => {
+    const { data, error } = await context.supabase
+      .from("library_items")
+      .select(LIBRARY_COLS)
+      .eq("is_published", true)
+      .in("collection", [...LEADERSHIP_LIBRARY_COLLECTIONS])
+      .order("sort_order", { ascending: true })
+      .limit(1000);
+    if (error) throw new Error(error.message);
+    return withMedia((data ?? []) as LibraryRow[], [{ from: "file_path", to: "file_url" }]);
+  });
+
+/**
+ * Public library rows — only the collections public pages use (committee
+ * charts and documents). Archive, Fund and Visual Identity collections are
+ * served by getMemberLibrary / getLeadershipLibrary to authorised users only.
+ */
 export const getPublishedLibrary = createServerFn({ method: "GET" }).handler(
   async (): Promise<LibraryRow[]> => {
     try {
@@ -301,6 +342,7 @@ export const getPublishedLibrary = createServerFn({ method: "GET" }).handler(
       const { data, error } = await createPublicServerClient()
         .from("library_items")
         .select(LIBRARY_COLS)
+        .in("collection", [...PUBLIC_LIBRARY_COLLECTIONS])
         .order("sort_order", { ascending: true })
         .limit(1000);
       if (error) {
@@ -962,6 +1004,7 @@ export const getPublicGlobalSearch = createServerFn({ method: "GET" })
           .from("library_items")
           .select("id, title_ar, title_en, collection, kind, file_path")
           .eq("is_published", true)
+          .in("collection", [...PUBLIC_LIBRARY_COLLECTIONS])
           .or(`title_ar.ilike.%${cleanQuery}%,title_en.ilike.%${cleanQuery}%`)
           .limit(4),
         supabase
@@ -1218,11 +1261,12 @@ export const getPublicGallery = createServerFn({ method: "GET" })
 
 /** Museum Archive collection detail page — a published gallery and its images, by slug. */
 export const getPublicGalleryBySlug = createServerFn({ method: "GET" })
+  .middleware([requireApprovedMember])
   .validator((slug: string) => publicGallerySlugSchema.parse(slug))
-  .handler(async ({ data: slug }): Promise<PublicGallery | null> => {
+  .handler(async ({ data: slug, context }): Promise<PublicGallery | null> => {
+    // Archive / Museum collections are members-only (Pages Access).
     try {
-      const { createPublicServerClient } = await import("./supabase-public.server");
-      return await fetchPublicGallery(createPublicServerClient(), { slug });
+      return await fetchPublicGallery(context.supabase, { slug });
     } catch (err) {
       console.error("[cms] getPublicGalleryBySlug error", err);
       return null;
@@ -1232,11 +1276,12 @@ export const getPublicGalleryBySlug = createServerFn({ method: "GET" })
 /** Museum Archive index page — every published Museum collection (section =
  *  "museum"), with its cover and image count. The Archive folder tree lives in
  *  the same table under section = "archive" and must never leak in here. */
-export const getPublishedGalleries = createServerFn({ method: "GET" }).handler(
-  async (): Promise<PublicGalleryListItem[]> => {
+export const getPublishedGalleries = createServerFn({ method: "GET" })
+  .middleware([requireApprovedMember])
+  .handler(async ({ context }): Promise<PublicGalleryListItem[]> => {
+    // Archive / Museum data is members-only (Pages Access); RLS applies via the member's client.
     try {
-      const { createPublicServerClient } = await import("./supabase-public.server");
-      const supabase = createPublicServerClient();
+      const supabase = context.supabase;
 
       const { data: galleries, error } = await supabase
         .from("galleries")
@@ -1280,11 +1325,12 @@ export type ArchiveFolder = PublicGalleryListItem & { children: PublicGalleryLis
  * sub-folders nested under them. Museum collections are excluded by the
  * `section` filter, so the Museum Collection tab is untouched by this read.
  */
-export const getPublishedArchiveFolders = createServerFn({ method: "GET" }).handler(
-  async (): Promise<ArchiveFolder[]> => {
+export const getPublishedArchiveFolders = createServerFn({ method: "GET" })
+  .middleware([requireApprovedMember])
+  .handler(async ({ context }): Promise<ArchiveFolder[]> => {
+    // Archive / Museum data is members-only (Pages Access); RLS applies via the member's client.
     try {
-      const { createPublicServerClient } = await import("./supabase-public.server");
-      const supabase = createPublicServerClient();
+      const supabase = context.supabase;
 
       const { data: rows, error } = await supabase
         .from("galleries")
@@ -1362,11 +1408,12 @@ export type ArchiveVideo = {
  * Data-driven end to end: a new clip uploaded from Admin → المتحف والمعارض into
  * any archive folder appears here with no code change.
  */
-export const getPublishedArchiveVideos = createServerFn({ method: "GET" }).handler(
-  async (): Promise<ArchiveVideo[]> => {
+export const getPublishedArchiveVideos = createServerFn({ method: "GET" })
+  .middleware([requireApprovedMember])
+  .handler(async ({ context }): Promise<ArchiveVideo[]> => {
+    // Archive / Museum data is members-only (Pages Access); RLS applies via the member's client.
     try {
-      const { createPublicServerClient } = await import("./supabase-public.server");
-      const supabase = createPublicServerClient();
+      const supabase = context.supabase;
 
       const { data: folders, error: folderError } = await supabase
         .from("galleries")

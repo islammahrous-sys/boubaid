@@ -3,7 +3,7 @@ import { FileSpreadsheet, Clock, MessageCircle, Eye, Download } from "lucide-rea
 import { useLang } from "@/i18n/LanguageProvider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
-import { getPublishedLibrary } from "@/lib/cms.functions";
+import { getMemberLibrary } from "@/lib/cms.functions";
 import { openMediaViewer } from "@/components/site/GlobalMediaViewer";
 import { downloadFile } from "@/lib/download";
 import { formatDualYear, formatDualYearRange } from "@/lib/dates";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/fund-financials")({
   beforeLoad: async () => ({ access: await resolvePageAccess("members") }),
   loader: async ({ context }) => {
     if (!context.access.allowed) return { statements: [] };
-    const library = await getPublishedLibrary();
+    const library = await getMemberLibrary();
     return {
       statements: library
         .filter((row) => row.collection === "financials" && row.is_published)

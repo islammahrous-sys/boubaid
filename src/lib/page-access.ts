@@ -50,6 +50,20 @@ export const MEMBER_ROLES = [
 
 export const LEADERSHIP_ROLES = ["admin", "super_admin"] as const;
 
+/**
+ * library_items collections, by audience. Mirrors the RLS policies in
+ * supabase/pending/20261025_members_only_archive_and_fund.sql — change both
+ * together. Anything not listed as public or leadership is members-only, so a
+ * new collection is protected by default.
+ */
+export const PUBLIC_LIBRARY_COLLECTIONS = ["committee_charts", "committee_documents"] as const;
+export const LEADERSHIP_LIBRARY_COLLECTIONS = [
+  "visual_identity",
+  "templates",
+  "templates_editable",
+  "collaterals",
+] as const;
+
 export const PAGE_ACCESS_SETTING_KEY = "page_access";
 
 export type PageAccessSetting = {

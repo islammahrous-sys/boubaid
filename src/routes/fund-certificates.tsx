@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Eyebrow, Prose } from "@/components/site/Editorial";
 import { siteMeta } from "@/content/site";
 import { fundDocumentGroups, resolveFundDocuments } from "@/content/fund-documents";
-import { getPublishedLibrary } from "@/lib/cms.functions";
+import { getMemberLibrary } from "@/lib/cms.functions";
 import { formatDualHijriYear } from "@/lib/dates";
 import { inl } from "@/content/page-copy/fund-certificates-inline";
 import { GatedPage, resolvePageAccess } from "@/components/access/AccessGate";
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/fund-certificates")({
   beforeLoad: async () => ({ access: await resolvePageAccess("members") }),
   loader: async ({ context }) =>
     context.access.allowed
-      ? { documents: resolveFundDocuments(await getPublishedLibrary()) }
+      ? { documents: resolveFundDocuments(await getMemberLibrary()) }
       : { documents: resolveFundDocuments([]) },
   head: () => ({
     meta: [
