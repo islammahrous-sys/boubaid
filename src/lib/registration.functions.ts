@@ -37,7 +37,24 @@ export const getRegistrationDesk = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Consent evidence: service role when configured, otherwise the admin's own
+    // client (admins can read audit_logs) — the desk must load either way.
+    const consentQuery = async () => {
+      const run = (client: any) =>
+        client
+          .from("audit_logs")
+          .select("entity_id, metadata, created_at")
+          .eq("entity_type", "legal_consent")
+          .order("created_at", { ascending: false })
+          .limit(5000);
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        return await run(supabaseAdmin);
+      } catch (err) {
+        console.error("[registration] service-role consent read failed:", (err as Error).message);
+        return await run(supabase);
+      }
+    };
     const [reqRes, profilesRes, rolesRes, consentRes] = await Promise.all([
       supabase
         .from("membership_requests")
@@ -47,14 +64,7 @@ export const getRegistrationDesk = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false }),
       supabase.from("profiles").select("id, full_name_ar, email, created_at"),
       supabase.from("user_roles").select("user_id, role"),
-      // Consent evidence is admin-only (audit_logs); service role keeps this
-      // independent of how the audit-log SELECT policy evolves.
-      supabaseAdmin
-        .from("audit_logs")
-        .select("entity_id, metadata, created_at")
-        .eq("entity_type", "legal_consent")
-        .order("created_at", { ascending: false })
-        .limit(5000),
+      consentQuery(),
     ]);
     const failed = reqRes.error ?? profilesRes.error ?? rolesRes.error;
     if (failed) throw new Error(failed.message);
@@ -110,16 +120,25 @@ export const getConsentRegister = createServerFn({ method: "GET" })
   .validator((input: unknown) =>
     z.object({ search: z.string().trim().max(200).optional() }).default({}).parse(input ?? {}),
   )
-  .handler(async ({ data }): Promise<ConsentLogRow[]> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    let q = supabaseAdmin
-      .from("audit_logs")
-      .select("id, created_at, action, entity_id, ip_address, user_agent, metadata")
-      .eq("entity_type", "legal_consent")
-      .order("created_at", { ascending: false })
-      .limit(500);
-    if (data.search) q = q.ilike("metadata->>email", `%${data.search.toLowerCase()}%`);
-    const { data: rows, error } = await q;
+  .handler(async ({ data, context }): Promise<ConsentLogRow[]> => {
+    const run = async (client: any) => {
+      let q = client
+        .from("audit_logs")
+        .select("id, created_at, action, entity_id, ip_address, user_agent, metadata")
+        .eq("entity_type", "legal_consent")
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (data.search) q = q.ilike("metadata->>email", `%${data.search.toLowerCase()}%`);
+      return await q;
+    };
+    let result: { data: any[] | null; error: { message: string } | null };
+    try {
+      result = await run((await import("@/integrations/supabase/client.server")).supabaseAdmin);
+    } catch (err) {
+      console.error("[registration] service-role unavailable, using admin session:", (err as Error).message);
+      result = await run(context.supabase);
+    }
+    const { data: rows, error } = result;
     if (error) throw new Error(error.message);
     return (rows ?? []).map((r) => {
       const m = (r.metadata ?? {}) as Record<string, unknown>;
