@@ -407,8 +407,8 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     title: { ar: "٧. مدة الاحتفاظ والحذف", en: "7. Retention and deletion" },
     paragraphs: [
       {
-        ar: "نحتفظ ببيانات الحساب ما دام الحساب قائماً. عند طلبك حذف الحساب نحذف بيانات ملفك وصورتك خلال ٣٠ يوماً، ونُبقي فقط ما يلزم نظاماً (مثل سجلات الموافقة والعمليات المالية) للمدة النظامية ثم نتلفه. تُحفظ الرسائل والطلبات للمدة اللازمة لمعالجتها ومتابعتها، وتُزال المرفقات متى انتهى الغرض منها. يمكنك إلغاء الاشتراك في النشرة في أي وقت فيتوقف الإرسال فوراً.",
-        en: "We keep account data while the account exists. When you ask us to delete your account, we delete your profile data and photo within 30 days, keeping only what the law requires (such as consent records and financial transactions) for the statutory period before destroying it. Messages and requests are kept as long as needed to handle and follow them up, and attachments are removed once their purpose ends. You can unsubscribe from the newsletter at any time and sending stops immediately.",
+        ar: "نحتفظ ببيانات الحساب ما دام الحساب قائماً. عند طلبك حذف الحساب نحذف بيانات ملفك وصورتك في أقرب وقت ممكن، ونُبقي فقط ما يلزم نظاماً (مثل سجلات الموافقة والعمليات المالية) للمدة النظامية ثم نتلفه. تُحفظ الرسائل والطلبات للمدة اللازمة لمعالجتها ومتابعتها، وتُزال المرفقات متى انتهى الغرض منها. يمكنك إلغاء الاشتراك في النشرة في أي وقت فيتوقف الإرسال فوراً.",
+        en: "We keep account data while the account exists. When you ask us to delete your account, we delete your profile data and photo as soon as reasonably possible, keeping only what the law requires (such as consent records and financial transactions) for the statutory period before destroying it. Messages and requests are kept as long as needed to handle and follow them up, and attachments are removed once their purpose ends. You can unsubscribe from the newsletter at any time and sending stops immediately.",
       },
     ],
   },
@@ -417,8 +417,8 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     title: { ar: "٨. حقوقك", en: "8. Your rights" },
     paragraphs: [
       {
-        ar: "يحق لك العلم بكيفية معالجة بياناتك، والوصول إليها والحصول على نسخة منها، وطلب تصحيحها أو تحديثها، وطلب إتلافها، وسحب موافقتك على النشرة أو نشر الصور في أي وقت دون أن يؤثر ذلك على عضويتك. يمكنك تعديل معظم بياناتك وموافقاتك الاختيارية مباشرة من صفحة حسابك، ولبقية الطلبات راسلنا عبر نموذج التواصل وسنرد خلال ٣٠ يوماً. ويحق لك تقديم شكوى إلى الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا).",
-        en: "You have the right to know how your data is processed, to access it and receive a copy, to ask for it to be corrected or updated, to ask for it to be destroyed, and to withdraw your newsletter or photo-publication consent at any time without affecting your membership. You can change most of your data and optional consents directly from your account page; for anything else, use the contact form and we will reply within 30 days. You may also lodge a complaint with the Saudi Data & AI Authority (SDAIA).",
+        ar: "يحق لك العلم بكيفية معالجة بياناتك، والوصول إليها والحصول على نسخة منها، وطلب تصحيحها أو تحديثها، وطلب إتلافها، وسحب موافقتك على النشرة أو نشر الصور في أي وقت دون أن يؤثر ذلك على عضويتك. يمكنك تعديل معظم بياناتك وموافقاتك الاختيارية مباشرة من صفحة حسابك، ولبقية الطلبات راسلنا عبر نموذج التواصل وسنرد في أقرب وقت ممكن. ويحق لك تقديم شكوى إلى الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا).",
+        en: "You have the right to know how your data is processed, to access it and receive a copy, to ask for it to be corrected or updated, to ask for it to be destroyed, and to withdraw your newsletter or photo-publication consent at any time without affecting your membership. You can change most of your data and optional consents directly from your account page; for anything else, use the contact form and we will reply as soon as reasonably possible. You may also lodge a complaint with the Saudi Data & AI Authority (SDAIA).",
       },
     ],
   },

@@ -5,8 +5,8 @@ Last updated: 25 October 2026 · Terms/Privacy version in force: **1.0** (`src/c
 
 > **Before declaring the project complete:** the Terms of Use and the Privacy Policy
 > (`/terms`, `/privacy`) must be reviewed by a qualified Saudi lawyer. The privacy
-> policy makes commitments (30-day replies, 30-day deletion) that this guide puts
-> into practice — the secretariat must be able to keep them.
+> policy promises that requests are handled as soon as reasonably possible —
+> this guide is how the secretariat does that.
 
 ---
 
@@ -49,7 +49,8 @@ Accounts created before 24 October 2026 have **no consent on record**.
 ## 4. Privacy requests (access, correction, deletion, withdrawing consent)
 
 Requests arrive in **Inbox** with subject “Personal data request”, or by the
-official email. Target: reply within **30 days**.
+official email. Reply as soon as reasonably possible (no fixed deadline —
+this is a family council, not a company).
 
 1. **Log it.** Note the date received; mark the message *in progress*.
 2. **Verify identity.** Reply only to the email address on the account, or
@@ -66,7 +67,7 @@ official email. Target: reply within **30 days**.
 4. **Close.** Reply with what was done; mark the message resolved. Keep the
    message thread as evidence.
 
-## 5. Account deletion (within 30 days of the request)
+## 5. Account deletion
 
 Done by an administrator in the Supabase dashboard (until a console button exists):
 

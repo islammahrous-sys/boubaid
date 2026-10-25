@@ -31,8 +31,8 @@ const LEGAL_HINTS: Record<string, BiText> = {
     en: "Include the page link or a description of the content, the type of issue (copyright, privacy, image without permission…), and your capacity (rights holder, person concerned, guardian). Reports are logged on arrival and content is taken down as a precaution where the issue is clear.",
   },
   [LEGAL_SUBJECTS.data.en]: {
-    ar: "حدد طلبك: الاطلاع على بياناتك أو الحصول على نسخة منها، تصحيحها، حذف الحساب، أو سحب موافقة. سنرد خلال ٣٠ يوماً على البريد المسجل.",
-    en: "State your request: access or a copy of your data, correction, account deletion, or withdrawing a consent. We reply within 30 days to the email on file.",
+    ar: "حدد طلبك: الاطلاع على بياناتك أو الحصول على نسخة منها، تصحيحها، حذف الحساب، أو سحب موافقة. سنرد في أقرب وقت ممكن على البريد المسجل.",
+    en: "State your request: access or a copy of your data, correction, account deletion, or withdrawing a consent. We reply as soon as possible to the email on file.",
   },
 };
 
