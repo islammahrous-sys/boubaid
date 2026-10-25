@@ -1,9 +1,8 @@
 -- =============================================================================
 -- Members-only Archive & Family Development Fund; leadership-only Visual Identity
 -- =============================================================================
--- STATUS: PENDING REVIEW — deliberately NOT in supabase/migrations so no
--- Lovable/GitHub sync applies it automatically. Apply only after review, in the
--- Supabase SQL editor (or move into supabase/migrations once approved).
+-- STATUS: APPLIED to production 2026-10-25 after a transactional dry run on the
+-- live database (verified, then rolled back) and the owner's approval.
 --
 -- Council "Pages Access" decision enforced at the database:
 --   * galleries / gallery_media (Archive + Museum)      -> approved members

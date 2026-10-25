@@ -106,13 +106,17 @@ Done by an administrator in the Supabase dashboard (until a console button exist
 | Visual Identity (`/templates`) | Admins + council chair and committee chairs listed in Registration → Page access |
 
 Enforced in three layers: the page (access screen), the website's data
-functions (refuse non-members), and — once applied — the database policies
-(`supabase/pending/20261025_members_only_archive_and_fund.sql`). Restricted
+functions (refuse non-members), and the database policies
+(`supabase/migrations/20261025120000_members_only_archive_and_fund.sql`). Restricted
 pages send `X-Robots-Tag: noindex` and are not in the sitemap.
 
-## 8. Applying the database migration (one time, reviewed)
+## 8. Database access policies (applied 25 October 2026)
 
-1. Read `supabase/pending/20261025_members_only_archive_and_fund.sql` in full.
+The migration below was dry-run on the live database inside a transaction,
+verified and rolled back, then applied with the owner's approval on 25 October
+2026. Keep these steps for future policy changes, or to roll back.
+
+1. Read `supabase/migrations/20261025120000_members_only_archive_and_fund.sql` in full.
 2. Supabase → SQL editor: run the **pre-flight** queries (section 0) and save the output.
 3. Run the migration body (BEGIN … COMMIT).
 4. Run the **verification** queries (section 7) — anonymous sees only committee

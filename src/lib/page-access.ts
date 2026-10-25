@@ -52,7 +52,7 @@ export const LEADERSHIP_ROLES = ["admin", "super_admin"] as const;
 
 /**
  * library_items collections, by audience. Mirrors the RLS policies in
- * supabase/pending/20261025_members_only_archive_and_fund.sql — change both
+ * supabase/migrations/20261025120000_members_only_archive_and_fund.sql — change both
  * together. Anything not listed as public or leadership is members-only, so a
  * new collection is protected by default.
  */
