@@ -201,6 +201,23 @@ export function Footer() {
                 </dd>
               </div>
             </dl>
+
+            <nav aria-label={rtl ? "الوثائق النظامية" : "Legal documents"} className="mt-6 border-t border-ivory/15 pt-5">
+              <p className="label-caps mb-3 text-gold/80">{rtl ? "الوثائق النظامية" : "Legal documents"}</p>
+              <ul className="space-y-2.5">
+                {(["terms", "privacy"] as const).map((key) => (
+                  <li key={key}>
+                    <Link
+                      to={LEGAL_DOCUMENTS[key].path}
+                      className="inline-flex items-center gap-2 text-sm font-medium text-ivory/85 underline decoration-gold/40 underline-offset-4 transition-colors hover:text-gold hover:decoration-gold focus-visible:text-gold"
+                    >
+                      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
+                      {t(LEGAL_DOCUMENTS[key].title)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
 
           {/* Index — derived from the live navigation, so it always matches the header */}

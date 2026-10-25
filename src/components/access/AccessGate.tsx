@@ -11,7 +11,7 @@ export type PageAccessResult =
   | {
       allowed: false;
       level: AccessLevel;
-      reason: "signed_out" | "pending" | "not_member" | "not_leadership";
+      reason: "signed_out" | "pending" | "not_member" | "not_leadership" | "error";
     };
 
 /**
@@ -29,8 +29,11 @@ export async function resolvePageAccess(level: AccessLevel): Promise<PageAccessR
   try {
     access = await getMyAccess();
   } catch {
-    // Expired or rejected token: treat as signed out so the member re-authenticates.
-    return { allowed: false, level, reason: "signed_out" };
+    // Only call it "signed out" when the session really is invalid; a valid
+    // session with a failing check is a temporary error, not a sign-in problem
+    // (sending a signed-in member back to sign-in loops them away).
+    const { data: user } = await supabase.auth.getUser();
+    return { allowed: false, level, reason: user?.user ? "error" : "signed_out" };
   }
   if (level === "leadership") {
     return access.leadership
@@ -101,6 +104,14 @@ export function AccessDenied({
         "This page is available to approved members only. Submit a membership request from your account page for the council to review.",
       ),
     },
+    error: {
+      icon: <Clock className="h-7 w-7 text-gold" aria-hidden />,
+      heading: L("تعذر التحقق من صلاحيتك الآن", "We couldn't check your access just now"),
+      body: L(
+        "أنت مسجل الدخول، لكن تعذر التحقق من العضوية مؤقتاً. أعد المحاولة بعد لحظات، وإن تكرر ذلك فتواصل مع الأمانة.",
+        "You're signed in, but your membership couldn't be checked right now. Try again in a moment; if it keeps happening, contact the secretariat.",
+      ),
+    },
     not_leadership: {
       icon: <Crown className="h-7 w-7 text-gold" aria-hidden />,
       heading: L("صفحة مخصصة لرئيس المجلس ورؤساء اللجان", "Reserved for the council chair and committee chairs"),
@@ -137,6 +148,10 @@ export function AccessDenied({
                 {L("عضوية جديدة", "New membership")}
               </Link>
             </>
+          ) : result.reason === "error" ? (
+            <button type="button" onClick={() => window.location.reload()} className={`${btn} bg-gold text-ink`}>
+              {L("إعادة المحاولة", "Try again")}
+            </button>
           ) : result.reason === "not_member" ? (
             <Link to="/account" className={`${btn} bg-gold text-ink`}>
               {L("الانتقال إلى حسابي", "Go to my account")}

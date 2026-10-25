@@ -9,15 +9,37 @@ import {
   type PageAccessSetting,
 } from "./page-access";
 
-async function readSetting(): Promise<PageAccessSetting> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin
-    .from("site_settings")
-    .select("value")
-    .eq("key", PAGE_ACCESS_SETTING_KEY)
-    .maybeSingle();
-  const value = (data?.value ?? {}) as Record<string, unknown>;
-  return { leadership_emails: normaliseEmails(value.leadership_emails) };
+/**
+ * Reads the chairs list. Never lets a missing/broken service-role key break
+ * page access: it falls back to the caller's own client (which RLS may limit
+ * to admins), and finally to an empty list — members still get member pages
+ * and admins still get leadership pages from their roles alone.
+ */
+async function readSetting(callerClient?: unknown): Promise<PageAccessSetting> {
+  const read = async (client: any) => {
+    const { data, error } = await client
+      .from("site_settings")
+      .select("value")
+      .eq("key", PAGE_ACCESS_SETTING_KEY)
+      .maybeSingle();
+    if (error) throw error;
+    const value = (data?.value ?? {}) as Record<string, unknown>;
+    return { leadership_emails: normaliseEmails(value.leadership_emails) };
+  };
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    return await read(supabaseAdmin);
+  } catch (err) {
+    console.error("[page-access] admin read failed, falling back:", (err as Error)?.message);
+  }
+  if (callerClient) {
+    try {
+      return await read(callerClient);
+    } catch {
+      // RLS denied — fine for non-admins.
+    }
+  }
+  return { leadership_emails: [] };
 }
 
 export type MyAccess = {
@@ -42,8 +64,9 @@ export const getMyAccess = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
-      readSetting(),
+      readSetting(supabase),
     ]);
+    if (rolesRes.error) throw new Error(`roles_read_failed: ${rolesRes.error.message}`);
     const roles = (rolesRes.data ?? []).map((r) => r.role as string);
     const email = String(claims.email ?? "").toLowerCase();
     const member = roles.some((r) => (MEMBER_ROLES as readonly string[]).includes(r));
@@ -60,7 +83,7 @@ export const getMyAccess = createServerFn({ method: "GET" })
 
 export const getPageAccessSetting = createServerFn({ method: "GET" })
   .middleware([requireAdminAuth])
-  .handler(async () => readSetting());
+  .handler(async ({ context }) => readSetting(context.supabase));
 
 export const savePageAccessSetting = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
