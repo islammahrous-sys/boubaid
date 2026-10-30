@@ -1,7 +1,7 @@
 import { registerCopy } from "@/i18n/editable-copy";
 
 export const copy = registerCopy("fund", {
-  text1: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
+  text1: { ar: "الشهادات والإثباتات", en: "Certificates & Attestations" },
   text2: {
     ar: "الترخيص الرسمي وشهادات التسجيل والإثباتات النظامية المعتمدة للصندوق.",
     en: "The official licence, registration certificates, and statutory attestations of the fund.",

@@ -316,7 +316,13 @@ type FolderCard = {
   image_count: number;
 };
 
-function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: string }) {
+function FolderGrid({
+  items,
+  countLabel,
+}: {
+  items: FolderCard[];
+  countLabel: (n: number) => string;
+}) {
   const { lang } = useLang();
   const pick = (ar: string, en?: string | null) => (lang === "en" ? en || ar : ar);
   return (
@@ -343,7 +349,7 @@ function FolderGrid({ items, countLabel }: { items: FolderCard[]; countLabel: st
             )}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
             <span className="absolute bottom-2 end-2 rounded bg-black/60 px-2 py-0.5 text-[11px] font-mono text-white">
-              {c.image_count} {countLabel}
+              {c.image_count} {countLabel(c.image_count)}
             </span>
           </div>
           <div className="flex flex-1 flex-col gap-1.5 p-4">
@@ -615,7 +621,7 @@ function LibraryPage() {
               }
             />
           ) : visibleItems.length > 0 ? (
-            <FolderGrid items={visibleItems} countLabel={t(copy.imageCount)} />
+            <FolderGrid items={visibleItems} countLabel={(n) => t(n === 1 ? copy.imageCountOne : copy.imageCount)} />
           ) : searchQuery.trim() ? (
             <div className="flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-card/40 py-24 text-center text-muted-foreground">
               <Search className="h-8 w-8 opacity-50" />

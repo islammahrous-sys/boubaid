@@ -88,7 +88,7 @@ export const fundDocuments: FundDocument[] = [
     group: "governance",
     title: { ar: "خطاب تشكيل المجلس", en: "Council Formation Letter" },
     note: {
-      ar: "خطاب تشكيل مجلس الأمناء (مُحجوبة أرقام الهوية).",
+      ar: "خطاب تشكيل مجلس الأمناء (أرقام الهوية محجوبة).",
       en: "Board of Trustees formation letter (ID numbers redacted).",
     },
     year: 1447,
@@ -101,7 +101,7 @@ export const fundDocuments: FundDocument[] = [
     group: "banking",
     title: { ar: "تفويض إدارة الحسابات البنكية", en: "Bank Accounts Signatory Authorisation" },
     note: {
-      ar: "خطاب تفويض إدارة الحسابات البنكية المعتمدة (مُحجوبة أرقام الهوية).",
+      ar: "خطاب تفويض إدارة الحسابات البنكية المعتمدة (أرقام الهوية محجوبة).",
       en: "Authorisation letter for managing the approved bank accounts (ID numbers redacted).",
     },
     year: 1447,
@@ -114,7 +114,7 @@ export const fundDocuments: FundDocument[] = [
     group: "banking",
     title: { ar: "تجديد التفويض 2026", en: "Banking Authorisation Renewal 2026" },
     note: {
-      ar: "خطاب تجديد التفويض بإدارة الحسابات البنكية لعام 2026 (مُحجوبة أرقام الهوية).",
+      ar: "خطاب تجديد التفويض بإدارة الحسابات البنكية لعام 2026 (أرقام الهوية محجوبة).",
       en: "Renewal of the bank accounts management authorisation for 2026 (ID numbers redacted).",
     },
     year: 1447,

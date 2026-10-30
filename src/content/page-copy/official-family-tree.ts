@@ -12,7 +12,7 @@ export const copy = registerCopy("official-family-tree", {
     en: "A wall plate approved by the Family Council, available in several frames and sizes for majlis and home, with a made-to-order option.",
   } as BiText,
   artworkBody: {
-    ar: "أُخرجت الأسرة هذه اللوحة الجدارية بتكلفة استثمارية بلغت 14,948 ريالاً سعودياً، وسُجلت حقوق ملكيتها الفكرية رسمياً لتكون مرجعاً بصرياً حصرياً يربط الجيل الناشئ بجذوره التميمية.",
+    ar: "أخرجتِ الأسرةُ هذه اللوحة الجدارية بتكلفة استثمارية بلغت 14,948 ريالًا سعوديًّا، وسُجلت حقوق ملكيتها الفكرية رسمياً لتكون مرجعاً بصرياً حصرياً يربط الجيل الناشئ بجذوره التميمية.",
     en: "The family commissioned this wall plate at an investment cost of SAR 14,948, and formally registered its intellectual-property rights to serve as an exclusive visual reference linking the rising generation to its Tamimi roots.",
   } as BiText,
   artworkOpen: { ar: "فتح اللوحة كاملة", en: "Open the full plate" } as BiText,
@@ -28,7 +28,7 @@ export const copy = registerCopy("official-family-tree", {
 
   ctaEyebrow: { ar: "للاقتناء والاطلاع على المقاسات", en: "View sizes and order" } as BiText,
   ctaTitle: {
-    ar: "للاقتناء و الاطلاع علي المقاسات",
+    ar: "للاقتناء والاطلاع على المقاسات",
     en: "View sizes and order your copy",
   } as BiText,
   ctaHint: {

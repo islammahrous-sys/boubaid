@@ -17,7 +17,7 @@ export const inl = registerCopy("familytreesections-inline", {
     en: "Official Illustrated Family Tree",
   } as BiText,
   t_382dbcce: {
-    ar: "أُخرجت الأسرة هذه اللوحة الجدارية بتكلفة استثمارية بلغت 14,948 ريالاً سعودياً، وسُجلت حقوق ملكيتها الفكرية رسمياً لتكون مرجعاً بصرياً حصرياً يربط الجيل الناشئ بجذوره التميمية.",
+    ar: "أخرجتِ الأسرةُ هذه اللوحة الجدارية بتكلفة استثمارية بلغت 14,948 ريالًا سعوديًّا، وسُجلت حقوق ملكيتها الفكرية رسمياً لتكون مرجعاً بصرياً حصرياً يربط الجيل الناشئ بجذوره التميمية.",
     en: "The family commissioned this wall plate at an investment cost of SAR 14,948, and formally registered its intellectual-property rights to serve as an exclusive visual reference linking the rising generation to its Tamimi roots.",
   } as BiText,
   t_20a7b57a: { ar: "فتح اللوحة كاملة", en: "Open the full plate" } as BiText,

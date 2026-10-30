@@ -42,7 +42,7 @@ export const councilAddress = registerCopy("council-address", {
       en: "And with his lasting instruction: “Be, O servants of God, brothers to one another.” Make these values your measure in dealing with people; humility is the essence of our standing, and kinship is our impregnable fortress.",
     },
     {
-      ar: "كما أدعوكم ألَّا تنسوا أبدًا ما يربطنا ببعضنا وبمن أحسن إلينا؛ فامتثلوا لقول الله تعالى: ﴿وَلَا تَنسَوُا الْفَضْلَ بَيْنَكُمْ﴾، ولتكن هذه الآية دستورًا لتعاملاتكم العائلية؛ فتقدير جهود أجدادكم الذين مهدوا لكم الطريق، والامتنان لبعضكم البعض، هو ما يبقي كياننا متماسكًا وقويًا أمام كل التحديات.",
+      ar: "كما أدعوكم ألَّا تنسوا أبدًا ما يربطنا ببعضنا وبمن أحسن إلينا؛ فامتثلوا لقول الله تعالى: ﴿وَلَا تَنسَوُا الْفَضْلَ بَيْنَكُمْ﴾، ولتكن هذه الآية دستورًا لتعاملاتكم العائلية؛ فتقدير جهود أجدادكم الذين مهدوا لكم الطريق، وامتنانُ بعضكم لبعض هو ما يُبقي كياننا متماسكًا وقويًا أمام كل التحديات.",
       en: "I also urge you never to forget what binds us to one another and to those who did us good: “And do not forget graciousness between yourselves.” Let this verse be the constitution of your family dealings; honouring the forebears who paved your way, and gratitude to one another, is what keeps our entity cohesive and strong before every challenge.",
     },
     {

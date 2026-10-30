@@ -886,7 +886,7 @@ function SortableGalleryRow({
         <p className="text-xs font-semibold text-foreground truncate">{gallery.title_ar}</p>
         <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 flex-wrap">
           <Badge variant="outline" className="text-[9px] px-1.5 h-4 font-mono">
-            {imageCount} {isAr ? "صورة" : "images"}
+            {imageCount} {isAr ? "صورة" : imageCount === 1 ? "image" : "images"}
           </Badge>
           <span
             className="text-[10px] text-muted-foreground font-mono truncate max-w-[120px] sm:max-w-none"

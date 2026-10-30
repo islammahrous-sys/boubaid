@@ -1105,7 +1105,7 @@ INSERT INTO public.initiatives (
     'National Volunteering Platform Partnership',
     'تسجيل ساعات التطوع لأبناء الأسرة الموثقة رسمياً في المنصة الوطنية للمملكة.',
     'Documenting official volunteer hours for family members on Saudi Arabia''s National Platform.',
-    'بصفتها كياناً أهلياً مرخصاً تحت رقم (1200758400)، تتيح صندوق التنمية العائلية (آل بوعبيد) توثيق الساعات التطوعية المعتمدة لأبناء الأسرة المشاركين في تنظيم الفعاليات والمبادرات الأهلية.',
+    'بصفته كيانًا أهليًّا مرخصًا برقم (1200758400)، يتيح صندوقُ التنمية العائلية (آل بوعبيد) توثيق الساعات التطوعية المعتمدة لأبناء الأسرة المشاركين في تنظيم الفعاليات والمبادرات الأهلية.',
     'As an NCNP-licensed nonprofit (#1200758400), the organization issues officially accredited volunteer hours for family members serving in civic initiatives.',
     true,
     6,
@@ -1291,7 +1291,7 @@ INSERT INTO public.achievers (
   ) VALUES (
     'ac000000-0000-0000-0000-000000000009',
     'أ. د. فاطمة بنت عبدالرحمن بوعبيد',
-    'Prof. Fatimah bint Abdulrahman Bu Obaid',
+    'Prof. Fatimah bintt Abdulrahman Bu Obaid',
     'الأكاديميا واللسانيات',
     'Academia & Linguistics',
     'academic',
@@ -1610,9 +1610,9 @@ INSERT INTO public.library_items (
   ) VALUES (
     '1b000000-0000-0000-0000-000000000010',
     'documents',
-    'خطاب تشكيل مجلس الأمناء (مُحجوبة أرقام الهوية)',
+    'خطاب تشكيل مجلس الأمناء (أرقام الهوية محجوبة)',
     'Board of Trustees Formation Letter (ID numbers redacted)',
-    'خطاب تشكيل مجلس الأمناء (مُحجوبة أرقام الهوية)',
+    'خطاب تشكيل مجلس الأمناء (أرقام الهوية محجوبة)',
     'Board of Trustees Formation Letter (ID numbers redacted)',
     1447,
     'documents',
@@ -1629,9 +1629,9 @@ INSERT INTO public.library_items (
   ) VALUES (
     '1b000000-0000-0000-0000-000000000011',
     'documents',
-    'خطاب تفويض إدارة الحسابات البنكية (مُحجوبة أرقام الهوية)',
+    'خطاب تفويض إدارة الحسابات البنكية (أرقام الهوية محجوبة)',
     'Bank Account Signatory Authorization Letter (ID numbers redacted)',
-    'خطاب تفويض إدارة الحسابات البنكية (مُحجوبة أرقام الهوية)',
+    'خطاب تفويض إدارة الحسابات البنكية (أرقام الهوية محجوبة)',
     'Bank Account Signatory Authorization Letter (ID numbers redacted)',
     1447,
     'documents',
@@ -2208,7 +2208,7 @@ VALUES
     '5e000000-0000-0000-0000-000000000003',
     'governance',
     'board_of_trustees',
-    '[{"role":{"ar":"عميد الأسرة (المنصب التقليدي)","en":"Family Dean (Traditional Office)"},"name":{"ar":"الأستاذ سعد بن عبدالرحمن بن علي بوعبيد","en":"Mr. Saad bin Abdulrahman bin Ali Bu Obaid"},"bio":{"ar":"يحتفظ بمنصب «عميد الأسرة» العرفي، ويمثل استمرارية «رأس المال الرمزي» الذي يوازن بين الحوكمة الإدارية الحديثة الملتزمة بتعليمات الدولة والمكانة الاجتماعية المتوارثة التي تضمن التماسك الروحي وولاء الأسرة الممتدة.","en":"Holds the customary office of Family Dean, embodying the family''s continuing ''symbolic capital'' — a deliberate balance between modern, state-compliant administrative governance and the inherited social standing that secures the extended family''s spiritual cohesion and loyalty."}},{"role":{"ar":"رئيس مجلس الأمناء","en":"Chairman, Board of Trustees"},"name":{"ar":"د. خالد بن يوسف بن أحمد بوعبيد","en":"Dr. Khaled bin Yousef bin Ahmed Bu Obaid"},"bio":{"ar":"حاصل على الدكتوراه من المعهد العالي للقضاء، وله خبرة في الفقه والقضاء وإدارة الشركات. يرأس مؤسسات فاعلة مثل شركة «سلسلة الثقة للمقاولات»، وله مساهمات بحثية في الفقه الطبي المستجد (فقه نوازل كورونا). يتولى القيادة العليا والإشراف على الامتثال للائحة الأساسية.","en":"Holds a PhD from the Higher Institute of Judiciary, with expertise in jurisprudence, the judiciary, and corporate management. He chairs active enterprises such as Silsilat Al-Thiqa for Contracting, and has published research in contemporary medical jurisprudence (COVID-era rulings). Holds senior leadership of the board and oversees compliance with the bylaws."}},{"role":{"ar":"نائب رئيس مجلس الأمناء","en":"Vice Chairman, Board of Trustees"},"name":{"ar":"الأستاذ حسين بن عبدالله بن حسين بوعبيد","en":"Mr. Hussein bin Abdullah bin Hussein Bu Obaid"},"bio":{"ar":"يقدم المساندة القيادية ويضمن سير العمليات الإدارية والمبادرات الاجتماعية، وأحد ثلاثة مفوضين رئيسيين يشترط توقيعهم المشترك على المعاملات المالية الحساسة.","en":"Provides leadership support and ensures the smooth running of administrative operations and social initiatives; one of three principal signatories whose joint signature is required for sensitive financial transactions."}},{"role":{"ar":"عضو مجلس الأمناء","en":"Board Trustee"},"name":{"ar":"الأستاذ عبدالرحمن بن عبدالعزيز بن عبدالرحمن بوعبيد","en":"Mr. Abdulrahman bin Abdulaziz bin Abdulrahman Bu Obaid"},"bio":{"ar":"يتولى الإشراف ضمن الدائرة المصغرة المخوّلة باتخاذ القرارات المالية والاستراتيجية، وأحد الموقّعين الثلاثة على التفويض البنكي الدقيق للصندوق.","en":"Oversees decisions within the small executive circle authorised to take financial and strategic decisions, and is one of three signatories on the fund''s bank authorisation."}},{"role":{"ar":"عضو مجلس الأمناء","en":"Board Trustee"},"name":{"ar":"الأستاذ عبدالله بن سعود بن عبدالعزيز بوعبيد","en":"Mr. Abdullah bin Saud bin Abdulaziz Bu Obaid"},"bio":{"ar":"يشارك في التوجيه الاستراتيجي للصندوق وتطوير مواردها.","en":"Participates in the organisation''s strategic direction and resource development."}}]'::jsonb,
+    '[{"role":{"ar":"عميد الأسرة (المنصب التقليدي)","en":"Family Dean (Traditional Office)"},"name":{"ar":"الأستاذ سعد بن عبدالرحمن بن علي بوعبيد","en":"Mr. Saad bin Abdulrahman bin Ali Bu Obaid"},"bio":{"ar":"يحتفظ بمنصب «عميد الأسرة» العرفي، ويمثل استمرارية «رأس المال الرمزي» الذي يوازن بين الحوكمة الإدارية الحديثة الملتزمة بتعليمات الدولة والمكانة الاجتماعية المتوارثة التي تضمن التماسك الروحي وولاء الأسرة الممتدة.","en":"Holds the customary office of Family Dean, embodying the family''s continuing ''symbolic capital'' — a deliberate balance between modern, state-compliant administrative governance and the inherited social standing that secures the extended family''s spiritual cohesion and loyalty."}},{"role":{"ar":"رئيس مجلس الأمناء","en":"Chairman, Board of Trustees"},"name":{"ar":"د. خالد بن يوسف بن أحمد بوعبيد","en":"Dr. Khaled bin Yousef bin Ahmed Bu Obaid"},"bio":{"ar":"حاصل على الدكتوراه من المعهد العالي للقضاء، وله خبرة في الفقه والقضاء وإدارة الشركات. يرأس مؤسسات فاعلة مثل شركة «سلسلة الثقة للمقاولات»، وله مساهمات بحثية في الفقه الطبي المستجد (فقه نوازل كورونا). يتولى القيادة العليا والإشراف على الامتثال للائحة الأساسية.","en":"Holds a PhD from the Higher Institute of Judiciary, with expertise in jurisprudence, the judiciary, and corporate management. He chairs active enterprises such as Silsilat Al-Thiqa for Contracting, and has published research in contemporary medical jurisprudence (COVID-era rulings). Holds senior leadership of the board and oversees compliance with the bylaws."}},{"role":{"ar":"نائب رئيس مجلس الأمناء","en":"Vice Chairman, Board of Trustees"},"name":{"ar":"الأستاذ حسين بن عبدالله بن حسين بوعبيد","en":"Mr. Hussein bin Abdullah bin Hussein Bu Obaid"},"bio":{"ar":"يقدم المساندة القيادية ويضمن سير العمليات الإدارية والمبادرات الاجتماعية، وأحد ثلاثة مفوضين رئيسيين يشترط توقيعهم المشترك على المعاملات المالية الحساسة.","en":"Provides leadership support and ensures the smooth running of administrative operations and social initiatives; one of three principal signatories whose joint signature is required for sensitive financial transactions."}},{"role":{"ar":"عضو مجلس الأمناء","en":"Board Trustee"},"name":{"ar":"الأستاذ عبدالرحمن بن عبدالعزيز بن عبدالرحمن بوعبيد","en":"Mr. Abdulrahman bin Abdulaziz bin Abdulrahman Bu Obaid"},"bio":{"ar":"يتولى الإشراف ضمن الدائرة المصغرة المخوّلة باتخاذ القرارات المالية والاستراتيجية، وأحد الموقّعين الثلاثة على التفويض البنكي الدقيق للصندوق.","en":"Oversees decisions within the small executive circle authorised to take financial and strategic decisions, and is one of three signatories on the fund''s bank authorisation."}},{"role":{"ar":"عضو مجلس الأمناء","en":"Board Trustee"},"name":{"ar":"الأستاذ عبدالله بن سعود بن عبدالعزيز بوعبيد","en":"Mr. Abdullah bin Saud bin Abdulaziz Bu Obaid"},"bio":{"ar":"يشارك في التوجيه الاستراتيجي للصندوق وتطوير موارده.","en":"Participates in the organisation''s strategic direction and resource development."}}]'::jsonb,
     true, now()
   ),
   (

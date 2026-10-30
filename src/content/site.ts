@@ -96,7 +96,7 @@ export const branches = [
     name: { ar: "فرع آل يوسف", en: "Al Yousef Branch" } as BiText,
     ancestor: {
       ar: "الجد يوسف بن أحمد بن عبدالله آل بوعبيد التميمي",
-      en: "Patriarch Yousef bin Ahmed bin Abdullah Al Bu Obaid",
+      en: "Yousef bin Ahmed bin Abdullah Al Bu Obaid",
     } as BiText,
     image: "/images/branch_yousef.png",
     treePoster: "/images/branch_tree_al_yousef.jpg",
@@ -130,7 +130,7 @@ export const branches = [
     name: { ar: "فرع آل عبدالعزيز", en: "Al Abdulaziz Branch" } as BiText,
     ancestor: {
       ar: "الجد عبدالعزيز بن أحمد بن عبدالله آل بوعبيد التميمي",
-      en: "Patriarch Abdulaziz bin Ahmed bin Abdullah Al Bu Obaid",
+      en: "Abdulaziz bin Ahmed bin Abdullah Al Bu Obaid",
     } as BiText,
     image: "/images/branch_abdulaziz.png",
     treePoster: "/images/branch_tree_al_abdulaziz.jpg",
@@ -161,7 +161,7 @@ export const branches = [
     name: { ar: "فرع آل محمد", en: "Al Mohammed Branch" } as BiText,
     ancestor: {
       ar: "الجد محمد بن أحمد بن عبدالله آل بوعبيد التميمي",
-      en: "Patriarch Mohammed bin Ahmed bin Abdullah Al Bu Obaid",
+      en: "Mohammed bin Ahmed bin Abdullah Al Bu Obaid",
     } as BiText,
     image: "/images/branch_mohammed_ahmed.png",
     treePoster: "/images/branch_tree_al_mohammed_ahmed.jpg",
@@ -191,7 +191,7 @@ export const branches = [
     name: { ar: "فرع آل سعد", en: "Al Saad Branch" } as BiText,
     ancestor: {
       ar: "الجد سعد بن أحمد بن عبدالله آل بوعبيد التميمي",
-      en: "Patriarch Saad bin Ahmed bin Abdullah Al Bu Obaid",
+      en: "Saad bin Ahmed bin Abdullah Al Bu Obaid",
     } as BiText,
     image: "/images/branch_saad.png",
     treePoster: "/images/branch_tree_al_saad.jpg",
@@ -222,7 +222,7 @@ export const branches = [
     name: { ar: "فرع آل عبداللطيف", en: "Al Abdullatif Branch" } as BiText,
     ancestor: {
       ar: "الجد عبداللطيف بن أحمد بن عبدالله آل بوعبيد التميمي",
-      en: "Patriarch Abdullatif bin Ahmed bin Abdullah Al Bu Obaid",
+      en: "Abdullatif bin Ahmed bin Abdullah Al Bu Obaid",
     } as BiText,
     image: "/images/branch_abdullatif.png",
     treePoster: "/images/branch_tree_al_abdullatif.jpg",
@@ -264,7 +264,7 @@ export const branches = [
     name: { ar: "فرع آل عبدالرحمن", en: "Al Abdulrahman Branch" } as BiText,
     ancestor: {
       ar: "الجد عبدالرحمن بن أحمد بن عبدالله آل بوعبيد التميمي",
-      en: "Patriarch Abdulrahman bin Ahmed bin Abdullah Al Bu Obaid",
+      en: "Abdulrahman bin Ahmed bin Abdullah Al Bu Obaid",
     } as BiText,
     image: "/images/branch_abdulrahman.png",
     treePoster: "/images/branch_tree_al_abdulrahman.jpg",
@@ -295,7 +295,7 @@ export const branches = [
     name: { ar: "فرع آل عبدالله صالح", en: "Al Abdullah Salih Branch" } as BiText,
     ancestor: {
       ar: "الجد عبدالله بن صالح بن عبدالله آل بوعبيد التميمي",
-      en: "Patriarch Abdullah bin Salih bin Abdullah Al Bu Obaid",
+      en: "Abdullah bin Salih bin Abdullah Al Bu Obaid",
     } as BiText,
     image: "/images/branch_abdullah_salih.png",
     treePoster: "/images/branch_tree_al_abdullah_salih.jpg",
@@ -633,7 +633,7 @@ export const boardOfTrustees = [
       en: "Mr. Abdullah bin Saud bin Abdulaziz Bu Obaid",
     } as BiText,
     bio: {
-      ar: "يشارك في التوجيه الاستراتيجي للصندوق وتطوير مواردها.",
+      ar: "يشارك في التوجيه الاستراتيجي للصندوق وتطوير موارده.",
       en: "Participates in the organisation's strategic direction and resource development.",
     } as BiText,
   },
@@ -681,7 +681,7 @@ export const foundingMembers = [
 
 /** The chief executive officer requirement stated in the bylaws: bachelor's degree + 16 years' administrative experience. */
 export const ceoRequirement = {
-  ar: "تشترط اللائحة الأساسية في المدير التنفيذي للصندوق الحصول على درجة البكالوريوس مع امتلاك خبرة إدارية تتجاوز 16 عاماً.",
+  ar: "يُشترط في المدير التنفيذي للصندوق أن يكون حاملًا درجة البكالوريوس، وأن تتجاوز خبرته الإدارية 16 عامًا.",
   en: "The bylaws require the fund's Chief Executive to hold a bachelor's degree and have more than 16 years of administrative experience.",
 } as BiText;
 

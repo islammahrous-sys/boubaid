@@ -13,11 +13,11 @@ export type SponsorRow = {
 export const SPONSOR_HEAD: BiText[] = [
   { ar: "العام", en: "Year" },
   { ar: "عدد المشاركين", en: "Participants" },
-  { ar: "المكرمين", en: "Honoured" },
+  { ar: "المكرَّمون", en: "Honoured" },
   { ar: "فروع المسابقة", en: "Competition branches" },
   { ar: "قيمة الجوائز", en: "Prize value" },
   { ar: "فروع الفائزين", en: "Winners' fields" },
-  { ar: "الرعاة والداعمين", en: "Sponsors & supporters" },
+  { ar: "الرعاة والداعمون", en: "Sponsors & supporters" },
 ];
 
 const br = (main: number, sub: number): BiText[] => [
@@ -27,7 +27,7 @@ const br = (main: number, sub: number): BiText[] => [
 const F = {
   sci: { ar: "تميز علمي", en: "Academic distinction" },
   pro: { ar: "تميز مهني", en: "Professional distinction" },
-  prize: { ar: "حصول على جائزة", en: "Award received" },
+  prize: { ar: "الحصول على جائزة", en: "Award received" },
 };
 const sar = (n: string): BiText => ({ ar: `${n} ريال`, en: `SAR ${n}` });
 

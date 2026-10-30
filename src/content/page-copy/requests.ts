@@ -11,7 +11,7 @@ export const copy = registerCopy("requests", {
 
   submitTitle: { ar: "تقديم طلب", en: "Submit a Request" } as BiText,
   submitNote: {
-    ar: "الطلبات مرتبة في مجموعات. يفتح البند إما الصفحة الرسمية الخاصة به على الموقع، أو نموذج تقديم مباشر يصل إلى الأمانة العامة، ولا يوجد نموذج بديل أو مواز.",
+    ar: "الطلبات مرتبة في مجموعات. يفتح البند إما الصفحة الرسمية الخاصة به على الموقع، أو نموذج تقديم مباشر يصل إلى الأمانة العامة، ولا يوجد نموذج بديل أو موازٍ.",
     en: "Requests are grouped by subject. Each item either opens its own official page on this site or a direct form that reaches the secretariat; there is no parallel or duplicate form.",
   } as BiText,
 

@@ -20,7 +20,7 @@ export const inl = registerCopy("achievers-inline", {
     en: "University graduation with a cumulative GPA of 4.75 or above",
   } as BiText,
   t_88b71f2c: {
-    ar: "الحصول على نسبة 90% في اختبار القدرات – الثالث ثانوي: الحصول على 90% في اختبار التحصيلي",
+    ar: "الحصول على نسبة 90% في اختبار القدرات – الثالث ثانوي: الحصول على 90% في الاختبار التحصيلي",
     en: "Scoring 90% in the Qudurat aptitude test – Grade 12: scoring 90% in the Tahsili achievement test",
   } as BiText,
   t_0d9f8155: {
@@ -58,7 +58,7 @@ export const inl = registerCopy("achievers-inline", {
   } as BiText,
   t_5f14880e: { ar: "عام 1448هـ", en: "Year 1448 AH" } as BiText,
   t_82666bc6: {
-    ar: "تُعلن أسماء المكرمين لعام 1448هـ بعد حفل التكريم.",
+    ar: "تُعلن أسماء المكرَّمين لعام 1448هـ بعد حفل التكريم.",
     en: "The 1448 AH honourees will be announced after the ceremony.",
   } as BiText,
   t_cc7a9654: { ar: "بدون سنة محددة", en: "Year not specified" } as BiText,

@@ -58,7 +58,7 @@ export const Route = createFileRoute("/directory")({
   },
   head: () => ({
     meta: [
-      { title: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج | آل بوعبيد" },
+      { title: "خدمات أفراد الأسرة وخدمات المنشآت – أسرتي تنتج | آل بوعبيد" },
       {
         name: "description",
         content:
@@ -66,7 +66,7 @@ export const Route = createFileRoute("/directory")({
       },
       {
         property: "og:title",
-        content: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج | آل بوعبيد",
+        content: "خدمات أفراد الأسرة وخدمات المنشآت – أسرتي تنتج | آل بوعبيد",
       },
       {
         property: "og:description",

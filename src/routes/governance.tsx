@@ -24,12 +24,12 @@ export const Route = createFileRoute("/governance")({
   loader: () => getPublicSiteSettings(),
   head: () => ({
     meta: [
-      { title: "الحوكمة و مجلس الامناء | آل بوعبيد" },
+      { title: "الحوكمة ومجلس الأمناء | آل بوعبيد" },
       {
         name: "description",
         content: `الحوكمة ومجلس الأمناء في صندوق التنمية العائلية (آل بوعبيد): الغرض والاختصاص، وتشكيل مجلس الأمناء وفق ترخيص NCNP رقم ${siteMeta.ncnpLicense}.`,
       },
-      { property: "og:title", content: "الحوكمة و مجلس الامناء — آل بوعبيد" },
+      { property: "og:title", content: "الحوكمة ومجلس الأمناء — آل بوعبيد" },
       {
         property: "og:description",
         content: "الغرض والاختصاص وتشكيل مجلس الأمناء في صندوق التنمية العائلية.",

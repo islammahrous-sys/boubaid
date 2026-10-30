@@ -109,7 +109,7 @@ function NewsDetail() {
           <span className="h-3 w-px bg-border" aria-hidden="true" />
           <span className="nums text-xs text-muted-foreground flex items-center gap-1">
             <Clock className="w-3 h-3 text-bronze dark:text-gold" />
-            {lang === "ar" ? `${readingMinutes} دقائق للقراءة` : `${readingMinutes} min read`}
+            {lang === "ar" ? readingMinutes === 1 ? "دقيقة واحدة للقراءة" : readingMinutes === 2 ? "دقيقتان للقراءة" : readingMinutes <= 10 ? `${readingMinutes} دقائق للقراءة` : `${readingMinutes} دقيقة للقراءة` : `${readingMinutes} min read`}
           </span>
         </div>
 

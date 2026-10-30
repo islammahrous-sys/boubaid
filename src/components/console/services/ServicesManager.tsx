@@ -224,7 +224,7 @@ export function ServicesManager() {
           <Layers className="h-5 w-5 text-primary" />
           <h3 className="text-sm font-bold text-foreground">
             {isAr
-              ? "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج"
+              ? "خدمات أفراد الأسرة وخدمات المنشآت – أسرتي تنتج"
               : "Family Member & Establishment Services – My Family Produces"}
           </h3>
         </div>
@@ -237,13 +237,13 @@ export function ServicesManager() {
       <Tabs value={category} onValueChange={(v) => setCategory(v as "family" | "establishment")}>
         <TabsList className="grid h-auto w-full grid-cols-2 gap-1 sm:w-[26rem]">
           <TabsTrigger value="family" className="h-auto whitespace-normal py-2 text-xs leading-5">
-            {isAr ? "خدمات افراد الأسرة" : "Family Member Services"}
+            {isAr ? "خدمات أفراد الأسرة" : "Family Member Services"}
           </TabsTrigger>
           <TabsTrigger
             value="establishment"
             className="h-auto whitespace-normal py-2 text-xs leading-5"
           >
-            {isAr ? "خدمات المنشأت" : "Establishment Services"}
+            {isAr ? "خدمات المنشآت" : "Establishment Services"}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -383,13 +383,13 @@ export function ServicesManager() {
               >
                 <TabsList className="grid h-auto w-full grid-cols-2 gap-1">
                   <TabsTrigger value="family" className="h-auto whitespace-normal py-2 text-xs">
-                    {isAr ? "خدمات افراد الأسرة" : "Family Member Services"}
+                    {isAr ? "خدمات أفراد الأسرة" : "Family Member Services"}
                   </TabsTrigger>
                   <TabsTrigger
                     value="establishment"
                     className="h-auto whitespace-normal py-2 text-xs"
                   >
-                    {isAr ? "خدمات المنشأت" : "Establishment Services"}
+                    {isAr ? "خدمات المنشآت" : "Establishment Services"}
                   </TabsTrigger>
                 </TabsList>
               </Tabs>

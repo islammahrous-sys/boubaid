@@ -87,7 +87,9 @@ export function ServiceCatalogue({
                   <span className="mt-auto inline-flex items-center gap-1.5 pt-1 text-[11px] font-medium text-primary">
                     <FileText className="h-3.5 w-3.5" aria-hidden="true" />
                     <span className="nums">{service.documents.length}</span>
-                    <span>{t(inl.t_1260a420)}</span>
+                    <span>
+                      {t(service.documents.length === 1 ? inl.t_1260a420_one : inl.t_1260a420)}
+                    </span>
                   </span>
                 ) : null}
               </button>

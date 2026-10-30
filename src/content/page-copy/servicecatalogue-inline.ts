@@ -17,4 +17,5 @@ export const inl = registerCopy("servicecatalogue-inline", {
   t_c47895fb: { ar: "عرض", en: "View" } as BiText,
   t_ec475806: { ar: "سجّل خدمتك", en: "Register your service" } as BiText,
   t_1260a420: { ar: "وثيقة", en: "documents" } as BiText,
+  t_1260a420_one: { ar: "وثيقة", en: "document" } as BiText,
 });

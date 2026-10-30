@@ -1,0 +1,31 @@
+-- Arabic language corrections (family council reviewer, 2026-10-30)
+-- Idempotent: each UPDATE only touches rows that still contain the old text.
+begin;
+update public.achievers set name_ar = replace(name_ar, 'تركي محمد احمد عبدالله', 'تركي محمد أحمد عبدالله') where id = 'ce643a30-5409-4c46-85ca-ed97499d9466' and name_ar like '%تركي محمد احمد عبدالله%';
+update public.achievers set name_ar = replace(name_ar, 'احمد محمد احمد عبدالله', 'أحمد محمد أحمد عبدالله') where id = '10d4bbb3-6f33-4ec7-91c3-74930a43f006' and name_ar like '%احمد محمد احمد عبدالله%';
+update public.achievers set achievement_ar = replace(achievement_ar, 'حصول على درجة الماجستير', 'الحصول على درجة الماجستير') where id = 'ae5c3c94-5f12-4b3f-a6cb-83fe4456e261' and achievement_ar like '%حصول على درجة الماجستير%';
+update public.achievers set achievement_ar = replace(achievement_ar, 'شهادة مهنية الإدارة', 'شهادة مهنية في الإدارة') where id = 'ba64c7a6-5f51-4f29-bfbe-a8137479f4ca' and achievement_ar like '%شهادة مهنية الإدارة%';
+update public.achievers set achievement_ar = replace(achievement_ar, 'دبلوم عالي في', 'دبلوم عالٍ في') where id = '3b28e73d-8a55-4396-b3dd-f8b3d3f7e228' and achievement_ar like '%دبلوم عالي في%';
+update public.achievers set name_ar = replace(name_ar, 'فاطمة بن عبدالرؤوف', 'فاطمة بنت عبدالرؤوف') where id = '53cedf03-f84e-4c93-bb61-33a87f16b2ca' and name_ar like '%فاطمة بن عبدالرؤوف%';
+update public.achievers set name_en = replace(name_en, 'Fatimah bin ', 'Fatimah bint ') where id = '53cedf03-f84e-4c93-bb61-33a87f16b2ca' and name_en like '%Fatimah bin %';
+update public.achievers set achievement_ar = replace(achievement_ar, 'الاستشارة الهندسة', 'الاستشارات الهندسية') where id = '574bec61-6136-4f49-9f61-73495983c31e' and achievement_ar like '%الاستشارة الهندسة%';
+update public.achievers set achievement_ar = replace(achievement_ar, 'سلاسل الامداد', 'سلاسل الإمداد') where id = '0d756778-e72e-4bd6-b402-e1efddb1d23d' and achievement_ar like '%سلاسل الامداد%';
+update public.initiatives set body_ar = replace(body_ar, 'بصفتها كياناً أهلياً مرخصاً تحت رقم (1200758400)، تتيح صندوق التنمية العائلية', 'بصفته كيانًا أهليًّا مرخصًا برقم (1200758400)، يتيح صندوقُ التنمية العائلية') where id = 'b5386586-5d7d-4bab-9961-74b657e7e33e' and body_ar like '%بصفتها كياناً أهلياً مرخصاً تحت رقم (1200758400)، تتيح صندوق التنمية العائلية%';
+update public.initiatives set body_ar = replace(body_ar, 'ديوانية رئيسية، مركزاً للوثائق', 'ديوانية رئيسية، ومركزًا للوثائق') where id = 'a2000000-0000-0000-0000-000000000001' and body_ar like '%ديوانية رئيسية، مركزاً للوثائق%';
+update public.navigation_items set label_ar = replace(label_ar, 'الحوكمة و مجلس الامناء', 'الحوكمة ومجلس الأمناء') where id = 'ad4db4eb-f593-4c3b-92b4-8f2b70b139c1' and label_ar like '%الحوكمة و مجلس الامناء%';
+update public.navigation_items set label_ar = replace(label_ar, 'الشهادات و الاثباتات', 'الشهادات والإثباتات') where id = '0d96e254-4afc-4bfa-b59d-3cbc4bdabfe0' and label_ar like '%الشهادات و الاثباتات%';
+update public.galleries set title_ar = replace(title_ar, 'لابناء العم', 'لأبناء العم') where id = 'fa5fc621-54b1-41dd-9b51-7648ce7fc01f' and title_ar like '%لابناء العم%';
+update public.galleries set title_ar = replace(title_ar, 'ألدعوات و اللقاءات', 'الدعوات واللقاءات') where id = 'd7953490-f17f-4a91-81f8-e58bfbc3fb41' and title_ar like '%ألدعوات و اللقاءات%';
+update public.galleries set title_ar = replace(title_ar, 'رحلة اجيالنا الاول', 'رحلة أجيالنا الأولى') where id = '21523db5-ea49-4a30-a8f5-b80d9fb51647' and title_ar like '%رحلة اجيالنا الاول%';
+update public.galleries set title_ar = replace(title_ar, 'بمسابقة الاسرية', 'بالمسابقة الأسرية') where id = 'fffd59aa-1c07-4b2a-bc86-94c7c1813a3b' and title_ar like '%بمسابقة الاسرية%';
+update public.galleries set title_ar = replace(title_ar, 'جائزة التميز العلمية', 'جائزة التميز العلمي') where id = 'b5bb19cc-daaf-49c4-881b-acf51d05017c' and title_ar like '%جائزة التميز العلمية%';
+update public.galleries set title_ar = replace(title_ar, 'الانجازات', 'الإنجازات') where id = 'eb225a68-d8a2-4a80-9797-b538a1274b1c' and title_ar like '%الانجازات%';
+update public.galleries set title_ar = replace(title_ar, 'اعلانات', 'إعلانات') where id = 'a22f3cb2-26be-42db-9f7f-77fb7d514420' and title_ar like '%اعلانات%';
+update public.galleries set title_ar = replace(title_ar, 'زياره الاستاذ فيصل', 'زيارة الأستاذ فيصل') where id = 'b177ba28-2c5a-47c6-b8a0-5aa77494e9a7' and title_ar like '%زياره الاستاذ فيصل%';
+update public.library_items set title_ar = replace(title_ar, '(مُحجوبة أرقام الهوية)', '(أرقام الهوية محجوبة)') where id = '1b000000-0000-0000-0000-000000000010' and title_ar like '%(مُحجوبة أرقام الهوية)%';
+update public.library_items set title_ar = replace(title_ar, '(مُحجوبة أرقام الهوية)', '(أرقام الهوية محجوبة)') where id = '1b000000-0000-0000-0000-000000000011' and title_ar like '%(مُحجوبة أرقام الهوية)%';
+update public.library_items set description_ar = replace(description_ar, 'خبر_نعى', 'خبر_نعي') where id = '65c78571-977c-4381-b102-57a09f931c3e' and description_ar like '%خبر_نعى%';
+update public.library_items set description_en = replace(description_en, 'خبر_نعى', 'خبر_نعي') where id = '65c78571-977c-4381-b102-57a09f931c3e' and description_en like '%خبر_نعى%';
+update public.library_items set description_ar = replace(description_ar, 'خبر_نعى', 'خبر_نعي') where id = '0bb1eef5-8249-4590-858e-a3e84eda1ced' and description_ar like '%خبر_نعى%';
+update public.library_items set description_en = replace(description_en, 'خبر_نعى', 'خبر_نعي') where id = '0bb1eef5-8249-4590-858e-a3e84eda1ced' and description_en like '%خبر_نعى%';
+commit;

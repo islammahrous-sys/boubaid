@@ -44,7 +44,7 @@ export const inl = registerCopy("requests-inline", {
     en: "Ask for a listed business entry to be updated: description, contact details, or website.",
   } as BiText,
   t_12858ee2: {
-    ar: "طلب اضافة خدمة – منشأت",
+    ar: "طلب إضافة خدمة – منشآت",
     en: "Add a service request – Establishments",
   } as BiText,
   t_f807f699: {
@@ -52,7 +52,7 @@ export const inl = registerCopy("requests-inline", {
     en: "Request that a service offered by a family establishment be added to the establishment services list.",
   } as BiText,
   t_0c2f876d: {
-    ar: "طلب اضافة خدمة – افراد العائلة",
+    ar: "طلب إضافة خدمة – أفراد العائلة",
     en: "Add a service request – Family members",
   } as BiText,
   t_2c3bb6d0: {
@@ -150,7 +150,7 @@ export const inl = registerCopy("requests-inline", {
     en: "Apply for support through the social solidarity programme; requests are handled confidentially.",
   } as BiText,
   t_930b7b2c: {
-    ar: "طلب ترشيح عضوية في احد اللجان",
+    ar: "طلب ترشيح عضوية في إحدى اللجان",
     en: "Committee membership nomination request",
   } as BiText,
   t_73310b90: {

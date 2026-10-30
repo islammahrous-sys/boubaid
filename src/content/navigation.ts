@@ -70,11 +70,11 @@ export const primaryNav: NavItem[] = [
     children: [
       {
         to: "/governance",
-        label: { ar: "الحوكمة و مجلس الامناء", en: "Governance & Board of Trustees" },
+        label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" },
       },
       {
         to: "/fund-certificates",
-        label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
+        label: { ar: "الشهادات والإثباتات", en: "Certificates & Attestations" },
       },
       {
         to: "/fund-financials",
@@ -127,11 +127,11 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
         children: [
           {
             to: "/governance",
-            label: { ar: "الحوكمة و مجلس الامناء", en: "Governance & Board of Trustees" },
+            label: { ar: "الحوكمة ومجلس الأمناء", en: "Governance & Board of Trustees" },
           },
           {
             to: "/fund-certificates",
-            label: { ar: "الشهادات و الاثباتات", en: "Certificates & Attestations" },
+            label: { ar: "الشهادات والإثباتات", en: "Certificates & Attestations" },
           },
           {
             to: "/fund-financials",
@@ -166,7 +166,7 @@ export const navGroups: { title: BiText; items: NavItem[] }[] = [
       {
         to: "/directory",
         label: {
-          ar: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج",
+          ar: "خدمات أفراد الأسرة وخدمات المنشآت – أسرتي تنتج",
           en: "Family Member & Establishment Services – My Family Produces",
         },
         short: { ar: "الخدمات", en: "Services" },

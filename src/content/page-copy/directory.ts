@@ -4,7 +4,7 @@ import { registerCopy } from "@/i18n/editable-copy";
 export const copy = registerCopy("directory", {
   eyebrow: { ar: "دليل الخدمات", en: "Services index" } as BiText,
   title: {
-    ar: "خدمات افراد الأسرة و خدمات المنشأت – اسرتي تنتج",
+    ar: "خدمات أفراد الأسرة وخدمات المنشآت – أسرتي تنتج",
     en: "Family Member & Establishment Services – My Family Produces",
   } as BiText,
   subtitle: {
@@ -13,8 +13,8 @@ export const copy = registerCopy("directory", {
   } as BiText,
 
   tabs: {
-    businesses: { ar: "خدمات المنشأت", en: "Establishment Services" } as BiText,
-    members: { ar: "خدمات افراد الأسرة", en: "Family Member Services" } as BiText,
+    businesses: { ar: "خدمات المنشآت", en: "Establishment Services" } as BiText,
+    members: { ar: "خدمات أفراد الأسرة", en: "Family Member Services" } as BiText,
   },
 
   metaListings: { ar: "عدد القيود", en: "Listings" } as BiText,

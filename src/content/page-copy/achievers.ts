@@ -8,7 +8,7 @@ export const copy = registerCopy("achievers", {
     en: "Al Bu Obaid Award for Academic Excellence and Distinction",
   } as BiText,
   subtitle: {
-    ar: "جائزة تمنح للمميزين من أفراد الأسرة ذكوراً وإناثًا بمختلف مراحلهم الدراسية أو من هم على رأس العمل، في المجالات التالية:",
+    ar: "جائزة تُمنح للمتميزين من أفراد الأسرة ذكورًا وإناثًا بمختلف مراحلهم الدراسية أو من هم على رأس العمل، في المجالات التالية:",
     en: "An award granted to distinguished family members, male and female, at every stage of study or in employment, in the following fields:",
   } as BiText,
 
@@ -24,7 +24,7 @@ export const copy = registerCopy("achievers", {
 
   colName: { ar: "الاسم", en: "Name" } as BiText,
   colAchievement: { ar: "التميز", en: "Distinction" } as BiText,
-  competencies: { ar: "كفاءات افراد الاسرة", en: "Family Members’ Competencies" } as BiText,
+  competencies: { ar: "كفاءات أفراد الأسرة", en: "Family Members’ Competencies" } as BiText,
   excellence: { ar: "جائزة التميز", en: "Excellence Award" } as BiText,
 
   nominateTitle: { ar: "الترشح لجائزة التميز", en: "Excellence Award Application" } as BiText,

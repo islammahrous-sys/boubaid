@@ -157,8 +157,7 @@ function OfficialFamilyTreePage() {
             className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70"
             aria-hidden="true"
           />
-          <Eyebrow className="justify-center">{t(copy.ctaEyebrow)}</Eyebrow>
-          <h2 className="mt-4 font-serif text-2xl leading-tight text-foreground md:text-3xl">
+          <h2 className="font-serif text-2xl leading-tight text-foreground md:text-3xl">
             {t(copy.ctaTitle)}
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-[13px] leading-relaxed text-muted-foreground">

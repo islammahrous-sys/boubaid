@@ -58,7 +58,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "تتجذر الأصول النسبية لأسرة آل بوعبيد في أعماق البنية القبلية العربية، حيث ينحدرون من فرع «العبادل»، وهم أبناء عبد الله بن دارم، والذي يُعد من البطون الكبرى والنخبة الأرستقراطية المؤثرة في قبيلة بني تميم العريقة. يمتد التسلسل النسبي الموثق للأسرة صعودًا إلى: عبد الله بن زيد بن عبد الله بن دارم بن مالك بن حنظلة بن مالك بن زيد مناة بن تميم بن مر. ويستمر هذا الاتصال النسبي الموغل في القدم حتى يلتقي مع الجد الأكبر عدنان، من ذرية نبي الله إسماعيل بن إبراهيم الخليل عليهما السلام.",
+          ar: "تتجذر الأصول النسبية لأسرة آل بوعبيد في أعماق البنية القبلية العربية، حيث ينحدرون من فرع «العبادل»، وهم أبناء عبد الله بن دارم، الذي يُعد من البطون الكبرى والنخبة الأرستقراطية المؤثرة في قبيلة بني تميم العريقة. يمتد التسلسل النسبي الموثق للأسرة صعودًا إلى: عبد الله بن زيد بن عبد الله بن دارم بن مالك بن حنظلة بن مالك بن زيد مناة بن تميم بن مر. ويستمر هذا الاتصال النسبي الموغل في القدم حتى يلتقي مع الجد الأكبر عدنان، من ذرية نبي الله إسماعيل بن إبراهيم الخليل عليهما السلام.",
           en: "The lineage of the Al Bu Obaid family is rooted deep in the Arab tribal structure. They descend from the ʿAbadil branch — the sons of ʿAbd Allāh ibn Dārim — one of the major and most influential aristocratic houses of the ancient tribe of Banu Tamim. The family's documented chain of descent ascends to: ʿAbd Allāh ibn Zayd ibn ʿAbd Allāh ibn Dārim ibn Mālik ibn Ḥanẓalah ibn Mālik ibn Zayd Manāt ibn Tamīm ibn Murr, and continues upward until it meets the great ancestor ʿAdnān, of the progeny of the Prophet Ishmael son of Abraham, peace be upon them.",
         },
       },
@@ -575,7 +575,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "في عهد الخلافة الراشدة، توثقت العلاقة بين أهل البيت وفرع بني دارم بشكل استثنائي. فقد تزوج أمير المؤمنين الخليفة علي بن أبي طالب رضي الله عنه من السيدة ليلى بنت مسعود الدارمية، وأنجبت له ولدين (أبو بكر وعبيد الله) استشهدا دفاعًا عن عائلتهما في كربلاء والمذار.",
+          ar: "في عهد الخلافة الراشدة، توثقت العلاقة بين أهل البيت وفرع بني دارم بشكل استثنائي. فقد تزوّج أمير المؤمنين الخليفة علي بن أبي طالب رضي الله عنه السيدةَ ليلى بنت مسعود الدارمية، وأنجبت له ولدين (أبا بكر وعبيد الله) استشهدا دفاعًا عن عائلتهما في كربلاء والمذار.",
           en: "In the era of the Rightly Guided Caliphate, the relationship between the Prophet's household and the Banu Dārim branch was exceptionally close: the Commander of the Faithful ʿAlī ibn Abī Ṭālib married Laylā bint Masʿūd al-Dārimiyyah, who bore him two sons, Abū Bakr and ʿUbayd Allāh, both of whom were martyred in defence of their family at Karbala and al-Madhār.",
         },
       },
@@ -642,7 +642,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "وبعد وفاة أمير المؤمنين علي بن أبي طالب رضي الله عنه، تزوجت ليلى بنت مسعود بعبد الله بن جعفر بن أبي طالب، وأنجبت له: يحيى وهارون وصالح الأكبر، وموسى، وأم محمد وكانت عند يزيد بن معاوية بن أبي سفيان.",
+          ar: "وبعد وفاة أمير المؤمنين علي بن أبي طالب رضي الله عنه، تزوّجت ليلى بنت مسعود عبدَ الله بن جعفر بن أبي طالب، وأنجبت له: يحيى وهارون وصالح الأكبر، وموسى، وأم محمد وكانت عند يزيد بن معاوية بن أبي سفيان.",
           en: "After the death of the Commander of the Faithful ʿAlī ibn Abī Ṭālib, Laylā bint Masʿūd married ʿAbd Allāh ibn Jaʿfar ibn Abī Ṭālib and bore him Yaḥyā, Hārūn, Ṣāliḥ the elder, Mūsā, and Umm Muḥammad, who was married to Yazīd ibn Muʿāwiyah ibn Abī Sufyān.",
         },
       },
@@ -786,7 +786,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "وسيذكر التاريخ للقعقاع أنه ضرب الرقم القياسي في عدد المعارك التي خاضها وسجل فيها صفحات مشرقة، منها إحدى عشرة وقعة شهيرة غير المعارك الصغيرة وهو القائد الوحيد الذى قاتل فى معارك الفتح الإسلامي الثلاثة الحاسمة (القادسية واليرموك ونهاوند) وكان يعتبر بحق في القادسية قائد الميدان الفعلي.",
+          ar: "وسيذكر التاريخ للقعقاع أنه ضرب الرقم القياسي في عدد المعارك التي خاضها وسجل فيها صفحات مشرقة، منها إحدى عشرة وقعة شهيرة غير المعارك الصغيرة وهو القائد الوحيد الذي قاتل في معارك الفتح الإسلامي الثلاث الحاسمة (القادسية واليرموك ونهاوند) وكان يعتبر بحق في القادسية قائد الميدان الفعلي.",
           en: "History records that al-Qaʿqāʿ set the record for the number of battles he fought and in which he wrote luminous pages — eleven famous engagements aside from the minor ones. He is the only commander to have fought in the three decisive battles of the Islamic conquest (al-Qādisiyyah, al-Yarmūk and Nahāwand), and was rightly regarded at al-Qādisiyyah as the actual field commander.",
         },
       },
@@ -935,7 +935,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "تذكر المصادر أنه كان للأحنف بن قيس دوره في الفتوحات الإسلامية، منها: قاسان والتيمرة، أما دوره الأبرز فقد كان في عمليات الفتوح في خراسان، فكان أحد قاداته، وفتح على يديه مرو الروذ، وقاشان.",
+          ar: "تذكر المصادر أنه كان للأحنف بن قيس دوره في الفتوحات الإسلامية، منها: قاشان والتيمرة، أما دوره الأبرز فقد كان في عمليات الفتوح في خراسان، فكان أحد قادتها، وفتح على يديه مرو الروذ، وقاشان.",
           en: "The sources record that al-Aḥnaf ibn Qays had his role in the Islamic conquests, among them Qāsān and al-Taymarah; his most prominent role was in the operations in Khurāsān, where he was one of the commanders, and Marw al-Rūdh and Qāshān were conquered at his hands.",
         },
       },
@@ -984,7 +984,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "ومن حكمته ما رواه هشام بن عقبة أخو ذي الرمة الشاعر المشهور قال: شهدت الأحنف بن قيس وقد جاء إلى قوم يتكلمون في دم، احكموا، فقالوا: نحكم بديتين. قال: ذلك لكم، فلما سكتوا قال: أنا أعطيكم ما سألتم غير أني قائل لكم شيئًا، إن لله عز وجل قضى بدية واحدة، وإن النبي ﷺ قضى بدية واحدة، وأنتم اليوم طالبون، وأخشى أن تكونوا غدًا مطلوبين، فلا يرضى الناس منكم إلا بمثل ما سننتم لأنفسكم، فقالوا: فردها إلى دية واحدة؛ فحمد الله وأثنى عليه وركب.",
+          ar: "ومن حكمته ما رواه هشام بن عقبة أخو ذي الرمة الشاعر المشهور قال: شهدت الأحنف بن قيس وقد جاء إلى قوم يتكلمون في دم، احكموا، فقالوا: نحكم بديتين. قال: ذلك لكم، فلما سكتوا قال: أنا أعطيكم ما سألتم غير أني قائل لكم شيئًا، إن الله عز وجل قضى بدية واحدة، وإن النبي ﷺ قضى بدية واحدة، وأنتم اليوم طالبون، وأخشى أن تكونوا غدًا مطلوبين، فلا يرضى الناس منكم إلا بمثل ما سننتم لأنفسكم، فقالوا: فردها إلى دية واحدة؛ فحمد الله وأثنى عليه وركب.",
           en: "Of his wisdom is what Hishām ibn ʿUqbah, brother of the famous poet Dhū al-Rummah, related: “I witnessed al-Aḥnaf ibn Qays come to a people disputing over a case of blood. He said: ‘Give your judgement.’ They said: ‘We judge two blood-monies.’ He said: ‘That is yours.’ When they fell silent he said: ‘I grant you what you asked, but let me say something to you. God Almighty decreed a single blood-money, and the Prophet ﷺ decreed a single blood-money. Today you are the claimants, and I fear that tomorrow you may be the ones claimed against; then people will accept from you nothing but the like of what you have made a precedent for yourselves.’ They said: ‘Return it to a single blood-money.’ He praised God, commended Him, and rode away.”",
         },
       },
@@ -1002,7 +1002,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "من ذلك: أن معاوية بن أبي سفيان بينا هو جالس وعنده وجوه الناس فيهم الأحنف بن قيس إذ دخل رجل من أهل الشام فقام خطيبًا، فكان آخر كلامه أن سب عليًا رضي الله عنه، فأطرق الناس، وتكلم الأحنف فقال: يا أمير المؤمنين، إن هذا القائل آنفًا لو يعلم أن رضاك في لعن المرسلين لفعل؛ فاتق الله ودع عنك عليًا فقد لقي ربه وأفرد في قبره وخلا بعمله، وكان والله المبرز سيفه، الطاهر ثوبه، الميمون نقيبته، العظيم مصيبته. فقال معاوية: يا أحنف لقد أغضيت العين عن القذى وقلت فيما ترى، وايم الله لتصعدن المنبر ولتلعننه طوعًا أو كرهًا. فقال له الأحنف: يا أمير المؤمنين، إن تعفني فهو خير لك وإن تجبرني فو الله لا تجري به شفتاي أبدًا. قال: قم فاصعد، قال الأحنف: أما والله مع ذلك لأنصفنك في القول والفعل، قال: وما أنت قائل يا أحنف إن أنصفتني قال: أصعد المنبر فأحمد الله تعالى بما هو أهله وأصلي على نبيه ﷺ ثم أقول: أيها الناس، إن أمير المؤمنين معاوية أمرني أن ألعن عليًّا، ألا وإن عليًّا ومعاوية اقتتلا واختلفا فادعى كل منهما أنه مبغيٌّ عليه وعلى فئته، فإذا دعوت فأمنوا رحمكم [الله]، ثم أقول: اللهم العن أنت وملائكتك وأنبياؤك وجميع خلقك الباغي منهما على صاحبه، والعن الفئة الباغية لعنًا كثيرًا، أمنوا رحمكم الله؛ يا معاوية لا أزيد على هذا حرفًا، ولا أنقص منه حرفًا، ولو كان فيه ذهاب نفسي. فقال معاوية: إذن نعفيك أبا بحر.",
+          ar: "من ذلك: أن معاوية بن أبي سفيان بينا هو جالس وعنده وجوه الناس فيهم الأحنف بن قيس إذ دخل رجل من أهل الشام فقام خطيبًا، فكان آخر كلامه أن سب عليًا رضي الله عنه، فأطرق الناس، وتكلم الأحنف فقال: يا أمير المؤمنين، إن هذا القائل آنفًا لو يعلم أن رضاك في لعن المرسلين لفعل؛ فاتق الله ودع عنك عليًا فقد لقي ربه وأفرد في قبره وخلا بعمله، وكان والله المبرز سيفه، الطاهر ثوبه، الميمون نقيبته، العظيم مصيبته. فقال معاوية: يا أحنف لقد أغضيت العين عن القذى وقلت فيما ترى، وايم الله لتصعدن المنبر ولتلعننه طوعًا أو كرهًا. فقال له الأحنف: يا أمير المؤمنين، إن تعفني فهو خير لك وإن تجبرني فوالله لا تجري به شفتاي أبدًا. قال: قم فاصعد، قال الأحنف: أما والله مع ذلك لأنصفنك في القول والفعل، قال: وما أنت قائل يا أحنف إن أنصفتني قال: أصعد المنبر فأحمد الله تعالى بما هو أهله وأصلي على نبيه ﷺ ثم أقول: أيها الناس، إن أمير المؤمنين معاوية أمرني أن ألعن عليًّا، ألا وإن عليًّا ومعاوية اقتتلا واختلفا فادعى كل منهما أنه مبغيٌّ عليه وعلى فئته، فإذا دعوت فأمنوا رحمكم [الله]، ثم أقول: اللهم العن أنت وملائكتك وأنبياؤك وجميع خلقك الباغي منهما على صاحبه، والعن الفئة الباغية لعنًا كثيرًا، أمنوا رحمكم الله؛ يا معاوية لا أزيد على هذا حرفًا، ولا أنقص منه حرفًا، ولو كان فيه ذهاب نفسي. فقال معاوية: إذن نعفيك أبا بحر.",
           en: "Among them: while Muʿāwiyah ibn Abī Sufyān was seated with the notables of the people, al-Aḥnaf ibn Qays among them, a man of Syria entered and rose to speak, ending his words by reviling ʿAlī. The people lowered their heads, and al-Aḥnaf spoke: “Commander of the Faithful, had this speaker known that your favour lay in cursing the messengers he would have done so. Fear God and leave ʿAlī be, for he has met his Lord, been laid alone in his grave, and left with his deeds. By God, he was foremost of sword, pure of garment, blessed of nature, and grievous of loss.” Muʿāwiyah said: “Al-Aḥnaf, you have closed your eye to the speck and said what you see; by God, you shall ascend the pulpit and curse him, willingly or unwillingly.” Al-Aḥnaf replied: “Commander of the Faithful, if you excuse me it is better for you; and if you compel me, by God my lips shall never utter it.” He said: “Rise and ascend.” Al-Aḥnaf said: “By God, even so I shall be fair to you in word and deed.” He said: “And what will you say, Aḥnaf, if you are fair to me?” He said: “I shall ascend the pulpit, praise God as He deserves and invoke blessings upon His Prophet ﷺ, then say: O people, the Commander of the Faithful Muʿāwiyah has ordered me to curse ʿAlī. Know that ʿAlī and Muʿāwiyah fought and differed, each claiming wrong was done to him and to his party. When I make the supplication, say Amen, may God have mercy upon you. Then I shall say: O God, curse — You, Your angels, Your prophets and all Your creation — whichever of the two wronged his fellow, and curse the wrongdoing party with abundant cursing. Say Amen, may God have mercy upon you. Muʿāwiyah, I shall add to this not one letter, nor take from it one letter, though it cost me my life.” Muʿāwiyah said: “Then we excuse you, Abū Baḥr.”",
         },
       },
@@ -1070,7 +1070,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "ولهذا الرأي ما يؤيده من كلام المؤرخين، حيث إننا عند تحليل كلام ابن الأثير، عند ذكره أحداث سنة ثمان وثلاثين، ومن ذلك قوله: «فلمّا وصل ابن الحضرميّ إلى البصرة نزل في بني تميمٍ».",
+          ar: "ولهذا الرأي ما يؤيده من كلام المؤرخين، ومن ذلك قول ابن الأثير عند ذكره أحداث سنة ثمان وثلاثين: «فلمّا وصل ابن الحضرميّ إلى البصرة نزل في بني تميمٍ».",
           en: "This view finds support in the words of the historians: analysing Ibn al-Athīr's account of the events of the year 38, he says: “When Ibn al-Ḥaḍramī reached Basra he lodged among Banu Tamim.”",
         },
       },
@@ -1112,7 +1112,7 @@ export const historySections: HistorySection[] = registerCopy("history", [
       {
         kind: "para",
         text: {
-          ar: "والمصنفات في بني تميم توضح خريطة هجراتهم، والتي من ضمنها استقرارهم في هجر (الأحساء)، حيث أشار آل تويم في كتابه «العبادل» أن قبيلة تميم سكنت منذ القدم رقعة واسعة من جزيرة العرب، توزعت فيها بطون القبيلة وفروعها، بسبب ضخامة عددها، ووفرة بطونها، وعشائرها، ودفاعها عما تحت يدها من أرض، وامتازت الأماكن التي سكنتها قبيلة تميم بالسعة، وتنوع التضاريس… وسكن بنو دارم أواسط بلاد تميم، ينتقلون فيها حيث الماء والمرعى لإبلهم وأغنامهم، ويمكن تقسيم الأماكن التي نزلها بنو دارم إلى ثلاث مجموعات متقاربة؛ يبرين وهجر والبيضة، والصمان وطويلع والجرباء والوريعة والقرعاء وثبرة واللصافة والرمادة وكاظمة، وزرود وعاقل وأشيقر وأبان ورامة ومنعج والقمراء.",
+          ar: "والمصنفات في بني تميم توضح خريطة هجراتهم، والتي من ضمنها استقرارهم في هجر (الأحساء)، حيث أشار آل تويم في كتابه «العبادل» إلى أن قبيلة تميم سكنت منذ القدم رقعة واسعة من جزيرة العرب، توزعت فيها بطون القبيلة وفروعها، بسبب ضخامة عددها، ووفرة بطونها، وعشائرها، ودفاعها عما تحت يدها من أرض، وامتازت الأماكن التي سكنتها قبيلة تميم بالسعة، وتنوع التضاريس… وسكن بنو دارم أواسط بلاد تميم، ينتقلون فيها حيث الماء والمرعى لإبلهم وأغنامهم، ويمكن تقسيم الأماكن التي نزلها بنو دارم إلى ثلاث مجموعات متقاربة؛ يبرين وهجر والبيضة، والصمان وطويلع والجرباء والوريعة والقرعاء وثبرة واللصافة والرمادة وكاظمة، وزرود وعاقل وأشيقر وأبان ورامة ومنعج والقمراء.",
           en: "The works devoted to Banu Tamim map their migrations, including their settlement at Hajar (Al-Ahsa). Āl Tuwaym notes in his book al-ʿAbādil that the tribe of Tamim has since antiquity inhabited a wide expanse of the Arabian Peninsula, across which its clans and branches were distributed owing to its great numbers, the abundance of its clans and kin groups, and its defence of the land it held. The places Tamim inhabited were marked by their breadth and varied terrain… Banu Dārim dwelt in the central lands of Tamim, moving within them wherever there was water and pasture for their camels and sheep. The places at which Banu Dārim encamped may be divided into three neighbouring groups: Yabrīn, Hajar and al-Bayḍah; al-Ṣammān, Ṭuwaylaʿ, al-Jarbāʾ, al-Wurayʿah, al-Qarʿāʾ, Thabrah, al-Liṣāfah, al-Ramādah and Kāẓimah; and Zarūd, ʿĀqil, Ushayqir, Abān, Rāmah, Munʿij and al-Qamrāʾ.",
         },
       },
